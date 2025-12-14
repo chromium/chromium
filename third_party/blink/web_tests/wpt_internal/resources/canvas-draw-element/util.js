@@ -9,18 +9,33 @@ function resizeToPixelGrid(canvas) {
 }
 
 function computeScaledDestinationSize(cvs, target, scaleX, scaleY, outsetWidth, outsetHeight) {
-  if (getComputedStyle(target).boxSizing != "border-box") {
-    throw new TypeError("'box-sizing:border-box' is required to compute" +
-                        " accurate destination size.");
-  }
-
+  let targetWidth, targetHeight;
   outsetWidth = outsetWidth || 0;
   outsetHeight = outsetHeight || 0;
 
-  // Destination size in CSS pixels
-  const style = getComputedStyle(target);
-  const targetWidth = (scaleX * Number.parseFloat(style.width)) + outsetWidth;
-  const targetHeight = (scaleY * Number.parseFloat(style.height)) + outsetHeight;
+  if (target instanceof Element) {
+    if (getComputedStyle(target).boxSizing != "border-box") {
+      throw new TypeError("'box-sizing:border-box' is required to compute" +
+                          " accurate destination size.");
+    }
+    const canvasScaleX = cvs.width / cvs.clientWidth;
+    const canvasScaleY = cvs.height / cvs.clientHeight;
+    const style = getComputedStyle(target);
+    targetWidth = canvasScaleX * (Number.parseFloat(style.width) + outsetWidth);
+    targetHeight = canvasScaleY * (Number.parseFloat(style.height) + outsetHeight);
+  }
+
+  if (target instanceof ImageData) {
+    targetWidth = target.width;
+    targetHeight = target.height;
+  }
+
+  return [Math.ceil(targetWidth * scaleX), Math.ceil(targetHeight * scaleY)];
+}
+
+function computeExplicitDestinationSize(cvs, scaleX, scaleY, swidth, sheight) {
+  const targetWidth = scaleX * swidth;
+  const targetHeight = scaleY * sheight;
 
   // Scale factor from CSS pixels to canvas grid.
   const canvasScaleX = cvs.width / cvs.clientWidth;
@@ -81,16 +96,24 @@ void main(){
     this.texLoc = gl.getUniformLocation(this.program, 'u_tex');
   }
 
-  render(target, scaleX, scaleY) {
+  render(target, scaleX, scaleY, sx, sy, swidth, sheight) {
     const gl = this.gl;
     gl.useProgram(this.program);
     const cvs = gl.canvas;
 
     const explicitScale = (scaleX !== undefined && scaleY !== undefined);
+    const explicitSourceRect = (sx !== undefined && sy !== undefined
+                                && swidth !== undefined && sheight !== undefined);
     scaleX = explicitScale ? scaleX : 1;
     scaleY = explicitScale ? scaleY : 1;
-    const [destWidth, destHeight] =
-          computeScaledDestinationSize(cvs, target, scaleX, scaleY);
+    let destWidth, destHeight;
+    if (explicitSourceRect) {
+      [destWidth, destHeight] =
+        computeExplicitDestinationSize(cvs, scaleX, scaleY, swidth, sheight);
+    } else {
+      [destWidth, destHeight] =
+        computeScaledDestinationSize(cvs, target, scaleX, scaleY);
+    }
 
     // Destination rect in GL clip space, placed at top left
     const xMin = -1;
@@ -119,16 +142,41 @@ void main(){
     const internalformat = gl.RGBA;
     const format = gl.RGBA;
     const type = gl.UNSIGNED_BYTE;
-    if (explicitScale) {
-      gl.texElementImage2D(
-        gl.TEXTURE_2D, level, internalformat,
-        destWidth, destHeight,
-        format, type, target);
-    } else {
-      gl.texElementImage2D(
-        gl.TEXTURE_2D, level, internalformat,
-        format, type, target);
+
+    if (target instanceof Element) {
+      if (explicitSourceRect) {
+        if (explicitScale) {
+          gl.texElementImage2D(
+            gl.TEXTURE_2D, level, internalformat,
+            sx, sy, swidth, sheight,
+            destWidth, destHeight,
+            format, type, target);
+        } else {
+          gl.texElementImage2D(
+            gl.TEXTURE_2D, level, internalformat,
+            sx, sy, swidth, sheight,
+            format, type, target);
+        }
+      } else {
+        if (explicitScale) {
+          gl.texElementImage2D(
+            gl.TEXTURE_2D, level, internalformat,
+            destWidth, destHeight,
+            format, type, target);
+        } else {
+          gl.texElementImage2D(
+            gl.TEXTURE_2D, level, internalformat,
+            format, type, target);
+        }
+      }
     }
+
+    if (target instanceof ImageData) {
+      gl.texImage2D(gl.TEXTURE_2D, level, internalformat,
+                    destWidth, destHeight, 0,
+                    format, type, target);
+    }
+
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.uniform1i(this.texLoc, 0);

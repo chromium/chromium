@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <head>
+    <title>texElementImage2D scaling</title>
+    <link rel="help" href="https://github.com/WICG/html-in-canvas">
+    <link rel="match" href="webgl-ink-overflow-ref.html">
+    <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+    <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+    <script src="/common/reftest-wait.js"></script>
+    <meta name="assert" value="Scaling content via destRect">
+    <style>
+     body {
+       display: grid;
+       grid: 256px / 1fr 1fr 1fr;
+       align-items: start;
+       --spread: 30px;
+     }
+     canvas {
+       width: 256px;
+       height: 256px;
+     }
+     color-grid {
+       width: 100px;
+       height: 100px;
+     }
+     .box-shadow {
+       box-shadow: 10px 20px 0px var(--spread) hotpink;
+     }
+     .outline {
+       outline: 5px solid salmon;
+     }
+    </style>
+  </head>
+  <body>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper box-shadow" outset="50">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper outline" outset="50">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper box-shadow" outset="-20">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper outline" outset="-20">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <script type="module">
+import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+Promise.all(Array.from(document.querySelectorAll("canvas")).map(async canvas => {
+  await resizeToPixelGrid(canvas);
+  const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
+  const target = canvas.firstElementChild;
+  const targetStyle = getComputedStyle(target);
+  const targetWidth = Number.parseFloat(targetStyle.width);
+  const targetHeight = Number.parseFloat(targetStyle.height);
+  const outset = Number.parseFloat(target.getAttribute("outset") || "0");
+  prog.render(target, undefined, undefined,
+             -outset, -outset, targetWidth + 2*outset, targetHeight + 2*outset);
+})).then(takeScreenshot);
+    </script>
+  </body>
+</html>

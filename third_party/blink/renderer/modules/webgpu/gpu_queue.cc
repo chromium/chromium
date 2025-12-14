@@ -836,7 +836,9 @@ void GPUQueue::CopyElementImageToTextureInternal(
   }
 
   scoped_refptr<StaticBitmapImage> image = context->GetElementImage(
-      element, width, height, "copyElementImageToTexture()", exception_state);
+      element, /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+      /*swidth*/ std::nullopt, /*sheight*/ std::nullopt, width, height,
+      "copyElementImageToTexture()", exception_state);
   if (!image) {
     return;
   }

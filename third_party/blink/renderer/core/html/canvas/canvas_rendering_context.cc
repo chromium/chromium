@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
@@ -254,14 +255,32 @@ std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
 
 scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     Element* element,
+    std::optional<float> sx,
+    std::optional<float> sy,
+    std::optional<float> swidth,
+    std::optional<float> sheight,
     std::optional<uint32_t> width,
     std::optional<uint32_t> height,
     const String& func_name,
     ExceptionState& exception_state) {
   element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kCanvasDrawElementImage);
-  std::optional<cc::PaintRecord> paint_record = GetElementPaintRecord(
-      element, /*cull_rect*/ std::nullopt, func_name, exception_state);
+
+  // Element size in physical coordinates.
+  gfx::SizeF box_size;
+  if (element->GetLayoutBox()) {
+    box_size = gfx::SizeF(element->GetLayoutBox()->StitchedSize());
+  }
+  gfx::RectF src_rect(box_size);
+  std::optional<CullRect> cull_rect;
+  if (sx && sy && swidth && sheight) {
+    float dpr = element->ComputedStyleRef().EffectiveZoom();
+    src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
+    cull_rect.emplace(gfx::ToEnclosingRect(src_rect));
+  }
+
+  std::optional<cc::PaintRecord> paint_record =
+      GetElementPaintRecord(element, cull_rect, func_name, exception_state);
   if (!paint_record) {
     return nullptr;
   }
@@ -272,8 +291,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   // size scaled to canvas grid coordinates. This causes the element to have
   // the same proportions when appearing inside the canvas as it would have
   // were it painted outside the canvas.
-  gfx::SizeF intrinsic_size =
-      gfx::SizeF(element->GetLayoutBox()->StitchedSize());
+  gfx::SizeF intrinsic_size(src_rect.size());
   gfx::Vector2dF canvas_scale =
       canvas_element->PhysicalPixelToCanvasGridScaleFactor();
   intrinsic_size.Scale(canvas_scale.x(), canvas_scale.y());
@@ -292,8 +310,10 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   if (!surface) {
     return nullptr;
   }
+
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
   skia_paint_canvas.scale(canvas_scale.x(), canvas_scale.y());
+  skia_paint_canvas.translate(-src_rect.x(), -src_rect.y());
   skia_paint_canvas.drawPicture(*paint_record);
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }

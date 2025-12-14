@@ -6670,6 +6670,37 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
                     element, exception_state);
 }
 
+void WebGLRenderingContextBase::texElement2D(GLenum target,
+                                             GLint level,
+                                             GLint internalformat,
+                                             GLfloat sx,
+                                             GLfloat sy,
+                                             GLfloat swidth,
+                                             GLfloat sheight,
+                                             GLenum format,
+                                             GLenum type,
+                                             Element* element,
+                                             ExceptionState& exception_state) {
+  texElementImage2D(target, level, internalformat, sx, sy, swidth, sheight,
+                    format, type, element, exception_state);
+}
+
+void WebGLRenderingContextBase::texElement2D(GLenum target,
+                                             GLint level,
+                                             GLint internalformat,
+                                             GLfloat sx,
+                                             GLfloat sy,
+                                             GLfloat swidth,
+                                             GLfloat sheight,
+                                             GLsizei width,
+                                             GLsizei height,
+                                             GLenum format,
+                                             GLenum type,
+                                             Element* element,
+                                             ExceptionState& exception_state) {
+  texElementImage2D(target, level, internalformat, sx, sy, swidth, sheight,
+                    width, height, format, type, element, exception_state);
+}
 void WebGLRenderingContextBase::texElementImage2D(
     GLenum target,
     GLint level,
@@ -6678,9 +6709,11 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLenum type,
     Element* element,
     ExceptionState& exception_state) {
-  TexElementImage2DInternal(target, level, internalformat, std::nullopt,
-                            std::nullopt, format, type, element,
-                            exception_state);
+  TexElementImage2DInternal(target, level, internalformat,
+                            /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+                            /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
+                            /*width*/ std::nullopt, /*height*/ std::nullopt,
+                            format, type, element, exception_state);
 }
 
 void WebGLRenderingContextBase::texElementImage2D(
@@ -6693,14 +6726,58 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLenum type,
     Element* element,
     ExceptionState& exception_state) {
-  TexElementImage2DInternal(target, level, internalformat, width, height,
+  TexElementImage2DInternal(target, level, internalformat,
+                            /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+                            /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
+                            width, height, format, type, element,
+                            exception_state);
+}
+
+void WebGLRenderingContextBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
+                            sheight,
+                            /*width*/ std::nullopt, /*height*/ std::nullopt,
                             format, type, element, exception_state);
+}
+
+void WebGLRenderingContextBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
+                            sheight, width, height, format, type, element,
+                            exception_state);
 }
 
 void WebGLRenderingContextBase::TexElementImage2DInternal(
     GLenum target,
     GLint level,
     GLint internalformat,
+    std::optional<GLfloat> sx,
+    std::optional<GLfloat> sy,
+    std::optional<GLfloat> swidth,
+    std::optional<GLfloat> sheight,
     std::optional<GLsizei> width,
     std::optional<GLsizei> height,
     GLenum format,
@@ -6717,8 +6794,9 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     return;
   }
 
-  scoped_refptr<Image> image = GetElementImage(
-      element, width, height, "texElementImage2D()", exception_state);
+  scoped_refptr<Image> image =
+      GetElementImage(element, sx, sy, swidth, sheight, width, height,
+                      "texElementImage2D()", exception_state);
   if (!image) {
     return;
   }

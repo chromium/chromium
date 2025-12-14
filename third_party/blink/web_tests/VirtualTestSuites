@@ -2809,6 +2809,7 @@
       "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
       "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
       "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
@@ -2855,6 +2856,7 @@
       "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
       "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
       "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"

@@ -2256,6 +2256,38 @@ void WebGLRenderingContextWebGPUBase::texElementImage2D(
   NOTIMPLEMENTED();
 }
 
+void WebGLRenderingContextWebGPUBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
 void WebGLRenderingContextWebGPUBase::texElement2D(
     GLenum target,
     GLint level,
@@ -2271,6 +2303,38 @@ void WebGLRenderingContextWebGPUBase::texElement2D(
     GLenum target,
     GLint level,
     GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElement2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElement2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
     GLsizei width,
     GLsizei height,
     GLenum format,
