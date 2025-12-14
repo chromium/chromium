@@ -865,4 +865,12 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   _tracker->NotifyEvent(config->iph_entrypoint_used_event_name);
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self resetTimersAndUIStateAnimated:YES];
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  contextualPanelTabHelper->SetLoudMomentEntrypointCanceled(true);
+}
+
 @end

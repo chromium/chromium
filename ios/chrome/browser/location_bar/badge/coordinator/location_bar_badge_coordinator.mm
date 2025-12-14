@@ -62,9 +62,8 @@
   _viewController = [[LocationBarBadgeViewController alloc] init];
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _dispatcher = self.browser->GetCommandDispatcher();
-  if (IsContextualPanelEnabled()) {
-    [self createContextualPanelEntryPointMediator];
-  }
+  _locationBarBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenController::FromBrowser(self.browser), self.viewController);
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _prefService = self.browser->GetProfile()->GetPrefs();
@@ -76,6 +75,11 @@
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    [self createContextualPanelEntryPointMediator];
+  } else {
+    [self attachContextualPanelEntrypoint];
+  }
   id<BWGCommands> BWGCommandHandler =
       HandlerForProtocol(_dispatcher, BWGCommands);
   _mediator.BWGCommandHandler = BWGCommandHandler;
@@ -85,7 +89,11 @@
 
 - (void)stop {
   _viewController = nil;
-  [self stopContextualPanelEntrypointMediator];
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    [_dispatcher stopDispatchingToTarget:self];
+  } else {
+    [self stopContextualPanelEntrypointMediator];
+  }
   [_dispatcher stopDispatchingToTarget:_mediator];
   _dispatcher = nil;
   [_mediator disconnect];
@@ -140,20 +148,45 @@
 
 - (void)notifyContextualPanelEntrypointIPHDismissed {
   [self enableFullscreen];
-  [_contextualPanelEntryPointMediator.consumer setEntrypointColored:NO];
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    [_viewController highlightBadge:NO];
+  } else {
+    [_contextualPanelEntryPointMediator.consumer setEntrypointColored:NO];
+  }
 }
 
 - (void)cancelContextualPanelEntrypointLoudMoment {
-  [_contextualPanelEntryPointMediator
-      cancelContextualPanelEntrypointLoudMoment];
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    [_mediator cancelContextualPanelEntrypointLoudMoment];
+  } else {
+    [_contextualPanelEntryPointMediator
+        cancelContextualPanelEntrypointLoudMoment];
+  }
 }
 
 #pragma mark - Private
+
+- (void)attachContextualPanelEntrypoint {
+  if (!IsContextualPanelEnabled()) {
+    return;
+  }
+
+  [_dispatcher
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  _mediator.contextualSheetHandler =
+      HandlerForProtocol(_dispatcher, ContextualSheetCommands);
+  _mediator.entrypointHelpHandler =
+      HandlerForProtocol(_dispatcher, ContextualPanelEntrypointIPHCommands);
+}
 
 // TODO(crbug.com/454351425): Remove when Contextual Panel Entry Point is
 // integrated with LocationBarBadgeMediator.
 // Creates a Contextual Panel entry point mediator.
 - (void)createContextualPanelEntryPointMediator {
+  if (!IsContextualPanelEnabled()) {
+    return;
+  }
   WebStateList* webStateList = self.browser->GetWebStateList();
 
   [_dispatcher
@@ -180,9 +213,6 @@
   _contextualPanelEntryPointMediator.consumer = _viewController;
   _viewController.contextualPanelEntryPointMutator =
       _contextualPanelEntryPointMediator;
-
-  _locationBarBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      FullscreenController::FromBrowser(self.browser), self.viewController);
 }
 
 // Cleans up ContextualPanelEntrypointMediator.
