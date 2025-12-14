@@ -16977,6 +16977,21 @@
             ]
         }
     ],
+    "OAuthMultiloginStandardCookiesBinding": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableOAuthMultiloginStandardCookiesBinding"
+                    ]
+                }
+            ]
+        }
+    ],
     "OcclusionCullingQuadSplitLimit": [
         {
             "platforms": [

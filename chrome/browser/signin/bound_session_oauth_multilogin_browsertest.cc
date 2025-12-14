@@ -81,7 +81,8 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
         /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
                               switches::kEnableChromeRefreshTokenBinding,
                               switches::kEnableOAuthMultiloginCookiesBinding},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            switches::kEnableOAuthMultiloginStandardCookiesBinding});
   }
 
   ~BoundSessionOAuthMultiloginTest() override = default;
