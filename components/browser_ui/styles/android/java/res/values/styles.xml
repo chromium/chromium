@@ -304,6 +304,9 @@ found in the LICENSE file.
     <style name="TextAppearance.TextMedium.Primary.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
+    <style name="TextAppearance.TextMedium.Primary.OnInverseSurface" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_inverse_surface_list</item>
+    </style>
     <style name="TextAppearance.TextSmall.Primary.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>

@@ -66,6 +66,7 @@ android_resources("java_resources") {
     "java/res/color/default_text_color_list.xml",
     "java/res/color/default_text_color_on_accent1_container_list.xml",
     "java/res/color/default_text_color_on_accent1_list.xml",
+    "java/res/color/default_text_color_on_inverse_surface_list.xml",
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/dialog_bg_color.xml",
     "java/res/color/dialog_selected_item_bg_color_list.xml",

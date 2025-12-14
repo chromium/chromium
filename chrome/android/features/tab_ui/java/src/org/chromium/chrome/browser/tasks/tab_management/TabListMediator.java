@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -3395,6 +3396,16 @@ class TabListMediator implements TabListNotificationHandler {
                         null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_TAB_PICKER_LIMIT_REACHED);
+        TabModel tabModel = getCurrentTabModelChecked();
+        boolean isIncognito = tabModel.isIncognitoBranded();
+        snackbar.setBackgroundColor(ChromeColors.getInverseBgColor(mActivity, isIncognito));
+
+        int textAppearanceResId =
+                isIncognito
+                        ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                        : R.style.TextAppearance_TextMedium_Primary_OnInverseSurface;
+        snackbar.setTextAppearance(textAppearanceResId);
+
         mSnackbarManager.showSnackbar(snackbar);
     }
 
