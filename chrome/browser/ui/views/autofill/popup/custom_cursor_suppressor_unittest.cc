@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
@@ -22,7 +23,6 @@
 namespace {
 
 using ::content::GlobalRenderFrameHostId;
-using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
@@ -193,7 +193,7 @@ TEST_F(CustomCursorSuppressorTest, MultipleBrowsers) {
   native_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(native_params));
-  ASSERT_THAT(*BrowserList::GetInstance(), SizeIs(2));
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   AddTab(browser2.get(), GURL(kUrl3));
 
   CustomCursorSuppressor suppressor;
@@ -223,7 +223,7 @@ TEST_F(CustomCursorSuppressorTest, BrowserAddition) {
   native_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(native_params));
-  ASSERT_THAT(*BrowserList::GetInstance(), SizeIs(2));
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   AddTab(browser2.get(), GURL(kUrl2));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser()),
