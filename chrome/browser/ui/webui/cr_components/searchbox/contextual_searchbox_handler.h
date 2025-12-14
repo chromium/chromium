@@ -150,6 +150,10 @@ class ContextualSearchboxHandler
 
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
+ protected:
+  // Helper function that uploads the cached tab context if it exists.
+  void UploadSnapshotTabContextIfPresent();
+
  private:
   void OnAddTabContextTokenCreated(int32_t tab_id,
                                    bool delay_upload,
@@ -171,9 +175,6 @@ class ContextualSearchboxHandler
   void UploadTabContext(
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
-
-  // Helper function that uploads the cached tab context if it exists.
-  void UploadSnapshotTabContextIfPresent();
 
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 

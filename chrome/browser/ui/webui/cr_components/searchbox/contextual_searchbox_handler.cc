@@ -329,6 +329,18 @@ ContextualSearchboxHandler::GetUploadedContextTokens() {
   return {};
 }
 
+void ContextualSearchboxHandler::UploadSnapshotTabContextIfPresent() {
+  if (!tab_context_snapshot_.has_value()) {
+    return;
+  }
+
+  auto [context_token, page_content_data] =
+      std::move(tab_context_snapshot_.value());
+  tab_context_snapshot_.reset();
+
+  UploadTabContext(context_token, std::move(page_content_data));
+}
+
 void ContextualSearchboxHandler::OnAddTabContextTokenCreated(
     int32_t tab_id,
     bool delay_upload,
@@ -585,18 +597,6 @@ void ContextualSearchboxHandler::UploadTabContext(
         context_token, std::move(page_content_data),
         CreateImageEncodingOptions());
   }
-}
-
-void ContextualSearchboxHandler::UploadSnapshotTabContextIfPresent() {
-  if (!tab_context_snapshot_.has_value()) {
-    return;
-  }
-
-  auto [context_token, page_content_data] =
-      std::move(tab_context_snapshot_.value());
-  tab_context_snapshot_.reset();
-
-  UploadTabContext(context_token, std::move(page_content_data));
 }
 
 void ContextualSearchboxHandler::OpenUrl(
