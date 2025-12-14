@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_MAC)
-#include <stddef.h>
+// #include <stddef.h>    //// used for size_t  but it is already available in <string_view> and <memory>
 
 #include <memory>
 #include <string_view>
@@ -43,15 +43,20 @@ std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
 }
 
 // static
-void PlatformStyle::OnTextfieldEditFailed() {}
+void PlatformStyle::OnTextfieldEditFailed() {
+    // TODO: Provide visual or audio feedback for text edit failure.
+}
 
 // static
 gfx::Range PlatformStyle::RangeToDeleteBackwards(std::u16string_view text,
                                                  size_t cursor_position) {
-  // Delete one code point, which may be two UTF-16 words.
-  size_t previous_grapheme_index =
+  // Delete one grapheme cluster , which may span multiple UTF-16 code units.
+    if (cursor_position == 0) // prevent crash when cursor is at position 0
+        return gfx::Range(0, 0);
+    
+        size_t previous_grapheme_index =
       gfx::UTF16OffsetToIndex(text, cursor_position, -1);
-  return gfx::Range(cursor_position, previous_grapheme_index);
+  return gfx::Range( previous_grapheme_index , cursor_position); //Range ( start , end) correct order
 }
 
 #endif  // !BUILDFLAG(IS_MAC)
