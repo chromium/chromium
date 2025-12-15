@@ -260,6 +260,7 @@ android_resources("java_resources") {
     "java/res/drawable/dialog_bg_tinted.xml",
     "java/res/drawable/drag_handlebar.xml",
     "java/res/drawable/home_surface_ui_background.xml",
+    "java/res/drawable/ic_cancel_24dp.xml",
     "java/res/drawable/ic_cancel_fill_24dp.xml",
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",
     "java/res/drawable/ic_custom_radio_unchecked.xml",
