@@ -3314,7 +3314,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.{LoginOrUnlock}.SamlRedirectUsage"
-    enum="SamlRedirectEvent" expires_after="2026-01-25">
+    enum="SamlRedirectEvent" expires_after="2027-01-25">
   <owner>andreydav@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
