@@ -935,9 +935,7 @@ HRESULT GenerateSampleFromVideoFrame(
   hr = MFCreateSample(&sample);
   RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
 
-  if (frame->storage_type() ==
-          VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE &&
-      dxgi_device_manager != nullptr) {
+  if (frame->HasMappableSharedImage() && dxgi_device_manager != nullptr) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
     if (buffer_handle.is_null()) {
