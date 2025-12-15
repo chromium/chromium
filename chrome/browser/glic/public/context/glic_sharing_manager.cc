@@ -46,4 +46,22 @@ GlicUnpinEvent::GlicUnpinEvent(GlicUnpinTrigger trigger,
 
 GlicUnpinEvent::~GlicUnpinEvent() = default;
 
+bool GlicPinnedTabUsage::IsExplicitlyPinnedByUser() const {
+  switch (pin_event.trigger) {
+    case GlicPinTrigger::kUnknown:
+    case GlicPinTrigger::kInstanceCreation:
+    case GlicPinTrigger::kDaisyChain:
+    case GlicPinTrigger::kNewTabDaisyChain:
+    case GlicPinTrigger::kConversationChange:
+    case GlicPinTrigger::kRestore:
+      return false;
+    case GlicPinTrigger::kContextMenu:
+    case GlicPinTrigger::kCandidatesToggle:
+    case GlicPinTrigger::kAtMention:
+    case GlicPinTrigger::kActuation:
+    case GlicPinTrigger::kWebClientUnknown:
+      return true;
+  }
+}
+
 }  // namespace glic

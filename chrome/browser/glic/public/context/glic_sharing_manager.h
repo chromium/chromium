@@ -81,6 +81,8 @@ struct GlicPinnedTabUsage {
 
   ~GlicPinnedTabUsage();
 
+  bool IsExplicitlyPinnedByUser() const;
+
   GlicPinEvent pin_event;
 
   int times_conversation_turn_submitted_while_pinned = 0;

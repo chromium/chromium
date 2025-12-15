@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -64,7 +65,7 @@ BASE_FEATURE(kGlicAlwaysBindOnPin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicUnpinOnUnbind, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
@@ -560,10 +561,18 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   instance_metrics_.OnUnbindEmbedder(key);
-  if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbind) &&
+  if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) &&
       std::holds_alternative<tabs::TabInterface*>(key)) {
     auto* tab = std::get<tabs::TabInterface*>(key);
-    sharing_manager().UnpinTabs({tab->GetHandle()});
+    std::optional<GlicPinnedTabUsage> usage =
+        sharing_manager().GetPinnedTabUsage(tab->GetHandle());
+    // If the conversation hasn't had a turn since the tab was pinned and the
+    // tab was not manually pinned, then we will unpin the tab.
+    if (usage.has_value() &&
+        usage->times_conversation_turn_submitted_while_pinned == 0 &&
+        !usage->IsExplicitlyPinnedByUser()) {
+      sharing_manager().UnpinTabs({tab->GetHandle()});
+    }
   }
 
   Close(key);
