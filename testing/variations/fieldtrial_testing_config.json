@@ -18447,6 +18447,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "premultiplied-alpha": "true"
+                    },
                     "enable_features": [
                         "PdfUseSkiaRenderer"
                     ]
