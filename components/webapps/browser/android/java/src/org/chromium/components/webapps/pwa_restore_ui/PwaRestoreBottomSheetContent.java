@@ -9,7 +9,8 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -24,10 +25,6 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     // This content's priority.
     private @ContentPriority int mPriority = ContentPriority.LOW;
 
-    // Helps keep track of whether the Back button was pressed.
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
-
     // The handler to notify when the (Android) Back button is pressed.
     Runnable mOsBackButtonClicked;
 
@@ -36,7 +33,6 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
         mView = view;
 
         mOsBackButtonClicked = onOsBackButtonClicked;
-        mBackPressStateChangedSupplier.set(true);
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -66,8 +62,8 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        return mBackPressStateChangedSupplier;
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 
     @Override

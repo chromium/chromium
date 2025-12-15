@@ -19,7 +19,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -65,8 +65,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private final Runnable mCloseButtonCallback;
     private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
     private final Callback<ViewGroup> mOnToolbarCreatedCallback;
 
     private ViewGroup mToolbarView;
@@ -105,8 +103,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
 
         createThinWebView(getMaxSheetHeight(maxViewHeight), intentRequestTracker);
         createToolbarView(maxViewHeight);
-
-        mBackPressStateChangedSupplier.set(true);
     }
 
     /**
@@ -338,8 +334,8 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        return mBackPressStateChangedSupplier;
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 
     @Override

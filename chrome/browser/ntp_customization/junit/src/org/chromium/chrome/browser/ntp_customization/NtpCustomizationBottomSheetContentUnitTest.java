@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -45,7 +44,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -63,7 +61,6 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
 
     @Mock private Runnable mBackPressRunnable;
     @Mock private Runnable mOnDestroyRunnable;
-    @Mock private ObservableSupplierImpl<Boolean> mObservableSupplier;
     @Mock private Supplier<Integer> mContainerHeightSupplier;
     @Mock private Supplier<Integer> mMaxSheetWidthSupplier;
     @Mock private RecyclerView mThemeCollectionsRecyclerView;
@@ -327,12 +324,11 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
 
     @Test
     public void testSheetClosedAndOpened() {
-        mBottomSheetContent.setBackPressStateChangedSupplierForTesting(mObservableSupplier);
         mBottomSheetContent.onSheetOpened();
-        verify(mObservableSupplier).set(eq(true));
+        assertTrue(mBottomSheetContent.getBackPressStateChangedSupplier().get());
 
         mBottomSheetContent.onSheetClosed();
-        verify(mObservableSupplier).set(eq(false));
+        assertFalse(mBottomSheetContent.getBackPressStateChangedSupplier().get());
     }
 
     @Test

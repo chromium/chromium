@@ -12,7 +12,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -209,13 +210,11 @@ public interface BottomSheetContent {
 
     /**
      * @return An observable supplier that will hold true if the content will intercept and handle a
-     *         back press event, false otherwise. If left {@code false}, the sheet will collapse to
-     *         its minimum state on back press or do nothing if in the minimum / peeking state.
+     *     back press event, false otherwise. If left {@code false}, the sheet will collapse to its
+     *     minimum state on back press or do nothing if in the minimum / peeking state.
      */
-    default ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(false);
-        return supplier;
+    default NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return ObservableSuppliers.alwaysFalse();
     }
 
     /**

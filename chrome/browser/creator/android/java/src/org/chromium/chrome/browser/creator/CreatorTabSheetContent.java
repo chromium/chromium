@@ -18,8 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -62,8 +63,6 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     private final Runnable mToolbarClickCallback;
     private final Runnable mCloseButtonCallback;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
 
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
@@ -101,7 +100,6 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         createThinWebView(getMaxSheetHeight(maxViewHeight), intentRequestTracker);
         createToolbarView(maxViewHeight);
 
-        mBackPressStateChangedSupplier.set(true);
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 
@@ -328,8 +326,8 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        return mBackPressStateChangedSupplier;
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 
     @Override

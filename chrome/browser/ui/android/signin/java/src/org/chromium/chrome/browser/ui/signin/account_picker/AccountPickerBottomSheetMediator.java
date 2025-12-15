@@ -15,7 +15,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -85,8 +87,8 @@ public class AccountPickerBottomSheetMediator
     private boolean mAcceptedAccountManagement;
 
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final AccountPickerDismissalLogger mDismissalLogger;
 
     static AccountPickerBottomSheetMediator create(
@@ -330,7 +332,7 @@ public class AccountPickerBottomSheetMediator
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressStateChangedSupplier;
     }
 
