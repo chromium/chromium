@@ -24,6 +24,7 @@ import androidx.annotation.StyleRes;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -311,14 +312,18 @@ class FuseboxViewBinder {
                                 context, brandedColorScheme));
                 endDrawable = null;
             }
+
+            @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_button_icon_size);
+            scaleDrawable(startDrawable, iconSizePx);
+            scaleDrawable(endDrawable, iconSizePx);
+
             typeButton.setVisibility(View.VISIBLE);
             typeButton.setText(text);
             typeButton.setContentDescription(description);
             typeButton.setButtonColor(ColorStateList.valueOf(buttonColor));
             typeButton.setBorderColor(ColorStateList.valueOf(borderColor));
             typeButton.setTextAppearance(textAppearanceRes);
-            typeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    startDrawable, null, endDrawable, null);
+            typeButton.setCompoundDrawablesRelative(startDrawable, null, endDrawable, null);
         } else {
             typeButton.setVisibility(View.GONE);
         }
@@ -404,5 +409,10 @@ class FuseboxViewBinder {
             // always be unaffected because the multiplied color is white.
             reapplyColorFilter(addCurrentTabButton);
         }
+    }
+
+    private static void scaleDrawable(@Nullable Drawable drawable, @Px int sizePx) {
+        if (drawable == null) return;
+        drawable.setBounds(0, 0, sizePx, sizePx);
     }
 }
