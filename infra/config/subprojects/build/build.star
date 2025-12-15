@@ -901,7 +901,9 @@ cq_rbe_test_builder(
         "builtin": "try/win-rel",
         "no_clang_modules": gn_args.config(configs = ["try/win-rel", "no_clang_modules"]),
     },
+    cores = 16,
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "rbe test|cq",
         short_name = "win",
@@ -969,7 +971,9 @@ ci_rbe_test_builder(
         "builtin": "ci/Win x64 Builder",
         "no_clang_modules": gn_args.config(configs = ["ci/Win x64 Builder", "no_clang_modules"]),
     },
+    cores = 16,
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "rbe test|ci",
         short_name = "win",
