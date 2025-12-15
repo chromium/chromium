@@ -51,7 +51,6 @@
 + (void)startSearchWhatYouSeePromoCoordinator;
 + (void)startSnackbarCoordinator;
 + (void)startReadingListCoordinator;
-+ (void)startBookmarksCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;

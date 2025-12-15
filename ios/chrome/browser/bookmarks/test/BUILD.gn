@@ -9,7 +9,6 @@ source_set("eg2_tests") {
     "bookmarks_accessibility_egtest.mm",
     "bookmarks_egtest.mm",
     "bookmarks_entries_egtest.mm",
-    "bookmarks_interaction_egtest.mm",
     "bookmarks_search_egtest.mm",
     "managed_bookmarks_egtest.mm",
   ]

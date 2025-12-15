@@ -10,7 +10,6 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
@@ -352,15 +351,6 @@
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
   [self.helper.coordinator start];
-}
-
-+ (void)startBookmarksCoordinator {
-  BookmarksCoordinator* coordinator =
-      [[BookmarksCoordinator alloc] initWithBrowser:self.helper.browser];
-  coordinator.baseViewController = [self rootViewController];
-  self.helper.coordinator = coordinator;
-  [self.helper.coordinator start];
-  [coordinator presentBookmarks];
 }
 
 #pragma mark - Private
