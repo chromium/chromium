@@ -161,18 +161,15 @@ TEST_P(PaintLayerTest, HasFixedPositionDescendant) {
     </div>
   )HTML");
   PaintLayer* parent = GetPaintLayerByElementId("parent");
-  PaintLayer* child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->HasFixedPositionDescendant());
-  EXPECT_FALSE(child->HasFixedPositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("child")->HasFixedPositionDescendant());
 
-  GetDocument()
-      .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("position: relative"));
+  GetElementById("child")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("position: relative"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(parent->HasFixedPositionDescendant());
-  EXPECT_FALSE(child->HasFixedPositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("child")->HasFixedPositionDescendant());
 }
 
 TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
@@ -182,27 +179,26 @@ TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
       </div>
     </div>
   )HTML");
-  PaintLayer* parent = GetPaintLayerByElementId("parent");
-  PaintLayer* child = GetPaintLayerByElementId("child");
-  EXPECT_FALSE(parent->HasNonContainedAbsolutePositionDescendant());
-  EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("parent")
+                   ->HasNonContainedAbsolutePositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("child")
+                   ->HasNonContainedAbsolutePositionDescendant());
 
-  GetDocument()
-      .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("position: absolute"));
+  GetElementById("child")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetPaintLayerByElementId("parent")
+                  ->HasNonContainedAbsolutePositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("child")
+                   ->HasNonContainedAbsolutePositionDescendant());
 
-  EXPECT_TRUE(parent->HasNonContainedAbsolutePositionDescendant());
-  EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
-
-  GetDocument()
-      .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("position: relative"));
+  GetElementById("parent")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("position: relative"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(parent->HasNonContainedAbsolutePositionDescendant());
-  EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("parent")
+                   ->HasNonContainedAbsolutePositionDescendant());
+  EXPECT_FALSE(GetPaintLayerByElementId("child")
+                   ->HasNonContainedAbsolutePositionDescendant());
 }
 
 TEST_P(PaintLayerTest, HasSelfPaintingDescendant) {
@@ -1720,12 +1716,11 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
 
   auto* body = GetDocument().body();
   auto* body_layer = body->GetLayoutBox()->Layer();
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
-  auto* target_object = target_element->GetLayoutObject();
-  auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
+  auto* target_element = GetElementById("target");
 
   // |container| is not the PaintingContainer of |target| because |target|
   // is stacked but |container| is not a stacking context.
+  auto* target_layer = GetPaintLayerByElementId("target");
   EXPECT_TRUE(target_layer->GetLayoutObject().IsStacked());
   EXPECT_NE(body_layer, target_layer->PaintingContainer());
   auto* old_painting_container = target_layer->PaintingContainer();
@@ -1734,7 +1729,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
   target_element->setAttribute(html_names::kStyleAttr, AtomicString("top: 0"));
   UpdateAllLifecyclePhasesExceptPaint();
 
-  EXPECT_FALSE(target_object->HasLayer());
+  EXPECT_FALSE(target_element->GetLayoutObject()->HasLayer());
   EXPECT_TRUE(body_layer->SelfNeedsRepaint());
   EXPECT_TRUE(old_painting_container->DescendantNeedsRepaint());
 

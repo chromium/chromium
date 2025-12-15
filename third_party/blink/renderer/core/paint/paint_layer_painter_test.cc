@@ -385,23 +385,20 @@ TEST_P(PaintLayerPainterTest,
   // PaintResult of all subsequences will be MayBeClippedByCullRect.
   PaintContents(gfx::Rect(0, 0, 50, 300));
 
-  const DisplayItemClient& container1 =
-      *GetDisplayItemClientFromElementId("container1");
-  const DisplayItemClient& content1 =
-      *GetDisplayItemClientFromElementId("content1");
-  const DisplayItemClient& container2 =
-      *GetDisplayItemClientFromElementId("container2");
-  const DisplayItemClient& content2 =
-      *GetDisplayItemClientFromElementId("content2");
+  EXPECT_THAT(
+      ContentDisplayItems(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+          IsSameId(GetDisplayItemClientFromElementId("container1")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("content1")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("container2")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("content2")->Id(),
+                   kBackgroundType)));
 
-  EXPECT_THAT(ContentDisplayItems(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(container1.Id(), kBackgroundType),
-                          IsSameId(content1.Id(), kBackgroundType),
-                          IsSameId(container2.Id(), kBackgroundType),
-                          IsSameId(content2.Id(), kBackgroundType)));
-
-  To<HTMLElement>(GetElementById("content1"))
+  GetElementById("content1")
       ->setAttribute(
           html_names::kStyleAttr,
           AtomicString("position: absolute; width: 100px; height: 100px; "
@@ -411,12 +408,18 @@ TEST_P(PaintLayerPainterTest,
   PaintContents(gfx::Rect(0, 0, 50, 300));
   EXPECT_EQ(4u, counter.num_cached_items);
 
-  EXPECT_THAT(ContentDisplayItems(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(container1.Id(), kBackgroundType),
-                          IsSameId(content1.Id(), kBackgroundType),
-                          IsSameId(container2.Id(), kBackgroundType),
-                          IsSameId(content2.Id(), kBackgroundType)));
+  EXPECT_THAT(
+      ContentDisplayItems(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+          IsSameId(GetDisplayItemClientFromElementId("container1")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("content1")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("container2")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("content2")->Id(),
+                   kBackgroundType)));
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
@@ -591,10 +594,8 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloat) {
       </div>
     </div>
   )HTML");
-  LayoutObject& float_div =
-      *GetDocument().getElementById(AtomicString("float"))->GetLayoutObject();
-  To<HTMLElement>(float_div.GetNode())
-      ->setAttribute(html_names::kStyleAttr, style_without_float);
+  Element* float_element = GetElementById("float");
+  float_element->setAttribute(html_names::kStyleAttr, style_without_float);
   UpdateAllLifecyclePhasesForTest();
 
   auto& self_painting_layer_object = *To<LayoutBoxModelObject>(
@@ -606,27 +607,26 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloat) {
   auto& non_self_painting_layer =
       *GetPaintLayerByElementId("non-self-painting-layer");
   ASSERT_FALSE(non_self_painting_layer.IsSelfPaintingLayer());
-  ASSERT_TRUE(&non_self_painting_layer == float_div.EnclosingLayer());
+  ASSERT_TRUE(&non_self_painting_layer ==
+              float_element->GetLayoutObject()->EnclosingLayer());
 
   EXPECT_FALSE(self_painting_layer.NeedsPaintPhaseFloat());
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseFloat());
 
   // needsPaintPhaseFloat should be set when any descendant on the same layer
   // has float.
-  To<HTMLElement>(float_div.GetNode())
-      ->setAttribute(html_names::kStyleAttr, style_with_float);
+  float_element->setAttribute(html_names::kStyleAttr, style_with_float);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(self_painting_layer.NeedsPaintPhaseFloat());
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseFloat());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
-              Contains(IsSameId(float_div.Id(),
+              Contains(IsSameId(float_element->GetLayoutObject()->Id(),
                                 DisplayItem::kBoxDecorationBackground)));
 
   // needsPaintPhaseFloat should be reset when there is no float actually
   // painted.
-  To<HTMLElement>(float_div.GetNode())
-      ->setAttribute(html_names::kStyleAttr, style_without_float);
+  float_element->setAttribute(html_names::kStyleAttr, style_without_float);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(self_painting_layer.NeedsPaintPhaseFloat());
 }

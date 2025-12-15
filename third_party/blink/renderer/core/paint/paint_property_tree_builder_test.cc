@@ -4822,17 +4822,15 @@ TEST_P(PaintPropertyTreeBuilderTest, BecomingUnfragmented) {
     </div>
   )HTML");
 
-  LayoutObject* target = GetLayoutObjectByElementId("target");
+  Element* target_element = GetElementById("target");
   EXPECT_EQ(PhysicalOffset(LayoutUnit(208), LayoutUnit(8)),
-            target->FirstFragment().PaintOffset());
-  Element* target_element =
-      GetDocument().getElementById(AtomicString("target"));
+            target_element->GetLayoutObject()->FirstFragment().PaintOffset());
 
   target_element->setAttribute(html_names::kStyleAttr,
                                AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalOffset(LayoutUnit(8), LayoutUnit(28)),
-            target->FirstFragment().PaintOffset());
+            target_element->GetLayoutObject()->FirstFragment().PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, Reflection) {
@@ -5036,16 +5034,28 @@ TEST_P(PaintPropertyTreeBuilderTest, ChangePositionUpdateDescendantProperties) {
     </div>
   )HTML");
 
-  LayoutObject* ancestor = GetLayoutObjectByElementId("ancestor");
-  LayoutObject* descendant = GetLayoutObjectByElementId("descendant");
-  EXPECT_EQ(ancestor->FirstFragment().PaintProperties()->OverflowClip(),
-            &descendant->FirstFragment().LocalBorderBoxProperties().Clip());
+  Element* ancestor = GetElementById("ancestor");
+  Element* descendant = GetElementById("descendant");
+  EXPECT_EQ(ancestor->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->OverflowClip(),
+            &descendant->GetLayoutObject()
+                 ->FirstFragment()
+                 .LocalBorderBoxProperties()
+                 .Clip());
 
-  To<Element>(ancestor->GetNode())
-      ->setAttribute(html_names::kStyleAttr, AtomicString("position: static"));
+  ancestor->setAttribute(html_names::kStyleAttr,
+                         AtomicString("position: static"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_NE(ancestor->FirstFragment().PaintProperties()->OverflowClip(),
-            &descendant->FirstFragment().LocalBorderBoxProperties().Clip());
+  EXPECT_NE(ancestor->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->OverflowClip(),
+            &descendant->GetLayoutObject()
+                 ->FirstFragment()
+                 .LocalBorderBoxProperties()
+                 .Clip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
