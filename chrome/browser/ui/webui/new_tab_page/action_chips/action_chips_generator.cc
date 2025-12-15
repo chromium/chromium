@@ -37,6 +37,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/search/ntp_features.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
@@ -114,11 +115,27 @@ ChipsGenerationScenario GetScenario(
 ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kRecentTab;
-  chip->title = tab->title;
-  chip->suggestion =
-      !suggestion.empty()
-          ? suggestion
-          : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+
+  if (ntp_features::kNtpNextShowSimplificationUIParam.Get()) {
+    std::string_view host = tab->url.host();
+
+    if (base::StartsWith(host, "www.", base::CompareCase::INSENSITIVE_ASCII)) {
+      host = host.substr(4);
+    }
+
+    chip->title =
+        !suggestion.empty()
+            ? suggestion
+            : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+    chip->suggestion = host;
+  } else {
+    chip->title = tab->title;
+    chip->suggestion =
+        !suggestion.empty()
+            ? suggestion
+            : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+  }
+
   chip->tab = std::move(tab);
   return chip;
 }
