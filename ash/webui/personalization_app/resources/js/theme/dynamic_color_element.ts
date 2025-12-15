@@ -23,7 +23,6 @@ import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-sel
 import {ColorScheme} from '../../color_scheme.mojom-webui.js';
 import type {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 import {STATIC_COLOR_DARK_GREEN, STATIC_COLOR_GOOGLE_BLUE, STATIC_COLOR_LIGHT_PINK, STATIC_COLOR_LIGHT_PURPLE, StaticColor} from '../../personalization_app.mojom-webui.js';
-import {logDynamicColorColorSchemeButtonClick, logDynamicColorStaticColorButtonClick, logDynamicColorToggleButtonClick} from '../personalization_metrics_logger.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';
 
@@ -159,13 +158,11 @@ export class DynamicColorElement extends WithPersonalizationStore {
   private onClickColorSchemeButton_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const colorScheme = Number(eventTarget.dataset['colorSchemeId']);
-    logDynamicColorColorSchemeButtonClick(colorScheme);
     setColorSchemePref(colorScheme, getThemeProvider(), this.getStore());
   }
 
   private onClickStaticColorButton_(event: OnStaticColorSelectedEvent) {
     const staticColorInfo = event.model.staticColor;
-    logDynamicColorStaticColorButtonClick(staticColorInfo.enumVal);
     setStaticColorPref(
         hexColorToSkColor(staticColorInfo.seedVal), getThemeProvider(),
         this.getStore());
@@ -175,7 +172,6 @@ export class DynamicColorElement extends WithPersonalizationStore {
     // automaticSeedColorEnabled represents the state before the toggle button
     // was clicked. We flip the state of automaticSeedColorEnabled to show the
     // result of clicking the toggle.
-    logDynamicColorToggleButtonClick(!this.automaticSeedColorEnabled);
     if (this.automaticSeedColorEnabled) {
       this.previousColorSchemeSelected_ = this.colorSchemeSelected_;
       const staticColor =

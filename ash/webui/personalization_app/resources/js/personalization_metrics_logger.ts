@@ -37,11 +37,6 @@ const enum HistogramName {
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
   AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED =
       'Ash.Personalization.Ambient.LinkToGooglePhotosClicked',
-  DYNAMIC_COLOR_COLOR_SCHEME_BUTTON =
-      'Ash.Personalization.DynamicColor.ColorSchemeButton',
-  DYNAMIC_COLOR_STATIC_COLOR_BUTTON =
-      'Ash.Personalization.DynamicColor.StaticColorButton',
-  DYNAMIC_COLOR_TOGGLE_BUTTON = 'Ash.Personalization.DynamicColor.ToggleButton',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
   LOCATION_PERMISSION_CHANGE_FROM_DIALOG =
@@ -104,23 +99,6 @@ export function logGooglePhotosPreviewsLoadTime() {
 export function logKeyboardBacklightOpenZoneCustomizationUMA() {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION, true);
-}
-
-export function logDynamicColorToggleButtonClick(enabled: boolean) {
-  chrome.metricsPrivate.recordBoolean(
-      HistogramName.DYNAMIC_COLOR_TOGGLE_BUTTON, enabled);
-}
-
-export function logDynamicColorStaticColorButtonClick(color: StaticColor) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      HistogramName.DYNAMIC_COLOR_STATIC_COLOR_BUTTON, color,
-      StaticColor.MAX_VALUE);
-}
-
-export function logDynamicColorColorSchemeButtonClick(color: ColorScheme) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      HistogramName.DYNAMIC_COLOR_COLOR_SCHEME_BUTTON, color,
-      ColorScheme.MAX_VALUE);
 }
 
 export function logAmbientModeLinkToGooglePhotosClick() {

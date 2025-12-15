@@ -6541,16 +6541,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.DynamicColor.ColorSchemeButton"
-    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-10-13">
-  <owner>ericamlee@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user clicks a button to choose a color scheme for dynamic
-    color in personalization hub.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Personalization.DynamicColor.StaticColor.Settled"
     enum="PersonalizationDynamicColorStaticColor" expires_after="2025-12-28">
   <owner>ericamlee@chromium.org</owner>
@@ -6558,26 +6548,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the static color that the user has settled on. Emitted once for
     every UMA upload.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Personalization.DynamicColor.StaticColorButton"
-    enum="PersonalizationDynamicColorStaticColor" expires_after="2025-07-13">
-  <owner>ericamlee@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user clicks a static color button for dynamic color in
-    personalization hub.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Personalization.DynamicColor.ToggleButton"
-    enum="BooleanEnabled" expires_after="2025-08-24">
-  <owner>ericamlee@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Emitted when a user clicks the toggle button to enable or disable dynamic
-    color in personalization hub.
   </summary>
 </histogram>
 
