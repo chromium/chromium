@@ -926,22 +926,19 @@ void PasswordAccessoryControllerImpl::RefreshSuggestions() {
 
   bool sheet_provides_value = last_focus_info_->is_generation_allowed_in_frame;
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kRetrieveTrustedVaultKeyKeyboardAccessoryAction)) {
-    ShouldShowAction show_unlock_password(
-        (last_focus_info_->focused_field_type ==
-             FocusedFieldType::kFillableUsernameField ||
-         last_focus_info_->focused_field_type ==
-             FocusedFieldType::kFillablePasswordField) &&
-        RequiresTrustedVaultRetrieval(credential_cache_->backend_error()));
-    sheet_provides_value |= show_unlock_password.value();
-    GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
-        show_unlock_password,
-        autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);
-  }
+  ShouldShowAction show_unlock_password(
+      (last_focus_info_->focused_field_type ==
+           FocusedFieldType::kFillableUsernameField ||
+       last_focus_info_->focused_field_type ==
+           FocusedFieldType::kFillablePasswordField) &&
+      RequiresTrustedVaultRetrieval(credential_cache_->backend_error()));
+  sheet_provides_value |= show_unlock_password.value();
+  GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
+      show_unlock_password,
+      autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);
 
   all_passwords_helper_.ClearUpdateCallback();
+
   if (!all_passwords_helper_.available_credentials().has_value()) {
     all_passwords_helper_.SetUpdateCallback(base::BindOnce(
         &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,

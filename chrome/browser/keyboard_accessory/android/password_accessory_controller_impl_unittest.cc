@@ -1953,10 +1953,6 @@ TEST_F(PasswordAccessoryControllerTest, SelectPlusAddressItemFromMenu) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
-  base::test::ScopedFeatureList features{
-      password_manager::features::
-          kRetrieveTrustedVaultKeyKeyboardAccessoryAction};
-
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
@@ -1996,10 +1992,6 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
 
 TEST_F(PasswordAccessoryControllerTest,
        ShowAndHideRetrieveTrustedVaultKeyAction) {
-  base::test::ScopedFeatureList features{
-      password_manager::features::
-          kRetrieveTrustedVaultKeyKeyboardAccessoryAction};
-
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
@@ -2044,34 +2036,6 @@ TEST_F(PasswordAccessoryControllerTest,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillablePasswordField,
-      /*is_field_eligible_for_manual_generation=*/false);
-}
-
-TEST_F(PasswordAccessoryControllerTest,
-       ShowAndHideRetrieveTrustedVaultKeyActionFeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::
-          kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
-
-  CreateSheetController();
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {}, CredentialCache::IsOriginBlocklisted(false),
-      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
-      url::Origin::Create(GURL(kExampleSite)));
-
-  // Trusted vault error key retrieval required on a username or password field
-  // should not show the action.
-  EXPECT_CALL(mock_manual_filling_controller_,
-              OnAccessoryActionAvailabilityChanged(
-                  ShouldShowAction(true),
-                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY))
-      .Times(0);
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_field_eligible_for_manual_generation=*/false);

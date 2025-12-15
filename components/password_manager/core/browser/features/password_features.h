@@ -217,12 +217,6 @@ BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
 // control locale/country server side.
 BASE_DECLARE_FEATURE(kReduceRequirementsForPasswordChange);
 
-#if BUILDFLAG(IS_ANDROID)
-// The feature flag for showing an action to unlock passwords in case of a
-// trusted vault error in the keyboard accessory.
-BASE_DECLARE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Updates password change flow to use the refined prompt on Open form step. The
 // prompt uses the list of interactable actionables on the web page to identify
 // the button, which opens the password change form.
