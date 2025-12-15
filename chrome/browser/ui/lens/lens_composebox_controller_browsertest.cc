@@ -1028,9 +1028,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   submit_query = test_side_panel_coordinator->last_sent_client_message_to_aim_
                      .submit_query();
   lens_image_query_data = submit_query.payload().lens_image_query_data(0);
-  EXPECT_TRUE(lens_image_query_data.has_visual_search_interaction_data());
-  EXPECT_FALSE(
-      lens_image_query_data.visual_search_interaction_data().has_zoomed_crop());
+  EXPECT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,

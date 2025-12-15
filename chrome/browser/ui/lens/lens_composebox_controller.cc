@@ -330,9 +330,6 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
       overlay_controller->HasRegionSelection()) {
     lens_image_query_data->mutable_visual_search_interaction_data()->CopyFrom(
         visual_search_interaction_data.value());
-  } else {
-    lens_image_query_data->mutable_visual_search_interaction_data()->CopyFrom(
-        lens::LensOverlayVisualSearchInteractionData());
   }
   return client_to_aim_message;
 }
