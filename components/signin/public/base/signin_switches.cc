@@ -504,7 +504,7 @@ BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
 // When enabled, Chrome will always use the /IssueToken endpoint to fetch access
 // tokens, no matter if a refresh token is bound or not.
 BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
