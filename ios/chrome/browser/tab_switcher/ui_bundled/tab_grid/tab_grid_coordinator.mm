@@ -24,6 +24,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -284,6 +285,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   ProceduralBlock _guidedTourCompletionBlock;
   // App bar for the prototype.
   ChromeAppBarPrototype* _appBar;
+  // Coordinator for the Assistant Sheet.
+  AssistantSheetCoordinator* _assistantSheetCoordinator;
 }
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
@@ -380,6 +383,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
   [_tabGroupsPanelCoordinator stopChildCoordinators];
+  [_assistantSheetCoordinator stop];
+  _assistantSheetCoordinator = nil;
 
   [self cancelCollaborationFlows];
 
@@ -926,6 +931,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)prototypeGeminiCallback {
   CHECK(IsDiamondPrototypeEnabled());
+
+  if (IsAssistantSheetEnabled()) {
+    _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.regularBrowser];
+    [_assistantSheetCoordinator start];
+    return;
+  }
+
   TabGridPage page = self.baseViewController.currentPage;
   if (page == TabGridPageTabGroups) {
     page = self.baseViewController.activePage;

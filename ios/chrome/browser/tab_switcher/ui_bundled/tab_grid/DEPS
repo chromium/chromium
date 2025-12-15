@@ -1,6 +1,7 @@
 include_rules = [
   "+components/collaboration/public",
   "+components/saved_tab_groups/public",
+  "+ios/chrome/browser/assistant/coordinator",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h",
   "+ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h",

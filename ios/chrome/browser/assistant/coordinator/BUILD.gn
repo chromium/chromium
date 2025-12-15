@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "assistant_sheet_coordinator.h",
+    "assistant_sheet_coordinator.mm",
+    "assistant_sheet_mediator.h",
+    "assistant_sheet_mediator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
