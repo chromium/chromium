@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 
-namespace bwg {
+namespace gemini {
 enum class EntryPoint;
 }
 
@@ -17,11 +17,11 @@ enum class EntryPoint;
 @protocol BWGCommands
 
 // Starts the Gemini flow with an entry point.
-- (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint;
+- (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint;
 
 // Starts the Gemini flow with a provided image as attachment.
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
-                                entryPoint:(bwg::EntryPoint)entryPoint;
+                                entryPoint:(gemini::EntryPoint)entryPoint;
 
 // Dismiss the Gemini flow with a completion block.
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion;

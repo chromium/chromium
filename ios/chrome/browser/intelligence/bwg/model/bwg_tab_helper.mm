@@ -359,7 +359,7 @@ void BwgTabHelper::SetLocationBarBadgeCommandsHandler(
 void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
     [bwg_commands_handler_
-        startGeminiFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
+        startGeminiFlowWithEntryPoint:gemini::EntryPoint::TabReopen];
     cached_snapshot_ = nil;
   }
 }

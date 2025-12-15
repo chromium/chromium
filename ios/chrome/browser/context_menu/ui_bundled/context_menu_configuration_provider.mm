@@ -1109,7 +1109,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       HandlerForProtocol(_browser->GetCommandDispatcher(), BWGCommands);
   [handler
       startGeminiFlowWithImageAttachment:image
-                              entryPoint:bwg::EntryPoint::ImageContextMenu];
+                              entryPoint:gemini::EntryPoint::ImageContextMenu];
 }
 
 @end

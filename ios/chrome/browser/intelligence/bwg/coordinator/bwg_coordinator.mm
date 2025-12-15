@@ -61,7 +61,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   id<BWGCommands> _BWGCommandsHandler;
 
   // Returns the `_entryPoint` the coordinator was intialized from.
-  bwg::EntryPoint _entryPoint;
+  gemini::EntryPoint _entryPoint;
 
   // Handler for sending IPH commands.
   id<HelpCommands> _helpCommandsHandler;
@@ -75,7 +75,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                            fromEntryPoint:(bwg::EntryPoint)entryPoint {
+                            fromEntryPoint:(gemini::EntryPoint)entryPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _entryPoint = entryPoint;
@@ -119,7 +119,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - BWGMediatorDelegate
 
 - (BOOL)maybePresentBWGFRE {
-  if (_entryPoint != bwg::EntryPoint::Promo) {
+  if (_entryPoint != gemini::EntryPoint::Promo) {
     _tracker->NotifyEvent(
         feature_engagement::events::kIOSGeminiFlowStartedNonPromo);
   }
@@ -135,7 +135,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   if (showPromo) {
     if (IsGeminiNavigationPromoEnabled() &&
-        _entryPoint == bwg::EntryPoint::Promo) {
+        _entryPoint == gemini::EntryPoint::Promo) {
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSFullscreenPromosGroupTrigger);
       _tracker->NotifyEvent(
@@ -214,7 +214,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // Record entry point with FRE context.
   RecordGeminiEntryPointClick(_entryPoint, willShowFRE);
 
-  if (_entryPoint == bwg::EntryPoint::AIHub) {
+  if (_entryPoint == gemini::EntryPoint::AIHub) {
     _tracker->NotifyEvent(
         feature_engagement::events::kIOSPageActionMenuIPHUsed);
   }
@@ -280,7 +280,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 // Attemps to present the entry point IPH the user hasn't used the AI Hub entry
 // point yet.
 - (void)presentPageActionMenuIPH {
-  if (_entryPoint != bwg::EntryPoint::AIHub) {
+  if (_entryPoint != gemini::EntryPoint::AIHub) {
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
   }
@@ -340,8 +340,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BOOL wouldTriggerIPH =
       _tracker->WouldTriggerHelpUI(feature_engagement::kIPHIOSPageActionMenu);
 
-  return _entryPoint != bwg::EntryPoint::AIHub && [self shouldShowBWGPromo] &&
-         wouldTriggerIPH;
+  return _entryPoint != gemini::EntryPoint::AIHub &&
+         [self shouldShowBWGPromo] && wouldTriggerIPH;
 }
 
 @end

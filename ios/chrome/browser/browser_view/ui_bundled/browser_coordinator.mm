@@ -3153,13 +3153,13 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - BWGCommands
 
-- (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
+- (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint {
   [self startGeminiFlowWithImageAttachment:nil entryPoint:entryPoint];
 }
 
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
-                                entryPoint:(bwg::EntryPoint)entryPoint {
-  if (entryPoint == bwg::EntryPoint::ImageContextMenu) {
+                                entryPoint:(gemini::EntryPoint)entryPoint {
+  if (entryPoint == gemini::EntryPoint::ImageContextMenu) {
     BwgBrowserAgent::FromBrowser(self.browser)
         ->StartGeminiFlow(self.viewController, image);
     return;
@@ -3185,7 +3185,7 @@ const char kChromeAppStoreUrl[] =
 - (void)showBWGPromoIfPageIsEligible {
   BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
-    [self startGeminiFlowWithEntryPoint:bwg::EntryPoint::Promo];
+    [self startGeminiFlowWithEntryPoint:gemini::EntryPoint::Promo];
   }
 }
 

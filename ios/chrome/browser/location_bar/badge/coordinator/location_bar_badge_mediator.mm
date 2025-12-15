@@ -325,7 +325,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         }
       }
       [self.BWGCommandHandler
-          startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+          startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
       break;

@@ -212,9 +212,9 @@ void RecordURLOpened() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiURLOpened"));
 }
 
-void RecordGeminiEntryPointClick(bwg::EntryPoint entry_point,
+void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
                                  bool is_fre_flow) {
-  if (entry_point == bwg::EntryPoint::Promo) {
+  if (entry_point == gemini::EntryPoint::Promo) {
     base::RecordAction(
         base::UserMetricsAction("MobileGeminiEntryPointAutomatic"));
   } else {

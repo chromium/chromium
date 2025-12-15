@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-namespace bwg {
+namespace gemini {
 
 // The different entrypoints from which Gemini was opened.
 // Logged as IOSGeminiEntryPoint enum for the IOS.Gemini.EntryPoint histogram.
@@ -31,7 +31,7 @@ enum class EntryPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 
-}  // namespace bwg
+}  // namespace gemini
 
 // BWG UI sheet detent identifier.
 extern NSString* const kBWGPromoConsentFullDetentIdentifier;

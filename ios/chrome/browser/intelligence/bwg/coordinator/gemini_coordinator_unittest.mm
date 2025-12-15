@@ -83,7 +83,7 @@ class GeminiCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(ApplicationCommands)];
   }
 
-  void StartCoordinatorWithEntryPoint(bwg::EntryPoint entryPoint) {
+  void StartCoordinatorWithEntryPoint(gemini::EntryPoint entryPoint) {
     base_view_controller_ = [[UIViewController alloc] init];
     coordinator_ =
         [[BWGCoordinator alloc] initWithBaseViewController:base_view_controller_
@@ -127,7 +127,7 @@ TEST_F(GeminiCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiFlowStartedNonPromo));
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::AIHub);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::AIHub);
 
   // Check that fullscreen mode is still active.
   EXPECT_EQ(0.0, controller->GetProgress());
@@ -163,7 +163,7 @@ TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
       NotifyEvent(
           feature_engagement::events::kIOSFullscreenPromosGroupTrigger));
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
 
   // Check that fullscreen mode is deactivated.
   EXPECT_EQ(1.0, controller->GetProgress());
@@ -195,7 +195,7 @@ TEST_F(GeminiCoordinatorTest, GeminiPromoNotShown) {
       NotifyEvent(feature_engagement::events::kIOSFullscreenPromosGroupTrigger))
       .Times(0);
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
 
   // Checks that a promo didn't start and the impression count didn't
   // increase.
@@ -209,7 +209,7 @@ TEST_F(GeminiCoordinatorTest, AIHubIPHWasTriggered) {
   OCMExpect([mock_help_command_handler_
       presentInProductHelpWithType:InProductHelpType::kPageActionMenu]);
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
@@ -221,7 +221,7 @@ TEST_F(GeminiCoordinatorTest, AIHubIPHNotTriggered) {
   OCMReject([mock_help_command_handler_
       presentInProductHelpWithType:InProductHelpType::kPageActionMenu]);
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::AIHub);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::AIHub);
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
@@ -254,7 +254,7 @@ TEST_F(GeminiCoordinatorTest, DismissOtherWindows) {
         return YES;
       }]]);
 
-  StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
 
   // Emulate starting the floaty from the first window.
   OCMStub([mock_bwg_command_handler_

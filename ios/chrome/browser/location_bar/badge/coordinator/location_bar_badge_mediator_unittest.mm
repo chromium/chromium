@@ -260,7 +260,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   id mock_bwg_command_handler = OCMProtocolMock(@protocol(BWGCommands));
   mediator_.BWGCommandHandler = mock_bwg_command_handler;
   OCMExpect([mock_bwg_command_handler
-      startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip]);
+      startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip]);
   EXPECT_CALL(
       *mock_tracker_,
       NotifyEvent(feature_engagement::events::kIOSGeminiContextualCueChipUsed));

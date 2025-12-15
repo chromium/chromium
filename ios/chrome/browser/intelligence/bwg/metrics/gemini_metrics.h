@@ -13,9 +13,9 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace bwg {
+namespace gemini {
 enum class EntryPoint;
-}  // namespace bwg
+}  // namespace gemini
 
 // UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
@@ -170,7 +170,8 @@ void RecordSessionFirstPrompt(bool had_first_prompt);
 void RecordURLOpened();
 
 // Records entry point metrics with context about whether FRE is shown.
-void RecordGeminiEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
+void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
+                                 bool is_fre_flow);
 
 // Records that the user tapped the new chat button in a Gemini session.
 void RecordGeminiNewChatButtonTapped();

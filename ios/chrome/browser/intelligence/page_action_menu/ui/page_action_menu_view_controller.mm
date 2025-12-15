@@ -568,7 +568,8 @@ const CGFloat kDividerWidth = 1.0;
   RecordAIHubAction(IOSAIHubAction::kGemini);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    [weakSelf.BWGHandler startGeminiFlowWithEntryPoint:bwg::EntryPoint::AIHub];
+    [weakSelf.BWGHandler
+        startGeminiFlowWithEntryPoint:gemini::EntryPoint::AIHub];
   }];
 }
 

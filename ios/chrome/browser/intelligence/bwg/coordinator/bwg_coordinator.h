@@ -15,7 +15,7 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                            fromEntryPoint:(bwg::EntryPoint)entryPoint
+                            fromEntryPoint:(gemini::EntryPoint)entryPoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
