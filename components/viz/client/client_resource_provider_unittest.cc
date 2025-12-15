@@ -164,14 +164,14 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
 
   // Return the resource, with a sync token if using gpu.
   std::vector<ReturnedResource> returned;
-  returned.emplace_back();
-  returned.back().id = exported[0].id;
-  returned.back().sync_token = GenSyncToken();
-  returned.back().count = 1;
-  returned.back().lost = false;
+  auto sync_token = GenSyncToken();
+  returned.emplace_back(
+      exported[0].id,
+      gpu::SharedImageExportResult::CreateForTesting(sync_token),
+      gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
 
   // The sync token is given to the ReleaseCallback.
-  EXPECT_CALL(release, Released(returned[0].sync_token, false));
+  EXPECT_CALL(release, Released(sync_token, false));
   provider().ReceiveReturnsFromParent(std::move(returned));
 }
 
@@ -225,12 +225,11 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentTwoTimes) {
 
   // Return the resource, with a sync token if using gpu.
   std::vector<ReturnedResource> returned;
-  returned.emplace_back();
-  returned.back().id = exported[0].id;
-  if (use_gpu())
-    returned.back().sync_token = GenSyncToken();
-  returned.back().count = 1;
-  returned.back().lost = false;
+  returned.emplace_back(exported[0].id,
+                        gpu::SharedImageExportResult::CreateForTesting(
+                            use_gpu() ? GenSyncToken() : gpu::SyncToken()),
+                        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
+
   provider().ReceiveReturnsFromParent(std::move(returned));
 
   // Then export again, it still sends.
@@ -313,14 +312,14 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
 
   // Return the resource, with a sync token if using gpu.
   std::vector<ReturnedResource> returned;
-  returned.emplace_back();
-  returned.back().id = exported[0].id;
-  returned.back().sync_token = GenSyncToken();
-  returned.back().count = 1;
-  returned.back().lost = false;
+  auto sync_token = GenSyncToken();
+  returned.emplace_back(
+      exported[0].id,
+      gpu::SharedImageExportResult::CreateForTesting(sync_token),
+      gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
 
   // The sync token is given to the ReleaseCallback.
-  EXPECT_CALL(release, Released(returned[0].sync_token, false));
+  EXPECT_CALL(release, Released(sync_token, false));
   provider().ReceiveReturnsFromParent(std::move(returned));
 
   EXPECT_CALL(release, Released(_, false)).Times(4);
@@ -348,14 +347,13 @@ TEST_P(ClientResourceProviderTest, TransferableResourceRemovedAfterReturn) {
   // Return the resource. This does not release the resource back to
   // the client.
   std::vector<ReturnedResource> returned;
-  returned.emplace_back();
-  returned.back().id = exported[0].id;
-  returned.back().sync_token = GenSyncToken();
-  returned.back().count = 1;
-  returned.back().lost = false;
+  auto sync_token = GenSyncToken();
+  returned.emplace_back(
+      exported[0].id,
+      gpu::SharedImageExportResult::CreateForTesting(sync_token),
+      gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
 
   EXPECT_CALL(release, Released(_, _)).Times(0);
-  auto sync_token = returned.back().sync_token;
   provider().ReceiveReturnsFromParent(std::move(returned));
   testing::Mock::VerifyAndClearExpectations(&release);
 
@@ -394,12 +392,10 @@ TEST_P(ClientResourceProviderTest, TransferableResourceExportedTwice) {
   {
     // Return the resource the first time.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    if (use_gpu())
-      returned.back().sync_token = GenSyncToken();
-    returned.back().count = 1;
-    returned.back().lost = false;
+    returned.emplace_back(exported[0].id,
+                          gpu::SharedImageExportResult::CreateForTesting(
+                              use_gpu() ? GenSyncToken() : gpu::SyncToken()),
+                          gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
 
@@ -407,12 +403,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceExportedTwice) {
     // And a second time, with a different sync token. Now the ReleaseCallback
     // can happen, using the latest sync token.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    returned.back().sync_token = GenSyncToken();
-    returned.back().count = 1;
-    returned.back().lost = false;
-    EXPECT_CALL(release, Released(returned[0].sync_token, false));
+    auto sync_token = GenSyncToken();
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(sync_token),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
+    EXPECT_CALL(release, Released(sync_token, false));
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
 }
@@ -446,14 +442,15 @@ TEST_P(ClientResourceProviderTest, TransferableResourceReturnedTwiceAtOnce) {
 
   // Return both exports at once.
   std::vector<ReturnedResource> returned;
-  returned.emplace_back();
-  returned.back().id = exported[0].id;
-  returned.back().sync_token = GenSyncToken();
-  returned.back().count = 2;
+  auto sync_token = GenSyncToken();
+  returned.emplace_back(
+      exported[0].id,
+      gpu::SharedImageExportResult::CreateForTesting(sync_token),
+      gfx::GpuFenceHandle(), /*count=*/2, /*lost=*/false);
   returned.back().lost = false;
 
   // When returned, the ReleaseCallback can happen, using the latest sync token.
-  EXPECT_CALL(release, Released(returned[0].sync_token, false));
+  EXPECT_CALL(release, Released(sync_token, false));
   provider().ReceiveReturnsFromParent(std::move(returned));
 }
 
@@ -487,10 +484,10 @@ TEST_P(ClientResourceProviderTest, TransferableResourceLostOnReturn) {
   {
     // Return the resource the first time, not lost.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    returned.back().count = 1;
-    returned.back().lost = false;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
 
@@ -498,10 +495,10 @@ TEST_P(ClientResourceProviderTest, TransferableResourceLostOnReturn) {
     // Return a second time, as lost. The ReturnCallback should report it
     // lost.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    returned.back().count = 1;
-    returned.back().lost = true;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/true);
     EXPECT_CALL(release, Released(_, true));
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
@@ -537,20 +534,20 @@ TEST_P(ClientResourceProviderTest, TransferableResourceLostOnFirstReturn) {
   {
     // Return the resource the first time, marked as lost.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    returned.back().count = 1;
-    returned.back().lost = true;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/true);
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
 
   {
     // Return a second time, not lost. The first lost signal should not be lost.
     std::vector<ReturnedResource> returned;
-    returned.emplace_back();
-    returned.back().id = exported[0].id;
-    returned.back().count = 1;
-    returned.back().lost = false;
+    returned.emplace_back(
+        exported[0].id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
     EXPECT_CALL(release, Released(_, true));
     provider().ReceiveReturnsFromParent(std::move(returned));
   }

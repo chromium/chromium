@@ -635,13 +635,15 @@ void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
     if (!extra->transferable_resource->is_empty()) {
       release_callback = base::BindOnce(
           [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+             scoped_refptr<gpu::ClientSharedImage> shared_image,
              const gpu::SyncToken& sync_token, bool is_lost) {
-            host_impl->ReturnResource({id, sync_token,
+            host_impl->ReturnResource({id, shared_image->EndImport(sync_token),
                                        /*release_fence=*/gfx::GpuFenceHandle(),
                                        /*count=*/1, is_lost});
           },
           layer.layer_tree_impl()->host_impl(),
-          extra->transferable_resource->id);
+          extra->transferable_resource->id,
+          extra->transferable_resource->shared_image());
     }
     layer.SetTransferableResource(extra->transferable_resource.value(),
                                   std::move(release_callback));
@@ -1022,12 +1024,13 @@ DeserializeTileResource(cc::LayerTreeHostImpl* host_impl,
 
   ReleaseCallback release_callback = base::BindOnce(
       [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+         scoped_refptr<gpu::ClientSharedImage> shared_image,
          const gpu::SyncToken& sync_token, bool is_lost) {
-        host_impl->ReturnResource({id, sync_token,
+        host_impl->ReturnResource({id, shared_image->EndImport(sync_token),
                                    /*release_fence=*/gfx::GpuFenceHandle(),
                                    /*count=*/1, is_lost});
       },
-      host_impl, wire.resource.id);
+      host_impl, wire.resource.id, wire.resource.shared_image());
 
   auto resource_id = host_impl->resource_provider()->ImportResource(
       wire.resource,
@@ -1977,12 +1980,14 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       }
       ReleaseCallback release_callback = base::BindOnce(
           [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+             scoped_refptr<gpu::ClientSharedImage> shared_image,
              const gpu::SyncToken& sync_token, bool is_lost) {
-            host_impl->ReturnResource({id, sync_token,
+            host_impl->ReturnResource({id, shared_image->EndImport(sync_token),
                                        /*release_fence=*/gfx::GpuFenceHandle(),
                                        /*count=*/1, is_lost});
           },
-          host_impl_.get(), ui_resource_request->transferable_resource->id);
+          host_impl_.get(), ui_resource_request->transferable_resource->id,
+          ui_resource_request->transferable_resource->shared_image());
 
       auto resource_id = host_impl_->resource_provider()->ImportResource(
           ui_resource_request->transferable_resource.value(),

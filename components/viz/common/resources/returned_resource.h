@@ -7,6 +7,7 @@
 
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
@@ -18,7 +19,7 @@ namespace viz {
 // TODO(crbug.com/40286368): Refactor ReturnedResource to use the opaque struct.
 struct VIZ_COMMON_EXPORT ReturnedResource {
   ReturnedResource(ResourceId id,
-                   gpu::SyncToken sync_token,
+                   gpu::SharedImageExportResult shared_image_export_result,
                    gfx::GpuFenceHandle release_fence,
                    int count,
                    bool lost);

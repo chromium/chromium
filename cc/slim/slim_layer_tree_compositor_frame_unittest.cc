@@ -121,8 +121,10 @@ class StubSharedImageTextureLayerClient : public TextureLayerClient {
 void AppendResourcesToReturn(std::vector<viz::ReturnedResource>& resources,
                              const viz::CompositorFrame& frame) {
   for (const auto& resource : frame.resource_list) {
-    resources.emplace_back(resource.id, gpu::SyncToken(), gfx::GpuFenceHandle(),
-                           1, false);
+    resources.emplace_back(
+        resource.id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), 1, false);
   }
 }
 

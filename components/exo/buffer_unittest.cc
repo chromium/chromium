@@ -97,9 +97,11 @@ TEST_F(BufferTest, ReleaseCallback) {
 
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
-  resources.emplace_back(resource->id, resource->sync_token(),
-                         /*release_fence=*/gfx::GpuFenceHandle(),
-                         /*count=*/0, /*lost=*/false);
+  resources.emplace_back(
+      resource->id,
+      gpu::SharedImageExportResult::CreateForTesting(resource->sync_token()),
+      /*release_fence=*/gfx::GpuFenceHandle(),
+      /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources));
 
   buffer->OnDetach();
@@ -136,9 +138,11 @@ TEST_F(BufferTest, SolidColorReleaseCallback) {
 
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
-  resources.emplace_back(viz::kInvalidResourceId, gpu::SyncToken(),
-                         /*release_fence=*/gfx::GpuFenceHandle(),
-                         /*count=*/0, /*lost=*/false);
+  resources.emplace_back(
+      viz::kInvalidResourceId,
+      gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+      /*release_fence=*/gfx::GpuFenceHandle(),
+      /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources));
 
   // We expect that Release() is not called, no matter whether we have a wait
@@ -181,9 +185,11 @@ TEST_F(BufferTest, IsLost) {
 
     // Release buffer.
     std::vector<viz::ReturnedResource> resources;
-    resources.emplace_back(resource->id, gpu::SyncToken(),
-                           /*release_fence=*/gfx::GpuFenceHandle(),
-                           /*count=*/0, /*lost=*/true);
+    resources.emplace_back(
+        resource->id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        /*release_fence=*/gfx::GpuFenceHandle(),
+        /*count=*/0, /*lost=*/true);
     frame_sink_holder->ReclaimResources(std::move(resources));
   }
 
@@ -198,9 +204,11 @@ TEST_F(BufferTest, IsLost) {
     buffer->OnDetach();
 
     std::vector<viz::ReturnedResource> resources2;
-    resources2.emplace_back(new_resource->id, gpu::SyncToken(),
-                            /*release_fence=*/gfx::GpuFenceHandle(),
-                            /*count=*/0, /*lost=*/false);
+    resources2.emplace_back(
+        new_resource->id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        /*release_fence=*/gfx::GpuFenceHandle(),
+        /*count=*/0, /*lost=*/false);
     frame_sink_holder->ReclaimResources(std::move(resources2));
   }
 }
@@ -327,9 +335,11 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     // Try to release buffer in last frame. This can happen during a resize
     // when frame sink id changes.
     std::vector<viz::ReturnedResource> resources;
-    resources.emplace_back(resource->id, resource->sync_token(),
-                           /*release_fence=*/gfx::GpuFenceHandle(),
-                           /*count=*/0, /*lost=*/false);
+    resources.emplace_back(
+        resource->id,
+        gpu::SharedImageExportResult::CreateForTesting(resource->sync_token()),
+        /*release_fence=*/gfx::GpuFenceHandle(),
+        /*count=*/0, /*lost=*/false);
     frame_sink_holder->ReclaimResources(std::move(resources));
   }
 

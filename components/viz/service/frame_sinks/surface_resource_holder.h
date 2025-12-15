@@ -54,8 +54,12 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   raw_ptr<SurfaceResourceHolderClient> client_;
 
   struct ResourceRefs {
+    ResourceRefs();
+    ~ResourceRefs();
+
     int refs_received_from_child = 0;
     int refs_holding_resource_alive = 0;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
   };
   // Keeps track of the number of users currently in flight for each resource

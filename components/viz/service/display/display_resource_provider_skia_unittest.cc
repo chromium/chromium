@@ -56,9 +56,11 @@ MATCHER_P(SamePtr, ptr_to_expected, "") {
 static void CollectResources(std::vector<ReturnedResource>* array,
                              std::vector<ReturnedResourceViz> returned) {
   for (auto& resource_viz : returned) {
-    ReturnedResource resource{resource_viz.id, resource_viz.sync_token,
-                              std::move(resource_viz.release_fence),
-                              resource_viz.count, resource_viz.lost};
+    ReturnedResource resource{
+        resource_viz.id,
+        gpu::SharedImageExportResult::CreateForTesting(resource_viz.sync_token),
+        std::move(resource_viz.release_fence), resource_viz.count,
+        resource_viz.lost};
     array->emplace_back(std::move(resource));
   }
 }

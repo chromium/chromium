@@ -44,6 +44,8 @@ class VideoFrame;
 
 namespace viz {
 class CopyOutputSharedImageResult;
+struct ReturnedResource;
+struct ReturnedResourceViz;
 }  // namespace viz
 
 namespace wgpu::dawn::wire::client {
@@ -89,12 +91,32 @@ struct SharedImageMetadata {
   SharedImageUsageSet usage;
 };
 
-class SharedImageExportResult {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
  public:
   ~SharedImageExportResult() = default;
 
+  // Used in FrameSinkResourceManager to facilitate creating a dummy
+  // ReturnedResource for callback clearing.
+  static SharedImageExportResult CreateEmptyResult() {
+    return SharedImageExportResult(SyncToken());
+  }
+
+  static SharedImageExportResult CreateForTesting(const SyncToken& sync_token) {
+    return SharedImageExportResult(sync_token);
+  }
+
  private:
   friend class ClientSharedImage;
+  // Allows ReturnedResource to access the sync_token_ member.
+  // TODO(crbug.com/40286368): After ReturnedResource is fully migrated to use
+  // SharedImageExportResult, this friend declaration may still be needed, but
+  // for a different purpose - to allow ReturnedResource to be default
+  // constructed. At that point, the comment above should be updated
+  // accordingly.
+  friend struct viz::ReturnedResource;
+
+  // Allows ReturnedResourceViz to convert SyncToken to SharedImageExportResult.
+  friend struct viz::ReturnedResourceViz;
 
   explicit SharedImageExportResult(const SyncToken& sync_token);
 

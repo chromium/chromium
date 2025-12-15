@@ -1317,7 +1317,9 @@ TEST_F(SurfaceSynchronizationTest, LatencyInfoNotCarriedOver) {
 // Checks that resources and ack are sent together if possible.
 TEST_F(SurfaceSynchronizationTest, ReturnResourcesWithAck) {
   const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
-  TransferableResource resource;
+  TransferableResource resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.id = ResourceId(1234);
   parent_support().SubmitCompositorFrame(
       parent_id.local_surface_id(),
@@ -1343,7 +1345,9 @@ TEST_F(SurfaceSynchronizationTest, SubmitToDestroyedSurface) {
 
   // Create the child surface by submitting a frame to it.
   EXPECT_EQ(nullptr, GetSurfaceForId(child_id));
-  TransferableResource resource;
+  TransferableResource resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.id = ResourceId(1234);
   child_support1().SubmitCompositorFrame(
       child_id.local_surface_id(),

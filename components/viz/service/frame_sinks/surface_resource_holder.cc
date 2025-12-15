@@ -13,6 +13,10 @@ namespace viz {
 
 ReservedResourceDelegate::~ReservedResourceDelegate() = default;
 
+SurfaceResourceHolder::ResourceRefs::ResourceRefs() = default;
+
+SurfaceResourceHolder::ResourceRefs::~ResourceRefs() = default;
+
 SurfaceResourceHolder::SurfaceResourceHolder(
     SurfaceResourceHolderClient* client)
     : client_(client) {}
@@ -36,6 +40,7 @@ void SurfaceResourceHolder::ReceiveFromChild(
     ResourceRefs& ref = resource_id_info_map_[resource.id];
     ref.refs_holding_resource_alive++;
     ref.refs_received_from_child++;
+    ref.shared_image = resource.shared_image();
   }
 }
 
@@ -74,10 +79,10 @@ void SurfaceResourceHolder::UnrefResources(
       ref.sync_token = resource_viz.sync_token;
     }
     if (ref.refs_holding_resource_alive == 0) {
-      ReturnedResource resource{resource_viz.id, ref.sync_token,
-                                std::move(resource_viz.release_fence),
-                                /*count=*/ref.refs_received_from_child,
-                                resource_viz.lost};
+      ReturnedResource resource{
+          resource_viz.id, ref.shared_image->EndImport(ref.sync_token),
+          std::move(resource_viz.release_fence),
+          /*count=*/ref.refs_received_from_child, resource_viz.lost};
       resources_available_to_return.push_back(std::move(resource));
       resource_id_info_map_.erase(count_it);
     }
