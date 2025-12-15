@@ -1905,6 +1905,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kContextualPanel,
                                     kContextualPanelEntrypointArmVariations,
                                     "ContextualPanel")},
+    {"reader-mode-omnibox-entrypoint",
+     flag_descriptions::kReaderModeOmniboxEntrypointName,
+     flag_descriptions::kReaderModeOmniboxEntrypointDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableReaderModeOmniboxEntryPoint)},
+
     {"enable-ipad-feed-ghost-cards",
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,

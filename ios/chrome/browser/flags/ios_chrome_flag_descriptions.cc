@@ -1436,6 +1436,11 @@ const char kReaderModeNewCssName[] = "Reader mode new CSS on iOS";
 const char kReaderModeNewCssDescription[] =
     "Enables the new CSS for Reader mode on iOS.";
 
+const char kReaderModeOmniboxEntrypointName[] =
+    "Reader Mode Omnibox Entrypoint";
+const char kReaderModeOmniboxEntrypointDescription[] =
+    "Enables an entrypoint in the Omnibox for Reader Mode.";
+
 const char kReaderModeOptimizationGuideEligibilityName[] =
     "Enables Reader Mode Optimization Guide Eligibility";
 const char kReaderModeOptimizationGuideEligibilityDescription[] =
