@@ -14,6 +14,9 @@ enum class ComposeboxEntrypoint;
 // Coordinator that contains the composebox, presenting it modally.
 @interface ComposeboxCoordinator : ChromeCoordinator
 
+/// Whether the composebox is presented.
+@property(nonatomic, assign, getter=isPresented, readonly) BOOL presented;
+
 /// Initializes the coordinator with the `baseViewController`, `browser`,
 /// `entrypoint` and an optional `query` to pre-fill the omnibox.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

@@ -141,6 +141,13 @@ typedef struct {
 // Shows the voice search UI.
 - (void)startVoiceSearch;
 
+// Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
+// NO, then calls `completion`. if `dismissPresentedViewController` is NO, the
+// view controller presented by the BVC will not be dismissed.
+- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+           dismissPresentedViewController:(BOOL)dismissPresentedViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_CONTROLLER_H_

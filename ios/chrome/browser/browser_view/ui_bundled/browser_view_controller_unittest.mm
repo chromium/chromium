@@ -481,7 +481,8 @@ TEST_F(BrowserViewControllerTest, TestClearPresentedState) {
       clearPresentedStateWithCompletion:^{
         this->OnCompletionCalled();
       }
-                         dismissOmnibox:YES];
+                         dismissOmnibox:YES
+         dismissPresentedViewController:YES];
 }
 
 // Tests that WebState::WasShown() and WebState::WasHidden() is properly called

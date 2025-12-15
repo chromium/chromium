@@ -32,11 +32,6 @@ enum class BrowserViewVisibilityState;
 // Height of the header view.
 @property(nonatomic, readonly) CGFloat headerHeight;
 
-// Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
-// NO, then calls `completion`.
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
 // Does an animation from `originPoint` when opening a background tab, then
 // calls `completion`.
 - (void)animateOpenBackgroundTabFromOriginPoint:(CGPoint)originPoint

@@ -147,6 +147,10 @@
   _navigationMediator = nil;
 }
 
+- (BOOL)isPresented {
+  return _viewController.presentingViewController != nil;
+}
+
 #pragma mark - UIViewControllerTransitioningDelegate
 
 - (id<UIViewControllerAnimatedTransitioning>)
