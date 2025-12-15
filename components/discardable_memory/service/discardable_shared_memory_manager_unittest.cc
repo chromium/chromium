@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -87,8 +88,8 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
 
 TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
   const int kDataSize = 1024;
-  uint8_t data[kDataSize];
-  UNSAFE_TODO(memset(data, 0x80, kDataSize));
+  std::array<uint8_t, kDataSize> data;
+  data.fill(0x80);
 
   base::UnsafeSharedMemoryRegion shared_region;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
