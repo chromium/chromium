@@ -2598,6 +2598,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // document is cleared. We use this as a hook to detect the case of document
   // destruction and don't waste time doing unnecessary work.
   bool DocumentBeingDestroyed() const;
+  bool DocumentBeingDestroyedActual() const;
 
   void DestroyAndCleanupAnonymousWrappers(bool performing_reattach);
 
@@ -4221,6 +4222,13 @@ struct ThreadingTrait<T> {
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(LayoutObject)
 
 inline bool LayoutObject::DocumentBeingDestroyed() const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::DisableDocumentBeingDestroyedEnabled()) {
+    return false;
+  }
+  return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
+}
+inline bool LayoutObject::DocumentBeingDestroyedActual() const {
   NOT_DESTROYED();
   return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
 }

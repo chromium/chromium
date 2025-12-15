@@ -1941,6 +1941,10 @@
       origin_trial_allows_insecure: true,
     },
     {
+      name: "DisableDocumentBeingDestroyed",
+      status: "stable",
+    },
+    {
       name: "DisableReduceAcceptLanguage",
       origin_trial_feature_name: "DisableReduceAcceptLanguage",
       origin_trial_type: "deprecation",
