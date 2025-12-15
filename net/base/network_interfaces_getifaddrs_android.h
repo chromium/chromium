@@ -5,10 +5,6 @@
 #ifndef NET_BASE_NETWORK_INTERFACES_GETIFADDRS_ANDROID_H_
 #define NET_BASE_NETWORK_INTERFACES_GETIFADDRS_ANDROID_H_
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_ANDROID)
-
 #include <ifaddrs.h>
 
 namespace net::internal {
@@ -24,7 +20,5 @@ int Getifaddrs(struct ifaddrs** result);
 void Freeifaddrs(struct ifaddrs* addrs);
 
 }  // namespace net::internal
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // NET_BASE_NETWORK_INTERFACES_GETIFADDRS_ANDROID_H_
