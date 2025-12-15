@@ -374,6 +374,8 @@ impl Handle for MessageEndpoint {
     }
 }
 
+impl Trappable for MessageEndpoint {}
+
 bitflags::bitflags! {
     #[derive(Clone, Copy, Default)]
     pub struct AppendMessageFlags: u32 {
