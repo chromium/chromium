@@ -29,7 +29,8 @@ function createLevelTag(level: LogLevel): HTMLElement {
   const levelClassName = 'log-level-' + level.toLowerCase();
   const tag = document.createElement('span');
   tag.textContent = level;
-  tag.classList.add('level-tag ' + levelClassName);
+  tag.classList.add('level-tag');
+  tag.classList.add(levelClassName);
   return tag;
 }
 
@@ -40,7 +41,8 @@ function createTypeTag(type: string): HTMLElement {
   const typeClassName = 'log-type-' + type.toLowerCase();
   const tag = document.createElement('span');
   tag.textContent = type;
-  tag.classList.add('type-tag ' + typeClassName);
+  tag.classList.add('type-tag');
+  tag.classList.add(typeClassName);
   return tag;
 }
 
@@ -56,7 +58,7 @@ function createLogEntryText(logEntry: LogEntry): HTMLElement|null {
   const level = logEntry.level;
   const levelIndex = logLevels.indexOf(level);
   const levelSelectIndex = logLevels.indexOf(
-      getRequiredElement<HTMLSelectElement>('#log-level-select').value as
+      getRequiredElement<HTMLSelectElement>('log-level-select').value as
       LogLevel);
   if (levelIndex < levelSelectIndex) {
     return null;
@@ -65,18 +67,18 @@ function createLogEntryText(logEntry: LogEntry): HTMLElement|null {
   const type = logEntry.type;
   const typeCheckbox = document.body.querySelector<HTMLInputElement>(
       `#log-type-${type.toLowerCase()}`);
-  if (typeCheckbox && typeCheckbox.checked) {
+  if (typeCheckbox && !typeCheckbox.checked) {
     return null;
   }
 
   const res = document.createElement('p');
   const textWrapper = document.createElement('span');
   let fileinfo = '';
-  if (getRequiredElement<HTMLInputElement>('#log-fileinfo').checked) {
+  if (getRequiredElement<HTMLInputElement>('log-fileinfo').checked) {
     fileinfo = logEntry.file;
   }
   let timestamp = '';
-  if (getRequiredElement<HTMLInputElement>('#log-timedetail').checked) {
+  if (getRequiredElement<HTMLInputElement>('log-timedetail').checked) {
     timestamp = logEntry.timestamp;
   } else {
     timestamp = logEntry.timestampshort;
@@ -96,7 +98,7 @@ function createLogEntryText(logEntry: LogEntry): HTMLElement|null {
  *     format.
  */
 function createEventLog(logEntries: string[]) {
-  const container = getRequiredElement('#log-container');
+  const container = getRequiredElement('log-container');
   container.textContent = '';
   for (const logEntry of logEntries) {
     const entry = createLogEntryText(JSON.parse(logEntry));
@@ -110,7 +112,7 @@ function createEventLog(logEntries: string[]) {
  * Callback function, triggered when the log is received.
  */
 function getLogCallback(data: string) {
-  const container = getRequiredElement('#log-container');
+  const container = getRequiredElement('log-container');
   try {
     createEventLog(JSON.parse(data));
     if (container.textContent === '') {
@@ -179,8 +181,8 @@ function setRefresh() {
  */
 document.addEventListener('DOMContentLoaded', function() {
   // Debug is the default level to show.
-  getRequiredElement<HTMLSelectElement>('#log-level-select').value = 'Debug';
-  getRequiredElement<HTMLSelectElement>('#log-level-select').onchange =
+  getRequiredElement<HTMLSelectElement>('log-level-select').value = 'Debug';
+  getRequiredElement<HTMLSelectElement>('log-level-select').onchange =
       requestLog;
 
   // Show all types by default.
@@ -190,14 +192,14 @@ document.addEventListener('DOMContentLoaded', function() {
     checkbox.checked = true;
   }
 
-  getRequiredElement<HTMLInputElement>('#log-fileinfo').checked = false;
-  getRequiredElement<HTMLInputElement>('#log-fileinfo').onclick = requestLog;
-  getRequiredElement<HTMLInputElement>('#log-timedetail').checked = false;
-  getRequiredElement<HTMLInputElement>('#log-timedetail').onclick = requestLog;
+  getRequiredElement<HTMLInputElement>('log-fileinfo').checked = false;
+  getRequiredElement<HTMLInputElement>('log-fileinfo').onclick = requestLog;
+  getRequiredElement<HTMLInputElement>('log-timedetail').checked = false;
+  getRequiredElement<HTMLInputElement>('log-timedetail').onclick = requestLog;
 
-  getRequiredElement('#log-refresh').onclick = requestLog;
-  getRequiredElement('#log-clear').onclick = clearLog;
-  getRequiredElement('#log-clear-types').onclick = clearLogTypes;
+  getRequiredElement('log-refresh').onclick = requestLog;
+  getRequiredElement('log-clear').onclick = clearLog;
+  getRequiredElement('log-clear-types').onclick = clearLogTypes;
 
   checkboxes = document.body.querySelectorAll<HTMLInputElement>(
       '#log-checkbox-container input[type="checkbox"]');
