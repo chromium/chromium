@@ -45,6 +45,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteContext',
       'clearFiles',
       'submitQuery',
+      'openLensSearch',
     ]);
   }
 
@@ -188,6 +189,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled(
         'submitQuery',
         {queryText, mouseButton, altKey, ctrlKey, metaKey, shiftKey});
+  }
+
+  openLensSearch() {
+    this.methodCalled('openLensSearch');
   }
 }
 

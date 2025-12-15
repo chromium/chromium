@@ -339,7 +339,7 @@ void ContextualSearchProvider::Start(const AutocompleteInput& input,
   }
 
   if (eligibility.lens_entry_match) {
-    AddLensEntrypointMatch(keyword_input);
+    matches_.push_back(CreateLensEntrypointMatch(keyword_input));
   }
 
   if (eligibility.page_verbatim) {
@@ -381,6 +381,37 @@ bool ContextualSearchProvider::HasToolbeltLensAction() const {
     return match.IsToolbelt() &&
            match.HasAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS);
   });
+}
+
+AutocompleteMatch ContextualSearchProvider::CreateLensEntrypointMatch(
+    const AutocompleteInput& input) {
+  // This match is effectively a pedal that doesn't require any query matching.
+  // Relevance depends on the page class, and selecting an appropriate score is
+  // necessary to avoid downstream conflicts in grouping framework sort order.
+  AutocompleteMatch match(
+      this,
+      omnibox::IsSearchResultsPage(input.current_page_classification())
+          ? omnibox::kContextualActionZeroSuggestRelevanceLow
+          : omnibox::kContextualActionZeroSuggestRelevance,
+      false, AutocompleteMatchType::PEDAL);
+  match.transition = ui::PAGE_TRANSITION_GENERATED;
+  match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
+
+  // Lens invocation action with secondary text that shows URL host.
+  match.takeover_action =
+      base::MakeRefCounted<ContextualSearchOpenLensAction>();
+  match.contents =
+      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().GetHost()));
+  if (!match.contents.empty()) {
+    match.contents_class = {{0, ACMatchClassification::DIM}};
+  }
+  match.description = match.takeover_action->GetLabelStrings().hint;
+  if (!match.description.empty()) {
+    match.description_class = {{0, ACMatchClassification::NONE}};
+  }
+  match.fill_into_edit = match.description;
+  return match;
 }
 
 // static
@@ -548,37 +579,6 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   for (const auto& entry : results.suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }
-}
-
-void ContextualSearchProvider::AddLensEntrypointMatch(
-    const AutocompleteInput& input) {
-  // This match is effectively a pedal that doesn't require any query matching.
-  // Relevance depends on the page class, and selecting an appropriate score is
-  // necessary to avoid downstream conflicts in grouping framework sort order.
-  AutocompleteMatch match(
-      this,
-      omnibox::IsSearchResultsPage(input.current_page_classification())
-          ? omnibox::kContextualActionZeroSuggestRelevanceLow
-          : omnibox::kContextualActionZeroSuggestRelevance,
-      false, AutocompleteMatchType::PEDAL);
-  match.transition = ui::PAGE_TRANSITION_GENERATED;
-  match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
-  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
-
-  // Lens invocation action with secondary text that shows URL host.
-  match.takeover_action =
-      base::MakeRefCounted<ContextualSearchOpenLensAction>();
-  match.contents =
-      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().GetHost()));
-  if (!match.contents.empty()) {
-    match.contents_class = {{0, ACMatchClassification::DIM}};
-  }
-  match.description = match.takeover_action->GetLabelStrings().hint;
-  if (!match.description.empty()) {
-    match.description_class = {{0, ACMatchClassification::NONE}};
-  }
-  match.fill_into_edit = match.description;
-  matches_.push_back(match);
 }
 
 void ContextualSearchProvider::AddDefaultVerbatimMatch(
