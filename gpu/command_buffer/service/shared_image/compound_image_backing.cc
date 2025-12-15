@@ -945,6 +945,19 @@ gfx::GpuMemoryBufferHandle CompoundImageBacking::GetGpuMemoryBufferHandle() {
   return element.backing->GetGpuMemoryBufferHandle();
 }
 
+scoped_refptr<gfx::NativePixmap> CompoundImageBacking::GetNativePixmap() {
+  // The purpose of this function is to get NativePixmap for overlay testing,
+  // so it needs be the same NativePixmap that we would later get from the
+  // ProduceOverlay representation. Hence using Overlay stream backing here.
+  for (const auto& element : elements_) {
+    if (element.access_streams.Has(SharedImageAccessStream::kOverlay) &&
+        element.backing) {
+      return element.backing->GetNativePixmap();
+    }
+  }
+  return nullptr;
+}
+
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

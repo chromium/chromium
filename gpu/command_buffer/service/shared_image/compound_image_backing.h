@@ -151,6 +151,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // CompoundImageBacking needs to propagate this call to all its elements.
   void MarkForDestruction() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
 
  protected:
   // SharedImageBacking implementation.
