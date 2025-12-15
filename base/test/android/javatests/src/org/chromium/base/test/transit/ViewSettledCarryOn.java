@@ -12,21 +12,23 @@ import org.chromium.build.annotations.Nullable;
 /** A ConditionalState entered when a ViewElement's View has been still for some amount of time. */
 @NullMarked
 class ViewSettledCarryOn extends CarryOn {
-    ViewSettledCarryOn(
-            @Nullable ActivityElement<?> otherActivityElement, ViewElement<?> viewElement) {
+    ViewSettledCarryOn(@Nullable Activity activity, ViewElement<?> viewElement) {
         super("ViewSettled");
 
-        if (otherActivityElement != null) {
-            Class<? extends Activity> activityClass = otherActivityElement.getActivityClass();
-            Activity activity = otherActivityElement.get();
-            assert activityClass != null;
-            assert activity != null;
-
-            declareActivity(activityClass).requireToBeInSameTask(activity);
+        RootSpec rootSpec;
+        if (activity != null) {
+            rootSpec = RootSpec.activityOrDialogRoot(activity);
+        } else {
+            rootSpec = RootSpec.anyRoot();
         }
 
         declareView(
                 viewElement.getViewSpec(),
-                viewElement.copyOptions().initialSettleTime(1000).unscoped().build());
+                viewElement
+                        .copyOptions()
+                        .initialSettleTime(1000)
+                        .unscoped()
+                        .rootSpec(rootSpec)
+                        .build());
     }
 }

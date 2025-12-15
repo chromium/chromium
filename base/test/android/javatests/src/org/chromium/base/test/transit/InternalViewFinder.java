@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import android.app.Activity;
-import android.os.IBinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -19,31 +17,26 @@ import com.google.common.collect.Lists;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.RootSpec.RootType;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/** Searches Android Windows for root Views and specific Views in those roots. */
 @NullMarked
-/** Searches Android Windows for specific Views and root Views. */
 class InternalViewFinder {
     /**
      * Searches all Windows for root Views.
      *
-     * @param activity If not null, restricts the search to that Activity's subwindows and dialogs.
-     *     If null, searches all focusable windows and dialogs.
+     * @param rootSpec Which scope to restrict the search to.
      * @return List of Roots found.
      */
-    static List<Root> findRoots(@Nullable Activity activity) {
+    static List<Root> findRoots(RootSpec rootSpec) {
         ThreadUtils.assertOnUiThread();
 
         List<Root> matches = new ArrayList<>();
 
-        IBinder activityToken = null;
-        if (activity != null) {
-            activityToken = activity.getWindow().getDecorView().getWindowToken();
-        }
         List<View> globalWindowViews = WindowInspector.getGlobalWindowViews();
         for (View view : Lists.reverse(globalWindowViews)) {
             if (!(view.getLayoutParams()
@@ -60,9 +53,17 @@ class InternalViewFinder {
                             .withWindowLayoutParams(windowLayoutParams)
                             .build();
 
-            // Include both subwindows of the activity and focused dialogs
-            if ((activityToken == null || view.getApplicationWindowToken() == activityToken)
-                    || (RootMatchers.isDialog().matches(root) && view.hasWindowFocus())) {
+            boolean rootMatches;
+            if (rootSpec.getType() == RootType.ANY_ROOT) {
+                rootMatches = true;
+            } else if (RootMatchers.isDialog().matches(root) && view.hasWindowFocus()) {
+                rootMatches = rootSpec.allowsFocusedDialogs();
+            } else {
+                // Subwindows of the activity.
+                rootMatches = rootSpec.allowsWindowToken(view.getApplicationWindowToken());
+            }
+
+            if (rootMatches) {
                 matches.add(root);
             }
         }

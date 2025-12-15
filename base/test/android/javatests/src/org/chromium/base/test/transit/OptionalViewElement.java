@@ -8,13 +8,12 @@ import android.view.View;
 
 import androidx.test.espresso.ViewAction;
 
-import org.hamcrest.Matcher;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents a lazily-checked {@link ViewElement}.
@@ -56,8 +55,15 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     private ViewCarryOn<ViewT> createViewCarryOn() {
+        ActivityElement<?> activityElement = mOwner.determineActivityElement();
+        RootSpec rootSpec =
+                activityElement == null
+                        ? RootSpec.anyRoot()
+                        : RootSpec.activityOrDialogRoot(activityElement);
         ViewCarryOn<ViewT> carryOn =
-                new ViewCarryOn<>(mOwner.determineActivityElement(), mViewSpec, mOptions);
+                new ViewCarryOn<>(
+                        mViewSpec,
+                        ViewElement.newOptions().initFrom(mOptions).rootSpec(rootSpec).build());
         mCarryOns.add(carryOn);
         return carryOn;
     }
@@ -97,13 +103,14 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
 
     /** Create a Condition fulfilled when this OptionalViewElement is present. */
     public ConditionWithResult<ViewT> present() {
-        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
+        // Delay calculating the root spec because the owner state might not be set yet.
+        Supplier<RootSpec> rootSpecSupplier = () -> ViewElement.calculateRootSpec(mOptions, mOwner);
         ViewConditions.DisplayedCondition.Options conditionOptions =
-                ViewElement.newDisplayedConditionOptions(mOptions).build();
+                ViewElement.calculateDisplayedConditionOptions(mOptions).build();
         return new ViewConditions.DisplayedCondition<>(
-                viewMatcher,
+                mViewSpec.getViewMatcher(),
                 mViewSpec.getViewClass(),
-                mOwner::determineActivityElement,
+                rootSpecSupplier,
                 conditionOptions);
     }
 

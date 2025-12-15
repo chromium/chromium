@@ -48,7 +48,7 @@ public class ViewConditions {
     public static class DisplayedCondition<ViewT extends View> extends ConditionWithResult<ViewT> {
         private final Matcher<View> mMatcher;
         private final Class<ViewT> mViewClass;
-        private final Supplier<@Nullable ActivityElement<?>> mActivityElementSupplier;
+        private final Supplier<RootSpec> mRootSpecSupplier;
         private final Options mOptions;
         private int mPreviousViewX = Integer.MIN_VALUE;
         private int mPreviousViewY = Integer.MIN_VALUE;
@@ -60,14 +60,12 @@ public class ViewConditions {
         public DisplayedCondition(
                 Matcher<View> matcher,
                 Class<ViewT> viewClass,
-                Supplier<@Nullable ActivityElement<?>> activityElementSupplier,
+                Supplier<RootSpec> rootSpecSupplier,
                 Options options) {
             super(/* isRunOnUiThread= */ true);
             mMatcher = matcher;
             mViewClass = viewClass;
-            // Do not dependOnSupplier(activityElementSupplier) because a null supplied Activity is
-            // valid.
-            mActivityElementSupplier = activityElementSupplier;
+            mRootSpecSupplier = rootSpecSupplier;
             mOptions = options;
         }
 
@@ -89,10 +87,7 @@ public class ViewConditions {
             if (mOptions.mExpectDisabled) {
                 description.append(", disabled");
             }
-            if (mOptions.mInDialogRoot) {
-                description.append(", in dialog");
-            }
-            description.append(")");
+            // TODO(crbug.com/456770151): Add to description which RootSpec was used.
             return description.toString();
         }
 
@@ -106,28 +101,26 @@ public class ViewConditions {
             // more details later in this method.
             ArrayList<String> messages = new ArrayList<>();
 
-            ActivityElement<?> activityElement = mActivityElementSupplier.get();
-            Activity activity;
-            if (activityElement == null) {
-                // TODO(crbug.com/456768907): Allow this only for dialogs.
-                activity = null;
-            } else {
-                activity = activityElement.get();
+            RootSpec rootSpec = mRootSpecSupplier.get();
+            Supplier<? extends Activity> activitySupplier = rootSpec.getActivitySupplier();
+
+            if (activitySupplier != null) {
+                Activity activity = activitySupplier.get();
                 if (activity == null) {
-                    return awaiting("Waiting for Activity from %s", activityElement)
+                    return awaiting("Waiting for Activity from %s", activitySupplier)
                             .withoutResult();
                 }
                 if (activity.isDestroyed()) {
-                    return notFulfilled("Activity from %s is destroyed", activityElement)
+                    return notFulfilled("Activity from %s is destroyed", activitySupplier)
                             .withoutResult();
                 }
                 if (activity.isFinishing()) {
-                    return notFulfilled("Activity from %s is finishing", activityElement)
+                    return notFulfilled("Activity from %s is finishing", activitySupplier)
                             .withoutResult();
                 }
             }
 
-            List<Root> roots = InternalViewFinder.findRoots(activity);
+            List<Root> roots = InternalViewFinder.findRoots(rootSpec);
 
             List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(roots, mMatcher);
 
@@ -261,7 +254,6 @@ public class ViewConditions {
         public static class Options {
             boolean mExpectEnabled = true;
             boolean mExpectDisabled;
-            boolean mInDialogRoot;
             int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
             int mSettleTimeMs;
 
@@ -270,12 +262,6 @@ public class ViewConditions {
             public class Builder {
                 public Options build() {
                     return Options.this;
-                }
-
-                /** Whether the View is expected to be a descendant of a dialog root. */
-                public Builder withInDialogRoot(boolean inDialogRoot) {
-                    mInDialogRoot = inDialogRoot;
-                    return this;
                 }
 
                 /** Whether the View is expected to be enabled. */
@@ -348,20 +334,20 @@ public class ViewConditions {
                 // If not created by a ViewElement (i.e. created by declareNoView()), search
                 // the Activity related to the state, or all if there is no specific Activity
                 // to search.
-                Activity activity;
+                RootSpec rootSpec;
                 if (mOwnerState == null) {
                     // If it's a TransitionCondition, mOwnerState will be null and search all roots.
-                    activity = null;
+                    rootSpec = RootSpec.anyRoot();
                 } else {
                     ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
                     if (activityElement == null) {
                         // TODO(crbug.com/456768907): Allow this only for dialogs.
-                        activity = null;
+                        rootSpec = RootSpec.anyRoot();
                     } else {
-                        activity = activityElement.get();
+                        rootSpec = RootSpec.activityOrDialogRoot(activityElement);
                     }
                 }
-                rootsToSearch = InternalViewFinder.findRoots(activity);
+                rootsToSearch = InternalViewFinder.findRoots(rootSpec);
             }
             List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
 

@@ -747,6 +747,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/OptionalViewElement.java",
       "android/javatests/src/org/chromium/base/test/transit/PayloadCallbackCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/PublicTransitConfig.java",
+      "android/javatests/src/org/chromium/base/test/transit/RootSpec.java",
       "android/javatests/src/org/chromium/base/test/transit/ScrollableFacility.java",
       "android/javatests/src/org/chromium/base/test/transit/SimpleConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/Station.java",

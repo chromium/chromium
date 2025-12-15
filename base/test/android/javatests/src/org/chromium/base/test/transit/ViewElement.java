@@ -34,6 +34,8 @@ import org.chromium.base.test.util.KeyUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
  *
@@ -75,19 +77,36 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
     @Override
     public @Nullable ConditionWithResult<ViewT> createEnterCondition() {
-        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
+        // Delay calculating the root spec because the owner state isn't set yet.
+        Supplier<RootSpec> rootSpecSupplier = () -> calculateRootSpec(mOptions, mOwner);
         DisplayedCondition.Options conditionOptions =
-                newDisplayedConditionOptions(mOptions).build();
+                calculateDisplayedConditionOptions(mOptions).build();
         return new DisplayedCondition<>(
-                viewMatcher,
+                mViewSpec.getViewMatcher(),
                 mViewSpec.getViewClass(),
-                mOwner::determineActivityElement,
+                rootSpecSupplier,
                 conditionOptions);
     }
 
-    static DisplayedCondition.Options.Builder newDisplayedConditionOptions(Options options) {
+    static RootSpec calculateRootSpec(Options options, ConditionalState owner) {
+        if (options.mRootSpec != null) {
+            // If a RootSpec is specified, use it.
+            return options.mRootSpec;
+        } else {
+            // By default, expect the owner to supply an ActivityElement.
+            ActivityElement<?> activityElement = owner.determineActivityElement();
+            if (activityElement == null) {
+                // Search everywhere if no RootSpec is specified and the owner does not have an
+                // ActivityElement.
+                return RootSpec.anyRoot();
+            } else {
+                return RootSpec.activityOrDialogRoot(activityElement);
+            }
+        }
+    }
+
+    static DisplayedCondition.Options.Builder calculateDisplayedConditionOptions(Options options) {
         return DisplayedCondition.newOptions()
-                .withInDialogRoot(options.mInDialog)
                 .withExpectEnabled(options.mExpectEnabled)
                 .withExpectDisabled(options.mExpectDisabled)
                 .withDisplayingAtLeast(options.mDisplayedPercentageRequired)
@@ -232,7 +251,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                         instrumentationThreadCondition(
                                 "Root has window focus",
                                 () -> whether(rootMatched.getDecorView().hasWindowFocus())))
-                .pickUpCarryOn(new ViewSettledCarryOn(activityElement, this));
+                .pickUpCarryOn(new ViewSettledCarryOn(activity, this));
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */
@@ -270,11 +289,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     public static class Options {
         static final Options DEFAULT = new Options();
         protected boolean mScoped = true;
-        protected boolean mInDialog;
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
         protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
         protected int mInitialSettleTimeMs;
+        protected @Nullable RootSpec mRootSpec;
 
         protected Options() {}
 
@@ -291,8 +310,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
             /** Expect the View to be in a dialog root. */
             public Builder inDialog() {
-                mInDialog = true;
-                return this;
+                return rootSpec(RootSpec.dialogRoot());
             }
 
             /**
@@ -333,14 +351,20 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                 return this;
             }
 
+            /** Restricts search to root filtered by the supplied RootSpec. */
+            public Builder rootSpec(RootSpec rootSpec) {
+                mRootSpec = rootSpec;
+                return this;
+            }
+
             /** Copy |optionsToClose|'s options into this instance. */
             public Builder initFrom(Options optionsToClone) {
                 mScoped = optionsToClone.mScoped;
-                mInDialog = optionsToClone.mInDialog;
                 mExpectDisabled = optionsToClone.mExpectDisabled;
                 mExpectEnabled = optionsToClone.mExpectEnabled;
                 mDisplayedPercentageRequired = optionsToClone.mDisplayedPercentageRequired;
                 mInitialSettleTimeMs = optionsToClone.mInitialSettleTimeMs;
+                mRootSpec = optionsToClone.mRootSpec;
                 return this;
             }
         }
@@ -369,5 +393,10 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     /** Convenience {@link Options} setting displayingAtLeast(). */
     public static Options displayingAtLeastOption(int percentage) {
         return newOptions().displayingAtLeast(percentage).build();
+    }
+
+    /** Convenience {@link Options} setting rootSpec(). */
+    public static Options rootSpecOption(RootSpec rootSpec) {
+        return newOptions().rootSpec(rootSpec).build();
     }
 }
