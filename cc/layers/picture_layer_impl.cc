@@ -285,7 +285,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     float max_contents_scale) {
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
-  last_append_quads_tilings_.clear();
+  last_append_quads_scales_.clear();
 
   // Ignore missing tiles outside of viewport for tile priority. This is
   // normally the same as draw viewport but can be independently overridden by
@@ -443,9 +443,11 @@ void PictureLayerImpl::AppendQuadsSpecialization(
 
     produced_tile_last_append_quads_ = true;
 
-    if (last_append_quads_tilings_.empty() ||
-        last_append_quads_tilings_.back() != iter.CurrentTiling()) {
-      last_append_quads_tilings_.push_back(iter.CurrentTiling());
+    if (last_append_quads_scales_.empty() ||
+        last_append_quads_scales_.back() !=
+            iter.CurrentTiling()->contents_scale_key()) {
+      last_append_quads_scales_.push_back(
+          iter.CurrentTiling()->contents_scale_key());
     }
   }
 
@@ -1594,13 +1596,13 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
          twin->GetIdealContentsScaleKey()});
   }
 
-  // TODO(crbug.com/7107398): Ideally |last_append_quads_tilings_| here should
+  // TODO(crbug.com/7107398): Ideally |last_append_quads_scales_| here should
   // be empty for TreesInViz mode since it's not populated in PictureLayerImpl
   // for that mode. But many cc_unittests currently calls AppendQuads() directly
   // on PictureLayerImpl via FakePictureLayerImpl resulting in non empty
-  // |last_append_quads_tilings_| in this mode. Hence not enabling the CHECK for
+  // |last_append_quads_scales_| in this mode. Hence not enabling the CHECK for
   // now. CHECK(!layer_tree_impl()->settings().TreesInVizInClientProcess() ||
-  //      last_append_quads_tilings_.empty());
+  //      last_append_quads_scales_.empty());
 
   std::vector<PictureLayerTiling*> to_remove;
   for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
@@ -1612,7 +1614,8 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
     }
 
     // Don't remove tilings that are required based on most recent draw.
-    if (base::Contains(last_append_quads_tilings_, tiling)) {
+    if (base::Contains(last_append_quads_scales_,
+                       tiling->contents_scale_key())) {
       continue;
     }
 

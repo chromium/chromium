@@ -2311,8 +2311,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   // Now, set the bounds to be 1x1, so that minimum contents scale becomes 1.
   SetupPendingTree(FakeRasterSource::CreateFilled(gfx::Size(1, 1)));
   ActivateTree();
-  active_layer()->GetLastAppendQuadsTilingsForTesting().push_back(
-      active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
+  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1.0f);
   active_layer()->UpdateTiles();
 
   EXPECT_EQ(1.f, active_layer()->MinimumContentsScale());
@@ -3705,7 +3704,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   active_layer()->MarkAllTilingsUsed();
 
   // We only have ideal tilings, so they aren't removed.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
   // Since this test simulates a pinch it needs an input handler.
@@ -3723,7 +3722,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
   // The tilings are still our target scale, so they aren't removed.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
@@ -3741,9 +3740,8 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   active_layer()->MarkAllTilingsUsed();
 
   // Mark the non-ideal tilings as used. They won't be removed.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
-  active_layer()->GetLastAppendQuadsTilingsForTesting().push_back(
-      active_layer()->tilings()->tiling_at(1));
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
+  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1);
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
@@ -3752,7 +3750,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
 
   // The high resolution tiling is between target and ideal, so is not
   // removed.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
@@ -3761,7 +3759,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
 
   // All the tilings are between are target and the ideal, so they are not
   // removed.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
@@ -3771,7 +3769,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
 
   // Because the pending layer's ideal scale is still 1.0, our tilings fall
   // in the range [1.0,1.2] and are kept.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
@@ -3783,15 +3781,14 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   // Our 1.0 tiling now falls outside the range between our ideal scale and our
   // target raster scale. But it is in our used tilings set, so nothing is
   // deleted.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
-  active_layer()->GetLastAppendQuadsTilingsForTesting().push_back(
-      active_layer()->tilings()->tiling_at(1));
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
+  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1);
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
   // If we remove it from our used tilings set, it is outside the range to keep
   // so it is deleted.
-  active_layer()->ClearLastAppendQuadsTilingsForTesting();
+  active_layer()->ClearLastAppendsQuadsScalesForTesting();
   active_layer()->CleanUpTilingsOnActiveLayer();
 
   // When TreesInViz is enabled, tiling cleanup is asynchronous.

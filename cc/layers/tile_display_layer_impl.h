@@ -260,8 +260,7 @@ class CC_EXPORT TileDisplayLayerImpl
   // (i.e. not used in the last frame) before the renderer actually removes
   // them. This keeps the renderer’s tile management logic close to its
   // current behavior and prevents premature deletion of tiles still needed by
-  // Viz. Note that unlike PictureLayerImpl, we have last appended quads scales
-  // here instead of tiling ptr since its not needed in this case.
+  // Viz.
   std::vector<float> last_append_quads_scales_;
 
   // A list of tiling scale keys that the client has nominated for deletion.
