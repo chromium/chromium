@@ -14,7 +14,6 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/test/fakes/crw_fake_wk_frame_info.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -23,6 +22,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
@@ -523,12 +524,20 @@ TEST_F(PermissionsInttest, TestsThatCancelllingPrerenderDeniesPermission) {
   __block NSInteger decision = -1;
   WKWebView* web_view = [web_controller() ensureWebViewCreated];
   id<WKUIDelegate> ui_delegate = web_view.UIDelegate;
-  // Fake a media capture permission request.
-  CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
-  frame_info.mainFrame = YES;
+
+  // Mock WKFrameInfo.
+  WKSecurityOrigin* mock_security_origin =
+      OCMClassMock([WKSecurityOrigin class]);
+  OCMStub([mock_security_origin protocol]).andReturn(@"https");
+  OCMStub([mock_security_origin host]).andReturn(@"chromium.test");
+  OCMStub([mock_security_origin port]).andReturn(0);
+  WKFrameInfo* mock_frame_info = OCMClassMock([WKFrameInfo class]);
+  OCMStub([mock_frame_info isMainFrame]).andReturn(YES);
+  OCMStub([mock_frame_info securityOrigin]).andReturn(mock_security_origin);
+
   [ui_delegate webView:web_view
-      requestMediaCapturePermissionForOrigin:frame_info.securityOrigin
-                            initiatedByFrame:frame_info
+      requestMediaCapturePermissionForOrigin:mock_frame_info.securityOrigin
+                            initiatedByFrame:mock_frame_info
                                         type:WKMediaCaptureTypeCamera
                              decisionHandler:^(
                                  WKPermissionDecision wk_permission_decision) {

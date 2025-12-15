@@ -43,7 +43,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
-#import "ios/web/test/fakes/crw_fake_wk_frame_info.h"
 #import "ios/web/test/fakes/crw_fake_wk_navigation_action.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_test_with_web_controller.h"
@@ -665,11 +664,11 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
       OCMStub([mock_download originalRequest]).andReturn(request);
 
       if (@available(iOS 18.2, *)) {
-        CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
-        frame_info.mainFrame = YES;
-        frame_info.request = request;
-        frame_info.webView = mock_web_view_;
-        OCMStub([mock_download originatingFrame]).andReturn(frame_info);
+        WKFrameInfo* mock_frame_info = OCMClassMock([WKFrameInfo class]);
+        OCMStub([mock_frame_info isMainFrame]).andReturn(YES);
+        OCMStub([mock_frame_info request]).andReturn(request);
+        OCMStub([mock_frame_info webView]).andReturn(mock_web_view_);
+        OCMStub([mock_download originatingFrame]).andReturn(mock_frame_info);
       }
 
       OCMStub([mock_download cancel:[OCMArg checkWithBlock:^BOOL(id obj) {
@@ -947,9 +946,9 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
         [[CRWFakeWKNavigationAction alloc] init];
     navigation_action.request = request;
 
-    CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
-    frame_info.mainFrame = YES;
-    navigation_action.targetFrame = frame_info;
+    WKFrameInfo* mock_frame_info = OCMClassMock([WKFrameInfo class]);
+    OCMStub([mock_frame_info isMainFrame]).andReturn(YES);
+    navigation_action.targetFrame = mock_frame_info;
 
     WKWebpagePreferences* preferences = [[WKWebpagePreferences alloc] init];
 

@@ -600,6 +600,7 @@ test("ios_web_inttests") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base:test_support",
     "//ui/resources",
   ]
