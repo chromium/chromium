@@ -136,8 +136,12 @@ export class ContextMenuEntrypointElement extends
   openMenuForMultiSelection() {
     if (this.enableMultiTabSelection_ &&
         this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
-      this.showMenuAtEntrypoint_();
+      this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
     }
+  }
+
+  closeMenu() {
+    this.$.menu.close();
   }
 
   // Checks if the image upload item in the context menu should be disabled.

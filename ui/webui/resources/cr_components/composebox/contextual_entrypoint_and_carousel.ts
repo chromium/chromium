@@ -309,6 +309,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           default:
             break;
         }
+        if (this.contextMenuEnabled_) {
+          this.$.contextEntrypoint.closeMenu();
+        }
       } else {
         file = {...file, status: status};
         this.files_.set(token, file);
@@ -534,6 +537,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.recordFileValidationMetric_(metric);
+    if (this.contextMenuEnabled_) {
+      this.$.contextEntrypoint.closeMenu();
+    }
     this.fire('on-file-validation-error', {
       errorMessage: this.i18n(errorMessage),
     });
