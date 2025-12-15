@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_promo_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_promo_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -20,9 +20,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-class BWGPromoSceneAgentTest : public PlatformTest {
+class GeminiPromoSceneAgentTest : public PlatformTest {
  public:
-  BWGPromoSceneAgentTest() : PlatformTest() {
+  GeminiPromoSceneAgentTest() : PlatformTest() {
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     scene_state_.scene = static_cast<UIWindowScene*>(
@@ -36,14 +36,14 @@ class BWGPromoSceneAgentTest : public PlatformTest {
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_];
     promos_manager_ = std::make_unique<MockPromosManager>();
-    agent_ = [[BWGPromoSceneAgent alloc]
+    agent_ = [[GeminiPromoSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()];
 
     agent_.sceneState = scene_state_;
   }
 
  protected:
-  BWGPromoSceneAgent* agent_;
+  GeminiPromoSceneAgent* agent_;
   // SceneState only weakly holds AppState, so keep it alive here.
   AppState* app_state_;
   base::test::ScopedFeatureList feature_list_;
@@ -52,8 +52,8 @@ class BWGPromoSceneAgentTest : public PlatformTest {
   std::unique_ptr<MockPromosManager> promos_manager_;
 };
 
-// Tests that the BWG promo single registers in the promo manager.
-TEST_F(BWGPromoSceneAgentTest, TestBWGPromoRegistration) {
+// Tests that the Gemini promo single registers in the promo manager.
+TEST_F(GeminiPromoSceneAgentTest, TestBWGPromoRegistration) {
   feature_list_.InitAndEnableFeature(kPageActionMenu);
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::BWGPromo))
@@ -63,7 +63,7 @@ TEST_F(BWGPromoSceneAgentTest, TestBWGPromoRegistration) {
 
 // Tests that the BWG promo is not registered in the promo
 // manager when the eligibility criteria is not met.
-TEST_F(BWGPromoSceneAgentTest, TestBWGPromoNoRegistration) {
+TEST_F(GeminiPromoSceneAgentTest, TestBWGPromoNoRegistration) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::BWGPromo))
       .Times(0);

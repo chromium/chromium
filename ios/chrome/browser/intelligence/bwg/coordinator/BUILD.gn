@@ -9,8 +9,8 @@ source_set("coordinator") {
     "bwg_mediator.h",
     "bwg_mediator.mm",
     "bwg_mediator_delegate.h",
-    "bwg_promo_scene_agent.h",
-    "bwg_promo_scene_agent.mm",
+    "gemini_promo_scene_agent.h",
+    "gemini_promo_scene_agent.mm",
   ]
   deps = [
     "//base",
@@ -46,8 +46,8 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bwg_promo_scene_agent_unittest.mm",
     "gemini_coordinator_unittest.mm",
+    "gemini_promo_scene_agent_unittest.mm",
   ]
 
   deps = [
