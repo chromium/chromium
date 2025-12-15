@@ -448,11 +448,6 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder = "webview-arm64-rel-ready",
-)
-
-chrome_internal_verifier(
     builder = "win-arm64-bluebird-rel",
 )
 
