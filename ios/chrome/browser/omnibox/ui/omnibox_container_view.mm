@@ -59,6 +59,7 @@ const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
 const CGFloat kClearButtonInset = 4.0f;
 /// Clear button image size.
 const CGFloat kClearButtonImageSize = 17.0f;
+const CGFloat kComposeboxClearButtonImageSize = 15.0f;
 const CGFloat kClearButtonSize = 28.0f;
 
 /// Whether the omnibox is using the text view instead of the text field.
@@ -128,18 +129,26 @@ OmniboxThumbnailButton* CreateThumbnailButton() {
 }
 
 /// Creates and configures the clear button.
-UIButton* CreateClearButton() {
+UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   UIButtonConfiguration* conf =
       [UIButtonConfiguration plainButtonConfiguration];
-  conf.image =
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kClearButtonImageSize);
+  CGFloat imageSize =
+      presentationContext == OmniboxPresentationContext::kComposebox
+          ? kComposeboxClearButtonImageSize
+          : kClearButtonImageSize;
+  conf.image = DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, imageSize);
   conf.contentInsets =
       NSDirectionalEdgeInsetsMake(kClearButtonInset, kClearButtonInset,
                                   kClearButtonInset, kClearButtonInset);
   UIButton* clear_button = [UIButton buttonWithType:UIButtonTypeSystem];
   clear_button.translatesAutoresizingMaskIntoConstraints = NO;
   clear_button.configuration = conf;
-  clear_button.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  if (presentationContext == OmniboxPresentationContext::kComposebox) {
+    clear_button.tintColor = [UIColor colorNamed:kTextTertiaryColor];
+  } else {
+    clear_button.tintColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  }
+
   SetA11yLabelAndUiAutomationName(clear_button, IDS_IOS_ACCNAME_CLEAR_TEXT,
                                   kOmniboxClearButtonAccessibilityIdentifier);
   clear_button.pointerInteractionEnabled = YES;
@@ -212,7 +221,7 @@ UIButton* CreateClearButton() {
   if (self) {
     _presentationContext = presentationContext;
     _leadingImageView = CreateLeadingImageView(iconTint, presentationContext);
-    self.clearButton = CreateClearButton();
+    self.clearButton = CreateClearButton(presentationContext);
     [self createAndAddTextInputViewWithTextColor:textColor
                                    textInputTint:textInputTint];
 
