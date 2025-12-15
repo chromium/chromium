@@ -1691,19 +1691,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceAuthenticator.CanAuthenticateWithBiometrics"
-    enum="BiometricsAvailability" expires_after="2025-09-30">
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Recorded when a UI surface/flow in Chrome on Android checks whether
-    biometric authentication is available on the device. It may be called from
-    various places which need to perform biometric re-auth (Password Manager,
-    Autofill, Incognito or Device Lock Page).
-  </summary>
-</histogram>
-
 <histogram name="Android.DeviceSize.ScreenSizeInTensOfInches"
     units="10x inches" expires_after="2026-05-03">
   <owner>twellington@chromium.org</owner>

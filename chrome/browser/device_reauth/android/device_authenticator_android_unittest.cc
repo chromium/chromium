@@ -81,31 +81,6 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
   raw_ptr<MockDeviceAuthenticatorBridge> bridge_ = nullptr;
 };
 
-TEST_F(DeviceAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
-
-  histogram_tester.ExpectUniqueSample(
-      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
-      BiometricsAvailability::kAvailable, 1);
-}
-
-TEST_F(
-    DeviceAuthenticatorAndroidTest,
-    CanAuthenticateDoesNotReecordHistogramForNonPasswordManagerForIncognito) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillOnce(Return(true));
-  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
-
-  histogram_tester.ExpectTotalCount(
-      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics", 0);
-}
-
 TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {
   base::HistogramTester histogram_tester;
 
