@@ -143,7 +143,7 @@ public class PreferenceParser {
             Bundle finalExtras = new Bundle();
             String childFragmentClass = bundle.getString(METADATA_FRAGMENT);
             if (childFragmentClass != null && providerMap.containsKey(childFragmentClass)) {
-                Bundle childDefaults = providerMap.get(childFragmentClass).getExtras();
+                Bundle childDefaults = providerMap.get(childFragmentClass).getExtras(context);
                 if (childDefaults != null) {
                     finalExtras.putAll(childDefaults);
                 }

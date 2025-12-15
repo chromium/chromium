@@ -68,4 +68,13 @@ public interface SearchIndexProvider {
     default Bundle getExtras() {
         return new Bundle();
     }
+
+    /**
+     * This is for Bundle args that need information from the context.
+     *
+     * @param context The {@link Context} used to access application resources.
+     */
+    default Bundle getExtras(Context context) {
+        return getExtras();
+    }
 }
