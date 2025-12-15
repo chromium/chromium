@@ -132,12 +132,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Used to determine if the provider is going to be initialized or not.
   enum class ShouldInitialize { kNo, kCallClear };
 
-  static std::unique_ptr<CanvasResourceProviderExternalBitmap>
-  CreateExternalBitmapProvider(gfx::Size size,
-                               viz::SharedImageFormat format,
-                               SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space);
-
   static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateSharedImageProviderForSoftwareCompositor(
       gfx::Size size,
@@ -452,6 +446,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
     : public CanvasSnapshotProvider {
  public:
+  static std::unique_ptr<CanvasResourceProviderExternalBitmap> Create(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space);
+
   CanvasResourceProviderExternalBitmap(gfx::Size size,
                                        viz::SharedImageFormat format,
                                        SkAlphaType alpha_type,

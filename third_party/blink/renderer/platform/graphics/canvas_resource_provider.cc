@@ -1233,7 +1233,7 @@ void CanvasResourceProviderSharedImage::OnMemoryDump(
 }
 
 std::unique_ptr<CanvasResourceProviderExternalBitmap>
-CanvasResourceProvider::CreateExternalBitmapProvider(
+CanvasResourceProviderExternalBitmap::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

@@ -216,7 +216,7 @@ std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideoFrame(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateExternalBitmapProvider(
+    return CanvasResourceProviderExternalBitmap::Create(
         size, format, alpha_type, color_space);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(

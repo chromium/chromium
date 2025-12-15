@@ -8891,7 +8891,7 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
     temp = CreateSnapshotProviderForVideoFrame(
         size, format, alpha_type, color_space, raster_context_provider);
   } else {
-    temp = CanvasResourceProvider::CreateExternalBitmapProvider(
+    temp = CanvasResourceProviderExternalBitmap::Create(
         size, format, alpha_type, color_space);
   }
 
