@@ -9966,3 +9966,6 @@ crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCPeerConnection-remote-track-m
 
 # Gardener 2025-12-12
 crbug.com/468374864 http/tests/inspector-protocol/target/auto-attach-wait-for-debugger-2-sessions-worker.js [ Failure Pass ]
+
+# Gardener 2025-12-17
+crbug.com/468856556 [ Linux ] fast/replaced/border-radius-clip.html [ Failure Pass ]
