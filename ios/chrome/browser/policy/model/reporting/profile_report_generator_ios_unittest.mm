@@ -84,6 +84,9 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     if (IsProfileReportingEnabled()) {
       feature_list_.InitAndEnableFeature(
           enterprise_reporting::kCloudProfileReporting);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          enterprise_reporting::kCloudProfileReporting);
     }
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kEnableChromeBrowserCloudManagement);
