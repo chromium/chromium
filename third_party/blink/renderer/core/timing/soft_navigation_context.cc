@@ -233,7 +233,7 @@ void SoftNavigationContext::Shutdown() {
   window_ = nullptr;
 }
 
-void SoftNavigationContext::EmitPerformanceEntry(
+void SoftNavigationContext::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
     uint64_t paint_size,
     base::TimeTicks load_time,

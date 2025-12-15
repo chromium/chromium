@@ -44,12 +44,12 @@ class CORE_EXPORT SoftNavigationContext
   explicit SoftNavigationContext(LocalDOMWindow& window);
 
   // LargestContentfulPaintCalculator::Delegate:
-  void EmitPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
-                            uint64_t paint_size,
-                            base::TimeTicks load_time,
-                            const AtomicString& id,
-                            const String& url,
-                            Element* element) override;
+  void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
+                               uint64_t paint_size,
+                               base::TimeTicks load_time,
+                               const AtomicString& id,
+                               const String& url,
+                               Element* element) override;
   bool IsHardNavigation() const override { return false; }
   void Trace(Visitor* visitor) const override;
 

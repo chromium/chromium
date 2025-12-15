@@ -31,7 +31,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     // Called when a PerformanceEntry for a new largest paint candidate should
     // be emitted. The `Delegate` is responsible for emitting an entry of the
     // appropriate type.
-    virtual void EmitPerformanceEntry(
+    virtual void EmitLcpPerformanceEntry(
         const DOMPaintTimingInfo& paint_timing_info,
         uint64_t paint_size,
         base::TimeTicks load_time,

@@ -483,7 +483,7 @@ PaintTimingDetector::LatestLcpDetailsForTest() {
   return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
 }
 
-void PaintTimingDetector::EmitPerformanceEntry(
+void PaintTimingDetector::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
     uint64_t paint_size,
     base::TimeTicks load_time,

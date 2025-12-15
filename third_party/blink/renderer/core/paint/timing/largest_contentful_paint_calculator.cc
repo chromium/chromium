@@ -124,11 +124,12 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  delegate_->EmitPerformanceEntry(largest_image.PaintTimingInfo(),
-                                  /*paint_size=*/largest_image.RecordedSize(),
-                                  /*load_time=*/largest_image.LoadTime(),
-                                  /*id=*/image_id, /*url=*/image_url,
-                                  /*element=*/image_element);
+  delegate_->EmitLcpPerformanceEntry(
+      largest_image.PaintTimingInfo(),
+      /*paint_size=*/largest_image.RecordedSize(),
+      /*load_time=*/largest_image.LoadTime(),
+      /*id=*/image_id, /*url=*/image_url,
+      /*element=*/image_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
@@ -160,12 +161,12 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       text_element ? text_element->GetIdAttribute() : AtomicString();
 
   // Always use paint time as start time for text LCP candidate.
-  delegate_->EmitPerformanceEntry(largest_text.PaintTimingInfo(),
-                                  /*paint_size=*/largest_text.RecordedSize(),
-                                  /*load_time=*/base::TimeTicks(),
-                                  /*id=*/text_id,
-                                  /*url=*/g_empty_string,
-                                  /*element=*/text_element);
+  delegate_->EmitLcpPerformanceEntry(largest_text.PaintTimingInfo(),
+                                     /*paint_size=*/largest_text.RecordedSize(),
+                                     /*load_time=*/base::TimeTicks(),
+                                     /*id=*/text_id,
+                                     /*url=*/g_empty_string,
+                                     /*element=*/text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
