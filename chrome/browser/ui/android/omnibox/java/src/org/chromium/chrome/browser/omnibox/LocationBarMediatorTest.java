@@ -889,7 +889,7 @@ public class LocationBarMediatorTest {
     @Test
     public void testOnKey_escape() {
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ESCAPE, mKeyEvent));
+        assertTrue(mMediator.handleEscPress());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         mUrlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);

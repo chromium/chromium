@@ -318,8 +318,8 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     }
 
     /**
-     * @return A {@link OnBackPressedCallback} which should be added to
-     * {@link androidx.activity.OnBackPressedDispatcher}.
+     * @return A {@link OnBackPressedCallback} which should be added to {@link
+     *     androidx.activity.OnBackPressedDispatcher}.
      */
     public OnBackPressedCallback getCallback() {
         return mCallback;

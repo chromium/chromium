@@ -1656,14 +1656,10 @@ class LocationBarMediator
 
     @SuppressLint("GestureBackNavigation")
     private boolean handleKeyEvent(View view, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) return false;
         boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
             return true;
-        } else if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
-            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
-                revertChanges();
-                return true;
-            }
         } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                 || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
             // Ensures URL bar doesn't lose focus, when RIGHT or LEFT (RTL) key is pressed while
@@ -1672,6 +1668,20 @@ class LocationBarMediator
             return tv.getSelectionStart() == tv.getSelectionEnd()
                     && tv.getSelectionEnd() == tv.getText().length();
         }
+        return false;
+    }
+
+    @Override
+    public Boolean handleEscPress() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        if (!mAutocompleteCoordinator.handleKeyEvent(KeyEvent.KEYCODE_ESCAPE, event)) {
+            revertChanges();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean invokeBackActionOnEscape() {
         return false;
     }
 
