@@ -19242,9 +19242,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOAST_CLOSE_TOOLTIP" desc="Tooltip for the X button on a toast notification that closes the toast.">
         Close
       </message>
-       <message name="IDS_GEMINI_WORKING_ON_TASK_BODY" desc="Text on a toast notification that is shown when gemini is working in the background">
-        Gemini will keep working on your task
-      </message>
       <message name="IDS_NON_MILESTONE_UPDATE_TOAST_BODY" desc="Text on a toast notification that is shown when a non milestone update is complete.">
         Chrome was updated
       </message>

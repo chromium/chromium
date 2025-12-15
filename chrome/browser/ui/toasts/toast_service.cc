@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -271,7 +272,7 @@ void ToastService::RegisterToasts(
     toast_registry_->RegisterToast(
         ToastId::kGeminiWorkingOnTask,
         ToastSpecification::Builder(kScreensaverAutoIcon,
-                                    IDS_GEMINI_WORKING_ON_TASK_BODY)
+                                    IDS_TASK_IN_PROGRESS_TOAST_BODY)
             .AddCloseButton()
             .Build());
   }
