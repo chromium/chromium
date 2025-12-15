@@ -167,6 +167,11 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
 #endif
 
 
+// When enabled, virtual card downstream enrollment will support multiple
+// requests at a time.
+BASE_FEATURE(kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the card benefits toggle in settings will show updated text.
 BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
              base::FEATURE_ENABLED_BY_DEFAULT);

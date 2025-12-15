@@ -23,6 +23,10 @@ namespace autofill {
 class PersonalDataManager;
 class VirtualCardEnrollmentManager;
 
+namespace payments {
+class PaymentsNetworkInterface;
+}
+
 // Delegate that listens to changes made in the settings related to payment
 // methods.
 // This class is owned by the Java AutofillPaymentMethodsDelegate object.
@@ -53,6 +57,8 @@ class AutofillPaymentMethodsDelegate {
  private:
   raw_ptr<Profile> profile_;                            // weak reference
   raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<payments::MultipleRequestPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>

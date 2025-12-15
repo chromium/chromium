@@ -375,7 +375,10 @@ void CreditCardAccessManager::FetchCreditCard(
       payments_autofill_client().GetVirtualCardEnrollmentManager();
   if (card->virtual_card_enrollment_state() ==
           CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible &&
-      virtual_card_enrollment_manager) {
+      virtual_card_enrollment_manager &&
+      base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
     // Set empty callback as we need to wait for form submission & card
     // extraction from the form, before we start the next step.
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
