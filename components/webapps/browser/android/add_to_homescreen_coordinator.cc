@@ -14,6 +14,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_mediator.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/twa_installer.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -89,7 +90,10 @@ void AddToHomescreenCoordinator::OnDataAvailable(
   if (app_type == AddToHomescreenParams::AppType::TWA) {
     CHECK(!mediator_);
 
-    // TODO(crbug.com/449581904): Start TWA install flow from here.
+    TwaInstaller::Install(
+        std::move(params),
+        base::BindRepeating(&AddToHomescreenCoordinator::RecordEventForAppMenu,
+                            data_fetcher_->web_contents()));
 
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AddToHomescreenCoordinator_onFlowCompleted(env, java_coordinator_);
@@ -121,8 +125,7 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
   }
 
   if (params->app_type == AddToHomescreenParams::AppType::TWA) {
-    // TODO(crbug.com/449581904): Start TWA install flow from here.
-    return true;
+    return TwaInstaller::Install(std::move(params), std::move(event_callback));
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();

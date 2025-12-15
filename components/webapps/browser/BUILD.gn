@@ -150,6 +150,8 @@ source_set("browser") {
       "android/pwa_universal_install_bottom_sheet_coordinator.cc",
       "android/shortcut_info.cc",
       "android/shortcut_info.h",
+      "android/twa_installer.cc",
+      "android/twa_installer.h",
       "android/webapk/webapk_icons_hasher.cc",
       "android/webapk/webapk_icons_hasher.h",
       "android/webapk/webapk_proto_builder.cc",

@@ -14,6 +14,7 @@ class WebContents;
 
 namespace webapps {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class AddToHomescreenEvent {
   INSTALL_STARTED,
   INSTALL_FAILED,

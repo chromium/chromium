@@ -1,0 +1,2 @@
+per-file twa_installer*=file:TWA_INSTALLER_OWNERS
+per-file ...TwaInstaller*=file:TWA_INSTALLER_OWNERS

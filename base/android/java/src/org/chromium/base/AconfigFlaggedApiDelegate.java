@@ -277,4 +277,26 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isWebAppServiceEnabled() {
         return false;
     }
+
+    /**
+     * Constructs {@link WebAppInstallRequest} and calls {@link
+     * android.content.pm.webapp.WebAppManager#install(@NonNull WebAppInstallRequest
+     * request, @NonNull @CallbackExecutor Executor executor, @NonNull ObjIntConsumer<String>
+     * callback)} with it if supported. Returns whether the method was successfully called.
+     *
+     * @param title The title of the web app to install.
+     * @param manifestUrl The manifest URL to install from.
+     * @param installSucceededCallback The callback to run when the install finished successfully.
+     * @param installFailedCallback The callback to run when the install failed.
+     * @param installCancelledCallback The callback to run when the user cancelled the installation.
+     */
+    default boolean installTwa(
+            String title,
+            String manifestUrl,
+            Runnable installSucceededCallback,
+            Runnable installFailedCallback,
+            Runnable installCancelledCallback) {
+        installFailedCallback.run();
+        return false;
+    }
 }
