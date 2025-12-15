@@ -2608,13 +2608,13 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
         name_to_cache_ = AndroidNameTo::kText;
       }
       break;
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::NameFrom::kCssAltText:
     case ax::mojom::NameFrom::kPopoverTarget:
     case ax::mojom::NameFrom::kInterestFor:
       name_to_cache_ = AndroidNameTo::kContentDescription;
       break;
     case ax::mojom::NameFrom::kNone:
-    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kContents:
     case ax::mojom::NameFrom::kPlaceholder:

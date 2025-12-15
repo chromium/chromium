@@ -1501,4 +1501,30 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_NodeUnignored) {
   EXPECT_TRUE(actual.contains(3));
 }
 
+TEST_F(BrowserAccessibilityAndroidTest, ExplicitlyEmptyName) {
+  // Create parent node with the empty name.
+  ui::AXNodeData parent_data;
+  parent_data.id = 1;
+  parent_data.role = ax::mojom::Role::kGenericContainer;
+  parent_data.SetNameExplicitlyEmpty();
+  parent_data.child_ids = {2};
+
+  // Create a child node with text that should be ignored.
+  ui::AXNodeData child_data;
+  child_data.id = 2;
+  child_data.role = ax::mojom::Role::kStaticText;
+  child_data.SetName("This text should be hidden");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(parent_data, child_data),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(1));
+  ASSERT_NE(nullptr, parent_node);
+
+  EXPECT_EQ(u"", parent_node->GetContentDescription());
+}
+
 }  // namespace content
