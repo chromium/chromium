@@ -173,16 +173,17 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
 
   void Dispatch(MainThreadEventQueue* queue) override {
     if (originally_cancelable_ &&
-        event_->Event().GetType() == WebInputEvent::Type::kTouchMove) {
+        (event_->Event().GetType() == WebInputEvent::Type::kTouchMove ||
+         event_->Event().GetType() == WebInputEvent::Type::kTouchEnd)) {
       auto* touch_event = static_cast<WebTouchEvent*>(event_->EventPointer());
-      if (queue->GetMainThreadOnly().should_unblock_touch_moves) {
+      if (queue->GetMainThreadOnly().should_unblock_touch_sequence) {
         // Though we have unblocked queued touch events when we set
-        // should_unblock_touch_moves_ to true, there is still chance of newly
+        // should_unblock_touch_sequence to true, there is still chance of newly
         // queued blocking touch events.
         touch_event->dispatch_type =
             WebInputEvent::DispatchType::kEventNonBlocking;
       }
-      // If the touch move has been unblocked (above or in
+      // If the touch event has been unblocked (above or in
       // HandleTouchScrollStartQueued()), run callbacks before dispatching.
       if (touch_event->dispatch_type ==
           WebInputEvent::DispatchType::kEventNonBlocking) {
@@ -221,7 +222,8 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
           queue->client_ ? queue->client_->RequestedMainFramePending() : false);
     }
 
-    queue->UnblockQueuedBlockingTouchMovesIfNeeded(event_->Event(), ack_result);
+    queue->UnblockQueuedBlockingTouchEventsIfNeeded(event_->Event(),
+                                                    ack_result);
   }
 
   struct CallbackInfo {
@@ -245,8 +247,9 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
   }
 
   std::optional<CallbackInfo> Unblock() {
-    if (event_->Event().GetType() != WebInputEvent::Type::kTouchMove ||
-        !callback_) {
+    DCHECK(event_->Event().GetType() == WebInputEvent::Type::kTouchMove ||
+           event_->Event().GetType() == WebInputEvent::Type::kTouchEnd);
+    if (!callback_) {
       return std::nullopt;
     }
 
@@ -792,10 +795,12 @@ void MainThreadEventQueue::QueueEvent(
     // compositor thread.
     CHECK_LE(shared_state_.unblock_touch_sequence_start_count_,
              enqueued_touch_sequence_start_count);
-    // Unblock touch moves before dispatching to the renderer if it is known
-    // that the touch start and first touch move of the touch sequence were not
-    // consumed.
-    if (is_input_event && input_event_type == WebInputEvent::Type::kTouchMove &&
+    // Unblock touch moves and touch end before dispatching to the renderer if
+    // it is known that the touch start and first touch move of the touch
+    // sequence were not consumed.
+    if (is_input_event &&
+        (input_event_type == WebInputEvent::Type::kTouchMove ||
+         input_event_type == WebInputEvent::Type::kTouchEnd) &&
         enqueued_touch_sequence_start_count ==
             shared_state_.unblock_touch_sequence_start_count_) {
       auto* queued_input_event = static_cast<QueuedWebInputEvent*>(event.get());
@@ -969,7 +974,7 @@ void MainThreadEventQueue::RequestUnbufferedInputEvents() {
   needs_low_latency_until_pointer_up_.store(true, std::memory_order_relaxed);
 }
 
-void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(
+void MainThreadEventQueue::UnblockQueuedBlockingTouchEventsIfNeeded(
     const WebInputEvent& dispatched_event,
     mojom::blink::InputEventResultState ack_result) {
   if (!WebInputEvent::IsTouchEventType(dispatched_event.GetType())) {
@@ -977,8 +982,8 @@ void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(
   }
 
   {
-    bool& should_unblock_touch_moves =
-        GetMainThreadOnly().should_unblock_touch_moves;
+    bool& should_unblock_touch_sequence =
+        GetMainThreadOnly().should_unblock_touch_sequence;
     bool& blocking_touch_start_not_consumed =
         GetMainThreadOnly().blocking_touch_start_not_consumed;
     auto& touch_event = static_cast<const WebTouchEvent&>(dispatched_event);
@@ -988,31 +993,32 @@ void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(
           ack_result == mojom::blink::InputEventResultState::kNotConsumed;
       if (touch_event.GetType() == WebInputEvent::Type::kTouchStart) {
         blocking_touch_start_not_consumed = is_not_consumed_blocking;
-        should_unblock_touch_moves = false;
+        should_unblock_touch_sequence = false;
       } else {
         // `event` is the first touch move.
         CHECK_EQ(touch_event.GetType(), WebInputEvent::Type::kTouchMove);
-        should_unblock_touch_moves =
+        should_unblock_touch_sequence =
             blocking_touch_start_not_consumed && is_not_consumed_blocking;
       }
     }
-    if (!should_unblock_touch_moves) {
+    if (!should_unblock_touch_sequence) {
       return;
     }
   }
 
   // Neither the touchstart nor the first touchmove was consumed. The browser
   // process will make the remaining of the touch sequence non-blocking, but
-  // we need to unblock the already queued blocking touchmove events and run
-  // the callbacks (collected in a vector to avoid locking during callbacks).
+  // we need to unblock the already queued blocking touchmove and touchend
+  // events and run the callbacks (collected in a vector to avoid locking during
+  // callbacks).
   Vector<QueuedWebInputEvent::CallbackInfo> callbacks;
   {
     base::AutoLock lock(shared_state_lock_);
 
-    // Tell the compositor to unblock future blocking touch moves for this touch
-    // sequence. If the main thread lags behind the compositor by more than one
-    // touch sequence, the loop below will unblock all the touch moves in the
-    // current sequence.
+    // Tell the compositor to unblock future blocking touch events for this
+    // touch sequence. If the main thread lags behind the compositor by more
+    // than one touch sequence, the loop below will unblock all the touch events
+    // in the current sequence.
     shared_state_.unblock_touch_sequence_start_count_ =
         GetMainThreadOnly().touch_sequence_start_dequeued_count;
 
@@ -1024,21 +1030,30 @@ void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(
       auto* queued_event = static_cast<QueuedWebInputEvent*>(task);
       WebInputEvent* event =
           queued_event->mutable_coalesced_event()->EventPointer();
-      if (event->GetType() == WebInputEvent::Type::kTouchStart ||
-          event->GetType() == WebInputEvent::Type::kTouchEnd) {
+      if (event->GetType() == WebInputEvent::Type::kTouchStart) {
         break;
       }
-      if (event->GetType() != WebInputEvent::Type::kTouchMove) {
-        continue;
+
+      if (event->GetType() == WebInputEvent::Type::kTouchMove) {
+        auto* touch_event = static_cast<WebTouchEvent*>(event);
+        if (!touch_event->touch_start_or_first_touch_move &&
+            touch_event->dispatch_type ==
+                WebInputEvent::DispatchType::kBlocking) {
+          touch_event->dispatch_type =
+              WebInputEvent::DispatchType::kEventNonBlocking;
+          queued_event->TakeCallbacksInto(callbacks);
+        }
       }
 
-      auto* touch_event = static_cast<WebTouchEvent*>(event);
-      if (!touch_event->touch_start_or_first_touch_move &&
-          touch_event->dispatch_type ==
-              WebInputEvent::DispatchType::kBlocking) {
-        touch_event->dispatch_type =
-            WebInputEvent::DispatchType::kEventNonBlocking;
-        queued_event->TakeCallbacksInto(callbacks);
+      if (event->GetType() == WebInputEvent::Type::kTouchEnd) {
+        auto* touch_event = static_cast<WebTouchEvent*>(event);
+        if (touch_event->dispatch_type ==
+            WebInputEvent::DispatchType::kBlocking) {
+          touch_event->dispatch_type =
+              WebInputEvent::DispatchType::kEventNonBlocking;
+          queued_event->TakeCallbacksInto(callbacks);
+        }
+        break;
       }
     }
   }

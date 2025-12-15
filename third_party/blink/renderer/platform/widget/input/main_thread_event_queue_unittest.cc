@@ -897,8 +897,10 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInput) {
                            false, 3),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
                            false, 4),
+          // The touch end is dispatched as non-blocking since the touch start
+          // and first touch move were not consumed.
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 5)));
+                           false, 4)));
 }
 
 TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputUrgentMainFrame) {

@@ -177,7 +177,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
 
   void ClearRafFallbackTimerForTesting();
 
-  void UnblockQueuedBlockingTouchMovesIfNeeded(
+  void UnblockQueuedBlockingTouchEventsIfNeeded(
       const WebInputEvent& dispatched_event,
       mojom::blink::InputEventResultState ack_result);
 
@@ -190,7 +190,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   // Contains data that are read and written on the main thread only.
   struct MainThreadOnly {
     bool blocking_touch_start_not_consumed = false;
-    bool should_unblock_touch_moves = false;
+    bool should_unblock_touch_sequence = false;
     int64_t touch_sequence_start_dequeued_count = 0;
   } main_thread_only_;
   MainThreadOnly& GetMainThreadOnly();
