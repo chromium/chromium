@@ -277,7 +277,9 @@
 
   /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
-    --composebox-container-height: calc(var(--composebox-height) + var(--composebox-dropdown-height) + var(--composebox-margin-bottom));
+    --composebox-container-height: calc(
+      var(--composebox-height) + var(--composebox-dropdown-height) + var(--composebox-margin-bottom)
+    );
     --color-composebox-scrim-background: var(--search-background-color);
     display: none;
     inset-block-end: 0;
@@ -299,7 +301,6 @@
     position: absolute;
     width: 100%;
   }
-
 
   /* Show the composebox when enabled and not on the error page.
    * Disabling when the error page is visible is a temporary fix since the
@@ -337,39 +338,41 @@
   }
 
   #aimHeader::after {
-  content: "";
-  background: linear-gradient(
-    180deg,
-    var(--search-background-color) 1%,
-    transparent 10px
-  );
-  inset-block: 0 0;
-  position: absolute;
-  inline-size: 100%;
-  margin-block-start: var(--aim-header-height);
-  block-size: 52px;
-  pointer-events: none;
-}
+    content: "";
+    background: linear-gradient(180deg, var(--search-background-color) 1%, transparent 10px);
+    inset-block: 0 0;
+    position: absolute;
+    inline-size: 100%;
+    margin-block-start: var(--aim-header-height);
+    block-size: 52px;
+    pointer-events: none;
+  }
 
   #aimHeaderLogo {
     position: absolute;
   }
 
   /* When the gradient is enabled, the container only spans the height of the composebox and dropdown. */
-  :host([enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused])
+  :host(
+      [enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused]
+    )
     #composeboxContainer:has(#composebox[show-dropdown_]) {
     height: var(--composebox-container-height);
     background-color: var(--search-background-color);
     inset-block-start: auto;
   }
 
-  :host([enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused])
+  :host(
+      [enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused]
+    )
     #composeboxContainer:has(#composebox[show-dropdown_])::before {
     /* The gradient should have more spread when the dropdown is showing. */
-      background: linear-gradient(to top,
-        rgba(var(--search-background-color-rgb), 1) 65vh,
-        rgba(var(--search-background-color-rgb), 0.9) 75vh,
-        transparent);
+    background: linear-gradient(
+      to top,
+      rgba(var(--search-background-color-rgb), 1) 65vh,
+      rgba(var(--search-background-color-rgb), 0.9) 75vh,
+      transparent
+    );
     /* Calculates the height between the header and the composebox container. */
     inset: calc(-1 * (100vh - var(--aim-header-height) - var(--composebox-container-height))) 0 0;
   }
@@ -465,7 +468,6 @@
     --cr-icon-button-hover-background-color: var(--color-composebox-hover);
   }
 
-
   #composebox::part(cancel-icon) {
     --cr-icon-button-icon-size: 24px;
     --cr-icon-button-fill-color: var(--color-composebox-cancel-button);
@@ -524,7 +526,6 @@
     line-height: 20px;
     white-space: normal;
   }
-
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
   :host([is-error-page-visible]) #uploadProgressBarContainer {
@@ -663,14 +664,18 @@
   </cr-button>
 </cr-toast>
 
-<div id="composeboxContainer" style$="--composebox-height: [[composeboxHeight_]]px;
- --composebox-dropdown-height: [[composeboxDropdownHeight_]]px;">
+<div
+  id="composeboxContainer"
+  style$="--composebox-height: [[composeboxHeight_]]px;
+ --composebox-dropdown-height: [[composeboxDropdownHeight_]]px;"
+>
   <cr-composebox
     id="composebox"
     is-collapsible
     hide-file-inputs_
     carousel-on-top_
     lens-button-disabled_$="[[isOverlayShowing]]"
+    max-suggestions="[[maxSuggestions]]"
   >
     <!-- Currently an empty div that has height to force the input textarea to
          not flow behind the Lens icon. Eventually, this should contain the

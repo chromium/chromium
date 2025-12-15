@@ -20,7 +20,8 @@ export function getHtml(this: ComposeboxDropdownElement) {
           .matchIndex="${index}"
           ?selected="${this.isSelected_(item)}"
           ?is-last="${this.isLastMatch_(index)}"
-          ?hidden="${this.hideVerbatimMatch_(index)}">
+          ?hidden="${this.hideVerbatimMatch_(index) ||
+                     index > this.getMaxVisibleIndex_()}">
       </cr-composebox-match>
     `)}
   </div>

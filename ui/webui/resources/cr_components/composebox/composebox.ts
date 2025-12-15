@@ -162,9 +162,11 @@ export class ComposeboxElement extends I18nMixinLit
       entrypointName: {type: String},
       transcript_: {type: String},
       receivedSpeech_: {type: Boolean},
+      maxSuggestions: {type: Number},
     };
   }
 
+  accessor maxSuggestions: number|null = null;
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor carouselOnTop_: boolean = false;
@@ -334,7 +336,7 @@ export class ComposeboxElement extends I18nMixinLit
         // If the selected match is the default match (typing) the input will
         // already have been set by handleInput.
         if (!(this.selectedMatchIndex_ === 0 &&
-            this.selectedMatch_.allowedToBeDefaultMatch)) {
+              this.selectedMatch_.allowedToBeDefaultMatch)) {
           // Update the input.
           const text = this.selectedMatch_.fillIntoEdit;
           assert(text);
@@ -393,7 +395,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     // If the composebox is not submittable or it is already expanded, do not
     // trigger the animation.
-    if(this.expanding_ && !this.submitEnabled_) {
+    if (this.expanding_ && !this.submitEnabled_) {
       requestAnimationFrame(() => {
         this.animationState = GlowAnimationState.EXPANDING;
       });
@@ -420,8 +422,9 @@ export class ComposeboxElement extends I18nMixinLit
     return this.$.matches;
   }
 
-  protected initializeState_(text: string = '', files: ContextualUpload[] = [],
-                             mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
+  protected initializeState_(
+      text: string = '', files: ContextualUpload[] = [],
+      mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -534,14 +537,14 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected async addFileContext_(e: CustomEvent<{
-      files: File[],
-      onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
+    files: File[],
+    onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
     for (const file of e.detail.files) {
       const fileBuffer = await file.arrayBuffer();
       const bigBuffer:
-            BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
+          BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
       const {token} = await this.searchboxHandler_.addFileContext(
           {
             fileName: file.name,
@@ -556,7 +559,8 @@ export class ComposeboxElement extends I18nMixinLit
         uuid: token,
         name: file.name,
         dataUrl: null,
-        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) : null,
+        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) :
+                                                 null,
         type: file.type,
         status: FileUploadStatus.kNotUploaded,
         url: null,
@@ -594,8 +598,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected async addTabContext_(e: CustomEvent<{
-      id: number, title: string, url: Url, delayUpload: boolean,
-      onContextAdded: (file: ComposeboxFile) => void,
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+    onContextAdded: (file: ComposeboxFile) => void,
   }>) {
     const {token} = await this.searchboxHandler_.addTabContext(
         e.detail.id, e.detail.delayUpload);
@@ -1106,8 +1113,7 @@ export class ComposeboxElement extends I18nMixinLit
       }
     } else if (file) {
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
-          this.showZps &&
-          !file.type.includes('image')) {
+          this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete(/* clearMatches= */ true);
       }

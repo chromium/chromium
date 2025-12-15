@@ -16,9 +16,9 @@ function remainder(lhs: number, rhs: number) {
   return ((lhs % rhs) + rhs) % rhs;
 }
 
-// TODO(crbug.com/439616869): Provide an API for the embedder (i.e., <cr-composebox>)
-// to change the selection.
-// A dropdown element that contains autocomplete matches.
+// TODO(crbug.com/439616869): Provide an API for the embedder (i.e.,
+// <cr-composebox>) to change the selection. A dropdown element that contains
+// autocomplete matches.
 export class ComposeboxDropdownElement extends CrLitElement {
   static get is() {
     return 'cr-composebox-dropdown';
@@ -49,12 +49,20 @@ export class ComposeboxDropdownElement extends CrLitElement {
         type: String,
         notify: true,
       },
+      maxSuggestions: {
+        type: Number,
+      },
     };
   }
 
   accessor result: AutocompleteResult|null = null;
   accessor selectedMatchIndex: number = -1;
   accessor lastQueriedInput: string = '';
+  // Limits the number of suggestions shown in the dropdown. This allows
+  // the embedder to limit the number of suggestions based on available
+  // height. A value of 0 indicates that no suggestions should be shown.
+  // A value of null or -1 indicates that all suggestions should be shown.
+  accessor maxSuggestions: number|null = null;
 
   //============================================================================
   // Public methods
@@ -94,24 +102,24 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
     let previous: number;
     const isTypedSuggest = this.lastQueriedInput.trim().length > 0;
+    const maxVisibleIndex = this.getMaxVisibleIndex_();
     if (isTypedSuggest && this.selectedMatchIndex === 1) {
       // Since we're hiding the first match, if we're on the second match (first
       // shown match) and we're selecting the previous match, go to the last
       // match in the result.
-      previous = -1;
+      previous = maxVisibleIndex;
     } else {
       // The value of -1 for |this.selectedMatchIndex| indicates no selection.
       // Therefore subtract one from the maximum of its value and 0.
       previous = Math.max(this.selectedMatchIndex, 0) - 1;
     }
 
-    this.selectedMatchIndex =
-        remainder(previous, this.result.matches.length);
+    this.selectedMatchIndex = remainder(previous, maxVisibleIndex + 1);
   }
 
   /** Selects the last match. */
   selectLast() {
-    this.selectedMatchIndex = this.result ? this.result.matches.length - 1 : -1;
+    this.selectedMatchIndex = this.result ? this.getMaxVisibleIndex_() : -1;
   }
 
   /**
@@ -126,8 +134,8 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
     let next;
     const isTypedSuggest = this.lastQueriedInput.trim().length > 0;
-    if (isTypedSuggest &&
-        this.selectedMatchIndex === this.result.matches.length - 1) {
+    const maxVisibleIndex = this.getMaxVisibleIndex_();
+    if (isTypedSuggest && this.selectedMatchIndex === maxVisibleIndex) {
       // Since we're hiding the first match, if we're on the last match and
       // we're selecting the next match, go to the second match (the first shown
       // match).
@@ -136,7 +144,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
       next = this.selectedMatchIndex + 1;
     }
 
-    this.selectedMatchIndex = remainder(next, this.result.matches.length);
+    this.selectedMatchIndex = remainder(next, maxVisibleIndex + 1);
   }
 
   /**
@@ -151,12 +159,38 @@ export class ComposeboxDropdownElement extends CrLitElement {
     return this.matchIndex_(match) === this.selectedMatchIndex;
   }
 
+  /** Returns the maximum index of the visible matches. */
+  protected getMaxVisibleIndex_(): number {
+    if (!this.result) {
+      return -1;
+    }
+
+    // Max suggestions is not set, so show all.
+    if (!this.maxSuggestions || this.maxSuggestions < 0) {
+      return this.result.matches.length - 1;
+    }
+
+    // If typeahead is enabled, and the verbatim match is hidden, the
+    // maxSuggestions is 1 greater since the verbatim match is not actually
+    // visible.
+    let maxVisibleSuggestionIndex =
+        this.maxSuggestions ? this.maxSuggestions : 0;
+    if (!this.hideVerbatimMatch_(0)) {
+      // If there is no verbatim match, then the max visible suggestion index is
+      // one less than the max suggestions to account for indexing by zero. If
+      // the verbatim match is hidden, the the visible matches start at index 1
+      // so do not decrement the max visible suggestion index.
+      maxVisibleSuggestionIndex--;
+    }
+    return Math.min(maxVisibleSuggestionIndex, this.result.matches.length - 1);
+  }
+
   /**
    * Returns whether the given index corresponds to the last match.
    */
   protected isLastMatch_(index: number): boolean {
     assert(this.result);
-    return index === this.result.matches.length - 1;
+    return index === this.getMaxVisibleIndex_();
   }
 
   /**

@@ -104,6 +104,7 @@ export function getHtml(this: ComposeboxElement) {
             role="listbox"
             .result="${this.result_}"
             .selectedMatchIndex="${this.selectedMatchIndex_}"
+            .maxSuggestions="${this.maxSuggestions}"
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
             @match-focusin="${this.onMatchFocusin_}"
             @match-click="${this.onMatchClick_}"
