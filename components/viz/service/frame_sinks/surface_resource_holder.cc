@@ -54,26 +54,30 @@ void SurfaceResourceHolder::RefResources(
 }
 
 void SurfaceResourceHolder::UnrefResources(
-    std::vector<ReturnedResource> resources) {
+    std::vector<ReturnedResourceViz> resources_viz) {
   std::vector<ReturnedResource> resources_available_to_return;
 
-  for (auto& resource : resources) {
+  for (auto& resource_viz : resources_viz) {
     // We don't handle reserved resources here.
-    if (resource.id >= kVizReservedRangeStartId)
+    if (resource_viz.id >= kVizReservedRangeStartId) {
       continue;
+    }
 
-    auto count_it = resource_id_info_map_.find(resource.id);
+    auto count_it = resource_id_info_map_.find(resource_viz.id);
     if (count_it == resource_id_info_map_.end())
       continue;
     ResourceRefs& ref = count_it->second;
-    ref.refs_holding_resource_alive -= resource.count;
+    ref.refs_holding_resource_alive -= resource_viz.count;
     // Keep the newest return sync token that has data.
     // TODO(jbauman): Handle the case with two valid sync tokens.
-    if (resource.sync_token.HasData())
-      ref.sync_token = resource.sync_token;
+    if (resource_viz.sync_token.HasData()) {
+      ref.sync_token = resource_viz.sync_token;
+    }
     if (ref.refs_holding_resource_alive == 0) {
-      resource.sync_token = ref.sync_token;
-      resource.count = ref.refs_received_from_child;
+      ReturnedResource resource{resource_viz.id, ref.sync_token,
+                                std::move(resource_viz.release_fence),
+                                /*count=*/ref.refs_received_from_child,
+                                resource_viz.lost};
       resources_available_to_return.push_back(std::move(resource));
       resource_id_info_map_.erase(count_it);
     }

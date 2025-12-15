@@ -24,7 +24,7 @@ class StubSurfaceClient : public SurfaceClient {
   void OnSurfaceWillDraw(Surface* surface) override {}
   void RefResources(
       const std::vector<TransferableResource>& resources) override {}
-  void UnrefResources(std::vector<ReturnedResource> resources) override {}
+  void UnrefResources(std::vector<ReturnedResourceViz> resources) override {}
   void ReturnResources(std::vector<ReturnedResource> resources) override {}
   void ReceiveFromChild(
       const std::vector<TransferableResource>& resources) override {}

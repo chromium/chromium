@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       const std::vector<TransferableResource>& resources) = 0;
 
   // Decrements the reference count on resources specified by |resources|.
-  virtual void UnrefResources(std::vector<ReturnedResource> resources) = 0;
+  virtual void UnrefResources(std::vector<ReturnedResourceViz> resources) = 0;
 
   // ReturnResources gets called when the display compositor is done using the
   // resources so that the client can use them.

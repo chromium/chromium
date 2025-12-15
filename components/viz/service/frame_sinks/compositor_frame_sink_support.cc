@@ -462,7 +462,7 @@ void CompositorFrameSinkSupport::RefResources(
 }
 
 void CompositorFrameSinkSupport::UnrefResources(
-    std::vector<ReturnedResource> resources) {
+    std::vector<ReturnedResourceViz> resources) {
   // `ReservedResourceDelegate` allocates ResourceIds in a different range
   // than the client so it can process returned resources before
   // |surface_resource_holder_|.

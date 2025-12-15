@@ -236,7 +236,7 @@ void SurfaceAnimationManager::RefResources(
 }
 
 void SurfaceAnimationManager::UnrefResources(
-    const std::vector<ReturnedResource>& resources) {
+    const std::vector<ReturnedResourceViz>& resources) {
   if (transferable_resource_tracker_.is_empty())
     return;
   for (const auto& resource : resources) {

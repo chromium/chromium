@@ -37,15 +37,15 @@ DisplayResourceProviderSkia::~DisplayResourceProviderSkia() {
   Destroy();
 }
 
-std::vector<ReturnedResource>
+std::vector<ReturnedResourceViz>
 DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  std::vector<ReturnedResource> to_return;
+  std::vector<ReturnedResourceViz> to_return;
   std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
       image_contexts_to_return;
-  std::vector<ReturnedResource*> external_used_resources;
+  std::vector<ReturnedResourceViz*> external_used_resources;
 
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.

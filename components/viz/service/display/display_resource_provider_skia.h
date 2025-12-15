@@ -86,7 +86,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
 
  private:
   // DisplayResourceProvider overrides:
-  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+  std::vector<ReturnedResourceViz> DeleteAndReturnUnusedResourcesToChildImpl(
       Child& child_info,
       DeleteStyle style,
       const std::vector<ResourceId>& unused) override;

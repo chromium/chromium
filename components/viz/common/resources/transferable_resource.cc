@@ -49,6 +49,14 @@ ReturnedResource TransferableResource::ToReturnedResource() const {
   return returned;
 }
 
+ReturnedResourceViz TransferableResource::ToReturnedResourceViz() const {
+  ReturnedResourceViz returned;
+  returned.id = id;
+  returned.sync_token = sync_token_;
+  returned.count = 1;
+  return returned;
+}
+
 // static
 std::vector<ReturnedResource> TransferableResource::ReturnResources(
     const std::vector<TransferableResource>& input) {
@@ -56,6 +64,17 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
   out.reserve(input.size());
   for (const auto& r : input)
     out.push_back(r.ToReturnedResource());
+  return out;
+}
+
+// static
+std::vector<ReturnedResourceViz> TransferableResource::ReturnResourcesViz(
+    const std::vector<TransferableResource>& input) {
+  std::vector<ReturnedResourceViz> out;
+  out.reserve(input.size());
+  for (const auto& r : input) {
+    out.push_back(r.ToReturnedResourceViz());
+  }
   return out;
 }
 

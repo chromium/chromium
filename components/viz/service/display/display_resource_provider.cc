@@ -255,8 +255,8 @@ void DisplayResourceProvider::ReceiveFromChild(
         transferable_resource.is_empty()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
-      std::vector<ReturnedResource> returned;
-      returned.push_back(transferable_resource.ToReturnedResource());
+      std::vector<ReturnedResourceViz> returned;
+      returned.push_back(transferable_resource.ToReturnedResourceViz());
       child_info.return_callback.Run(std::move(returned));
       continue;
     }
@@ -413,7 +413,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     return;
   }
 
-  std::vector<ReturnedResource> to_return =
+  std::vector<ReturnedResourceViz> to_return =
       DeleteAndReturnUnusedResourcesToChildImpl(child_info, style, unused);
 
   if (!to_return.empty())

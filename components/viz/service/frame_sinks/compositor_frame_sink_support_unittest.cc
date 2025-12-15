@@ -202,9 +202,9 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   void UnrefResources(base::span<ResourceId> ids_to_unref,
                       base::span<int> counts_to_unref) {
     CHECK_EQ(ids_to_unref.size(), counts_to_unref.size());
-    std::vector<ReturnedResource> unref_array;
+    std::vector<ReturnedResourceViz> unref_array;
     for (size_t i = 0; i < ids_to_unref.size(); ++i) {
-      ReturnedResource resource;
+      ReturnedResourceViz resource;
       resource.sync_token = consumer_sync_token_;
       resource.id = ids_to_unref[i];
       resource.count = counts_to_unref[i];

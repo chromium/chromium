@@ -955,12 +955,13 @@ void Surface::UnrefFrameResourcesAndRunCallbacks(
   if (!frame_data || !surface_client_)
     return;
 
-  std::vector<ReturnedResource> resources =
-      TransferableResource::ReturnResources(frame_data->frame.resource_list);
+  std::vector<ReturnedResourceViz> resources_viz =
+      TransferableResource::ReturnResourcesViz(frame_data->frame.resource_list);
   // No point in returning same sync token to sender.
-  for (auto& resource : resources)
-    resource.sync_token.Clear();
-  surface_client_->UnrefResources(std::move(resources));
+  for (auto& resource_viz : resources_viz) {
+    resource_viz.sync_token.Clear();
+  }
+  surface_client_->UnrefResources(std::move(resources_viz));
 
   frame_data->SendAckIfNeeded(surface_client_.get());
 

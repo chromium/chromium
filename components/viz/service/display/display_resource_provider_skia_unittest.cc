@@ -54,9 +54,13 @@ MATCHER_P(SamePtr, ptr_to_expected, "") {
 }
 
 static void CollectResources(std::vector<ReturnedResource>* array,
-                             std::vector<ReturnedResource> returned) {
-  array->insert(array->end(), std::make_move_iterator(returned.begin()),
-                std::make_move_iterator(returned.end()));
+                             std::vector<ReturnedResourceViz> returned) {
+  for (auto& resource_viz : returned) {
+    ReturnedResource resource{resource_viz.id, resource_viz.sync_token,
+                              std::move(resource_viz.release_fence),
+                              resource_viz.count, resource_viz.lost};
+    array->emplace_back(std::move(resource));
+  }
 }
 
 class MockExternalUseClient : public ExternalUseClient {

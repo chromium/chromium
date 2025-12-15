@@ -38,6 +38,7 @@ class ClientSharedImage;
 namespace viz {
 
 struct ReturnedResource;
+struct ReturnedResourceViz;
 
 struct VIZ_COMMON_EXPORT TransferableResource {
   struct VIZ_COMMON_EXPORT MetadataOverride {
@@ -100,6 +101,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
 
+  static std::vector<ReturnedResourceViz> ReturnResourcesViz(
+      const std::vector<TransferableResource>& input);
+
   TransferableResource();
   ~TransferableResource();
 
@@ -107,6 +111,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   TransferableResource& operator=(const TransferableResource& other);
 
   ReturnedResource ToReturnedResource() const;
+  ReturnedResourceViz ToReturnedResourceViz() const;
 
   bool is_empty() const { return shared_image_ == nullptr; }
 
