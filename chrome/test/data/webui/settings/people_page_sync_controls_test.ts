@@ -171,6 +171,18 @@ suite('SyncControlsTest', function() {
     assertFalse(syncControls.hidden);
   });
 
+  // Regression test for crbug.com/467318495.
+  test('SyncNotConfirmed', function() {
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
+    };
+    // Controls are not hidden when sync is not yet confirmed.
+    assertFalse(syncControls.hidden);
+  });
+
   // <if expr="is_chromeos">
   test('SyncCookiesSupported', async function() {
     // Sync everything enabled.
