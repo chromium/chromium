@@ -28,6 +28,11 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
 
+void OmniboxPopupPresenter::Hide() {
+  OmniboxPopupPresenterBase::Hide();
+  content_height_ = 1;
+}
+
 void OmniboxPopupPresenter::WidgetDestroyed() {
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -38,6 +39,7 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::OnWidgetClosed() {
+  OmniboxPopupWebUIBaseContent::OnWidgetClosed();
   auto* handler = popup_aim_handler();
   if (handler) {
     handler->OnWidgetClosed();
