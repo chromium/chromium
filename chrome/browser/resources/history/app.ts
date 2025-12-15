@@ -754,9 +754,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // <if expr="not is_chromeos">
-  // TODO(https://crbug.com/418144407): add more conditions e.g. sync disabled
+  // History sync promo is shown based on the following conditions:
+  // 1. UNO phase 2 follow up feature flag is enabled.
+  // 2. Should be shown based on user prefs (the promo was closed < 5 times)
+  // 3. History sync is not disabled.
+  // 4. User is not already signed in and syncing history.
   protected shouldShowHistoryPageHistorySyncPromo_(): boolean {
-    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_;
+    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_ &&
+        this.identityState_.historySync !== SyncState.DISABLED &&
+        !(this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
+          this.identityState_.historySync === SyncState.TURNED_ON);
   }
 
   private handleShouldShowHistoryPageHistorySyncPromoChanged_(
