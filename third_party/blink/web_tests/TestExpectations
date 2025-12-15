@@ -9852,13 +9852,6 @@ crbug.com/451712152 virtual/permission-element/external/wpt/html/semantics/permi
 crbug.com/377152628 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html [ Failure Pass ]
 
 # Gardener 2025-10-17
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Crash Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Crash Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Crash Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Crash Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass ]
-# Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
-crbug.com/452827889 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
 crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?1-5 [ Crash Failure Pass ]
 crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?6-10 [ Crash Failure Pass ]
 crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?11-15 [ Crash Failure Pass ]
@@ -9969,3 +9962,11 @@ crbug.com/468374864 http/tests/inspector-protocol/target/auto-attach-wait-for-de
 
 # Gardener 2025-12-17
 crbug.com/468856556 [ Linux ] fast/replaced/border-radius-clip.html [ Failure Pass ]
+# Started to timeout on Linux, previously was flaky on all platforms (crbug.com/468856556)
+crbug.com/415946389 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Crash Failure Pass Timeout ]
+crbug.com/452729239 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Crash Failure Pass Timeout ]
+crbug.com/446272167 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Crash Failure Pass Timeout ]
+crbug.com/452628516 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Crash Failure Pass Timeout ]
+crbug.com/453103188 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass Timeout ]
+# Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
+crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
