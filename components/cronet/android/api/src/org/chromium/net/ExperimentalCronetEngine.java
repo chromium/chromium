@@ -23,8 +23,6 @@ import java.util.concurrent.Executor;
  * experimental features. Experimental features may be deprecated in the future. Use at your own
  * risk.
  *
- * <p>{@hide since this class exposes experimental features that should be hidden.}
- *
  * @deprecated scheduled for deletion, don't use in new code.
  */
 @Deprecated

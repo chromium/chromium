@@ -12,8 +12,6 @@ package org.chromium.net;
  * use, but instead only to access experimental features. Experimental features may be deprecated in
  * the future. Use at your own risk.
  *
- * <p>{@hide for consistency with other experimental classes}
- *
  * @deprecated scheduled for deletion, don't use in new code.
  */
 @Deprecated
@@ -25,8 +23,6 @@ public abstract class ExperimentalBidirectionalStream extends BidirectionalStrea
      * backed by the same implementation and hence perform identically. Instances of this class are
      * not meant for general use, but instead only to access experimental features. Experimental
      * features may be deprecated in the future. Use at your own risk.
-     *
-     * <p>{@hide for consistency with other experimental classes}
      *
      * @deprecated scheduled for deletion, don't use in new code.
      */
