@@ -360,7 +360,8 @@ void LocationBarView::Init() {
         /*location_bar_view=*/this);
   }
   if (omnibox::IsAimPopupFeatureEnabled()) {
-    omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>();
+    omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>(
+        GetWidget()->GetNativeWindow());
   }
 
   // Subscribe to popup state changes to coordinate popup visibility across
