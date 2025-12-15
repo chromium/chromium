@@ -232,6 +232,11 @@ void TranslationDispatcher::EmitError(TranslateEventCallback callback,
   std::move(callback).Run(base::unexpected<std::string>(message));
 }
 
+void TranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
 void TranslationDispatcher::OnResponseJsonParsed(
     TranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
@@ -242,7 +247,6 @@ void TranslationDispatcher::OnResponseJsonParsed(
     EmitError(std::move(callback), "Error parsing response: value null");
     return;
   }
-
   if (!result.value().is_dict()) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,
