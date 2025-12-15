@@ -244,9 +244,12 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // Simulate a paint in a separate task.
   {
     TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000, context);
+    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
+                         /*info=*/DOMPaintTimingInfo());
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
+    EXPECT_TRUE(context->HasFirstContentfulPaint());
     EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
   }
 
@@ -266,6 +269,8 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // And another paint
   {
     TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000, context);
+    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
+                         /*info=*/DOMPaintTimingInfo());
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));

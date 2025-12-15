@@ -387,7 +387,6 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
   // We must *not* wait on this presentation time callback, because all other
   // new performance entries created need to use this new navigation id, in
   // order to match with the eventual soft-nav entry.
-  ++soft_navigation_count_;
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
@@ -408,6 +407,10 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
   CHECK(context->HasFirstContentfulPaint());
   CHECK(!context->WasEmitted());
   context->MarkEmitted();
+  // Since this is used for metrics reporting and sent as part of the
+  // SoftNavigationMetrics record, we must increment it before calling
+  // ReportSoftNavigationToMetrics.
+  soft_navigation_count_++;
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);

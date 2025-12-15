@@ -125,21 +125,29 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
     blink::SoftNavigationMetricsForReporting new_metrics) {
+  CHECK(new_metrics.count);
+  CHECK_GT(new_metrics.count, soft_navigation_metrics_->count);
+
+  CHECK(new_metrics.navigation_id);  // blink::kNavigationIdAbsentValue
+  // Increases strictly monotonically but can overflow,
+  // see blink::NavigationIdGenerator.
+  CHECK_NE(new_metrics.navigation_id, soft_navigation_metrics_->navigation_id);
+
   // The start_time is a TimeDelta, and its resolution is in microseconds.
-  // Every time we observe a new soft navigation we expect the total count to
-  // increase by one, and the navigation_id to update, however, we have no
-  // expectations about start_time values.  This is because soft-navs start_time
-  // might not be monotonically increasing. See: crbug.com/418449366#comment3
-  CHECK(new_metrics.count >= soft_navigation_metrics_->count);
+  // Note that it may not be monotonically increasing, see:
+  // crbug.com/418449366#comment3
   CHECK(!new_metrics.start_time.is_zero());
-  CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 
+  CHECK(!new_metrics.same_document_metrics_token.is_empty());
+  CHECK(new_metrics.same_document_metrics_token !=
+        soft_navigation_metrics_->same_document_metrics_token);
+
+  // Now that we've checked the invariants, start with a fresh Mojom
+  // message, including a cleared out largest_contentful_paint field.
+  soft_navigation_metrics_ = CreateSoftNavigationMetrics();
   soft_navigation_metrics_->count = new_metrics.count;
-
-  soft_navigation_metrics_->start_time = new_metrics.start_time;
-
   soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
-
+  soft_navigation_metrics_->start_time = new_metrics.start_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;
 

@@ -217,7 +217,11 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   HeapHashSet<Member<InteractionEffectsMonitor>> interaction_effects_monitors_;
 
+  // This count is incremented when a soft navigation is sent to the
+  // frame client for reporting, so that it will be monotonically increasing
+  // as it arrives in the browser process.
   uint64_t soft_navigation_count_ = 0;
+
   bool has_active_event_scope_ = false;
 
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
