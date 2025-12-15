@@ -257,11 +257,12 @@ scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  draw_callback(recorder_->getRecordingCanvas());
+  // The static creation method returns nullptr if `IsValid()` is false on the
+  // created instance, and once `surface_` is created, it is never destroyed
+  // until the instance itself is destroyed.
+  CHECK(surface_);
 
-  if (!IsValid()) {
-    return nullptr;
-  }
+  draw_callback(recorder_->getRecordingCanvas());
 
   if (recorder_->HasReleasableDrawOps()) {
     if (!skia_canvas_) {
