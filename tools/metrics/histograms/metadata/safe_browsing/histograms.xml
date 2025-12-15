@@ -204,12 +204,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.Populate.{AllowlistSource}Version"
-    units="versioncode" expires_after="2025-10-31">
+    units="versioncode" expires_after="2026-10-31">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the version of the allowlist when the {AllowlistSource}. This metric
     is only recorded when populating the allowlist is successful.
+
+    Warning: this histogram was expired from 2025-10-31 to 2025-12-15; data may
+    be missing.
   </summary>
   <token key="AllowlistSource" variants="RealTimeUrlAllowlistSource"/>
 </histogram>
