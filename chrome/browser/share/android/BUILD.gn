@@ -8,7 +8,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-ldrtl/text_icon.xml",
     "java/res/drawable/delete_icon.xml",
-    "java/res/drawable/edit_icon.xml",
     "java/res/drawable/generic_file.xml",
     "java/res/drawable/ink_highlighter.xml",
     "java/res/drawable/link.xml",

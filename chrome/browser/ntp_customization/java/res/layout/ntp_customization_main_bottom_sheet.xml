@@ -20,7 +20,7 @@ found in the LICENSE file.
     <include layout="@layout/ntp_customization_drag_handle_bar" />
 
     <ImageView
-        android:id="@+id/edit_icon"
+        android:id="@+id/ic_edit_24dp"
         android:layout_width="@dimen/ntp_customization_edit_icon_background_size"
         android:layout_height="@dimen/ntp_customization_edit_icon_background_size"
         android:padding="@dimen/ntp_customization_edit_icon_padding"
@@ -42,7 +42,7 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        app:layout_constraintTop_toBottomOf="@id/edit_icon"
+        app:layout_constraintTop_toBottomOf="@id/ic_edit_24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:focusable="true"
