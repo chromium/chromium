@@ -5,10 +5,13 @@
 import '//resources/cr_components/composebox/composebox.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
+import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -37,6 +40,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
+      tabSuggestions_: {type: Array},
     };
   }
 
@@ -45,10 +49,27 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected accessor isComposeboxFocused_: boolean = false;
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
+  protected accessor tabSuggestions_: TabInfo[] = [];
   private eventTracker_: EventTracker = new EventTracker();
+  private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
+  private searchboxHandler_: SearchboxPageHandlerRemote;
+  private searchboxListenerIds_: number[] = [];
+
+  constructor() {
+    super();
+    this.searchboxCallbackRouter_ =
+        ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
+    this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.searchboxListenerIds_.push(
+        this.searchboxCallbackRouter_.onTabStripChanged.addListener(
+            this.refreshTabSuggestions_.bind(this)));
+
+    this.refreshTabSuggestions_();
 
     const composebox = this.$.composebox;
     if (composebox) {
@@ -81,10 +102,18 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.searchboxListenerIds_.forEach(
+        id => assert(this.searchboxCallbackRouter_.removeListener(id)));
+    this.searchboxListenerIds_ = [];
   }
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  protected async refreshTabSuggestions_() {
+    const {tabs} = await this.searchboxHandler_.getRecentTabs();
+    this.tabSuggestions_ = [...tabs];
   }
 }
 
