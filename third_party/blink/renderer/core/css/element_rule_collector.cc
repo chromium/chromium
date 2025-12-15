@@ -1025,6 +1025,17 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     }
   }
 
+  if (SelectorChecker::MatchesOverscrollTarget(element)) {
+    for (const auto bundle : match_request.AllRuleSets()) {
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->OverscrollTargetRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker, context) &&
+          stop_at_first_match) {
+        return true;
+      }
+    }
+  }
+
   if (context.context.pseudo_id >= kPseudoIdScrollbarThumb &&
       context.context.pseudo_id <= kPseudoIdScrollbarCorner) {
     for (const auto bundle : match_request.AllRuleSets()) {

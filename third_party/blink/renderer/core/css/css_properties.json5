@@ -4599,6 +4599,16 @@
       runtime_flag: "CSSOverscrollGestures",
     },
     {
+      name: "-internal-overscroll-area",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "CSSOverscrollGestures",
+    },
+    {
       name: "overscroll-behavior-inline",
       logical_property_group: {
         name: "overscroll-behavior",
@@ -4660,6 +4670,16 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
+      runtime_flag: "CSSOverscrollGestures",
+    },
+    {
+      name: "-internal-overscroll-position",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
       runtime_flag: "CSSOverscrollGestures",
     },
     {

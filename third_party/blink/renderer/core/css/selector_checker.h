@@ -395,6 +395,7 @@ class CORE_EXPORT SelectorChecker {
   static bool MatchesFocusVisiblePseudoClass(const Element&);
   static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
   static bool MatchesActiveViewTransitionPseudoClass(const Element&);
+  static bool MatchesOverscrollTarget(const Element&);
 
  private:
   // Does the work of checking whether the simple selector and element pointed

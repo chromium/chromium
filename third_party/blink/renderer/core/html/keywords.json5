@@ -109,6 +109,8 @@
     "page-block-end",
     "page-inline-start",
     "page-inline-end",
+    // command for overscroll
+    "toggle-overscroll",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

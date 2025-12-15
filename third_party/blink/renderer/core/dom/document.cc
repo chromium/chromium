@@ -10285,6 +10285,20 @@ CustomElementRegistry* Document::EffectiveGlobalCustomElementRegistry() const {
   return nullptr;
 }
 
+void Document::AddOverscrollCommandTarget(const AtomicString& target) {
+  overscroll_command_targets_.insert(target);
+  if (auto* element = getElementById(target)) {
+    element->OverscrollTargetStateChanged();
+  }
+}
+
+void Document::RemoveOverscrollCommandTarget(const AtomicString& target) {
+  overscroll_command_targets_.erase(target);
+  if (auto* element = getElementById(target)) {
+    element->OverscrollTargetStateChanged();
+  }
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink

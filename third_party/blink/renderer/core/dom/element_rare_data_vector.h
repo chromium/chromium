@@ -105,8 +105,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kDisplayAdElementMonitor = 40,
     kOverscrollAreaTracker = 41,
     kAltContentData = 42,
+    kOverscrollContainer = 43,
 
-    kNumFields = 43,
+    kNumFields = 44,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -390,6 +391,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetFocusgroupLastFocused(Element* element);
   Element* GetFocusgroupLastFocused() const;
   void ClearFocusgroupLastFocused() { SetFocusgroupLastFocused(nullptr); }
+
+  void SetOverscrollContainer(Element* element);
+  Element* GetOverscrollContainer() const;
+  void ClearOverscrollContainer() { SetOverscrollContainer(nullptr); }
 
   void SetAffectedByStartingStyles() {
     fields_.affected_by_starting_styles = true;

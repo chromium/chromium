@@ -850,6 +850,37 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     return;
   }
 
+  if (params.name == html_names::kCommandAttr) {
+    bool old_is_overscroll = IsOverscrollCommand(
+        GetCommandEventType(params.old_value, GetExecutionContext()));
+    bool new_is_overscroll = IsOverscrollCommand(
+        GetCommandEventType(params.new_value, GetExecutionContext()));
+    const AtomicString& command_for =
+        FastGetAttribute(html_names::kCommandforAttr);
+    // TODO(crbug.com/469042533): Verify the validity of `command_for`, for
+    // instance skipping empty strings or making sure it's a valid id.
+    if (old_is_overscroll != new_is_overscroll && !command_for.IsNull()) {
+      if (new_is_overscroll) {
+        GetDocument().AddOverscrollCommandTarget(command_for);
+      } else {
+        CHECK(old_is_overscroll);
+        GetDocument().RemoveOverscrollCommandTarget(command_for);
+      }
+    }
+  } else if (params.name == html_names::kCommandforAttr) {
+    if (IsOverscrollCommand(
+            GetCommandEventType(FastGetAttribute(html_names::kCommandAttr),
+                                GetExecutionContext())) &&
+        params.old_value != params.new_value) {
+      if (!params.old_value.IsNull()) {
+        GetDocument().RemoveOverscrollCommandTarget(params.old_value);
+      }
+      if (!params.new_value.IsNull()) {
+        GetDocument().AddOverscrollCommandTarget(params.new_value);
+      }
+    }
+  }
+
   if (params.reason != AttributeModificationReason::kDirectly)
     return;
   // adjustedFocusedElementInTreeScope() is not trivial. We should check
@@ -2680,9 +2711,10 @@ void HTMLElement::setCommand(const AtomicString& type) {
   setAttribute(html_names::kCommandAttr, type);
 }
 
+// static
 CommandEventType HTMLElement::GetCommandEventType(
     const AtomicString& action,
-    ExecutionContext* execution_context) const {
+    ExecutionContext* execution_context) {
   if (action.IsNull() || action.empty()) {
     return CommandEventType::kNone;
   }
@@ -2808,6 +2840,11 @@ CommandEventType HTMLElement::GetCommandEventType(
     if (EqualIgnoringASCIICase(action, keywords::kPageInlineEnd)) {
       return CommandEventType::kPageInlineEnd;
     }
+  }
+
+  if (RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled() &&
+      EqualIgnoringASCIICase(action, keywords::kToggleOverscroll)) {
+    return CommandEventType::kToggleOverscroll;
   }
 
   return CommandEventType::kNone;

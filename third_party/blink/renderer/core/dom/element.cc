@@ -3628,6 +3628,16 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
           .GetRenderBlockingResourceManager()
           ->RemovePendingParsingElement(GetIdAttribute(), this);
     }
+    // If the id changes that may have been a target of overscroll command, we
+    // need to notify that an overscroll-target pseudo class may have changed.
+    const auto& overscroll_command_targets =
+        GetDocument().OverscrollCommandTargets();
+    if ((!params.old_value.IsNull() &&
+         overscroll_command_targets.Contains(params.old_value)) ||
+        (!params.new_value.IsNull() &&
+         overscroll_command_targets.Contains(params.new_value))) {
+      OverscrollTargetStateChanged();
+    }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
         params.reason != AttributeModificationReason::kByMoveToNewDocument &&
@@ -3686,12 +3696,14 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled() &&
              name == html_names::kOverscrollcontainerAttr) {
-    if (params.old_value.IsNull() && !params.new_value.IsNull()) {
-      EnsureOverscrollAreaTracker().TakeOverscrollFromAncestor();
-    } else if (!params.old_value.IsNull() && params.new_value.IsNull()) {
-      if (auto* area_tracker = OverscrollAreaTracker()) {
-        area_tracker->PropagateOverscrollToAncestor();
-      }
+    if (params.new_value.IsNull() || params.old_value.IsNull()) {
+      // TODO(crbug.com/467968812): We can optimize this in some cases since a
+      // container that disappears necessarily adds its elements to the
+      // ancestor container. However, if the container appears, it's harder to
+      // figure out which elements are contained by it without doing a subtree
+      // recalc.
+      SetNeedsStyleRecalc(kSubtreeStyleChange,
+                          StyleChangeReasonForTracing::FromAttribute(name));
     }
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
@@ -5232,6 +5244,30 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // null to make sure we don't mark for re-attachment if the new style is
     // null.
     old_style = nullptr;
+  }
+
+  // If we have an overscroll container, but it's the wrong one or we shouldn't
+  // have one, remove this element from the overscroll container (which should
+  // also clear OverscrollContainer() on `this`).
+  if (OverscrollContainer() &&
+      (!new_style || !new_style->IsInternalOverscrollPositionAuto() ||
+       OverscrollContainer() != style_recalc_context.overscroll_container)) {
+    auto* tracker = OverscrollContainer()->OverscrollAreaTracker();
+    // We should've created a tracker when we set the OverscrollContainer on
+    // `this`.
+    CHECK(tracker);
+    tracker->RemoveOverscroll(this);
+  }
+  // If we no longer an overscroll container, but need one, add this element to
+  // the context overscroll container.
+  if (!OverscrollContainer() && new_style &&
+      new_style->IsInternalOverscrollPositionAuto()) {
+    // Note that we don't do anything special if there is no overscroll
+    // container.
+    if (style_recalc_context.overscroll_container) {
+      style_recalc_context.overscroll_container->EnsureOverscrollAreaTracker()
+          .AddOverscroll(this);
+    }
   }
 
   if (!new_style) {
@@ -8285,6 +8321,14 @@ void Element::PatchStateChanged() {
                           style_change_reason::kPseudoClass,
                           style_change_extra_data::g_patching));
   PseudoStateChanged(CSSSelector::kPseudoPatching);
+}
+
+void Element::OverscrollTargetStateChanged() {
+  SetNeedsStyleRecalc(kLocalStyleChange,
+                      StyleChangeReasonForTracing::CreateWithExtraData(
+                          style_change_reason::kPseudoClass,
+                          style_change_extra_data::g_overscroll_target));
+  PseudoStateChanged(CSSSelector::kPseudoOverscrollTarget);
 }
 
 void Element::FocusWithinStateChanged() {
@@ -13094,6 +13138,23 @@ OverscrollAreaTracker* Element::OverscrollAreaTracker() const {
     return data->OverscrollAreaTracker();
   }
   return nullptr;
+}
+
+Element* Element::OverscrollContainer() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetOverscrollContainer();
+  }
+  return nullptr;
+}
+
+void Element::SetOverscrollContainer(Element* element) {
+  return EnsureElementRareData().SetOverscrollContainer(element);
+}
+
+void Element::ClearOverscrollContainer() {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->ClearOverscrollContainer();
+  }
 }
 
 }  // namespace blink

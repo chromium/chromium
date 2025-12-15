@@ -262,6 +262,8 @@ enum class CommandEventType {
   kPageBlockEnd,
   kPageInlineStart,
   kPageInlineEnd,
+  // Overscroll,
+  kToggleOverscroll,
 };
 
 // Defaults for the `interestfor` API's `normal` value.
@@ -1120,6 +1122,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ActiveViewTransitionStateChanged();
   void ActiveViewTransitionTypeStateChanged();
   void PatchStateChanged();
+  void OverscrollTargetStateChanged();
   void SetDragged(bool) override;
 
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
@@ -1218,6 +1221,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
            command == CommandEventType::kPageBlockEnd ||
            command == CommandEventType::kPageInlineStart ||
            command == CommandEventType::kPageInlineEnd;
+  }
+
+  static bool IsOverscrollCommand(CommandEventType command) {
+    return command == CommandEventType::kToggleOverscroll;
   }
 
   // This allows customization of how Invoker Commands are handled, per element.
@@ -1963,6 +1970,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   OverscrollAreaTracker& EnsureOverscrollAreaTracker();
   OverscrollAreaTracker* OverscrollAreaTracker() const;
+
+  Element* OverscrollContainer() const;
+  void SetOverscrollContainer(Element*);
+  void ClearOverscrollContainer();
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }

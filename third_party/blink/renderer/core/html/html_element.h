@@ -378,8 +378,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // function doesn't connect directly to the `command*` attributes themselves;
   // i.e. this will not change state if the `commandfor` attribute is changed.
   virtual bool CanBeCommandInvoker() const;
-  CommandEventType GetCommandEventType(const AtomicString& type,
-                                       ExecutionContext*) const;
+  static CommandEventType GetCommandEventType(const AtomicString& type,
+                                              ExecutionContext*);
   virtual bool HandleCommandForActivation();
   Element* commandForElement() const;
   AtomicString command() const;

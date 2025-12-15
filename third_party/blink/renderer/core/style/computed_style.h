@@ -2600,6 +2600,13 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HasBaseEffectiveAppearance() const;
 
+  bool IsInternalOverscrollAreaAuto() const {
+    return InternalOverscrollArea() == EInternalOverscrollArea::kAuto;
+  }
+  bool IsInternalOverscrollPositionAuto() const {
+    return InternalOverscrollPosition() == EInternalOverscrollPosition::kAuto;
+  }
+
  private:
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;

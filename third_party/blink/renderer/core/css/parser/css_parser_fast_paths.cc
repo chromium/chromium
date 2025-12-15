@@ -1710,6 +1710,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBlockEllipsis:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kNoEllipsis;
+    case CSSPropertyID::kInternalOverscrollArea:
+    case CSSPropertyID::kInternalOverscrollPosition:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     default:
       NOTREACHED();
   }
@@ -1855,6 +1858,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kTextBoxTrim,
     CSSPropertyID::kScrollInitialTarget,
     CSSPropertyID::kInteractivity,
+    CSSPropertyID::kInternalOverscrollArea,
+    CSSPropertyID::kInternalOverscrollPosition,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

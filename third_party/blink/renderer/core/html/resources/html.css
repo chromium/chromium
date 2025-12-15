@@ -2425,3 +2425,11 @@ select::-internal-select-autofill-preview-text {
     }
   }
 }
+
+[overscrollcontainer] {
+  -internal-overscroll-area: auto;
+}
+
+:-internal-overscroll-target {
+  -internal-overscroll-position: auto;
+}

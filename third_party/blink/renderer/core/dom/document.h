@@ -2292,6 +2292,12 @@ class CORE_EXPORT Document : public ContainerNode,
     }
   }
 
+  const HashSet<AtomicString>& OverscrollCommandTargets() const {
+    return overscroll_command_targets_;
+  }
+  void AddOverscrollCommandTarget(const AtomicString& target);
+  void RemoveOverscrollCommandTarget(const AtomicString& target);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -3213,6 +3219,13 @@ class CORE_EXPORT Document : public ContainerNode,
 #endif
 
   bool responsive_embedded_sizing_ = false;
+
+  // A set of idrefs that have been identified by commandfor with an overscroll
+  // related command (e.g. toggle-overscroll). This determines a
+  // :-internal-overscroll-target pseudo class. Whenever adding or removing
+  // entries here, the element identified by the target needs to invalidate that
+  // pseudo class.
+  HashSet<AtomicString> overscroll_command_targets_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

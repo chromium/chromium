@@ -407,11 +407,14 @@ class CORE_EXPORT CSSSelector {
     // Scroll button pseudo for Carousel
     kPseudoScrollButton,
 
+    // Overscroll gesture support.
+    kPseudoOverscrollTarget,
     kPseudoOverscrollAreaParent,
 
     // :link-to(<navigation-location>)
     // TODO(crbug.com/436805487): Should be :link-to(<link-condition>)
     kPseudoLinkTo,
+
   };
 
   enum class AttributeMatchType : int {

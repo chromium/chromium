@@ -75,6 +75,7 @@ DEFINE_GLOBAL(, AtomicString, g_focus);
 DEFINE_GLOBAL(, AtomicString, g_focus_visible);
 DEFINE_GLOBAL(, AtomicString, g_focus_within);
 DEFINE_GLOBAL(, AtomicString, g_hover);
+DEFINE_GLOBAL(, AtomicString, g_overscroll_target);
 DEFINE_GLOBAL(, AtomicString, g_past);
 DEFINE_GLOBAL(, AtomicString, g_patching);
 DEFINE_GLOBAL(, AtomicString, g_unresolved);
@@ -97,6 +98,8 @@ void Init() {
   new (base::NotNullTag::kNotNull, (void*)&g_focus_within)
       AtomicString(":focus-within");
   new (base::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
+  new (base::NotNullTag::kNotNull, (void*)&g_overscroll_target)
+      AtomicString(":-internal-overscroll-target");
   new (base::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
   new (base::NotNullTag::kNotNull, (void*)&g_patching)
       AtomicString(":patching");

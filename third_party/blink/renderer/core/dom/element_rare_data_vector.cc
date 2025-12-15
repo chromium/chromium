@@ -650,6 +650,18 @@ void ElementRareDataVector::SetAltContentData(ContentData* content_data) {
   }
 }
 
+void ElementRareDataVector::SetOverscrollContainer(Element* element) {
+  SetWrappedField<WeakMember<Element>>(FieldId::kOverscrollContainer, element);
+}
+
+Element* ElementRareDataVector::GetOverscrollContainer() const {
+  if (auto* value =
+          GetWrappedField<WeakMember<Element>>(FieldId::kOverscrollContainer)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
 OverscrollAreaTracker& ElementRareDataVector::EnsureOverscrollAreaTracker(
     Element* element) {
   return EnsureField<class OverscrollAreaTracker>(

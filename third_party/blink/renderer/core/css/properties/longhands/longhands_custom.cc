@@ -7937,6 +7937,24 @@ void OverflowY::ApplyValue(StyleResolverState& state,
   }
 }
 
+// -internal-overscroll-area: none | auto
+const CSSValue* InternalOverscrollArea::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.InternalOverscrollArea());
+}
+
+// -internal-overscroll-position: none | auto
+const CSSValue* InternalOverscrollPosition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.InternalOverscrollPosition());
+}
+
 // overscroll-area: none | <dashed-ident>#
 const CSSValue* OverscrollArea::ParseSingleValue(
     CSSParserTokenStream& stream,

@@ -472,6 +472,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   base::span<const RuleData> ActiveViewTransitionRules() const {
     return active_view_transition_rules_;
   }
+  base::span<const RuleData> OverscrollTargetRules() const {
+    return overscroll_target_rules_;
+  }
   const HeapVector<CascadeLayered<StyleRulePage>>& PageRules() const {
     return page_rules_;
   }
@@ -756,6 +759,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Separate bucket for :active-view-transition rules, to support a default
   // view-transition-name in user-agent style.
   HeapVector<RuleData> active_view_transition_rules_;
+  HeapVector<RuleData> overscroll_target_rules_;
   HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
   HeapVector<CascadeLayered<StyleRulePage>> page_rules_;

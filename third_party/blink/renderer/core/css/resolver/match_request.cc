@@ -27,6 +27,9 @@ void RuleSetGroup::AddRuleSet(RuleSet* rule_set) {
   if (!rule_set->LinkPseudoClassRules().empty()) {
     has_link_pseudo_class_rules_ |= rule_set_mask;
   }
+  if (!rule_set->OverscrollTargetRules().empty()) {
+    has_overscroll_target_pseudo_class_rules_ |= rule_set_mask;
+  }
   if (!rule_set->FocusPseudoClassRules().empty()) {
     has_focus_pseudo_class_rules_ |= rule_set_mask;
   }
