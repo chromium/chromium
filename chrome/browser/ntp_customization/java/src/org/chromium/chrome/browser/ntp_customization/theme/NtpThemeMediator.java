@@ -258,13 +258,13 @@ public class NtpThemeMediator {
                     }
 
                     // TODO(crbug.com/423579377): Decide if these indices should be dynamic.
-                    int firstIndex = mThemeCollectionsList.size() > 3 ? 3 : 0;
+                    int firstIndex = 0;
                     GURL firstImageUrl =
                             mThemeCollectionsList.size() > firstIndex
                                     ? mThemeCollectionsList.get(firstIndex).previewImageUrl
                                     : null;
 
-                    int secondIndex = mThemeCollectionsList.size() > 5 ? 5 : 1;
+                    int secondIndex = 1;
                     GURL secondImageUrl =
                             mThemeCollectionsList.size() > secondIndex
                                     ? mThemeCollectionsList.get(secondIndex).previewImageUrl
