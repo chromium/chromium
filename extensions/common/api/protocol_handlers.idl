@@ -22,6 +22,6 @@
   };
 
   dictionary ManifestKeys {
-    ProtocolHandler[] protocol_handlers;
+    ProtocolHandler[]? protocol_handlers;
   };
 };

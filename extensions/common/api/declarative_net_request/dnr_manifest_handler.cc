@@ -52,8 +52,9 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
           extension->manifest()->available_values(), manifest_keys, *error)) {
     return false;
   }
+  CHECK(manifest_keys.declarative_net_request.has_value());
   std::vector<dnr_api::Ruleset> rulesets =
-      std::move(manifest_keys.declarative_net_request.rule_resources);
+      std::move(manifest_keys.declarative_net_request->rule_resources);
 
   if (rulesets.size() >
       static_cast<size_t>(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS)) {

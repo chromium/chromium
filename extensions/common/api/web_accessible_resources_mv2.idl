@@ -7,6 +7,6 @@
   dictionary ManifestKeys {
     // Relative paths within the extension package representing web accessible
     // resources.
-    DOMString[] web_accessible_resources;
+    DOMString[]? web_accessible_resources;
   };
 };

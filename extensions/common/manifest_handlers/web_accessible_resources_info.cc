@@ -63,11 +63,12 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
     return nullptr;
   }
 
+  CHECK(manifest_keys.web_accessible_resources.has_value());
   auto info = std::make_unique<WebAccessibleResourcesInfo>();
   URLPatternSet resource_set;
 
   for (std::string& web_accessible_resource :
-       manifest_keys.web_accessible_resources) {
+       *manifest_keys.web_accessible_resources) {
     resource_set.AddPattern(
         GetPattern(std::move(web_accessible_resource), extension));
   }
@@ -100,8 +101,10 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     return nullptr;
   }
 
+  CHECK(manifest_keys.web_accessible_resources.has_value());
   size_t i = 0;
-  for (auto& web_accessible_resource : manifest_keys.web_accessible_resources) {
+  for (auto& web_accessible_resource :
+       *manifest_keys.web_accessible_resources) {
     bool use_dynamic_url_bool = web_accessible_resource.use_dynamic_url &&
                                 *web_accessible_resource.use_dynamic_url;
 

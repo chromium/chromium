@@ -20,6 +20,6 @@ namespace chrome_url_overrides {
 
   dictionary ManifestKeys {
     // Chrome url overrides. Note that an extension can override only one page.
-    UrlOverrideInfo chrome_url_overrides;
+    UrlOverrideInfo? chrome_url_overrides;
   };
 };

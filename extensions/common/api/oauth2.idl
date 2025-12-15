@@ -17,6 +17,6 @@ namespace oauth2 {
   };
 
   dictionary ManifestKeys {
-    OAuth2Info oauth2;
+    OAuth2Info? oauth2;
   };
 };

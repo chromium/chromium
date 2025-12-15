@@ -50,15 +50,16 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
 
   auto info = std::make_unique<WebFileHandlers>();
 
+  CHECK(manifest_keys.file_handlers.has_value());
   // file_handlers: array. can't be empty
-  if (manifest_keys.file_handlers.empty()) {
+  if (manifest_keys.file_handlers->empty()) {
     *error = get_error(0, "At least one File Handler must be present.");
     return nullptr;
   }
 
-  for (size_t i = 0; i < manifest_keys.file_handlers.size(); i++) {
+  for (size_t i = 0; i < manifest_keys.file_handlers->size(); i++) {
     WebFileHandler web_file_handler;
-    auto& manifest_file_handler = manifest_keys.file_handlers[i];
+    auto& manifest_file_handler = (*manifest_keys.file_handlers)[i];
 
     // `name` is a string that can't be empty.
     if (manifest_file_handler.name.empty()) {

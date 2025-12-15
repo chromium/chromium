@@ -639,7 +639,7 @@ namespace declarativeNetRequest {
   };
 
   [nodoc] dictionary ManifestKeys {
-    DNRInfo declarative_net_request;
+    DNRInfo? declarative_net_request;
   };
 
   dictionary RegexOptions {

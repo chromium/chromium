@@ -113,7 +113,8 @@ std::unique_ptr<ProtocolHandlers> ParseEntryList(
     return nullptr;
   }
 
-  if (manifest_keys.protocol_handlers.empty()) {
+  CHECK(manifest_keys.protocol_handlers.has_value());
+  if (manifest_keys.protocol_handlers->empty()) {
     install_warnings.emplace_back(errors::kInvalidProtocolHandlersEmpty);
     return nullptr;
   }
@@ -122,7 +123,7 @@ std::unique_ptr<ProtocolHandlers> ParseEntryList(
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
 
   std::unique_ptr<ProtocolHandlers> info = std::make_unique<ProtocolHandlers>();
-  for (const auto& protocol_handler : manifest_keys.protocol_handlers) {
+  for (const auto& protocol_handler : *manifest_keys.protocol_handlers) {
     apps::ProtocolHandlerInfo handler;
     DCHECK(!protocol_handler.protocol.empty());
     DCHECK(!protocol_handler.uri_template.empty());

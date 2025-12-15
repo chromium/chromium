@@ -50,6 +50,6 @@
 
   dictionary ManifestKeys {
     // File Handlers to register onto the target system.
-    FileHandler[] file_handlers;
+    FileHandler[]? file_handlers;
   };
 };

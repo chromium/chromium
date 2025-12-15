@@ -33,14 +33,15 @@ std::unique_ptr<SidePanelInfo> ParseFromDictionary(const Extension& extension,
     return nullptr;
   }
 
-  if (!extension.GetResourceURL(manifest_keys.side_panel.default_path)
+  CHECK(manifest_keys.side_panel.has_value());
+  if (!extension.GetResourceURL(manifest_keys.side_panel->default_path)
            .is_valid()) {
     *error = errors::kSidePanelManifestDefaultPathInvalid;
     return nullptr;
   }
 
   auto info = std::make_unique<SidePanelInfo>();
-  info->default_path = std::move(manifest_keys.side_panel.default_path);
+  info->default_path = std::move(manifest_keys.side_panel->default_path);
   return info;
 }
 

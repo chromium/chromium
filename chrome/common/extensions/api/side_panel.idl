@@ -11,7 +11,7 @@ namespace sidePanel {
   };
 
   dictionary ManifestKeys {
-    SidePanel side_panel;
+    SidePanel? side_panel;
   };
 
   // Defines the possible alignment for the side panel in the browser UI.

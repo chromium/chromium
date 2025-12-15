@@ -30,6 +30,6 @@
   };
 
   dictionary ManifestKeys {
-    WebAccessibleResource[] web_accessible_resources;
+    WebAccessibleResource[]? web_accessible_resources;
   };
 };
