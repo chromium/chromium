@@ -132,10 +132,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
         observer: 'onHasCameraCountChanged_',
       },
 
-      /**
-       *  TODO(crbug.com/40134918): add type |BarcodeDetector| when externs
-       *  becomes available
-       */
       qrCodeDetector_: {
         type: Object,
         value: null,
@@ -271,10 +267,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
     return this.isDeviceCarrierLocked_;
   }
 
-  /**
-   * TODO(crbug.com/40134918): Remove suppression when shape_detection extern
-   * definitions become available.
-   */
   private async initBarcodeDetector_(): Promise<void> {
     const formats = await this.barcodeDetectorClass_.getSupportedFormats();
 
@@ -444,10 +436,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
     }
   }
 
-  /**
-   * TODO(crbug.com/40134918): Remove suppression when shape_detection extern
-   * definitions become available.
-   */
   private async detectActivationCode_(frame: ImageBitmap):
       Promise<string|null> {
     if (!this.qrCodeDetector_) {
