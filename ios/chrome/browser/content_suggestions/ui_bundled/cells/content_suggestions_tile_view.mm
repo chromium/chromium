@@ -49,10 +49,8 @@ const CGFloat kCornerRadius = 8.0;
     _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     if (ios::provider::IsRaccoonEnabled()) {
-      if (@available(iOS 17.0, *)) {
         _imageContainerView.hoverStyle = [UIHoverStyle
             styleWithShape:[UIShape rectShapeWithCornerRadius:kCornerRadius]];
-      }
     }
 
     // Use original rounded-square background image for Shorcuts
