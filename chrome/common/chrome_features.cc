@@ -16,19 +16,6 @@ namespace features {
 
 // All features in alphabetical order.
 
-// Controls if page stability monitoring uses paint stability as a signal.
-constexpr base::FeatureParam<ActorPaintStabilityMode>::Option
-    kActorPaintStabilityModeOptions[] = {
-        {ActorPaintStabilityMode::kDisabled, "disabled"},
-        {ActorPaintStabilityMode::kLogOnly, "log-only"},
-        {ActorPaintStabilityMode::kEnabled, "enabled"},
-};
-BASE_FEATURE_ENUM_PARAM(ActorPaintStabilityMode,
-                        kActorPaintStabilityMode,
-                        &kGlicActor,
-                        "actor-paint-stability-mode",
-                        ActorPaintStabilityMode::kEnabled,
-                        &kActorPaintStabilityModeOptions);
 // Timeout controlling how long the paint stability monitor waits after the
 // initial contentful paint before considering the UI to have stabilized.
 const base::FeatureParam<base::TimeDelta>

@@ -18,8 +18,6 @@
 
 namespace actor {
 
-using ::features::ActorPaintStabilityMode;
-
 namespace {
 
 // Returns how long the monitor should wait for the initial contenful paint
@@ -45,29 +43,22 @@ base::TimeDelta GetSubsequentPaintTimeout() {
 }  // namespace
 
 // static
-std::unique_ptr<PaintStabilityMonitor> PaintStabilityMonitor::MaybeCreate(
+std::unique_ptr<PaintStabilityMonitor> PaintStabilityMonitor::Create(
     content::RenderFrame& frame,
     TaskId task_id,
     Journal& journal) {
-  if (features::kActorPaintStabilityMode.Get() ==
-      ActorPaintStabilityMode::kDisabled) {
-    return nullptr;
-  }
   return base::WrapUnique(new PaintStabilityMonitor(frame, task_id, journal));
 }
 
 PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame,
                                              TaskId task_id,
                                              Journal& journal)
-    : mode_(features::kActorPaintStabilityMode.Get()),
-      task_id_(task_id),
+    : task_id_(task_id),
       journal_(journal),
       interaction_effects_monitor_(
           std::make_unique<blink::WebInteractionEffectsMonitor>(
               *frame.GetWebFrame(),
-              this)) {
-  CHECK_NE(mode_, ActorPaintStabilityMode::kDisabled);
-}
+              this)) {}
 
 PaintStabilityMonitor::~PaintStabilityMonitor() = default;
 
@@ -141,12 +132,6 @@ void PaintStabilityMonitor::OnPaintStabilityDetected() {
                     .Add("is_waiting_for_stable", !!is_stable_callback_)
                     .Build());
   is_stability_reached_ = true;
-
-  // If we're only logging, continue monitoring to log post-stable contentful
-  // paints.
-  if (mode_ == ActorPaintStabilityMode::kLogOnly) {
-    return;
-  }
 
   // If we're monitoring but not yet waiting for stability, wait for
   // `WaitForStable()` to be called.

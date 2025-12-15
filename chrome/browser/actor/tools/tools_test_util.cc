@@ -257,15 +257,4 @@ gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
   return gfx::RectF(x, y, width, height);
 }
 
-std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode) {
-  switch (mode) {
-    case features::ActorPaintStabilityMode::kDisabled:
-      return "Disabled";
-    case features::ActorPaintStabilityMode::kLogOnly:
-      return "LogOnly";
-    case features::ActorPaintStabilityMode::kEnabled:
-      return "Enabled";
-  }
-}
-
 }  // namespace actor

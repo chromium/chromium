@@ -26,17 +26,6 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-enum class ActorPaintStabilityMode {
-  // Paint stability tracking is not enabled at all.
-  kDisabled,
-  // Paint stability tracking is only added to the journal.
-  kLogOnly,
-  // Paint stability tracking is used as a page stability heuristic.
-  kEnabled,
-};
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<ActorPaintStabilityMode>
-    kActorPaintStabilityMode;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kActorPaintStabilityIntialPaintTimeout);

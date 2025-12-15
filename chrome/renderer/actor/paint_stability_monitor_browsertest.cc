@@ -30,8 +30,7 @@ class PaintStabilityMonitorTest : public ChromeRenderViewTest {
   PaintStabilityMonitorTest() : task_id_(100) {
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
-        {{::features::kActorPaintStabilityMode.name, "enabled"},
-         {::features::kActorPaintStabilityIntialPaintTimeout.name, "1000ms"},
+        {{::features::kActorPaintStabilityIntialPaintTimeout.name, "1000ms"},
          {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
           "500ms"}});
   }
@@ -72,8 +71,8 @@ TEST_F(PaintStabilityMonitorTest, NoContentfulPaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -116,8 +115,8 @@ TEST_F(PaintStabilityMonitorTest, SinglePaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -164,8 +163,8 @@ TEST_F(PaintStabilityMonitorTest, PaintStabilityReached_DelayedPaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -234,8 +233,8 @@ TEST_F(PaintStabilityMonitorTest, PaintStabilityReached_MultiplePaints) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -295,8 +294,8 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -347,8 +346,8 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback_ResetTimer) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::MaybeCreate(*GetMainRenderFrame(), task_id_,
-                                           journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
+                                      journal_);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);

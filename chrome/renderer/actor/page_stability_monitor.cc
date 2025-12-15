@@ -63,7 +63,7 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
       journal_(journal),
       paint_stability_monitor_(
           supports_paint_stability
-              ? PaintStabilityMonitor::MaybeCreate(frame, task_id, journal)
+              ? PaintStabilityMonitor::Create(frame, task_id, journal)
               : nullptr),
       network_and_main_thread_stability_monitor_(
           std::make_unique<NetworkAndMainThreadStabilityMonitor>(frame,

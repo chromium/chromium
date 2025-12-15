@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
@@ -121,8 +120,6 @@ class ActorToolsTest : public InProcessBrowserTest {
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
                                  std::string_view query);
-
-std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode);
 
 }  // namespace actor
 
