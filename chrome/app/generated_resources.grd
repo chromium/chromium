@@ -11767,7 +11767,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Live Caption
       </message>
       <message name="IDS_PICTURE_IN_PICTURE_REPLAY_10_TEXT" desc="Text label of the replay 10 seconds button. The button appears when the user hovers over the Picture-in-Picture window.">
-        Replay 10 seconds
+        Rewind 10 seconds
       </message>
       <message name="IDS_PICTURE_IN_PICTURE_FORWARD_10_TEXT" desc="Text label of the forward 10 seconds button. The button appears when the user hovers over the Picture-in-Picture window.">
         Forward 10 seconds
