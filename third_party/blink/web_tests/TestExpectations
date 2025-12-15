@@ -9957,6 +9957,18 @@ crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCPeerConnection-remote-track-m
 # Gardener 2025-12-12
 crbug.com/468374864 http/tests/inspector-protocol/target/auto-attach-wait-for-debugger-2-sessions-worker.js [ Failure Pass ]
 
+# Temporarily disable to land view-source adorner change in DevTools
+crbug.com/436798168 http/tests/devtools/elements/bidi-dom-tree.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/copy-styles.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/edit/delete-from-document.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/elements-hide-html-comments.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/elements-panel-correct-case.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/elements-panel-structure.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/iframe-load-event.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/elements/user-properties.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure Pass ]
+crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
+
 # Gardener 2025-12-17
 crbug.com/468856556 [ Linux ] fast/replaced/border-radius-clip.html [ Failure Pass ]
 # Started to timeout on Linux, previously was flaky on all platforms (crbug.com/468856556)
