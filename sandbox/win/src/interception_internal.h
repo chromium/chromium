@@ -35,7 +35,6 @@ struct FunctionInfo {
   // Not a raw_ptr<> as this represents an address in another process.
   RAW_PTR_EXCLUSION const void* interceptor_address;
   char function[1];  // placeholder for null terminated name
-  // char interceptor[]           // followed by the interceptor function
 };
 
 // A single dll:
@@ -51,8 +50,6 @@ struct DllPatchInfo {
 // All interceptions:
 struct SharedMemory {
   size_t num_intercepted_dlls;
-  // Not a raw_ptr<> as this represents an address in another process.
-  RAW_PTR_EXCLUSION void* interceptor_base;
   DllPatchInfo dll_list[1];  // placeholder for the list of dlls
 };
 

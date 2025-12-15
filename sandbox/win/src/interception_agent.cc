@@ -165,19 +165,9 @@ bool InterceptionAgent::PatchDll(const DllPatchInfo* dll_info,
     if (!resolver)
       return false;
 
-    const char* interceptor =
-        function->function + GetNtExports()->strlen(function->function) + 1;
-
-    if (!IsWithinRange(function, function->record_bytes, interceptor) ||
-        !IsWithinRange(dll_info, dll_info->record_bytes, interceptor)) {
-      NOTREACHED_NT();
-      return false;
-    }
-
     NTSTATUS ret = resolver->Setup(
-        thunks->base, interceptions_->interceptor_base, function->function,
-        interceptor, function->interceptor_address, &thunks->thunks[i],
-        sizeof(ThunkData), nullptr);
+        thunks->base, function->function, function->interceptor_address,
+        &thunks->thunks[i], sizeof(ThunkData), nullptr);
     if (!NT_SUCCESS(ret)) {
       NOTREACHED_NT();
       return false;

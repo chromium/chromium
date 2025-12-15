@@ -81,7 +81,7 @@ InterceptionManager::InterceptionData::InterceptionData(
 InterceptionManager::InterceptionData::~InterceptionData() {}
 
 InterceptionManager::InterceptionManager(TargetProcess& child_process)
-    : child_(child_process), names_used_(false) {}
+    : child_(child_process) {}
 InterceptionManager::~InterceptionManager() {}
 
 bool InterceptionManager::AddToPatchedFunctions(
@@ -98,25 +98,6 @@ bool InterceptionManager::AddToPatchedFunctions(
   function.interceptor_address = replacement_code_address;
 
   interceptions_.push_back(function);
-  return true;
-}
-
-bool InterceptionManager::AddToPatchedFunctions(
-    const wchar_t* dll_name,
-    const char* function_name,
-    InterceptionType interception_type,
-    const char* replacement_function_name,
-    InterceptorId id) {
-  InterceptionData function;
-  function.type = interception_type;
-  function.id = id;
-  function.dll = dll_name;
-  function.function = function_name;
-  function.interceptor = replacement_function_name;
-  function.interceptor_address = nullptr;
-
-  interceptions_.push_back(function);
-  names_used_ = true;
   return true;
 }
 
@@ -178,8 +159,7 @@ size_t InterceptionManager::GetBufferSize() const {
     }
 
     // we have to NULL terminate the strings on the structure
-    size_t strings_chars =
-        interception.function.size() + interception.interceptor.size() + 2;
+    size_t strings_chars = interception.function.size() + 1;
 
     // a new FunctionInfo is required per function
     size_t record_bytes = offsetof(FunctionInfo, function) + strings_chars;
@@ -206,9 +186,6 @@ bool InterceptionManager::SetupConfigBuffer(void* buffer, size_t buffer_bytes) {
   SharedMemory* shared_memory = reinterpret_cast<SharedMemory*>(buffer);
   DllPatchInfo* dll_info = shared_memory->dll_list;
   size_t num_dlls = 0;
-
-  shared_memory->interceptor_base =
-      names_used_ ? child_->MainModule() : nullptr;
 
   buffer_bytes -= offsetof(SharedMemory, dll_list);
   buffer = dll_info;
@@ -296,11 +273,9 @@ bool InterceptionManager::SetupInterceptionInfo(const InterceptionData& data,
   FunctionInfo* function = reinterpret_cast<FunctionInfo*>(*buffer);
 
   size_t name_bytes = data.function.size();
-  size_t interceptor_bytes = data.interceptor.size();
 
   // the strings at the end of the structure are zero terminated
-  size_t required =
-      offsetof(FunctionInfo, function) + name_bytes + interceptor_bytes + 2;
+  size_t required = offsetof(FunctionInfo, function) + name_bytes + 1;
   required = RoundUpToMultiple(required, sizeof(size_t));
   if (*buffer_bytes < required)
     return false;
@@ -313,16 +288,11 @@ bool InterceptionManager::SetupInterceptionInfo(const InterceptionData& data,
   function->type = data.type;
   function->id = data.id;
   function->interceptor_address = data.interceptor_address;
-  char* names = function->function;
+  char* name = function->function;
 
-  data.function.copy(names, name_bytes);
-  UNSAFE_TODO(names += name_bytes);
-  *UNSAFE_TODO(names++) = '\0';
-
-  // interceptor follows the function_name
-  data.interceptor.copy(names, interceptor_bytes);
-  UNSAFE_TODO(names += interceptor_bytes);
-  *UNSAFE_TODO(names++) = '\0';
+  data.function.copy(name, name_bytes);
+  UNSAFE_TODO(name += name_bytes);
+  UNSAFE_TODO(*name++ = '\0');
 
   // update the dll table
   dll_info->num_functions++;
@@ -436,11 +406,11 @@ InterceptionManager::PatchClientFunctions(DllInterceptionData* thunks,
     if (INTERCEPTION_SERVICE_CALL != interception.type)
       return base::unexpected(SBOX_ERROR_BAD_PARAMS);
 
-    NTSTATUS ret = thunk.Setup(
-        ntdll_base, nullptr, interception.function.c_str(),
-        interception.interceptor.c_str(), interception.interceptor_address,
-        &UNSAFE_TODO(thunks->thunks[patch.dll_data.num_thunks]),
-        thunk_bytes - patch.dll_data.used_bytes, nullptr);
+    NTSTATUS ret =
+        thunk.Setup(ntdll_base, interception.function.c_str(),
+                    interception.interceptor_address,
+                    &UNSAFE_TODO(thunks->thunks[patch.dll_data.num_thunks]),
+                    thunk_bytes - patch.dll_data.used_bytes, nullptr);
     if (!NT_SUCCESS(ret)) {
       ::SetLastError(GetLastErrorFromNtStatus(ret));
       return base::unexpected(SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_THUNK);

@@ -31,18 +31,11 @@ class [[clang::lto_visibility_public]] ServiceResolverThunk
 
   // Implementation of Resolver::Setup.
   NTSTATUS Setup(const void* target_module,
-                 const void* interceptor_module,
                  const char* target_name,
-                 const char* interceptor_name,
                  const void* interceptor_entry_point,
                  void* thunk_storage,
                  size_t storage_bytes,
                  size_t* storage_used) override;
-
-  // Implementation of Resolver::ResolveInterceptor.
-  NTSTATUS ResolveInterceptor(const void* module,
-                              const char* function_name,
-                              const void** address) override;
 
   // Implementation of Resolver::ResolveTarget.
   NTSTATUS ResolveTarget(const void* module,

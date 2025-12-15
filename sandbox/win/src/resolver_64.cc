@@ -86,11 +86,4 @@ bool ResolverThunk::SetInternalThunk(void* storage,
   return true;
 }
 
-NTSTATUS ResolverThunk::ResolveTarget(const void* module,
-                                      const char* function_name,
-                                      void** address) {
-  // We don't support sidestep & co.
-  return STATUS_NOT_IMPLEMENTED;
-}
-
 }  // namespace sandbox

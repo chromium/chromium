@@ -25,9 +25,7 @@ class EatResolverThunk : public ResolverThunk {
 
   // Implementation of Resolver::Setup.
   NTSTATUS Setup(const void* target_module,
-                 const void* interceptor_module,
                  const char* target_name,
-                 const char* interceptor_name,
                  const void* interceptor_entry_point,
                  void* thunk_storage,
                  size_t storage_bytes,
