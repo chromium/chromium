@@ -25,10 +25,10 @@ import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//content/browser/devtools/features.gni")
@@ -8736,6 +8736,7 @@ test("unit_tests") {
       "//components/media_effects/test:test_support",
       "//components/media_message_center:test_support",
       "//components/media_router/common:test_support",
+      "//components/on_device_translation/buildflags",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/permissions:test_support",
@@ -8751,7 +8752,6 @@ test("unit_tests") {
       "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
-      "//components/services/on_device_translation/buildflags",
       "//components/session_proto_db",
       "//components/sharing_message",
       "//components/signin/public/base:signin_buildflags",

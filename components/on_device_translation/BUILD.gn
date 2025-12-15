@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 
 assert(enable_on_device_translation)
 
@@ -22,8 +22,8 @@ source_set("unit_tests") {
 
   sources = [ "features_unittest.cc" ]
   deps = [
+    ":on_device_translation",
     "//base/test:test_support",
-    "//components/on_device_translation",
     "//testing/gmock",
     "//testing/gtest",
   ]

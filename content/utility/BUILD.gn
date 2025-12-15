@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -40,8 +40,8 @@ source_set("utility") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//components/on_device_translation/buildflags",
     "//components/optimization_guide/core:features",
-    "//components/services/on_device_translation/buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",

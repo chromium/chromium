@@ -61,6 +61,7 @@ include_rules = [
   "+components/services/unzip",
   "+components/user_data_importer/mojom",
   "+components/user_data_importer/content",
+  "+components/on_device_translation",
   "+components/webapps/services/web_app_origin_association",
   "+content/public/child",
   "+content/public/utility",

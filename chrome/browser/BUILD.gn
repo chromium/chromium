@@ -21,9 +21,9 @@ import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//content/public/common/features.gni")
 import("//crypto/features.gni")
@@ -8445,6 +8445,7 @@ static_library("browser_public_dependencies") {
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/input",
     "//components/media_router/common/mojom:media_controller",
+    "//components/on_device_translation/buildflags",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/page_image_service/mojom:mojo_bindings",
@@ -8458,7 +8459,6 @@ static_library("browser_public_dependencies") {
     "//components/safe_browsing:buildflags",
     "//components/saved_tab_groups/proto",
     "//components/search_engines",
-    "//components/services/on_device_translation/buildflags",
     "//components/services/storage/public/mojom",
     "//components/session_proto_db",
     "//components/sharing_message",

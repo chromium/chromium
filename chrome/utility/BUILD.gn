@@ -5,7 +5,7 @@
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -40,11 +40,11 @@ static_library("utility") {
     "//components/heap_profiling/in_process",
     "//components/metrics:child_call_stack_profile_builder",
     "//components/mirroring/service:mirroring_service",
+    "//components/on_device_translation/buildflags",
     "//components/paint_preview/buildflags",
     "//components/password_manager/services/csv_password:lib",
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
-    "//components/services/on_device_translation/buildflags",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
     "//components/services/unzip:lib",
