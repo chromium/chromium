@@ -518,7 +518,7 @@ public class FeedSurfaceCoordinator
         // above the RecyclerView.
         if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
             mNtpCustomizationButton = new ImageButton(mActivity);
-            mNtpCustomizationButton.setImageResource(R.drawable.bookmark_edit_active);
+            mNtpCustomizationButton.setImageResource(R.drawable.ic_edit_24dp);
             mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
             ImageViewCompat.setImageTintList(
                     mNtpCustomizationButton,

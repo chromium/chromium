@@ -154,7 +154,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 () -> onCopyLink(suggestion)),
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
-                                        mContext, R.drawable.bookmark_edit_active, true),
+                                        mContext, R.drawable.ic_edit_24dp, true),
                                 OmniboxResourceProvider.getString(
                                         mContext,
                                         isSearch
