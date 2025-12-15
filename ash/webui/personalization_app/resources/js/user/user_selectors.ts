@@ -43,7 +43,8 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
       const sharedMemory = value.sharedMemory;
       const {buffer, result} =
           sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
-      assert(result === Mojo.RESULT_OK, 'Could not map buffer');
+      assert(
+          result === Mojo.RESULT_OK, `Could not map buffer. error: ${result}`);
       bytes = new Uint8Array(buffer);
     }
 
