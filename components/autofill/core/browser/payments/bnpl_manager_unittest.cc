@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
@@ -2733,5 +2734,66 @@ TEST_F(BnplManagerTest, OnPurchaseAmountExtracted_CancelCallback) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_IOS)
+// Test that the `AiAmountExtraction.AmountInIssuerRange` histogram is logged
+// correctly when within range.
+TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_WithinRange) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+  OnIssuerSelected(test::GetTestLinkedBnplIssuer(IssuerId::kBnplAffirm));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(100'000'000, "USD"));
+
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Affirm",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+// Test that the `AiAmountExtraction.AmountInIssuerRange` histogram is logged
+// correctly when outside range.
+TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_OutsideRange) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+  OnIssuerSelected(test::GetTestLinkedBnplIssuer(IssuerId::kBnplZip));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(5'000'000, "USD"));
+
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Zip",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
+// Test that the `AiAmountExtraction.AmountInIssuerRange` histogram is logged
+// only once per page load.
+TEST_F(BnplManagerTest, LogAiAmountExtractedInIssuerRange_LogsOnlyOnce) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+  OnIssuerSelected(test::GetTestLinkedBnplIssuer(IssuerId::kBnplAffirm));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(100'000'000, "USD"));
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(100'000'000, "USD"));
+
+  histogram_tester_->ExpectUniqueSample(
+      "Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.Affirm",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::payments

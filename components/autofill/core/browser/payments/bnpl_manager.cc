@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
@@ -491,7 +492,18 @@ bool BnplManager::IssuerSelectedAndCheckoutAmountWithinRange() {
           price_range->price_lower_bound ||
       ongoing_flow_state_->final_checkout_amount >
           price_range->price_upper_bound) {
+    if (!has_logged_ai_amount_extracted_in_issuer_range_) {
+      autofill_metrics::LogAiAmountExtractedInIssuerRange(
+          /*is_within_range=*/false, ongoing_flow_state_->issuer->issuer_id());
+      has_logged_ai_amount_extracted_in_issuer_range_ = true;
+    }
     return false;
+  }
+
+  if (!has_logged_ai_amount_extracted_in_issuer_range_) {
+    autofill_metrics::LogAiAmountExtractedInIssuerRange(
+        /*is_within_range=*/true, ongoing_flow_state_->issuer->issuer_id());
+    has_logged_ai_amount_extracted_in_issuer_range_ = true;
   }
   return true;
 }

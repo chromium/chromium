@@ -2285,6 +2285,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange.{Issuer}"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the AI-based checkout amount is within the issuer's
+    transaction range. Recorded once per page load when AI amount extraction
+    completes.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+</histogram>
+
 <histogram name="Autofill.Bnpl.IssuersSyncedCount.Startup" units="issuers"
     expires_after="2026-06-01">
   <owner>yiwenqian@google.com</owner>

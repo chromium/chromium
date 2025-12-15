@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
 
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
@@ -29,6 +30,11 @@ enum class AiAmountExtractionResult {
 // and UKM
 void LogAiAmountExtractionResult(AiAmountExtractionResult result,
                                  ukm::SourceId ukm_source_id);
+
+// Logs if the amount extracted is within or outside the issuer's supported
+// range.
+void LogAiAmountExtractedInIssuerRange(bool is_within_range,
+                                       BnplIssuer::IssuerId issuer_id);
 
 }  // namespace autofill::autofill_metrics
 

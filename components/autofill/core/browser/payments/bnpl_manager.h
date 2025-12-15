@@ -312,6 +312,11 @@ class BnplManager {
   // logged. Ensures that logging occurs only once per page load.
   bool has_logged_bnpl_suggestion_unavailable_reason_ = false;
 
+  // Set to true after the first time it is logged whether an extracted amount
+  // is within an issuer's range. Ensures that logging occurs only once per
+  // page load.
+  bool has_logged_ai_amount_extracted_in_issuer_range_ = false;
+
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
