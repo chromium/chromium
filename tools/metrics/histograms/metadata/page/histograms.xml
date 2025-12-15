@@ -3966,8 +3966,8 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
-<histogram name="PageLoad.Internal.SoftNavigation.TotalPaintArea.{Status}"
-    units="pixels" expires_after="2026-06-05">
+<histogram name="PageLoad.Internal.SoftNavigation.{Status}.TotalPaintArea"
+    units="pixels" expires_after="2026-12-15">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3979,8 +3979,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Internal.SoftNavigation.TotalPaintAreaPoints.{Status}"
-    units="Points" expires_after="2026-06-05">
+    name="PageLoad.Internal.SoftNavigation.{Status}.TotalPaintAreaPoints"
+    units="Points" expires_after="2026-12-15">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
