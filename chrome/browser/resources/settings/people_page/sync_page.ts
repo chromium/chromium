@@ -358,7 +358,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
          (!!this.syncStatus_.hasError &&
           this.syncStatus_.statusAction !== StatusAction.ENTER_PASSPHRASE &&
           this.syncStatus_.statusAction !==
-              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS));
+              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
+          this.syncStatus_.statusAction !==
+              StatusAction.CONFIRM_SYNC_SETTINGS));
   }
 
   private computeSyncDisabledByAdmin_(): boolean {
