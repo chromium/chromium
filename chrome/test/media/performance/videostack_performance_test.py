@@ -13,10 +13,8 @@ and smoothness.
 
 import argparse
 import logging
-import multiprocessing
 import os
 import shutil
-import socket
 import subprocess
 import sys
 import time
@@ -106,7 +104,7 @@ def setup_test_environment(args, chrome_version):
     return driver, tunnel_proc
 
 # pylint: disable=too-many-locals
-def run_performance_test(video_file: str, framerate: int, driver: webdriver):
+def run_performance_test(video_file: str, driver: webdriver):
     """
     Runs a single video performance test by playing and recording the video.
 
@@ -116,7 +114,6 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
 
     Args:
         video_file (str): The name of the video file to be tested.
-        framerate (int): The framerate of the video.
         driver (webdriver.Remote): The Selenium WebDriver instance.
 
     Returns:
@@ -271,9 +268,7 @@ def main():
             logging.info("Starting test for video: %s", video['name'])
             rec_proc = None
             try:
-                rec_proc = run_performance_test(video['name'],
-                                                video['fps'],
-                                                driver)
+                rec_proc = run_performance_test(video['name'], driver)
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
                 raise

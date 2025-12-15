@@ -12,7 +12,6 @@ like dropped frames and smoothness.
 
 import argparse
 import logging
-import multiprocessing
 import os
 import shutil
 import subprocess
@@ -179,8 +178,7 @@ def start_tab_mirroring(driver, args):
     raise RuntimeError("Failed to start tab mirroring.")
 
 # pylint: disable=too-many-locals
-def run_performance_test(video_file: str, framerate: int,
-                         driver: webdriver, args):
+def run_performance_test(video_file: str, driver: webdriver, args):
     """
     Runs a single video performance test by casting and recording the video.
 
@@ -190,7 +188,6 @@ def run_performance_test(video_file: str, framerate: int,
 
     Args:
         video_file (str): The name of the video file to be tested.
-        framerate (int): The framerate of the video.
         driver (webdriver.Remote): The Selenium WebDriver instance.
         args: The parsed command-line arguments.
 
@@ -367,10 +364,7 @@ def main():
             logging.info("Starting test for video: %s", video['name'])
             rec_proc = None
             try:
-                rec_proc = run_performance_test(video['name'],
-                                                video['fps'],
-                                                driver,
-                                                args)
+                rec_proc = run_performance_test(video['name'], driver, args)
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
                 raise
@@ -382,4 +376,3 @@ def main():
 if __name__ == '__main__':
     with common.StartProcess(common.server.start, [common.SERVER_PORT], True):
         sys.exit(main())
-
