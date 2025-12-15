@@ -3650,9 +3650,10 @@ TEST_F(AIPageContentAgentTest, SVGWithText) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text,
+            "Hello SVG Text!");
 
   const auto& text_child = *svg.children_nodes[0];
   EXPECT_EQ(text_child.content_attributes->attribute_type,
@@ -3677,9 +3678,9 @@ TEST_F(AIPageContentAgentTest, SVGWithNoText) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_FALSE(svg.content_attributes->svg_data->inner_text);
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_FALSE(svg.content_attributes->svg_root_data->inner_text);
 
   // Only visible text nodes are extracted.
   EXPECT_EQ(svg.children_nodes.size(), 0u);
@@ -3712,9 +3713,10 @@ TEST_F(AIPageContentAgentTest, SVGSubtreeContainersAreKept) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text,
+            "Hello SVG Text!");
 
   ASSERT_EQ(svg.children_nodes.size(), 1u);
   const auto& a_child = *svg.children_nodes[0];

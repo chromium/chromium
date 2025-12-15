@@ -33,7 +33,9 @@ enum AIPageContentAttributeType {
 
   // Image chunks.
   kImage,
-  kSVG,
+
+  // Root SVG nodes.
+  kSvgRoot,
   kCanvas,
   kVideo,
 
@@ -297,7 +299,7 @@ struct AIPageContentImageInfo {
   url.mojom.Origin? source_origin;
 };
 
-struct AIPageContentSVGData {
+struct AIPageContentSvgRootData {
   // Provides the concatenated string for the text inside an SVG tree.
   string? inner_text;
 };
@@ -470,8 +472,8 @@ struct AIPageContentAttributes {
   // Only set if attribute_type is kImage.
   AIPageContentImageInfo? image_info;
 
-  // Only set if attribute_type is kSVG.
-  AIPageContentSVGData? svg_data;
+  // Only set if attribute_type is kSvgRoot.
+  AIPageContentSvgRootData? svg_root_data;
 
   // Only set if attribute_type is kCanvas.
   AIPageContentCanvasData? canvas_data;

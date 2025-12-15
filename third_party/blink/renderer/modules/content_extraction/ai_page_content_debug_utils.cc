@@ -32,8 +32,8 @@ const char* AttributeTypeToString(
       return "Heading";
     case mojom::blink::AIPageContentAttributeType::kImage:
       return "Image";
-    case mojom::blink::AIPageContentAttributeType::kSVG:
-      return "SVG";
+    case mojom::blink::AIPageContentAttributeType::kSvgRoot:
+      return "SvgRoot";
     case mojom::blink::AIPageContentAttributeType::kCanvas:
       return "Canvas";
     case mojom::blink::AIPageContentAttributeType::kVideo:

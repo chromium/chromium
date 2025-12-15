@@ -536,7 +536,7 @@ bool ShouldSkipDescendants(
   // If the feature is disabled, we don't capture the SVG layout internally so
   // there's no need to walk their tree.
   if (content_node->content_attributes->attribute_type ==
-          mojom::blink::AIPageContentAttributeType::kSVG &&
+          mojom::blink::AIPageContentAttributeType::kSvgRoot &&
       !RuntimeEnabledFeatures::AIPageContentIncludeSVGSubtreeEnabled()) {
     return true;
   }
@@ -604,7 +604,8 @@ void ProcessImageNode(const LayoutObject& layout_image,
 
 void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
                     mojom::blink::AIPageContentAttributes& attributes) {
-  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kSVG;
+  attributes.attribute_type =
+      mojom::blink::AIPageContentAttributeType::kSvgRoot;
   CHECK(IsVisible(layout_svg));
 
   auto* element = DynamicTo<Element>(layout_svg.GetNode());
@@ -612,11 +613,11 @@ void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
     return;
   }
 
-  auto svg_data = mojom::blink::AIPageContentSVGData::New();
+  auto svg_root_data = mojom::blink::AIPageContentSvgRootData::New();
   // TODO(b/452908424): Consider removing this given that the inner text is
   // available in the text nodes.
-  svg_data->inner_text = element->GetInnerTextWithoutUpdate();
-  attributes.svg_data = std::move(svg_data);
+  svg_root_data->inner_text = element->GetInnerTextWithoutUpdate();
+  attributes.svg_root_data = std::move(svg_root_data);
 }
 
 void ProcessCanvasNode(const LayoutHTMLCanvas& layout_canvas,

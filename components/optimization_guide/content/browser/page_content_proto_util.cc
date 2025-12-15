@@ -179,7 +179,7 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR;
     case blink::mojom::AIPageContentAttributeType::kImage:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
-    case blink::mojom::AIPageContentAttributeType::kSVG:
+    case blink::mojom::AIPageContentAttributeType::kSvgRoot:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_SVG;
     case blink::mojom::AIPageContentAttributeType::kCanvas:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS;
@@ -401,10 +401,11 @@ void ConvertImageInfo(
   }
 }
 
-void ConvertSVGData(const blink::mojom::AIPageContentSVGData& mojom_svg_data,
-                    optimization_guide::proto::SVGData* proto_svg_data) {
-  if (mojom_svg_data.inner_text) {
-    proto_svg_data->set_inner_text(*mojom_svg_data.inner_text);
+void ConvertSvgRootData(
+    const blink::mojom::AIPageContentSvgRootData& mojom_svg_root_data,
+    optimization_guide::proto::SVGData* proto_svg_data) {
+  if (mojom_svg_root_data.inner_text) {
+    proto_svg_data->set_inner_text(*mojom_svg_root_data.inner_text);
   }
 }
 
@@ -684,13 +685,13 @@ base::expected<void, std::string> ConvertAttributes(
     }
     ConvertImageInfo(*mojom_attributes.image_info,
                      proto_attributes->mutable_image_data());
-  } else if (mojom_attributes.svg_data) {
+  } else if (mojom_attributes.svg_root_data) {
     if (mojom_attributes.attribute_type !=
-        blink::mojom::AIPageContentAttributeType::kSVG) {
-      return base::unexpected("svg_data present, but node isn't kSvg");
+        blink::mojom::AIPageContentAttributeType::kSvgRoot) {
+      return base::unexpected("svg_root_data present, but node isn't kSvgRoot");
     }
-    ConvertSVGData(*mojom_attributes.svg_data,
-                   proto_attributes->mutable_svg_data());
+    ConvertSvgRootData(*mojom_attributes.svg_root_data,
+                       proto_attributes->mutable_svg_data());
   } else if (mojom_attributes.canvas_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kCanvas) {
