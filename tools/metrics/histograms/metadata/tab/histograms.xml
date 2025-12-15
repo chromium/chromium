@@ -1050,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
-    expires_after="2025-12-28">
+    expires_after="2026-12-15">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1104,7 +1104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage"
-    units="%" expires_after="2025-12-14">
+    units="%" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1261,7 +1261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Negative"
-    units="tabs" expires_after="2026-04-20">
+    units="tabs" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Positive"
-    units="tabs" expires_after="2026-04-20">
+    units="tabs" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1308,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroupTabTimeSinceModification"
-    units="minutes" expires_after="2026-05-17">
+    units="minutes" expires_after="2026-12-15">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1363,7 +1363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Shared.LastTabClosed2" enum="Boolean"
-    expires_after="2026-04-05">
+    expires_after="2026-12-15">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1486,7 +1486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SpecificsToDataMigration.ParseFailurePercentage"
-    units="%" expires_after="2025-12-14">
+    units="%" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1555,7 +1555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.GroupClosedByUser.HasTitle"
-    enum="BooleanHasTitle" expires_after="2025-04-06">
+    enum="BooleanHasTitle" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1776,7 +1776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2026-06-07">
+    enum="DeviceType" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1786,7 +1786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2026-06-07">
+    enum="DeviceType" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1797,7 +1797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.TabSelected.TabCreateOrigin"
-    enum="DeviceType" expires_after="2026-06-07">
+    enum="DeviceType" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1808,7 +1808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2026-06-07">
+    enum="DeviceType" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1818,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.UserInteracted.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2026-06-07">
+    enum="DeviceType" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1829,7 +1829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.UserInteracted.HasTitle"
-    enum="BooleanHasTitle" expires_after="2026-06-07">
+    enum="BooleanHasTitle" expires_after="2026-12-15">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1936,7 +1936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
-    expires_after="2025-05-11">
+    expires_after="2026-12-15">
   <owner>sophiechang@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
