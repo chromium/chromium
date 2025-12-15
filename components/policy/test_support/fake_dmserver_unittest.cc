@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -96,6 +97,54 @@ constexpr std::string_view kSHA256HashForExtensionPolicyPayload(
     "\x4b\x91\x2b\x73\x1a\x5c\x85\x72\xa8\xf2\x87\x4a\xbc\x44",
     32);
 
+class Response {
+ public:
+  Response(int status, std::string mime_type, std::string raw_body)
+      : status(status), mime_type_(std::move(mime_type)) {
+    if (mime_type_ == "application/x-protobuffer") {
+      body = em::DeviceManagementResponse();
+      proto_parse_success_ =
+          std::get<em::DeviceManagementResponse>(body).ParseFromString(
+              raw_body);
+    } else {
+      body = std::move(raw_body);
+    }
+  }
+
+  void AssertValidProto() {
+    ASSERT_EQ(mime_type_, "application/x-protobuffer");
+    ASSERT_TRUE(proto_parse_success_) << "Proto parsing failed.";
+    ASSERT_TRUE(is_proto());
+  }
+
+  void AssertText() {
+    ASSERT_EQ(mime_type_, "text/plain");
+    ASSERT_TRUE(is_text());
+  }
+
+  const em::DeviceManagementResponse& proto() const {
+    CHECK(is_proto());
+    return std::get<em::DeviceManagementResponse>(body);
+  }
+
+  const std::string& text() const {
+    CHECK(is_text());
+    return std::get<std::string>(body);
+  }
+
+  int status;
+  std::variant<std::string, em::DeviceManagementResponse> body;
+
+ private:
+  bool is_proto() const {
+    return std::holds_alternative<em::DeviceManagementResponse>(body);
+  }
+  bool is_text() const { return std::holds_alternative<std::string>(body); }
+
+  bool proto_parse_success_;
+  std::string mime_type_;
+};
+
 }  // namespace
 
 // TODO(b/239676448): Add missing unittest for Writing to Pipe.
@@ -115,8 +164,10 @@ class FakeDMServerTest : public testing::Test {
     grpc_unix_socket_uri_ = "unix:///tmp/fake_dmserver_grpc.sock";
   }
 
-  // TODO(b/240445061): Check response content to verify the returned policy.
-  int SendRequest(const GURL& server_url, const std::string& request_path) {
+  Response SendRequest(
+      const GURL& server_url,
+      const std::string& request_path,
+      std::optional<em::DeviceManagementRequest> request_proto = std::nullopt) {
     std::string request_url =
         base::StringPrintf("http://%s:%s%s", server_url.GetHost().c_str(),
                            server_url.GetPort().c_str(), request_path.c_str());
@@ -130,19 +181,30 @@ class FakeDMServerTest : public testing::Test {
     std::unique_ptr<network::SimpleURLLoader> url_loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
+    if (request_proto) {
+      std::string body;
+      CHECK(request_proto->SerializeToString(&body));
+      url_loader->AttachStringForUpload(body, "application/x-protobuffer");
+    }
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
 
     base::test::TestFuture<std::optional<std::string>> test_future;
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(), test_future.GetCallback());
-    const std::optional<std::string> response_body = test_future.Take();
+    std::optional<std::string> response_body = test_future.Take();
     if (response_body) {
       LOG(INFO) << "Response body: " << *response_body;
     }
     LOG(INFO) << "Response headers: "
               << url_loader->ResponseInfo()->headers->raw_headers();
-    return url_loader->ResponseInfo()->headers->response_code();
+    int response_code = url_loader->ResponseInfo()->headers->response_code();
+    if (response_body) {
+      std::string mime_type;
+      CHECK(url_loader->ResponseInfo()->headers->GetMimeType(&mime_type));
+      return Response(response_code, mime_type, std::move(*response_body));
+    }
+    return Response(response_code, "", "");
   }
 
  protected:
@@ -162,8 +224,10 @@ TEST_F(FakeDMServerTest, HandleExitRequestSucceeds) {
   EXPECT_TRUE(fake_dmserver.Start());
 
   EXPECT_CALL(callback, Run());
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(), "/test/exit"),
-            net::HTTP_OK);
+  Response response = SendRequest(fake_dmserver.GetServiceURL(), "/test/exit");
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertText());
+  EXPECT_EQ(response.text(), "Policy Server exited.");
 }
 
 TEST_F(FakeDMServerTest, HandlePingRequestSucceeds) {
@@ -172,8 +236,10 @@ TEST_F(FakeDMServerTest, HandlePingRequestSucceeds) {
                              grpc_unix_socket_uri_);
   EXPECT_TRUE(fake_dmserver.Start());
 
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(), "/test/ping"),
-            net::HTTP_OK);
+  Response response = SendRequest(fake_dmserver.GetServiceURL(), "/test/ping");
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertText());
+  EXPECT_EQ(response.text(), "Pong.");
 }
 
 TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
@@ -189,10 +255,15 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
     }
   )"));
 
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
-                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
-            net::HTTP_OK);
+  Response response = SendRequest(fake_dmserver.GetServiceURL(),
+                                  "/?apptype=Chrome&deviceid=fake_device_id&"
+                                  "devicetype=2&oauth_token=fake_policy_token&"
+                                  "request=register");
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  EXPECT_TRUE(response.proto().has_register_response());
+  EXPECT_EQ(response.proto().register_response().machine_name(),
+            " - fake_device_id");
 
   // Check if the data of the registered client is correct and written to the
   // client state file.
@@ -253,7 +324,8 @@ TEST_F(FakeDMServerTest, ReadClientStateFileWithWrongJSONDataFails) {
   ASSERT_TRUE(base::WriteFile(client_state_path_, "wrong data"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -266,7 +338,8 @@ TEST_F(FakeDMServerTest, ReadClientStateFileWithNonDictFileFails) {
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"([ "1", "2" ])"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -280,7 +353,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonDictValueFails) {
                               R"({ "fake_device_id" : "not dict" })"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -295,7 +369,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithOnlyDeviceIDFails) {
       R"({ "fake_device_id" : { "device_id" : "fake_device_id" } })"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -309,7 +384,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringDeviceIDFails) {
                               R"({ "fake_device_id" : { "device_id" : 7 } })"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -332,7 +408,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithoutStateKeyListFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -356,13 +433,14 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-  client_state_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII(),
                              grpc_unix_socket_uri_);
   EXPECT_TRUE(fake_dmserver.Start());
 
@@ -379,7 +457,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_OK);
 }
 
@@ -401,6 +480,11 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
       }
     }
   )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=register")
+                .status,
+            net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
@@ -411,24 +495,25 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
 
   ASSERT_TRUE(base::WriteFile(
       policy_blob_path_,
-      R"(
+      base::StringPrintf(
+          R"(
     {
       "managed_users" : [ "*" ],
       "policy_user" : "tast-user@managedchrome.com",
       "policies" : [
         {
-          "policy_type" : "google/chromeos/user", "value" : "uhMCEAE="
+          "policy_type" : "%s", "value" : "uhMCEAE="
         }, {
           "policy_type" : "google/chromeos/device",
           "value" : "qgFSCikSJWRlZmF1bHRNZ3NTZXRCeVRhc3RAbWFuYWdlZGNocm9tZS5jb)"
-      R"(20YABIlZGVmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ=="
+          R"(20YABIlZGVmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ=="
         }, {
           "entity_id" : "accountid@managedchrome.com",
           "policy_type" : "google/chromeos/publicaccount",
           "value" : "ojCsARKpAXsiaGFzaCI6IjdhMDUyYzVlNGYyM2MxNTk2NjgxNDhkZjJhM)"
-      R"(2MyMDJiZWQ0ZDY1NzQ5Y2FiNWVjZDBmYTdkYjIxMWMxMmEzYjgiLCJ1cmwiOiJodHRwcz)"
-      R"(ovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vY2hyb21pdW1vcy10ZXN0LWFzc2V0cy1wdWJ)"
-      R"(saWMvZW50ZXJwcmlzZS9wcmludGVycy5qc29uIn0="
+          R"(2MyMDJiZWQ0ZDY1NzQ5Y2FiNWVjZDBmYTdkYjIxMWMxMmEzYjgiLCJ1cmwiOiJodHRwcz)"
+          R"(ovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vY2hyb21pdW1vcy10ZXN0LWFzc2V0cy1wdWJ)"
+          R"(saWMvZW50ZXJwcmlzZS9wcmludGVycy5qc29uIn0="
         }
       ],
       "current_key_index": 1,
@@ -448,8 +533,11 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
         }
       }
     }
-  )"));
-  ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
+  )",
+          policy::dm_protocol::GetChromeUserPolicyType())));
+  ASSERT_TRUE(base::WriteFile(
+      client_state_path_,
+      base::StringPrintf(R"(
     {
       "fake_device_id" : {
         "device_id" : "fake_device_id",
@@ -458,28 +546,52 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
         "username" : "tast-user@managedchrome.com",
         "state_keys" : [ "fake_state_key" ],
         "allowed_policy_types" : [ "google/chrome/extension",
-        "google/chromeos/user" ]
+        "%s", "google/chromeos/device", "google/chromeos/publicaccount" ]
       }
     }
-  )"));
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
-                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
-            net::HTTP_OK);
+  )",
+                         policy::dm_protocol::GetChromeUserPolicyType())));
 
-  std::string user_policy_payload =
-      fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/user",
-                                                       "");
-  std::string user_policy_output = base::Base64Encode(user_policy_payload);
-  EXPECT_EQ(user_policy_output, "uhMCEAE=");
+  {
+    em::DeviceManagementRequest request_proto;
+    request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+        policy::dm_protocol::GetChromeUserPolicyType());
+    Response response =
+        SendRequest(fake_dmserver.GetServiceURL(),
+                    "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                    "oauth_token=fake_policy_token&request=policy",
+                    std::move(request_proto));
+    EXPECT_EQ(response.status, net::HTTP_OK);
+    ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+    EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        response.proto().policy_response().responses(0).policy_data()));
+    EXPECT_EQ(policy_data.policy_type(),
+              policy::dm_protocol::GetChromeUserPolicyType());
+    EXPECT_EQ(base::Base64Encode(policy_data.policy_value()), "uhMCEAE=");
+  }
 
-  std::string device_policy_payload =
-      fake_dmserver.policy_storage()->GetPolicyPayload("google/chromeos/device",
-                                                       "");
-  std::string device_policy_output = base::Base64Encode(device_policy_payload);
-  EXPECT_EQ(device_policy_output,
-            "qgFSCikSJWRlZmF1bHRNZ3NTZXRCeVRhc3RAbWFuYWdlZGNocm9tZS5jb20YABIlZG"
-            "VmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ==");
+  {
+    em::DeviceManagementRequest request_proto;
+    request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+        "google/chromeos/device");
+    Response response =
+        SendRequest(fake_dmserver.GetServiceURL(),
+                    "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                    "oauth_token=fake_policy_token&request=policy",
+                    std::move(request_proto));
+    EXPECT_EQ(response.status, net::HTTP_OK);
+    ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+    EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        response.proto().policy_response().responses(0).policy_data()));
+    EXPECT_EQ(
+        base::Base64Encode(policy_data.policy_value()),
+        "qgFSCikSJWRlZmF1bHRNZ3NTZXRCeVRhc3RAbWFuYWdlZGNocm9tZS5jb20YABIlZG"
+        "VmYXVsdE1nc1NldEJ5VGFzdEBtYW5hZ2VkY2hyb21lLmNvbQ==");
+  }
 
   std::string publicaccount_policy_payload =
       fake_dmserver.policy_storage()->GetPolicyPayload(
@@ -529,7 +641,7 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
       initial_enrollment_state->initial_enrollment_mode,
       static_cast<enterprise_management::DeviceInitialEnrollmentStateResponse::
                       InitialEnrollmentMode>(2));
-}
+  }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
@@ -565,7 +677,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -589,25 +702,41 @@ TEST_F(FakeDMServerTest, HandleExternalPolicyRequestSucceeds) {
       }
     }
   )"));
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
-                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
-            net::HTTP_OK);
 
-  std::string policy_data = fake_dmserver.policy_storage()->GetPolicyPayload(
-      "google/chrome/extension", "ibdnofdagboejmpijdiknapcihkomkki");
-  ASSERT_FALSE(policy_data.empty());
-  enterprise_management::ExternalPolicyData data;
-  ASSERT_TRUE(data.ParseFromString(policy_data));
-  EXPECT_EQ(data.secure_hash(), kSHA256HashForExtensionPolicyPayload);
-  // TODO(b/240445061): Write an integration test that issues a request to the
-  // returned URL and verifies that it returns correct policy.
-  ASSERT_TRUE(data.has_download_url());
+  em::DeviceManagementRequest request_proto;
+  auto* policy_request = request_proto.mutable_policy_request()->add_requests();
+  policy_request->set_policy_type("google/chrome/extension");
+  policy_request->set_settings_entity_id("ibdnofdagboejmpijdiknapcihkomkki");
+  Response response =
+      SendRequest(fake_dmserver.GetServiceURL(),
+                  "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                  "oauth_token=fake_policy_token&request=policy",
+                  std::move(request_proto));
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+  em::PolicyFetchResponse policy_fetch_response =
+      response.proto().policy_response().responses(0);
 
-  std::string extension_policy_payload =
-      fake_dmserver.policy_storage()->GetExternalPolicyPayload(
-          "google/chrome/extension", "ibdnofdagboejmpijdiknapcihkomkki");
-  EXPECT_EQ(extension_policy_payload, kRawExtensionPolicyPayload);
+  em::PolicyData policy_data;
+  ASSERT_TRUE(policy_data.ParseFromString(
+      response.proto().policy_response().responses(0).policy_data()));
+  EXPECT_EQ(policy_data.policy_type(), "google/chrome/extension");
+
+  em::ExternalPolicyData external_policy_data;
+  ASSERT_TRUE(external_policy_data.ParseFromString(policy_data.policy_value()));
+  EXPECT_TRUE(external_policy_data.has_download_url());
+  EXPECT_EQ(external_policy_data.secure_hash(),
+            kSHA256HashForExtensionPolicyPayload);
+  ASSERT_TRUE(external_policy_data.has_download_url());
+
+  GURL download_url(external_policy_data.download_url());
+  ASSERT_TRUE(download_url.is_valid());
+  Response second_response =
+      SendRequest(fake_dmserver.GetServiceURL(), download_url.PathForRequest());
+  EXPECT_EQ(second_response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(second_response.AssertText());
+  EXPECT_EQ(second_response.text(), kRawExtensionPolicyPayload);
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithWrongJSONDataFails) {
@@ -619,7 +748,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithWrongJSONDataFails) {
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, "wrong data"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -632,7 +762,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictFileFails) {
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"([ "1", "2" ])"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -650,7 +781,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictPoliciesFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -668,7 +800,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictExternalPoliciesFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -692,7 +825,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntRequestErrorFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -717,7 +851,8 @@ TEST_F(FakeDMServerTest,
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -745,7 +880,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonStringManagementDomainFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -774,7 +910,8 @@ TEST_F(FakeDMServerTest,
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -798,7 +935,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntCurrentKeyIndexFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -818,7 +956,8 @@ TEST_F(FakeDMServerTest, SetPolicyPayloadWithoutValueOrTypeFieldFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -838,7 +977,8 @@ TEST_F(FakeDMServerTest, SetPolicyPayloadWithNonBase64ValueFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -862,7 +1002,8 @@ TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithoutValueOrTypeFieldFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
@@ -886,7 +1027,8 @@ TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithNonBase64ValueFails) {
   )"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
                         "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=policy"),
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
