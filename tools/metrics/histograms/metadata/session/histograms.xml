@@ -83,6 +83,9 @@ chromium-metrics-reviews@google.com.
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
+    Warning: This histogram is broken on Android, please use Session.IsActive2
+    there instead.
+
     Was a browsing session active when the UMA record was captured? This metric
     is recorded with every UMA log upload when the session tracker is running
     (which, in principle, should always be the case). This metric is NOT
@@ -91,6 +94,28 @@ chromium-metrics-reviews@google.com.
     previous session but not uploaded during the previous session).
 
     Recorded on Android, iOS, Windows, Mac, and Linux.
+
+    For information on what's considered &quot;active&quot;, see the histogram
+    description for Session.TotalDuration.
+  </summary>
+</histogram>
+
+<histogram name="Session.IsActive2" enum="BooleanActive"
+    expires_after="2026-05-03">
+  <owner>rogerm@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Fixes an issue with Session.IsActive where foreground Sessions were not
+    marked as active on Android.
+
+    Was a browsing session active when the UMA record was captured? This metric
+    is recorded with every UMA log upload when the session tracker is running
+    (which, in principle, should always be the case). This metric is NOT
+    recorded in logs that reflect information from a previous session (i.e.,
+    &quot;stability logs&quot; or &quot;persistent UMA&quot; data related to the
+    previous session but not uploaded during the previous session).
+
+    Recorded only on Android.
 
     For information on what's considered &quot;active&quot;, see the histogram
     description for Session.TotalDuration.

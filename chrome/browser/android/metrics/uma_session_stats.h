@@ -99,6 +99,7 @@ class UmaSessionStats {
 
   SessionTimeTracker session_time_tracker_;
   int active_session_count_ = 0;
+  bool closing_active_session_ = false;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_METRICS_UMA_SESSION_STATS_H_

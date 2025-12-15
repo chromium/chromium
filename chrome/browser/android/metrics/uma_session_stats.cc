@@ -121,10 +121,11 @@ void UmaSessionStats::UmaResumeSession(JNIEnv* env) {
 }
 
 void UmaSessionStats::UmaEndSession(JNIEnv* env) {
-  --active_session_count_;
-  DCHECK_GE(active_session_count_, 0);
-
-  if (active_session_count_ == 0) {
+  // Only close the record if this is the last session.
+  if (active_session_count_ == 1) {
+    // closing_active_session_ maintains the previous (incorrect) behavior of
+    // Session.IsActive.
+    base::AutoReset<bool> auto_reset(&closing_active_session_, true);
     const base::TimeDelta duration =
         session_time_tracker_.EndForegroundSession();
 
@@ -149,6 +150,14 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env) {
     // background session time toward the previous log.
     session_time_tracker_.BeginBackgroundSession();
   }
+
+  // This function closes the UMA log, which in turn calls
+  // ProvideCurrentSessionData() on all metrics providers, where we record
+  // Session.IsActive.
+  // Decrement session count after collecting session metrics or
+  // Session.IsActive will be wrong.
+  --active_session_count_;
+  DCHECK_GE(active_session_count_, 0);
 }
 
 void UmaSessionStats::FlushSession(JNIEnv* env) {
@@ -164,7 +173,16 @@ void UmaSessionStats::FlushSession(JNIEnv* env) {
 }
 
 void UmaSessionStats::ProvideCurrentSessionData() {
-  base::UmaHistogramBoolean("Session.IsActive", active_session_count_ != 0);
+  // Session.IsActive historically gave the wrong value when closing an active
+  // session as we decremented the session count before closing the session.
+  // Maintain the incorrect logic for the old version of the histogram.
+  // TODO(https://crbug.com/464285583): Deprecate Session.IsActive on all
+  // platforms and replace it with Session.IsActive2 after we measure any
+  // metrics shifts.
+  base::UmaHistogramBoolean(
+      "Session.IsActive",
+      active_session_count_ > (closing_active_session_ ? 1 : 0));
+  base::UmaHistogramBoolean("Session.IsActive2", active_session_count_ != 0);
 
   // We record Session.Background.TotalDuration here to ensure each UMA log
   // containing a background session contains this histogram.
