@@ -29,6 +29,7 @@
 #include "ui/views/widget/widget.h"
 
 class Browser;
+class SkRegion;
 
 namespace content {
 class RenderFrameHost;
@@ -173,6 +174,8 @@ class GlicWindowController {
   // documentation.
   virtual void AddGlobalStateObserver(PanelStateObserver* observer) = 0;
   virtual void RemoveGlobalStateObserver(PanelStateObserver* observer) = 0;
+
+  virtual void SetDraggableRegion(const SkRegion& region) = 0;
 };
 
 // This class owns and manages the glic window. This class has the same lifetime

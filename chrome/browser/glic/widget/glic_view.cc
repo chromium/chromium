@@ -25,6 +25,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_variant.h"
 #include "ui/events/event_observer.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
@@ -82,7 +83,15 @@ void GlicView::SetDraggableAreas(
   draggable_areas_.assign(draggable_areas.begin(), draggable_areas.end());
 }
 
+void GlicView::SetDraggableRegion(const SkRegion& region) {
+  draggable_region_ = region;
+}
+
 bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
+  if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
+    return draggable_region_.contains(point.x(), point.y());
+  }
+
   for (const gfx::Rect& rect : draggable_areas_) {
     if (rect.Contains(point)) {
       return true;

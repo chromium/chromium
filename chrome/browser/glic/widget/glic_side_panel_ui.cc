@@ -27,6 +27,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/views/view.h"
 
 namespace glic {
@@ -134,6 +135,10 @@ void GlicSidePanelUi::Resize(const gfx::Size& size,
 
 void GlicSidePanelUi::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
+  NOTIMPLEMENTED();
+}
+
+void GlicSidePanelUi::SetDraggableRegion(const SkRegion& draggable_region) {
   NOTIMPLEMENTED();
 }
 

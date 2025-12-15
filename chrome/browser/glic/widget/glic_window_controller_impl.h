@@ -37,6 +37,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class SkRegion;
 class Browser;
 class WindowFinder;
 namespace gfx {
@@ -97,6 +98,8 @@ class GlicWindowControllerImpl
   void RemoveStateObserver(StateObserver* observer) override;
   void AddGlobalStateObserver(PanelStateObserver* observer) override;
   void RemoveGlobalStateObserver(PanelStateObserver* observer) override;
+  void SetDraggableRegion(const SkRegion& draggable_region) override;
+
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
 
