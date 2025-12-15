@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.filters.MediumTest;
@@ -51,6 +52,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -69,6 +71,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -216,8 +219,24 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
+    public void testPrimaryButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
+        testPrimaryButtonClick(accessPoint, R.id.signin_promo_primary_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testPrimaryButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
+        testPrimaryButtonClick(accessPoint, R.id.sync_promo_signin_button);
+    }
+
+    private void testPrimaryButtonClick(
+            @SigninAccessPoint int accessPoint, @IdRes int primaryButtonId) {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Continued.Count."
@@ -230,7 +249,7 @@ public class SigninPromoCoordinatorTest {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
-        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+        onView(withId(primaryButtonId)).perform(click());
 
         @HistorySyncConfig.OptInMode
         int historyOptInMode =
@@ -258,12 +277,29 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
+    public void testSigninBottomSheetStrings_compactPromo(@SigninAccessPoint int accessPoint) {
+        testSigninBottomSheetStrings(accessPoint, R.id.signin_promo_primary_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testSigninBottomSheetStrings_seamlessSigninDisabled(
+            @SigninAccessPoint int accessPoint) {
+        testSigninBottomSheetStrings(accessPoint, R.id.sync_promo_signin_button);
+    }
+
+    private void testSigninBottomSheetStrings(
+            @SigninAccessPoint int accessPoint, @IdRes int primaryButtonId) {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
-        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+        onView(withId(primaryButtonId)).perform(click());
 
         // Extract the config passed to the sign-in flow launcher.
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
@@ -308,7 +344,21 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
+    public void testBookmarksAccountSettingsPromoPrimaryButtonClick_compactPromo() {
+        testBookmarksAccountSettingsPromoPrimaryButtonClick(R.id.signin_promo_primary_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testBookmarksAccountSettingsPromoPrimaryButtonClick_seamlessSigninDisabled() {
+        testBookmarksAccountSettingsPromoPrimaryButtonClick(R.id.sync_promo_signin_button);
+    }
+
+    private void testBookmarksAccountSettingsPromoPrimaryButtonClick(@IdRes int primaryButtonId) {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -330,7 +380,7 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
         ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
 
-        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+        onView(withId(primaryButtonId)).perform(click());
 
         verify(mOnOpenSettings).run();
         histogramWatcher.assertExpected();
@@ -339,10 +389,11 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSecondaryButtonClick(@SigninAccessPoint int accessPoint) {
+    public void testSecondaryButtonClick_twoButtonsPromo(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // The history page promo doesn't have a secondary button.
+            // The history page promo is hidden for non-signed in accounts.
             return;
         }
         var histogramWatcher =
@@ -361,12 +412,64 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
-        // TODO(crbug.com/448227402): remove this check once Seamless Sign-in is launched
+        onView(withId(R.id.signin_promo_secondary_button)).perform(click());
+
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
+        verify(mLauncher)
+                .createBottomSheetSigninIntentOrShowError(
+                        eq(mActivityTestRule.getActivity()),
+                        eq(mProfile),
+                        configCaptor.capture(),
+                        eq(accessPoint));
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
+        assertEquals(
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
+        assertEquals(
+                accessPoint == SigninAccessPoint.RECENT_TABS
+                        ? HistorySyncConfig.OptInMode.REQUIRED
+                        : HistorySyncConfig.OptInMode.NONE,
+                config.historyOptInMode);
+        assertNull(config.selectedCoreAccountId);
+        histogramWatcher.assertExpected();
+        impressionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testSecondaryButtonClick_seamlessSigninDisabled(
+            @SigninAccessPoint int accessPoint) {
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // The history page promo is hidden for non-signed in accounts.
+            return;
+        }
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.Promo.ImpressionsUntil.Continued."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .expectIntRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1)
+                        .build();
+        var impressionHistogramWatcher =
+                getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setUpSignInPromo(accessPoint);
+
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
+            // Recent tabs doesn't support secondary button for non seamless sign-in.
             onView(withId(R.id.sync_promo_choose_account_button))
                     .check(ViewAssertions.matches(not(isDisplayed())));
             return;
         }
+
         onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
@@ -389,7 +492,43 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden() {
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
+    public void testHistoryPagePromoSecondaryButtonHidden_twoButtonsPromo() {
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
+        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
+        onView(withId(R.id.signin_promo_secondary_button))
+                .check(ViewAssertions.matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testHistoryPagePromoSecondaryButtonHidden_seamlessSigninDisabled() {
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
+        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
+        onView(withId(R.id.sync_promo_choose_account_button))
+                .check(ViewAssertions.matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
+    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden_twoButtonsPromo() {
+        testBookmarksAccountSettingsPromoSecondaryButtonHidden(R.id.signin_promo_secondary_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden_seamlessSigninDisabled() {
+        testBookmarksAccountSettingsPromoSecondaryButtonHidden(
+                R.id.sync_promo_choose_account_button);
+    }
+
+    private void testBookmarksAccountSettingsPromoSecondaryButtonHidden(
+            @IdRes int secondaryButtonId) {
         var histogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
@@ -399,15 +538,30 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
 
         ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
-        onView(withId(R.id.sync_promo_choose_account_button))
-                .check(ViewAssertions.matches(not(isDisplayed())));
+        onView(withId(secondaryButtonId)).check(ViewAssertions.matches(not(isDisplayed())));
         histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
+    public void testDismissButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
+        testDismissButtonClick(accessPoint, R.id.signin_promo_dismiss_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testDismissButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
+        testDismissButtonClick(accessPoint, R.id.sync_promo_close_button);
+    }
+
+    private void testDismissButtonClick(
+            @SigninAccessPoint int accessPoint, @IdRes int dismissButtonId) {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -427,13 +581,13 @@ public class SigninPromoCoordinatorTest {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
-        // TODO(crbug.com/448227402): remove this check once Seamless Sign-in is launched
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
-            onView(withId(R.id.sync_promo_close_button))
-                    .check(ViewAssertions.matches(not(isDisplayed())));
+            // Recent tabs doesn't support dismiss button.
+            onView(withId(dismissButtonId)).check(ViewAssertions.matches(not(isDisplayed())));
             return;
         }
-        onView(withId(R.id.sync_promo_close_button)).perform(click());
+
+        onView(withId(dismissButtonId)).perform(click());
 
         verify(mOnPromoStateChange).run();
         String preferenceName = getAccessPointDismissPreferenceName(accessPoint);

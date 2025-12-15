@@ -98,6 +98,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -385,6 +386,9 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    // TODO(crbug.com/469006865): The seamless sign-in promo is moved out of the Feed into the NTP.
+    // This test validates the *legacy* in-feed sign-in promo logic.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_AccountsNotReady() {
         try (var unused = mSigninTestRule.blockGetAccountsUpdate(false)) {
             openNewTabPage();
@@ -409,6 +413,9 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    // TODO(crbug.com/469006865): The seamless sign-in promo is moved out of the Feed into the NTP.
+    // This test validates the *legacy* in-feed sign-in promo logic.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_NotShownAfterSignIn() {
         openNewTabPage();
         // Check that the sign-in promo is displayed.

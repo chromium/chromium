@@ -34,6 +34,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -47,6 +49,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -96,10 +99,24 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
-    public void testPromoNotShownAfterBeingDismissed() {
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
+    public void testPromoNotShownAfterBeingDismissed_compactPromo() {
+        testPromoNotShownAfterBeingDismissed(R.id.signin_promo_dismiss_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testPromoNotShownAfterBeingDismissed_seamlessSigninDisabled() {
+        testPromoNotShownAfterBeingDismissed(R.id.sync_promo_close_button);
+    }
+
+    private void testPromoNotShownAfterBeingDismissed(@IdRes int dismissButtonId) {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
-        onActiveViewId(R.id.sync_promo_close_button).perform(click());
+        onActiveViewId(dismissButtonId).perform(click());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
@@ -109,7 +126,22 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
-    public void testPromoDismissedHistogramRecordedAfterBeingDismissed() {
+    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
+    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
+    public void testPromoDismissedHistogramRecordedAfterBeingDismissed_compactPromo() {
+        testPromoDismissedHistogramRecordedAfterBeingDismissed(R.id.signin_promo_dismiss_button);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testPromoDismissedHistogramRecordedAfterBeingDismissed_seamlessSigninDisabled() {
+        testPromoDismissedHistogramRecordedAfterBeingDismissed(R.id.sync_promo_close_button);
+    }
+
+    private void testPromoDismissedHistogramRecordedAfterBeingDismissed(
+            @IdRes int dismissButtonId) {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Signin.SyncPromo.Dismissed.Count.Bookmarks")
@@ -118,7 +150,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
-        onActiveViewId(R.id.sync_promo_close_button).perform(click());
+        onActiveViewId(dismissButtonId).perform(click());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
 
         closeBookmarkManager();
