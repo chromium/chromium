@@ -1454,9 +1454,7 @@ WebstorePrivateShouldShowEnterprisePromotionBannerFunction::Run() {
   if (!promotion_eligibility_checker_) {
     promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
         profile,
-        // TODO(crbug.com/465701760) Add logic for
-        // kHasDismissedEnterprisePromotion.
-        /*dismissed_banner_pref=*/false,
+        prefs->GetBoolean(pref_names::kHasDismissedEnterprisePromotion),
         base::FeatureList::IsEnabled(
             extensions_features::kEnableShouldShowPromotion));
 
@@ -1523,9 +1521,14 @@ WebstorePrivateOnEnterprisePromoClickFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateOnEnterprisePromoClickFunction::Run() {
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  prefs->SetBoolean(pref_names::kHasDismissedEnterprisePromotion, true);
+  prefs->SetInteger(enterprise_promotion::kEnterprisePromotionEligibility,
+                    static_cast<int>(enterprise::PromotionType::kUnspecified));
+
   base::UmaHistogramEnumeration("Enterprise.CwsPromotionBannerEvent",
                                 enterprise::CwsPromotionBannerEvent::kClicked);
-  // TODO(crbug.com/465701760) Add logic for kHasDismissedEnterprisePromotion.
   return RespondNow(NoArguments());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

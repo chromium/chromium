@@ -65,14 +65,19 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browser_process.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 #include "components/enterprise/browser/promotion/promotion_prefs.h"
 #include "components/enterprise/promotion_types.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -841,9 +846,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-class WebstorePrivateEnterprisePromotionApiTest : public ExtensionApiTest {
+class WebstorePrivateEnterprisePromotionApiTest
+    : public MixinBasedInProcessBrowserTest {
  public:
-  WebstorePrivateEnterprisePromotionApiTest() = default;
+  WebstorePrivateEnterprisePromotionApiTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kEnableShouldShowPromotion);
+  }
+  ~WebstorePrivateEnterprisePromotionApiTest() override = default;
+
+ protected:
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
@@ -857,19 +877,19 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
       std::make_unique<FakePromotionEligibilityChecker>(
           std::move(mock_response)));
 
-  std::optional<base::Value> result =
-      utils::RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[]", browser()->profile());
 
   ASSERT_TRUE(result);
   EXPECT_EQ("CHROME_ENTERPRISE_CORE", result->GetString());
   EXPECT_EQ(static_cast<int>(enterprise::PromotionType::kChromeEnterpriseCore),
-            profile()->GetPrefs()->GetInteger(
+            browser()->profile()->GetPrefs()->GetInteger(
                 enterprise_promotion::kEnterprisePromotionEligibility));
 }
 
 IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
                        ReturnsCachedPromotionEligibility) {
-  PrefService* prefs = profile()->GetPrefs();
+  PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       enterprise_promotion::kEnterprisePromotionEligibility,
       static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium));
@@ -882,8 +902,8 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
   function->SetFakePromotionEligibilityCheckerForTesting(
       std::make_unique<FailIfCalledPromotionEligibilityChecker>());
 
-  std::optional<base::Value> result =
-      utils::RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[]", browser()->profile());
 
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->is_string());
@@ -893,6 +913,37 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
       prefs->GetInteger(enterprise_promotion::kEnterprisePromotionEligibility));
   EXPECT_EQ(future_expiration,
             prefs->GetTime(pref_names::kEnterprisePromotionExpirationTime));
+}
+
+IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
+                       ReturnsUnspecifiedResponseWhenBannerWasDismissed) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy::CloudPolicyManager* manager =
+      browser()->profile()->GetCloudPolicyManager();
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+  client->SetDMToken("fake-dm-token");
+  manager->Connect(g_browser_process->local_state(), std::move(client));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(pref_names::kHasDismissedEnterprisePromotion, true);
+  scoped_refptr<WebstorePrivateShouldShowEnterprisePromotionBannerFunction>
+      function = base::MakeRefCounted<
+          WebstorePrivateShouldShowEnterprisePromotionBannerFunction>();
+
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[]", browser()->profile());
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(
+      api::webstore_private::ToString(
+          api::webstore_private::PromotionType::kPromotionTypeUnspecified),
+      result->GetString());
+  EXPECT_EQ(static_cast<int>(enterprise::PromotionType::kUnspecified),
+            browser()->profile()->GetPrefs()->GetInteger(
+                enterprise_promotion::kEnterprisePromotionEligibility));
+  EXPECT_EQ(
+      static_cast<int>(enterprise::PromotionType::kUnspecified),
+      prefs->GetInteger(enterprise_promotion::kEnterprisePromotionEligibility));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

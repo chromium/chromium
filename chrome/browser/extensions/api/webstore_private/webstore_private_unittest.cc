@@ -943,6 +943,8 @@ class WebstorePrivateOnEnterprisePromoClickFunctionTest
 
 TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
        HistogramRecordedClick) {
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetBoolean(pref_names::kHasDismissedEnterprisePromotion, false);
   auto function =
       base::MakeRefCounted<WebstorePrivateOnEnterprisePromoClickFunction>();
 
@@ -951,6 +953,7 @@ TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.CwsPromotionBannerEvent",
       static_cast<int>(enterprise::CwsPromotionBannerEvent::kClicked), 1);
+  EXPECT_TRUE(prefs->GetBoolean(pref_names::kHasDismissedEnterprisePromotion));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

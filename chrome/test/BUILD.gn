@@ -1532,6 +1532,10 @@ source_set("platform_browser_tests") {
   if (is_chromeos) {
     sources +=
         [ "../browser/metrics/cros_pre_consent_metrics_manager_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/policy/core",
+    ]
   } else {
     sources += [ "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc" ]
   }
