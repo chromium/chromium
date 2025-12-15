@@ -62,10 +62,13 @@ const CGFloat kSquareCornerRadius = 10;
 
     _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
 
-    if (@available(iOS 26, *)) {
-      self.configuration = [UIButtonConfiguration glassButtonConfiguration];
+    if (@available(iOS 18, *)) {
+      self.configuration = [UIButtonConfiguration filledButtonConfiguration];
       _symbol = DefaultSymbolWithPointSize(kPlusSymbol, symbolSize);
       self.tintColor = UIColor.blackColor;
+      if (@available(iOS 26, *)) {
+        self.configuration = [UIButtonConfiguration glassButtonConfiguration];
+      }
     }
 
     _imageContainer = [[UIImageView alloc] initWithImage:_symbol];
@@ -104,7 +107,7 @@ const CGFloat kSquareCornerRadius = 10;
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
 
-      if (@available(iOS 26, *)) {
+      if (@available(iOS 18, *)) {
         UIButtonConfiguration* config = self.configuration;
         config.background.backgroundColor = UIColor.whiteColor;
         // Set the corner style to display a circle button.
@@ -122,7 +125,7 @@ const CGFloat kSquareCornerRadius = 10;
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
 
-      if (@available(iOS 26, *)) {
+      if (@available(iOS 18, *)) {
         UIButtonConfiguration* config = self.configuration;
         config.background.backgroundColor =
             [UIColor colorNamed:kStaticBlue400Color];
@@ -141,7 +144,7 @@ const CGFloat kSquareCornerRadius = 10;
         self.accessibilityLabel =
             l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
 
-        if (@available(iOS 26, *)) {
+        if (@available(iOS 18, *)) {
           UIButtonConfiguration* config = self.configuration;
           config.background.backgroundColor =
               [UIColor colorNamed:kStaticBlue400Color];
