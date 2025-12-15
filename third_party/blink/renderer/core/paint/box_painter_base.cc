@@ -329,7 +329,7 @@ void BoxPainterBase::PaintNormalBoxShadow(
     // Draw only the shadow. If the color of the shadow is transparent we will
     // set an empty draw looper.
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurRadius(),
+    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurAsSigma(),
                                   shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
@@ -455,7 +455,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     }
 
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurRadius(),
+    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurAsSigma(),
                                   shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);

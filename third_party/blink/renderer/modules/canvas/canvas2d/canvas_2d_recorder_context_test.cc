@@ -357,7 +357,7 @@ TEST(Canvas2DRecorderContextCompositingTests, Shadow) {
   // TODO: crbug.com/364549423 - Remove draw-looper.
   cc::PaintFlags shadow_flags = FillFlags();
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -576,7 +576,7 @@ TEST(Canvas2DRecorderContextCompositingTests, FilterShadowCopyOp) {
 
   // TODO: crbug.com/364549423 - Remove draw-looper.
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -665,7 +665,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowMultiply) {
   // TODO: crbug.com/364549423 - Remove draw-looper.
   cc::PaintFlags shadow_only_flags = FillFlags();
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -725,7 +725,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowMultiplyTransform) {
   // TODO: crbug.com/364549423 - Remove draw-looper.
   cc::PaintFlags shadow_only_flags = FillFlags();
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -780,7 +780,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowDstOutTransform) {
   cc::PaintFlags flags = FillFlags();
   flags.setBlendMode(SkBlendMode::kDstOut);
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -813,7 +813,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowSrcIn) {
   // TODO: crbug.com/364549423 - Remove draw-looper.
   cc::PaintFlags shadow_only_flags = FillFlags();
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);
@@ -872,7 +872,7 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowSrcInTransform) {
   // TODO: crbug.com/364549423 - Remove draw-looper.
   cc::PaintFlags shadow_only_flags = FillFlags();
   DrawLooperBuilder draw_looper_builder;
-  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur_sigma=*/1,
                                 Color::FromRGB(255, 0, 0),
                                 DrawLooperBuilder::kShadowIgnoresTransforms,
                                 DrawLooperBuilder::kShadowRespectsAlpha);

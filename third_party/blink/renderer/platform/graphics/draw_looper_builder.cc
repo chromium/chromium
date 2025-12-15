@@ -32,13 +32,8 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "cc/paint/draw_looper.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -57,11 +52,11 @@ void DrawLooperBuilder::AddUnmodifiedContent() {
 }
 
 void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
-                                  float blur,
+                                  float blur_sigma,
                                   const Color& color,
                                   ShadowTransformMode shadow_transform_mode,
                                   ShadowAlphaMode shadow_alpha_mode) {
-  DCHECK_GE(blur, 0);
+  DCHECK_GE(blur_sigma, 0);
 
   // Detect when there's no effective shadow.
   if (color.IsFullyTransparent()) {
@@ -76,9 +71,8 @@ void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
     flags |= cc::DrawLooper::kPostTransformFlag;
   }
 
-  draw_looper_builder_.AddShadow({offset.x(), offset.y()},
-                                 BlurRadiusToStdDev(blur), color.toSkColor4f(),
-                                 flags,
+  draw_looper_builder_.AddShadow({offset.x(), offset.y()}, blur_sigma,
+                                 color.toSkColor4f(), flags,
                                  /*add_on_top=*/true);
 }
 

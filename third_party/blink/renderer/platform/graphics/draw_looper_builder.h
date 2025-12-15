@@ -68,7 +68,7 @@ class PLATFORM_EXPORT DrawLooperBuilder final {
 
   void AddUnmodifiedContent();
   void AddShadow(const gfx::Vector2dF& offset,
-                 float blur,
+                 float blur_sigma,
                  const Color&,
                  ShadowTransformMode = kShadowRespectsTransforms,
                  ShadowAlphaMode = kShadowRespectsAlpha);

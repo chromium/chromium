@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -74,6 +73,13 @@ class CORE_EXPORT ShadowData {
   bool operator==(const ShadowData&) const = default;
 
   static ShadowData NeutralValue();
+  static inline float BlurRadiusToStdDev(float radius) {
+    DCHECK_GE(radius, 0);
+    // Per spec, sigma is exactly half the blur radius:
+    // https://www.w3.org/TR/css-backgrounds-3/#shadow-blur
+    // https://html.spec.whatwg.org/C/#when-shadows-are-drawn
+    return radius * 0.5f;
+  }
 
   float X() const { return offset_.x(); }
   float Y() const { return offset_.y(); }

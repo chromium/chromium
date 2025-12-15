@@ -63,20 +63,6 @@ inline viz::SharedImageFormat GetN32FormatForCanvas() {
   return viz::SharedImageFormat::N32Format();
 }
 
-// Technically, this is driven by the CSS/Canvas2D specs and unrelated to Skia.
-// It should probably live in the CSS layer, but the notion of a "blur radius"
-// leaks into platform/graphics currently (ideally we should only deal with
-// sigma at this level).
-// TODO(fmalita): find a better home for this helper.
-inline float BlurRadiusToStdDev(float radius) {
-  DCHECK_GE(radius, 0);
-
-  // Per spec, sigma is exactly half the blur radius:
-  // https://www.w3.org/TR/css-backgrounds-3/#shadow-blur
-  // https://html.spec.whatwg.org/C/#when-shadows-are-drawn
-  return radius * 0.5f;
-}
-
 // Attempts to allocate an SkData on the PartitionAlloc buffer partition.
 // If this fails (e.g. due to low memory), returns a null sk_sp<SkData> instead.
 // Otherwise, the returned buffer is guaranteed to be zero-filled.
