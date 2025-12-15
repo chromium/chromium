@@ -231,22 +231,15 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   }
 #endif
 
-  is_remote_page_metadata_fetching_enabled_ =
-      features::RemotePageMetadataEnabled(application_locale, country_code);
-  is_salient_image_metadata_fetching_enabled_ =
-      features::ShouldPersistSalientImageMetadata(application_locale,
-                                                  country_code);
-  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-  if (is_remote_page_metadata_fetching_enabled_) {
+  if (features::RemotePageMetadataEnabled(application_locale, country_code)) {
+    std::vector<optimization_guide::proto::OptimizationType> optimization_types;
     optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
-  }
-  if (is_salient_image_metadata_fetching_enabled_) {
     optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
+    if (optimization_guide_decider_) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          optimization_types);
+    }
   }
-  if (optimization_guide_decider_ && !optimization_types.empty()) {
-    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
-  }
-
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
 }
@@ -785,17 +778,13 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     return;
   }
 
-  if (is_remote_page_metadata_fetching_enabled_ &&
-      optimization_guide_decider_) {
+  if (optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), optimization_guide::proto::PAGE_ENTITIES,
         base::BindOnce(
             &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
             weak_ptr_factory_.GetWeakPtr(), history_visit,
             optimization_guide::proto::PAGE_ENTITIES));
-  }
-  if (is_salient_image_metadata_fetching_enabled_ &&
-      optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), optimization_guide::proto::SALIENT_IMAGE,
         base::BindOnce(

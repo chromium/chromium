@@ -416,61 +416,17 @@ TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
   task_environment_.FastForwardBy(base::Seconds(10));
 }
 
-class PageContentAnnotationsServiceRemotePageMetadataTest
-    : public PageContentAnnotationsServiceTest {
- public:
-  PageContentAnnotationsServiceRemotePageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-    features::kRemotePageMetadata,
-    {{"supported_locales", "*"}, {"supported_countries", "*"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
-  std::vector<optimization_guide::proto::OptimizationType>
-      registered_optimization_types =
-          optimization_guide_decider()->registered_optimization_types();
-  EXPECT_TRUE(base::Contains(registered_optimization_types,
-                             optimization_guide::proto::PAGE_ENTITIES));
-}
-
-TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
-  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
-           /*local_navigation_id=*/1);
-}
-
-TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
-       DoesNotPersistIfServerReturnsWrongMetadata) {
-  // Navigate.
-  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
-           /*local_navigation_id=*/1);
-}
-
-TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
-       RequestsToPersistIfHasPageMetadata) {
-  EXPECT_CALL(*history_service_,
-              AddPageMetadataForVisit("alternative title", 13));
-
-  // Navigate.
-  VisitURL(GURL("http://hasmetadata.com"), u"sometitle", 13,
-           /*local_navigation_id=*/1);
-}
-
 TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
   std::vector<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           optimization_guide_decider()->registered_optimization_types();
   EXPECT_TRUE(base::Contains(registered_optimization_types,
+                             optimization_guide::proto::PAGE_ENTITIES));
+  EXPECT_TRUE(base::Contains(registered_optimization_types,
                              optimization_guide::proto::SALIENT_IMAGE));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, DoesNotPersistIfServerHasNoData) {
-  // Navigate.
   VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
@@ -479,6 +435,15 @@ TEST_F(PageContentAnnotationsServiceTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
   VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
+           /*local_navigation_id=*/1);
+}
+
+TEST_F(PageContentAnnotationsServiceTest, RequestsToPersistIfHasPageMetadata) {
+  EXPECT_CALL(*history_service_,
+              AddPageMetadataForVisit("alternative title", 13));
+
+  // Navigate.
+  VisitURL(GURL("http://hasmetadata.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
 

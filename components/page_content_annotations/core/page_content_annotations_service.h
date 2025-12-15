@@ -413,12 +413,6 @@ class PageContentAnnotationsService
 
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_ = nullptr;
 
-  // Whether fetching for remote page metadata enabled.
-  bool is_remote_page_metadata_fetching_enabled_ = false;
-
-  // Whether fetching for salient image metadata is enabled.
-  bool is_salient_image_metadata_fetching_enabled_ = false;
-
   // Not owned and must outlive |this|.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
