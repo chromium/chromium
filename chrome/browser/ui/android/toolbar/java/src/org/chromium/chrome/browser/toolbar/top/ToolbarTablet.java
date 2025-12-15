@@ -494,6 +494,18 @@ public class ToolbarTablet extends ToolbarLayout {
         }
     }
 
+    @Override
+    public void onWidthConsumerVisibilityChanged() {
+        // Re-allocate width to account for a change in a width consumer's visibility.
+        allocateAvailableToolbarWidth(mToolbarWidthConsumers, getWidth());
+    }
+
+    /**
+     * Allocates available width to toolbar width consumers.
+     *
+     * @param toolbarWidthConsumer The array of all toolbar width consumers.
+     * @param availableWidthDp The available width in dp.
+     */
     @VisibleForTesting
     static void allocateAvailableToolbarWidth(
             @Nullable ToolbarWidthConsumer[] toolbarWidthConsumer, int availableWidthDp) {

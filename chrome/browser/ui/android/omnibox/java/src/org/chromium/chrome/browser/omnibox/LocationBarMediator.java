@@ -27,6 +27,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
@@ -188,6 +189,7 @@ class LocationBarMediator
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
+    private final LocationBarEmbedder mLocationBarEmbedder;
     private StatusCoordinator mStatusCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private @Nullable OmniboxPrerender mOmniboxPrerender;
@@ -270,10 +272,12 @@ class LocationBarMediator
             ObservableSupplier<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            LocationBarEmbedder locationBarEmbedder) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
+        mLocationBarEmbedder = locationBarEmbedder;
         mFuseboxCoordinator = fuseboxCoordinator;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
@@ -309,31 +313,31 @@ class LocationBarMediator
                         mContext,
                         mIsTablet,
                         this::shouldShowBookmarkButton,
-                        this::updateBookmarkButtonVisibility);
+                        this::setBookmarkButtonVisibility);
         mInstallButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
                         mIsTablet,
                         this::shouldShowInstallButton,
-                        this::updateInstallButtonVisibility);
+                        this::setInstallButtonVisibility);
         mMicButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
                         mIsTablet,
                         this::shouldShowMicButton,
-                        this::updateMicButtonVisibility);
+                        this::setMicButtonVisibility);
         mLensButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
                         mIsTablet,
                         this::shouldShowLensButton,
-                        this::updateLensButtonVisibility);
+                        this::setLensButtonVisibility);
         mZoomButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
                         mIsTablet,
                         this::shouldShowZoomButton,
-                        this::updateZoomButtonVisibility);
+                        (result) -> mLocationBarLayout.setZoomButtonVisibility(result));
 
         mPersistEditingState =
                 OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
@@ -1440,22 +1444,26 @@ class LocationBarMediator
                 || mPageZoomIndicatorCoordinator.isZoomLevelDefault()) {
             return false;
         }
-        return !mPageZoomIndicatorCoordinator.isZoomLevelDefault();
+        return !mPageZoomIndicatorCoordinator.isZoomLevelDefault()
+                || mPageZoomIndicatorCoordinator.isPopupWindowShowing();
     }
 
     private void updateZoomButtonVisibility() {
         if (mPageZoomIndicatorCoordinator == null) return;
-        setZoomButtonVisibility(
-                shouldShowZoomButton() || mPageZoomIndicatorCoordinator.isPopupWindowShowing());
-    }
-
-    private void setZoomButtonVisibility(boolean shouldShowZoomButton) {
-        mLocationBarLayout.setZoomButtonVisibility(
-                shouldShowZoomButton && mZoomButtonToolbarWidthConsumer.hasSpaceToShow());
+        if (!ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
+            mLocationBarLayout.setZoomButtonVisibility(shouldShowZoomButton());
+            return;
+        }
+        // Embedder will handle visibility changes.
+        mLocationBarEmbedder.onWidthConsumerVisibilityChanged();
     }
 
     public void updateZoomButtonVisibilityForTesting() {
         updateZoomButtonVisibility();
+    }
+
+    public ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumerForTesting() {
+        return mBookmarkButtonToolbarWidthConsumer;
     }
 
     private @Nullable WebContents getWebContentsForCurrentTab() {
@@ -2197,7 +2205,7 @@ class LocationBarMediator
     private static class ButtonToolbarWidthConsumer implements ToolbarWidthConsumer {
         private final int mButtonWidth;
         private final Supplier<Boolean> mShouldShowButton;
-        private final Runnable mUpdateButtonVisibility;
+        private final Callback<Boolean> mUpdateButtonVisibility;
         private final boolean mIsTablet;
         private boolean mHasSpaceToShow;
 
@@ -2205,7 +2213,7 @@ class LocationBarMediator
                 Context context,
                 boolean isTablet,
                 Supplier<Boolean> shouldShowButton,
-                Runnable updateButtonVisibility) {
+                Callback<Boolean> updateButtonVisibility) {
             mShouldShowButton = shouldShowButton;
             mIsTablet = isTablet;
             mUpdateButtonVisibility = updateButtonVisibility;
@@ -2232,11 +2240,11 @@ class LocationBarMediator
 
             if (mShouldShowButton.get() && availableWidth >= mButtonWidth) {
                 mHasSpaceToShow = true;
-                mUpdateButtonVisibility.run();
+                mUpdateButtonVisibility.onResult(true);
                 return mButtonWidth;
             }
             mHasSpaceToShow = false;
-            mUpdateButtonVisibility.run();
+            mUpdateButtonVisibility.onResult(false);
             return 0;
         }
 
