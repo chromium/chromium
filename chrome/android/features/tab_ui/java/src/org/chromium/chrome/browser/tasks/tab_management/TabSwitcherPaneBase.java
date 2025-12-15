@@ -41,8 +41,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -109,6 +107,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
     private final Runnable mHardCleanupRunnable = this::hardCleanupInternal;
     private final Runnable mDestroyCoordinatorRunnable = this::destroyTabSwitcherPaneCoordinator;
+    private final Runnable mOnShownIphRunnerRunnable = this::onShownIphRunner;
     private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager =
             new TabSwitcherCustomViewManager();
 
@@ -210,6 +209,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     @Override
     public void destroy() {
         removeDelayedCallbacks();
+        mHandler.removeCallbacks(mOnShownIphRunnerRunnable);
         mIsVisibleSupplier.removeObserver(mVisibilityObserver);
         destroyTabSwitcherPaneCoordinator();
     }
@@ -725,7 +725,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         // TODO(crbug.com/346356139): Figure out a more elegant way of observing entering the hub as
         // well as switching between panes. Knowing when these animations complete turns out to be
         // fairly difficult, especially knowing when we're about to enter a transition.
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onShownIphRunner, ON_SHOWN_IPH_DELAY);
+        mHandler.postDelayed(mOnShownIphRunnerRunnable, ON_SHOWN_IPH_DELAY);
     }
 
     private void onShownIphRunner() {
