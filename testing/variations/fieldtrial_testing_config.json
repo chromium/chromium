@@ -19989,6 +19989,22 @@
             ]
         }
     ],
+    "PrivateUserMetricsForRegionalCapabilities": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivateMetricsPuma",
+                        "PrivateMetricsPumaRc"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProbeStylusWritingInBackground": [
         {
             "platforms": [
