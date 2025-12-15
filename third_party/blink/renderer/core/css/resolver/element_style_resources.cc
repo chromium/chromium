@@ -433,15 +433,7 @@ void ElementStyleResources::LoadPendingImages(
             StyleImage* new_image = loader.Load(*pending_value, length_resolver,
                                                 image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
-              if (new_image->IsLoaded() &&
-                  RuntimeEnabledFeatures::
-                      LazyImageConformantLoadEventTimingEnabled()) {
-                LazyImageHelper::StopMonitoring(&element_);
-                To<StyleFetchedImage>(new_image)->LoadDeferredImage(
-                    element_.GetDocument());
-              } else {
-                LazyImageHelper::StartMonitoring(&element_);
-              }
+              LazyImageHelper::StartMonitoring(&element_);
             }
             background_layer->SetImage(new_image);
           }

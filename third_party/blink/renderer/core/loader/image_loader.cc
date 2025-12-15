@@ -411,16 +411,8 @@ void ImageLoader::UpdateImageState(ImageResourceContent* new_image_content) {
     }
   } else {
     image_complete_ = false;
-    if (lazy_image_load_state_ == LazyImageLoadState::kDeferred) {
-      if (new_image_content->IsLoaded() &&
-          RuntimeEnabledFeatures::LazyImageConformantLoadEventTimingEnabled()) {
-        LazyImageHelper::StopMonitoring(GetElement());
-        lazy_image_load_state_ = LazyImageLoadState::kFullImage;
-        EnqueueImageLoadingMicroTask(kUpdateFromMicrotask);
-      } else {
-        LazyImageHelper::StartMonitoring(GetElement());
-      }
-    }
+    if (lazy_image_load_state_ == LazyImageLoadState::kDeferred)
+      LazyImageHelper::StartMonitoring(GetElement());
   }
   delay_until_image_notify_finished_ = nullptr;
 }
@@ -791,16 +783,9 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   CHECK(!image_complete_);
 
   if (lazy_image_load_state_ == LazyImageLoadState::kDeferred) {
-    // Some other content may have triggered the load of this image, but that
-    // shouldn't alter the behavior of loading="lazy", i.e., this <img>
-    // shouldn't fire its load event until LazyLoadImageObserver reports it to
-    // be intersecting (or close to) the viewport.
-    if (RuntimeEnabledFeatures::LazyImageConformantLoadEventTimingEnabled()) {
-      return;
-    }
-    // TODO(paint-dev): This is incorrect legacy behavior: the loading="lazy"
-    // <img> will fire its load event immediately. If the above feature flag
-    // doesn't cause breakage this should be removed.
+    // A placeholder was requested, but the result was an error or a full image.
+    // In these cases, consider this as the final image and suppress further
+    // reloading and proceed to the image load completion process below.
     LazyImageHelper::StopMonitoring(GetElement());
     lazy_image_load_state_ = LazyImageLoadState::kFullImage;
   }
@@ -821,6 +806,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       svg_image->MaybeRecordSvgImageProcessingTime(GetElement()->GetDocument());
     }
   }
+
 
   DispatchDecodeRequestsIfComplete();
 
