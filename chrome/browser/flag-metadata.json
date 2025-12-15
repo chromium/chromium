@@ -1875,6 +1875,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "composebox-close-button-top-align",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "composebox-compact-mode",
     "owners": [ "christianxu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 149
