@@ -150,6 +150,7 @@ class ContextualTasksService : public KeyedService {
                                     SessionID tab_id) = 0;
   virtual void DisassociateTabFromTask(const base::Uuid& task_id,
                                        SessionID tab_id) = 0;
+  virtual void DisassociateAllTabsFromTask(const base::Uuid& task_id) = 0;
   virtual std::optional<ContextualTask> GetContextualTaskForTab(
       SessionID tab_id) const = 0;
   virtual std::vector<SessionID> GetTabsAssociatedWithTask(

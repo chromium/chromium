@@ -88,6 +88,10 @@ class MockContextualTasksContextController
               DisassociateTabFromTask,
               (const base::Uuid& task_id, SessionID tab_id),
               (override));
+  MOCK_METHOD(void,
+              DisassociateAllTabsFromTask,
+              (const base::Uuid& task_id),
+              (override));
   MOCK_METHOD(std::vector<SessionID>,
               GetTabsAssociatedWithTask,
               (const base::Uuid& task_id),

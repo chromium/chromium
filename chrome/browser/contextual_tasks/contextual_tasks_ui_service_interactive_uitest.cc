@@ -374,4 +374,78 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       MoveTaskUiToNewTab) {
+  // Add 2 new tabs.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Create task1 and associate with tab0.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(
+          browser()->tab_strip_model()->GetWebContentsAt(0)));
+  contextual_tasks_controller->AssociateTabWithTask(
+      task1.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(
+          browser()->tab_strip_model()->GetWebContentsAt(1)));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // 3 tabs open.
+  EXPECT_EQ(tab_strip_model->count(), 3);
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+        tab_strip_model->ActivateTabAt(1);
+
+        // The side panel will remain open because the tasks are assocaiated
+        // with the same task.
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+        EXPECT_EQ(tab_strip_model->count(), 3);
+        EXPECT_EQ(tab_strip_model->active_index(), 1);
+
+        // Moving the task UI to a new tab will disassocaite all tabs from this
+        // task.
+        service->MoveTaskUiToNewTab(task1.GetTaskId(), browser(),
+                                    GURL(chrome::kChromeUIContextualTasksURL));
+      }),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_EQ(tab_strip_model->count(), 4);
+        EXPECT_EQ(tab_strip_model->active_index(), 2);
+        EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+
+        // Go back to original tab and open the Contextual Tasks side panel
+        // again.
+        tab_strip_model->ActivateTabAt(0);
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+        tab_strip_model->ActivateTabAt(1);
+      }),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // The side panel will hide because the 2 tabs are no longer associated
+        // with the same task.
+        EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+      }));
+}
+
 }  // namespace contextual_tasks

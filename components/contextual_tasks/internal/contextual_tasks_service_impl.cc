@@ -432,6 +432,13 @@ void ContextualTasksServiceImpl::DisassociateTabFromTask(
           weak_ptr_factory_.GetWeakPtr(), task_id, tab_id));
 }
 
+void ContextualTasksServiceImpl::DisassociateAllTabsFromTask(
+    const base::Uuid& task_id) {
+  for (const SessionID& tab_id : GetTabsAssociatedWithTask(task_id)) {
+    DisassociateTabFromTask(task_id, tab_id);
+  }
+}
+
 std::optional<ContextualTask>
 ContextualTasksServiceImpl::GetContextualTaskForTab(SessionID tab_id) const {
   auto it = tab_to_task_.find(tab_id);

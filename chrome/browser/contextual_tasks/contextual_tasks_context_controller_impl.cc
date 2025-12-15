@@ -184,6 +184,11 @@ void ContextualTasksContextControllerImpl::DisassociateTabFromTask(
   service_->DisassociateTabFromTask(task_id, tab_id);
 }
 
+void ContextualTasksContextControllerImpl::DisassociateAllTabsFromTask(
+    const base::Uuid& task_id) {
+  service_->DisassociateAllTabsFromTask(task_id);
+}
+
 std::optional<ContextualTask>
 ContextualTasksContextControllerImpl::GetContextualTaskForTab(
     SessionID tab_id) const {

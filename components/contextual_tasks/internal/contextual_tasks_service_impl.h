@@ -89,6 +89,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
                             SessionID tab_id) override;
   void DisassociateTabFromTask(const base::Uuid& task_id,
                                SessionID tab_id) override;
+  void DisassociateAllTabsFromTask(const base::Uuid& task_id) override;
   std::optional<ContextualTask> GetContextualTaskForTab(
       SessionID tab_id) const override;
   std::vector<SessionID> GetTabsAssociatedWithTask(
