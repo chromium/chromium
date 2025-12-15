@@ -85,6 +85,8 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
      */
     public TabGroupListBottomSheetFacility<HostStationT> clickAddTabToGroup(
             boolean isNewTabGroupRowVisible) {
+        checkItemsAbsent(addTabToNewGroup, moveTabToGroup);
+
         List<Token> allTabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -99,6 +101,8 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
 
     /** Click add to new group. This should only be possible when there are no tab groups. */
     public NewTabGroupDialogFacility<HostStationT> clickAddTabToNewGroup() {
+        checkItemsAbsent(addTabToGroup, moveTabToGroup);
+
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> newTabGroupDialogFacility =
                 new NewTabGroupDialogFacility<>(List.of(mTabId), softKeyboard);

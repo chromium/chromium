@@ -25,10 +25,13 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardContextMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -67,7 +70,7 @@ public class TabSwitcherCardContextMenuTest {
     @MediumTest
     public void testTabCardMenuInTabSwitcher_addToNewGroup() {
         Tab firstTab = mFirstPage.loadedTabElement.value();
-        int firstTabId = firstTab.getId();
+        @TabId int firstTabId = firstTab.getId();
 
         RegularTabSwitcherStation tabSwitcher = mFirstPage.openRegularTabSwitcher();
 
@@ -85,7 +88,7 @@ public class TabSwitcherCardContextMenuTest {
     @MediumTest
     public void testTabCardMenuInTabSwitcher_addToGroup() {
         Tab firstTab = mFirstPage.loadedTabElement.value();
-        int firstTabId = firstTab.getId();
+        @TabId int firstTabId = firstTab.getId();
 
         RegularTabSwitcherStation tabSwitcher = mFirstPage.openRegularTabSwitcher();
 
@@ -111,6 +114,24 @@ public class TabSwitcherCardContextMenuTest {
         assertNotNull(firstTab.getTabGroupId());
         assertNotNull(secondTab.getTabGroupId());
         assertNotEquals(firstTab.getTabGroupId(), secondTab.getTabGroupId());
+
+        ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
+    }
+
+    @Test
+    @MediumTest
+    public void testTabCardMenuInTabSwitcher_shareIsAbsentForNtp() {
+        RegularNewTabPageStation ntp = mFirstPage.openRegularTabSwitcher().openNewTab();
+        Tab secondTab = ntp.loadedTabElement.value();
+        @TabId int secondTabId = secondTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher = ntp.openRegularTabSwitcher();
+
+        TabSwitcherTabCardContextMenuFacility<TabSwitcherStation> contextMenu =
+                tabSwitcher.expectTabCard(secondTabId, secondTab.getTitle()).showContextMenu();
+        contextMenu.share.checkAbsent();
+        contextMenu.pressBackTo().exitFacility();
 
         ntp = tabSwitcher.openNewTab();
         assertFinalDestination(ntp);

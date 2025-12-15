@@ -17,6 +17,7 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
@@ -238,6 +239,46 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             }
         }
 
+        /**
+         * Check that the item is absent. Will attempt scroll to the item to verify it does not
+         * exist.
+         *
+         * <p>If the item is found, it throws an AssertionError.
+         */
+        public void checkAbsent() {
+            assert mPresence != Presence.PRESENT_AND_ENABLED;
+            assert mPresence != Presence.PRESENT_AND_DISABLED;
+
+            Root root = determineRoot();
+            assert root != null;
+
+            try {
+                // Attempt to scroll to the item. This should throw.
+                if (mOffScreenDataMatcher != null) {
+                    onData(mOffScreenDataMatcher)
+                            .inRoot(withDecorView(is(root.getDecorView())))
+                            .perform(ViewActions.scrollTo());
+                } else {
+                    assumeNonNull(mViewSpec);
+                    onView(mViewSpec.getViewMatcher())
+                            .inRoot(withDecorView(is(root.getDecorView())))
+                            .perform(ViewActions.scrollTo());
+                }
+                // If we reach here, the scroll completed successfully. This is a failure for
+                // checkAbsent.
+                throw new AssertionError(
+                        String.format(
+                                "Item with matcher '%s' was found but should be absent.",
+                                mOffScreenDataMatcher != null
+                                        ? StringDescription.asString(mOffScreenDataMatcher)
+                                        : StringDescription.asString(
+                                                assumeNonNull(mViewSpec).getViewMatcher())));
+            } catch (NoMatchingViewException | PerformException e) {
+                // Success: The scroll action failed because the item was not found or could not be
+                // scrolled to (if there is not off-screen matcher).
+            }
+        }
+
         /** Select the item, scrolling to it if necessary, to start a Transition. */
         public TripBuilder scrollToAndSelectWithoutClosingTo() {
             return scrollToItemIfNeeded().selectTo();
@@ -392,6 +433,18 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns the {@link Item} that is on the screen. */
         public Item getItem() {
             return mItem;
+        }
+    }
+
+    /**
+     * Check that the given items are absent.
+     *
+     * @param items The items to verify are absent.
+     */
+    @SafeVarargs
+    public final void checkItemsAbsent(Item... items) {
+        for (Item item : items) {
+            item.checkAbsent();
         }
     }
 
