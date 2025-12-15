@@ -47,6 +47,11 @@ class ActionTrackerTest : public DNRTestBase {
     action_tracker_->SetCheckTabIdOnRuleMatchForTest(false);
   }
 
+  void TearDown() override {
+    action_tracker_.reset();
+    DNRTestBase::TearDown();
+  }
+
  protected:
   using RequestActionType = RequestAction::Type;
 

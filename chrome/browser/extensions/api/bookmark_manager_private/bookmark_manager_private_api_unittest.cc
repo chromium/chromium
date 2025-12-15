@@ -55,6 +55,7 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
   }
 
   void TearDown() override {
+    model_ = nullptr;
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();
     ExtensionServiceTestBase::TearDown();

@@ -115,9 +115,8 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
     return ExtensionServiceInitParams();
   }
 
-  // ExtensionServiceTestBase:
+  // ExtensionServiceTestWithInstall:
   void SetUp() override;
-  void TearDown() override;
 
  private:
   // This test does not create a root window. Because of this,
@@ -163,20 +162,13 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
 }
 
 void ManagementApiUnitTest::SetUp() {
-  ExtensionServiceTestBase::SetUp();
+  ExtensionServiceTestWithInstall::SetUp();
   InitializeExtensionService(GetExtensionServiceInitParams());
   ManagementAPI::GetFactoryInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildManagementApi));
 
   EventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildEventRouter));
-}
-
-void ManagementApiUnitTest::TearDown() {
-  // TODO(crbug.com/371332103): Call ExtensionServiceTestWithInstall::TearDown
-  // here. As-is this skips the ExtensionServiceUserTestBase::TearDown() call
-  // on Chrome OS. It's unclear if that's important.
-  ExtensionServiceTestBase::TearDown();
 }
 
 // Test the basic parts of management.setEnabled.
@@ -1251,6 +1243,13 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
         base::WrapUnique(supervised_user_delegate_.get()));
   }
 
+  void TearDown() override {
+    supervised_user_delegate_ = nullptr;
+    management_api_ = nullptr;
+    web_contents_.reset();
+    ManagementApiUnitTest::TearDown();
+  }
+
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<ManagementAPI> management_api_ = nullptr;
   raw_ptr<TestSupervisedUserExtensionsDelegate> supervised_user_delegate_ =
@@ -1639,6 +1638,12 @@ class ManagementApiSupervisedUserTestWithSetup
     extension_ = ExtensionBuilder("Test").Build();
     registrar()->AddExtension(extension_.get());
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
+  }
+
+  void TearDown() override {
+    extension_.reset();
+    delegate_ = nullptr;
+    ManagementApiSupervisedUserTest::TearDown();
   }
 
   raw_ptr<TestManagementAPIDelegate> delegate_ = nullptr;

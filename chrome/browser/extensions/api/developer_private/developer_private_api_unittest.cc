@@ -703,7 +703,7 @@ void DeveloperPrivateApiUnitTest::SetDraggedFile(
 }
 
 void DeveloperPrivateApiUnitTest::SetUp() {
-  ExtensionServiceTestBase::SetUp();
+  ExtensionServiceTestWithInstall::SetUp();
 
   ExtensionServiceInitParams init_params;
   init_params.profile_is_supervised = ProfileIsSupervised();
@@ -727,7 +727,7 @@ void DeveloperPrivateApiUnitTest::SetUp() {
 void DeveloperPrivateApiUnitTest::TearDown() {
   test_extension_dirs_.clear();
   render_process_host_.reset();
-  ExtensionServiceTestBase::TearDown();
+  ExtensionServiceTestWithInstall::TearDown();
 }
 
 // Test developerPrivate.updateExtensionConfiguration.

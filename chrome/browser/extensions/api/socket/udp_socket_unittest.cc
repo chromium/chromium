@@ -34,7 +34,10 @@ namespace extensions {
 class UDPSocketUnitTest : public extensions::ExtensionServiceTestBase {
  protected:
   // extensions::ExtensionServiceTestBase:
-  void SetUp() override { InitializeEmptyExtensionService(); }
+  void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
+    InitializeEmptyExtensionService();
+  }
 
   std::unique_ptr<UDPSocket> CreateSocket() {
     network::mojom::NetworkContext* network_context =

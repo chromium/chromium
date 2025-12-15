@@ -74,6 +74,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     remover_->SetEmbedderDelegate(&delegate_);
   }
 
+  void TearDown() override {
+    remover_ = nullptr;
+    ExtensionServiceTestBase::TearDown();
+  }
+
   const base::Time& GetBeginTime() {
     return remover_->GetLastUsedBeginTimeForTesting();
   }
@@ -312,7 +317,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   content::MockBrowsingDataRemoverDelegate* delegate() { return &delegate_; }
 
  private:
-  raw_ptr<content::BrowsingDataRemover> remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_ = nullptr;
   content::MockBrowsingDataRemoverDelegate delegate_;
 #if !BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList scoped_feature_list_;

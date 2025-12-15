@@ -234,6 +234,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
   }
 
   void TearDown() override {
+    update_install_gate_.reset();
+    runtime_delegate_.reset();
     ExtensionDownloader::set_test_delegate(nullptr);
     ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(nullptr);
     ExtensionServiceTestWithInstall::TearDown();

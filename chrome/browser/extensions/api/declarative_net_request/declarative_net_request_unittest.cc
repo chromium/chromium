@@ -162,6 +162,13 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     ASSERT_EQ(300, GetMaximumRulesPerRuleset());
   }
 
+  void TearDown() override {
+    extension_prefs_ = nullptr;
+    extension_.reset();
+    loader_.reset();
+    DNRTestBase::TearDown();
+  }
+
  protected:
   RulesetManager* manager() {
     return RulesMonitorService::Get(browser_context())->ruleset_manager();

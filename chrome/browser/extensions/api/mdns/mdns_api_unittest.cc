@@ -259,6 +259,11 @@ class MDnsAPIDiscoveryTest : public MDnsAPITest {
     EXPECT_CALL(*mdns_api_, IsMDnsAllowed(_)).WillRepeatedly(Return(true));
   }
 
+  void TearDown() override {
+    mdns_api_ = nullptr;
+    MDnsAPITest::TearDown();
+  }
+
  protected:
   raw_ptr<MockedMDnsAPI> mdns_api_;
 };

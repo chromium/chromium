@@ -55,6 +55,14 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
     folder_node_id_ = base::NumberToString(folder_node_->id());
   }
 
+  void TearDown() override {
+    url_node_ = nullptr;
+    subfolder_node_ = nullptr;
+    folder_node_ = nullptr;
+    model_ = nullptr;
+    ExtensionServiceTestBase::TearDown();
+  }
+
   raw_ptr<bookmarks::BookmarkModel> model() const { return model_; }
   const bookmarks::BookmarkNode* folder_node() const { return folder_node_; }
   std::string folder_node_id() const { return folder_node_id_; }
