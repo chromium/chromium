@@ -296,7 +296,7 @@ const base::FeatureParam<bool> kShowLensSearchChip(
 const base::FeatureParam<bool> kShowRecentTabChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowRecentTabChip",
-    true);
+    false);
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "ShowSmartCompose",

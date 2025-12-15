@@ -869,25 +869,28 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
-
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
         {"ShowCreateImageTool", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
         {"MaxNumFiles", "5"},
 };
