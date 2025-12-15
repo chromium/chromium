@@ -1442,6 +1442,41 @@ const FeatureEntry::FeatureVariation kFRESignInHeaderTextUpdateVariations[] = {
      std::size(kFRESignInHeaderTextUpdateArm1), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kPersistTabContextFileSystem_WasHidden_FullContext[] = {
+        {kPersistTabContextStorageParam, "0"},
+        {kPersistTabContextExtractionTimingParam, "0"},
+        {kPersistTabContextDataParam, "0"}};
+const FeatureEntry::FeatureParam
+    kPersistTabContextSqlite_WasHidden_FullContext[] = {
+        {kPersistTabContextStorageParam, "1"},
+        {kPersistTabContextExtractionTimingParam, "0"},
+        {kPersistTabContextDataParam, "0"}};
+const FeatureEntry::FeatureParam
+    kPersistTabContextSqlite_WasHiddenPageLoad_FullContext[] = {
+        {kPersistTabContextStorageParam, "1"},
+        {kPersistTabContextExtractionTimingParam, "1"},
+        {kPersistTabContextDataParam, "0"}};
+const FeatureEntry::FeatureParam
+    kPersistTabContextSqlite_WasHidden_InnerTextOnly[] = {
+        {kPersistTabContextStorageParam, "1"},
+        {kPersistTabContextExtractionTimingParam, "0"},
+        {kPersistTabContextDataParam, "1"}};
+
+const FeatureEntry::FeatureVariation kPersistTabContextVariations[] = {
+    {"FileSystem, On Tab Hide, APC + Inner Text",
+     kPersistTabContextFileSystem_WasHidden_FullContext,
+     std::size(kPersistTabContextFileSystem_WasHidden_FullContext), nullptr},
+    {"SQLite, On Tab Hide, APC + Inner Text",
+     kPersistTabContextSqlite_WasHidden_FullContext,
+     std::size(kPersistTabContextSqlite_WasHidden_FullContext), nullptr},
+    {"SQLite, On Tab Hide & Page Load, APC + Inner Text",
+     kPersistTabContextSqlite_WasHiddenPageLoad_FullContext,
+     std::size(kPersistTabContextSqlite_WasHiddenPageLoad_FullContext),
+     nullptr},
+    {"SQLite, On Tab Hide, Inner Text",
+     kPersistTabContextSqlite_WasHidden_InnerTextOnly,
+     std::size(kPersistTabContextSqlite_WasHidden_InnerTextOnly), nullptr}};
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2676,7 +2711,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kSmartTabGrouping)},
     {"persist-tab-context", flag_descriptions::kPersistTabContextName,
      flag_descriptions::kPersistTabContextDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPersistTabContext)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kPersistTabContext,
+                                    kPersistTabContextVariations,
+                                    "PersistTabContext")},
     {"composebox-autoattach-tab",
      flag_descriptions::kComposeboxAutoattachTabName,
      flag_descriptions::kComposeboxAutoattachTabDescription, flags_ui::kOsIos,

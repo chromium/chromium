@@ -6,6 +6,8 @@
 
 #import "base/check.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -176,11 +178,48 @@ bool IsSmartTabGroupingEnabled() {
 
 BASE_FEATURE(kPersistTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kPersistTabContextStorageParam[] = "storage_implementation";
+const char kPersistTabContextExtractionTimingParam[] = "extraction_timing";
+const char kPersistTabContextDataParam[] = "data_extracted";
+
 bool IsPersistTabContextEnabled() {
   if (IsSmartTabGroupingEnabled()) {
     return true;
   }
   return base::FeatureList::IsEnabled(kPersistTabContext);
+}
+
+PersistTabStorageType GetPersistTabContextStorageType() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextStorageParam,
+      static_cast<int>(PersistTabStorageType::kFileSystem));
+  if (param == static_cast<int>(PersistTabStorageType::kSQLite) &&
+      base::FeatureList::IsEnabled(
+          page_content_annotations::features::kPageContentCache)) {
+    return PersistTabStorageType::kSQLite;
+  }
+  return PersistTabStorageType::kFileSystem;
+}
+
+PersistTabExtractionTiming GetPersistTabContextExtractionTiming() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextExtractionTimingParam,
+      static_cast<int>(PersistTabExtractionTiming::kOnWasHidden));
+  if (param ==
+      static_cast<int>(PersistTabExtractionTiming::kOnWasHiddenAndPageLoad)) {
+    return PersistTabExtractionTiming::kOnWasHiddenAndPageLoad;
+  }
+  return PersistTabExtractionTiming::kOnWasHidden;
+}
+
+PersistTabDataExtracted GetPersistTabContextDataExtracted() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, kPersistTabContextDataParam,
+      static_cast<int>(PersistTabDataExtracted::kApcAndInnerText));
+  if (param == static_cast<int>(PersistTabDataExtracted::kInnerTextOnly)) {
+    return PersistTabDataExtracted::kInnerTextOnly;
+  }
+  return PersistTabDataExtracted::kApcAndInnerText;
 }
 
 BASE_FEATURE(kCleanupPersistedTabContexts, base::FEATURE_ENABLED_BY_DEFAULT);

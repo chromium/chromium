@@ -141,8 +141,46 @@ BASE_DECLARE_FEATURE(kSmartTabGrouping);
 // Returns true if smart tab grouping is enabled.
 bool IsSmartTabGroupingEnabled();
 
+// Feature parameter determining the storage backend used for persisting tab
+// contexts.
+extern const char kPersistTabContextStorageParam[];
+
+// Feature parameter detirmining the event(s) that trigger page context
+// extraction.
+extern const char kPersistTabContextExtractionTimingParam[];
+
+// Feature parameter detirmining what page content data is persisted.
+extern const char kPersistTabContextDataParam[];
+
+// Defines the storage backend used for persisting tab contexts.
+enum class PersistTabStorageType {
+  kFileSystem = 0,
+  kSQLite = 1,
+};
+
+// Defines the event(s) that trigger page context extraction.
+enum class PersistTabExtractionTiming {
+  kOnWasHidden = 0,
+  kOnWasHiddenAndPageLoad = 1,
+};
+
+// Defines what page content data is persisted.
+enum class PersistTabDataExtracted {
+  kApcAndInnerText = 0,
+  kInnerTextOnly = 1,
+};
+
 // Returns true if tab context persisting is enabled.
 bool IsPersistTabContextEnabled();
+
+// Returns the configured persistent tab context storage type.
+PersistTabStorageType GetPersistTabContextStorageType();
+
+// Returns the configured persistent tab context extraction timing.
+PersistTabExtractionTiming GetPersistTabContextExtractionTiming();
+
+// Returns the configured persistent tab context data extracted.
+PersistTabDataExtracted GetPersistTabContextDataExtracted();
 
 // Feature flag to persist tab context.
 BASE_DECLARE_FEATURE(kPersistTabContext);
