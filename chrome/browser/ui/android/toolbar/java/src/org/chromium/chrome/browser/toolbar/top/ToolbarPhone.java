@@ -17,6 +17,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -41,6 +42,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
@@ -450,6 +452,27 @@ public class ToolbarPhone extends ToolbarLayout
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getContext());
         setActiveLocationBarBackground(mLocationBarBackground);
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mLocationBar
+                    .getContainerView()
+                    .setOutlineProvider(
+                            new ViewOutlineProvider() {
+                                @Override
+                                public void getOutline(View view, Outline outline) {
+                                    // We intentionally don't get the outline directly from
+                                    // mActiveLocationBarBackground. This is because we invalidate
+                                    // the outline at the start of the transition, which is before
+                                    // the background has reached its end state.
+                                    GradientDrawable bgDrawable =
+                                            getActiveLocationBarGradientDrawable();
+                                    if (bgDrawable == null) return;
+                                    outline.setRoundRect(
+                                            getLocationBarOutlineRect(),
+                                            bgDrawable.getCornerRadius());
+                                }
+                            });
+            mLocationBar.getContainerView().setClipToOutline(true);
+        }
     }
 
     private void setActiveLocationBarBackground(Drawable background) {
@@ -571,6 +594,9 @@ public class ToolbarPhone extends ToolbarLayout
                         MathUtils.interpolate(
                                 nonFocusedRadius, focusedRadius, mUrlFocusChangeFraction);
         mLocationBarBackground.setCornerRadius(radius);
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mLocationBar.getContainerView().invalidateOutline();
+        }
     }
 
     /**
@@ -984,10 +1010,13 @@ public class ToolbarPhone extends ToolbarLayout
             updateLocationBarTranslationOnScroll();
             float oldScrollFraction = mNtpSearchBoxScrollFraction;
             if (scrollFraction > 0.f && mNtpSearchBoxScrollFraction != 1.f) {
+                // Snap to the toolbar region.
                 mNtpSearchBoxScrollFraction = 1.f;
                 createAndRunNtpFocusAnimatorRefactored();
             } else if (scrollFraction <= 0.f && mNtpSearchBoxScrollFraction != 0.f) {
+                // Un-snap from the toolbar region. Track the starting offset for scroll state.
                 mNtpSearchBoxScrollFraction = 0.f;
+                mRefactoredNtpStartingOffset = getLocationBarTranslationY();
                 createAndRunNtpFocusAnimatorRefactored();
             }
             // If the scroll fraction was previously uninitialized, we likely just navigated to a
@@ -1037,7 +1066,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void createAndRunNtpFocusAnimatorRefactored() {
-        mRefactoredNtpStartingOffset = getLocationBarTranslationY();
         // The scroll fraction will have just changed, so update the expansion fraction accordingly.
         // This is also used to determine the alpha of the toolbar background, so update now before
         // capturing the transparent background color in the upcoming transition.
@@ -1699,28 +1727,46 @@ public class ToolbarPhone extends ToolbarLayout
      * on its previously calculated bounds, the NTP offset, and the location bar's translation.
      */
     private void updateLocationBarBackgroundViewBounds() {
+        Rect rect = getLocationBarBackgroundRect();
+        mActiveLocationBarBackgroundView.setTranslationX(rect.left);
+        mActiveLocationBarBackgroundView.setTranslationY(rect.top);
+        ViewGroup.LayoutParams lp = mActiveLocationBarBackgroundView.getLayoutParams();
+        lp.width = rect.right - rect.left;
+        lp.height = rect.bottom - rect.top;
+        mActiveLocationBarBackgroundView.setLayoutParams(lp);
+        mLocationBar.getContainerView().invalidateOutline();
+    }
+
+    /** Gets the location bar background's Rect from the location bar bounds and the NTP offset. */
+    private Rect getLocationBarBackgroundRect() {
         int left = mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left;
         int top = mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top;
         int right = mLocationBarBackgroundBounds.right + mLocationBarBackgroundNtpOffset.right;
         int bottom = mLocationBarBackgroundBounds.bottom + mLocationBarBackgroundNtpOffset.bottom;
+        return new Rect(left, top, right, bottom);
+    }
 
-        mActiveLocationBarBackgroundView.setTranslationX(left);
-        mActiveLocationBarBackgroundView.setTranslationY(top);
-        ViewGroup.LayoutParams lp = mActiveLocationBarBackgroundView.getLayoutParams();
-        lp.width = right - left;
-        lp.height = bottom - top;
-        mActiveLocationBarBackgroundView.setLayoutParams(lp);
+    /** Gets the location bar's outline rect from the location bar background's Rect. */
+    private Rect getLocationBarOutlineRect() {
+        Rect rect = getLocationBarBackgroundRect();
+        // Evidently, the clip outline is applied before the left margin is applied. i.e. we need to
+        // supply the Rect as if the location bar were left-aligned.
+        int left = 0;
+        int top = rect.top - (int) mRefactoredNtpStartingOffset;
+        int right = rect.right - rect.left;
+        int bottom = rect.bottom - (int) mRefactoredNtpStartingOffset;
+        return new Rect(left, top, right, bottom);
     }
 
     private boolean drawLocationBar(Canvas canvas, long drawingTime) {
         TraceEvent.begin("ToolbarPhone.drawLocationBar");
         boolean clipped = false;
-        if (shouldDrawLocationBar()) {
+        if (shouldDrawLocationBar()
+                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             canvas.save();
             // If the animation refactor is enabled, the background will instead be drawn by an
             // Android view hosting the background drawable.
-            if (shouldDrawLocationBarBackground()
-                    && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            if (shouldDrawLocationBarBackground()) {
                 mActiveLocationBarBackground.setBounds(
                         mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left,
                         mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top,
@@ -2384,6 +2430,15 @@ public class ToolbarPhone extends ToolbarLayout
         mUrlFocusLayoutAnimator.start();
     }
 
+    private @Nullable GradientDrawable getActiveLocationBarGradientDrawable() {
+        if (mActiveLocationBarBackground == mLocationBarBackground) {
+            return mLocationBarBackground.getBackgroundGradient();
+        } else if (mActiveLocationBarBackground == mNtpFakeboxBackground) {
+            return mNtpFakeboxBackground;
+        }
+        return null;
+    }
+
     private class BackgroundDrawableTransition extends Transition {
         private static final String PROPNAME_TOOLBAR_COLOR =
                 "BackgroundDrawableTransition:toolbarColor";
@@ -2418,15 +2473,6 @@ public class ToolbarPhone extends ToolbarLayout
                         PROPNAME_LOCATION_BAR_CORNER_RADIUS,
                         locationBarBackgroundGradientDrawable.getCornerRadius());
             }
-        }
-
-        private @Nullable GradientDrawable getActiveLocationBarGradientDrawable() {
-            if (mActiveLocationBarBackground == mLocationBarBackground) {
-                return mLocationBarBackground.getBackgroundGradient();
-            } else if (mActiveLocationBarBackground == mNtpFakeboxBackground) {
-                return mNtpFakeboxBackground;
-            }
-            return null;
         }
 
         @Override
@@ -3103,16 +3149,17 @@ public class ToolbarPhone extends ToolbarLayout
             mLayoutUpdater.run();
         }
         updateShadowVisibility();
-        // TODO(crbug.com/463449054): It is possible to navigate from a NTP to a non-NTP without
-        //  focusing the fakebox (e.g. through the MVT or the GTS). In those cases, the refactored
-        //  transitions will not run, which also means that the location bar's position will not be
-        //  updated. This was previously handled by the URL expansion call that is now skipped in
-        //  the refactored flow (through skipUrlExpansion below). This is causing the location bar
-        //  to be mispositioned.
-        invokeTransition(
-                /* resetNtpTransition= */ false,
-                /* skipUrlExpansion= */ ChromeFeatureList.sToolbarPhoneAnimationRefactor
-                        .isEnabled());
+
+        boolean skipUrlExpansion = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
+        invokeTransition(/* resetNtpTransition= */ false, /* skipUrlExpansion= */ skipUrlExpansion);
+        if (skipUrlExpansion) {
+            // If the URL expansion animation update is being skipped, manually update the relevant
+            // properties here instead. #updateLocationBarFocusChangeFraction sets the status icon
+            // and url bar spacing while #layoutLocationBarWithoutAnimationExpansion updates the
+            // location bar's left margin and width.
+            updateLocationBarFocusChangeFraction();
+            layoutLocationBarWithoutAnimationExpansion(getWidth());
+        }
 
         // This exception is to prevent early change of theme color when exiting the tab switcher
         // since currently visual state does not map correctly to tab switcher state. See
