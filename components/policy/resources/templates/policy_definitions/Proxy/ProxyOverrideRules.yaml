@@ -27,7 +27,7 @@ desc: |-
 
   The <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> field contains a list of conditions that must all be met for its override rule to be used to decide the proxy to use. If it is left unset, the entry will be used as long as at least one host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
 
-  The <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE">DnsProbe</ph> condition checks if the provided DNS <ph name="PROXY_OVERRIDE_RULES_HOST">Host</ph> is able to resolve to an IP address. If the value of <ph name="PROXY_OVERRIDE_RULES_RESULT">Result</ph> is "<ph name="PROXY_OVERRIDE_RULES_RESOLVED">resolved</ph>" then the condition is considered as met. If the value is instead set to <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND">not_found</ph>, then the condition is considered met if the resolution failed.
+  The <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE">DnsProbe</ph> condition checks if the provided DNS <ph name="PROXY_OVERRIDE_RULES_HOST">Host</ph> is able to resolve to an IP address. It must contain a host (e.g. example.com), and optionally a scheme or a port (e.g. https://example.com, example.com:123, https://example.com:123). If the value of <ph name="PROXY_OVERRIDE_RULES_RESULT">Result</ph> is "<ph name="PROXY_OVERRIDE_RULES_RESOLVED">resolved</ph>" then the condition is considered as met. If the value is instead set to <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND">not_found</ph>, then the condition is considered met if the resolution failed.
 
 example_value:
 - DestinationMatchers:

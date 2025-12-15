@@ -23,8 +23,10 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/url_util.h"
 #include "net/net_buildflags.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -81,8 +83,38 @@ ValueToDnsCondition(const base::Value& value) {
     return std::nullopt;
   }
 
+  GURL url(*host_value);
+  std::string scheme = url.GetScheme();
+  std::string host = url.GetHost();
+  int port = url.IntPort();
+
+  // If the value used to initialize `url` is missing parts (for example because
+  // it's only a hostname), then try to specify a replacement scheme and/or
+  // port. This gives flexibility to the policy field to only specify certain
+  // values.
+  if (host.empty()) {
+    // This path is reached when only the host is provided (ex. "foo.com").
+    // In this case, `url` will be invalid and see "foo.com" as a scheme, so if
+    // that happens the string is instead parsed as a host:port pair, with HTTP
+    // as the default scheme.
+    scheme = url::kHttpScheme;
+    if (!net::ParseHostAndPort(*host_value, &host, &port)) {
+      return std::nullopt;
+    }
+  }
+  if (scheme.empty()) {
+    scheme = url::kHttpScheme;
+  }
+  if (port == url::PORT_UNSPECIFIED) {
+    port = url::DefaultPortForScheme(scheme);
+  }
+
   net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition dns_probe_condition;
-  dns_probe_condition.host = url::SchemeHostPort(GURL(*host_value));
+  dns_probe_condition.host = url::SchemeHostPort(scheme, host, port);
+  if (!dns_probe_condition.host.IsValid()) {
+    return std::nullopt;
+  }
+
   dns_probe_condition.result =
       *result_value == "resolved"
           ? net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved
