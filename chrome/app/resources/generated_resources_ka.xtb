@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">თქვენს Google ანგარიშში არსებული პაროლებისა და წვდომის გასაღებების გამოყენება და შენახვა</translation>
 <translation id="1166583374608765787">შეამოწმეთ სახელის განახლება</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ეკუთვნის სამუშაო დაფას „<ph name="DESK_TITLE" />“</translation>
+<translation id="1167008614036441342">ბარათი ამოიშალა, რადგან ბოლო დროს არ გამოგიყენებიათ</translation>
 <translation id="1168020859489941584">დრო გახსნამდე: <ph name="TIME_REMAINING" />…</translation>
 <translation id="1168704243733734901">ხელოვნური ინტელექტით შექმნილი ბოლოდროინდელი თემა <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“, გამოყენებული სტილია „<ph name="STYLE" />“, ხოლო განწყობა — „<ph name="MOOD" />“.</translation>
 <translation id="1168799042879144934">ჰკითხეთ Google-ს წინა გვერდის შესახებ</translation>
@@ -2204,6 +2205,7 @@
 <translation id="2476901513051581836">მეხსიერების გათავისუფლება ვერ მოხერხდება, სანამ ხაზგარეშე მეხსიერების ზომა ცნობილია.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ის დეინსტალაციისთვის გამორთეთ Windows.</translation>
 <translation id="2477065602824695373">ვინაიდან რამდენიმე გადამრთველი დააყენეთ, ავტომატური სკანირება გამოირთო.</translation>
+<translation id="2477218554275525952">ახალი ჩანართის გახსნისას Gemini-ს გვერდითი ზოლის გახსნილი დატოვება</translation>
 <translation id="2477607419416067650">Google-ის სხვა მონაცემები</translation>
 <translation id="2478176599153288112">მედია ფაილის ნებართვები „<ph name="EXTENSION" />“-თვის</translation>
 <translation id="24786041351753425">ჩართეთ მონაცემთა აღდგენის სერვისი.</translation>

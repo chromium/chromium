@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">使用及儲存 Google 帳戶中的密碼和密碼金鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
+<translation id="1167008614036441342">這張卡片因近期未使用而移除</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168704243733734901">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格為<ph name="STYLE" />，情境為<ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">向 Google 詢問與上一個網頁相關的資訊</translation>
@@ -2204,6 +2205,7 @@
 <translation id="2476901513051581836">離線儲存空間大小不明，因此無法清理儲存空間。</translation>
 <translation id="2476974672882258506">請關閉 Windows 以解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">你已設定多個切換工具，因此自動掃描功能已關閉。</translation>
+<translation id="2477218554275525952">開啟新分頁時，保持 Gemini 側欄開啟</translation>
 <translation id="2477607419416067650">其他 Google 資料</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>

@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">ប្រើ និងរក្សាទុក​ពាក្យសម្ងាត់ និង​កូដសម្ងាត់​ពីគណនី Google របស់អ្នក</translation>
 <translation id="1166583374608765787">ពិនិត្យមើល​ការប្ដូរឈ្មោះ</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ជារបស់តុ <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">កាត​ត្រូវបាន​ដកចេញ ដោយសារ​អ្នកមិនបានប្រើវា​នាពេលថ្មីៗ​នេះ</translation>
 <translation id="1168020859489941584">កំពុងបើកនៅក្នុង <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">ទម្រង់រចនា AI ថ្មីទី <ph name="INDEX" /> របស់ <ph name="SUBJECT" /> ជារចនាប័ទ្ម <ph name="STYLE" /> ដែលមាន​អារម្មណ៍ <ph name="MOOD" />។</translation>
 <translation id="1168799042879144934">សួរ Google អំពី​ទំព័រមុន</translation>
@@ -2217,6 +2218,7 @@
 <translation id="2476901513051581836">មិនអាច​សម្អាត​ទំហំផ្ទុក​បានទេ រហូតទាល់តែ​ស្គាល់​ទំហំផ្ទុក​ក្រៅអ៊ីនធឺណិត។</translation>
 <translation id="2476974672882258506">បិទ Windows ដើម្បីលុប <ph name="PARALLELS_DESKTOP" />។</translation>
 <translation id="2477065602824695373">ដោយសារ​អ្នកបានរៀបចំ​ឧបករណ៍ចុចច្រើន ការស្កេន​ដោយស្វ័យប្រវត្តិត្រូវបានបិទ។</translation>
+<translation id="2477218554275525952">បន្តបើក​របារចំហៀង Gemini នៅពេល​អ្នកបើក​ផ្ទាំងថ្មី</translation>
 <translation id="2477607419416067650">ទិន្នន័យ Google ផ្សេង​ទៀត</translation>
 <translation id="2478176599153288112">ការអនុញ្ញាតឯកសារកំសាន្តសម្រាប់ "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">បើក​សេវាកម្ម​ស្ដារទិន្នន័យឡើងវិញ។</translation>

@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Користите и чувајте лозинке и приступне кључеве са Google налога</translation>
 <translation id="1166583374608765787">Прегледајте ажурирање назива</translation>
 <translation id="1166596238782048887">Картица <ph name="TAB_TITLE" /> припада радној површини <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">Картица је уклоњена јер је нисте скоро користили</translation>
 <translation id="1168020859489941584">Отварање за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. недавна AI тема од <ph name="SUBJECT" />, у стилу <ph name="STYLE" /> са расположењем <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Упитај Google о претходној страници</translation>
@@ -2202,6 +2203,7 @@
 <translation id="2476901513051581836">Није могуће очистити меморијски простор док не знате величину офлајн меморијског простора.</translation>
 <translation id="2476974672882258506">Искључите Windows да бисте деинсталирали <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Пошто сте подесили више прекидача, аутоматско скенирање је искључено.</translation>
+<translation id="2477218554275525952">Не затварај Gemini бочну траку при отварању нове картице</translation>
 <translation id="2477607419416067650">Други Google подаци</translation>
 <translation id="2478176599153288112">Дозволе за медијске датотеке за „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Омогућите услугу враћања података.</translation>

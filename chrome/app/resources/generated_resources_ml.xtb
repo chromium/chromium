@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള പാസ്‌വേഡുകളും പാസ്‌കീകളും ഉപയോഗിക്കുക, സംരക്ഷിക്കുക</translation>
 <translation id="1166583374608765787">പേര് അപ്‌ഡേറ്റ് ചെയ്തത് അവലോകനം ചെയ്യുക</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> എന്ന ഡെസ്കിൽ ഉൾപ്പെടുന്നു</translation>
+<translation id="1167008614036441342">നിങ്ങൾ അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ലാത്തതിനാൽ കാർഡ് നീക്കം ചെയ്തു</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ല്‍ തുറക്കുന്നു...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> സ്റ്റൈലിലും <ph name="MOOD" /> മൂഡിലുമുള്ള <ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ സമീപകാല AI തീം.</translation>
 <translation id="1168799042879144934">മുമ്പത്തെ പേജിനെക്കുറിച്ച് Google-നോട് ചോദിക്കുക</translation>
@@ -2201,6 +2202,7 @@
 <translation id="2476901513051581836">ഓഫ്‌ലെെൻ സ്‌റ്റോറേജ് വലുപ്പം അറിയുന്നത് വരെ സ്‌റ്റോറേജിൽ ഇടം സൃഷ്‌ടിക്കാനാകില്ല.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> അൺഇൻസ്റ്റാൾ ചെയ്യാൻ Windows ഷട്ട് ഡൗൺ ചെയ്യുക.</translation>
 <translation id="2477065602824695373">നിങ്ങൾ ഒന്നിലധികം സ്വിച്ചുകൾ സജ്ജീകരിച്ചതിനാൽ സ്വയമേവ-സ്‌കാൻ ചെയ്യൽ ഓഫാക്കി.</translation>
+<translation id="2477218554275525952">നിങ്ങൾ പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ, Gemini സൈഡ്ബാർ തുറന്ന നിലയിൽ നിലനിർത്തുക</translation>
 <translation id="2477607419416067650">മറ്റ് Google ഡാറ്റ</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" എന്നതിനായുള്ള മീഡിയ-ഫയൽ അനുമതികൾ</translation>
 <translation id="24786041351753425">ഡാറ്റ വീണ്ടെടുക്കൽ സേവനം പ്രവർത്തനക്ഷമമാക്കുക.</translation>

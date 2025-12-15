@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">‏שימוש בסיסמאות ובמפתחות גישה בחשבון Google ושמירה שלהם</translation>
 <translation id="1166583374608765787">בדיקת עדכון השם</translation>
 <translation id="1166596238782048887">הכרטיסייה <ph name="TAB_TITLE" /> שייכת לשולחן העבודה הווירטואלי <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">הכרטיס הוסר כי לא השתמשת בו לאחרונה</translation>
 <translation id="1168020859489941584">הפתיחה תתבצע בעוד <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">‏עיצוב <ph name="INDEX" /> מהזמן האחרון של <ph name="SUBJECT" /> שנוצר על ידי AI, בסגנון <ph name="STYLE" />, באווירה <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">‏אפשר לשאול את Google לגבי הדף הקודם</translation>
@@ -2216,6 +2217,7 @@
 <translation id="2476901513051581836">אי אפשר לפנות מקום כל עוד הגודל של נפח האחסון אופליין לא ידוע.</translation>
 <translation id="2476974672882258506">‏יש לכבות את Windows כדי להסיר את <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">הסריקה האוטומטית מושבתת כי הגדרת כמה מתגים.</translation>
+<translation id="2477218554275525952">‏כשפותחים כרטיסייה חדשה, אפשר להשאיר את סרגל הצד של Gemini פתוח</translation>
 <translation id="2477607419416067650">‏נתונים אחרים של Google</translation>
 <translation id="2478176599153288112">הרשאות של קובץ מדיה עבור "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">הפעלה של שירות שחזור הנתונים</translation>

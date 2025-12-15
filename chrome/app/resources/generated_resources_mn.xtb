@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Google Бүртгэлээсээ нууц үг болон нэвтрэх түлхүүрүүдийг ашиглах, хадгалах</translation>
 <translation id="1166583374608765787">Нэрийн шинэчлэлтийг шалгах</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> нь <ph name="DESK_TITLE" />-н дэлгэцэд харьяалагдана</translation>
+<translation id="1167008614036441342">Та картыг сүүлийн үед ашиглаагүй тул хассан</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> дотор нээж байна ...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> сэтгэл санааны байдалтай, <ph name="STYLE" /> хэв маягтай, <ph name="SUBJECT" />-н сэдэвтэй саяхны ХОУ-ы <ph name="INDEX" />-р загвар.</translation>
 <translation id="1168799042879144934">Өмнөх хуудасны талаар Google-с асуух</translation>
@@ -2214,6 +2215,7 @@
 <translation id="2476901513051581836">Офлайн хадгалах сангийн хэмжээ мэдэгдэх хүртэл хадгалах санг цэвэрлэх боломжгүй.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-г устгахын тулд Windows-г унтраана уу.</translation>
 <translation id="2477065602824695373">Та олон сэлгүүр тохируулсан тул автоматаар скан хийхийг унтраасан байна.</translation>
+<translation id="2477218554275525952">Таныг шинэ таб нээхэд Gemini-н хажуугийн цэсийг байлгах</translation>
 <translation id="2477607419416067650">Google-н бусад өгөгдөл</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />"-ийн Медиа-Файл зөвшөөрөл</translation>
 <translation id="24786041351753425">Өгөгдөл сэргээх үйлчилгээг идэвхжүүлнэ үү.</translation>

@@ -48,7 +48,7 @@
 <translation id="7068383018033524534">Manifestfilen er ugyldig</translation>
 <translation id="7217838517480956708">Administratoren af denne computer kræver, at <ph name="EXTENSION_NAME" /> skal installeres. Den kan ikke fjernes eller ændres.</translation>
 <translation id="7612608473764576263">Den indtastede værdi for den private nøgle skal være et gyldigt format (PEM-kodet RSA-nøgle i PKCS#8-format).</translation>
-<translation id="7876803335449432072">Filen "<ph name="RELATIVE_PATH" />" til indholdsscript kunne ikke indlæses. Indholdsscripts med typografiark kan kun indlæses fra understøttede typografiarkfiler, f.eks. .css-filer.</translation>
+<translation id="7876803335449432072">Filen "<ph name="RELATIVE_PATH" />" til indholdsscript kunne ikke indlæses. Indholdsscripts med stylesheets kan kun indlæses fra understøttede stylesheetfiler, f.eks. .css-filer.</translation>
 <translation id="7939686037314084444">Udvidelsen kunne ikke indlæses korrekt. Den kan muligvis ikke opfange netværksanmodninger.</translation>
 <translation id="7972881773422714442">Valgmuligheder: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Frontkamera</translation>

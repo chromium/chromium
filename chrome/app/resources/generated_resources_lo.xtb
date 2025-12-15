@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">ໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານຈາກບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1166583374608765787">ກວດສອບການອັບເດດຊື່</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ເປັນຂອງໂຕະ <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">ບັດຖືກລຶບອອກເນື່ອງຈາກທ່ານບໍ່ໄດ້ໃຊ້ມັນເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="1168020859489941584">ກໍາລັງເປີດຢູ່ໃນ <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">ຮູບແບບສີສັນ AI ຫຼ້າສຸດທີ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" />, ໃນຮູບແບບ <ph name="STYLE" />, ດ້ວຍອາລົມ <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">ຖາມ Google ກ່ຽວກັບໜ້າກ່ອນໜ້າ</translation>
@@ -2216,6 +2217,7 @@
 <translation id="2476901513051581836">ບໍ່ສາມາດສ້າງພື້ນທີ່ຫວ່າງໄດ້ຈົນກວ່າຈະຮູ້ຂະໜາດບ່ອນຈັດເກັບຂໍ້ມູນອອບລາຍ.</translation>
 <translation id="2476974672882258506">ປິດ Windows ເພື່ອຖອນການຕິດຕັ້ງ <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">ເນື່ອງຈາກທ່ານຕັ້ງຄ່າສະວິດຫຼາຍອັນ, ການສະແກນອັດຕະໂນມັດຈຶ່ງຖືກປິດໄວ້.</translation>
+<translation id="2477218554275525952">ເປີດແຖບດ້ານຂ້າງຂອງ Gemini ໄວ້ເມື່ອທ່ານເປີດແຖບໃໝ່</translation>
 <translation id="2477607419416067650">ຂໍ້ມູນອື່ນໆໃນ Google</translation>
 <translation id="2478176599153288112">ການ​ອະ​ນຸ​ຍາດໄຟລ໌ມີເດຍສໍາ​ລັບ "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">ເປີດການນຳໃຊ້ບໍລິການການກູ້ຄືນຂໍ້ມູນ.</translation>

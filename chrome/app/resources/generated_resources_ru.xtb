@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Использовать пароли и ключи доступа, сохраненные в аккаунте Google, и добавлять в него новые</translation>
 <translation id="1166583374608765787">Проверьте новое название</translation>
 <translation id="1166596238782048887">Вкладка "<ph name="TAB_TITLE" />" находится на рабочем столе "<ph name="DESK_TITLE" />"</translation>
+<translation id="1167008614036441342">Карточка удалена, так как вы давно ее не использовали.</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Недавняя тема, созданная искусственным интеллектом: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Спросить Google о предыдущей странице</translation>
@@ -2206,6 +2207,7 @@
 <translation id="2476901513051581836">Невозможно очистить хранилище, пока не будет известен его размер</translation>
 <translation id="2476974672882258506">Чтобы удалить <ph name="PARALLELS_DESKTOP" />, завершите работу Windows.</translation>
 <translation id="2477065602824695373">Автосканирование отключено, поскольку настроено несколько переключателей.</translation>
+<translation id="2477218554275525952">Боковая панель Gemini будет оставаться открытой при открытии новой вкладки</translation>
 <translation id="2477607419416067650">Другие данные в аккаунте Google</translation>
 <translation id="2478176599153288112"><ph name="EXTENSION" />: доступ к медиафайлам</translation>
 <translation id="24786041351753425">Включение сервиса восстановления данных</translation>

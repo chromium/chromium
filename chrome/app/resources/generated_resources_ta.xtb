@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">எனது Google கணக்கில் இருந்து கடவுச்சொற்களையும் கடவுச்சாவிகளையும் பயன்படுத்து மற்றும் சேமி</translation>
 <translation id="1166583374608765787">பெயர் மாற்றப்பட்டுள்ளது</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> பக்கம் <ph name="DESK_TITLE" /> டெஸ்க்கில் உள்ளது</translation>
+<translation id="1167008614036441342">நீங்கள் சமீபத்தில் கார்டைப் பயன்படுத்தாததால் அது அகற்றப்பட்டது</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> இல் திறக்கிறது…</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> ஸ்டைல் மற்றும் <ph name="MOOD" /> மனநிலையுடன் <ph name="SUBJECT" /> இன் சமீபத்திய <ph name="INDEX" />வது AI தீம்.</translation>
 <translation id="1168799042879144934">முந்தைய பக்கம் குறித்து Googleளிடம் கேளுங்கள்</translation>
@@ -2217,6 +2218,7 @@
 <translation id="2476901513051581836">ஆஃப்லைன் சேமிப்பகத்தின் அளவு தெரிந்தால் மட்டுமே சேமிப்பகத்தைக் காலியாக்க முடியம்.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ஐ நிறுவல் நீக்க, Windowsஸை ஷட் டவுன் செய்யவும்.</translation>
 <translation id="2477065602824695373">ஒன்றுக்கும் மேற்பட்ட ஸ்விட்ச்சுகளை நீங்கள் ஒதுக்கியுள்ளதால் தானியங்கு ஸ்கேன் முடக்கப்பட்டது.</translation>
+<translation id="2477218554275525952">புதிய பக்கத்தைத் திறக்கும்போது Gemini பக்கப்பட்டியைத் திறந்தே வைத்திரு</translation>
 <translation id="2477607419416067650">பிற Google தரவு</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" க்கான மீடியா-ஃபைல் அனுமதிகள்</translation>
 <translation id="24786041351753425">தரவு மீட்டெடுப்புச் சேவையை இயக்குங்கள்.</translation>

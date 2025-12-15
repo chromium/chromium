@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Օգտագործել և պահել գաղտնաբառերն ու մուտքի բանալիները իմ Google հաշվից</translation>
 <translation id="1166583374608765787">Դիտեք անվան փոփոխությունները</translation>
 <translation id="1166596238782048887">«<ph name="TAB_TITLE" />» ներդիրը պատկանում է «<ph name="DESK_TITLE" />» աշխատասեղանին</translation>
+<translation id="1167008614036441342">Քարտը հեռացվել է, քանի որ այն վերջերս չի օգտագործվել</translation>
 <translation id="1168020859489941584">Բացվում է <ph name="TIME_REMAINING" />-ից…</translation>
 <translation id="1168704243733734901">Արհեստական բանականության վերջերս ստեղծած թեմա <ph name="INDEX" /> (<ph name="SUBJECT" />), <ph name="STYLE" /> ոճով, <ph name="MOOD" /> տրամադրությամբ։</translation>
 <translation id="1168799042879144934">Հարցնել Google-ին նախորդ էջի մասին</translation>
@@ -2206,6 +2207,7 @@
 <translation id="2476901513051581836">Տարածքը կարելի է ազատել, միայն եթե անցանց հիշողության չափը հայտնի է։</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ն ապատեղադրելու համար ավարտեք Windows-ի հետ աշխատանքը։</translation>
 <translation id="2477065602824695373">Քանի որ դուք մի քանի փոխանջատիչ եք նշանակել, ավտոմատ սկանավորումն անջատվել է։</translation>
+<translation id="2477218554275525952">Բացված պահել Gemini-ի կողային վահանակը, երբ նոր ներդիր եք բացում</translation>
 <translation id="2477607419416067650">Այլ Google տվյալներ</translation>
 <translation id="2478176599153288112">Մեդիա ֆայլերի օգտագործման թույլտվություններ «<ph name="EXTENSION" />»-ի համար</translation>
 <translation id="24786041351753425">Տվյալների վերականգնման ծառայության միացում</translation>

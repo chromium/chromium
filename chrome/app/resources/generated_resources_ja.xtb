@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Google アカウントのパスワードとパスキーを使用、保存する</translation>
 <translation id="1166583374608765787">新しい名前を確認</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> はデスク <ph name="DESK_TITLE" /> に含まれています</translation>
+<translation id="1167008614036441342">最近使用していないため、カードを削除しました</translation>
 <translation id="1168020859489941584">後 <ph name="TIME_REMAINING" />でファイルが開きます...</translation>
 <translation id="1168704243733734901">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">前のページについて Google に質問する</translation>
@@ -2200,6 +2201,7 @@
 <translation id="2476901513051581836">オフライン ストレージのサイズが判明するまで、ストレージをクリーンアップできません。</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> をアンインストールするには Windows をシャットダウンしてください。</translation>
 <translation id="2477065602824695373">複数のスイッチを設定したため、自動スキャンがオフになっています。</translation>
+<translation id="2477218554275525952">新しいタブを開くときに Gemini サイドバーを開いたままにする</translation>
 <translation id="2477607419416067650">その他の Google データ</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」のメディアファイル権限</translation>
 <translation id="24786041351753425">データ復旧サービスを有効にしてください。</translation>

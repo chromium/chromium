@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">‏استفاده و ذخیره گذرواژه‌ها و گذرکلیدهای موجود در «حساب Google»</translation>
 <translation id="1166583374608765787">مرور به‌روزرسانی نام</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میز کار <ph name="DESK_TITLE" /> تعلق دارد</translation>
+<translation id="1167008614036441342">کارت برداشته شد، زیرا اخیراً از آن استفاده نکرده‌اید</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">‏پرسیدن از Google درباره صفحه قبلی</translation>
@@ -2214,6 +2215,7 @@
 <translation id="2476901513051581836">تا زمانی که اندازه فضای ذخیره‌سازی آفلاین مشخص نشود نمی‌توان فضای ذخیره‌سازی را پاک کرد.</translation>
 <translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
 <translation id="2477065602824695373">چون چند کلید راه‌اندازی کرده‌اید، اسکن خودکار خاموش شده است.</translation>
+<translation id="2477218554275525952">‏وقتی‌که زبانه جدیدی باز می‌کنید، نوار کناری Gemini باز بماند</translation>
 <translation id="2477607419416067650">‏سایر داده‌های Google</translation>
 <translation id="2478176599153288112">مجوزهای فایل رسانه‌ای برای «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">فعال کردن سرویس بازیابی داده.</translation>

@@ -256,6 +256,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1166457390969131095">Koristite i čuvajte lozinke i pristupne ključeve sa Google naloga</translation>
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887">Kartica <ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">Kartica je uklonjena jer je niste skoro koristili</translation>
 <translation id="1168020859489941584">Otvaranje za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. nedavna AI tema od <ph name="SUBJECT" />, u stilu <ph name="STYLE" /> sa raspoloženjem <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Upitaj Google o prethodnoj stranici</translation>
@@ -2202,6 +2203,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2476901513051581836">Nije moguće očistiti memorijski prostor dok ne znate veličinu oflajn memorijskog prostora.</translation>
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Pošto ste podesili više prekidača, automatsko skeniranje je isključeno.</translation>
+<translation id="2477218554275525952">Ne zatvaraj Gemini bočnu traku pri otvaranju nove kartice</translation>
 <translation id="2477607419416067650">Drugi Google podaci</translation>
 <translation id="2478176599153288112">Dozvole za medijske datoteke za „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Omogućite uslugu vraćanja podataka.</translation>

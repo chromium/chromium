@@ -256,6 +256,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1166457390969131095">Google hisobingizdagi parollar va kirish kalitlarini ishlatish va unga yangilarini saqlash</translation>
 <translation id="1166583374608765787">Nom oʻzgarishi tekshiruvi</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> nomli varaq <ph name="DESK_TITLE" /> ish stoliga tegishli</translation>
+<translation id="1167008614036441342">Yaqinda ishlatilmaganligi uchun karta olib tashlandi</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
 <translation id="1168704243733734901">Oxirgi AI mavzusi: <ph name="INDEX" />/<ph name="SUBJECT" />, uslub: <ph name="STYLE" />, kayfiyat: <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Avvalgi sahifa haqida Googlega savol bering</translation>
@@ -2206,6 +2207,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2476901513051581836">Oflayn xotira hajmi aniqlanmasa, xotirani tozalab boʻlmaydi.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> oʻchirib tashlanishi uchun Windows ishini yakunlang.</translation>
 <translation id="2477065602824695373">Bir nechta kalit tugma sozlangani sababli avto-skanerlash faolsizlantirildi.</translation>
+<translation id="2477218554275525952">Yangi varaq ochilganda Gemini yon paneli ochiq tursin</translation>
 <translation id="2477607419416067650">Boshqa Google maʼlumotlari</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" uchun media fayli ruxsatlari</translation>
 <translation id="24786041351753425">Maʼlumotlarni tiklash xizmatini yoqing.</translation>

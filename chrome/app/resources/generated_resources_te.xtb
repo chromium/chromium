@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">మీ Google ఖాతా నుండి పాస్‌వర్డ్‌లను, పాస్-కీలను ఉపయోగించి, సేవ్ చేయండి</translation>
 <translation id="1166583374608765787">పేరుకు సంబంధించిన అప్‌డేట్‌ను రివ్యూ చేయండి</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> డెస్క్‌కు సంబంధించినది</translation>
+<translation id="1167008614036441342">మీరు ఇటీవల ఉపయోగించనందున కార్డ్ తీసివేయబడింది</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />లో తెరవబడుతోంది...</translation>
 <translation id="1168704243733734901"><ph name="SUBJECT" />‌కు సంబంధించి <ph name="STYLE" /> స్టయిల్‌లో <ph name="MOOD" /> మూడ్‌తో ఇటీవలి AI రూపం <ph name="INDEX" />.</translation>
 <translation id="1168799042879144934">మునుపటి పేజీ గురించి Googleను అడగండి</translation>
@@ -2215,6 +2216,7 @@
 <translation id="2476901513051581836">ఆఫ్‌లైన్ స్టోరేజ్ సైజు తెలిసే వరకు స్టోరేజ్‌ను క్లీన్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />ను అన్‌ఇన్‌స్టాల్ చేయడానికి Windowsను షట్ డౌన్ చేయండి.</translation>
 <translation id="2477065602824695373">మీరు అనేక స్విచ్‌లను సెటప్ చేసినందున, ఆటో-స్కాన్ ఆఫ్ చేయబడింది.</translation>
+<translation id="2477218554275525952">మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు Gemini సైడ్‌బార్‌ను తెరిచి ఉంచండి</translation>
 <translation id="2477607419416067650">ఇతర Google డేటా</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" కోసం మీడియా-ఫైల్ అనుమతులు</translation>
 <translation id="24786041351753425">డేటా రికవరీ సర్వీస్‌ను ఎనేబుల్ చేయండి.</translation>

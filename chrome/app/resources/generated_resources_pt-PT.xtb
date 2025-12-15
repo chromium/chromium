@@ -256,6 +256,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1166457390969131095">Usar e guardar palavras-passe e chaves de acesso da sua Conta Google</translation>
 <translation id="1166583374608765787">Analise a atualização do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertence ao espaço de trabalho <ph name="DESK_TITLE" /></translation>
+<translation id="1167008614036441342">O cartão foi removido porque não o usou recentemente</translation>
 <translation id="1168020859489941584">A abrir dentro de <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />, no estilo <ph name="STYLE" />, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Perguntar ao Google acerca da página anterior</translation>
@@ -2204,6 +2205,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2476901513051581836">Não é possível limpar o armazenamento enquanto o tamanho do armazenamento offline não for conhecido.</translation>
 <translation id="2476974672882258506">Encerre o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Uma vez que configurou vários interruptores, a análise automática foi desativada.</translation>
+<translation id="2477218554275525952">Manter a barra lateral do Gemini aberta quando abrir um novo separador</translation>
 <translation id="2477607419416067650">Outros dados da Google</translation>
 <translation id="2478176599153288112">Autorizações de ficheiros multimédia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ative o serviço de recuperação de dados.</translation>

@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">तुमच्या Google खाते मधील पासवर्ड आणि पासकी वापरा व सेव्ह करा</translation>
 <translation id="1166583374608765787">अपडेट केलेल्या नावाचे पुनरावलोकन करा</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> हा <ph name="DESK_TITLE" /> डेस्‍कशी कनेक्ट केलेला आहे</translation>
+<translation id="1167008614036441342">तुम्ही अलीकडील काळात कार्ड वापरले नसल्यामुळे ते काढून टाकले आहे</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मध्ये उघडत आहे...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> शैलीमध्ये, <ph name="MOOD" /> मूड असलेली <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> अलीकडील AI थीम.</translation>
 <translation id="1168799042879144934">मागील पेजविषयी Google ला विचारा</translation>
@@ -2217,6 +2218,7 @@
 <translation id="2476901513051581836">ऑफलाइन स्टोरेज जागा ज्ञात होईपर्यंत स्टोरेज साफ करू शकत नाही.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
+<translation id="2477218554275525952">तुम्ही नवीन टॅब उघडता, तेव्हा Gemini साइडबार उघडा ठेवा</translation>
 <translation id="2477607419416067650">इतर Google डेटा</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
 <translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>

@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Використовувати й зберігати паролі та ключі доступу з вашого облікового запису Google</translation>
 <translation id="1166583374608765787">Перевірте змінену назву</translation>
 <translation id="1166596238782048887">"<ph name="TAB_TITLE" />" – це вкладка з робочого столу "<ph name="DESK_TITLE" />"</translation>
+<translation id="1167008614036441342">Картку вилучено, оскільки ви давно нею не користувалися</translation>
 <translation id="1168020859489941584">Відкриття через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Нещодавня тема ШІ <ph name="INDEX" />, використана для об’єкта "<ph name="SUBJECT" />". Стиль: <ph name="STYLE" />. Настрій: <ph name="MOOD" />.</translation>
 <translation id="1168799042879144934">Запитати Google про попередню сторінку</translation>
@@ -2220,6 +2221,7 @@
 <translation id="2476901513051581836">Неможливо звільнити місце, доки не буде відомий розмір офлайн-сховища.</translation>
 <translation id="2476974672882258506">Щоб видалити <ph name="PARALLELS_DESKTOP" />, завершіть роботу Windows.</translation>
 <translation id="2477065602824695373">Оскільки ви налаштували кілька перемикачів, автосканування вимкнено.</translation>
+<translation id="2477218554275525952">Не закривати бічну панель Gemini, коли відкривається нова вкладка</translation>
 <translation id="2477607419416067650">Інші дані Google</translation>
 <translation id="2478176599153288112">Дозволи медіа-файлу для розширення "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Увімкнути сервіс відновлення даних.</translation>
