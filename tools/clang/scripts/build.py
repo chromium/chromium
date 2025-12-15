@@ -765,9 +765,10 @@ def main():
                       help='don\'t build Fuchsia clang_rt runtime (linux/mac)',
                       dest='with_fuchsia',
                       default=sys.platform in ('linux2', 'darwin'))
-  parser.add_argument('--with-ccache',
-                      action='store_true',
-                      help='Use ccache to build the stage 1 compiler')
+  parser.add_argument('--with-compiler-wrapper',
+                      metavar='WRAPPER',
+                      help='Use a compiler wrapper (like ccache) to build the '
+                      'stage 1 compiler')
   parser.add_argument('--without-zstd',
                       dest='with_zstd',
                       action='store_false',
@@ -946,10 +947,12 @@ def main():
                                        universal_newlines=True).rstrip()
   base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
-  ccache_cmake_args = []
-  if args.with_ccache:
-    ccache_cmake_args.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
-    ccache_cmake_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
+  compiler_wrapper_cmake_args = []
+  if args.with_compiler_wrapper:
+    compiler_wrapper_cmake_args.append('-DCMAKE_C_COMPILER_LAUNCHER=' +
+                                       args.with_compiler_wrapper)
+    compiler_wrapper_cmake_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=' +
+                                       args.with_compiler_wrapper)
 
   if args.host_cc or args.host_cxx:
     assert args.host_cc and args.host_cxx, \
@@ -1075,7 +1078,7 @@ def main():
     if sys.platform == 'darwin':
       # Need ARM and AArch64 for building the ios clang_rt.
       bootstrap_targets += ';ARM;AArch64'
-    bootstrap_args = base_cmake_args + ccache_cmake_args + [
+    bootstrap_args = base_cmake_args + compiler_wrapper_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=clang;lld',
         '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
@@ -1562,7 +1565,7 @@ def main():
   cmake_args.append('-DLLVM_RUNTIME_TARGETS=' + all_triples)
 
   if not args.bootstrap:
-    cmake_args.extend(ccache_cmake_args)
+    cmake_args.extend(compiler_wrapper_cmake_args)
 
   if os.path.exists(LLVM_BUILD_DIR):
     RmTree(LLVM_BUILD_DIR)
