@@ -5580,6 +5580,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-actor-cursor",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-bind-pinned-unbound-tab",
     "owners": [
       "basiaz@google.com",
