@@ -1001,7 +1001,11 @@ chromium-metrics-reviews@google.com.
   <owner>polonium@google.com</owner>
   <summary>
     The software keyboard height as a percentage of the tab height. Emitted when
-    the omnibox was focused for any reason, including autofocus.
+    the omnibox was focused for any reason, including autofocus. This metric is
+    logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
 </histogram>
 
@@ -1015,7 +1019,10 @@ chromium-metrics-reviews@google.com.
     percentage of the tab height. This value can exceed 100%. This measurement
     excludes the padding above the topmost text element and below the bottommost
     text element. Emitted when the omnibox was focused for any reason, including
-    autofocus.
+    autofocus. This metric is logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
 </histogram>
 
@@ -1029,7 +1036,10 @@ chromium-metrics-reviews@google.com.
     percentage of the tab height. This value can exceed 100%. This measurement
     includes the padding above the topmost text element but excludes the padding
     below the bottommost one. Emitted when the omnibox was focused for any
-    reason, including autofocus.
+    reason, including autofocus. This metric is logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
 </histogram>
 
@@ -1049,7 +1059,26 @@ chromium-metrics-reviews@google.com.
     Note that recording is debounced by 100ms. This prevents logging of
     transient states, as a single user action can trigger suggestion updates
     multiple times in a short period. Debouncing ensures that only the final,
-    settled state is logged.
+    settled state is logged. This metric is logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Incognito.OmniboxAutofocus.Outcome"
+    enum="OmniboxAutofocusOutcome" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the outcome of the omnibox autofocus logic on the Incognito New Tab
+    Page. Emitted each time a new Incognito tab is opened. The value indicates
+    whether the autofocus occurred, and if it did, what conditions (e.g., not
+    first tab, hardware keyboard, prediction) contributed into making this
+    decision. This metric is logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
 </histogram>
 
@@ -1062,7 +1091,11 @@ chromium-metrics-reviews@google.com.
     The percentage of the Incognito New Tab Page's text content that is hidden
     by the software keyboard. This calculation is based on the text content's
     height, which excludes the padding above the topmost and below the
-    bottommost text elements. {FocusEvent}
+    bottommost text elements. {FocusEvent} This metric is logged on Android
+    only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
   <token key="FocusEvent">
     <variant name="OnAutofocus"
@@ -1082,7 +1115,11 @@ chromium-metrics-reviews@google.com.
     The percentage of the Incognito New Tab Page's text content that is hidden
     by the software keyboard. This calculation is based on the text content's
     height, which includes the padding above the topmost text element but
-    excludes the padding below the bottommost one. {FocusEvent}
+    excludes the padding below the bottommost one. {FocusEvent} This metric is
+    logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
   </summary>
   <token key="FocusEvent">
     <variant name="OnAutofocus"

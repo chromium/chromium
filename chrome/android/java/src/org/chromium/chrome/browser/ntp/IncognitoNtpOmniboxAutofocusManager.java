@@ -439,6 +439,14 @@ public class IncognitoNtpOmniboxAutofocusManager {
                                     || isAutofocusAllowedWithPrediction
                                     || isAutofocusAllowedWithHardwareKeyboard) {
                                 autofocus(tab);
+
+                                IncognitoNtpOmniboxAutofocusTracker.recordAutofocusTriggered(
+                                        noConditionsConfigured,
+                                        isAutofocusAllowedNotFirstTab,
+                                        isAutofocusAllowedWithPrediction,
+                                        isAutofocusAllowedWithHardwareKeyboard);
+                            } else {
+                                IncognitoNtpOmniboxAutofocusTracker.recordAutofocusNotTriggered();
                             }
                         });
     }
