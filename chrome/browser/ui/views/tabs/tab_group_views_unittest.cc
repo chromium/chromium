@@ -95,10 +95,10 @@ TEST_F(TabGroupViewsTest, HeaderInitialAccessibilityProperties) {
 TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
   TabGroupHeader* header = group_views_->header();
   Tab* tab_1 = tab_container_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
   tab_1->SetGroup(id_);
   Tab* tab_2 = tab_container_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(2), tab_slot_controller_.get()));
   tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
@@ -126,10 +126,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
 TEST_F(TabGroupViewsTest, UnderlineBoundsWhenTabsAreNotVisible) {
   TabGroupHeader* header = group_views_->header();
   Tab* tab_1 = tab_container_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
   tab_1->SetGroup(id_);
   Tab* tab_2 = tab_container_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(2), tab_slot_controller_.get()));
   tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
@@ -150,10 +150,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
   TabGroupHeader* header = group_views_->header();
   drag_context_->AddChildViewRaw(header);
   Tab* tab_1 = drag_context_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
   tab_1->SetGroup(id_);
   Tab* tab_2 = drag_context_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(2), tab_slot_controller_.get()));
   tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
@@ -191,10 +191,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
 TEST_F(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
   TabGroupHeader* header = group_views_->header();
   Tab* other_tab = tab_container_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get()));
   other_tab->SetGroup(id_);
   Tab* dragged_tab = drag_context_->AddChildView(
-      std::make_unique<Tab>(tab_slot_controller_.get()));
+      std::make_unique<Tab>(tabs::TabHandle(2), tab_slot_controller_.get()));
   dragged_tab->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);

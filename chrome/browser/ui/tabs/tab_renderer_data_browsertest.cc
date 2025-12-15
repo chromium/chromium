@@ -110,35 +110,6 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, PinnedStateChange) {
   EXPECT_EQ(data_before, data_after_unpinning);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabInterfaceWeakPtr) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
-  content::WebContents* wc1 = tab_strip_model->GetWebContentsAt(0);
-
-  UpdateTitleForEntry(wc1, u"First Tab");
-
-  TabRendererData data1 = TabRendererData::FromTabInModel(tab_strip_model, 0);
-
-  EXPECT_EQ(data1.title, u"First Tab");
-  EXPECT_EQ(data1.tab_interface->GetContents(), wc1);
-
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    content::WebContents* wc2 = tab_strip_model->GetWebContentsAt(1);
-    TabRendererData data2 = TabRendererData::FromTabInModel(tab_strip_model, 1);
-    EXPECT_EQ(data2.tab_interface->GetContents(), wc2);
-    tab_strip_model->CloseWebContentsAt(1, CLOSE_NONE);
-    EXPECT_FALSE(data2.tab_interface);
-    EXPECT_FALSE(data2.pinned);
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TitleChange) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,

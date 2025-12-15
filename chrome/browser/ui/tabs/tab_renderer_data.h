@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/byte_count.h"
-#include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
@@ -24,7 +23,6 @@ class CollaborationMessagingTabData;
 }  // namespace tab_groups
 
 namespace tabs {
-class TabInterface;
 enum class TabAlert;
 }  // namespace tabs
 
@@ -76,9 +74,6 @@ struct TabRendererData {
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;
-
-  // Weak pointer to the TabInterface for accessing tab state
-  base::WeakPtr<tabs::TabInterface> tab_interface;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

@@ -49,22 +49,23 @@ TabUnderlineView::Factory* TabUnderlineView::Factory::factory_ = nullptr;
 std::unique_ptr<TabUnderlineView> TabUnderlineView::Factory::Create(
     std::unique_ptr<TabUnderlineViewController> controller,
     Browser* browser,
-    Tab* tab) {
+    tabs::TabHandle tab_handle) {
   if (factory_) [[unlikely]] {
-    return factory_->CreateUnderlineView(std::move(controller), browser, tab);
+    return factory_->CreateUnderlineView(std::move(controller), browser,
+                                         tab_handle);
   }
   return base::WrapUnique(new TabUnderlineView(std::move(controller), browser,
-                                               tab, /*tester=*/nullptr));
+                                               tab_handle, /*tester=*/nullptr));
 }
 
 TabUnderlineView::TabUnderlineView(
     std::unique_ptr<TabUnderlineViewController> controller,
     Browser* browser,
-    Tab* tab,
+    tabs::TabHandle tab_handle,
     std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
       controller_(std::move(controller)),
-      tab_(tab) {
+      tab_handle_(tab_handle) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
 
   // Post-initialization updates. Don't do the update in the controller's ctor
@@ -75,8 +76,8 @@ TabUnderlineView::TabUnderlineView(
 
 TabUnderlineView::~TabUnderlineView() = default;
 
-base::WeakPtr<tabs::TabInterface> TabUnderlineView::GetTabInterface() {
-  return tab_ ? tab_->data().tab_interface : nullptr;
+tabs::TabInterface* TabUnderlineView::GetTabInterface() {
+  return tab_handle_.Get();
 }
 
 bool TabUnderlineView::IsCycleDone(base::TimeTicks timestamp) {
@@ -133,7 +134,7 @@ int TabUnderlineView::ComputeWidth() {
 
   // Underline should use either the width of the tab's contents bounds or the
   // width of the favicon, whichever is greater.
-  int underline_width = size().width() - tab_->GetInsets().width();
+  int underline_width = size().width() - parent()->GetInsets().width();
   if (underline_width < gfx::kFaviconSize) {
     return kSmallUnderlineWidth;
   }

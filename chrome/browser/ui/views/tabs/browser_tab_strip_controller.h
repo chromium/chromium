@@ -174,8 +174,7 @@ class BrowserTabStripController : public TabStripController,
   void SetTabDataAt(content::WebContents* web_contents, int model_index);
 
   // Adds tabs to the view model.
-  void AddTabs(
-      std::vector<std::pair<content::WebContents*, int>> contents_list);
+  void AddTabs(std::vector<std::pair<tabs::TabInterface*, int>> contents_list);
 
   void OnDiscardRingTreatmentEnabledChanged();
 

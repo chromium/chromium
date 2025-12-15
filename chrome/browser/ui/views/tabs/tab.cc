@@ -218,8 +218,9 @@ void Tab::SetShowHoverCardOnMouseHoverForTesting(bool value) {
   g_show_hover_card_on_mouse_hover = value;
 }
 
-Tab::Tab(TabSlotController* controller)
-    : controller_(controller),
+Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
+    : tab_handle_(handle),
+      controller_(controller),
       title_(new views::Label()),
       title_animation_(this) {
   DCHECK(controller);
@@ -231,10 +232,6 @@ Tab::Tab(TabSlotController* controller)
   SetNotifyEnterExitOnChild(true);
 
   SetID(VIEW_ID_TAB);
-
-  // This will cause calls to GetContentsBounds to return only the rectangle
-  // inside the tab shape, rather than to its extents.
-  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::FADE_TAIL);
@@ -269,7 +266,7 @@ Tab::Tab(TabSlotController* controller)
         views::Builder<glic::TabUnderlineView>(
             glic::TabUnderlineView::Factory::Create(
                 std::make_unique<glic::TabUnderlineViewControllerImpl>(),
-                controller->GetBrowser(), this))
+                controller->GetBrowser(), tab_handle_))
             // Needed so that expectations of visibility that
             // inform underline updates are correct on first show.
             .SetVisible(false)
@@ -285,6 +282,10 @@ Tab::Tab(TabSlotController* controller)
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
       base::BindRepeating(&TabSlotController::OnMouseEventInTab,
                           base::Unretained(controller_))));
+
+  // This will cause calls to GetContentsBounds to return only the rectangle
+  // inside the tab shape, rather than to its extents.
+  UpdateInsets();
 
 #if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();

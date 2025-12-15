@@ -122,7 +122,12 @@ class TabStrip : public views::View,
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
   // Adds tabs at the specified indices.
-  void AddTabsAt(std::vector<std::pair<int, TabRendererData>> tabs_datas);
+  struct AddTabData {
+    int index;
+    tabs::TabHandle handle;
+    TabRendererData data;
+  };
+  void AddTabsAt(const std::vector<AddTabData>& tabs_datas);
 
   // Moves a tab.
   void MoveTab(int from_model_index, int to_model_index, TabRendererData data);

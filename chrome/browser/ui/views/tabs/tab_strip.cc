@@ -1191,17 +1191,15 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
   }
 }
 
-void TabStrip::AddTabsAt(
-    std::vector<std::pair<int, TabRendererData>> tabs_datas) {
+void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
   std::vector<TabContainer::TabInsertionParams> tabs_params;
 
   for (const auto& tab_data : tabs_datas) {
-    const int model_index = tab_data.first;
-    CHECK(IsValidModelIndex(model_index))
+    CHECK(IsValidModelIndex(tab_data.index))
         << "Attempted to add a tab with an invalid model index.";
     TabContainer::TabInsertionParams param(
-        std::make_unique<Tab>(this), tab_data.first,
-        tab_data.second.pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+        std::make_unique<Tab>(tab_data.handle, this), tab_data.index,
+        tab_data.data.pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
     tabs_params.push_back(std::move(param));
   }
 
@@ -1209,11 +1207,10 @@ void TabStrip::AddTabsAt(
 
   for (int index = 0; index < static_cast<int>(tabs_datas.size()); index++) {
     Tab* tab = tabs[index];
-    int model_index = tabs_datas[index].first;
-    TabRendererData renderer_data = tabs_datas[index].second;
+    TabRendererData renderer_data = tabs_datas[index].data;
     tab->set_context_menu_controller(&context_menu_controller_);
     tab->AddObserver(this);
-    selected_tabs_.IncrementFrom(model_index);
+    selected_tabs_.IncrementFrom(tabs_datas[index].index);
 
     // Setting data must come after all state from the model has been updated
     // above for the tab. Accessibility, in particular, reacts to data changed
@@ -1221,7 +1218,7 @@ void TabStrip::AddTabsAt(
     tab->SetData(std::move(renderer_data));
 
     if (observer_) {
-      observer_->OnTabAdded(model_index);
+      observer_->OnTabAdded(tabs_datas[index].index);
     }
 
     // At the start of AddTabAt() the model and tabs are out of sync. Any

@@ -28,13 +28,14 @@ void FakeBaseTabStripController::AddTab(int index,
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
-  std::vector<std::pair<int, TabRendererData>> data_list;
+  std::vector<TabStrip::AddTabData> data_list;
   TabRendererData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
     data.pinned = true;
   }
-  data_list.emplace_back(index, std::move(data));
+  data_list.push_back(
+      {.index = index, .handle = tabs::TabHandle(index), .data = data});
   if (tab_strip_) {
     tab_strip_->AddTabsAt(std::move(data_list));
   }

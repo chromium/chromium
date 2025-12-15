@@ -222,7 +222,8 @@ class TabContainerTest : public ChromeViewsTestBase {
               TabActive active = TabActive::kInactive,
               TabPinned pinned = TabPinned::kUnpinned) {
     std::vector<TabContainer::TabInsertionParams> tabs_params;
-    tabs_params.emplace_back(std::make_unique<Tab>(tab_slot_controller_.get()),
+    tabs_params.emplace_back(std::make_unique<Tab>(tabs::TabHandle(model_index),
+                                                   tab_slot_controller_.get()),
                              model_index, pinned);
     Tab* tab = tab_container_->AddTabs(std::move(tabs_params))[0];
 
@@ -1146,7 +1147,8 @@ TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferTabTo) {
 TEST_F(TabContainerTest, PreferredWidthAddTabToViewModel) {
   // Start with one tab, and one more that is not in the container.
   AddTab(0);
-  const auto owned_tab = std::make_unique<Tab>(tab_slot_controller_.get());
+  const auto owned_tab =
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get());
   const int initial_pref_width = tab_container_->GetPreferredSize().width();
 
   // Add `owned_tab` to `tab_container_`'s viewmodel without giving it the

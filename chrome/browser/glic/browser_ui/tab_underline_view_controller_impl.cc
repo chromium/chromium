@@ -110,7 +110,7 @@ void TabUnderlineViewControllerImpl::OnFocusedTabChanged(
   auto* current_focus = glic_current_focused_contents_.get();
 
   base::WeakPtr<content::WebContents> underline_contents;
-  if (auto tab_interface = GetTabInterface()) {
+  if (auto* tab_interface = GetTabInterface()) {
     underline_contents = tab_interface->GetContents()->GetWeakPtr();
   } else {
     return;
@@ -179,7 +179,7 @@ void TabUnderlineViewControllerImpl::OnPinnedTabsChanged(
 
 void TabUnderlineViewControllerImpl::OnContextTabsChanged(
     const std::set<tabs::TabHandle>& context_tabs) {
-  auto tab_interface = GetTabInterface();
+  auto* tab_interface = GetTabInterface();
   if (!tab_interface) {
     // If the TabInterface is invalid at this point, there is no relevant UI
     // to handle.
@@ -207,13 +207,12 @@ void TabUnderlineViewControllerImpl::OnUserInputSubmitted() {
   UpdateUnderlineView(UpdateUnderlineReason::kUserInputSubmitted);
 }
 
-base::WeakPtr<tabs::TabInterface>
-TabUnderlineViewControllerImpl::GetTabInterface() {
+tabs::TabInterface* TabUnderlineViewControllerImpl::GetTabInterface() {
   return underline_view_ ? underline_view_->GetTabInterface() : nullptr;
 }
 
 bool TabUnderlineViewControllerImpl::IsUnderlineTabPinned() {
-  if (auto tab_interface = GetTabInterface()) {
+  if (auto* tab_interface = GetTabInterface()) {
     return glic_service_ && glic_service_->sharing_manager().IsTabPinned(
                                 tab_interface->GetHandle());
   }
@@ -225,9 +224,9 @@ bool TabUnderlineViewControllerImpl::IsUnderlineTabSharedThroughActiveFollow() {
     return false;
   }
 
-  if (auto tab_interface = GetTabInterface()) {
+  if (auto* tab_interface = GetTabInterface()) {
     return (glic_service_->sharing_manager().GetFocusedTabData().focus() ==
-            tab_interface.get()) &&
+            tab_interface) &&
            context_access_indicator_enabled_;
   }
   return false;

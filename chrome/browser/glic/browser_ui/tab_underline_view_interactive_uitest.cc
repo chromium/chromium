@@ -137,11 +137,11 @@ class TestUnderlineView : public TabUnderlineView {
  public:
   TestUnderlineView(std::unique_ptr<TabUnderlineViewController> controller,
                     Browser* browser,
-                    Tab* tab,
+                    tabs::TabHandle handle,
                     std::unique_ptr<Tester> tester)
       : TabUnderlineView(std::move(controller),
                          browser,
-                         tab,
+                         handle,
                          std::move(tester)) {}
   ~TestUnderlineView() override = default;
 };
@@ -155,9 +155,9 @@ class TestFactory : public TabUnderlineView::Factory {
   std::unique_ptr<TabUnderlineView> CreateUnderlineView(
       std::unique_ptr<TabUnderlineViewController> controller,
       Browser* browser,
-      Tab* tab) override {
+      tabs::TabHandle handle) override {
     TabUnderlineView* new_underline = new TestUnderlineView(
-        std::move(controller), browser, tab, std::make_unique<TesterImpl>());
+        std::move(controller), browser, handle, std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_underline->tester());
     tester->set_underline(new_underline);
     return base::WrapUnique(new_underline);

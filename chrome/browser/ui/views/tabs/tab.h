@@ -19,6 +19,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -77,7 +78,7 @@ class Tab : public gfx::AnimationDelegate,
   // tests to prevent them from interfering with unrelated tests.
   static void SetShowHoverCardOnMouseHoverForTesting(bool value);
 
-  explicit Tab(TabSlotController* controller);
+  explicit Tab(tabs::TabHandle handle, TabSlotController* controller);
   Tab(const Tab&) = delete;
   Tab& operator=(const Tab&) = delete;
   ~Tab() override;
@@ -267,6 +268,9 @@ class Tab : public gfx::AnimationDelegate,
   void MaybeUpdateHoverStatus(const ui::MouseEvent& event);
 
   void CloseButtonPressed(const ui::Event& event);
+
+  // The tab handle associated with the view.
+  const tabs::TabHandle tab_handle_;
 
   // The controller, never nullptr.
   const raw_ptr<TabSlotController> controller_;

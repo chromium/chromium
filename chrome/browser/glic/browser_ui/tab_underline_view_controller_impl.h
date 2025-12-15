@@ -108,7 +108,7 @@ class TabUnderlineViewControllerImpl
 
   // Returns the TabInterface corresponding to `underline_view_`, if it is
   // valid.
-  base::WeakPtr<tabs::TabInterface> GetTabInterface();
+  tabs::TabInterface* GetTabInterface();
 
   bool IsUnderlineTabPinned();
 

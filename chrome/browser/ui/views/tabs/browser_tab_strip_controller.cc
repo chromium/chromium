@@ -199,9 +199,9 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 
   // Walk the model, calling our insertion observer method for each item within
   // it.
-  std::vector<std::pair<WebContents*, int>> tabs_to_add;
+  std::vector<std::pair<tabs::TabInterface*, int>> tabs_to_add;
   for (int i = 0; i < model_->count(); ++i) {
-    tabs_to_add.emplace_back(model_->GetWebContentsAt(i), i);
+    tabs_to_add.emplace_back(model_->GetTabAtIndex(i), i);
   }
   AddTabs(tabs_to_add);
 }
@@ -744,10 +744,10 @@ void BrowserTabStripController::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
-      std::vector<std::pair<WebContents*, int>> tabs_to_add;
+      std::vector<std::pair<tabs::TabInterface*, int>> tabs_to_add;
       for (const auto& contents : change.GetInsert()->contents) {
         DCHECK(model_->ContainsIndex(contents.index));
-        tabs_to_add.emplace_back(contents.contents, contents.index);
+        tabs_to_add.emplace_back(contents.tab, contents.index);
       }
       AddTabs(tabs_to_add);
       break;
@@ -991,14 +991,16 @@ void BrowserTabStripController::SetTabDataAt(content::WebContents* web_contents,
 }
 
 void BrowserTabStripController::AddTabs(
-    std::vector<std::pair<WebContents*, int>> contents_list) {
+    std::vector<std::pair<tabs::TabInterface*, int>> contents_list) {
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
 
-  std::vector<std::pair<int, TabRendererData>> tabs_data;
-  for (const auto& [contents, index] : contents_list) {
-    tabs_data.emplace_back(index,
-                           TabRendererData::FromTabInModel(model_, index));
+  std::vector<TabStrip::AddTabData> tabs_data;
+  for (const auto& [tab, index] : contents_list) {
+    tabs_data.push_back(
+        {.index = index,
+         .handle = tab->GetHandle(),
+         .data = TabRendererData::FromTabInModel(model_, index)});
   }
 
   tabstrip_->AddTabsAt(std::move(tabs_data));

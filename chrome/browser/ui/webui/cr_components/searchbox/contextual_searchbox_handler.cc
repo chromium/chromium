@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -386,25 +387,23 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
     return;
   }
 
-  TabRendererData current_tab_renderer_data =
-      TabRendererData::FromTabInModel(tab_strip_model, tab_index);
-  const std::u16string& current_title = current_tab_renderer_data.title;
+  const std::u16string& current_title = TabUIHelper::From(tab)->GetTitle();
 
   int title_count = 0;
   std::vector<std::pair<int, base::TimeTicks>> last_active_times;
   for (int i = 0; i < tab_strip_model->count(); i++) {
-    TabRendererData tab_renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, i);
-    if (tab_renderer_data.title == current_title) {
+    tabs::TabInterface* tab_interface = tab_strip_model->GetTabAtIndex(i);
+
+    const std::u16string& tab_title =
+        TabUIHelper::From(tab_interface)->GetTitle();
+    if (tab_title == current_title) {
       title_count++;
     }
 
-    if (tab_renderer_data.tab_interface) {
-      last_active_times.emplace_back(
-          i, tab_renderer_data.tab_interface->GetContents()
-                 ->GetLastActiveTimeTicks());
-    }
+    last_active_times.emplace_back(
+        i, tab_interface->GetContents()->GetLastActiveTimeTicks());
   }
+
   if (title_count > 1) {
     has_duplicate_title = true;
   }
