@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.settings.search;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -257,9 +258,40 @@ public class SettingsIndexData {
      * @param titleId String resource ID of the title.
      */
     public void addEntryForKey(String prefFragment, String key, int titleId) {
+        addEntryForKey(prefFragment, key, titleId, /* summaryId= */ 0);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     */
+    public void addEntryForKey(String prefFragment, String key, int titleId, int summaryId) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, String title, @Nullable String summary) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
-        String title = ContextUtils.getApplicationContext().getString(titleId);
-        addEntry(id, new Entry.Builder(id, key, title, prefFragment).build());
+        var builder = new Entry.Builder(id, key, title, prefFragment);
+        if (summary != null) builder.setSummary(summary);
+        addEntry(id, builder.build());
     }
 
     @Nullable
