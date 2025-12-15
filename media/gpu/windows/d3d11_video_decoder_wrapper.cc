@@ -385,7 +385,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
         std::move(video_decoder));
   }
 
-  if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_1) {
+  if (supported_d3d11_version >= D3D_FEATURE_LEVEL_11_1) {
     ComD3D11VideoContext1 video_context1;
     hr = video_context.As(&video_context1);
     CHECK_EQ(hr, S_OK);
