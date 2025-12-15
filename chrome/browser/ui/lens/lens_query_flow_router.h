@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "content/public/browser/web_contents.h"
@@ -49,6 +50,12 @@ class LensQueryFlowRouter {
   // Restarts the query flow if its in a state where no cluster info is
   // available or permissions were not granted.
   void MaybeRestartQueryFlow();
+
+  // Returns the suggest inputs for the current page.
+  std::optional<lens::proto::LensOverlaySuggestInputs> GetSuggestInputs();
+
+  // Sets the callback for when the suggest inputs are ready.
+  void SetSuggestInputsReadyCallback(base::RepeatingClosure callback);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping

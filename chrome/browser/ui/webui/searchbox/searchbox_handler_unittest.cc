@@ -311,7 +311,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     suggest_inputs.set_search_session_id("123");
     suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
-        .WillRepeatedly(ReturnRef(suggest_inputs));
+        .WillRepeatedly(Return(suggest_inputs));
 
     handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 
@@ -363,7 +363,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     suggest_inputs.set_search_session_id("123");
     suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
-        .WillRepeatedly(ReturnRef(suggest_inputs));
+        .WillRepeatedly(Return(suggest_inputs));
 
     handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
 

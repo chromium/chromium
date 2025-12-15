@@ -44,6 +44,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -363,7 +364,6 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
     LensOverlayInteractionResponseCallback interaction_response_callback,
-    LensOverlaySuggestInputsCallback suggest_inputs_callback,
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     UploadProgressCallback page_content_upload_progress_callback,
     variations::VariationsClient* variations_client,
@@ -374,7 +374,6 @@ LensOverlayQueryController::LensOverlayQueryController(
     lens::LensOverlayGen204Controller* gen204_controller)
     : full_image_callback_(std::move(full_image_callback)),
       interaction_response_callback_(std::move(interaction_response_callback)),
-      suggest_inputs_callback_(std::move(suggest_inputs_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
       page_content_upload_progress_callback_(
           std::move(page_content_upload_progress_callback)),
@@ -707,8 +706,11 @@ void LensOverlayQueryController::RunSuggestInputsCallback() {
   } else {
     suggest_inputs_.clear_search_session_id();
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(suggest_inputs_callback_, suggest_inputs_));
+  if (suggest_inputs_ready_callback_ &&
+      AreLensSuggestInputsReady(suggest_inputs_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, suggest_inputs_ready_callback_);
+  }
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoStateForTesting() {
@@ -2017,9 +2019,8 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
 }
 
 void LensOverlayQueryController::RunInteractionCallbackForError() {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(suggest_inputs_callback_,
-                                lens::proto::LensOverlaySuggestInputs()));
+  suggest_inputs_.Clear();
+  RunSuggestInputsCallback();
 }
 
 void LensOverlayQueryController::SendFullImageLatencyGen204IfEnabled(

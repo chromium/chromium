@@ -221,8 +221,8 @@ void LensComposeboxController::AddVisualSelectionContext(
   // If the composebox handler is not yet bound, the image will be added when
   // the composebox is bound.
   if (composebox_handler_) {
-    composebox_handler_->AddFileContextFromBrowser(vsc_image_data_->id,
-                                        vsc_image_data_->file_info.Clone());
+    composebox_handler_->AddFileContextFromBrowser(
+        vsc_image_data_->id, vsc_image_data_->file_info.Clone());
   }
 }
 
@@ -263,7 +263,13 @@ LensComposeboxController::GetLensSuggestInputs() const {
   if (!lens::features::GetAimSuggestionsEnabled()) {
     return lens::proto::LensOverlaySuggestInputs();
   }
-  lens::proto::LensOverlaySuggestInputs suggest_inputs = suggest_inputs_;
+  LensOverlayQueryController* query_controller =
+      lens_search_controller_->lens_overlay_query_controller();
+  if (!query_controller) {
+    return lens::proto::LensOverlaySuggestInputs();
+  }
+  lens::proto::LensOverlaySuggestInputs suggest_inputs =
+      query_controller->GetLensSuggestInputs();
   // If the overlay is closed and there is not a region selection in the
   // composebox, clear the vsint param so that the server will not focus
   // suggestions on the stale region.
@@ -279,11 +285,6 @@ LensComposeboxController::GetLensSuggestInputs() const {
         kImageVisualInputTypeQueryParameterValue);
   }
   return suggest_inputs;
-}
-
-void LensComposeboxController::UpdateSuggestInputs(
-    const lens::proto::LensOverlaySuggestInputs& suggest_inputs) {
-  suggest_inputs_ = suggest_inputs;
 }
 
 lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(

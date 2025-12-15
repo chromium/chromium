@@ -413,7 +413,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void SetInvocationTimeForWebUIBinding(base::TimeTicks time);
 
   // Returns the lens suggest inputs stored in this controller for testing.
-  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
+  lens::proto::LensOverlaySuggestInputs GetLensSuggestInputsForTesting();
 
   // Returns true if tutorial IPH is eligible to be shown for the given URL for
   // testing.
@@ -969,7 +969,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
 
-  // Shorthand to grab the LensOverlaySidePanelCoordinator for this instance of Lens.
+  // Shorthand to grab the LensOverlaySidePanelCoordinator for this instance of
+  // Lens.
   lens::LensOverlaySidePanelCoordinator* GetLensOverlaySidePanelCoordinator();
 
   // Shorthand to grab the LensResultsPanelRouter for this instance of Lens.

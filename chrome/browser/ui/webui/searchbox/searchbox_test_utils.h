@@ -123,7 +123,7 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               (),
               (override, const));
   MOCK_METHOD(std::string&, GetThumbnail, (), (override));
-  MOCK_METHOD(const lens::proto::LensOverlaySuggestInputs&,
+  MOCK_METHOD(lens::proto::LensOverlaySuggestInputs,
               GetLensSuggestInputs,
               (),
               (override, const));
