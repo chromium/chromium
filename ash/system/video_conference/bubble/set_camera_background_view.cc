@@ -136,8 +136,6 @@ class RecentlyUsedImageButton : public views::ImageButton {
     SetImageModel(ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromImageSkia(background_image_));
 
-    // TODO(b/332573200): only construct this button when the metadata is
-    // decodable.
     SetAccessibilityLabelFromMetadata(metadata);
 
     SetFlipCanvasOnPaintForRTLUI(false);
