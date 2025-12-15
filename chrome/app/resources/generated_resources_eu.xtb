@@ -6145,6 +6145,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> erabiltzaileak partekatua</translation>
 <translation id="5188648870018555788">Erabili kokapena. Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Zu identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta. <ph name="BEGIN_LINK1" />Lortu kokapena erabiltzeari buruzko informazio gehiago<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Lerroka</translation>
 <translation id="5189274947477567401">Prozesuak partekatzeko aukera ez erabiltzea aukeratzeko, arakatzailea berrabiarazi behar da. Orain berrabiaraziko da arakatzailea.</translation>
 <translation id="5189404424758444348">Steampunk-a</translation>
 <translation id="5190577235024772869">Erabilitako tokia: <ph name="USED_SPACE" /></translation>
@@ -12008,6 +12009,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9207434080086272167">Eguzkitsua</translation>
 <translation id="9207669213427469593">Pantaila zatitua erabiltzeko leiho bat alde batera eramaten baduzu, beste alderako iradokitako leihoak ikusiko dituzu</translation>
 <translation id="9209563766569767417">Linux-en edukiontziaren konfigurazioa egiaztatzen</translation>
+<translation id="9212565256020141627">Ezin izan da partekatu irudia Gemini-rekin. Saiatu berriro edo erabili beste irudi bat.</translation>
 <translation id="9214520840402538427">Instalazioko atributuak abiarazteko denbora-muga gainditu da. Jarri harremanetan laguntza emateko ordezkariarekin.</translation>
 <translation id="9214695392875603905">Pasteltxoa</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" gehitu da</translation>

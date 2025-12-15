@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Հպեք և պահեք՝ ինկոգնիտո ռեժիմին անցնելու համար</translation>
 <translation id="2860954141821109167">Համոզվեք, որ «Հեռախոս» հավելվածը միացված է այս սարքում</translation>
 <translation id="2861923151411510142">Chrome-ի որոշ գործառույթներ այլևս հասանելի չեն լինի</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ու ևս 1 ներդիր}one{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2869430948265924908">Մեքենայում ձեր զգայուն բովանդակությունը պաշտպանելու համար դուք պետք է ստեղծեք մեքենայի պրոֆիլի կողպում։  Դա կարող եք անել PIN կոդի, ծածկագրի կամ գաղտնաբառի միջոցով։</translation>
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2871733351037274014">Էջերի նախաբեռնում</translation>

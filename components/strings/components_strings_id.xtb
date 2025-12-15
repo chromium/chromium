@@ -1359,7 +1359,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> di <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat ini</translation>
-<translation id="3201482403106004262">Terjadi error dengan survei.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="3203025201812691413">URL harus diisi</translation>
 <translation id="320323717674993345">Batalkan Pembayaran</translation>
@@ -3459,7 +3458,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6568793038316600992">Tombol Kelola metode pembayaran, aktifkan untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
 <translation id="6569060085658103619">Anda melihat halaman ekstensi</translation>
 <translation id="6571992525120410251">Tanya <ph name="ENGINE_NAME" /> apa saja</translation>
-<translation id="6572867903637058088">Apakah ini membantu?</translation>
 <translation id="6573200754375280815">Dua lubang di kanan</translation>
 <translation id="6575408526598156416">Simpan di akun</translation>
 <translation id="6577792494180292262">Modal Ventura</translation>
@@ -5068,7 +5066,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9195969368671142407">Jika organisasi membatasi penyimpanan ke Akun Google, Anda tidak dapat berbagi atau bergabung ke grup tab</translation>
 <translation id="9198613052465150219">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Pencetakan diblokir</translation>
-<translation id="9201904868909900493">Membuka survei...</translation>
 <translation id="9204089334327209740">Setelah upload selesai, Anda dapat mengubah file di <ph name="CLOUD_PROVIDER" />. Penyimpanan lokal, termasuk semua file di Sampah, akan otomatis dihapus.</translation>
 <translation id="9205078245616868884">Data Anda dienkripsi dengan frasa sandi sinkronisasi. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="920643408853370361">Asuransi Perjalanan</translation>

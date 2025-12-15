@@ -1358,7 +1358,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Trang web có thể yêu cầu được biết khi bạn đang dùng thiết bị này</translation>
-<translation id="3201482403106004262">Đã xảy ra lỗi với bản khảo sát.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="3203025201812691413">Không được để trống URL</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
@@ -3459,7 +3458,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6568793038316600992">Nút Quản lý phương thức thanh toán, hãy nhấn nút này để quản lý thông tin thanh toán và thẻ tín dụng của bạn trong phần cài đặt của Chrome</translation>
 <translation id="6569060085658103619">Bạn đang xem trang tiện ích</translation>
 <translation id="6571992525120410251">Hỏi <ph name="ENGINE_NAME" /> bất cứ điều gì</translation>
-<translation id="6572867903637058088">Thông tin này có hữu ích không?</translation>
 <translation id="6573200754375280815">Đục 2 lỗ bên phải</translation>
 <translation id="6575408526598156416">Lưu vào tài khoản</translation>
 <translation id="6577792494180292262">Đầu tư mạo hiểm</translation>
@@ -5073,7 +5071,6 @@ Thông tin chi tiết bổ sung:
 <translation id="9195969368671142407">Khi tổ chức của bạn giới hạn những nội dung bạn được lưu vào Tài khoản Google, bạn sẽ không thể chia sẻ hoặc tham gia nhóm thẻ</translation>
 <translation id="9198613052465150219">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tính năng in đã bị chặn</translation>
-<translation id="9201904868909900493">Đang mở bản khảo sát...</translation>
 <translation id="9204089334327209740">Sau khi tải lên xong, bạn có thể sửa đổi các tệp của mình trong <ph name="CLOUD_PROVIDER" />. Bộ nhớ cục bộ, bao gồm mọi tệp trong Thùng rác, đều sẽ tự động bị xoá.</translation>
 <translation id="9205078245616868884">Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="920643408853370361">Bảo hiểm du lịch</translation>

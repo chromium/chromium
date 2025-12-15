@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2721190673959776287">上下文面板的产品内帮助详细说明示例，每天会显示多次。</translation>
 <translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">开启摄像头</translation>
 <translation id="5229315183665181733">修改网站</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5234094073825090254">{count,plural, =1{书签已保存到您的 Google 账号 {email}。}other{书签已保存到您的 Google 账号 {email}。}}</translation>

@@ -1356,7 +1356,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3194765668709099364">IKlarna</translation>
 <translation id="3195213714973468956">I-<ph name="PRINTER_NAME" /> ku-<ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Ingase icele ukwazi lapho usebenzisa le divayisi</translation>
-<translation id="3201482403106004262">Kwenzeke iphutha ngenhlolovo.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese no-Enter ukuze uphathe ukuthi yiluphi ulwazi olivumelanisa kumasethingi we-Chrome</translation>
 <translation id="3203025201812691413">I-URL ayikwazi ukungabi nalutho</translation>
 <translation id="320323717674993345">Khansela inkokhelo</translation>
@@ -3456,7 +3455,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6568793038316600992">Phatha inkinobho yendlela yokukhokha, yenza kusebenze ukuze uphathe ulwazi lwezinkokhelo zakho nekhadi lesikweletu kumasethingi we-Chrome</translation>
 <translation id="6569060085658103619">Ubuka ikhasi ngesandiso sekhasi</translation>
 <translation id="6571992525120410251">Buza i-<ph name="ENGINE_NAME" /> noma ngabe yini</translation>
-<translation id="6572867903637058088">Ingabe lokhu kuyasiza?</translation>
 <translation id="6573200754375280815">Ukushaya okubili kwesokudla</translation>
 <translation id="6575408526598156416">Londoloza e-akhawuntini</translation>
 <translation id="6577792494180292262">Ikhephithali yebhizinisi</translation>
@@ -5068,7 +5066,6 @@ Imininingwane engeziwe:
 <translation id="9195969368671142407">Uma inhlangano yakho ikhawulela ukulondoloza kuGoogle Account, awukwazi ukwabelana noma ukujoyina amaqembu amathebhu</translation>
 <translation id="9198613052465150219">IGoogle Account ingaba namanye amafomu omlando wokubhrawuza kokuthi <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Ukuphrinta kuvinjelwe</translation>
-<translation id="9201904868909900493">Kuvulwa inhlolovo…</translation>
 <translation id="9204089334327209740">Uma ukulayisha sekuphelile, ungalungisa amafayela akho ku-<ph name="CLOUD_PROVIDER" />. Isitoreji sendawo, kufaka phakathi noma yimaphi amafayela Akudoti, azosuswa ngokuzenzakalelayo.</translation>
 <translation id="9205078245616868884">Idatha yakho ibethelwe ngomushwana wakho wokungena wokuvumelanisa. Wufake lapha ukuze uqale ukuvumelanisa.</translation>
 <translation id="920643408853370361">Umshwalense Wokuhamba</translation>

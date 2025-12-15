@@ -1359,7 +1359,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />, palvelin: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Saa pyytää luvan tietää, kun käytät tätä laitetta aktiivisesti</translation>
-<translation id="3201482403106004262">Kyselyssä tapahtui virhe.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit valita synkronoitavat tiedot Chromen asetuksista</translation>
 <translation id="3203025201812691413">URL-osoite ei voi olla tyhjä</translation>
 <translation id="320323717674993345">Peru maksu</translation>
@@ -3460,7 +3459,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6568793038316600992">Ylläpidä maksutapoja ‑painike, aktivoi ylläpitääksesi maksu- ja credit-korttitietoja Chromen asetuksissa</translation>
 <translation id="6569060085658103619">Tämä on laajennussivu.</translation>
 <translation id="6571992525120410251">Kysy mitä tahansa, niin <ph name="ENGINE_NAME" /> vastaa</translation>
-<translation id="6572867903637058088">Oliko tästä apua?</translation>
 <translation id="6573200754375280815">Kaksi reikää oikealla</translation>
 <translation id="6575408526598156416">Tallenna tilille</translation>
 <translation id="6577792494180292262">Pääomasijoittaminen</translation>
@@ -5074,7 +5072,6 @@ Lisätietoja:
 <translation id="9195969368671142407">Kun organisaatiosi rajoittaa tallentamista Google-tilillesi, et voi jakaa välilehtiryhmiä tai liittyä niihin</translation>
 <translation id="9198613052465150219">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tulostus on estetty</translation>
-<translation id="9201904868909900493">Avataan kyselyä…</translation>
 <translation id="9204089334327209740">Kun lataus on valmis, voit muokata tiedostoja täällä: <ph name="CLOUD_PROVIDER" />. Paikallisen tallennustilan sisältö, myös roskakorissa olevat tiedostot, poistetaan automaattisesti.</translation>
 <translation id="9205078245616868884">Tietosi on salattu synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="920643408853370361">Matkavakuutukset</translation>

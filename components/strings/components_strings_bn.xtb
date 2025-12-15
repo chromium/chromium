@@ -1359,7 +1359,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> এ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">আপনি কখন ডিভাইস সক্রিয়ভাবে ব্যবহার করেন তা জানতে চাইতে পারে</translation>
-<translation id="3201482403106004262">সমীক্ষায় কিছু সমস্যা হয়েছে।</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে কী ধরনের তথ্য আপনি সিঙ্ক করবেন, তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="3203025201812691413">URL খালি রাখা যাবে না</translation>
 <translation id="320323717674993345">পেমেন্ট বাতিল করুন</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">'পেমেন্ট পদ্ধতি ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="6569060085658103619">আপনি একটি এক্সটেনশন পৃষ্ঠা দেখছেন</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" />-কে যা খুশি জিজ্ঞাসা করুন</translation>
-<translation id="6572867903637058088">এই তথ্য কি আপনার কাজে লেগেছে?</translation>
 <translation id="6573200754375280815">ডানদিকে ডুয়াল পাঞ্চ</translation>
 <translation id="6575408526598156416">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="6577792494180292262">ঝুঁকিপূর্ণ উদ্যোগের মূলধন</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">আপনার সংস্থা আপনাকে Google অ্যাকাউন্টে সেভ করতে না দিলে, আপনি ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে পারবেন না</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে</translation>
 <translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
-<translation id="9201904868909900493">সমীক্ষা খুলছে …</translation>
 <translation id="9204089334327209740">আপলোড করা হয়ে গেলে, আপনি <ph name="CLOUD_PROVIDER" />-এ নিজের ফাইল মডিফাই করতে পারবেন। ট্র্যাশে থাকা সব ফাইল সহ লোকাল স্টোরেজ অটোমেটিক সরিয়ে দেওয়া হবে।</translation>
 <translation id="9205078245616868884">আপনার ডেটা আপনার সিঙ্ক পাসফ্রেজ দিয়ে এনক্রিপ্ট করা হয়েছে। সিঙ্ক শুরু করার জন্য এটি লিখুন।</translation>
 <translation id="920643408853370361">ভ্রমণ বীমা</translation>

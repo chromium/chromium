@@ -1358,7 +1358,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">Printer <ph name="PRINTER_NAME" /> serveris <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Saab küsida luba selle teadmiseks, millal seadet aktiivselt kasutate</translation>
-<translation id="3201482403106004262">Küsitlusega seoses ilmnes viga.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes sünkroonitava teabe haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="3203025201812691413">URL ei tohi olla tühi</translation>
 <translation id="320323717674993345">Tühista makse</translation>
@@ -3459,7 +3458,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6568793038316600992">Nupp Makseviiside haldamine, aktiveerige nupp, et hallata Chrome'i seadetes oma makseid ja krediitkaardi teavet</translation>
 <translation id="6569060085658103619">Vaatate laienduse lehte</translation>
 <translation id="6571992525120410251">Küsige ja <ph name="ENGINE_NAME" /> vastab</translation>
-<translation id="6572867903637058088">Kas see on kasulik?</translation>
 <translation id="6573200754375280815">Kaks auku paremal</translation>
 <translation id="6575408526598156416">Salvestage kontole</translation>
 <translation id="6577792494180292262">Riskikapital</translation>
@@ -5072,7 +5070,6 @@ Lisateave:
 <translation id="9195969368671142407">Kui teie organisatsiooni piirab Google'i kontole salvestamist, ei saa te vahelehegruppe jagada ega nendega liituda</translation>
 <translation id="9198613052465150219">Aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu</translation>
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>
-<translation id="9201904868909900493">Küsitluse avamine…</translation>
 <translation id="9204089334327209740">Üleslaadimise järel saate faile muuta teenuses <ph name="CLOUD_PROVIDER" />. Kohalikud failid, sh prügikastis olevad failid eemaldatakse automaatselt.</translation>
 <translation id="9205078245616868884">Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="920643408853370361">Reisikindlustus</translation>

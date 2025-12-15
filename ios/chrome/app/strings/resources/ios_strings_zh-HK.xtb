@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
 <translation id="2721190673959776287">「內容面板」的產品內詳細說明範例，每日應該會多次出現。</translation>
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">根據日期建立日曆活動</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">開啟攝錄機</translation>
 <translation id="5229315183665181733">編輯網站</translation>
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5234094073825090254">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})。}other{書籤已儲存至 Google 帳戶 ({email})。}}</translation>

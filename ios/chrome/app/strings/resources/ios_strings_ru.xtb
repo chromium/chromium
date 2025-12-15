@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="271033894570825754">Новое</translation>
 <translation id="2712929214961145009">Без засечек</translation>
+<translation id="2713106313042589954">Отключить камеру</translation>
 <translation id="2718352093833049315">Только по Wi-Fi</translation>
 <translation id="2721190673959776287">Пример расширенной Справки для контекстной панели. Такие подсказки должны появляться несколько раз в день.</translation>
 <translation id="2739887572830526131">Вы сможете пользоваться ей в дальнейшем. Если группа больше не нужна, удалите ее.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Как создать мероприятия в календаре на странице с датами</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Включить камеру</translation>
 <translation id="5229315183665181733">Изменить сайт</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5234094073825090254">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{Закладки сохранены в аккаунте Google ({email}).}few{Закладки сохранены в аккаунте Google ({email}).}many{Закладки сохранены в аккаунте Google ({email}).}other{Закладки сохранены в аккаунте Google ({email}).}}</translation>

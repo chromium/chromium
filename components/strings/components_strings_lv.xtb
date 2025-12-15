@@ -1358,7 +1358,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> serverī <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Var pieprasīt informāciju par to, kad jūs aktīvi lietojat šo ierīci</translation>
-<translation id="3201482403106004262">Radās ar aptauju saistīta kļūda.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>
 <translation id="3203025201812691413">URL lauks nedrīkst būt tukšs.</translation>
 <translation id="320323717674993345">Atcelt maksājumu</translation>
@@ -3457,7 +3456,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6568793038316600992">Poga “Pārvaldīt maksājumu veidus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu savus maksājumu un kredītkaršu informāciju.</translation>
 <translation id="6569060085658103619">Jūs skatāt paplašinājumu lapu.</translation>
 <translation id="6571992525120410251">Jautājiet <ph name="ENGINE_NAME" /> jebko</translation>
-<translation id="6572867903637058088">Vai tas ir noderīgi?</translation>
 <translation id="6573200754375280815">Divi caurumi labajā pusē</translation>
 <translation id="6575408526598156416">Saglabāt kontā</translation>
 <translation id="6577792494180292262">Riska kapitāls</translation>
@@ -5070,7 +5068,6 @@ Papildu informācija:
 <translation id="9195969368671142407">Ja jūsu organizācija ierobežo saglabāšanas iespējas jūsu Google kontā, jūs nevarat kopīgot vai pievienoties ciļņu grupām.</translation>
 <translation id="9198613052465150219">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Drukāšana ir bloķēta</translation>
-<translation id="9201904868909900493">Notiek aptaujas atvēršana…</translation>
 <translation id="9204089334327209740">Kad augšupielāde būs pabeigta, varēsiet pārveidot savus failus pakalpojumā <ph name="CLOUD_PROVIDER" />. Lokālā krātuve un visi atkritnē esošie faili tiks automātiski noņemti.</translation>
 <translation id="9205078245616868884">Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="920643408853370361">Ceļojuma apdrošināšana</translation>

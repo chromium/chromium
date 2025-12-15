@@ -6149,6 +6149,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Dijeli <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Upotreba lokacije. Dopustite ChromeOS i Android aplikacijama, web-lokacijama i uslugama s dopuštenjem za lokaciju da upotrebljavaju lokaciju vašeg uređaja. Postavka Preciznost lokacije pruža precizniju lokaciju za Android aplikacije i usluge. Da bi se to postiglo, Google povremeno obrađuje podatke o senzorima uređaja i bežične signale s vašeg uređaja da bi masovno prikupio lokacije bežičnih signala. Ti se podaci upotrebljavaju, bez otkrivanja vašeg identiteta, u svrhu poboljšanja preciznosti lokacije i usluga temeljenih na lokaciji te općeg poboljšanja, pružanja i održavanja Googleovih usluga na temelju legitimnih interesa Googlea i trećih strana kako bi se zadovoljile potrebe korisnika. <ph name="BEGIN_LINK1" />Saznajte više o upotrebi lokacije<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Redak</translation>
 <translation id="5189274947477567401">Za isključivanje dijeljenja procesa potrebno je ponovo pokrenuti preglednik. Ovaj će se preglednik sada ponovo pokrenuti.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Upotrebljava se <ph name="USED_SPACE" /></translation>

@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да тражи да зна када активно користите уређај</translation>
-<translation id="3201482403106004262">Дошло је до грешке са анкетом.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="3203025201812691413">URL не може да буде празан</translation>
 <translation id="320323717674993345">Откажи плаћање</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">Дугме Управљај начинима плаћања, активирајте га да бисте управљали плаћањима и информацијама о кредитним картицама у подешавањима Chrome-а</translation>
 <translation id="6569060085658103619">Прегледате страницу додатка.</translation>
 <translation id="6571992525120410251">Питајте <ph name="ENGINE_NAME" /> било шта</translation>
-<translation id="6572867903637058088">Да ли је ово корисно?</translation>
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
 <translation id="6575408526598156416">Сачувајте на налогу</translation>
 <translation id="6577792494180292262">Предузетнички капитал</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">Када организација ограничи чување на Google налогу, не можете да делите групе картица нити да им се придружите</translation>
 <translation id="9198613052465150219">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
-<translation id="9201904868909900493">Отвара се анкета…</translation>
 <translation id="9204089334327209740">Када се отпремање заврши, можете да измените фајлове у услузи <ph name="CLOUD_PROVIDER" />. Локално складиште, укључујући све фајлове у отпаду, аутоматски ће бити уклоњено.</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
 <translation id="920643408853370361">Путно осигурање</translation>

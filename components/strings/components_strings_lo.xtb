@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ໃນ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">ສາມາດຂໍຂໍ້ມູນວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢ່າງຕໍ່ເນື່ອງຕອນໃດ</translation>
-<translation id="3201482403106004262">ເກີດຄວາມຜິດພາດຂຶ້ນກັບແບບສຳຫຼວດ.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3203025201812691413">ຕ້ອງລະບຸ URL</translation>
 <translation id="320323717674993345">ຍົກເລີກການຈ່າຍເງິນ</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">ປຸ່ມຈັດການວິທີການຈ່າຍເງິນ, ເປີດນຳໃຊ້ເພື່ອຈັດການການຈ່າຍເງິນ ແລະ ຂໍ້ມູນບັດເຄຣດິດຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6569060085658103619">ທ່ານກຳລັງເບິ່ງໜ້າສ່ວນຂະຫຍາຍ</translation>
 <translation id="6571992525120410251">ຖາມ <ph name="ENGINE_NAME" /> ຫຍັງກໍໄດ້</translation>
-<translation id="6572867903637058088">ຂໍ້ມູນນີ້ມີປະໂຫຍດບໍ?</translation>
 <translation id="6573200754375280815">ເຈາະຮູຢູ່ເບື້ອງຂວາສອງຮູ</translation>
 <translation id="6575408526598156416">ບັນທຶກໃນບັນຊີ</translation>
 <translation id="6577792494180292262">ບໍລິສັດຮ່ວມທຶນ</translation>
@@ -5071,7 +5069,6 @@
 <translation id="9195969368671142407">ເມື່ອອົງກອນຂອງທ່ານຈຳກັດການບັນທຶກໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດແບ່ງປັນ ຫຼື ເຂົ້າຮ່ວມກຸ່ມແຖບໄດ້</translation>
 <translation id="9198613052465150219">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">ມີການບລັອກການພິມໄວ້</translation>
-<translation id="9201904868909900493">ກຳລັງເປີດແບບສຳຫຼວດ...</translation>
 <translation id="9204089334327209740">ເມື່ອອັບໂຫຼດສຳເລັດແລ້ວ, ທ່ານສາມາດແກ້ໄຂໄຟລ໌ຂອງທ່ານໄດ້ໃນ <ph name="CLOUD_PROVIDER" />. ບ່ອນຈັດເກັບຂໍ້ມູນໃນເຄື່ອງ, ຮວມທັງໄຟລ໌ໃດກໍຕາມໃນຖັງຂີ້ເຫຍື້ອ, ຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="9205078245616868884">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍວະລີຜ່ານການຊິ້ງຂອງທ່ານ. ໃຫ້ປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="920643408853370361">ປະກັນໄພການເດີນທາງ</translation>

@@ -1357,7 +1357,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Осы құрылғыны қашан белсенді пайдаланатыныңыз туралы білу үшін сұрай алады</translation>
-<translation id="3201482403106004262">Сауалнамаға қатысты қате пайда болды.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
@@ -2836,7 +2835,7 @@
 <translation id="5558125320634132440">Бұл сайт бөгелді, себебі құрамында ересектерге арналған контент болуы мүмкін.</translation>
 <translation id="5559311991468302423">Мекенжайды жою</translation>
 <translation id="5561747310506483298">Жеке куәліктер</translation>
-<translation id="55635442646131152">Тақырыптар тізімдемесі</translation>
+<translation id="55635442646131152">Құжат құрылымы</translation>
 <translation id="5563589142503817291">Локацияны пайдалану үшін <ph name="LINK" /> бөлімінде Chrome-ға рұқсат беріңіз.</translation>
 <translation id="5565613213060953222">Инкогнито қойындысын ашу</translation>
 <translation id="5565735124758917034">Белсенді</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">"Төлеу әдістерін басқару" түймесі, Chrome параметрлерінде төлемдеріңіз және несиелік картаңыз туралы ақпаратты басқару үшін белсендіріңіз</translation>
 <translation id="6569060085658103619">Кеңейтім бетін көрудесіз</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> жүйесінен кез келген нәрсе сұраңыз</translation>
-<translation id="6572867903637058088">Пайдалы болды ма?</translation>
 <translation id="6573200754375280815">Оң жағын екі рет тесу</translation>
 <translation id="6575408526598156416">Аккаунтқа сақтау</translation>
 <translation id="6577792494180292262">Венчурлық капитал</translation>
@@ -5069,7 +5067,6 @@
 <translation id="9195969368671142407">Ұйымыңыз Google аккаунтына сақтауға шектеу қойса, қойындылар топтарын бөлісу не оларға қосылу мүмкін болмайды.</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайында Google аккаунтымен браузерді қолдану тарихының басқа түрлері болуы мүмкін.</translation>
 <translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>
-<translation id="9201904868909900493">Сауалнама ашылып жатыр…</translation>
 <translation id="9204089334327209740">Жүктеп салынғаннан кейін файлдарды <ph name="CLOUD_PROVIDER" /> ішінде өзгертуге болады. Себеттегі файлдарды қоса алғанда, жергілікті жад автоматты түрде жойылады.</translation>
 <translation id="9205078245616868884">Деректер синхрондаудың құпия фразасымен шифрланған. Синхрондауды бастау үшін оны енгізіңіз.</translation>
 <translation id="920643408853370361">Туристік сақтандыру</translation>

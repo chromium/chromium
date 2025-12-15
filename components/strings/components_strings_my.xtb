@@ -1360,7 +1360,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ရှိ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ခွင့်တောင်းနိုင်သည်</translation>
-<translation id="3201482403106004262">စစ်တမ်းတွင် အမှားဖြစ်သွားသည်။</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန် ‘တဘ်ခလုတ်’ နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3203025201812691413">URL သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="320323717674993345">ငွေပေးချေမှုကို ပယ်ဖျက်ရန်</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">သင့်ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ်အချက်အလက်ကို Chrome ဆက်တင်များတွင် စီမံရန်အတွက် ‘ငွေပေးချေနည်းလမ်းများ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="6569060085658103619">သင်သည် နောက်ဆက်တွဲစာမျက်နှာကို ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ကို ကြိုက်ရာမေးရန်</translation>
-<translation id="6572867903637058088">ဤအရာက အကူအညီရပါသလား။</translation>
 <translation id="6573200754375280815">ညာဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6575408526598156416">အကောင့်တွင် သိမ်းခြင်း</translation>
 <translation id="6577792494180292262">လုပ်ငန်း ရင်းနှီးငွေ</translation>
@@ -5073,7 +5071,6 @@
 <translation id="9195969368671142407">သင်၏ Google Account တွင် သိမ်းသည့်အရာများကို သင့်အဖွဲ့အစည်းက ကန့်သတ်လိုက်သည့်အခါ တဘ်အုပ်စုများကို မျှဝေခြင်း (သို့) ၎င်းတို့တွင် ပါဝင်ခြင်းတို့ မလုပ်နိုင်ပါ</translation>
 <translation id="9198613052465150219">သင့် Google Account သည် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုမှုမှတ်တမ်းများ ရှိနေနိုင်သည်</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>
-<translation id="9201904868909900493">စစ်တမ်း ဖွင့်နေသည်…</translation>
 <translation id="9204089334327209740">အပ်လုဒ်လုပ်ပြီးပါက <ph name="CLOUD_PROVIDER" /> တွင် သင့်ဖိုင်များကို ပြင်နိုင်သည်။ အမှိုက်ပုံးထဲရှိ ဖိုင်အားလုံး အပါအဝင် စက်တွင်း သိုလှောင်ခန်းကို အလိုအလျောက် ဖယ်ရှားပါမည်။</translation>
 <translation id="9205078245616868884">သင့်ဒေတာများကို သင်စင့်ခ်ပြုလုပ်ထားသည့် စကားဝှက်ဖြင့် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်ပြုလုပ်ခြင်းစတင်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="920643408853370361">ခရီးသွားအာမခံ</translation>

@@ -1355,7 +1355,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Può chiedere di sapere quando stai utilizzando attivamente questo dispositivo</translation>
-<translation id="3201482403106004262">Si è verificato un errore con il sondaggio.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="3203025201812691413">L'URL non può essere vuoto</translation>
 <translation id="320323717674993345">Annulla pagamento</translation>
@@ -3455,7 +3454,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6568793038316600992">Pulsante Gestisci metodi di pagamento, attiva per gestire i tuoi pagamenti e i dati delle carte di credito nelle impostazioni di Chrome</translation>
 <translation id="6569060085658103619">È visualizzata la pagina di un'estensione</translation>
 <translation id="6571992525120410251">Chiedi a <ph name="ENGINE_NAME" /> qualsiasi cosa</translation>
-<translation id="6572867903637058088">Hai trovato questa informazione utile?</translation>
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
 <translation id="6575408526598156416">Salva nell'account</translation>
 <translation id="6577792494180292262">Venture capital</translation>
@@ -5067,7 +5065,6 @@ Ulteriori dettagli:
 <translation id="9195969368671142407">Quando la tua organizzazione limita il salvataggio nel tuo Account Google, non puoi partecipare a gruppi di schede o condividerli</translation>
 <translation id="9198613052465150219">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">La stampa è bloccata</translation>
-<translation id="9201904868909900493">Apertura del sondaggio in corso…</translation>
 <translation id="9204089334327209740">Al termine del caricamento, puoi modificare i file in <ph name="CLOUD_PROVIDER" />. Lo spazio di archiviazione locale, inclusi i file nel cestino, verrà rimosso automaticamente.</translation>
 <translation id="9205078245616868884">I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="920643408853370361">Assicurazione per viaggi</translation>

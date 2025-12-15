@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">New collection</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2721190673959776287">Sample rich in-product help for the Contextual panel, which should appear multiple times a day.</translation>
 <translation id="2739887572830526131">Keep this group to add tabs later or delete it if you no longer need it.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Create calendar events from dates</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5229315183665181733">Edit site</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark saved in your Google Account, {email}.}other{Bookmarks saved in your Google Account, {email}.}}</translation>

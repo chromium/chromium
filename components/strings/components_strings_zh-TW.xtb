@@ -1356,7 +1356,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
-<translation id="3201482403106004262">問卷調查發生錯誤。</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
@@ -3457,7 +3456,6 @@
 <translation id="6568793038316600992">「管理付款方式」按鈕，啟動後即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
 <translation id="6571992525120410251">問問 <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">這則評論對你有幫助嗎？</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6575408526598156416">儲存到帳戶</translation>
 <translation id="6577792494180292262">創業投資</translation>
@@ -5069,7 +5067,6 @@
 <translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
 <translation id="9198613052465150219">Google 帳戶可能會有其他形式的瀏覽記錄。如要查看，請前往 <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>
-<translation id="9201904868909900493">正在開啟問卷調查...</translation>
 <translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>
 <translation id="9205078245616868884">您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="920643408853370361">旅遊保險</translation>

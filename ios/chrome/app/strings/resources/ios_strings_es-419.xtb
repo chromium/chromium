@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1547610699249301703">Comparte contraseñas</translation>
+<translation id="1554043146674176775">Desactivar el Modo IA</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1565371473877914088">Nueva pestaña de incógnito</translation>
@@ -457,12 +458,14 @@
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">La cámara se está usando</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
+<translation id="2697530870203420261">Sobrenombre no válido</translation>
 <translation id="269819437389494246">Puedes ver las páginas que visitaste o borrarlas de tu historial</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2708051474374549906">Protección proactiva y en tiempo real contra descargas, extensiones y sitios peligrosos que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Nueva colección</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2721190673959776287">Ejemplo de ayuda integrada en el producto para el panel contextual, que debería aparecer varias veces al día.</translation>
 <translation id="2739887572830526131">Conserva este grupo para agregar pestañas más tarde o bórralo si ya no lo necesitas.</translation>
@@ -1106,6 +1109,7 @@
 <translation id="5220945116117011963">Crea eventos de calendario a partir de fechas</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Activar la cámara</translation>
 <translation id="5229315183665181733">Editar sitio</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5234094073825090254">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google, {email}.}other{Se guardaron los favoritos en tu Cuenta de Google, {email}.}}</translation>
@@ -1561,6 +1565,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6830728435402077660">No seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
+<translation id="6844773122575789617">Activar el Modo IA</translation>
 <translation id="6851516051005285358">Solicitar sitio para computadoras</translation>
 <translation id="6857446173140146664">Borrar fondo</translation>
 <translation id="6858718102216837409">Agregar idioma…</translation>

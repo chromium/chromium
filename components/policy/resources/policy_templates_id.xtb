@@ -6579,34 +6579,6 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 
 Jika kebijakan disetel ke Nonaktif, histori browser dan histori download tidak dapat dihapus. Meskipun kebijakan ini dinonaktifkan, histori penjelajahan dan download tidak dijamin akan dipertahankan. Pengguna dapat langsung mengedit atau menghapus file database histori, dan browser dapat tidak berlaku lagi atau mengarsipkan beberapa atau semua item histori setiap saat.</translation>
 <translation id="5322649594584715998">Isi daya baterai hingga penuh pada kecepatan standar. Mode ini akan menonaktifkan pengisian daya adaptif dan terbatas.</translation>
-<translation id="5322726025747768984">Menyetel kebijakan ini akan mengonfigurasi aturan yang menentukan proxy mana yang digunakan browser, bergantung pada URL tujuan dan kondisi lainnya. Kebijakan ini akan lebih diutamakan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan pengguna manual jika ada yang disetel.
-
-Jika kebijakan ini tidak disetel, kebijakan proxy atau setelan pengguna lainnya tidak akan terpengaruh.
-
-Saat browser perlu memutuskan proxy mana yang akan digunakan, entri dari kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri memenuhi semua poin berikut:
-  * Setidaknya satu pola URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> cocok.
-  * Tidak ada pola URL di <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> yang cocok.
-  * Jika <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ditentukan dan merupakan daftar yang tidak kosong, semua kondisi yang diwakili oleh entrinya akan terpenuhi.
-Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Pola URL yang didukung oleh <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> didokumentasikan di https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sesuai dengan nilai string file PAC seperti:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Atau, penentu proxy seperti URL dapat digunakan langsung untuk menentukan proxy, misalnya:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-Entri pertama yang dapat dijangkau dalam daftar akan digunakan sebagai proxy. Entri yang tidak valid dalam daftar akan diabaikan.
-
-Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantian dapat digunakan untuk menentukan proxy yang akan digunakan. Jika kebijakan ini tidak disetel, entri akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
-
-Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS yang diberikan <ph name="PROXY_OVERRIDE_RULES_HOST" /> dapat di-resolve ke alamat IP. Jika nilai <ph name="PROXY_OVERRIDE_RULES_RESULT" /> adalah "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", kondisi tersebut dianggap terpenuhi. Jika nilai tersebut disetel ke <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, kondisi tersebut dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="5323200200131319468">Mengaktifkan respons lisan di layar login</translation>
 <translation id="5323271643727095577">Jangan tampilkan dialog pembatalan saat event.preventDefault() dipanggil untuk peristiwa beforeunload. Tampilkan dialog pembatalan jika event.returnValue berisi string kosong untuk peristiwa beforeunload.</translation>
 <translation id="5324430722441910403">Setelan penelusuran situs</translation>

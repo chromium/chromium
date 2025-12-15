@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Awtolenwi</translation>
 <translation id="271033894570825754">Newydd</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">Diffodd y camera</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
 <translation id="2721190673959776287">Sampl o gymorth mewn cynnyrch cyfoethog ar gyfer y Panel Cyd-destunol, a ddylai ymddangos sawl gwaith y dydd.</translation>
 <translation id="2739887572830526131">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu ddileu ef os nad oes ei angen arnoch fwyach.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Creu digwyddiadau calendr o ddyddiadau</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Troi'r camera ymlaen</translation>
 <translation id="5229315183665181733">Golygu Gwefan</translation>
 <translation id="5233638681132016545">Tab newydd</translation>
 <translation id="5234094073825090254">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}.}zero{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}two{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}few{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}many{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}other{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}}</translation>

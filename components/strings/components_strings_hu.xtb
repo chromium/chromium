@@ -1356,7 +1356,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> nyomtató a(z) <ph name="SERVER_NAME" /> nevű szerveren</translation>
 <translation id="3197136577151645743">Engedélyt kérhet annak észlelésére, hogy Ön mikor használja aktívan az eszközt</translation>
-<translation id="3201482403106004262">Hiba történt a kérdőívvel.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt az adatok szinkronizálásának Chrome-beállítások közötti kezeléséhez.</translation>
 <translation id="3203025201812691413">Az URL mezője nem maradhat üresen.</translation>
 <translation id="320323717674993345">Fizetés visszavonása</translation>
@@ -3456,7 +3455,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6568793038316600992">Fizetési módok kezelése gomb. A gombot megnyomva kezelheti fizetési és hitelkártyaadatait a Chrome-beállítások között.</translation>
 <translation id="6569060085658103619">Jelenleg bővítményoldalt tekint meg</translation>
 <translation id="6571992525120410251">Kérdezzen tőle bármit: <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Hasznosnak találta?</translation>
 <translation id="6573200754375280815">Kettő lyuk a jobb oldalon</translation>
 <translation id="6575408526598156416">Mentés a fiókba</translation>
 <translation id="6577792494180292262">Vállalkozási tőke</translation>
@@ -5071,7 +5069,6 @@ További részletek:
 <translation id="9195969368671142407">Ha a szervezete korlátozza a Google-fiókba történő mentést, akkor nem oszthat meg lapcsoportokat, valamint nem csatlakozhat hozzájuk</translation>
 <translation id="9198613052465150219">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
-<translation id="9201904868909900493">Kérdőív megnyitása…</translation>
 <translation id="9204089334327209740">A feltöltés végeztével a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásban módosíthatja a fájlokat. A helyi tárhely, beleértve a kukában lévő fájlokat is, automatikusan eltávolításra kerül.</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="920643408853370361">Utazási biztosítás</translation>

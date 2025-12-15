@@ -6161,6 +6161,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Shared by <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Line</translation>
 <translation id="5189274947477567401">Opting out of process sharing requires a browser restart. This browser will restart now.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Using <ph name="USED_SPACE" /></translation>

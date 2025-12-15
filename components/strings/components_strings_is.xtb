@@ -1358,7 +1358,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> á <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Getur beðið um að fá að vita hvenær þú ert að nota tækið</translation>
-<translation id="3201482403106004262">Villa kom upp í könnuninni.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna því hvaða upplýsingar þú samstillir</translation>
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
@@ -3459,7 +3458,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6568793038316600992">Hnappurinn „Stjórna greiðslumátum“, virkjaðu til að stjórna greiðslu- og kreditkortaupplýsingum í stillingum Chrome</translation>
 <translation id="6569060085658103619">Þú ert að skoða viðbótarsíðu</translation>
 <translation id="6571992525120410251">Spyrðu <ph name="ENGINE_NAME" /> að hverju sem er</translation>
-<translation id="6572867903637058088">Er þetta gagnlegt?</translation>
 <translation id="6573200754375280815">Tvö göt hægra megin</translation>
 <translation id="6575408526598156416">Vista á reikningi</translation>
 <translation id="6577792494180292262">Áhættufjárfestingar</translation>
@@ -5071,7 +5069,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9195969368671142407">Þegar fyrirtækið þitt takmarkar vistanir við Google-reikninginn þinn getur þú ekki deilt eða tengst flipahópum</translation>
 <translation id="9198613052465150219">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Lokað er fyrir prentun</translation>
-<translation id="9201904868909900493">Opnar könnun...</translation>
 <translation id="9204089334327209740">Þegar upphleðslunni er lokið geturðu breytt skránum í <ph name="CLOUD_PROVIDER" />. Staðbundna geymslurýminu verður sjálfkrafa eytt, þ.m.t. öllum skrám í ruslinu.</translation>
 <translation id="9205078245616868884">Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="920643408853370361">Ferðatrygging</translation>

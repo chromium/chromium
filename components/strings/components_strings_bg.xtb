@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да поиска разрешение да разпознава кога използвате устройството активно</translation>
-<translation id="3201482403106004262">При показването на анкетата възникна грешка.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате данните, които да се синхронизират, от настройките на Chrome</translation>
 <translation id="3203025201812691413">URL адресът трябва да се попълни</translation>
 <translation id="320323717674993345">Анулиране на плащането</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
 <translation id="6571992525120410251">Попитайте <ph name="ENGINE_NAME" /> каквото и да е</translation>
-<translation id="6572867903637058088">Това полезно ли е?</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
 <translation id="6575408526598156416">Запазване в профила</translation>
 <translation id="6577792494180292262">Рисков капитал</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">Когато организацията ви ограничи запазването в профила ви в Google, не можете да споделяте или да се присъединявате към групи раздели</translation>
 <translation id="9198613052465150219">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>
-<translation id="9201904868909900493">Анкетата се отваря…</translation>
 <translation id="9204089334327209740">След като качването завърши, можете да променяте файловете си в(ъв) <ph name="CLOUD_PROVIDER" />. Данните в локалното хранилище, включително файловете в кошчето, ще бъдат премахнати автоматично.</translation>
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="920643408853370361">Застраховка при пътуване</translation>

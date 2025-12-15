@@ -1355,7 +1355,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> – <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Qurilmadan foydalanishga oid axborotlarni soʻrashi mumkin</translation>
-<translation id="3201482403106004262">Soʻrovnoma bilan xatolik yuz berdi.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali sinxronlanadigan maʼlumotlarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3203025201812691413">URL boʻsh boʻlmaydi</translation>
 <translation id="320323717674993345">To‘lovni bekor qilish</translation>
@@ -3453,7 +3452,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6568793038316600992">Toʻlov usullarini boshqarish tugmasi, Chrome sozlamalari orqali toʻlov va kredit karta axborotini boshqarish uchun faollashtiring</translation>
 <translation id="6569060085658103619">Siz kengaytma sahifasidasiz.</translation>
 <translation id="6571992525120410251">Savol bering: <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Buning foydasi tegdimi?</translation>
 <translation id="6573200754375280815">Oʻngdan 2 ta teshik ochish</translation>
 <translation id="6575408526598156416">Hisobda saqlash</translation>
 <translation id="6577792494180292262">Venchur kapitali</translation>
@@ -5065,7 +5063,6 @@ Batafsil axborot:
 <translation id="9195969368671142407">Tashkilotingiz Google hisobingizga maʼlumotlarni saqlashni cheklasa, varaqlar guruhini ulashish yoki ularga qoʻshilish imkonsiz boʻladi</translation>
 <translation id="9198613052465150219">Google hisobingiz orqali bajarilgan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="9199905725844810519">Chop etish taqiqlangan</translation>
-<translation id="9201904868909900493">Soʻrovnoma ochilmoqda...</translation>
 <translation id="9204089334327209740">Yuklanganidan keyin fayllarni <ph name="CLOUD_PROVIDER" /> xizmatida oʻzgartirish mumkin. Qurilmadagi, jumladan, Chiqitdondagi fayllar avtomatik tozalanadi.</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="920643408853370361">Sayohat sugʻurtasi</translation>

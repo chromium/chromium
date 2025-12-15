@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> در <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">می‌تواند درخواست کند که استفاده فعال شما از دستگاه به او اطلاع داده شود</translation>
-<translation id="3201482403106004262">خطایی در نظرسنجی روی داد.</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="3203025201812691413">نشانی وب نباید خالی باشد</translation>
 <translation id="320323717674993345">لغو پرداخت</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">‏دکمه «مدیریت روش‌های پرداخت»؛ برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6569060085658103619">درحال مشاهده یک صفحه افزونه هستید</translation>
 <translation id="6571992525120410251">هرچه می‌خواهید از <ph name="ENGINE_NAME" /> بپرسید</translation>
-<translation id="6572867903637058088">آیا مفید است؟</translation>
 <translation id="6573200754375280815">دو سوراخ در راست</translation>
 <translation id="6575408526598156416">ذخیره کردن در حساب</translation>
 <translation id="6577792494180292262">سرمایه‌گذاری خطرپذیر</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">‏وقتی سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید گروه‌های زبانه را هم‌رسانی کنید یا به آن‌ها بپیوندید</translation>
 <translation id="9198613052465150219">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> باشد</translation>
 <translation id="9199905725844810519">چاپ کردن مسدود شده است</translation>
-<translation id="9201904868909900493">درحال باز کردن نظرسنجی…</translation>
 <translation id="9204089334327209740">بعداز کامل شدن بارگذاری، می‌توانید فایل‌هایتان را در <ph name="CLOUD_PROVIDER" /> اصلاح کنید. فضای ذخیره‌سازی محلی، شامل هر فایلی در «حذف‌شده‌ها»، به‌طور خودکار برداشته خواهد شد.</translation>
 <translation id="9205078245616868884">داده‌های شما با گذرعبارت همگام‌سازی رمزگذاری می‌شود. برای شروع همگام‌سازی آن را وارد کنید.</translation>
 <translation id="920643408853370361">بیمه مسافرت</translation>

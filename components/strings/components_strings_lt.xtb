@@ -1359,7 +1359,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">„<ph name="PRINTER_NAME" />“ serveryje „<ph name="SERVER_NAME" />“</translation>
 <translation id="3197136577151645743">Gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
-<translation id="3201482403106004262">Įvyko apklausos klaida.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
@@ -3460,7 +3459,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6568793038316600992">Mygtukas „Tvarkyti mokėjimo metodus“; suaktyvinkite, kad būtų galima tvarkyti mokėjimų ir kredito kortelės informaciją „Chrome“ nustatymuose</translation>
 <translation id="6569060085658103619">Peržiūrite plėtinio puslapį</translation>
 <translation id="6571992525120410251">Klauskite „<ph name="ENGINE_NAME" />“ bet ko</translation>
-<translation id="6572867903637058088">Ar tai naudinga?</translation>
 <translation id="6573200754375280815">Dvi skylės dešinėje</translation>
 <translation id="6575408526598156416">Išsaugojimas paskyroje</translation>
 <translation id="6577792494180292262">Rizikos kapitalas</translation>
@@ -5074,7 +5072,6 @@ Papildoma išsami informacija:
 <translation id="9195969368671142407">Kai organizacija riboja išsaugojimą „Google“ paskyroje, negalite bendrinti skirtukų grupių ar prie jų prisijungti</translation>
 <translation id="9198613052465150219">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Spausdinimas užblokuotas</translation>
-<translation id="9201904868909900493">Atidaroma apklausa…</translation>
 <translation id="9204089334327209740">Kai įkėlimas bus baigtas, galėsite keisti failus „<ph name="CLOUD_PROVIDER" />“. Vietinė saugykla, įskaitant visus šiukšliadėžėje esančius failus, bus automatiškai pašalinta.</translation>
 <translation id="9205078245616868884">Duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="920643408853370361">Kelionių draudimas</translation>

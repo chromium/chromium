@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да прашува за да знае кога активно го користите уредов</translation>
-<translation id="3201482403106004262">Се јави грешка при вчитувањето на анкетата.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со податоците коишто се синхронизираат во поставките за Chrome</translation>
 <translation id="3203025201812691413">URL-адресата не може да биде празна</translation>
 <translation id="320323717674993345">Откажи го плаќањето</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">Копче за управување со начините на плаќање, активирајте го за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="6569060085658103619">Гледате страница со екстензии</translation>
 <translation id="6571992525120410251">Прашајте го пребарувачот <ph name="ENGINE_NAME" /> што било</translation>
-<translation id="6572867903637058088">Дали е ова корисно?</translation>
 <translation id="6573200754375280815">Две дупки десно</translation>
 <translation id="6575408526598156416">Зачувајте во сметката</translation>
 <translation id="6577792494180292262">Ризичен капитал</translation>
@@ -5071,7 +5069,6 @@
 <translation id="9195969368671142407">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, нема да може да споделувате или да се придружувате во групи картички</translation>
 <translation id="9198613052465150219">Вашата сметка на Google може да има други форми на историја на прелистувањето на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Печатењето е блокирано</translation>
-<translation id="9201904868909900493">Анкетата се отвора…</translation>
 <translation id="9204089334327209740">Штом ќе заврши прикачувањето, може да ги менувате датотеките во <ph name="CLOUD_PROVIDER" />. Локалниот простор (што ги опфаќа и датотеките во „Корпа“) ќе се отстрани автоматски.</translation>
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="920643408853370361">Патничко осигурување</translation>

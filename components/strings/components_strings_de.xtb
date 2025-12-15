@@ -1358,7 +1358,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> auf <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Darf nachfragen, wenn sie Informationen zu meiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
-<translation id="3201482403106004262">Bei der Umfrage ist ein Fehler aufgetreten.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="3203025201812691413">URL darf nicht leer sein</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
@@ -3457,7 +3456,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6568793038316600992">Button „Zahlungsmethoden verwalten“ – aktivieren, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="6569060085658103619">Dies ist eine Erweiterungsseite</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> eine Frage stellen</translation>
-<translation id="6572867903637058088">Ist das hilfreich?</translation>
 <translation id="6573200754375280815">Doppelte Lochung rechts</translation>
 <translation id="6575408526598156416">Im Konto speichern</translation>
 <translation id="6577792494180292262">Risikokapital</translation>
@@ -5071,7 +5069,6 @@ Weitere Details:
 <translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
 <translation id="9198613052465150219">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert</translation>
 <translation id="9199905725844810519">Drucken ist blockiert</translation>
-<translation id="9201904868909900493">Umfrage öffnen…</translation>
 <translation id="9204089334327209740">Sobald der Upload abgeschlossen ist, kannst du deine Dateien in <ph name="CLOUD_PROVIDER" /> bearbeiten. Der lokale Speicher, einschließlich aller Dateien im Papierkorb, wird automatisch deaktiviert.</translation>
 <translation id="9205078245616868884">Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="920643408853370361">Reiseversicherung</translation>

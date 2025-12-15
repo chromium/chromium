@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
 <translation id="271033894570825754">Нова колекција</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
 <translation id="2721190673959776287">Пример детаљне помоћи у производу за контекстуално окно које треба да се приказује више пута дневно.</translation>
 <translation id="2739887572830526131">Задржите ову групу да бисте додали картице касније или је избришите ако вам више не треба.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Укључи камеру</translation>
 <translation id="5229315183665181733">Измени сајт</translation>
 <translation id="5233638681132016545">Нова картица</translation>
 <translation id="5234094073825090254">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}.}one{Обележивачи су сачувани на Google налогу, {email}.}few{Обележивачи су сачувани на Google налогу, {email}.}other{Обележивачи су сачувани на Google налогу, {email}.}}</translation>

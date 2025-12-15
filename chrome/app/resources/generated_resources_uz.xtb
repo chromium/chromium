@@ -2216,6 +2216,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2476901513051581836">Oflayn xotira hajmi aniqlanmasa, xotirani tozalab boʻlmaydi.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> oʻchirib tashlanishi uchun Windows ishini yakunlang.</translation>
 <translation id="2477065602824695373">Bir nechta kalit tugma sozlangani sababli avto-skanerlash faolsizlantirildi.</translation>
+<translation id="2477218554275525952">Yangi varaq ochilganda Gemini yon paneli ochiq tursin</translation>
 <translation id="2477607419416067650">Boshqa Google maʼlumotlari</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" uchun media fayli ruxsatlari</translation>
 <translation id="24786041351753425">Maʼlumotlarni tiklash xizmatini yoqing.</translation>
@@ -6150,6 +6151,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> ulashgan</translation>
 <translation id="5188648870018555788">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ChromeOS, Android ilovalari, veb-saytlar va xizmatlarga bu qurilma joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuvni aniqlash xizmati Android ilova va xizmatlarga yanada aniq joylashuv axborotini taqdim etadi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi. Anonim maʼlumotlar foydalanuvchining joylashuv axboroti bilan ishlaydigan xizmatlarda joylashuv aniqligini oshirish maqsadida jamlanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlarga xizmatlarni qonun doirasida yaxshilash, taqdim etish hamda dastaklashga yordam beradi. <ph name="BEGIN_LINK1" />Joylashuv axboroti ishlatilishi haqida batafsil<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Chiziq</translation>
 <translation id="5189274947477567401">Jarayon ulashuvini tark etish uchun brauzerni qayta ochish talab etiladi. Bu brauzer hozir qayta ochiladi.</translation>
 <translation id="5189404424758444348">Stimpank</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> band</translation>
@@ -12023,6 +12025,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9207434080086272167">Quyoshli</translation>
 <translation id="9207669213427469593">Ajratilgan ekran rejimi uchun oynani yonga tortsangiz, ikkinchi tomon oynasiga takliflar chiqadi</translation>
 <translation id="9209563766569767417">Linux konteyneri sozlamalari tekshirilmoqda</translation>
+<translation id="9212565256020141627">Geminiga rasm ulashilmadi Qayta urining yoki boshqa rasmni tanlang.</translation>
 <translation id="9214520840402538427">Afsuski, vaqt sozlamalarini o‘rnatishga tayyorlash vaqti tugadi. Xizmat ko‘rsatish markazi bilan bog‘laning.</translation>
 <translation id="9214695392875603905">Keks</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" qo‘shildi</translation>

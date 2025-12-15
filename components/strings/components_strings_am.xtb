@@ -1357,7 +1357,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> በ<ph name="SERVER_NAME" /> ላይ</translation>
 <translation id="3197136577151645743">ይህን መሣሪያ በንቃት ሲጠቀሙ ለማወቅ መጠየቅ ይችላል</translation>
-<translation id="3201482403106004262">ከዳሰሳ ጥናቱ ጋር አንድ ስህተት ተከስቷል።</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ ምን መረጃ እንደሚያሰምሩ ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3203025201812691413">ዩአርኤል ባዶ ሊሆን አይችልም</translation>
 <translation id="320323717674993345">ክፍያን ሰርዝ</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">የመክፈያ ዘዴዎች አዝራርን ያስተዳድሩ፣ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ በChrome ቅንብሮች ውስጥ ለማስተዳደር ያግብሩ</translation>
 <translation id="6569060085658103619">የቅጥያ ገፅ እየተመለከቱ ነው</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" />ን ማንኛውንም ነገር ይጠይቁ</translation>
-<translation id="6572867903637058088">ይህ አጋዥ ነው?</translation>
 <translation id="6573200754375280815">ድርብ ብስ ቀኝ</translation>
 <translation id="6575408526598156416">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="6577792494180292262">ቬንቸር ካፒታል</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">ድርጅትዎ ወደ Google መለያ ማስቀመጥን ከገደበ የትር ቡድኖችን ማጋራት ወይም መቀላቀል አይችሉም</translation>
 <translation id="9198613052465150219">የእርስዎ Google መለያ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="9199905725844810519">ማተም ታግዷል</translation>
-<translation id="9201904868909900493">የዳሰሳ ጥናት በመክፈት ላይ…</translation>
 <translation id="9204089334327209740">አንዴ ሰቀላ ከተጠናቀቀ በኋላ ፋይሎችዎን <ph name="CLOUD_PROVIDER" /> ውስጥ ማስተካከል ይችላሉ። መጣያ ውስጥ ያሉ ማናቸውም ፋይሎችን ጨምሮ አካባቢያዊ ማከማቻ በራስ-ሰር ይወገዳል።</translation>
 <translation id="9205078245616868884">የእርስዎ ውሂብ በእርስዎ የስምረት የይለፍ ቃል ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="920643408853370361">የጉዞ መድህን</translation>

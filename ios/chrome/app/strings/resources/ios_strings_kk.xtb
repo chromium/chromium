@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Автотолтыру</translation>
 <translation id="271033894570825754">Жаңа</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2718352093833049315">Тек Wi-Fi</translation>
 <translation id="2721190673959776287">Контекстік панельге арналған өнімдегі толық анықтама үлгісі. Күніне бірнеше рет пайда болуы керек.</translation>
 <translation id="2739887572830526131">Бұл топты кейінірек қойындылар қосу үшін сақтаңыз. Қажет болмаса, жойыңыз.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Күндерден күнтізбедегі іс-шараларды жасау</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5225388483876575107">А</translation>
+<translation id="5225463052809312700">Камераны қосу</translation>
 <translation id="5229315183665181733">Сайтты өзгерту</translation>
 <translation id="5233638681132016545">Жаңа қойынды</translation>
 <translation id="5234094073825090254">{count,plural, =1{Бетбелгі Google аккаунтына ({email}) сақталды.}other{Бетбелгілер Google аккаунтына ({email}) сақталды.}}</translation>

@@ -1357,7 +1357,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> എന്നതിലെ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ ആവശ്യപ്പെടാം</translation>
-<translation id="3201482403106004262">സർവേയിൽ ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="3203025201812691413">URL ശൂന്യമായിരിക്കരുത്</translation>
 <translation id="320323717674993345">പേയ്‌മെന്റ് റദ്ദാക്കുക</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക ബട്ടൺ', Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="6569060085658103619">നിങ്ങൾ ഒരു വിപുലീകരണ പേജാണ് കാണുന്നത്</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> എന്നതിനോട് എന്തും ചോദിക്കൂ</translation>
-<translation id="6572867903637058088">ഇത് സഹായകരമാണോ?</translation>
 <translation id="6573200754375280815">വലതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="6575408526598156416">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="6577792494180292262">വെഞ്ച്വർ കാപ്പിറ്റൽ</translation>
@@ -5069,7 +5067,6 @@
 <translation id="9195969368671142407">നിങ്ങളുടെ Google Account-ലേക്ക് സംരക്ഷിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തുമ്പോൾ, നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ കഴിയില്ല</translation>
 <translation id="9198613052465150219">നിങ്ങളുടെ Google Account-ൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം, അവ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> -ൽ കണ്ടെത്താനാകും</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
-<translation id="9201904868909900493">സർവേ തുറക്കുന്നു...</translation>
 <translation id="9204089334327209740">അപ്‌ലോഡ് പൂർത്തിയായിക്കഴിഞ്ഞാൽ, നിങ്ങളുടെ ഫയലുകൾ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ പരിഷ്ക്കരിക്കാനാകും. ട്രാഷിലുള്ള ഫയലുകൾ ഉൾപ്പെടെയുള്ള ലോക്കൽ സ്റ്റോറേജ് സ്വയമേവ നീക്കം ചെയ്യപ്പെടും.</translation>
 <translation id="9205078245616868884">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="920643408853370361">യാത്രാ ഇൻഷുറൻസ്</translation>

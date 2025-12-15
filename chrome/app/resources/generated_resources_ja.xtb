@@ -6137,6 +6137,7 @@
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> さんが共有しました</translation>
 <translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">行</translation>
 <translation id="5189274947477567401">共有プロセスを無効にするにはブラウザの再起動が必要です。このブラウザは今すぐ再起動されます。</translation>
 <translation id="5189404424758444348">スチームパンク</translation>
 <translation id="5190577235024772869">使用量: <ph name="USED_SPACE" /></translation>

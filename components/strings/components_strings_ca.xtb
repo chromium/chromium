@@ -1358,7 +1358,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> a <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pot demanar permís per saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
-<translation id="3201482403106004262">S'ha produït un error amb l'enquesta.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="3203025201812691413">L'URL no pot ser buit</translation>
 <translation id="320323717674993345">Cancel·la el pagament</translation>
@@ -3216,7 +3215,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6195418151868446719">Electrònica de consum</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
-<translation id="6198480336395236519">Etiquetes completament tallades</translation>
+<translation id="6198480336395236519">Pestanyes de tall complet</translation>
 <translation id="6203231073485539293">Comprovació de la connexió a Internet</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3459,7 +3458,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6568793038316600992">Botó Gestiona les formes de pagament: activa'l per gestionar la informació dels pagaments i de les targetes de crèdit a la configuració de Chrome</translation>
 <translation id="6569060085658103619">Estàs consultant la pàgina d'una extensió</translation>
 <translation id="6571992525120410251">Pregunta a <ph name="ENGINE_NAME" /> el que vulguis</translation>
-<translation id="6572867903637058088">Et sembla útil?</translation>
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
 <translation id="6575408526598156416">Desa al compte</translation>
 <translation id="6577792494180292262">Capital de risc</translation>
@@ -5071,7 +5069,6 @@ Detalls addicionals:
 <translation id="9195969368671142407">Si la teva organització limita el que pots desar al teu Compte de Google, no podràs compartir grups de pestanyes ni unir-t'hi</translation>
 <translation id="9198613052465150219">A <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
-<translation id="9201904868909900493">S'està obrint l'enquesta...</translation>
 <translation id="9204089334327209740">Un cop s'hagi completat la pujada, podràs modificar els fitxers a <ph name="CLOUD_PROVIDER" />. L'emmagatzematge local, inclosos els fitxers de la paperera, se suprimirà automàticament.</translation>
 <translation id="9205078245616868884">Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincronització. Introduïu-la per començar la sincronització.</translation>
 <translation id="920643408853370361">Assegurança de viatges</translation>

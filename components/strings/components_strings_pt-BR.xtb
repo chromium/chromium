@@ -1358,7 +1358,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando você está usando o dispositivo ativamente</translation>
-<translation id="3201482403106004262">Ocorreu um erro com a pesquisa.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
@@ -3459,7 +3458,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6568793038316600992">Botão "Gerenciar formas de pagamento". Ative para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
 <translation id="6571992525120410251">Pergunte o que quiser a <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">A informação foi útil?</translation>
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
 <translation id="6575408526598156416">Salvar na conta</translation>
 <translation id="6577792494180292262">Capital de risco</translation>
@@ -5074,7 +5072,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9195969368671142407">Quando a organização limita o salvamento na sua Conta do Google, não é possível compartilhar ou participar de grupos de guias</translation>
 <translation id="9198613052465150219">Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
-<translation id="9201904868909900493">Abrindo a pesquisa…</translation>
 <translation id="9204089334327209740">Depois que o upload for concluído, você poderá modificar seus arquivos no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os arquivos na lixeira, será removido automaticamente.</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>

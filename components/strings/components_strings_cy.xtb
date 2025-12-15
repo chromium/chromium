@@ -1358,7 +1358,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ar <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Yn gallu gofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
-<translation id="3201482403106004262">Cafwyd gwall gyda'r arolwg.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="3203025201812691413">Ni all URL fod yn wag</translation>
 <translation id="320323717674993345">Canslo'r Taliad</translation>
@@ -3459,7 +3458,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6568793038316600992">Botwm rheoli dulliau talu, gweithredwch i reoli eich taliadau a gwybodaeth cerdyn credyd yng ngosodiadau Chrome</translation>
 <translation id="6569060085658103619">Rydych yn edrych ar dudalen estyniad</translation>
 <translation id="6571992525120410251">Gofynnwch unrhyw beth i <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">A yw hyn yn ddefnyddiol?</translation>
 <translation id="6573200754375280815">Dau dwll ar y dde</translation>
 <translation id="6575408526598156416">Cadw yn y cyfrif</translation>
 <translation id="6577792494180292262">Cyfalaf Menter</translation>
@@ -5071,7 +5069,6 @@ Manylion ychwanegol:
 <translation id="9195969368671142407">Pan fydd eich sefydliad yn cyfyngu ar gynilo i'ch Cyfrif Google, ni allwch rannu neu ymuno â grwpiau tabiau</translation>
 <translation id="9198613052465150219">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ni chewch argraffu</translation>
-<translation id="9201904868909900493">Wrthi'n agor yr arolwg...</translation>
 <translation id="9204089334327209740">Unwaith y bydd y llwythiad wedi'i gwblhau, gallwch chi addasu'ch ffeiliau yn <ph name="CLOUD_PROVIDER" />. Bydd storfa leol, gan gynnwys unrhyw ffeiliau yn y Sbwriel, yn cael eu tynnu'n awtomatig.</translation>
 <translation id="9205078245616868884">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="920643408853370361">Yswiriant Teithio</translation>

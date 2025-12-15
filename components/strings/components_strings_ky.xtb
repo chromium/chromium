@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты сурай алат</translation>
-<translation id="3201482403106004262">Сурамжылоодо ката кетти.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеринен шайкештирилген маалыматты башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="3203025201812691413">URL бош болбошу керек</translation>
 <translation id="320323717674993345">Төлөмдү жокко чыгаруу</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">"Төлөм ыкмаларын башкаруу" баскычы. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн иштетиңиз</translation>
 <translation id="6569060085658103619">Кеңейтүү баракчасын карап жатасыз</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> кызматынан каалаган нерсени сураңыз</translation>
-<translation id="6572867903637058088">Пайдасы тийдиби?</translation>
 <translation id="6573200754375280815">Оң жагын эки жолу тешүү</translation>
 <translation id="6575408526598156416">Аккаунтта сактоо</translation>
 <translation id="6577792494180292262">Венчурдук капитал</translation>
@@ -5070,7 +5068,6 @@
 <translation id="9195969368671142407">Уюмуңуз Google аккаунтуңузда сактоону чектегенде, өтмөктөр топторуна кошула же бөлүшө албайсыз</translation>
 <translation id="9198613052465150219">Көрүлгөн вебсайттардын тизмеси Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="9199905725844810519">Басып чыгаруу бөгөттөлгөн</translation>
-<translation id="9201904868909900493">Сурамжылоо ачылууда...</translation>
 <translation id="9204089334327209740">Жүктөп берүү аяктагандан кийин, файлдарыңызды <ph name="CLOUD_PROVIDER" /> камсыздоочусунда өзгөртө аласыз. Жергиликтүү сактагыч, анын ичинде таштандыдагы бардык файлдар автоматтык түрдө өчүрүлөт.</translation>
 <translation id="9205078245616868884">Дайын-даректериңиз купуя сөз айкашы менен шифрленген. Шайкештирип баштоо үчүн аны киргизиңиз.</translation>
 <translation id="920643408853370361">Саякатты камсыздандыруу</translation>

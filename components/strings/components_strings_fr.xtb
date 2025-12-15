@@ -1358,7 +1358,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Peut demander à savoir quand vous utilisez activement cet appareil</translation>
-<translation id="3201482403106004262">Une erreur s'est produite dans l'enquête.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les infos que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="3203025201812691413">Vous devez saisir une URL</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
@@ -3459,7 +3458,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6568793038316600992">Bouton "Gérer les modes de paiement" à activer pour gérer vos paiements et informations sur vos cartes de crédit dans les paramètres Chrome</translation>
 <translation id="6569060085658103619">Vous consultez la page d'une extension</translation>
 <translation id="6571992525120410251">Posez une question à <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Ces informations sont-elles utiles ?</translation>
 <translation id="6573200754375280815">Double perforation à droite</translation>
 <translation id="6575408526598156416">Enregistrer dans le compte</translation>
 <translation id="6577792494180292262">Capital-risque</translation>
@@ -5072,7 +5070,6 @@ Informations supplémentaires :
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
 <translation id="9198613052465150219">Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Impression bloquée</translation>
-<translation id="9201904868909900493">Ouverture de l'enquête...</translation>
 <translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>

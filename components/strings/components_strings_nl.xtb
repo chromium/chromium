@@ -1355,7 +1355,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
-<translation id="3201482403106004262">Er is een fout opgetreden in de enquête.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
 <translation id="320323717674993345">Betaling annuleren</translation>
@@ -3452,7 +3451,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6568793038316600992">Knop Betaalmethoden beheren. Activeer deze om betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="6569060085658103619">Je bekijkt een extensiepagina</translation>
 <translation id="6571992525120410251">Stel je vraag aan <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Is dit nuttig?</translation>
 <translation id="6573200754375280815">Twee perforaties rechts</translation>
 <translation id="6575408526598156416">Opslaan in account</translation>
 <translation id="6577792494180292262">Durfkapitaal</translation>
@@ -5064,7 +5062,6 @@ Aanvullende informatie:
 <translation id="9195969368671142407">Als je organisatie opslaan in je Google-account beperkt, kun je geen tabbladgroepen delen of eraan deelnemen</translation>
 <translation id="9198613052465150219">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
-<translation id="9201904868909900493">Enquête openen...</translation>
 <translation id="9204089334327209740">Nadat de upload is afgerond, kun je je bestanden aanpassen in <ph name="CLOUD_PROVIDER" />. Lokale opslag, inclusief bestanden in de prullenbak, wordt automatisch verwijderd.</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>

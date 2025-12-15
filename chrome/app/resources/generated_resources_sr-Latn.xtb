@@ -6147,6 +6147,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Deli <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Koristi lokaciju. Dozvolite ChromeOS i Android aplikacijama, veb-sajtovima i uslugama sa dozvolom za lokaciju da koriste lokaciju uređaja. Preciznost lokacije pruža precizniju lokaciju za Android aplikacije i usluge. U tu svrhu, Google periodično obrađuje informacije o senzorima uređaja i bežičnim signalima sa uređaja kako bi pomoću kraudsorsinga odredio lokacije bežičnih signala. Bez otkrivanja vašeg identiteta ovi podaci se koriste za poboljšavanje preciznosti lokacije i usluga zasnovanih na lokaciji, kao i za poboljšavanje, pružanje i održavanje Google usluga zasnovanih na legitimnim interesima Google-a i trećih strana da ispunjavaju potrebe korisnika. <ph name="BEGIN_LINK1" />Saznajte više o korišćenju lokacije<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Red</translation>
 <translation id="5189274947477567401">Ako onemogućite deljenje procesa, treba da restartujete pregledač. Ovaj pregledač će se sada restartovati.</translation>
 <translation id="5189404424758444348">Stimpank</translation>
 <translation id="5190577235024772869">Koristi se <ph name="USED_SPACE" /></translation>
@@ -12022,6 +12023,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9207434080086272167">Sunčano</translation>
 <translation id="9207669213427469593">Ako pomerite prozor na jednu stranu da biste koristili podeljeni ekran, videćete predloge prozora za drugu stranu</translation>
 <translation id="9209563766569767417">Proverava se podešavanje Linux kontejnera</translation>
+<translation id="9212565256020141627">Deljenje slike sa Gemini-jem nije uspelo. Probajte ponovo ili probajte sa drugom slikom.</translation>
 <translation id="9214520840402538427">Ups! Vreme pokretanja atributa za vreme instalacije je isteklo. Kontaktirajte predstavnika podrške.</translation>
 <translation id="9214695392875603905">Mafin</translation>
 <translation id="9215293857209265904">Dodat je „<ph name="EXTENSION_NAME" />“</translation>

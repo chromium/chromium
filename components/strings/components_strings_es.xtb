@@ -1358,7 +1358,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> de <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Puede solicitar permiso para saber cuándo usas activamente este dispositivo</translation>
-<translation id="3201482403106004262">Se ha producido un error en la encuesta.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar qué información quieres sincronizar en la configuración de Chrome</translation>
 <translation id="3203025201812691413">La URL no puede estar vacía</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
@@ -3459,7 +3458,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6568793038316600992">Botón Gestionar métodos de pago: actívalo para gestionar tus pagos y la información de tu tarjeta de crédito en la configuración de Chrome</translation>
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
 <translation id="6571992525120410251">Pregunta lo que quieras a <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">¿Es útil esta información?</translation>
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
 <translation id="6575408526598156416">Guardar en la cuenta</translation>
 <translation id="6577792494180292262">Capital de riesgo</translation>
@@ -5072,7 +5070,6 @@ Más información:
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>
-<translation id="9201904868909900493">Abriendo encuesta...</translation>
 <translation id="9204089334327209740">Cuando termine la subida, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, incluidos los archivos de la papelera, se eliminará automáticamente.</translation>
 <translation id="9205078245616868884">Tus datos se han cifrado con tu frase de contraseña de sincronización. Introdúcela para iniciar la sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaje</translation>

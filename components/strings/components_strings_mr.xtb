@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
-<translation id="3201482403106004262">सर्वेक्षणामध्ये एरर आली.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">पेमेंट पद्धती व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड माहिती व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6569060085658103619">तुम्ही एक एक्स्टेंशन पेज पाहत आहात</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ला काहीही विचारा</translation>
-<translation id="6572867903637058088">हे उपयुक्त आहे का?</translation>
 <translation id="6573200754375280815">ड्युअल पंच राइट</translation>
 <translation id="6575408526598156416">खात्यामध्ये सेव्ह करा</translation>
 <translation id="6577792494180292262">व्हेंचर कॅपिटल</translation>
@@ -5072,7 +5070,6 @@
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="9198613052465150219">तुमच्या Google खाते मध्ये, <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> येथे इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो</translation>
 <translation id="9199905725844810519">प्रिंट करणे ब्लॉक केले</translation>
-<translation id="9201904868909900493">सर्वेक्षण उघडत आहे...</translation>
 <translation id="9204089334327209740">अपलोड पूर्ण झाल्यावर, तुम्ही <ph name="CLOUD_PROVIDER" /> मध्ये तुमच्या फाइलमध्ये फेरबदल करू शकता. ट्रॅश मधील कोणत्याही फाइलसह स्थानिक स्टोरेज आपोआप काढून टाकले जाईल.</translation>
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="920643408853370361">प्रवास विमा</translation>

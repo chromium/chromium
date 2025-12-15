@@ -1358,7 +1358,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može tražiti da zna kada aktivno koristite ovaj uređaj</translation>
-<translation id="3201482403106004262">Došlo je do greške s anketom.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate time koje ćete informacije sinhronizirati u postavkama Chromea</translation>
 <translation id="3203025201812691413">URL ne može biti prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
@@ -3459,7 +3458,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6568793038316600992">Dugme Upravljaj načinima plaćanja, aktivirajte da upravljate plaćanjima i informacijama o kreditnim karticama u postavkama Chromea</translation>
 <translation id="6569060085658103619">Gledate stranicu s ekstenzijama</translation>
 <translation id="6571992525120410251">Pitajte pretraživač <ph name="ENGINE_NAME" /> bilo šta</translation>
-<translation id="6572867903637058088">Je li ovo korisnо?</translation>
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6575408526598156416">Sačuvajte na račun</translation>
 <translation id="6577792494180292262">Rizični kapital</translation>
@@ -5072,7 +5070,6 @@ Dodatni detalji:
 <translation id="9195969368671142407">Kada vaša organizacija ograniči pohranjivanje na Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
 <translation id="9198613052465150219">Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
-<translation id="9201904868909900493">Otvaranje ankete…</translation>
 <translation id="9204089334327209740">Nakon završetke otpremanja možete izmijeniti fajlove na usluzi <ph name="CLOUD_PROVIDER" />. Automatski će se ukloniti lokalna pohrana, uključujući sve fajlove u Otpadu.</translation>
 <translation id="9205078245616868884">Vaši podaci su šifrirani pristupnim izrazom za sinhronizaciju. Unesite ga da počnete sinhronizaciju.</translation>
 <translation id="920643408853370361">Putno osiguranje</translation>

@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Remplissage automatique</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2721190673959776287">Exemple d'aide détaillée sur le produit pour le panneau contextuel, qui devrait s'afficher plusieurs fois par jour.</translation>
 <translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Activer l'appareil photo</translation>
 <translation id="5229315183665181733">Modifier le site</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5234094073825090254">{count,plural, =1{Le favori a été enregistré dans votre compte Google, {email}}one{Le favori a été enregistré dans votre compte Google, {email}}other{Les favoris ont été enregistrés dans votre compte Google, {email}}}</translation>

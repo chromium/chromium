@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Completare automată</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
 <translation id="2721190673959776287">Exemplu de ajutor complex integrat în produs pentru panoul contextual, care ar trebui să apară de mai multe ori pe zi.</translation>
 <translation id="2739887572830526131">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Creează evenimente în calendar din date</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Activează camera foto</translation>
 <translation id="5229315183665181733">Editează site-ul</translation>
 <translation id="5233638681132016545">Filă nouă</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcajul s-a salvat în Contul Google {email}.}few{Marcajele s-au salvat în Contul Google {email}.}other{Marcajele s-au salvat în Contul Google {email}.}}</translation>

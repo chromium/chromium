@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Emplenament automàtic</translation>
 <translation id="271033894570825754">Col·lecció nova</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
 <translation id="2721190673959776287">Completa ajuda de mostra al producte per al tauler contextual, la qual hauria d'aparèixer diverses vegades al dia.</translation>
 <translation id="2739887572830526131">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Crea esdeveniments del calendari a partir de dates</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Activa la càmera</translation>
 <translation id="5229315183665181733">Edita el lloc web</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5234094073825090254">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google ({email}).}other{Les adreces d'interès s'han desat al teu Compte de Google ({email}).}}</translation>

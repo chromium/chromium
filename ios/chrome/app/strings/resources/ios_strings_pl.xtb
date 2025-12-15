@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Autouzupełnianie</translation>
 <translation id="271033894570825754">Nowa kolekcja</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
 <translation id="2721190673959776287">Przykładowa rozbudowana pomoc w usłudze dotycząca panelu kontekstowego, która powinna pojawiać się kilka razy dziennie.</translation>
 <translation id="2739887572830526131">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Twórz wydarzenia w kalendarzu na podstawie dat</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Włącz kamerę</translation>
 <translation id="5229315183665181733">Edytuj witrynę</translation>
 <translation id="5233638681132016545">Nowa karta</translation>
 <translation id="5234094073825090254">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{Zakładki zostały zapisane na Twoim koncie Google {email}.}many{Zakładki zostały zapisane na Twoim koncie Google {email}.}other{Zakładki zostały zapisane na Twoim koncie Google {email}.}}</translation>

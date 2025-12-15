@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Nueva</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2721190673959776287">Prueba la ayuda integrada en el panel contextual, que debería aparecer varias veces al día.</translation>
 <translation id="2739887572830526131">Conserva este grupo para añadir pestañas más tarde o elimínalo si ya no lo necesitas.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Crea eventos del calendario a partir de fechas</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Activar cámara</translation>
 <translation id="5229315183665181733">Editar sitio</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado en tu cuenta de Google: {email}.}other{Marcadores guardados en tu cuenta de Google: {email}.}}</translation>

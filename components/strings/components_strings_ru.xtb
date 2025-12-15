@@ -1357,7 +1357,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Разрешено запрашивать информацию об использовании устройства</translation>
-<translation id="3201482403106004262">Не удалось открыть опрос.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="3203025201812691413">Нужно указать URL.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">Кнопка "Настроить способы оплаты". Нажмите ее, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="6569060085658103619">Вы просматриваете страницу расширения</translation>
 <translation id="6571992525120410251">Спросите <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Эта информация полезна?</translation>
 <translation id="6573200754375280815">Два отверстия справа</translation>
 <translation id="6575408526598156416">Сохранить в аккаунте</translation>
 <translation id="6577792494180292262">Венчурный капитал</translation>
@@ -5071,7 +5069,6 @@
 <translation id="9195969368671142407">Это значит, что вы не можете делиться группами вкладок и присоединяться к ним.</translation>
 <translation id="9198613052465150219">В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>
-<translation id="9201904868909900493">Опрос открывается…</translation>
 <translation id="9204089334327209740">Когда загрузка завершится, вы сможете изменять свои файлы в сервисе <ph name="CLOUD_PROVIDER" />. Данные в локальном хранилище, в том числе в корзине, будут автоматически удалены.</translation>
 <translation id="9205078245616868884">Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="920643408853370361">Туристическое страхование</translation>

@@ -6150,6 +6150,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Partilhado por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios do dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar o utilizador para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Linha</translation>
 <translation id="5189274947477567401">Para desativar a partilha de processos, é necessário reiniciar o navegador. Este navegador vai ser reiniciado agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">A usar <ph name="USED_SPACE" /></translation>
@@ -12021,6 +12022,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9207434080086272167">Alegre</translation>
 <translation id="9207669213427469593">Se encaixar uma janela a um dos lados para usar o ecrã dividido, vai ver sugestões de janelas para o outro lado</translation>
 <translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
+<translation id="9212565256020141627">Não foi possível partilhar a imagem com o Gemini. Tente novamente ou experimente outra imagem.</translation>
 <translation id="9214520840402538427">Ups! A inicialização dos atributos de tempo de instalação expirou. Contacte o seu representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>

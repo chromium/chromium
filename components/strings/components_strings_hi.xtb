@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> पर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">साइट, यह जानकारी मांग सकती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
-<translation id="3201482403106004262">सर्वे में कोई गड़बड़ी हुई.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, आपने जो जानकारी सिंक की है उसे मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">'पेमेंट के तरीके मैनेज करें' बटन, Chrome की सेटिंग में, पेमेंट और क्रेडिट कार्ड की जानकारी मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="6569060085658103619">एक एक्सटेंशन पेज देखा जा रहा है</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> से किसी भी विषय के बारे में पूछें</translation>
-<translation id="6572867903637058088">क्या यह जानकारी काम की थी?</translation>
 <translation id="6573200754375280815">दाईं ओर ड्युएल पंच</translation>
 <translation id="6575408526598156416">खाते में सेव करें</translation>
 <translation id="6577792494180292262">वेंचर कैपिटल</translation>
@@ -5073,7 +5071,6 @@
 <translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
 <translation id="9198613052465150219">आपके Google खाते में <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> पर कुछ तरह का ब्राउज़िंग इतिहास अब भी सेव हो सकता है</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>
-<translation id="9201904868909900493">सर्वे खुल रहा है...</translation>
 <translation id="9204089334327209740">अपलोड पूरा हो जाने के बाद, <ph name="CLOUD_PROVIDER" /> में अपनी फ़ाइलों में बदलाव किए जा सकते हैं. लोकल स्टोरेज में मौजूद फ़ाइलों के साथ-साथ, ट्रैश में भेजी गई फ़ाइलें भी अपने-आप हट जाएंगी.</translation>
 <translation id="9205078245616868884">आपका डेटा आपके सिंक पासफ़्रेज़ से सुरक्षित किया गया है. सिंक शुरू करने के लिए इसे डालें.</translation>
 <translation id="920643408853370361">यात्रा का बीमा</translation>

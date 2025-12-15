@@ -1359,7 +1359,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
-<translation id="3201482403106004262">Адбылася памылка, звязаная з апытаннем.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце Tab, затым Enter</translation>
 <translation id="3203025201812691413">Укажыце URL-адрас</translation>
 <translation id="320323717674993345">Скасаваць плацеж</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">Кнопка "Наладзіць спосабы аплаты". Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце яе.</translation>
 <translation id="6569060085658103619">Вы праглядаеце старонку пашырэння</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" />: задайце любое пытанне</translation>
-<translation id="6572867903637058088">Гэта карысна?</translation>
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
 <translation id="6575408526598156416">Захаваць ва ўліковым запісе</translation>
 <translation id="6577792494180292262">Венчурны капітал</translation>
@@ -5071,7 +5069,6 @@
 <translation id="9195969368671142407">Калі захоўванне даных ва Уліковым запісе Google абмежавана арганізацыяй, вы не можаце абагульваць групы ўкладак і далучацца да іх</translation>
 <translation id="9198613052465150219">На старонцы <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> можа захоўвацца гісторыя прагляду сайтаў іншымі спосабамі, звязаная з вашым Уліковым запісам Google</translation>
 <translation id="9199905725844810519">Друкаванне заблакіравана</translation>
-<translation id="9201904868909900493">Адкрываецца апытанне…</translation>
 <translation id="9204089334327209740">Пасля завяршэння запампоўвання Вы зможаце ўносіць змяненні ў файлы ў сэрвісе <ph name="CLOUD_PROVIDER" />. Змесціва лакальнага сховішча, у тым ліку сметніцы, будзе аўтаматычна выдалена.</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>

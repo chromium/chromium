@@ -6136,6 +6136,7 @@
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">由<ph name="USER_NAME" />共享</translation>
 <translation id="5188648870018555788">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">行</translation>
 <translation id="5189274947477567401">如需停用进程共享功能，需要重启浏览器。此浏览器将立即重启。</translation>
 <translation id="5189404424758444348">蒸汽朋克</translation>
 <translation id="5190577235024772869">已使用 <ph name="USED_SPACE" /></translation>
@@ -12002,6 +12003,7 @@
 <translation id="9207434080086272167">晴朗</translation>
 <translation id="9207669213427469593">将窗口移至一侧，即可使用分屏。此时，系统会在另一侧显示窗口建议</translation>
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
+<translation id="9212565256020141627">无法与 Gemini 分享图片。请重试或使用其他图片。</translation>
 <translation id="9214520840402538427">糟糕！安装时间属性的初始化已过期，请与您的支持代表联系。</translation>
 <translation id="9214695392875603905">纸杯蛋糕</translation>
 <translation id="9215293857209265904">已添加“<ph name="EXTENSION_NAME" />”</translation>

@@ -1356,7 +1356,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
-<translation id="3201482403106004262">调查问卷发生错误。</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="3203025201812691413">网址不能为空</translation>
 <translation id="320323717674993345">取消付款</translation>
@@ -3454,7 +3453,6 @@
 <translation id="6568793038316600992">“管理付款方式”按钮，激活它即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6571992525120410251">向<ph name="ENGINE_NAME" />提出任何问题</translation>
-<translation id="6572867903637058088">这是否有用？</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
 <translation id="6575408526598156416">保存到账号</translation>
 <translation id="6577792494180292262">风险投资</translation>
@@ -5067,7 +5065,6 @@
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
 <translation id="9198613052465150219">您的 Google 账号在 <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 上可能有其他形式的浏览记录</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>
-<translation id="9201904868909900493">正在打开调查问卷…</translation>
 <translation id="9204089334327209740">上传完成后，您可以在<ph name="CLOUD_PROVIDER" />中修改文件。本地存储空间（包括回收站中的所有文件）将被自动移除。</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>

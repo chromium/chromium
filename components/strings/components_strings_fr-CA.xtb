@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Les sites peuvent demander à savoir quand vous utilisez activement cet appareil</translation>
-<translation id="3201482403106004262">Une erreur s'est produite concernant le sondage.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer quelles données vous synchronisez dans les paramètres de Chrome</translation>
 <translation id="3203025201812691413">L'URL ne peut pas être vide</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
@@ -3459,7 +3458,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6568793038316600992">Bouton Gérer les modes de paiement, activez-le pour gérer vos paiements et les informations de votre carte de crédit dans les paramètres de Chrome</translation>
 <translation id="6569060085658103619">Vous consultez une page d'extension</translation>
 <translation id="6571992525120410251">Posez une question à <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Est-ce utile?</translation>
 <translation id="6573200754375280815">Double perforation à droite</translation>
 <translation id="6575408526598156416">Enregistrer l'adresse dans le compte</translation>
 <translation id="6577792494180292262">Capital de risque</translation>
@@ -5070,7 +5068,6 @@ Détails supplémentaires :
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez ni partager ni rejoindre des groupes d'onglets</translation>
 <translation id="9198613052465150219">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
-<translation id="9201904868909900493">Ouverture du sondage en cours…</translation>
 <translation id="9204089334327209740">Quand le téléversement sera terminé, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. Le stockage local, y compris tous les fichiers de la corbeille, sera automatiquement retiré.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>

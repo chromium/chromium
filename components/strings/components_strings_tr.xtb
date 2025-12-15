@@ -1358,7 +1358,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> üzerinde <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek isteyebilir</translation>
-<translation id="3201482403106004262">Anketle ilgili bir hata oluştu.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="3203025201812691413">URL boş olamaz</translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
@@ -3459,7 +3458,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6568793038316600992">Ödeme yöntemlerini yönet düğmesi, Chrome ayarlarında ödemelerinizi ve kredi kartı bilgilerinizi yönetmek için etkinleştirin</translation>
 <translation id="6569060085658103619">Bir uzantı sayfası görüntülüyorsunuz</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> arama motoruna soru sorun</translation>
-<translation id="6572867903637058088">İşinize yaradı mı?</translation>
 <translation id="6573200754375280815">Sağda ikili delik</translation>
 <translation id="6575408526598156416">Hesaba kaydet</translation>
 <translation id="6577792494180292262">Risk Sermayesi</translation>
@@ -5072,7 +5070,6 @@ Ek ayrıntılar:
 <translation id="9195969368671142407">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekme gruplarını paylaşamaz veya bunlara katılamazsınız</translation>
 <translation id="9198613052465150219">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="9199905725844810519">Yazdırma engellendi</translation>
-<translation id="9201904868909900493">Anket açılıyor…</translation>
 <translation id="9204089334327209740">Yükleme işlemi tamamlandıktan sonra dosyalarınızı <ph name="CLOUD_PROVIDER" /> içinde düzenleyebilirsiniz. Çöp kutusundaki dosyalar da dahil olmak üzere yerel depolama alanı otomatik olarak kaldırılır.</translation>
 <translation id="9205078245616868884">Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="920643408853370361">Seyahat Sigortası</translation>

@@ -1358,7 +1358,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> v strežniku <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
-<translation id="3201482403106004262">Prišlo je do napake z anketo.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
 <translation id="3203025201812691413">Polje za URL ne sme biti prazno</translation>
 <translation id="320323717674993345">Prekliči plačilo</translation>
@@ -3459,7 +3458,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6568793038316600992">Gumb za upravljanje plačilnih sredstev, aktivirajte, če želite upravljati plačila in podatke o kreditnih karticah v Chromovih nastavitvah</translation>
 <translation id="6569060085658103619">Ogledujete si stran razširitve</translation>
 <translation id="6571992525120410251">Vprašajte <ph name="ENGINE_NAME" /> kar koli</translation>
-<translation id="6572867903637058088">Je to uporabno?</translation>
 <translation id="6573200754375280815">Dvojno luknjanje na desni</translation>
 <translation id="6575408526598156416">Shranjevanje v račun</translation>
 <translation id="6577792494180292262">Tvegani kapital</translation>
@@ -5072,7 +5070,6 @@ Dodatne podrobnosti:
 <translation id="9195969368671142407">Ko organizacija omeji shranjevanje v računu Google, ne morete deliti ali se pridružiti skupinam zavihkov</translation>
 <translation id="9198613052465150219">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Tiskanje je blokirano</translation>
-<translation id="9201904868909900493">Odpiranje ankete …</translation>
 <translation id="9204089334327209740">Ko je nalaganje končano, lahko datoteke spreminjate v storitvi <ph name="CLOUD_PROVIDER" />. Lokalna shramba, vključno z datotekami v smetnjaku, bo samodejno odstranjena.</translation>
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="920643408853370361">Potovalno zavarovanje</translation>

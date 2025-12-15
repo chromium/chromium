@@ -2225,7 +2225,7 @@
 <translation id="2476901513051581836">必須得知離線儲存空間大小，才能清理儲存空間。</translation>
 <translation id="2476974672882258506">關閉 Windows 即可解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由於您已設定多個按鈕裝置，因此自動掃瞄已關閉。</translation>
-<translation id="2477218554275525952">開啟新分頁時，保持 Gemini 側欄開啟</translation>
+<translation id="2477218554275525952">打開新分頁時保持開啟 Gemini 側欄</translation>
 <translation id="2477607419416067650">其他 Google 資料</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
@@ -6155,6 +6155,7 @@
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">分享者：<ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">使用位置資料。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用裝置位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，協助尋找無線訊號位置。這些資料不會識別你的身分，會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，滿足使用者的需要。<ph name="BEGIN_LINK1" />進一步瞭解如何使用位置設定<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">線條</translation>
 <translation id="5189274947477567401">如要停用程序共用功能，必須重新啟動瀏覽器。此瀏覽器會立即重新啟動。</translation>
 <translation id="5189404424758444348">蒸氣龐克</translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
@@ -12014,6 +12015,7 @@
 <translation id="9207434080086272167">晴朗</translation>
 <translation id="9207669213427469593">將視窗移到畫面其中一側後，系統就會使用分割螢幕，並在另一側顯示視窗建議</translation>
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>
+<translation id="9212565256020141627">無法與 Gemini 分享圖片，請再試一次或嘗試其他圖片。</translation>
 <translation id="9214520840402538427">糟糕！系統嘗試初始設定安裝時間 (installation-time) 屬性，但是動作已逾時。請與您的支援代表聯絡。</translation>
 <translation id="9214695392875603905">紙杯蛋糕</translation>
 <translation id="9215293857209265904">已新增「<ph name="EXTENSION_NAME" />」</translation>

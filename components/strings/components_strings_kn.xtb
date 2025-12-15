@@ -1356,7 +1356,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ನಲ್ಲಿ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ನೀವು ಈ ಸಾಧನವನ್ನು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವಾಗ ತಿಳಿದುಕೊಳ್ಳಲು ಕೇಳಬಹುದು</translation>
-<translation id="3201482403106004262">ಸಮೀಕ್ಷೆಯಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಯಾವ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="3203025201812691413">URL ಖಾಲಿ ಇರುವಂತಿಲ್ಲ</translation>
 <translation id="320323717674993345">ಪಾವತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -3455,7 +3454,6 @@
 <translation id="6568793038316600992">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6569060085658103619">ನೀವು ವಿಸ್ತರಣೆ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ಗೆ ಏನು ಬೇಕಾದರೂ ಕೇಳಿ</translation>
-<translation id="6572867903637058088">ಇದು ಸಹಾಯಕಾರಿಯಾಗಿದೆಯೇ?</translation>
 <translation id="6573200754375280815">ಬಲಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6575408526598156416">ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="6577792494180292262">ವೆಂಚರ್ ಬಂಡವಾಳ</translation>
@@ -5068,7 +5066,6 @@
 <translation id="9195969368671142407">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಉಳಿತಾಯವನ್ನು ಮಿತಿಗೊಳಿಸಿದಾಗ, ನೀವು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="9198613052465150219">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="9199905725844810519">ಪ್ರಿಂಟಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="9201904868909900493">ಸಮೀಕ್ಷೆಯನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ …</translation>
 <translation id="9204089334327209740">ಒಮ್ಮೆ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ನೀವು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಮಾರ್ಪಡಿಸಬಹುದು. ಟ್ರ್ಯಾಶ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="9205078245616868884">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="920643408853370361">ಪ್ರಯಾಣ ವಿಮೆ</translation>

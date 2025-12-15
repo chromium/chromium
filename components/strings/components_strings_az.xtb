@@ -1356,7 +1356,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
 <translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
-<translation id="3201482403106004262">Sorğu ilə bağlı xəta baş verdi.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="3203025201812691413">URL boş ola bilməz</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
@@ -3455,7 +3454,6 @@
 <translation id="6568793038316600992">"Ödəniş metodlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında ödəniş və kredit kartı məlumatlarını idarə edin</translation>
 <translation id="6569060085658103619">Artırma səhifəsinə baxırsınız</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> axtarış mühərrikindən istədiyinizi soruşun</translation>
-<translation id="6572867903637058088">Faydalıdır?</translation>
 <translation id="6573200754375280815">Sağdan qoşa deşik açın</translation>
 <translation id="6575408526598156416">Hesabda yadda saxlayın</translation>
 <translation id="6577792494180292262">Risk Kapitalı</translation>
@@ -5067,7 +5065,6 @@
 <translation id="9195969368671142407">Təşkilatınız Google Hesabınızda yadda saxlaya biləcəklərinizi məhdudlaşdırdıqda tab qruplarını paylaşa və ya onlara qoşula bilməzsiniz</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> saytında Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
-<translation id="9201904868909900493">Sorğu açılır…</translation>
 <translation id="9204089334327209740">Yüklənmə tamamlandıqdan sonra faylları <ph name="CLOUD_PROVIDER" /> buludunda dəyişə bilərsiniz. Zibil qutusundakı fayllar daxil olmaqla yerli yaddaş avtomatik olaraq silinəcək.</translation>
 <translation id="9205078245616868884">Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="920643408853370361">Səyahət Sığortası</translation>

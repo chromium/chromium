@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може запитувати, чи ви активно використовуєте цей пристрій</translation>
-<translation id="3201482403106004262">З опитуванням сталася помилка.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
 <translation id="3203025201812691413">Потрібно вказати URL-адресу</translation>
 <translation id="320323717674993345">Скасувати оплату</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">Кнопка "Керувати способами оплати"; активуйте, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
 <translation id="6569060085658103619">Ви переглядаєте сторінку розширень</translation>
 <translation id="6571992525120410251">Запитайте <ph name="ENGINE_NAME" /> про щось</translation>
-<translation id="6572867903637058088">Ця інформація корисна?</translation>
 <translation id="6573200754375280815">Пробити два отвори праворуч</translation>
 <translation id="6575408526598156416">Зберегти в обліковому записі</translation>
 <translation id="6577792494180292262">Венчурний капітал</translation>
@@ -3499,7 +3497,7 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Керує:</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
-<translation id="6654224358955673568">Описати у формальнішому стилі</translation>
+<translation id="6654224358955673568">Формальний стиль</translation>
 <translation id="6654244995031366386">Скло (текстуроване)</translation>
 <translation id="6655085656059574817">Зі зв’язаним обліковим записом ви зможете швидше оплачувати покупки через <ph name="BNPL_ISSUER_NAME" />. Щоб від’єднати його, перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Містить інформацію про бронювання авіаквитків і транспортні засоби</translation>
@@ -5073,7 +5071,6 @@
 <translation id="9195969368671142407">Якщо ваша організація дозволяє зберігати в обліковому записі Google не всі дані, ви не зможете ділитися групами вкладок або приєднуватися до них</translation>
 <translation id="9198613052465150219">Історія вебперегляду також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Друк заблоковано</translation>
-<translation id="9201904868909900493">Опитування відкривається…</translation>
 <translation id="9204089334327209740">Коли завантаження завершиться, ви зможете змінювати файли в сервісі <ph name="CLOUD_PROVIDER" />. Локальне сховище, зокрема файли в кошику, буде автоматично вилучено.</translation>
 <translation id="9205078245616868884">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб почати синхронізацію.</translation>
 <translation id="920643408853370361">Туристичне страхування</translation>

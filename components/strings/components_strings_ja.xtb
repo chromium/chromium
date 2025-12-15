@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
-<translation id="3201482403106004262">アンケートでエラーが発生しました。</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">[お支払い方法を管理] ボタンです。実行すると、Chrome の設定でお支払いとクレジット カードの情報を管理できます</translation>
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> に質問する</translation>
-<translation id="6572867903637058088">お役に立ちましたか？</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
 <translation id="6575408526598156416">アカウントに保存</translation>
 <translation id="6577792494180292262">ベンチャー キャピタル</translation>
@@ -5073,7 +5071,6 @@
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9198613052465150219">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
-<translation id="9201904868909900493">アンケートを開いています…</translation>
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="920643408853370361">旅行保険</translation>

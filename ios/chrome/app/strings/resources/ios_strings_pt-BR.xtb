@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="271033894570825754">Nova</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2721190673959776287">Exemplo de ajuda detalhada do produto para o painel contextual, que deve aparecer várias vezes por dia.</translation>
 <translation id="2739887572830526131">Mantenha este grupo para adicionar guias mais tarde ou exclua se não precisar mais dele.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Criar eventos da agenda usando datas</translation>
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Ativar câmera</translation>
 <translation id="5229315183665181733">Editar site</translation>
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5234094073825090254">{count,plural, =1{Favorito salvo na sua Conta do Google {email}.}one{Favorito salvo na sua Conta do Google {email}.}other{Favoritos salvos na sua Conta do Google {email}.}}</translation>

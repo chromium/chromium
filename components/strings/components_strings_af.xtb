@@ -1358,7 +1358,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vra om te weet wanneer jy hierdie toestel aktief gebruik</translation>
-<translation id="3201482403106004262">Daar was ’n fout met die opname.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
 <translation id="3203025201812691413">URL kan nie leeg wees nie</translation>
 <translation id="320323717674993345">Kanselleer betaling</translation>
@@ -3459,7 +3458,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6568793038316600992">Knoppie om betaalmetodes te bestuur; aktiveer om jou betaal- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="6569060085658103619">Jy bekyk tans 'n uitbreidingbladsy</translation>
 <translation id="6571992525120410251">Vra enigiets vir <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Is dit nuttig?</translation>
 <translation id="6573200754375280815">Dubbelpons regs</translation>
 <translation id="6575408526598156416">Stoor in rekening</translation>
 <translation id="6577792494180292262">Ondernemingkapitaal</translation>
@@ -5071,7 +5069,6 @@ Bykomende besonderhede:
 <translation id="9195969368671142407">As jou organisasie jou Google-rekening se storing beperk, kan jy nie oortjiegroepe deel of by hulle aansluit nie</translation>
 <translation id="9198613052465150219">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> hê</translation>
 <translation id="9199905725844810519">Druk word geblokkeer</translation>
-<translation id="9201904868909900493">Maak tans opname oop …</translation>
 <translation id="9204089334327209740">Jy kan jou lêers in <ph name="CLOUD_PROVIDER" /> wysig sodra die oplaai voltooi is. Plaaslike berging, insluitend enige lêers in die asblik, sal outomaties verwyder word.</translation>
 <translation id="9205078245616868884">Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="920643408853370361">Reisversekering</translation>

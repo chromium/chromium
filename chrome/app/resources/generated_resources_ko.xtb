@@ -6162,6 +6162,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />(<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" />님이 공유함</translation>
 <translation id="5188648870018555788">위치를 사용합니다. 위치 정보 액세스 권한이 있는 ChromeOS 및 Android의 앱, 웹사이트, 서비스에서 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다. <ph name="BEGIN_LINK1" />위치 사용 자세히 알아보기<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">행</translation>
 <translation id="5189274947477567401">프로세스 공유를 사용 중지하려면 브라우저를 다시 시작해야 합니다. 브라우저가 지금 다시 시작됩니다.</translation>
 <translation id="5189404424758444348">스팀펑크</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> 사용 중</translation>

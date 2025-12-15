@@ -1358,7 +1358,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serwerze <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Może prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
-<translation id="3201482403106004262">Wystąpił błąd dotyczący ankiety.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać w ustawieniach Chrome informacjami, które mają być synchronizowane, naciśnij Tab, a potem Enter</translation>
 <translation id="3203025201812691413">URL nie może być pusty</translation>
 <translation id="320323717674993345">Anuluj płatność</translation>
@@ -3459,7 +3458,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6568793038316600992">Przycisk Zarządzaj formami płatności; aktywuj, aby zarządzać informacjami o płatnościach i danymi kart kredytowych w ustawieniach Chrome</translation>
 <translation id="6569060085658103619">Przeglądasz stronę rozszerzenia</translation>
 <translation id="6571992525120410251">Zapytaj <ph name="ENGINE_NAME" />, o co chcesz</translation>
-<translation id="6572867903637058088">Czy to jest przydatne?</translation>
 <translation id="6573200754375280815">Dwa otwory po prawej</translation>
 <translation id="6575408526598156416">Zapisz na koncie</translation>
 <translation id="6577792494180292262">Kapitał wysokiego ryzyka</translation>
@@ -5071,7 +5069,6 @@ Dodatkowe informacje:
 <translation id="9195969368671142407">Gdy Twoja organizacja ogranicza zapisywanie danych na koncie Google, nie możesz udostępniać grup kart ani do nich dołączać</translation>
 <translation id="9198613052465150219">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Drukowanie jest zablokowane</translation>
-<translation id="9201904868909900493">Otwieram ankietę…</translation>
 <translation id="9204089334327209740">Po zakończeniu przesyłania możesz zmodyfikować pliki w usłudze <ph name="CLOUD_PROVIDER" />. Dane z pamięci lokalnej, w tym wszystkie pliki w koszu, zostaną automatycznie usunięte.</translation>
 <translation id="9205078245616868884">Twoje dane są szyfrowane z użyciem hasła wielowyrazowego do synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="920643408853370361">Ubezpieczenia turystyczne</translation>

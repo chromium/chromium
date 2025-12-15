@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Автоматаар бөглөх</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2712929214961145009">Санс сериф</translation>
+<translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
 <translation id="2721190673959776287">Хам сэдэвт түр зуурын самбарт зориулсан, өдөрт олон удаа гарч ирэх ёстой бүтээгдэхүүн дэх жишээгээр баялаг тусламж.</translation>
 <translation id="2739887572830526131">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл уг бүлэг танд цаашид хэрэггүй болсон бол устгана уу.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Огноонуудаас календарийн үйл явдал үүсгэх</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5225388483876575107">А</translation>
+<translation id="5225463052809312700">Камерыг асаах</translation>
 <translation id="5229315183665181733">Сайтыг засах</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
 <translation id="5234094073825090254">{count,plural, =1{Хавчуургыг таны {email} Google Бүртгэлд хадгалсан.}other{Хавчуургуудыг таны {email} Google Бүртгэлд хадгалсан.}}</translation>

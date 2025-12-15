@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">자동 완성</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2721190673959776287">제품 내에서 상황별 패널에 대해 상세한 도움말을 제공하는 풍선으로, 하루에 여러 번 표시됩니다.</translation>
 <translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">날짜로 캘린더 일정 만들기</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">카메라 켜기</translation>
 <translation id="5229315183665181733">사이트 수정</translation>
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5234094073825090254">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크가 Google 계정({email})에 저장되었습니다.}}</translation>

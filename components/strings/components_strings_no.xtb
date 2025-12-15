@@ -1358,7 +1358,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan be om å få vite når du bruker denne enheten aktivt</translation>
-<translation id="3201482403106004262">Det oppsto en feil med undersøkelsen.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="3203025201812691413">Nettadressen kan ikke være tom</translation>
 <translation id="320323717674993345">Avbryt betalingen</translation>
@@ -3459,7 +3458,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6568793038316600992">Knappen «Administrer betalingsmåter» – aktiver for å administrere betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
 <translation id="6571992525120410251">Spør <ph name="ENGINE_NAME" /> om hva som helst</translation>
-<translation id="6572867903637058088">Er dette nyttig?</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
 <translation id="6575408526598156416">Lagre i kontoen</translation>
 <translation id="6577792494180292262">Risikokapital</translation>
@@ -5071,7 +5069,6 @@ Mer informasjon:
 <translation id="9195969368671142407">Når organisasjonen din begrenser lagring i Google-kontoen din, kan du ikke dele eller bli med i fanegrupper</translation>
 <translation id="9198613052465150219">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Utskrift er blokkert</translation>
-<translation id="9201904868909900493">Åpner spørreundersøkelsen …</translation>
 <translation id="9204089334327209740">Når opplastingen er fullført, kan du endre filene dine i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inkludert eventuelle filer i papirkurven, fjernes automatisk.</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="920643408853370361">Reiseforsikring</translation>

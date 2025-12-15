@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Poate solicita permisiunea de a afla când folosești activ dispozitivul</translation>
-<translation id="3201482403106004262">A apărut o eroare legată de sondaj.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile de sincronizat din setările Chrome</translation>
 <translation id="3203025201812691413">Adresa URL trebuie completată</translation>
 <translation id="320323717674993345">Anulează plata</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">Butonul Gestionează metodele de plată, activează pentru a gestiona informațiile despre plăți și carduri de credit în setările Chrome</translation>
 <translation id="6569060085658103619">Se afișează pagina unei extensii</translation>
 <translation id="6571992525120410251">Solicită-i serviciului <ph name="ENGINE_NAME" /> orice</translation>
-<translation id="6572867903637058088">Este util?</translation>
 <translation id="6573200754375280815">Perforare dublă în dreapta</translation>
 <translation id="6575408526598156416">Salvează în cont</translation>
 <translation id="6577792494180292262">Capital de risc</translation>
@@ -5073,7 +5071,6 @@ Detalii suplimentare:
 <translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
 <translation id="9198613052465150219">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printarea este blocată</translation>
-<translation id="9201904868909900493">Se deschide sondajul…</translation>
 <translation id="9204089334327209740">După finalizarea încărcării, poți să modifici fișierele în <ph name="CLOUD_PROVIDER" />. Spațiul de stocare local se va elimina automat, inclusiv fișierele din coșul de gunoi.</translation>
 <translation id="9205078245616868884">Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
 <translation id="920643408853370361">Asigurări de călătorie</translation>

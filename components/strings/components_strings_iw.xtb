@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> בשרת <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">האתר יכול לבקש הרשאה לשאול מתי את/ה משתמש/ת בפועל במכשיר</translation>
-<translation id="3201482403106004262">קרתה שגיאה במהלך הסקר.</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="3203025201812691413">‏כתובת ה-URL לא יכולה להיות ריקה</translation>
 <translation id="320323717674993345">ביטול תשלום</translation>
@@ -3464,7 +3463,6 @@ Del</translation>
 <translation id="6568793038316600992">‏הכפתור לניהול אמצעי התשלום, מפעילים אותו כדי לנהל את פרטי כרטיסי האשראי והתשלומים שלך בהגדרות Chrome</translation>
 <translation id="6569060085658103619">זהו דף של תוסף</translation>
 <translation id="6571992525120410251">אפשר לשאול את <ph name="ENGINE_NAME" /> הכל</translation>
-<translation id="6572867903637058088">המידע הזה מועיל?</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
 <translation id="6575408526598156416">שמירה בחשבון</translation>
 <translation id="6577792494180292262">הון סיכון</translation>
@@ -5077,7 +5075,6 @@ Del</translation>
 <translation id="9195969368671142407">‏כשהארגון מגביל את האפשרות לשמור בחשבון Google, לא ניתן לשתף קבוצות של כרטיסיות או להצטרף אליהן</translation>
 <translation id="9198613052465150219">‏אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>
-<translation id="9201904868909900493">הסקר כבר נפתח…</translation>
 <translation id="9204089334327209740">אחרי שההעלאה תסתיים, אפשר יהיה לשנות את הקבצים ב-<ph name="CLOUD_PROVIDER" />. הקבצים באחסון המקומי, כולל הקבצים באשפה, יוסרו באופן אוטומטי.</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>

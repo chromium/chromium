@@ -6162,6 +6162,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartilhado por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usar o local. Permitir que apps, sites e serviços do ChromeOS e do Android com permissão de localização usem o local do dispositivo. A Precisão de Local fornece dados mais precisos para apps e serviços Android. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar você para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários. <ph name="BEGIN_LINK1" />Saiba mais sobre o uso da localização.<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Linha</translation>
 <translation id="5189274947477567401">Para desativar o compartilhamento de processos, é necessário reiniciar o navegador. O navegador será reiniciado agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Como usar o <ph name="USED_SPACE" /></translation>

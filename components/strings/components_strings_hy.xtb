@@ -1364,7 +1364,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
-<translation id="3201482403106004262">Հարցման հետ կապված սխալ առաջացավ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
@@ -3468,7 +3467,6 @@
 <translation id="6568793038316600992">«Կառավարել վճարման եղանակները» կոճակ․ ակտիվացրեք ձեր վճարումները և վարկային քարտերի տվյալները Chrome-ի կարգավորումներում կառավարելու համար</translation>
 <translation id="6569060085658103619">Դուք դիտում եք ընդլայնման էջը</translation>
 <translation id="6571992525120410251">Որևէ բան հարցրեք <ph name="ENGINE_NAME" />-ին</translation>
-<translation id="6572867903637058088">Տեղեկությունն օգտակա՞ր է</translation>
 <translation id="6573200754375280815">Երկու անցք աջ կողմում</translation>
 <translation id="6575408526598156416">Պահել հաշվում</translation>
 <translation id="6577792494180292262">Վենչուրային կապիտալ</translation>
@@ -5079,7 +5077,6 @@
 <translation id="9195969368671142407">Դա նշանակում է, որ դուք չեք կարող կիսվել ներդիրների խմբերով կամ միանալ դրանց</translation>
 <translation id="9198613052465150219">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
 <translation id="9199905725844810519">Տպումն արգելափակված է</translation>
-<translation id="9201904868909900493">Հարցումը բացվում է…</translation>
 <translation id="9204089334327209740">Երբ վերբեռնումն ավարտվի, դուք կարող եք փոփոխել ձեր ֆայլերը <ph name="CLOUD_PROVIDER" />-ում։ Լոկալ պահոցը, այդ թվում՝ աղբարկղի ֆայլերը, ավտոմատ կհեռացվեն։</translation>
 <translation id="9205078245616868884">Ձեր տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="920643408853370361">Ճանապարհորդական ապահովագրություն</translation>

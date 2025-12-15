@@ -1358,7 +1358,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na poslužitelju <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može tražiti dopuštenje da zna kad aktivno koristite ovaj uređaj</translation>
-<translation id="3201482403106004262">Došlo je do pogreške s anketom.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste u postavkama Chromea upravljali time koji će se podaci sinkronizirati</translation>
 <translation id="3203025201812691413">URL ne može biti prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
@@ -3458,7 +3457,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6568793038316600992">Gumb Upravljaj načinima plaćanja, aktivirajte ga da biste upravljali podacima o plaćanju i kreditnoj kartici u postavkama Chromea</translation>
 <translation id="6569060085658103619">Gledate stranicu proširenja</translation>
 <translation id="6571992525120410251">Pitajte tražilicu <ph name="ENGINE_NAME" /> bilo što</translation>
-<translation id="6572867903637058088">Je li ovo korisno?</translation>
 <translation id="6573200754375280815">Dvostruko bušenje s desne strane</translation>
 <translation id="6575408526598156416">Spremite na račun</translation>
 <translation id="6577792494180292262">Rizični kapital</translation>
@@ -5072,7 +5070,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9195969368671142407">Kada vaša organizacija ograniči spremanje na vaš Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
 <translation id="9198613052465150219">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ispis je blokiran</translation>
-<translation id="9201904868909900493">Otvaranje ankete …</translation>
 <translation id="9204089334327209740">Nakon dovršetka prijenosa možete izmijeniti datoteke na usluzi <ph name="CLOUD_PROVIDER" />. Lokalna pohrana, uključujući sve datoteke u otpadu, automatski će se ukloniti.</translation>
 <translation id="9205078245616868884">Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="920643408853370361">Putno osiguranje</translation>

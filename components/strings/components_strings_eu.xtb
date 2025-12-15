@@ -1355,7 +1355,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> zerbitzariko <ph name="PRINTER_NAME" /> inprimagailua</translation>
 <translation id="3197136577151645743">Gailu hau noiz erabiltzen ari zaren jakitea eska dezake</translation>
-<translation id="3201482403106004262">Errore bat gertatu da inkestan.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome-ren ezarpenetara joan, eta sinkronizatzen den informazioa kudeatzeko</translation>
 <translation id="3203025201812691413">URLa ezin da hutsik egon</translation>
 <translation id="320323717674993345">Utzi bertan behera ordainketa</translation>
@@ -3454,7 +3453,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6568793038316600992">Ordainketa-metodoak kudeatzeko botoia: aktiba ezazu ordainketak eta kreditu-txartelaren informazioa kudeatzeko Chrome-ren ezarpenetan</translation>
 <translation id="6569060085658103619">Luzapen baten orria ari zara ikusten</translation>
 <translation id="6571992525120410251">Galdetu edozer <ph name="ENGINE_NAME" /> bilatzaileari</translation>
-<translation id="6572867903637058088">Lagungarria izan zaizu?</translation>
 <translation id="6573200754375280815">Bi zulo eskuinean</translation>
 <translation id="6575408526598156416">Gorde kontuan</translation>
 <translation id="6577792494180292262">Arrisku-kapitala</translation>
@@ -5065,7 +5063,6 @@ Xehetasun gehiago:
 <translation id="9195969368671142407">Erakundeak Google-ko kontuan gordetzeko aukera mugatzen dizunean, ezin dituzu partekatu fitxa taldeak, ezta haietan sartu ere</translation>
 <translation id="9198613052465150219">Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero, joan <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> helbidera</translation>
 <translation id="9199905725844810519">Inprimatzeko aukera blokeatuta dago</translation>
-<translation id="9201904868909900493">Inkesta irekitzen…</translation>
 <translation id="9204089334327209740">Karga osatu ostean, fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzuan alda ditzakezu. Gailuko biltegiratzea, zaborrontziko fitxategiak barne, automatikoki kenduko da.</translation>
 <translation id="9205078245616868884">Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="920643408853370361">Bidaia-aseguruak</translation>

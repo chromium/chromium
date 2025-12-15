@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Automatické vyplňování</translation>
 <translation id="271033894570825754">Nová sbírka</translation>
 <translation id="2712929214961145009">Bezpatkové</translation>
+<translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
 <translation id="2721190673959776287">Ukázka bohaté nápovědy v produktu pro kontextový panel, který by se měl objevovat několikrát denně.</translation>
 <translation id="2739887572830526131">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete smazat, jestli ji už nepotřebujete.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Vytváření událostí v kalendáři z dat</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Zapnout kameru</translation>
 <translation id="5229315183665181733">Upravit web</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5234094073825090254">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}.}few{Záložky byly uloženy do vašeho účtu Google {email}.}many{Záložky byly uloženy do vašeho účtu Google {email}.}other{Záložky byly uloženy do vašeho účtu Google {email}.}}</translation>

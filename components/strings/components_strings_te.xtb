@@ -1353,7 +1353,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />లో <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగించే సమయాలను తెలుసుకోవడానికి సైట్ అనుమతి అడగవచ్చు</translation>
-<translation id="3201482403106004262">సర్వేతో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3203025201812691413">URL ఖాళీగా ఉండకూడదు</translation>
 <translation id="320323717674993345">పేమెంట్‌ను రద్దు చేయండి</translation>
@@ -3454,7 +3453,6 @@
 <translation id="6568793038316600992">'పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ పేమెంట్‌లను, క్రెడిట్ కార్డ్ సమాచారాన్ని మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="6569060085658103619">మీరు ఎక్స్‌టెన్షన్‌ పేజీని వీక్షిస్తున్నారు</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" />‌ను ఏదైనా అడగండి</translation>
-<translation id="6572867903637058088">ఇది సహాయకరంగా ఉందా?</translation>
 <translation id="6573200754375280815">కుడివైపు రెండు రంధ్రాలు</translation>
 <translation id="6575408526598156416">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="6577792494180292262">వెంచర్ క్యాపిటల్</translation>
@@ -5067,7 +5065,6 @@
 <translation id="9195969368671142407">మీ సంస్థ మీ Google ఖాతాకు డేటా సేవింగ్‌ను పరిమితం చేసినప్పుడు, ట్యాబ్ గ్రూప్‌లను షేర్ చేయడానికి లేదా వాటిలో చేరడానికి మీకు ఆప్షన్ ఉండదు</translation>
 <translation id="9198613052465150219">మీ Google ఖాతా <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> వెబ్‌సైట్‌లో ఇతర రకాల బ్రౌజింగ్ హిస్టరీని ఉండవచ్చు</translation>
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
-<translation id="9201904868909900493">సర్వేను తెరుస్తోంది…</translation>
 <translation id="9204089334327209740">అప్‌లోడ్ పూర్తయిన తర్వాత, మీరు మీ ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />లో సవరించవచ్చు. ట్రాష్‌లోని ఏవైనా ఫైల్స్‌తో సహా లోకల్ స్టోరేజ్ ఆటోమేటిక్‌గా తీసివేయబడుతుంది.</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="920643408853370361">ప్రయాణ బీమా</translation>

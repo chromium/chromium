@@ -1588,6 +1588,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2062354623176996748">Con una ventana de incógnito, podrás usar la Web sin que se guarde tu historial de navegación</translation>
 <translation id="206308717637808771">Borrar los datos cuando cierras todas las ventanas; los parámetros de configuración del sitio que estás viendo se aplican a los datos</translation>
 <translation id="2066700471214517561">Micrófono con conformación de haces para que la persona que usa la Chromebook se escuche con claridad.</translation>
+<translation id="2068581968816126410">Usa favoritos en varios dispositivos</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> terminó de imprimirse en <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar estas extensiones}}</translation>
@@ -1957,6 +1958,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha solicitado permisos adicionales.</translation>
 <translation id="2304820083631266885">Planeta</translation>
+<translation id="2305202347479035002">Cómo funciona</translation>
 <translation id="2306794767168143227">Guardar en el <ph name="BRAND" /> en este dispositivo</translation>
 <translation id="2308798336967462263">No se admiten las siguientes teclas: Tab, Mayúsculas, Control, Escape, Bloq Mayús, Volumen</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
@@ -1973,6 +1975,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2319072477089403627">Conectando con tu teléfono Android…</translation>
 <translation id="2319459402137712349">Selecciona un campo de texto para abrir el teclado. También puedes seleccionar el ícono de Teclado en la parte inferior de la pantalla.</translation>
 <translation id="2319993584768066746">Fotos de la pantalla de acceso</translation>
+<translation id="2321487076181785382">Dividir pestañas</translation>
 <translation id="2322193970951063277">Encabezados y pies de página</translation>
 <translation id="2322318151094136999">Preguntarme cuando un sitio intente acceder a puertos en serie (recomendado)</translation>
 <translation id="2322622365472107569">Hora de finalización <ph name="TIME" /></translation>
@@ -3435,6 +3438,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3336855445806447827">No lo sé</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="333863344734218290">Te advierte sobre sitios públicos y privados no seguros</translation>
+<translation id="3339789735267352349">Te protege de sitios, descargas y extensiones que se sabe que son peligrosos</translation>
 <translation id="3340620525920140773">Se completó la descarga: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341091511696469129">Chrome puede crear y traducir subtítulos para los idiomas que se muestran aquí</translation>
@@ -3734,6 +3738,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Esta extensión puede leer y cambiar los datos del sitio</translation>
 <translation id="3541823293333232175">Asignado</translation>
+<translation id="3543296862747913985">¿Qué hace?</translation>
 <translation id="3543298914473315872">Proceso del actualizador</translation>
 <translation id="3543393733900874979">Error de actualización (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Firma X9.62 ECDSA con SHA-512</translation>
@@ -6140,6 +6145,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartido por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usar la ubicación. Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre el uso de la ubicación<ph name="END_LINK1" /></translation>
+<translation id="5189244881767082992">Línea</translation>
 <translation id="5189274947477567401">Para inhabilitar el uso compartido de procesos, se debe reiniciar el navegador. El navegador se reiniciará ahora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
@@ -6880,6 +6886,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5702161882524398150">Preguntar sobre la pestaña anterior</translation>
 <translation id="5702749864074810610">Se descartó la sugerencia</translation>
 <translation id="5703716265115423771">bajar volumen</translation>
+<translation id="5703998022096520811">Protección proactiva en tiempo real a través del envío de más información a la Navegación segura de Google</translation>
 <translation id="5704875434923668958">Sincronizando con</translation>
 <translation id="5705005699929844214">Mostrar siempre las opciones de accesibilidad</translation>
 <translation id="5705882733397021510">Volver</translation>
@@ -9694,6 +9701,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="766560638707011986">Mostrar dominios</translation>
 <translation id="766635563210446220">No se pudieron importar las contraseñas. Revisa <ph name="FILENAME" /> y asegúrate de que tenga el formato correcto. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7666531788977935712">Se habilitó el botón Continuar</translation>
+<translation id="7666966001957552011">Te advierte sobre sitios, descargas y extensiones que se sabe que son peligrosos. Puedes desactivar estas advertencias en cualquier momento. Si ves una advertencia para contenido legítimo, puedes <ph name="BEGIN_LINK" />denunciar un error<ph name="END_LINK" />.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Devuelve el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semana}other{Devuelve el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semanas}}</translation>
 <translation id="7668205084604701639">Configuración de archivos de Office</translation>
 <translation id="7668423670802040666">En el Administrador de contraseñas de Google de <ph name="ACCOUNT" /></translation>
@@ -9718,6 +9726,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7676019765091965045">Detección de contraseñas hackeadas</translation>
 <translation id="7676119992609591770">Se encontró <ph name="NUM" /> pestaña para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para habilitar el dictado en cualquier campo de texto.</translation>
+<translation id="7678198209643823714">Quitar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">¿Quieres restablecer todos los permisos de dispositivos USB?</translation>
 <translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras administradas.</translation>
 <translation id="7679895819123160382">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Las conexiones seguras no se usan para algunos dominios que configuró el administrador.</translation>
@@ -10216,6 +10225,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8011372169388649948">Se movió "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">bloq mayús</translation>
 <translation id="8012463809859447963">Detalles del Hotspot instantáneo</translation>
+<translation id="8013181884974864006">Tareas contextuales</translation>
 <translation id="8013534738634318212">Estos sitios están en un grupo, definido por <ph name="RWS_OWNER" />. Los sitios de un grupo pueden ver tu actividad allí.</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8014154204619229810">El actualizador se está ejecutando en este momento. Actualiza dentro de un minuto para verificarlo de nuevo.</translation>

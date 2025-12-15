@@ -1358,7 +1358,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može da traži da zna kada aktivno koristite uređaj</translation>
-<translation id="3201482403106004262">Došlo je do greške sa anketom.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="3203025201812691413">URL ne može da bude prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
@@ -3458,7 +3457,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6568793038316600992">Dugme Upravljaj načinima plaćanja, aktivirajte ga da biste upravljali plaćanjima i informacijama o kreditnim karticama u podešavanjima Chrome-a</translation>
 <translation id="6569060085658103619">Pregledate stranicu dodatka.</translation>
 <translation id="6571992525120410251">Pitajte <ph name="ENGINE_NAME" /> bilo šta</translation>
-<translation id="6572867903637058088">Da li je ovo korisno?</translation>
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6575408526598156416">Sačuvajte na nalogu</translation>
 <translation id="6577792494180292262">Preduzetnički kapital</translation>
@@ -5072,7 +5070,6 @@ Dodatni detalji:
 <translation id="9195969368671142407">Kada organizacija ograniči čuvanje na Google nalogu, ne možete da delite grupe kartica niti da im se pridružite</translation>
 <translation id="9198613052465150219">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
-<translation id="9201904868909900493">Otvara se anketa…</translation>
 <translation id="9204089334327209740">Kada se otpremanje završi, možete da izmenite fajlove u usluzi <ph name="CLOUD_PROVIDER" />. Lokalno skladište, uključujući sve fajlove u otpadu, automatski će biti uklonjeno.</translation>
 <translation id="9205078245616868884">Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="920643408853370361">Putno osiguranje</translation>

@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Automatinis pildymas</translation>
 <translation id="271033894570825754">Nauja kolekcija</translation>
 <translation id="2712929214961145009">Be užraitų</translation>
+<translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2718352093833049315">Tik su „Wi–Fi“</translation>
 <translation id="2721190673959776287">Pavyzdinio kontekstinis skydelio raiškiosios medijos pagalba produkte, kuri turi būti rodoma kelis kartus per dieną.</translation>
 <translation id="2739887572830526131">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba ištrinkite, jei jos nebereikia.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Kalendoriaus įvykių kūrimas pagal datas</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Įjungti fotoaparatą</translation>
 <translation id="5229315183665181733">Redaguoti svetainę</translation>
 <translation id="5233638681132016545">Naujas skirtukas</translation>
 <translation id="5234094073825090254">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}.}one{Žymės išsaugotos „Google“ paskyroje {email}.}few{Žymės išsaugotos „Google“ paskyroje {email}.}many{Žymės išsaugotos „Google“ paskyroje {email}.}other{Žymės išsaugotos „Google“ paskyroje {email}.}}</translation>

@@ -1358,7 +1358,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
-<translation id="3201482403106004262">Ocorreu um erro com o inquérito.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as informações que sincroniza nas Definições do Chrome.</translation>
 <translation id="3203025201812691413">O URL não pode estar vazio</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
@@ -3459,7 +3458,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6568793038316600992">Botão Gerir métodos de pagamento; ative para gerir as suas informações de cartões de crédito e pagamentos nas definições do Chrome</translation>
 <translation id="6569060085658103619">Está a ver a página de uma extensão</translation>
 <translation id="6571992525120410251">Pergunte o que quiser ao <ph name="ENGINE_NAME" /></translation>
-<translation id="6572867903637058088">Isto é útil?</translation>
 <translation id="6573200754375280815">Perfuração dupla à direita</translation>
 <translation id="6575408526598156416">Guarde na conta</translation>
 <translation id="6577792494180292262">Capital de risco</translation>
@@ -5072,7 +5070,6 @@ Detalhes adicionais:
 <translation id="9195969368671142407">Quando a sua organização limita a gravação na sua Conta Google, não pode partilhar nem aderir a grupos de separadores</translation>
 <translation id="9198613052465150219">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">A impressão está bloqueada.</translation>
-<translation id="9201904868909900493">A abrir inquérito…</translation>
 <translation id="9204089334327209740">Quando o carregamento estiver concluído, pode modificar os seus ficheiros no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os ficheiros no Lixo, vai ser removido automaticamente.</translation>
 <translation id="9205078245616868884">Os dados estão encriptados com a sua frase de acesso de sincronização. Introduza-a para iniciar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>

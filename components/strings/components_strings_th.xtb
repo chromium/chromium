@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ใน <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">สามารถขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้</translation>
-<translation id="3201482403106004262">แบบสำรวจเกิดข้อผิดพลาด</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูลที่คุณซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="3203025201812691413">ต้องระบุ URL</translation>
 <translation id="320323717674993345">ยกเลิกการชำระเงิน</translation>
@@ -3458,7 +3457,6 @@
 <translation id="6568793038316600992">ปุ่มจัดการวิธีการชําระเงิน เปิดใช้งานเพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
 <translation id="6571992525120410251">ถาม <ph name="ENGINE_NAME" /> อะไรก็ได้</translation>
-<translation id="6572867903637058088">ข้อมูลนี้มีประโยชน์ไหม</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
 <translation id="6575408526598156416">บันทึกในบัญชี</translation>
 <translation id="6577792494180292262">ธุรกิจเงินร่วมลงทุน</translation>
@@ -5071,7 +5069,6 @@
 <translation id="9195969368671142407">เมื่อองค์กรจำกัดการบันทึกลงในบัญชี Google ของคุณ คุณจะแชร์หรือเข้าร่วมกลุ่มแท็บไม่ได้</translation>
 <translation id="9198613052465150219">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>
-<translation id="9201904868909900493">กำลังเปิดแบบสำรวจ...</translation>
 <translation id="9204089334327209740">เมื่ออัปโหลดเสร็จสมบูรณ์แล้ว คุณจะแก้ไขไฟล์ใน <ph name="CLOUD_PROVIDER" /> ได้ ระบบจะนำพื้นที่เก็บข้อมูลในเครื่อง รวมถึงไฟล์ในถังขยะออกโดยอัตโนมัติ</translation>
 <translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่านการซิงค์ โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="920643408853370361">ประกันภัยการเดินทาง</translation>

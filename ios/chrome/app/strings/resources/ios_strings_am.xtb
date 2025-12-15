@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">ራስ-ሙላ</translation>
 <translation id="271033894570825754">አዲስ ስብስብ</translation>
 <translation id="2712929214961145009">ሳንስ ሰሪፍ</translation>
+<translation id="2713106313042589954">ካሜራ አጥፋ</translation>
 <translation id="2718352093833049315">በWi-Fi ላይ ብቻ</translation>
 <translation id="2721190673959776287">በቀን ውስጥ በርካታ ጊዜ መታየት ያለበት ለአውድ ፓነል የሚሆን በናሙና የበለፀገ የውስጠ-ምርት እገዛ።</translation>
 <translation id="2739887572830526131">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ የማያስፈልግዎ ከሆነ ይሰርዙት።</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">ከቀናት ላይ የቀን መቁጠሪያ ክስተቶችን ይፍጠሩ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">ካሜራን አብራ</translation>
 <translation id="5229315183665181733">ጣቢያን አርትዕ</translation>
 <translation id="5233638681132016545">አዲስ ትር</translation>
 <translation id="5234094073825090254">{count,plural, =1{ዕልባት በእርስዎ Google መለያ {email} ውስጥ ተቀምጧል።}one{ዕልባት በእርስዎ Google መለያ {email} ውስጥ ተቀምጧል።}other{ዕልባቶች በእርስዎ Google መለያ {email} ውስጥ ተቀምጠዋል።}}</translation>

@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Autoisi</translation>
 <translation id="271033894570825754">Koleksi baharu</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
 <translation id="2721190673959776287">Sampel bantuan dalam produk yang kaya untuk Panel Kontekstual, yang sepatutnya dipaparkan beberapa kali sehari.</translation>
 <translation id="2739887572830526131">Simpan kumpulan ini untuk menambahkan tab kemudian atau padamkan jika anda tidak memerlukan kumpulan ini lagi.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Buat acara kalendar daripada tarikh</translation>
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Hidupkan kamera</translation>
 <translation id="5229315183665181733">Edit Laman</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
 <translation id="5234094073825090254">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}.}other{Penanda halaman disimpan dalam Google Account anda, {email}.}}</translation>
@@ -1459,6 +1461,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6445981559479772097">Mesej dihantar.</translation>
 <translation id="6449554712554071184">Tindakan ini akan memadamkan kumpulan tersebut secara kekal daripada peranti anda.</translation>
 <translation id="6452534462676960500">Aktiviti baharu</translation>
+<translation id="6454311990702999318">Data tidak sah</translation>
 <translation id="6459411599807878608">Butiran tersembunyi</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6472069383518492189">Anda akan menemukan muat turun anda di sini</translation>
@@ -1492,6 +1495,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6579867704846662339">Anda boleh memilih untuk membuka URL masuk daripada apl lain dalam Inkognito.</translation>
 <translation id="6583087784430677195">Untuk mematikan, buka <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> dan pergi ke Kata Laluan AutoLengkap.</translation>
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
+<translation id="6589001036857939353">Gabungkan pendua</translation>
 <translation id="659407965921887085">Kad ini menunjukkan penurunan harga merentas web untuk produk yang anda jejaki pada masa ini</translation>
 <translation id="6596481460663245319">Cari Imej dengan Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 Kata laluan}other{# kata laluan}}</translation>

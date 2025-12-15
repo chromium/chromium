@@ -1358,7 +1358,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedirche permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>
-<translation id="3201482403106004262">Produciuse un erro ao cargar a enquisa.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome a información que se sincroniza, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3203025201812691413">O URL non pode estar baleiro</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
@@ -3459,7 +3458,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6568793038316600992">Botón para xestionar métodos de pago. Actívao para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="6569060085658103619">Estás vendo unha páxina de extensións</translation>
 <translation id="6571992525120410251">Pregúntalle a <ph name="ENGINE_NAME" /> o que queiras</translation>
-<translation id="6572867903637058088">Paréceche útil?</translation>
 <translation id="6573200754375280815">Dúas perforacións na parte dereita</translation>
 <translation id="6575408526598156416">Gardar na conta</translation>
 <translation id="6577792494180292262">Capital risco</translation>
@@ -5071,7 +5069,6 @@ Detalles adicionais:
 <translation id="9195969368671142407">Cando a túa organización limita a función de gardado para a túa Conta de Google, non podes compartir grupos de pestanas nin unirte a eles</translation>
 <translation id="9198613052465150219">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
-<translation id="9201904868909900493">Abrindo enquisa...</translation>
 <translation id="9204089334327209740">Cando se complete a carga, poderás modificar os ficheiros en <ph name="CLOUD_PROVIDER" />. O almacenamento local (incluídos os ficheiros da papeleira) quitarase automaticamente.</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaxe</translation>

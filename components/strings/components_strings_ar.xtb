@@ -1358,7 +1358,6 @@
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> على <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">السماح للموقع الإلكتروني بطلب إذن لمعرفة الأوقات التي تستخدم فيها هذا الجهاز بشكل نشط</translation>
-<translation id="3201482403106004262">حدث خطأ أثناء محاولة تحميل الاستطلاع.</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة نوع المعلومات التي تريد مزامنتها من خلال إعدادات متصفّح Chrome.</translation>
 <translation id="3203025201812691413">‏لا يمكن ترك عنوان URL فارغًا.</translation>
 <translation id="320323717674993345">إلغاء الدفع</translation>
@@ -3459,7 +3458,6 @@
 <translation id="6568793038316600992">‏زر إدارة طرق الدفع: انقر على هذا الزر لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="6569060085658103619">أنت تعرض صفحة إضافة</translation>
 <translation id="6571992525120410251">‫<ph name="ENGINE_NAME" /> بانتظار أسئلتك</translation>
-<translation id="6572867903637058088">هل هذه المعلومات مفيدة؟</translation>
 <translation id="6573200754375280815">عمل ثقبَين يمينًا</translation>
 <translation id="6575408526598156416">الحفظ في الحساب</translation>
 <translation id="6577792494180292262">رأس مال مُخاطر</translation>
@@ -5075,7 +5073,6 @@
 <translation id="9195969368671142407">‏عندما تفرض مؤسستك قيودًا على حفظ المعلومات في حسابك على Google، لن تتمكّن من مشاركة مجموعات علامات التبويب أو الانضمام إليها</translation>
 <translation id="9198613052465150219">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">تم حظر الطباعة</translation>
-<translation id="9201904868909900493">جارٍ فتح الاستطلاع…</translation>
 <translation id="9204089334327209740">بعد اكتمال عملية التحميل، يمكنك تعديل ملفاتك في <ph name="CLOUD_PROVIDER" />. وستتم إزالة مساحة التخزين المحلية تلقائيًا، بما في ذلك أي ملفات في "المهملات".</translation>
 <translation id="9205078245616868884">يتم ترميز بياناتك باستخدام عبارة مرور المزامنة. أدخلها لبدء المزامنة.</translation>
 <translation id="920643408853370361">تأمين على السفر</translation>

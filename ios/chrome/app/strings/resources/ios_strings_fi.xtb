@@ -465,6 +465,7 @@
 <translation id="2709516037105925701">Automaattinen täyttö</translation>
 <translation id="271033894570825754">Uusi kokoelma</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
+<translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
 <translation id="2721190673959776287">Esimerkki tuotekohtaisista ohjeista asiayhteyden mukaan, joiden pitäisi näkyä useita kertoja päivässä.</translation>
 <translation id="2739887572830526131">Säilytä tämä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poista se, jos et enää tarvitse sitä.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="5220945116117011963">Luo kalenteritapahtumia päivämäärien kautta</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Käynnistä kamera</translation>
 <translation id="5229315183665181733">Muokkaa sivustoa</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5234094073825090254">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email}).}other{Kirjanmerkit tallennettu Google-tilillesi ({email}).}}</translation>
