@@ -1393,9 +1393,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  // Added 01/2025.
-  [defaults removeObjectForKey:@"ChromeRecentTabsCollapsedSections"];
-
   // Added 03/2025.
   [defaults removeObjectForKey:@"FeedLastBackgroundRefreshTimestamp"];
 
