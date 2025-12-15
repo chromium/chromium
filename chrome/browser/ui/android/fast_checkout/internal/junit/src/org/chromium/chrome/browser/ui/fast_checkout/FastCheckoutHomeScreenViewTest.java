@@ -245,7 +245,7 @@ public class FastCheckoutHomeScreenViewTest {
         assertTrue(addressImageView.isShown());
         assertThat(
                 shadowOf(addressImageView.getDrawable()).getCreatedFromResId(),
-                equalTo(R.drawable.home_logo));
+                equalTo(R.drawable.ic_home_24dp));
 
         // Icon subtitle for Home address should be shown.
         TextView addressTextView = mHomeScreenView.findViewById(R.id.fast_checkout_record_type);

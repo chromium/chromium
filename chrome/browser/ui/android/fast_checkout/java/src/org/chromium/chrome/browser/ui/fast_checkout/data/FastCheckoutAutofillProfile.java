@@ -146,7 +146,7 @@ public class FastCheckoutAutofillProfile {
         @RecordType int recordType = getRecordType();
         switch (recordType) {
             case RecordType.ACCOUNT_HOME:
-                return R.drawable.home_logo;
+                return R.drawable.ic_home_24dp;
             case RecordType.ACCOUNT_WORK:
                 return R.drawable.work_logo;
             default:

@@ -287,7 +287,7 @@ public class BottomBarConfigCreator {
                         id,
                         UiUtils.getTintedDrawable(
                                 mContext,
-                                R.drawable.bottom_bar_home_icon,
+                                R.drawable.ic_home_24dp,
                                 R.color.default_icon_color_baseline),
                         mContext.getString(R.string.google_bottom_bar_home_button_description),
                         /* pendingIntent= */ null);
@@ -617,19 +617,21 @@ public class BottomBarConfigCreator {
             Context context, @ButtonId int buttonId, CustomButtonParams params) {
         return switch (buttonId) {
             case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED ->
-            // Always use pageInsights icon provided by Chrome
-            UiUtils.getTintedDrawable(
-                    context,
-                    R.drawable.bottom_bar_page_insights_icon,
-                    R.color.default_icon_color_baseline);
+                    // Always use pageInsights icon provided by Chrome
+                    UiUtils.getTintedDrawable(
+                            context,
+                            R.drawable.bottom_bar_page_insights_icon,
+                            R.color.default_icon_color_baseline);
             case ButtonId.SEARCH ->
-            // Always use search icon provided by Chrome
-            UiUtils.getTintedDrawable(
-                    context, R.drawable.ic_search, R.color.default_icon_color_baseline);
-            case ButtonId.HOME -> UiUtils.getTintedDrawable(
-                    context, R.drawable.bottom_bar_home_icon, R.color.default_icon_color_baseline);
-            default -> getTintedIcon(
-                    context, params.getIcon(context), R.color.default_icon_color_baseline);
+                    // Always use search icon provided by Chrome
+                    UiUtils.getTintedDrawable(
+                            context, R.drawable.ic_search, R.color.default_icon_color_baseline);
+            case ButtonId.HOME ->
+                    UiUtils.getTintedDrawable(
+                            context, R.drawable.ic_home_24dp, R.color.default_icon_color_baseline);
+            default ->
+                    getTintedIcon(
+                            context, params.getIcon(context), R.color.default_icon_color_baseline);
         };
     }
 }

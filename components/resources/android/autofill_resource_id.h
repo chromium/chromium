@@ -134,7 +134,7 @@ DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
                     R.drawable.ic_plus_addresses_logo_16dp)
 
 // Home and work icons.
-DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.home_logo)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.ic_home_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WORK, R.drawable.work_logo)
 
 // APC password recovery icon

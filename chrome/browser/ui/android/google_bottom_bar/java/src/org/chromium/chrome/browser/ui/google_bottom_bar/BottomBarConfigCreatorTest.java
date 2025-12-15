@@ -357,7 +357,7 @@ public class BottomBarConfigCreatorTest {
                 drawableToBitmap(
                         UiUtils.getTintedDrawable(
                                 mContext,
-                                R.drawable.bottom_bar_home_icon,
+                                R.drawable.ic_home_24dp,
                                 R.color.default_icon_color_baseline));
         Bitmap actualBitmap = drawableToBitmap(buttonConfig.getButtonList().get(0).getIcon());
         // the button has the expected custom button params set

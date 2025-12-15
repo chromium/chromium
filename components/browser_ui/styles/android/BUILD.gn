@@ -201,6 +201,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_headphones_24dp.xml",
     "java/res/drawable/ic_help_and_feedback.xml",
     "java/res/drawable/ic_history_24dp.xml",
+    "java/res/drawable/ic_home_24dp.xml",
     "java/res/drawable/ic_incognito_24dp.xml",
     "java/res/drawable/ic_incognito_circle_fill_24dp.xml",
     "java/res/drawable/ic_incognito_fill_18dp.xml",

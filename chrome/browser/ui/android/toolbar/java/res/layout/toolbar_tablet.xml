@@ -28,7 +28,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.toolbar.home_button.HomeButton
             android:id="@+id/home_button"
             style="@style/ToolbarHoverableButton.AdaptiveDensity"
-            android:src="@drawable/btn_toolbar_home"
+            android:src="@drawable/ic_home_24dp"
             android:contentDescription="@string/accessibility_toolbar_btn_home"
             android:tooltipText="@string/accessibility_toolbar_btn_home"
             android:visibility="gone"

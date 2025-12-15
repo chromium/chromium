@@ -221,7 +221,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setFeatureForIph("")
                         .setApplyDeactivatedStyle(false)
                         .setPayload(new AutofillProfilePayload("123"))
-                        .setIconId(R.drawable.home_logo)
+                        .setIconId(R.drawable.ic_home_24dp)
                         .build();
 
         AutofillSuggestion autocompleteSuggestion =
