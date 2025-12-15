@@ -17,13 +17,20 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Facility for a tab switcher card that appears upon long press or right click.
@@ -36,6 +43,7 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     //  operations. Rename to something more appropriate.
     public final ViewElement<TouchTrackingListView> listElement =
             declareView(TouchTrackingListView.class, withId(R.id.tab_group_action_menu_list));
+    private final @TabId int mTabId;
 
     public Item share;
     public Item addTabToGroup;
@@ -47,6 +55,10 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     public Item pinTab;
     public Item unpinTab;
     public Item closeTab;
+
+    public TabSwitcherTabCardContextMenuFacility(@TabId int tabId) {
+        mTabId = tabId;
+    }
 
     @Override
     protected void declareItems(ItemsBuilder items) {
@@ -64,6 +76,39 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
 
     private Item declarePossibleItemWithText(ItemsBuilder builder, String text) {
         return builder.declarePossibleItem(getItemViewSpec(text), withMenuItemTitle(text));
+    }
+
+    /**
+     * Click 'Add to group'. This should only be possible when there is at least one tab group.
+     *
+     * @param isNewTabGroupRowVisible Whether the 'new tab group' row should be visible.
+     */
+    public TabGroupListBottomSheetFacility<HostStationT> clickAddTabToGroup(
+            boolean isNewTabGroupRowVisible) {
+        List<Token> allTabGroupIds =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new ArrayList<>(
+                                        mHostStation.getTabGroupModelFilter().getAllTabGroupIds()));
+        return addTabToGroup
+                .scrollToAndSelectTo()
+                .enterFacility(
+                        new TabGroupListBottomSheetFacility<>(
+                                allTabGroupIds, isNewTabGroupRowVisible));
+    }
+
+    /** Click add to new group. This should only be possible when there are no tab groups. */
+    public NewTabGroupDialogFacility<HostStationT> clickAddTabToNewGroup() {
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+        NewTabGroupDialogFacility<HostStationT> newTabGroupDialogFacility =
+                new NewTabGroupDialogFacility<>(List.of(mTabId), softKeyboard);
+        newTabGroupDialogFacility =
+                addTabToNewGroup
+                        .scrollToAndSelectTo()
+                        .enterFacilityAnd(softKeyboard)
+                        .enterFacility(newTabGroupDialogFacility);
+        softKeyboard.close(newTabGroupDialogFacility.dialogElement);
+        return newTabGroupDialogFacility;
     }
 
     private ViewSpec<View> getItemViewSpec(String text) {

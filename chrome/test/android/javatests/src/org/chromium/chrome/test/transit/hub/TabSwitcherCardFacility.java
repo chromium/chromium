@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -68,7 +69,8 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
     }
 
     protected TripBuilder veryLongPressTo() {
-        VeryLongPressAction longPress = new VeryLongPressAction(/* longPressMultiple= */ 2.5f);
+        VeryLongPressAction longPress =
+                new VeryLongPressAction(/* longPressMultiple= */ 2.5f, isDisplayed());
         return cardViewElement.performViewActionTo(longPress);
     }
 }
