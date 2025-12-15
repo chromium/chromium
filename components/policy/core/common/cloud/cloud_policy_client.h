@@ -361,6 +361,15 @@ class POLICY_EXPORT CloudPolicyClient {
   // will allow for more targeted monitoring and alerting.
   virtual void FetchPolicy(PolicyFetchReason reason);
 
+  // Same as above, but allows to specify the policy type to fetch. The
+  // |callback| will be called when the operation completes.
+  // The policy fetched will not be persisted in the store.
+  virtual void FetchExtensionInstallPolicy(
+      const std::string& policy_type,
+      PolicyFetchReason reason,
+      const ExtensionIdAndVersion& extension_id_and_version,
+      base::OnceCallback<void(DMServerJobResult)> callback);
+
   // Upload a policy validation report to the server. Like FetchPolicy, this
   // method requires that the client is in a registered state. This method
   // should only be called if the policy was rejected (e.g. validation or
@@ -731,6 +740,15 @@ class POLICY_EXPORT CloudPolicyClient {
   // settings entity IDs that should be fetched for the given policy type and
   // settings entity ID.
   typedef base::flat_set<CloudPolicyClientTypeParams> CloudPolicyClientTypeParamsSet;
+
+  void FetchPolicyInternal(
+      PolicyFetchReason reason,
+      const CloudPolicyClientTypeParamsSet& types_to_fetch,
+      base::OnceCallback<void(DMServerJobResult)> callback);
+
+  enterprise_management::PolicyFetchRequest* AddPolicyFetchRequest(
+      enterprise_management::DevicePolicyRequest* policy_request,
+      const CloudPolicyClientTypeParams& type_to_fetch);
 
   // Upload a certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must

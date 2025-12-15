@@ -1123,6 +1123,9 @@ message DevicePolicyRequest {
     UNNECESSARY_DISCONNECT = 101;
     // Fetch policy request when schema is updated.
     UNNECESSARY_SCHEMA_UPDATED = 102;
+    // Policy fetch triggered by the ExtensionInstallPolicyService before an
+    // extension is installed.
+    EXTENSION_INSTALL = 103;
   }
   optional Reason reason = 4;
 }

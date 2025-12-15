@@ -158,6 +158,9 @@ enum class PolicyFetchReason {
   kSchemaUpdated,
   // Disconnect from cloud management
   kDisconnect,
+  // Policy fetch triggered by the ExtensionInstallPolicyService before an
+  // extension is installed.
+  kExtensionInstall,
 };
 
 }  // namespace policy

@@ -13,7 +13,9 @@
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -65,6 +67,70 @@ void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback,
   refresh_callbacks_.push_back(std::move(callback));
   refresh_state_ = REFRESH_POLICY_FETCH;
   client_->FetchPolicy(reason);
+}
+
+void CloudPolicyService::FetchExtensionInstallPolicy(
+    const std::string& policy_type,
+    const ExtensionIdAndVersion& extension_id_and_version,
+    PolicyFetchReason reason,
+    base::OnceCallback<void(ExtensionInstallDecision)> callback) {
+  // If the client is not registered bail out.
+  if (!client_->is_registered()) {
+    std::move(callback).Run(ExtensionInstallDecision());
+    return;
+  }
+
+  client_->FetchExtensionInstallPolicy(
+      policy_type, reason, extension_id_and_version,
+      base::BindOnce(
+          &CloudPolicyService::HandleExtensionInstallPolicyFetchResult,
+          weak_ptr_factory_.GetWeakPtr(), extension_id_and_version,
+          std::move(callback)));
+}
+
+void CloudPolicyService::HandleExtensionInstallPolicyFetchResult(
+    ExtensionIdAndVersion extension_id_and_version,
+    base::OnceCallback<void(ExtensionInstallDecision)> callback,
+    DMServerJobResult result) {
+  if (result.dm_status != DM_STATUS_SUCCESS) {
+    std::move(callback).Run(ExtensionInstallDecision());
+    return;
+  }
+  if (!result.response.has_policy_response() ||
+      result.response.policy_response().responses_size() == 0) {
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT) << "Empty policy response.";
+    std::move(callback).Run(ExtensionInstallDecision());
+    return;
+  }
+
+  const em::DevicePolicyResponse& policy_response =
+      result.response.policy_response();
+
+  for (const auto& fetch_response : policy_response.responses()) {
+    em::PolicyData policy_data;
+    if (!policy_data.ParseFromString(fetch_response.policy_data()) ||
+        !policy_data.IsInitialized() || !policy_data.has_policy_type() ||
+        !policy_data.has_settings_entity_id()) {
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+          << "Invalid PolicyData received, ignoring";
+      continue;
+    }
+
+    // If the policy type and settings entity id match, run the callback and
+    // return.
+    em::ExtensionInstallPolicies extension_install_policies;
+    if (!extension_install_policies.ParseFromString(
+            policy_data.policy_value())) {
+      LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+          << "Failed to parse extension install policies";
+      continue;
+    }
+
+    std::move(callback).Run(policy::ConvertToExtensionInstallDecision(
+        extension_install_policies, extension_id_and_version));
+    return;
+  }
+  std::move(callback).Run(ExtensionInstallDecision());
 }
 
 void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {

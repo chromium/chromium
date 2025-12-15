@@ -134,6 +134,13 @@ class POLICY_EXPORT CloudPolicyManager
   CloudPolicyService* service() { return core_.service(); }
   const CloudPolicyService* service() const { return core_.service(); }
 
+  CloudPolicyService* extension_install_service() {
+    return core_.extension_install_service();
+  }
+  const CloudPolicyService* extension_install_service() const {
+    return core_.extension_install_service();
+  }
+
  private:
   // Completion handler for policy refresh operations.
   void OnRefreshComplete(bool success);

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 
@@ -28,6 +29,10 @@ enum class PolicyPerProfileFilter {
   // Any user policy.
   kAny
 };
+
+POLICY_EXPORT ExtensionInstallDecision ConvertToExtensionInstallDecision(
+    const enterprise_management::ExtensionInstallPolicies& policies,
+    const ExtensionIdAndVersion& extension_id_and_version);
 
 // Decode all the fields in `policy` and store them in the given `map`, with the
 // given `source` and `scope`.

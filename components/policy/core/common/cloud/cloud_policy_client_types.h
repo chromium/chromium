@@ -11,8 +11,23 @@
 
 #include "base/functional/callback.h"
 #include "components/policy/policy_export.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
+
+struct POLICY_EXPORT ExtensionInstallDecision {
+  ExtensionInstallDecision();
+  ExtensionInstallDecision(
+      enterprise_management::ExtensionInstallPolicy::Action action,
+      std::set<enterprise_management::ExtensionInstallPolicy::Reason> reasons);
+  ExtensionInstallDecision(const ExtensionInstallDecision&);
+  ExtensionInstallDecision(ExtensionInstallDecision&&);
+  ~ExtensionInstallDecision();
+
+  enterprise_management::ExtensionInstallPolicy::Action action =
+      enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW;
+  std::set<enterprise_management::ExtensionInstallPolicy::Reason> reasons;
+};
 
 struct POLICY_EXPORT ExtensionIdAndVersion {
   std::string extension_id;
@@ -24,6 +39,8 @@ struct POLICY_EXPORT ExtensionIdAndVersion {
 
 class POLICY_EXPORT CloudPolicyClientTypeParams {
  public:
+  using ExtensionSetCallback =
+      base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>;
   // When used in a set, `policy_type` and |settings_entity_id| will be used
   // as the primary key. Only one of |settings_entity_id| and
   // `extension_ids_and_version|` is only used for the policy type
@@ -44,8 +61,7 @@ class POLICY_EXPORT CloudPolicyClientTypeParams {
 
   CloudPolicyClientTypeParams(
       const std::string& policy_type,
-      base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
-          extension_ids_and_version_getter);
+      ExtensionSetCallback extension_ids_and_version_getter);
 
   CloudPolicyClientTypeParams(const CloudPolicyClientTypeParams&);
   CloudPolicyClientTypeParams(CloudPolicyClientTypeParams&&);
@@ -59,14 +75,12 @@ class POLICY_EXPORT CloudPolicyClientTypeParams {
   bool operator==(const CloudPolicyClientTypeParams& other) const;
 
   const std::string& policy_type() const { return policy_type_; }
-  const std::string& settings_entity_id() const { return settings_entity_id_; }
+  std::string settings_entity_id() const;
   std::set<ExtensionIdAndVersion> extension_ids_and_version() const;
 
  private:
   std::string policy_type_;
-  std::string settings_entity_id_;
-  base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
-      extension_ids_and_version_getter_;
+  std::variant<std::string, ExtensionSetCallback> extra_param_;
 };
 
 }  // namespace policy

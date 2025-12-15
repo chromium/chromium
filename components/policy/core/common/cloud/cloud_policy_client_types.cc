@@ -21,6 +21,18 @@ bool IsExtensionInstallPolicyType(const std::string& policy_type) {
 
 }  // namespace
 
+ExtensionInstallDecision::ExtensionInstallDecision() = default;
+ExtensionInstallDecision::ExtensionInstallDecision(
+    enterprise_management::ExtensionInstallPolicy::Action action,
+    std::set<enterprise_management::ExtensionInstallPolicy::Reason> reasons)
+    : action(action), reasons(reasons) {}
+ExtensionInstallDecision::ExtensionInstallDecision(
+    const ExtensionInstallDecision&) = default;
+ExtensionInstallDecision::ExtensionInstallDecision(ExtensionInstallDecision&&) =
+    default;
+
+ExtensionInstallDecision::~ExtensionInstallDecision() = default;
+
 bool ExtensionIdAndVersion::operator<(
     const ExtensionIdAndVersion& other) const {
   return std::tie(extension_id, extension_version) <
@@ -36,33 +48,25 @@ bool ExtensionIdAndVersion::operator==(
 CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
     const std::string& policy_type,
     const std::string& settings_entity_id)
-    : policy_type_(policy_type), settings_entity_id_(settings_entity_id) {}
+    : policy_type_(policy_type), extra_param_(settings_entity_id) {}
 
 CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
     const std::string& policy_type,
     ExtensionIdAndVersion extension_id_and_version)
-    : policy_type_(policy_type),
-      settings_entity_id_(base::StringPrintf(
-          "%s@%s",
-          extension_id_and_version.extension_id.c_str(),
-          extension_id_and_version.extension_version.c_str())),
-      extension_ids_and_version_getter_(base::BindRepeating(
-          [](ExtensionIdAndVersion extension_id_and_version) {
-            return std::set<ExtensionIdAndVersion>{extension_id_and_version};
-          },
-          std::move(extension_id_and_version))) {
-  CHECK(IsExtensionInstallPolicyType(policy_type));
-}
+    : CloudPolicyClientTypeParams(
+          policy_type,
+          base::BindRepeating(
+              [](ExtensionIdAndVersion extension_id_and_version) {
+                return std::set<ExtensionIdAndVersion>{
+                    extension_id_and_version};
+              },
+              std::move(extension_id_and_version))) {}
 
 CloudPolicyClientTypeParams::CloudPolicyClientTypeParams(
     const std::string& policy_type,
-    base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
-        extension_ids_and_version_getter)
+    ExtensionSetCallback extension_ids_and_version_getter)
     : policy_type_(policy_type),
-      // settings_entity_id_ is intentionally left empty as it's expected to be
-      // derived or not applicable when using a getter for multiple extensions.
-      extension_ids_and_version_getter_(
-          std::move(extension_ids_and_version_getter)) {
+      extra_param_(std::move(extension_ids_and_version_getter)) {
   CHECK(IsExtensionInstallPolicyType(policy_type));
 }
 
@@ -82,20 +86,44 @@ CloudPolicyClientTypeParams& CloudPolicyClientTypeParams::operator=(
 
 bool CloudPolicyClientTypeParams::operator<(
     const CloudPolicyClientTypeParams& other) const {
-  return std::tie(policy_type_, settings_entity_id_) <
-         std::tie(other.policy_type_, other.settings_entity_id_);
+  if (policy_type_ != other.policy_type_) {
+    return policy_type_ < other.policy_type_;
+  }
+  if (extra_param_.index() != other.extra_param_.index()) {
+    return extra_param_.index() < other.extra_param_.index();
+  }
+  if (std::holds_alternative<std::string>(extra_param_) &&
+      std::holds_alternative<std::string>(other.extra_param_)) {
+    return std::get<std::string>(extra_param_) <
+           std::get<std::string>(other.extra_param_);
+  }
+
+  if (std::holds_alternative<ExtensionSetCallback>(extra_param_) &&
+      std::holds_alternative<ExtensionSetCallback>(other.extra_param_)) {
+    return std::get<ExtensionSetCallback>(extra_param_).Run() <
+           std::get<ExtensionSetCallback>(other.extra_param_).Run();
+  }
+  NOTREACHED() << "Unsupported extra param type";
 }
 
 bool CloudPolicyClientTypeParams::operator==(
     const CloudPolicyClientTypeParams& other) const {
-  return std::tie(policy_type_, settings_entity_id_) ==
-         std::tie(other.policy_type_, other.settings_entity_id_);
+  return std::tie(policy_type_, extra_param_) ==
+         std::tie(other.policy_type_, other.extra_param_);
+}
+
+std::string CloudPolicyClientTypeParams::settings_entity_id() const {
+  if (std::holds_alternative<std::string>(extra_param_)) {
+    return std::get<std::string>(extra_param_);
+  }
+  return std::string();
 }
 
 std::set<ExtensionIdAndVersion>
 CloudPolicyClientTypeParams::extension_ids_and_version() const {
-  return extension_ids_and_version_getter_
-             ? extension_ids_and_version_getter_.Run()
-             : std::set<ExtensionIdAndVersion>();
+  if (std::holds_alternative<ExtensionSetCallback>(extra_param_)) {
+    return std::get<ExtensionSetCallback>(extra_param_).Run();
+  }
+  return std::set<ExtensionIdAndVersion>();
 }
 }  // namespace policy
