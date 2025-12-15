@@ -383,6 +383,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kDigitalCredentialsProtocolOpenId4VpMultisigned,
           WebFeature::kDigitalCredentialsProtocolOrgIsoMdoc,
           WebFeature::kDigitalCredentialsProtocolOpenId4Vci,
+          WebFeature::kDigitalCredentialsProtocolUnknown,
           WebFeature::kV8FileSystemObserver_Observe_Method,
           WebFeature::kGamepadHapticActuatorType,
           WebFeature::kV8Navigator_JoinAdInterestGroup_Method,

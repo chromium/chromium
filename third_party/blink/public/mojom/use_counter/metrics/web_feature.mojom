@@ -5083,6 +5083,7 @@ enum WebFeature {
   kDigitalCredentialsProtocolOpenId4VpMultisigned = 5767,
   kDigitalCredentialsProtocolOrgIsoMdoc = 5768,
   kDigitalCredentialsProtocolOpenId4Vci = 5769,
+  kDigitalCredentialsProtocolUnknown = 5770,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

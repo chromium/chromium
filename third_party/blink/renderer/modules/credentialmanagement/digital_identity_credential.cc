@@ -172,6 +172,9 @@ void RecordProtocolUseCounters(ExecutionContext* execution_context,
   auto it = protocol_map->find(protocol);
   if (it != protocol_map->end()) {
     UseCounter::Count(execution_context, it->value);
+  } else {
+    UseCounter::Count(execution_context,
+                      WebFeature::kDigitalCredentialsProtocolUnknown);
   }
 }
 
