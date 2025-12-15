@@ -231,6 +231,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SEARCH_IN_SETTINGS_NO_MATCH" desc='Guide message when there is no match for search in settings. [CHAR_LIMIT=32]'>
         No results found
       </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_CLEAR_QUERY" desc='Label for the icon clearing the query text of settings. [CHAR_LIMIT=32]'>
+        Clear search query
+      </message>
       <message name="IDS_SEARCH_IN_SETTINGS_HELP_CENTER" desc='Message suggesting user search help center when there is no match in search. [CHAR_LIMIT=32]'>
         Try searching the help center
       </message>

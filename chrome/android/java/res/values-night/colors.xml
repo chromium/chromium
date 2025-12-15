@@ -19,4 +19,5 @@ found in the LICENSE file.
     <color name="settings_search_logo_color_1">@color/material_primary_40</color>
     <color name="settings_search_logo_color_2">@color/material_primary_60</color>
     <color name="settings_search_logo_color_3">@color/material_primary_90</color>
+    <color name="settings_search_clear_text">@color/baseline_neutral_80</color>
 </resources>

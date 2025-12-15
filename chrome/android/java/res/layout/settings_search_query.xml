@@ -26,7 +26,8 @@ found in the LICENSE file.
         app:tint="@color/default_icon_color_tint_list"/>
     <EditText
         android:id="@+id/search_query"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:background="@null"
         android:hint="@string/search_in_settings_hint"
@@ -35,4 +36,14 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:singleLine="true"
         android:importantForAutofill="no" />
+    <ImageView
+        android:id="@+id/clear_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="@dimen/settings_search_icon_padding"
+        android:paddingEnd="@dimen/settings_search_icon_padding"
+        android:src="@drawable/clear_text"
+        android:contentDescription="@string/search_in_settings_clear_query"
+        app:tint="@color/default_icon_color_tint_list"/>
 </LinearLayout>

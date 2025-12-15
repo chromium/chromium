@@ -304,6 +304,7 @@ chrome_java_resources = [
   "java/res/drawable/checklist.xml",
   "java/res/drawable/checkmark_selection_drawable.xml",
   "java/res/drawable/chrome_logo_on_circular_background.xml",
+  "java/res/drawable/clear_text.xml",
   "java/res/drawable/computer_black_24dp.xml",
   "java/res/drawable/custom_tabs_handle_view_shape.xml",
   "java/res/drawable/custom_tabs_url_bar_omnibox_bg.xml",

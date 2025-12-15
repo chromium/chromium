@@ -180,6 +180,7 @@ public class SettingsSearchCoordinator {
         setSearchBoxBottomMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(v -> enterSearchState());
 
+        View query = mActivity.findViewById(R.id.search_query_container);
         if (mMultiColumnSettings != null) {
             mHandler.post(this::updateMultiColumnSearchUi);
         } else {
@@ -192,7 +193,6 @@ public class SettingsSearchCoordinator {
             mBoxUiConfig = new UiConfig(searchBox);
             ViewResizer.createAndAttach(
                     searchBox, mBoxUiConfig, defaultPadding, minWidePaddingPixels);
-            View query = mActivity.findViewById(R.id.search_query_container);
             mQueryUiConfig = new UiConfig(query);
             ViewResizer.createAndAttach(
                     query, mQueryUiConfig, defaultPadding, minWidePaddingPixels);
@@ -210,6 +210,15 @@ public class SettingsSearchCoordinator {
                     }
                 };
         mActivity.getOnBackPressedDispatcher().addCallback(mActivity, mBackActionCallback);
+        query.findViewById(R.id.clear_text).setOnClickListener(v -> clearQueryText());
+    }
+
+    private void clearQueryText() {
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        if (queryEdit.getText().toString().isEmpty()) return;
+
+        queryEdit.setText("");
+        clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
     }
 
     /** Hide the icon for Help & Feedback. */
