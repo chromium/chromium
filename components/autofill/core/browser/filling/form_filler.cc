@@ -960,7 +960,7 @@ void FormFiller::FillOrPreviewForm(
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           fill_id,
-          /*supports_refill=*/augmented_filling_payload.supports_refills(),
+          /*supports_refill=*/could_attempt_refill,
           autofill_trigger_field.origin(),
           base::flat_map<FieldGlobalId, FieldType>(
               std::move(filled_field_types)),
