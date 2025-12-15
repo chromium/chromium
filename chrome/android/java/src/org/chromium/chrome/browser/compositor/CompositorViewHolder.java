@@ -656,6 +656,10 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Should be called for cleanup when the CompositorView instance is no longer used. */
     public void shutDown() {
+        if (mSystemUiFullscreenResizeRunnable != null) {
+            assumeNonNull(getHandler()).removeCallbacks(mSystemUiFullscreenResizeRunnable);
+        }
+
         setTab(null);
         if (mApplicationBottomInsetSupplier != null) {
             assert mOnViewportInsetsChanged != null;
