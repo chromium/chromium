@@ -53,7 +53,8 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, PostMessageCommunication) {
   RunTest("lens/side_panel/post_message_communication_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, Composebox) {
+// TODO(crbug.com/451340876): Test is flaky.
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, DISABLED_Composebox) {
   RunTest("lens/side_panel/composebox_test.js", "mocha.run()");
 }
 
