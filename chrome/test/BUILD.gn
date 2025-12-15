@@ -11736,6 +11736,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac) {
       sources += [ "../installer/mac/keystone_install_unittest.cc" ]
+      deps += [ "../installer/mac:install_test_util" ]
       data += [
         "//chrome/installer/mac/keystone_install.sh",
         "//chrome/installer/mac/keystone_install_test.sh",
