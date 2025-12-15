@@ -7,16 +7,15 @@
 #include <memory>
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
-#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_like_background.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/canvas.h"
-#include "ui/views/view.h"
 
 MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view)
     : browser_view_(browser_view) {
@@ -37,9 +36,13 @@ MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 
 void MainBackgroundRegionView::Layout(PassKey) {
   background_view_->SetBoundsRect(GetLocalBounds());
-  if (ImmersiveModeController::From(browser_view_->browser())->IsEnabled()) {
-    // Rounded top corners are not needed in immersive mode, so use an empty
-    // clip path.
+
+  if (ImmersiveModeController::From(browser_view_->browser())->IsEnabled() ||
+      (tabs::IsVerticalTabsFeatureEnabled() &&
+       tabs::VerticalTabStripStateController::From(browser_view_->browser())
+           ->ShouldDisplayVerticalTabs())) {
+    // Rounded top corners are not needed in immersive mode or when showing
+    // vertical tabs, so use an empty clip path.
     background_view_->SetClipPath(SkPathBuilder().detach());
   } else {
     const int corner_radius =

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_BACKGROUND_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
 // This wrapper view primarily serves to paint and style the background of the
@@ -20,6 +19,7 @@ class MainBackgroundRegionView : public views::View {
   MainBackgroundRegionView& operator=(const MainBackgroundRegionView&) = delete;
   ~MainBackgroundRegionView() override;
 
+  // views::View:
   void Layout(PassKey) override;
 
  private:
