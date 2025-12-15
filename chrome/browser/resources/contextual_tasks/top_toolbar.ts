@@ -66,7 +66,11 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onThreadHistoryClick_() {
-    this.fire('thread-history-click');
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenThreadHistory');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenThreadHistory', true);
+    this.browserProxy_.handler.showThreadHistory();
   }
 
   protected onMoreClick_(e: Event) {

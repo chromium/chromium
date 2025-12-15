@@ -122,7 +122,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   showThreadHistory() {
     this.methodCalled('showThreadHistory');
-    return Promise.resolve({threads: []});
   }
 
   setIsShownInTab(isInTab: boolean) {

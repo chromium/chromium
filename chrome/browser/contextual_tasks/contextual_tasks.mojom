@@ -7,16 +7,6 @@ module contextual_tasks.mojom;
 import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 
-// Represents the visual information needed to display a single thread in the
-// list of threads UI.
-struct Thread {
-  // The task ID associated with the thread.
-  mojo_base.mojom.Uuid task_id;
-
-  // The title of the thread as shown in the list item.
-  string title;
-};
-
 // Represents the visual information needed to display a single tab in the
 // sources menu.
 struct Tab {
@@ -53,10 +43,9 @@ interface PageHandler {
   CloseSidePanel();
 
   // Invoked when the user clicks Thread History button to show the full list
-  // of threads from history. Initiates a query to the backend to retrieve the
-  // list asynchronously. On receiving the list, a drawer UI will be shown
-  // populated with the threads. Used for thread resumption.
-  ShowThreadHistory() => (array<Thread> threads);
+  // of threads from history. In response, the backend will send a
+  // OPEN_THREADS_VIEW message to search to open the thread history natively.
+  ShowThreadHistory();
 
   // Returns whether the WebUI is being shown in a tab. If false, the UI is
   // shown in the side panel.
