@@ -170,9 +170,13 @@ void IdentityLaunchWebAuthFlowFunction::StartAuthFlow(
       this, profile, auth_url, mode, user_gesture(),
       abort_on_load_for_non_interactive, timeout_for_non_interactive,
       popup_bounds);
+
+  // TODO(crbug.com/434156398): Add support for the infobar on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // An extension might call `launchWebAuthFlow()` with any URL. Add an infobar
   // to attribute displayed URL to the extension.
   auth_flow_->SetShouldShowInfoBar(extension()->name());
+#endif
 
   auth_flow_->Start();
 }

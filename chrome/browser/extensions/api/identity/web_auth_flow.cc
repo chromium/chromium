@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -33,6 +34,14 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#else
+static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -55,9 +64,7 @@ WebAuthFlow::WebAuthFlow(
       profile_(profile),
       provider_url_(provider_url),
       mode_(mode),
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       user_gesture_(user_gesture),
-#endif
       abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
       timeout_for_non_interactive_(timeout_for_non_interactive),
       non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()),
@@ -149,13 +156,26 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
+    BrowserWindowInterface* browser) {
+  TabModel* tab_model =
+      TabModelList::FindTabModelWithWindowSessionId(browser->GetSessionID());
+  // TODO(crbug.com/434156398): Update the CreateTab() signature to accept
+  // std::unique_ptr<WebContents>.
+  tab_model->CreateTab(
+      TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
+      web_contents_.release(), /*select=*/true);
+}
+#endif
+
 bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
-  if (Browser::GetCreationStatusForProfile(profile_) !=
-      Browser::CreationStatus::kOk) {
+  if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
     return false;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile_,
                                        user_gesture_);
   browser_params.omit_from_session_restore = true;
@@ -171,13 +191,22 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
       AddTabTypes::ADD_ACTIVE);
 
   browser->window()->Show();
+#else
+  static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   *profile_, user_gesture_);
+  if (popup_bounds_.has_value()) {
+    params.initial_bounds = popup_bounds_.value();
+  }
+
+  base::OnceCallback<void(BrowserWindowInterface*)> callback =
+      base::BindOnce(&WebAuthFlow::OnBrowserWindowInterfaceInitialized,
+                     weak_factory_.GetWeakPtr());
+  CreateBrowserWindow(std::move(params), std::move(callback));
+#endif
+
   return true;
 }
-#else
-bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
-  return false;
-}
-#endif
 
 void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
   if (delegate_) {
