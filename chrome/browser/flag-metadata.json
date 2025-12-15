@@ -2148,7 +2148,7 @@
     "owners": [
       "izuzic@google.com",
       "friedrichh@chromium.org" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 150
   },
   {
     "name": "cros-block-warnings",
