@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -39,6 +40,13 @@ CSSValueList::CSSValueList(ClassType class_type,
 CSSValueList::CSSValueList(ValueListSeparator list_separator)
     : CSSValue(kValueListClass) {
   value_list_separator_ = list_separator;
+}
+
+CSSValueList::CSSValueList(ValueListSeparator list_separator,
+                           bool needs_tree_scope_population)
+    : CSSValue(kValueListClass) {
+  value_list_separator_ = list_separator;
+  needs_tree_scope_population_ = needs_tree_scope_population;
 }
 
 CSSValueList::CSSValueList(ValueListSeparator list_separator,
@@ -210,6 +218,19 @@ void CSSValueList::ReResolveUrl(const Document& document) const {
   for (const auto& value : values_) {
     value->ReResolveUrl(document);
   }
+}
+
+const CSSValue*
+CSSValueList::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) const {
+  CSSValueList* new_list = CSSValueList::CreateWithSeparatorFrom(*this);
+  for (wtf_size_t i = 0; i < length(); i++) {
+    new_list->Append(
+        *Item(i).CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+            property_name, property_value_index + i));
+  }
+  return new_list;
 }
 
 void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) const {

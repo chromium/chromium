@@ -126,6 +126,10 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
       const TryTacticTransform&,
       const WritingDirectionMode&) const;
 
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:

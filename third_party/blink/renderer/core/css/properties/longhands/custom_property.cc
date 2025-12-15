@@ -269,8 +269,13 @@ const CSSValue* CustomProperty::Parse(
   if (!registration_) {
     return ParseUntyped(text, context, local_context);
   }
-  return registration_->Syntax().Parse(text, context,
-                                       local_context.IsAnimationTainted());
+  const CSSValue* result = registration_->Syntax().Parse(
+      text, context, local_context.IsAnimationTainted());
+  if (result) {
+    result = result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+        GetCSSPropertyName(), 0);
+  }
+  return result;
 }
 
 bool CustomProperty::HasInitialValue() const {

@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_progress_value.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
@@ -1117,5 +1118,24 @@ String CSSValue::ClassTypeToString() const {
   NOTREACHED();
 }
 #endif
+
+const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) const {
+  if (IsMathFunctionValue()) {
+    return To<CSSMathFunctionValue>(this)
+        ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+            property_name, property_value_index);
+  }
+  if (IsBaseValueList()) {
+    return To<CSSValueList>(this)
+        ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+            property_name, property_value_index);
+  }
+  // TODO(crbug.com/413385732): CSS random() function values can be part of
+  // other CSS list values, like CSSAxisValue, CSSFunctionValue, etc. We need to
+  // pass property info there as well.
+  return this;
+}
 
 }  // namespace blink

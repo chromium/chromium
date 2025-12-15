@@ -201,6 +201,18 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual CSSMathExpressionNode* Copy() const = 0;
 
+  // Checks if a CSS random() function is present in the value. If so, creates a
+  // deep copy and binds the random value's identifier to the specified property
+  // name and index. This ensures the random() function's internal identifier is
+  // uniquely associated with the provided property name and value index for
+  // caching purposes.
+  virtual const CSSMathExpressionNode*
+  CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const {
+    return this;
+  }
+
   virtual bool IsNumericLiteral() const { return false; }
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
@@ -303,6 +315,9 @@ class CORE_EXPORT CSSMathExpressionNode
   bool HasComparisons() const { return has_comparisons_; }
   bool HasAnchorFunctions() const { return has_anchor_functions_; }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
+  bool NeedsPropertyNameAndValueIndexForRandom() const {
+    return needs_property_name_and_value_index_for_random_;
+  }
 
   const CSSMathExpressionNode& EnsureScopedValue(
       const TreeScope* tree_scope) const {
@@ -360,6 +375,7 @@ class CORE_EXPORT CSSMathExpressionNode
   bool has_comparisons_;
   bool has_anchor_functions_;
   bool needs_tree_scope_population_;
+  bool needs_property_name_and_value_index_for_random_ = false;
 };
 
 class CORE_EXPORT CSSMathExpressionNumericLiteral final
@@ -712,6 +728,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         category_, std::move(operands), operator_, type_);
   }
+
+  const CSSMathExpressionNode* CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const final;
 
   const Operands& GetOperands() const { return operands_; }
   CSSMathOperator OperatorType() const { return operator_; }
@@ -1154,11 +1174,20 @@ class RandomValueSharing {
   static RandomValueSharing Fixed(double fixed_value) {
     return RandomValueSharing(fixed_value);
   }
+  // Returns the current object if an identifier is already set or if it's fixed
+  // value. Otherwise, returns a copy with the identifier bound to the specified
+  // property name and index.
+  static RandomValueSharing WithPropertyIdent(
+      RandomValueSharing other,
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index);
+
   bool IsFixed() const;
   double GetFixed() const;
   bool IsAuto() const;
   AtomicString GetIdent() const;
   bool IsElementShared() const;
+
   bool operator==(const RandomValueSharing& other) const;
   String CssText() const;
 
@@ -1203,6 +1232,9 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
       HeapVector<Member<const CSSMathExpressionNode>>&& nodes);
 
   CSSMathExpressionNode* Copy() const override;
+  const CSSMathExpressionNode* CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const final;
   bool IsRandomFunction() const final { return true; }
   double DoubleValue() const final { NOTREACHED(); }
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()

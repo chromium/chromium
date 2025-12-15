@@ -22,9 +22,7 @@ class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
   RandomCachingKey(AtomicString ident, const Element* element)
       : ident_(ident), element_(element) {}
   static RandomCachingKey* Create(RandomValueSharing random_value_sharing,
-                                  const Element* element,
-                                  AtomicString property_name,
-                                  size_t property_value_index);
+                                  const Element* element);
   bool operator==(const RandomCachingKey& other) const;
   unsigned GetHash() const;
   void Trace(Visitor* visitor) const;

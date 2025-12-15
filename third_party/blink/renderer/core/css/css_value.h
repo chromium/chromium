@@ -35,6 +35,7 @@ namespace blink {
 class Document;
 class Length;
 class TreeScope;
+class CSSPropertyName;
 
 class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
  public:
@@ -256,6 +257,15 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 #if DCHECK_IS_ON()
   String ClassTypeToString() const;
 #endif
+
+  // Checks if a CSS random() function is present in the value. If so, creates a
+  // deep copy and binds the random value's identifier to the specified property
+  // name and index. This ensures the random() function's internal identifier is
+  // uniquely associated with the provided property name and value index for
+  // caching purposes.
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;

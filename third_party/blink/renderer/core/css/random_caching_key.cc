@@ -9,25 +9,20 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 RandomCachingKey* RandomCachingKey::Create(
     RandomValueSharing random_value_sharing,
-    const Element* element,
-    AtomicString property_name,
-    size_t property_value_index) {
+    const Element* element) {
   DCHECK(!random_value_sharing.IsFixed());
   const Element* element_for_caching =
       random_value_sharing.IsElementShared() ? nullptr : element;
   AtomicString ident = random_value_sharing.GetIdent();
-  if (random_value_sharing.IsAuto()) {
-    StringBuilder str;
-    str.Append(property_name);
-    str.AppendNumber(property_value_index);
-    ident = str.ToAtomicString();
-  }
+  DCHECK(!ident.IsNull());
   return MakeGarbageCollected<RandomCachingKey>(ident, element_for_caching);
 }
 

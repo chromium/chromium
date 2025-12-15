@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
@@ -1802,6 +1803,20 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
       category, std::move(operands), op, CSSMathType());
 }
 
+const CSSMathExpressionNode*
+CSSMathExpressionOperation::CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) const {
+  DCHECK(NeedsPropertyNameAndValueIndexForRandom());
+  Operands operands(operands_);
+  for (wtf_size_t i = 0; i < operands_.size(); i++) {
+    operands[i] = operands_[i]->CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+        property_name, property_value_index);
+  }
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      category_, std::move(operands), operator_, type_);
+}
+
 // Helper function for parsing number value
 static double ValueAsNumber(const CSSMathExpressionNode* node, bool& error) {
   if (node->Category() == kCalcNumber) {
@@ -2609,6 +2624,9 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
   has_nested_intermediate_result_ |= NodeHasNestedIntermediateResult(left_side);
   has_nested_intermediate_result_ |=
       NodeHasNestedIntermediateResult(right_side);
+  needs_property_name_and_value_index_for_random_ |=
+      (left_side && left_side->NeedsPropertyNameAndValueIndexForRandom()) ||
+      (right_side && right_side->NeedsPropertyNameAndValueIndexForRandom());
 }
 
 bool CSSMathExpressionOperation::HasPercentage() const {
@@ -2697,6 +2715,10 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
         NodeHasNestedIntermediateResult(operands_.front());
     has_nested_intermediate_result_ |=
         NodeHasNestedIntermediateResult(operands_.back());
+  }
+  for (const CSSMathExpressionNode* operand : operands_) {
+    needs_property_name_and_value_index_for_random_ |=
+        operand && operand->NeedsPropertyNameAndValueIndexForRandom();
   }
 }
 
@@ -5302,7 +5324,7 @@ double RandomValueSharing::GetFixed() const {
 }
 bool RandomValueSharing::IsAuto() const {
   return !std::holds_alternative<IdentElementShared>(value_) ||
-         std::get<IdentElementShared>(value_).ident.IsNull();
+         !std::get<IdentElementShared>(value_).ident.StartsWith("--");
 }
 AtomicString RandomValueSharing::GetIdent() const {
   if (!std::holds_alternative<IdentElementShared>(value_)) {
@@ -5313,6 +5335,25 @@ AtomicString RandomValueSharing::GetIdent() const {
 bool RandomValueSharing::IsElementShared() const {
   return std::holds_alternative<IdentElementShared>(value_) &&
          std::get<IdentElementShared>(value_).is_element_shared;
+}
+
+RandomValueSharing RandomValueSharing::WithPropertyIdent(
+    RandomValueSharing other,
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) {
+  if (!std::holds_alternative<IdentElementShared>(other.value_)) {
+    return other;
+  }
+  IdentElementShared ident_element_shared =
+      std::get<IdentElementShared>(other.value_);
+  if (ident_element_shared.ident.IsNull()) {
+    StringBuilder str;
+    str.Append(property_name.ToAtomicString());
+    str.AppendNumber(property_value_index);
+    other.value_ = IdentElementShared(str.ToAtomicString(),
+                                      ident_element_shared.is_element_shared);
+  }
+  return other;
 }
 
 std::optional<RandomValueSharing> RandomValueSharing::Parse(
@@ -5376,7 +5417,7 @@ String RandomValueSharing::CssText() const {
     result.Append("fixed ");
     result.AppendNumber(GetFixed());
   }
-  if (GetIdent()) {
+  if (!IsAuto()) {
     result.Append(GetIdent());
   }
   if (IsElementShared()) {
@@ -5414,7 +5455,10 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
       random_value_sharing_(random_value_sharing),
       min_(min),
       max_(max),
-      step_(step) {}
+      step_(step) {
+  needs_property_name_and_value_index_for_random_ =
+      random_value_sharing.GetIdent().IsNull();
+}
 
 CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(
     RandomValueSharing random_value_sharing,
@@ -5443,6 +5487,17 @@ CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(
 CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
   return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
       category_, random_value_sharing_, min_, max_, step_);
+}
+
+const CSSMathExpressionNode* CSSMathExpressionRandomFunction::
+    CopyRandomWithPropertyNameAndValueIndexIfNeeded(
+        const CSSPropertyName& property_name,
+        wtf_size_t property_value_index) const {
+  RandomValueSharing random_value_sharing =
+      RandomValueSharing::WithPropertyIdent(
+          random_value_sharing_, property_name, property_value_index);
+  return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+      category_, random_value_sharing, min_, max_, step_);
 }
 
 bool CSSMathExpressionRandomFunction::IsComputationallyIndependent() const {
@@ -5482,7 +5537,7 @@ CSSMathExpressionRandomFunction::ToCalculationExpression(
   const Element* element = length_resolver.GetElement();
   double random_base_value =
       element->GetDocument().GetStyleEngine().GetCachedRandomBaseValue(
-          random_value_sharing_, element, AtomicString(""), 0);
+          random_value_sharing_, element);
 
   HeapVector<Member<const CalculationExpressionNode>> operands;
   operands.push_back(
@@ -5512,7 +5567,7 @@ double CSSMathExpressionRandomFunction::ComputeDouble(
   // index.
   double random_base_value =
       element->GetDocument().GetStyleEngine().GetCachedRandomBaseValue(
-          random_value_sharing_, element, g_empty_atom, 0);
+          random_value_sharing_, element);
   double min = min_->ComputeNumber(length_resolver);
   double max = max_->ComputeNumber(length_resolver);
   std::optional<double> step = std::nullopt;

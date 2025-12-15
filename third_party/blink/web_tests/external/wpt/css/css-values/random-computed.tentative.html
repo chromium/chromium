@@ -9,12 +9,24 @@
   <div id="target"></div>
 </div>
 <style>
+  @property --x {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 3;
+  }
+  @property --y {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 3;
+  }
   .randomNoIdentifier {
     width: random(0px, 100px);
     height: random(0px, 100px);
     left: random(0px, 100000px);
     right: random(0px, 100000px);
     margin: random(0px, 100000px) random(0px, 100000px);
+    --x: random(0, 100);
+    --y: random(0, 100);
   }
   .randomMatchElement {
     width: random(element-shared, 0px, 100px);
@@ -23,6 +35,7 @@
     right: random(element-shared, 0px, 100000px);
     margin: random(element-shared 0px, 100000px) random(element-shared 0px, 100000px);
     translate: random(10%, 30%);
+    scale: random(element-shared, 1, 3) random(element-shared, 3, 9);
   }
   .randomIdentifier {
     width: random(--identifier, 0px, 100px);
@@ -338,22 +351,81 @@ test(() => {
 
   try {
     var allHaveSameMarginTopAndMarginLeft = true;
+    var allHaveSameMarginTopAndMarginBottom = true;
     for (i = 0; i < iterations; ++i) {
       const other = document.createElement('div');
       other.className = 'randomNoIdentifier';
       holder.appendChild(other);
       const otherComputedMarginLeft = getComputedStyle(other)['margin-left'];
       const otherComputedMarginTop = getComputedStyle(other)['margin-top'];
+      const otherComputedMarginBottom = getComputedStyle(other)['margin-bottom'];
       if (otherComputedMarginLeft != otherComputedMarginTop) {
         allHaveSameMarginTopAndMarginLeft = false;
+      }
+      if (otherComputedMarginBottom != otherComputedMarginTop) {
+        allHaveSameMarginTopAndMarginBottom = false;
       }
     }
 
     assert_false(allHaveSameMarginTopAndMarginLeft);
+    assert_true(allHaveSameMarginTopAndMarginBottom);
   } finally {
     document.body.removeChild(holder);
   }
 }, `Maximum random - shorthand: random(a, b)`);
+
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomMatchElement';
+    holder.appendChild(el);
+    const elScale = getComputedStyle(el)['scale'];
+
+    var allHaveSameScaleXAndScaleY = true;
+    var allSame = true;
+    for (i = 0; i < iterations; ++i) {
+      const other = document.createElement('div');
+      other.className = 'randomMatchElement';
+      holder.appendChild(other);
+      const otherScale = getComputedStyle(other)['scale'];
+      if (elScale != otherScale) {
+        allSame = false;
+      }
+      let [scaleX, scaleY] = otherScale.split(' ');
+      if (scaleX != scaleY) {
+        allHaveSameScaleXAndScaleY = false;
+      }
+    }
+
+    assert_false(allHaveSameScaleXAndScaleY);
+    assert_true(allSame);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Maximum random - list: random(a, b)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    for (i = 0; i < iterations; ++i) {
+      const el = document.createElement('div');
+      el.className = 'randomNoIdentifier';
+      holder.appendChild(el);
+      const elComputedX = getComputedStyle(el).getPropertyValue('--x');
+      const elComputedY = getComputedStyle(el).getPropertyValue('--y');
+      assert_false(elComputedX == elComputedY,
+                   "Different custom properties on the same element should not have equal values");
+    }
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Maximum random custom property: 'random(a, b)'`);
 
 test(() => {
   const holder = document.createElement('div');

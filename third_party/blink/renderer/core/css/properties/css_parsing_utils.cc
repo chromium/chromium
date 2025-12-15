@@ -107,7 +107,9 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/color_utils.h"
 
@@ -3921,7 +3923,21 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
   const CSSValue* result =
       To<Longhand>(CSSProperty::Get(property_id))
           .ParseSingleValue(stream, context, local_context);
-  return result;
+
+  if (!result) {
+    return nullptr;
+  }
+
+  CSSPropertyName property_name =
+      CSSProperty::Get(property_id).GetCSSPropertyName();
+  wtf_size_t property_value_index = 0;
+  if (current_shorthand != CSSPropertyID::kInvalid) {
+    property_name = CSSProperty::Get(current_shorthand).GetCSSPropertyName();
+    property_value_index = static_cast<int>(property_id);
+  }
+
+  return result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      property_name, property_value_index);
 }
 
 bool ConsumeShorthandVia2Longhands(
