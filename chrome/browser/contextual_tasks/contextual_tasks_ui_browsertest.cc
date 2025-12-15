@@ -30,6 +30,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace {
 
@@ -195,5 +196,71 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kTestToken, expiration);
 
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       OnSidePanelStateChanged_InTab) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  base::RunLoop run_loop;
+  // Expect OnSidePanelStateChanged to be called on the page.
+  EXPECT_CALL(mock_page, OnSidePanelStateChanged()).Times(1);
+
+  // Expect PostMessageToWebview to be called with the correct display mode.
+  EXPECT_CALL(mock_page, PostMessageToWebview(_))
+      .WillOnce([&run_loop](const std::vector<uint8_t>& message) {
+        lens::ClientToAimMessage client_message;
+        ASSERT_TRUE(
+            client_message.ParseFromArray(message.data(), message.size()));
+        ASSERT_TRUE(client_message.has_set_cobrowsing_display_mode());
+        EXPECT_EQ(client_message.set_cobrowsing_display_mode()
+                      .payload()
+                      .display_mode(),
+                  lens::CobrowsingDisplayModeParams::COBROWSING_TAB);
+        run_loop.Quit();
+      });
+
+  controller_->OnSidePanelStateChanged();
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       OnSidePanelStateChanged_InSidePanel) {
+  // Create a WebContents not associated with a tab.
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  auto side_panel_web_ui = std::make_unique<content::TestWebUI>();
+  side_panel_web_ui->set_web_contents(side_panel_contents.get());
+
+  auto side_panel_controller =
+      std::make_unique<ContextualTasksUI>(side_panel_web_ui.get());
+
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  side_panel_controller->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                           std::move(handler_receiver));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page, OnSidePanelStateChanged()).Times(1);
+  EXPECT_CALL(mock_page, PostMessageToWebview(_))
+      .WillOnce([&run_loop](const std::vector<uint8_t>& message) {
+        lens::ClientToAimMessage client_message;
+        ASSERT_TRUE(
+            client_message.ParseFromArray(message.data(), message.size()));
+        ASSERT_TRUE(client_message.has_set_cobrowsing_display_mode());
+        EXPECT_EQ(client_message.set_cobrowsing_display_mode()
+                      .payload()
+                      .display_mode(),
+                  lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
+        run_loop.Quit();
+      });
+
+  side_panel_controller->OnSidePanelStateChanged();
   run_loop.Run();
 }

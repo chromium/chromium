@@ -203,16 +203,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
-  if (tab->GetContents() &&
-      IsContextualTasksHost(tab->GetContents()->GetLastCommittedURL())) {
-    content::WebUI* webui = tab->GetContents()->GetWebUI();
-    if (webui && webui->GetController()) {
-      webui->GetController()
-          ->GetAs<ContextualTasksUI>()
-          ->OnSidePanelStateChanged();
-    }
-  }
-
   // Get the index of the web contents.
   const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
 
@@ -225,6 +215,8 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       tab_strip_model->DetachWebContentsAtForInsertion(
           current_index,
           TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
+  content::WebContents* contextual_task_contents_ptr =
+      contextual_task_contents.get();
 
   CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
   AssociateWebContentsToTask(new_contents_ptr, task_id);
@@ -237,6 +229,17 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // Open the side panel.
   ContextualTasksSidePanelCoordinator::From(browser.get())
       ->Show(/*transition_from_tab=*/true);
+
+  // Notify the WebUI to adjust itself e.g. hide the toolbar.
+  // `contextual_task_contents_ptr` is guaranteed to be alive here, since
+  // the ownership of `contextual_task_contents` has been moved to
+  // ContextualTasksSidePanelCoordinator.
+  content::WebUI* webui = contextual_task_contents_ptr->GetWebUI();
+  if (webui && webui->GetController()) {
+    webui->GetController()
+        ->GetAs<ContextualTasksUI>()
+        ->OnSidePanelStateChanged();
+  }
 }
 
 void ContextualTasksUiService::OnSearchResultsNavigationInTab(
