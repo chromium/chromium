@@ -9975,3 +9975,6 @@ crbug.com/452628516 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Cras
 crbug.com/453103188 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass Timeout ]
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
 crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
+
+# Gardener 2025-12-15
+crbug.com/469128832 virtual/permission-element/external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
