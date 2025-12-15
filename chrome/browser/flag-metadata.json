@@ -6772,22 +6772,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "linked-services-setting",
-    "owners": [
-      "rainhard@chromium.org",
-      "chrome-privacy-controls@google.com"
-    ],
-    "expiry_milestone": 134
-  },
-  {
-    "name": "linked-services-setting-ios",
-    "owners": [
-      "chrome-privacy-controls@google.com",
-      "bling-flags@google.com"
-    ],
-    "expiry_milestone": 146
-  },
-  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all

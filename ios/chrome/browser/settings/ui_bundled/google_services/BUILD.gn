@@ -26,7 +26,6 @@ source_set("google_services") {
   ]
   deps = [
     ":constants",
-    ":features",
     ":personalize_google_services",
     ":sync_error_settings_command_handler",
     "//base",
@@ -200,7 +199,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
-    ":features",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",
@@ -257,7 +255,6 @@ source_set("unit_tests") {
     "personalize_google_services_view_controller_unittest.mm",
   ]
   deps = [
-    ":features",
     ":google_services",
     ":personalize_google_services",
     "//base/test:test_support",
@@ -302,12 +299,4 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
 }

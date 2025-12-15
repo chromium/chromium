@@ -648,9 +648,6 @@ extern const char kLensUnaryHttpTransportEnabledDescription[];
 extern const char kLensWebPageLoadOptimizationEnabledName[];
 extern const char kLensWebPageLoadOptimizationEnabledDescription[];
 
-extern const char kLinkedServicesSettingIosName[];
-extern const char kLinkedServicesSettingIosDescription[];
-
 extern const char kLocationBarBadgeMigrationName[];
 extern const char kLocationBarBadgeMigrationDescription[];
 

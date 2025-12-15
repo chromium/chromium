@@ -1078,10 +1078,6 @@ const char kLensWebPageLoadOptimizationEnabledName[] =
 const char kLensWebPageLoadOptimizationEnabledDescription[] =
     "Enables optmized loading for the Lens web page.";
 
-const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
-const char kLinkedServicesSettingIosDescription[] =
-    "Add Linked Services Setting to the Sync Settings page.";
-
 const char kLocationBarBadgeMigrationName[] = "LocationBarBadgeMigration";
 const char kLocationBarBadgeMigrationDescription[] =
     "Enables the LocationBarBadgeMigration feature.";

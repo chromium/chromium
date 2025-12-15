@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_consumer.h"
@@ -338,52 +337,33 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model addItem:self.encryptionItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
-  if (IsLinkedServicesSettingIosEnabled()) {
-    // PersonalizeGoogleServicesItemType.
-    TableViewImageItem* personalizeGoogleServicesItem =
-        [[TableViewImageItem alloc]
-            initWithType:PersonalizeGoogleServicesItemType];
-    if (self.isEEAAccount) {
-      personalizeGoogleServicesItem.title = GetNSString(
-          IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA);
-      personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kChevronForwardSymbol)];
-    } else {
-      personalizeGoogleServicesItem.title =
-          GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
-      personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kExternalLinkSymbol)];
-    }
-    personalizeGoogleServicesItem.accessoryView.tintColor =
-        [UIColor colorNamed:kTextQuaternaryColor];
-    personalizeGoogleServicesItem.detailText = GetNSString(
-        IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION);
-    personalizeGoogleServicesItem.accessibilityIdentifier =
-        kPersonalizeGoogleServicesIdentifier;
-    personalizeGoogleServicesItem.accessibilityTraits |=
-        UIAccessibilityTraitButton;
-    [model addItem:personalizeGoogleServicesItem
-        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  // PersonalizeGoogleServicesItemType.
+  TableViewImageItem* personalizeGoogleServicesItem =
+      [[TableViewImageItem alloc]
+          initWithType:PersonalizeGoogleServicesItemType];
+  if (self.isEEAAccount) {
+    personalizeGoogleServicesItem.title =
+        GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA);
+    personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kChevronForwardSymbol)];
   } else {
-    // GoogleActivityControlsItemType.
-    TableViewImageItem* googleActivityControlsItem = [[TableViewImageItem alloc]
-        initWithType:GoogleActivityControlsItemType];
-    googleActivityControlsItem.accessoryView = [[UIImageView alloc]
+    personalizeGoogleServicesItem.title =
+        GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
+    personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
         initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
                           kExternalLinkSymbol)];
-    googleActivityControlsItem.accessoryView.tintColor =
-        [UIColor colorNamed:kTextQuaternaryColor];
-    googleActivityControlsItem.title =
-        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
-    googleActivityControlsItem.detailText =
-        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
-    googleActivityControlsItem.accessibilityTraits |=
-        UIAccessibilityTraitButton;
-    [model addItem:googleActivityControlsItem
-        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
   }
+  personalizeGoogleServicesItem.accessoryView.tintColor =
+      [UIColor colorNamed:kTextQuaternaryColor];
+  personalizeGoogleServicesItem.detailText =
+      GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION);
+  personalizeGoogleServicesItem.accessibilityIdentifier =
+      kPersonalizeGoogleServicesIdentifier;
+  personalizeGoogleServicesItem.accessibilityTraits |=
+      UIAccessibilityTraitButton;
+  [model addItem:personalizeGoogleServicesItem
+      toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
   // AdvancedSettingsSectionIdentifier.
   TableViewImageItem* dataFromChromeSyncItem =
@@ -933,7 +913,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SwitchAccountItemType:
     case SignOutItemType:
     case EncryptionItemType:
-    case GoogleActivityControlsItemType:
     case DataFromChromeSync:
     case PersonalizeGoogleServicesItemType:
     case PrimaryAccountReauthErrorItemType:
@@ -1085,9 +1064,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [self.syncErrorHandler openPassphraseDialogWithModalPresentation:NO];
       break;
     }
-    case GoogleActivityControlsItemType:
-      [self.commandHandler openWebAppActivityDialog];
-      break;
     case DataFromChromeSync:
       [self.commandHandler openDataFromChromeSyncWebPage];
       break;

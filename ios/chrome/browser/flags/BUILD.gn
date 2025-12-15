@@ -102,7 +102,6 @@ source_set("flags") {
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
-    "//ios/chrome/browser/settings/ui_bundled/google_services:features",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
     "//ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide:features",
     "//ios/chrome/browser/shared/public/features",
