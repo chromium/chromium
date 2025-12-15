@@ -1292,6 +1292,37 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
   EXPECT_EQ(gfx::Rect(1, -1, 8, 12), ToEnclosingRect(rect));
 }
 
+TEST_P(VisualRectMappingTest, MapToVisualRectFastPathMapsToViewport) {
+  // Mapping to a null ancestor uses the GeometryMapper fast path to reach the
+  // local root viewport (including remote viewport transforms).
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 15px;
+        top: 25px;
+        width: 60px;
+        height: 40px;
+      }
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
+  ASSERT_TRUE(target);
+  gfx::RectF rect(0, 0, 60, 40);
+  constexpr auto kMapperFlags =
+      static_cast<VisualRectFlags>(kIgnoreFilters | kUseGeometryMapper |
+                                   kVisualRectApplyRemoteViewportTransform);
+
+  bool intersects = false;
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpaceInternalFastPath(
+      /*ancestor=*/nullptr, rect, kMapperFlags, intersects));
+  EXPECT_EQ(gfx::Rect(15, 25, 60, 40), gfx::ToEnclosingRect(rect));
+  EXPECT_TRUE(intersects);
+}
+
 TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(

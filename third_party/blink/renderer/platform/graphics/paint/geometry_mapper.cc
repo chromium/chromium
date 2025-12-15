@@ -210,6 +210,15 @@ bool GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, mapping_rect, clip_behavior, flags);
 }
 
+bool GeometryMapper::LocalToLocalRootViewportRect(
+    const PropertyTreeState& local_state,
+    FloatClipRect& mapping_rect,
+    OverlayScrollbarClipBehavior clip_behavior,
+    VisualRectFlags flags) {
+  return LocalToAncestorVisualRect(local_state, PropertyTreeState::Root(),
+                                   mapping_rect, clip_behavior, flags);
+}
+
 template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
 bool GeometryMapper::LocalToAncestorVisualRectInternal(
     const PropertyTreeState& local_state,

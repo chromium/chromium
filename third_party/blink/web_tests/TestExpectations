@@ -55,9 +55,6 @@ wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
 # Short-lived expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
 # Will be removed in follow-up CL with the fixes.
-# DCHECK failed: visual bounding box does not fit in outer bounding box
-virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Failure Pass Timeout ]
-virtual/content-extraction/css3/filters/nested-filter.html [ Crash Timeout ]
 # DCHECK failed: !GetDocument().InvalidationDisallowed().
 virtual/content-extraction/fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]
 # DCHECK failed: object.GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean. ComputeVisibleBoundingBox only works when layout is complete

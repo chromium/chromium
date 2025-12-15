@@ -2490,7 +2490,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   //
   // The ancestor can be nullptr which, if |this| is not the root view, will map
   // the rect to the main frame's space which includes the root view's scroll
-  // and clip. This is even true if the main frame is remote.
+  // and clip. This is even true if the main frame is remote; the GeometryMapper
+  // fast path is used when possible.
   //
   // If VisualRectFlags has the kEdgeInclusive bit set, clipping operations will
   // use PhysicalRect::InclusiveIntersect, and the return value of
@@ -3464,8 +3465,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // (see documentation of return value of MapToVisualRectInAncestorSpace).
   //
   // The return value of this method is whether the fast path could be used.
+  // If ancestor_or_null is null, map the rect to the viewport space.
+  friend class VisualRectMappingTest_MapToVisualRectFastPathMapsToViewport_Test;
   bool MapToVisualRectInAncestorSpaceInternalFastPath(
-      const LayoutBoxModelObject* ancestor,
+      const LayoutBoxModelObject* ancestor_or_null_for_viewport,
       gfx::RectF&,
       VisualRectFlags,
       bool& intersects) const;

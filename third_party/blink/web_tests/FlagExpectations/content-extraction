@@ -4,10 +4,6 @@
 
 # Expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
 
-# DCHECK failed: visual bounding box does not fit in outer bounding box
-virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Failure Pass Timeout ]
-virtual/content-extraction/css3/filters/nested-filter.html [ Crash Timeout ]
-
 # DCHECK failed: object.GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean. ComputeVisibleBoundingBox only works when layout is complete
 compositing/iframes/content-visibility-hidden-frame.html [ Crash Timeout ]
 

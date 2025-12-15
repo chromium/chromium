@@ -772,6 +772,12 @@
       name: "BlinkExtensionWebViewMediaIntegrity",
       public: true,
     },
+    // Whether MapToVisualRectInAncestorSpace() with a null ancestor can
+    // use the geometry mapper fast path.
+    {
+      name: "BlinkGeometryMapperViewportFastPath",
+      status: "stable",
+    },
     {
       name: "BlinkLifecycleScriptForbidden",
     },

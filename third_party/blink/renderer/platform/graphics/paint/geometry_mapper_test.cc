@@ -1325,4 +1325,25 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
   }
 }
 
+TEST_P(GeometryMapperTest,
+       NullAncestorUsesRootStateForLocalToAncestorVisualRect) {
+  // Regression guard for callers that need viewport mapping without specifying
+  // an ancestor. The GeometryMapper fast path should handle this case instead
+  // of forcing the slow path.
+  auto* translate = CreateTransform(t0(), MakeTranslationMatrix(5, 7));
+  auto local_state = PropertyTreeState::Root();
+  local_state.SetTransform(*translate);
+
+  FloatClipRect expected_clip(gfx::RectF(0, 0, 10, 10));
+  GeometryMapper::LocalToAncestorVisualRect(
+      local_state, PropertyTreeState::Root(), expected_clip);
+
+  FloatClipRect mapped_clip(gfx::RectF(0, 0, 10, 10));
+  ASSERT_TRUE(
+      GeometryMapper::LocalToLocalRootViewportRect(local_state, mapped_clip));
+
+  EXPECT_EQ(expected_clip.Rect(), mapped_clip.Rect());
+  EXPECT_EQ(expected_clip.IsTight(), mapped_clip.IsTight());
+}
+
 }  // namespace blink
