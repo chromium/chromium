@@ -666,6 +666,10 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
+bool Element::WasLastFocusFromUserGestureInternal() const {
+  return GetElementRareData()->WasLastFocusFromUserGesture();
+}
+
 const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
   HeapVector<Member<Node>> children;
   const Element* layout_parent =
@@ -7828,7 +7832,9 @@ void Element::Focus(const FocusParams& params) {
 }
 
 void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
-  last_focus_type_ = focus_type;
+  EnsureElementRareData().SetWasLastFocusFromUserGesture(
+      focus_type != mojom::blink::FocusType::kNone &&
+      focus_type != mojom::blink::FocusType::kScript);
   // Recurse up author shadow trees to mark shadow hosts if it matches :focus.
   // TODO(kochi): Handle UA shadows which marks multiple nodes as focused such
   // as <input type="date"> the same way as author shadow.

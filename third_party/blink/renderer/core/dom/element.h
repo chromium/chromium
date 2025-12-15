@@ -1189,8 +1189,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // script source. For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
   bool WasLastFocusFromUserGesture() const {
-    return last_focus_type_ != mojom::blink::FocusType::kNone &&
-           last_focus_type_ != mojom::blink::FocusType::kScript;
+    return RareData() && WasLastFocusFromUserGestureInternal();
   }
 
   // Returns false if the event was canceled, and true otherwise.
@@ -2436,6 +2435,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void CancelSelectionAfterLayout();
   virtual int DefaultTabIndex() const;
 
+  bool WasLastFocusFromUserGestureInternal() const;
+
   inline void UpdateCallbackSelectors(const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
   inline void NotifyIfMatchedDocumentRulesSelectorsChanged(
@@ -2563,11 +2564,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // only when they are added. Attribute _values_ are not part of this
   // filter, except for the values of class="".
   uint32_t attribute_or_class_bloom_ = 0;
-
-  // This records the last type of a focus on this element via `SetFocused`.
-  // For more see:
-  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-  mojom::blink::FocusType last_focus_type_ = mojom::blink::FocusType::kNone;
 };
 
 template <>

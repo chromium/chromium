@@ -487,6 +487,13 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ContentData* GetAltContentData() const;
   void SetAltContentData(ContentData* content_data);
 
+  bool WasLastFocusFromUserGesture() const {
+    return fields_.was_last_focus_from_user_gesture;
+  }
+  void SetWasLastFocusFromUserGesture(bool value) {
+    fields_.was_last_focus_from_user_gesture = value;
+  }
+
   OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
   OverscrollAreaTracker* OverscrollAreaTracker() const;
 
@@ -506,10 +513,15 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     unsigned has_counters_styles : 1 = false;
     unsigned has_been_explicitly_scrolled : 1 = false;
     unsigned may_be_implicit_anchor : 1 = false;
+    unsigned affected_by_starting_styles : 1 = false;
+    // This records the last type of a focus on this element via `SetFocused`
+    // (or more accurately, the only derived value we need from that).
+    // For more see:
+    // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+    unsigned was_last_focus_from_user_gesture : 1 = false;
     HasInvalidationFlags has_invalidation_flags;
     FocusgroupBehavior focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
     FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
-    unsigned affected_by_starting_styles : 1 = false;
   };
   Fields fields_;
 };
