@@ -243,6 +243,13 @@ bool TextCodecUtf8::HandlePartialSequence<LChar>(
     if (character & ~0xff)
       return true;
 
+    // `count` should be always be two here and the partial buffer can't
+    // contain more code units than that at this point. ASCII characters can't
+    // be partial, and all Latin-1 characters can be encoded with two code
+    // units. Anything else (non-Latin-1, invalid characters) would be handled
+    // by the UTF-16 code-path (below).
+    DCHECK_EQ(count, 2u);
+    DCHECK_EQ(partial_sequence_size_, count);
     partial_sequence_size_ -= count;
     destination.take_first<1u>()[0] = static_cast<LChar>(character);
   } while (partial_sequence_size_);
@@ -312,7 +319,7 @@ bool TextCodecUtf8::HandlePartialSequence<UChar>(
       continue;
     }
 
-    partial_sequence_size_ -= count;
+    ConsumePartialSequenceBytes(count);
     destination = AppendCharacter(destination, character);
   } while (partial_sequence_size_);
 

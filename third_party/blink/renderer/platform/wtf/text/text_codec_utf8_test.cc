@@ -106,6 +106,36 @@ TEST(TextCodecUTF8, DecodeOverflow) {
       ""));
 }
 
+TEST(TextCodecUTF8, DecodeMultiplePartialsAfterError) {
+  TextEncoding encoding("UTF-8");
+  std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
+
+  constexpr std::array<uint8_t, 4> data = {0xf0, 0xc3, 0x80, 0x2a};
+  const auto [first_chunk, second_chunk] = base::span(data).split_at(1u);
+
+  bool saw_error = false;
+  {
+    String s = codec->Decode(first_chunk, FlushBehavior::kDoNotFlush, false,
+                             saw_error);
+    EXPECT_TRUE(s.empty());
+    EXPECT_FALSE(saw_error);
+  }
+  {
+    String s = codec->Decode(second_chunk, FlushBehavior::kDoNotFlush, false,
+                             saw_error);
+    ASSERT_EQ(s.length(), 3u);
+    EXPECT_EQ(s[0], 0xfffd);  // 0xf0, invalid => replacement character
+    EXPECT_EQ(s[1], 0x00c0);  // 0xc3 0x80
+    EXPECT_EQ(s[2], 0x002a);  // 0x2a
+    EXPECT_TRUE(saw_error);
+  }
+  {
+    String s = codec->Decode({}, FlushBehavior::kDataEOF, false, saw_error);
+    EXPECT_TRUE(s.empty());
+    EXPECT_TRUE(saw_error);
+  }
+}
+
 }  // namespace
 
 }  // namespace blink
