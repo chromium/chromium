@@ -295,7 +295,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 @property(nonatomic, strong) TabStripCoordinator* tabStripCoordinator;
 // A weak reference to the view of the tab strip on tablet.
 @property(nonatomic, weak) UIView* tabStripView;
-
+// Constraint for the top of the tab strip view.
+@property(nonatomic, strong) NSLayoutConstraint* tabStripTopConstraint;
 // Returns the header views, all the chrome on top of the page, including the
 // ones that cannot be scrolled off screen by full screen.
 @property(nonatomic, strong, readonly) NSArray<HeaderDefinition*>* headerViews;
@@ -986,7 +987,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   // Update the tab strip placement.
   if (self.tabStripView) {
-    [self showTabStripView:self.tabStripView];
+    self.tabStripTopConstraint.constant = self.headerOffset;
   }
 }
 
@@ -1488,13 +1489,19 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
         self.tabStripView = tabStripViewController.view;
         [self.view addSubview:self.tabStripView];
         [tabStripViewController didMoveToParentViewController:self];
-        CGRect tabStripFrame =
-            CGRectMake(0, self.headerOffset, self.view.bounds.size.width,
-                       TabStripCollectionViewConstants.height);
-        self.tabStripView.frame = tabStripFrame;
-        self.tabStripView.autoresizingMask =
-            (UIViewAutoresizingFlexibleWidth |
-             UIViewAutoresizingFlexibleBottomMargin);
+        self.tabStripView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.tabStripTopConstraint = [self.tabStripView.topAnchor
+            constraintEqualToAnchor:self.view.topAnchor
+                           constant:self.headerOffset];
+        [NSLayoutConstraint activateConstraints:@[
+          self.tabStripTopConstraint,
+          [self.tabStripView.leadingAnchor
+              constraintEqualToAnchor:self.view.leadingAnchor],
+          [self.tabStripView.trailingAnchor
+              constraintEqualToAnchor:self.view.trailingAnchor],
+          [self.tabStripView.heightAnchor
+              constraintEqualToConstant:TabStripCollectionViewConstants.height],
+        ]];
       }
       [self.view insertSubview:primaryToolbarView
                   aboveSubview:self.tabStripView];
@@ -1847,8 +1854,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   // Update the tab strip visibility.
   if (self.tabStripView) {
-    [self showTabStripView:self.tabStripView];
-    [self.tabStripView layoutSubviews];
     const bool canShowTabStrip = CanShowTabStrip(self);
     [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
     _fakeStatusBarView.hidden = !canShowTabStrip;
@@ -1866,25 +1871,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   [self setNeedsStatusBarAppearanceUpdate];
 
   self.fullscreenController->BrowserTraitCollectionChangedEnd();
-}
-
-// Shows the `tabStripView`.
-- (void)showTabStripView:(UIView*)tabStripView {
-  DCHECK([self isViewLoaded]);
-  DCHECK(tabStripView);
-  self.tabStripView = tabStripView;
-  CGRect tabStripFrame = [self.tabStripView frame];
-  tabStripFrame.origin = CGPointZero;
-  // TODO(crbug.com/41023322): Move the origin.y below to -setUpViewLayout.
-  // because the CGPointZero above will break reset the offset, but it's not
-  // clear what removing that will do.
-  tabStripFrame.origin.y = self.headerOffset;
-  tabStripFrame.size.width = CGRectGetWidth([self view].bounds);
-  [self.tabStripView setFrame:tabStripFrame];
-
-  UIView* primaryToolbar =
-      self.toolbarCoordinator.primaryToolbarViewController.view;
-  [self.view insertSubview:tabStripView belowSubview:primaryToolbar];
 }
 
 // On iOS 26, returns the top inset with corner adapation, otherwise returns 0.
