@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
@@ -36,37 +35,6 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
-
-// A mock extensions menu platform delegate.
-class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
- public:
-  TestPlatformDelegate() = default;
-  ~TestPlatformDelegate() override = default;
-
-  void AttachToModel(ExtensionsMenuViewModel* model) override {}
-  void DetachFromModel() override {}
-  void OnActiveWebContentsChanged(content::WebContents* web_contents) override {
-  }
-  void OnHostAccessRequestAddedOrUpdated(
-      const extensions::ExtensionId& extension_id,
-      content::WebContents* web_contents) override {}
-  void OnHostAccessRequestRemoved(
-      const extensions::ExtensionId& extension_id) override {}
-  void OnHostAccessRequestsCleared() override {}
-  void OnHostAccessRequestDismissedByUser(
-      const extensions::ExtensionId& extension_id) override {}
-  void OnShowHostAccessRequestsInToolbarChanged(
-      const extensions::ExtensionId& extension_id,
-      bool can_show_requests) override {}
-  void OnUserPermissionsSettingsChanged() override {}
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override {}
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override {}
-  void OnToolbarModelInitialized() override {}
-  void OnToolbarActionUpdated() override {}
-  void OnToolbarPinnedActionsChanged() override {}
-};
 
 }  // namespace
 
@@ -194,8 +162,8 @@ void ExtensionsMenuViewModelBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  menu_model_ = std::make_unique<ExtensionsMenuViewModel>(
-      browser_window_interface(), std::make_unique<TestPlatformDelegate>());
+  menu_model_ =
+      std::make_unique<ExtensionsMenuViewModel>(browser_window_interface());
 
   permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
   permissions_manager_ = PermissionsManager::Get(profile());

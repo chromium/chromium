@@ -491,13 +491,9 @@ ExtensionsMenuViewModel::ControlState::operator=(const ControlState&) = default;
 ExtensionsMenuViewModel::ControlState::~ControlState() = default;
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
-    BrowserWindowInterface* browser,
-    std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate)
+    BrowserWindowInterface* browser)
     : browser_(browser),
-      platform_delegate_(std::move(platform_delegate)),
       toolbar_model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
-  platform_delegate_->AttachToModel(this);
-
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->GetProfile()));
   toolbar_model_observation_.Observe(toolbar_model_.get());
@@ -505,8 +501,14 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
   tab_list_interface_observation_.Observe(tab_list);
 }
 
-ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
-  platform_delegate_->DetachFromModel();
+ExtensionsMenuViewModel::~ExtensionsMenuViewModel() = default;
+
+void ExtensionsMenuViewModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ExtensionsMenuViewModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ExtensionsMenuViewModel::UpdateSiteAccess(
@@ -885,8 +887,9 @@ void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     return;
   }
 
-  platform_delegate_->OnHostAccessRequestAddedOrUpdated(extension_id,
-                                                        web_contents);
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestAddedOrUpdated(extension_id, web_contents);
+  }
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
@@ -903,11 +906,15 @@ void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
       extensions::PermissionsManager::Get(browser_->GetProfile());
   if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
     // Update the request iff it's an active one.
-    platform_delegate_->OnHostAccessRequestAddedOrUpdated(
-        extension_id, GetActiveWebContents());
+    for (Observer& observer : observers_) {
+      observer.OnHostAccessRequestAddedOrUpdated(extension_id,
+                                                 GetActiveWebContents());
+    }
   } else {
     // Otherwise, remove the request if existent.
-    platform_delegate_->OnHostAccessRequestRemoved(extension_id);
+    for (Observer& observer : observers_) {
+      observer.OnHostAccessRequestRemoved(extension_id);
+    }
   }
 }
 
@@ -921,7 +928,9 @@ void ExtensionsMenuViewModel::OnHostAccessRequestRemoved(
     return;
   }
 
-  platform_delegate_->OnHostAccessRequestRemoved(extension_id);
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestRemoved(extension_id);
+  }
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
@@ -932,7 +941,9 @@ void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
     return;
   }
 
-  platform_delegate_->OnHostAccessRequestsCleared();
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestsCleared();
+  }
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestDismissedByUser(
@@ -946,53 +957,73 @@ void ExtensionsMenuViewModel::OnHostAccessRequestDismissedByUser(
     return;
   }
 
-  platform_delegate_->OnHostAccessRequestDismissedByUser(extension_id);
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestDismissedByUser(extension_id);
+  }
 }
 
 void ExtensionsMenuViewModel::OnShowAccessRequestsInToolbarChanged(
     const extensions::ExtensionId& extension_id,
     bool can_show_requests) {
-  platform_delegate_->OnShowHostAccessRequestsInToolbarChanged(
-      extension_id, can_show_requests);
+  for (Observer& observer : observers_) {
+    observer.OnShowHostAccessRequestsInToolbarChanged(extension_id,
+                                                      can_show_requests);
+  }
 }
 
 void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
-  platform_delegate_->OnUserPermissionsSettingsChanged();
+  for (Observer& observer : observers_) {
+    observer.OnUserPermissionsSettingsChanged();
+  }
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnToolbarActionAdded(action_id);
+  for (Observer& observer : observers_) {
+    observer.OnToolbarActionAdded(action_id);
+  }
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnToolbarActionRemoved(action_id);
+  for (Observer& observer : observers_) {
+    observer.OnToolbarActionRemoved(action_id);
+  }
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnToolbarActionUpdated();
+  for (Observer& observer : observers_) {
+    observer.OnToolbarActionUpdated();
+  }
 }
 
 void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
-  platform_delegate_->OnToolbarModelInitialized();
+  for (Observer& observer : observers_) {
+    observer.OnToolbarModelInitialized();
+  }
 }
 
 void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
-  platform_delegate_->OnToolbarPinnedActionsChanged();
+  for (Observer& observer : observers_) {
+    observer.OnToolbarPinnedActionsChanged();
+  }
 }
 
 void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
   auto* web_contents = tab->GetContents();
-  platform_delegate_->OnActiveWebContentsChanged(web_contents);
+  for (Observer& observer : observers_) {
+    observer.OnActiveWebContentsChanged(web_contents);
+  }
 }
 
 void ExtensionsMenuViewModel::DidFinishNavigation(
     content::NavigationHandle* handle) {
   auto* web_contents = GetActiveWebContents();
-  platform_delegate_->OnActiveWebContentsChanged(web_contents);
+  for (Observer& observer : observers_) {
+    observer.OnActiveWebContentsChanged(web_contents);
+  }
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

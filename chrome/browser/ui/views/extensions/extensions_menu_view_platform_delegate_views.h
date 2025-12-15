@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
-#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
@@ -33,7 +32,7 @@ class ToolbarActionsModel;
 // text should appear on a button) versus UI platform logic (e.g updating the
 // view).
 class ExtensionsMenuViewPlatformDelegateViews
-    : public ExtensionsMenuViewPlatformDelegate,
+    : public ExtensionsMenuViewModel::Observer,
       public ExtensionsMenuHandler {
  public:
   ExtensionsMenuViewPlatformDelegateViews(
@@ -46,9 +45,7 @@ class ExtensionsMenuViewPlatformDelegateViews
       const ExtensionsMenuViewPlatformDelegateViews&) = delete;
   ~ExtensionsMenuViewPlatformDelegateViews() override;
 
-  // ExtensionsMenuViewPlatformDelegate:
-  void AttachToModel(ExtensionsMenuViewModel* model) override;
-  void DetachFromModel() override;
+  // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
   void OnHostAccessRequestAddedOrUpdated(
       const extensions::ExtensionId& extension_id,
@@ -137,7 +134,10 @@ class ExtensionsMenuViewPlatformDelegateViews
   const raw_ptr<views::View> bubble_contents_;
 
   // The platform-agnostic menu view model.
-  raw_ptr<ExtensionsMenuViewModel> menu_model_{nullptr};
+  std::unique_ptr<ExtensionsMenuViewModel> menu_model_;
+  base::ScopedObservation<ExtensionsMenuViewModel,
+                          ExtensionsMenuViewModel::Observer>
+      menu_model_observation_{this};
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
 

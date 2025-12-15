@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -21,7 +20,6 @@ class WebContents;
 }  // namespace content
 
 class BrowserWindowInterface;
-class ExtensionsMenuViewPlatformDelegate;
 
 // The platform agnostic model for the extensions menu.
 class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
@@ -29,6 +27,60 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public TabListInterfaceObserver,
                                 public content::WebContentsObserver {
  public:
+  // Observer used to notify platforms about changes to the model.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Notifies the delegate that the active web contents changed to
+    // `web_contents`.
+    virtual void OnActiveWebContentsChanged(
+        content::WebContents* web_contents) = 0;
+
+    // Notifies the delegate that a new host access request was added or updated
+    // for `extension_id` on `web_contents`.
+    virtual void OnHostAccessRequestAddedOrUpdated(
+        const extensions::ExtensionId& extension_id,
+        content::WebContents* web_contents) = 0;
+
+    // Notifies the delegate that the host access request for
+    // `extension_id` was removed.
+    virtual void OnHostAccessRequestRemoved(
+        const extensions::ExtensionId& extension_id) = 0;
+
+    // Notifies the delegate that host access requests on the current site were
+    // cleared.
+    virtual void OnHostAccessRequestsCleared() = 0;
+
+    // Notifies the delegate that the host access requests for `extension_id` on
+    // the current site was dismissed.
+    virtual void OnHostAccessRequestDismissedByUser(
+        const extensions::ExtensionId& extension_id) = 0;
+
+    virtual void OnShowHostAccessRequestsInToolbarChanged(
+        const extensions::ExtensionId& extension_id,
+        bool can_show_requests) = 0;
+
+    // Notifies the delegate that a new toolbar action was added.
+    virtual void OnToolbarActionAdded(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Notifies the delegate that toolbar action with `action_id` was removed.
+    virtual void OnToolbarActionRemoved(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Notifies the delegate that a toolbar action was updated.
+    virtual void OnToolbarActionUpdated() = 0;
+
+    // Notifies the delegate that the toolbar actions model was initialized
+    virtual void OnToolbarModelInitialized() = 0;
+
+    // Notifies the delegate that the pinned toolbar actions have changed
+    virtual void OnToolbarPinnedActionsChanged() = 0;
+
+    // Notifies the delegate that the user permissions settings changed on the
+    // current site.
+    virtual void OnUserPermissionsSettingsChanged() = 0;
+  };
+
   // The type of optional section to display in the menu.
   enum class OptionalSection {
     // A section alerting the user that a page reload is required for changes to
@@ -105,13 +157,14 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_enterprise;
   };
 
-  ExtensionsMenuViewModel(
-      BrowserWindowInterface* browser,
-      std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
+  explicit ExtensionsMenuViewModel(BrowserWindowInterface* browser);
   ExtensionsMenuViewModel(const ExtensionsMenuViewModel&) = delete;
   const ExtensionsMenuViewModel& operator=(const ExtensionsMenuViewModel&) =
       delete;
   ~ExtensionsMenuViewModel() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Updates the extension's site access for the current site.
   void UpdateSiteAccess(
@@ -204,8 +257,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // The browser window that the extensions menu is in.
   raw_ptr<BrowserWindowInterface> browser_;
 
-  // The delegate that handles platform-specific UI.
-  std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate_;
+  // The observers that handles platform-specific UI.
+  base::ObserverList<Observer> observers_;
 
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>

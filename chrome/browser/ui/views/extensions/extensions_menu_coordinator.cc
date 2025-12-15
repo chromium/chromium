@@ -93,13 +93,8 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_view_observation_.Observe(bubble_contents);
   bubble_tracker_.SetView(bubble_contents);
 
-  auto menu_delegate =
-      std::make_unique<ExtensionsMenuViewPlatformDelegateViews>(
-          browser_, extensions_container, bubble_contents);
-  menu_delegate_ = menu_delegate.get();
-  menu_model_ = std::make_unique<ExtensionsMenuViewModel>(
-      browser_, std::move(menu_delegate));
-
+  menu_delegate_ = std::make_unique<ExtensionsMenuViewPlatformDelegateViews>(
+      browser_, extensions_container, bubble_contents);
   menu_delegate_->OpenMainPage();
 
   return bubble_delegate;
@@ -108,8 +103,6 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
 void ExtensionsMenuCoordinator::OnViewIsDeleting(views::View* observed_view) {
   bubble_tracker_.SetView(nullptr);
   bubble_view_observation_.Reset();
-  // Reset the model to keep 1:1 lifetime with the view. The model owns the
-  // delegate, so it must be set to nullptr first.
-  menu_delegate_ = nullptr;
-  menu_model_.reset();
+  // Reset the delegate to keep 1:1 lifetime with the view.
+  menu_delegate_.reset();
 }

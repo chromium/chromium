@@ -148,23 +148,13 @@ ExtensionsMenuViewPlatformDelegateViews::
     : browser_(browser),
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
+      menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser_)),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
+  menu_model_observation_.Observe(menu_model_.get());
 }
 
 ExtensionsMenuViewPlatformDelegateViews::
     ~ExtensionsMenuViewPlatformDelegateViews() = default;
-
-void ExtensionsMenuViewPlatformDelegateViews::AttachToModel(
-    ExtensionsMenuViewModel* model) {
-  CHECK(model);
-  CHECK(!menu_model_);
-  menu_model_ = model;
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::DetachFromModel() {
-  CHECK(menu_model_);
-  menu_model_ = nullptr;
-}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnActiveWebContentsChanged(
     content::WebContents* web_contents) {
