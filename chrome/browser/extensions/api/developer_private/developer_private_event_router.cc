@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 
 #include <memory>
 #include <set>
@@ -36,6 +36,11 @@
 #include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -44,7 +49,7 @@ namespace developer = api::developer_private;
 
 // static
 developer::UserSiteSettings
-DeveloperPrivateEventRouterShared::ConvertToUserSiteSettings(
+DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
     const PermissionsManager::UserPermissionsSettings& settings) {
   api::developer_private::UserSiteSettings user_site_settings;
   user_site_settings.permitted_sites.reserve(settings.permitted_sites.size());
@@ -60,8 +65,7 @@ DeveloperPrivateEventRouterShared::ConvertToUserSiteSettings(
   return user_site_settings;
 }
 
-DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
-    Profile* profile)
+DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : profile_(profile), event_router_(EventRouter::Get(profile_)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   error_console_observation_.Observe(ErrorConsole::Get(profile));
@@ -74,30 +78,29 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
   extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+  app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
   // callback on destruction.
   pref_change_registrar_.Add(
       prefs::kExtensionsUIDeveloperMode,
-      base::BindRepeating(
-          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       kMV2DeprecationWarningAcknowledgedGloballyPref.name,
-      base::BindRepeating(
-          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
-      base::BindRepeating(
-          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name,
-      base::BindRepeating(
-          &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
 
   if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
     account_extension_tracker_observation_.Observe(
@@ -105,20 +108,19 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
   }
 }
 
-DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
-    default;
+DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() = default;
 
-void DeveloperPrivateEventRouterShared::AddExtensionId(
+void DeveloperPrivateEventRouter::AddExtensionId(
     const ExtensionId& extension_id) {
   extension_ids_.insert(extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::RemoveExtensionId(
+void DeveloperPrivateEventRouter::RemoveExtensionId(
     const ExtensionId& extension_id) {
   extension_ids_.erase(extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionLoaded(
+void DeveloperPrivateEventRouter::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   DCHECK(
@@ -126,7 +128,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionLoaded(
   BroadcastItemStateChanged(developer::EventType::kLoaded, extension->id());
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionUnloaded(
+void DeveloperPrivateEventRouter::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
@@ -135,7 +137,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionUnloaded(
   BroadcastItemStateChanged(developer::EventType::kUnloaded, extension->id());
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionInstalled(
+void DeveloperPrivateEventRouter::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
@@ -144,7 +146,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionInstalled(
   BroadcastItemStateChanged(developer::EventType::kInstalled, extension->id());
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionUninstalled(
+void DeveloperPrivateEventRouter::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
@@ -154,8 +156,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionUninstalled(
                             extension->id());
 }
 
-void DeveloperPrivateEventRouterShared::OnErrorAdded(
-    const ExtensionError* error) {
+void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
   // We don't want to handle errors thrown by extensions subscribed to these
   // events (currently only the Apps Developer Tool), because doing so risks
   // entering a loop.
@@ -167,13 +168,13 @@ void DeveloperPrivateEventRouterShared::OnErrorAdded(
                             error->extension_id());
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionConfigurationChanged(
+void DeveloperPrivateEventRouter::OnExtensionConfigurationChanged(
     const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kConfigurationChanged,
                             extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnErrorsRemoved(
+void DeveloperPrivateEventRouter::OnErrorsRemoved(
     const std::set<ExtensionId>& removed_ids) {
   for (const ExtensionId& id : removed_ids) {
     if (!extension_ids_.count(id)) {
@@ -182,52 +183,52 @@ void DeveloperPrivateEventRouterShared::OnErrorsRemoved(
   }
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionFrameRegistered(
+void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
     const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionFrameUnregistered(
+void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
     const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnStartedTrackingServiceWorkerInstance(
+void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
                             worker_id.extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnStoppedTrackingServiceWorkerInstance(
+void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionDisableReasonsChanged(
+void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
     const ExtensionId& extension_id,
     DisableReasonSet disable_reasons) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionRuntimePermissionsChanged(
+void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
     const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::ExtensionWarningsChanged(
+void DeveloperPrivateEventRouter::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
   for (const ExtensionId& id : affected_extensions) {
     BroadcastItemStateChanged(developer::EventType::kWarningsChanged, id);
   }
 }
 
-void DeveloperPrivateEventRouterShared::OnUserPermissionsSettingsChanged(
+void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {
   developer::UserSiteSettings user_site_settings =
       ConvertToUserSiteSettings(settings);
@@ -240,7 +241,7 @@ void DeveloperPrivateEventRouterShared::OnUserPermissionsSettingsChanged(
   event_router_->BroadcastEvent(std::move(event));
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionPermissionsUpdated(
+void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
     const Extension& extension,
     const PermissionSet& permissions,
     PermissionsManager::UpdateReason reason) {
@@ -248,7 +249,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionPermissionsUpdated(
                             extension.id());
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionManagementSettingsChanged() {
+void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
   base::Value::List args;
   args.Append(CreateProfileInfo(profile_).ToValue());
 
@@ -258,31 +259,31 @@ void DeveloperPrivateEventRouterShared::OnExtensionManagementSettingsChanged() {
   event_router_->BroadcastEvent(std::move(event));
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionAllowlistWarningStateChanged(
+void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
     const ExtensionId& extension_id,
     bool show_warning) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionCommandAdded(
+void DeveloperPrivateEventRouter::OnExtensionCommandAdded(
     const ExtensionId& extension_id,
     const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionCommandRemoved(
+void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
     const ExtensionId& extension_id,
     const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionUploadabilityChanged(
+void DeveloperPrivateEventRouter::OnExtensionUploadabilityChanged(
     const ExtensionId& id) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, id);
 }
 
-void DeveloperPrivateEventRouterShared::OnExtensionsUploadabilityChanged() {
+void DeveloperPrivateEventRouter::OnExtensionsUploadabilityChanged() {
   const ExtensionSet extensions =
       ExtensionRegistry::Get(profile_)->GenerateInstalledExtensionsSet();
   for (const auto& extension : extensions) {
@@ -293,7 +294,7 @@ void DeveloperPrivateEventRouterShared::OnExtensionsUploadabilityChanged() {
   }
 }
 
-void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {
+void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
   base::Value::List args;
   args.Append(CreateProfileInfo(profile_).ToValue());
   auto event = std::make_unique<Event>(
@@ -320,7 +321,7 @@ void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {
   }
 }
 
-void DeveloperPrivateEventRouterShared::BroadcastItemStateChanged(
+void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
     developer::EventType event_type,
     const ExtensionId& extension_id) {
   auto info_generator = std::make_unique<ExtensionInfoGenerator>(profile_);
@@ -328,12 +329,12 @@ void DeveloperPrivateEventRouterShared::BroadcastItemStateChanged(
   info_generator_weak->CreateExtensionInfo(
       extension_id,
       base::BindOnce(
-          &DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper,
+          &DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper,
           weak_factory_.GetWeakPtr(), event_type, extension_id,
           std::move(info_generator)));
 }
 
-void DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper(
+void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
     developer::EventType event_type,
     const ExtensionId& extension_id,
     std::unique_ptr<ExtensionInfoGenerator> info_generator,
@@ -355,7 +356,7 @@ void DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper(
   event_router_->BroadcastEvent(std::move(event));
 }
 
-void DeveloperPrivateEventRouterShared::OnToolbarPinnedActionsChanged() {
+void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
   // Currently, only enabled extensions are considered since they are the only
   // ones that have extension actions.
   // TODO(crbug.com/40280426): Since pinned info is stored as a pref, include
@@ -369,5 +370,17 @@ void DeveloperPrivateEventRouterShared::OnToolbarPinnedActionsChanged() {
     }
   }
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+void DeveloperPrivateEventRouter::OnAppWindowAdded(AppWindow* window) {
+  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
+                            window->extension_id());
+}
+
+void DeveloperPrivateEventRouter::OnAppWindowRemoved(AppWindow* window) {
+  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
+                            window->extension_id());
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 }  // namespace extensions

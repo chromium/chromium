@@ -89,9 +89,8 @@ source_set("extensions") {
     "api/declarative_content/default_content_predicate_evaluators.h",
     "api/developer_private/developer_private_api.cc",
     "api/developer_private/developer_private_api.h",
+    "api/developer_private/developer_private_event_router.cc",
     "api/developer_private/developer_private_event_router.h",
-    "api/developer_private/developer_private_event_router_shared.cc",
-    "api/developer_private/developer_private_event_router_shared.h",
     "api/developer_private/developer_private_functions.h",
     "api/developer_private/developer_private_functions_shared.cc",
     "api/developer_private/developer_private_functions_shared.h",
@@ -625,7 +624,6 @@ source_set("extensions") {
   if (is_android) {
     sources += [
       "api/chrome_extensions_api_client_android.cc",
-      "api/developer_private/developer_private_event_router_android.h",
       "api/developer_private/developer_private_functions_android.cc",
       "api/developer_private/developer_private_functions_android.h",
       "api/identity/identity_unimplemented_functions_android.cc",
@@ -688,8 +686,6 @@ source_set("extensions") {
       "api/bookmark_manager_private/bookmark_manager_private_api.cc",
       "api/bookmark_manager_private/bookmark_manager_private_api.h",
       "api/chrome_device_permissions_prompt.h",
-      "api/developer_private/developer_private_event_router_desktop.cc",
-      "api/developer_private/developer_private_event_router_desktop.h",
       "api/developer_private/developer_private_functions_desktop.cc",
       "api/developer_private/developer_private_functions_desktop.h",
       "api/enterprise_reporting_private/conversion_utils.cc",
