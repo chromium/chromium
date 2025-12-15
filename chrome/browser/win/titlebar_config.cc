@@ -47,5 +47,6 @@ bool ShouldCustomDrawSystemTitlebar() {
 }
 
 bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
-  return ShouldCustomDrawSystemTitlebar();
+  return browser_view->GetIsWebAppType() ||
+         ShouldCustomDrawSystemTitlebar();
 }

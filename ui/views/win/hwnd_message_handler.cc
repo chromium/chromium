@@ -679,7 +679,7 @@ void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
     native_show_state = SW_SHOWMAXIMIZED;
   } else {
     const bool is_maximized_or_arranged =
-        IsMaximized() || IsWindowArranged(hwnd());
+        IsMaximized();
 
     // Use SW_SHOW/SW_SHOWNA instead of SW_SHOWNORMAL/SW_SHOWNOACTIVATE so that
     // the window is not restored to its original position if it is maximized.
@@ -3002,10 +3002,11 @@ void HWNDMessageHandler::OnWindowPosChanging(WINDOWPOS* window_pos) {
 
       // If the browser window is arranged by Snap, then we should not change
       // its position but let Windows do it.
+      // Most of the Supermium target platforms have no provision for arranged windows,
+      // so let's ignore them. Pretending otherwise results in strange window handling issues.
       if (same_monitor &&
           (incorrect_maximized_bounds || fullscreen_without_hack ||
-           work_area_changed) &&
-          !IsWindowArranged(hwnd())) {
+           work_area_changed)) {
         // A rect for the monitor we're on changed.  Normally Windows notifies
         // us about this (and thus we're reaching here due to the SetWindowPos()
         // call in OnSettingChange() above), but with some software (e.g.
