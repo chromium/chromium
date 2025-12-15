@@ -44,11 +44,16 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
   ~MockScrollElasticityHelper() override = default;
 
   // cc::ScrollElasticityHelper implementation:
-  bool IsUserScrollableHorizontal(cc::ElementId element_id) const override {
-    return is_user_scrollable_horizontal_;
-  }
-  bool IsUserScrollableVertical(cc::ElementId element_id) const override {
-    return is_user_scrollable_vertical_;
+  Vector2dF ConstrainOverscrollDelta(cc::ElementId element_id,
+                                     const Vector2dF& delta) const override {
+    Vector2dF constrained_delta = delta;
+    if (!is_user_scrollable_horizontal_) {
+      constrained_delta.set_x(0);
+    }
+    if (!is_user_scrollable_vertical_) {
+      constrained_delta.set_y(0);
+    }
+    return constrained_delta;
   }
   Vector2dF StretchAmount(cc::ElementId element_id) const override {
     return stretch_amount_;
@@ -571,6 +576,50 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
   helper_.SetStretchAmount(cc::ElementId(), Vector2dF());
   SendGestureScrollEnd();
   EXPECT_EQ(0, helper_.request_begin_frame_count());
+}
+
+// Verify that velocity is constrained to the user-scrollable axes.
+TEST_F(ElasticOverscrollControllerExponentialTest,
+       VelocityConstrainedToScrollableAxes) {
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 0),
+                                            gfx::PointF(10, 10));
+  Vector2dF delta(10, 10);
+
+  // Disable horizontal scrolling.
+  helper_.SetUserScrollable(false, true);
+
+  SendGestureScrollBegin(NonMomentumPhase);
+  // Send update to trigger velocity calculation.
+  SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
+  SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
+
+  // Access the entry to check velocity.
+  // The element_id used in tests is default constructed cc::ElementId().
+  const auto* entry = controller_.GetEntry(cc::ElementId());
+  ASSERT_TRUE(entry);
+
+  // Horizontal velocity should be 0 because it's not user scrollable.
+  EXPECT_EQ(0.f, entry->scroll_velocity.x());
+  // Vertical velocity should be non-zero.
+  EXPECT_NE(0.f, entry->scroll_velocity.y());
+
+  SendGestureScrollEnd();
+
+  // Disable vertical scrolling.
+  helper_.SetUserScrollable(true, false);
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
+  SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
+
+  entry = controller_.GetEntry(cc::ElementId());
+  ASSERT_TRUE(entry);
+
+  // Vertical velocity should be 0.
+  EXPECT_EQ(0.f, entry->scroll_velocity.y());
+  // Horizontal velocity should be non-zero.
+  EXPECT_NE(0.f, entry->scroll_velocity.x());
+
+  SendGestureScrollEnd();
 }
 
 }  // namespace

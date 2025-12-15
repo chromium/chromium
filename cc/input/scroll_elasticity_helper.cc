@@ -68,8 +68,9 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   explicit ScrollElasticityHelperImpl(LayerTreeHostImpl* host_impl);
   ~ScrollElasticityHelperImpl() override;
 
-  bool IsUserScrollableHorizontal(ElementId) const override;
-  bool IsUserScrollableVertical(ElementId) const override;
+  gfx::Vector2dF ConstrainOverscrollDelta(
+      ElementId element_id,
+      const gfx::Vector2dF& delta) const override;
   void ResetStretchAmounts() override;
   void ApplyStretchAmountsToPending() override;
   void ApplyStretchAmountsToActive() override;
@@ -113,26 +114,24 @@ const ScrollNode* ScrollElasticityHelperImpl::GetNode(
   return host_impl_->GetScrollTree().FindNodeFromElementId(element_id);
 }
 
-bool ScrollElasticityHelperImpl::IsUserScrollableHorizontal(
-    ElementId element_id) const {
+gfx::Vector2dF ScrollElasticityHelperImpl::ConstrainOverscrollDelta(
+    ElementId element_id,
+    const gfx::Vector2dF& delta) const {
   const ScrollNode* scroll_node = IsRoot(element_id)
                                       ? host_impl_->OuterViewportScrollNode()
                                       : GetNode(element_id);
   if (!scroll_node) {
-    return false;
+    return gfx::Vector2dF();
   }
-  return scroll_node->user_scrollable_horizontal;
-}
 
-bool ScrollElasticityHelperImpl::IsUserScrollableVertical(
-    ElementId element_id) const {
-  const ScrollNode* scroll_node = IsRoot(element_id)
-                                      ? host_impl_->OuterViewportScrollNode()
-                                      : GetNode(element_id);
-  if (!scroll_node) {
-    return false;
+  gfx::Vector2dF constrained_delta = delta;
+  if (!scroll_node->user_scrollable_horizontal) {
+    constrained_delta.set_x(0);
   }
-  return scroll_node->user_scrollable_vertical;
+  if (!scroll_node->user_scrollable_vertical) {
+    constrained_delta.set_y(0);
+  }
+  return constrained_delta;
 }
 
 gfx::Vector2dF ScrollElasticityHelperImpl::StretchAmount(
