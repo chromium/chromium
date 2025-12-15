@@ -217,7 +217,7 @@ class SyncPrefs {
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
-  // TODO(crbug.com/40282890): ClearAllEncryptionBootstrapTokens is only needed
+  // TODO(crbug.com/369297671): ClearAllEncryptionBootstrapTokens is only needed
   // to clear the gaia-keyed pref on signout for syncing users. It should be
   // removed only when kMigrateSyncingUserToSignedIn is fully rolled-out.
   void ClearAllEncryptionBootstrapTokens();

@@ -40,7 +40,7 @@ class BrowserPrefsTest : public PlatformTest {
   BrowserPrefsTest() {
     RegisterProfilePrefs(pref_service_.registry());
 
-    // TODO(crbug.com/40282890): Remove this line ~one year after full launch.
+    // TODO(crbug.com/369296278): Remove this line ~one year after full launch.
     // Manually register IdentityManagerFactory preferences as ProfilePrefs do
     // not register KeyedService factories prefs.
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
