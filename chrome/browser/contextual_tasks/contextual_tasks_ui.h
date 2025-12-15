@@ -274,6 +274,13 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::unique_ptr<ContextualTasksInternalsPageHandler>
       contextual_tasks_internals_page_handler_;
 
+  enum class WebUIState {
+    kUnknown,
+    kShownInTab,
+    kShownInSidePanel,
+  };
+  WebUIState previous_web_ui_state_ = WebUIState::kUnknown;
+
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
