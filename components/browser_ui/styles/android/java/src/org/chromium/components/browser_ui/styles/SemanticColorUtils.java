@@ -179,7 +179,12 @@ public class SemanticColorUtils {
         return ContextCompat.getColor(context, R.color.dialog_bg_color);
     }
 
-    /** Returns the surface color value of the conceptual sheet_bg_color. */
+    /**
+     * Returns the surface color value of the conceptual sheet_bg_color.
+     *
+     * @deprecated Use bottom_sheet_bg_color instead.
+     * */
+    @Deprecated
     public static @ColorInt int getSheetBgColor(Context context) {
         return resolve(R.attr.colorSurface, context);
     }
