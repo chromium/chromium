@@ -130,7 +130,7 @@ class TokenFetcherImplTest : public testing::Test {
   void GetAuthnTokens(int num_tokens) {
     fetcher_->GetAuthnTokens(num_tokens, tokens_future_.GetCallback());
 
-    ASSERT_TRUE(tokens_future_.Wait()) << "GetAuthnTokens did not call back";
+    CHECK(tokens_future_.Wait()) << "GetAuthnTokens did not call back";
   }
 
   // Expect that the GetAuthnTokens call returned the given tokens.

@@ -60,29 +60,27 @@ class FakeOakSessionService : public mojom::OakSession {
 
   void RunInitiateHandshakeCallback(HandshakeMessage message) {
     // Mojo service is not called instantly, therefore we have to wait here.
-    ASSERT_TRUE(base::test::RunUntil(
+    CHECK(base::test::RunUntil(
         [&]() { return !initiate_handshake_callback_.is_null(); }));
     std::move(initiate_handshake_callback_).Run(std::move(message));
   }
 
   void RunCompleteHandshakeCallback(bool handshake_verified) {
     // Mojo service is not called instantly, therefore we have to wait here.
-    ASSERT_TRUE(base::test::RunUntil(
+    CHECK(base::test::RunUntil(
         [&]() { return !complete_handshake_callback_.is_null(); }));
     std::move(complete_handshake_callback_).Run(handshake_verified);
   }
 
   void RunEncryptCallback(const std::optional<std::vector<uint8_t>>& data) {
     // Mojo service is not called instantly, therefore we have to wait here.
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return !encrypt_callback_.is_null(); }));
+    CHECK(base::test::RunUntil([&]() { return !encrypt_callback_.is_null(); }));
     std::move(encrypt_callback_).Run(data);
   }
 
   void RunDecryptCallback(const std::optional<std::vector<uint8_t>>& data) {
     // Mojo service is not called instantly, therefore we have to wait here.
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return !decrypt_callback_.is_null(); }));
+    CHECK(base::test::RunUntil([&]() { return !decrypt_callback_.is_null(); }));
     std::move(decrypt_callback_).Run(data);
   }
 

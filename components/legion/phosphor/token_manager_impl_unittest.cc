@@ -66,7 +66,7 @@ class MockTokenFetcher : public TokenFetcher {
 
   void GetAuthnTokens(int batch_size,
                       GetAuthnTokensCallback callback) override {
-    ASSERT_FALSE(expected_get_authn_token_calls_.empty())
+    CHECK(!expected_get_authn_token_calls_.empty())
         << "Unexpected call to GetAuthnTokens";
     auto& exp = expected_get_authn_token_calls_.front();
     EXPECT_EQ(batch_size, exp.batch_size);

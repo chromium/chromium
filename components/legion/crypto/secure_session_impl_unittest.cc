@@ -21,9 +21,9 @@ class SecureSessionImplTest : public ::testing::Test {
 
     auto server_handshake_response =
         server_session.ProcessHandshake(client_handshake_request);
-    ASSERT_TRUE(server_handshake_response.has_value());
+    CHECK(server_handshake_response.has_value());
 
-    ASSERT_TRUE(client_session_.ProcessHandshakeResponse(
+    CHECK(client_session_.ProcessHandshakeResponse(
         server_handshake_response.value()));
   }
 
