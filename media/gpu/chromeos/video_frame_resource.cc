@@ -82,6 +82,10 @@ gfx::GpuMemoryBufferHandle VideoFrameResource::CreateGpuMemoryBufferHandle()
   return media::CreateGpuMemoryBufferHandle(frame_.get());
 }
 
+bool VideoFrameResource::HasMappableSharedImage() const {
+  return frame_->HasMappableSharedImage();
+}
+
 scoped_refptr<gpu::ClientSharedImage> VideoFrameResource::GetSharedImage()
     const {
   return frame_->shared_image();
