@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 ExtensionsToolbarViewModel::ExtensionsToolbarViewModel() = default;
 
 ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() = default;

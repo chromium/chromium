@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 inline constexpr char kExtensionSettingsOverriddenDialogName[] =
     "ExtensionSettingsOverriddenDialog";
 

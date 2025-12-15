@@ -20,8 +20,11 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionActionPlatformDelegate;
 class IconWithBadgeImageSource;

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
@@ -21,6 +22,8 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -34,6 +35,8 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

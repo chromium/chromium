@@ -28,8 +28,11 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

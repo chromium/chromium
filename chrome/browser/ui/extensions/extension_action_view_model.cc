@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -51,6 +52,8 @@
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContentsObserver;
 using extensions::ActionInfo;

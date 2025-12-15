@@ -9,6 +9,9 @@
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // ViewModel for the ExtensionsToolbarContainer. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves

@@ -9,7 +9,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/ui_base_types.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // The controller for the ControlledHomeDialog. This class is responsible
 // for both providing the display information (ShowParams) as well as handling
