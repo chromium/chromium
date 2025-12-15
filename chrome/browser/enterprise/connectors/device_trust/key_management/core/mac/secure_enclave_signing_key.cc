@@ -24,7 +24,7 @@ namespace enterprise_connectors {
 namespace {
 
 // An implementation of crypto::UnexportableSigningKey.
-class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
+class SecureEnclaveSigningKey : public crypto::StatefulUnexportableSigningKey {
  public:
   SecureEnclaveSigningKey(base::apple::ScopedCFTypeRef<SecKeyRef> key,
                           std::unique_ptr<SecureEnclaveClient> client,
@@ -38,6 +38,11 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override;
   SecKeyRef GetSecKeyRef() const override;
+  crypto::StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
+      override;
+
+  // crypto::StatefulUnexportableSigningKey:
+  std::string GetKeyTag() const override;
 
  private:
   base::apple::ScopedCFTypeRef<SecKeyRef> key_;
@@ -96,6 +101,18 @@ std::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
 
 SecKeyRef SecureEnclaveSigningKey::GetSecKeyRef() const {
   return key_.get();
+}
+
+crypto::StatefulUnexportableSigningKey*
+SecureEnclaveSigningKey::AsStatefulUnexportableSigningKey() {
+  return this;
+}
+
+std::string SecureEnclaveSigningKey::GetKeyTag() const {
+  // For `crypto::UnexportableSigningKeyMac` this corresponds to the key's
+  // `kSecAttrApplicationTag` attribute. Since this is not set for
+  // `SecureEnclaveSigningKey`, we return the empty string here for consistency.
+  return "";
 }
 
 }  // namespace

@@ -101,7 +101,7 @@ void LogKeychainOperationError(
 
 // UnexportableSigningKeyMac is an implementation of the UnexportableSigningKey
 // interface on top of Apple's Secure Enclave.
-class UnexportableSigningKeyMac : public UnexportableSigningKey {
+class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
  public:
   explicit UnexportableSigningKeyMac(CFDictionaryRef key_attributes)
       : UnexportableSigningKeyMac(
@@ -117,7 +117,8 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
         application_label_(base::ToVector(base::apple::CFDataToSpan(
             base::apple::GetValueFromDictionary<CFDataRef>(
                 key_attributes,
-                kSecAttrApplicationLabel)))) {
+                kSecAttrApplicationLabel)))),
+        application_tag_(GetApplicationTag(key_attributes)) {
     base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
         crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(key_.get()));
     base::apple::ScopedCFTypeRef<CFDataRef> x962_bytes(
@@ -172,6 +173,14 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
 
   SecKeyRef GetSecKeyRef() const override { return key_.get(); }
 
+  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
+      LIFETIME_BOUND override {
+    return this;
+  }
+
+  // StatefulUnexportableSigningKey:
+  std::string GetKeyTag() const override { return application_tag_; }
+
  private:
   // The wrapped key as returned by the Keychain API.
   const base::apple::ScopedCFTypeRef<SecKeyRef> key_;
@@ -180,6 +189,9 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
   // key. We use this to uniquely identify the key in lieu of a wrapped private
   // key.
   const std::vector<uint8_t> application_label_;
+
+  // The application tag of the key.
+  const std::string application_tag_;
 
   // The public key in DER SPKI format.
   std::vector<uint8_t> public_key_spki_;

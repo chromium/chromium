@@ -83,6 +83,10 @@ class MockUnexportableKeyService : public UnexportableKeyService {
               GetAlgorithm,
               (UnexportableKeyId key_id),
               (const, override));
+  MOCK_METHOD(ServiceErrorOr<std::string>,
+              GetKeyTag,
+              (UnexportableKeyId key_id),
+              (const, override));
 };
 
 }  // namespace unexportable_keys

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -19,6 +20,9 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto {
+
+class StatefulUnexportableSigningKey;
+class StatefulUnexportableKeyProvider;
 
 // UnexportableSigningKey provides a hardware-backed signing oracle on platforms
 // that support it. Current support is:
@@ -75,9 +79,22 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // instance.
   virtual SecKeyRef GetSecKeyRef() const = 0;
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Typesafe downcast to `StatefulUnexportableSigningKey`. Returns nullptr if
+  // the key is not stateful.
+  virtual StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
+      LIFETIME_BOUND = 0;
 };
 
-class StatefulUnexportableKeyProvider;
+// StatefulUnexportableSigningKey is an interface for keys that are backed by
+// some permanent state, such as the keychain on macOS.
+class CRYPTO_EXPORT StatefulUnexportableSigningKey
+    : public UnexportableSigningKey {
+ public:
+  // Returns the tag of the stateful key stored by the platform. For example,
+  // on macOS, this is the application tag set when creating the key.
+  virtual std::string GetKeyTag() const = 0;
+};
 
 // UnexportableKeyProvider creates |UnexportableSigningKey|s.
 class CRYPTO_EXPORT UnexportableKeyProvider {

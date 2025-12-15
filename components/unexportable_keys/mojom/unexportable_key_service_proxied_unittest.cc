@@ -39,6 +39,7 @@ namespace {
 
 constexpr auto kTestSubjectPublicKeyInfo = std::to_array<uint8_t>({1, 2, 3, 4});
 constexpr auto kTestWrappedKey = std::to_array<uint8_t>({5, 6, 7, 8});
+constexpr std::string_view kTestKeyTag = "test_key_tag";
 
 class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
  public:
@@ -64,6 +65,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
           base::ToVector(kTestSubjectPublicKeyInfo);
       new_key_data->wrapped_key = base::ToVector(kTestWrappedKey);
       new_key_data->algorithm = acceptable_algorithms[0];
+      new_key_data->key_tag = kTestKeyTag;
       std::move(callback).Run(std::move(new_key_data));
     }
   }
@@ -85,6 +87,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
       new_key_data->wrapped_key = wrapped_key;
       new_key_data->algorithm =
           crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+      new_key_data->key_tag = kTestKeyTag;
       std::move(callback).Run(std::move(new_key_data));
     }
   }
@@ -214,6 +217,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeySuccess) {
   EXPECT_THAT(
       proxied_service_.GetAlgorithm(key_id),
       ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256));
+  EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyError) {
@@ -283,6 +287,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeySuccess) {
   EXPECT_THAT(
       proxied_service_.GetAlgorithm(key_id),
       ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyAlreadyCached) {

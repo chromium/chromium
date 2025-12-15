@@ -69,6 +69,10 @@ class SoftwareECDSA : public UnexportableSigningKey {
     return ret;
   }
 
+  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
+    return nullptr;
+  }
+
 #if BUILDFLAG(IS_MAC)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
 #endif  // BUILDFLAG(IS_MAC)
@@ -117,6 +121,10 @@ class SoftwareRSA : public UnexportableSigningKey {
 #if BUILDFLAG(IS_MAC)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
 #endif  // BUILDFLAG(IS_MAC)
+
+  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
+    return nullptr;
+  }
 
  private:
   bssl::UniquePtr<RSA> key_;

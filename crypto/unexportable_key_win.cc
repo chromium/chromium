@@ -437,6 +437,10 @@ class ECDSAKey : public UnexportableSigningKey {
     return provider_type_ == ProviderType::kTPM;
   }
 
+  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
+    return nullptr;
+  }
+
  private:
   const ProviderType provider_type_;
   ScopedNCryptKey key_;
@@ -480,6 +484,10 @@ class RSAKey : public UnexportableSigningKey {
 
   bool IsHardwareBacked() const override {
     return provider_type_ == ProviderType::kTPM;
+  }
+
+  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
+    return nullptr;
   }
 
  private:

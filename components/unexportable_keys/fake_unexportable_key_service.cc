@@ -73,4 +73,9 @@ FakeUnexportableKeyService::GetAlgorithm(UnexportableKeyId key_id) const {
   return base::unexpected(ServiceError::kKeyNotFound);
 }
 
+ServiceErrorOr<std::string> FakeUnexportableKeyService::GetKeyTag(
+    UnexportableKeyId key_id) const {
+  return base::unexpected(ServiceError::kKeyNotFound);
+}
+
 }  // namespace unexportable_keys

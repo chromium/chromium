@@ -268,6 +268,14 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeyWithWrongApplicationTag) {
   EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }
 
+TEST_F(UnexportableKeyMacTest, GetKeyTag) {
+  ASSERT_TRUE(provider_);
+  auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  EXPECT_EQ(key->AsStatefulUnexportableSigningKey()->GetKeyTag(),
+            kTestApplicationTag);
+}
+
 TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {
   ASSERT_TRUE(provider_);
   auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);

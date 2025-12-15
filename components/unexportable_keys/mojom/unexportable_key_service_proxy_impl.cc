@@ -4,10 +4,13 @@
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 
 #include <cstdint>
+#include <optional>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -24,39 +27,36 @@ namespace unexportable_keys {
 
 namespace {
 
-base::expected<mojom::NewKeyDataPtr, ServiceError> PopulateNewKeyData(
+// For operations requiring stateful keys `ServiceError::kOperationNotSupported`
+// might be returned on platforms where keys are stateless. Since this is not an
+// actual error when retrieving the key, treat it simply as a missing key.
+template <typename T>
+ServiceErrorOr<std::optional<T>> AdaptOperationNotSupported(
+    ServiceErrorOr<T> result) {
+  using ServiceErrorOrOpt = ServiceErrorOr<std::optional<T>>;
+  return ServiceErrorOrOpt(std::move(result)).or_else([](ServiceError error) {
+    return error == ServiceError::kOperationNotSupported
+               ? ServiceErrorOrOpt(std::nullopt)
+               : base::unexpected(error);
+  });
+}
+
+ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     const ServiceErrorOr<UnexportableKeyId> error_or_key_id) {
-  if (!error_or_key_id.has_value()) {
-    return base::unexpected(error_or_key_id.error());
-  }
-
-  const UnexportableKeyId& key_id = error_or_key_id.value();
+  ASSIGN_OR_RETURN(UnexportableKeyId key_id, error_or_key_id);
   auto new_key_data = mojom::NewKeyData::New();
-
   new_key_data->key_id = key_id;
 
-  const ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> algo =
-      unexportable_key_service.GetAlgorithm(key_id);
-  if (!algo.has_value()) {
-    return base::unexpected(algo.error());
-  }
-  new_key_data->algorithm = *algo;
-
-  const ServiceErrorOr<std::vector<uint8_t>> wrapped =
-      unexportable_key_service.GetWrappedKey(key_id);
-  if (!wrapped.has_value()) {
-    return base::unexpected(wrapped.error());
-  }
-  new_key_data->wrapped_key = *wrapped;
-
-  const ServiceErrorOr<std::vector<uint8_t>> key_info =
-      unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-  if (!key_info.has_value()) {
-    return base::unexpected(key_info.error());
-  }
-  new_key_data->subject_public_key_info = *key_info;
-
+  ASSIGN_OR_RETURN(new_key_data->algorithm,
+                   unexportable_key_service.GetAlgorithm(key_id));
+  ASSIGN_OR_RETURN(new_key_data->wrapped_key,
+                   unexportable_key_service.GetWrappedKey(key_id));
+  ASSIGN_OR_RETURN(new_key_data->subject_public_key_info,
+                   unexportable_key_service.GetSubjectPublicKeyInfo(key_id));
+  ASSIGN_OR_RETURN(
+      new_key_data->key_tag,
+      AdaptOperationNotSupported(unexportable_key_service.GetKeyTag(key_id)));
   return new_key_data;
 }
 

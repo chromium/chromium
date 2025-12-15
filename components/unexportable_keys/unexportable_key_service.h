@@ -212,6 +212,12 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // or `FromWrappedSigningKeySlowlyAsync()`
   virtual ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
   GetAlgorithm(UnexportableKeyId key_id) const = 0;
+
+  // Returns the tag of a key that `key_id` refers to.
+  // Returns a `ServiceError` if `key_id` is not found, or if the key does not
+  // support stateful operations.
+  virtual ServiceErrorOr<std::string> GetKeyTag(
+      UnexportableKeyId key_id) const = 0;
 };
 
 }  // namespace unexportable_keys

@@ -63,6 +63,7 @@ struct NewKeyData {
   array<uint8> subject_public_key_info;
   array<uint8> wrapped_key;
   SignatureAlgorithm algorithm;
+  string? key_tag;
 };
 
 // Interface for proxying calls to UnexportableKeyService from less privileged

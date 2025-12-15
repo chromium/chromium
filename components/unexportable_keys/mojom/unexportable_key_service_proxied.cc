@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
@@ -40,6 +41,14 @@ ServiceErrorOr<size_t> AdaptSizeType(ServiceErrorOr<uint64_t> result) {
 }  // namespace
 
 UnexportableKeyServiceProxied::CachedKeyData::CachedKeyData() = default;
+
+UnexportableKeyServiceProxied::CachedKeyData::CachedKeyData(
+    const mojom::NewKeyDataPtr& new_key_data)
+    : subject_public_key_info(new_key_data->subject_public_key_info),
+      wrapped_key(new_key_data->wrapped_key),
+      algorithm(new_key_data->algorithm),
+      key_tag(base::OptionalToExpected(new_key_data->key_tag,
+                                       ServiceError::kOperationNotSupported)) {}
 
 UnexportableKeyServiceProxied::CachedKeyData::CachedKeyData(
     const UnexportableKeyServiceProxied::CachedKeyData& other) = default;
@@ -86,12 +95,7 @@ void UnexportableKeyServiceProxied::OnKeyGenerated(
   const mojom::NewKeyDataPtr& new_key_data = result.value();
   UnexportableKeyId key_id(new_key_data->key_id);
 
-  CachedKeyData cached_data;
-  cached_data.subject_public_key_info = new_key_data->subject_public_key_info;
-  cached_data.wrapped_key = new_key_data->wrapped_key;
-  cached_data.algorithm = new_key_data->algorithm;
-
-  if (!key_cache_.try_emplace(key_id, std::move(cached_data)).second) {
+  if (!key_cache_.try_emplace(key_id, new_key_data).second) {
     std::move(original_callback)
         .Run(base::unexpected(ServiceError::kKeyCollision));
     return;
@@ -125,13 +129,7 @@ void UnexportableKeyServiceProxied::OnKeyLoaded(
   const mojom::NewKeyDataPtr& new_key_data = result.value();
   UnexportableKeyId key_id(new_key_data->key_id);
 
-  key_cache_.lazy_emplace(key_id, [&](const auto& ctor) {
-    CachedKeyData cached_data;
-    cached_data.subject_public_key_info = new_key_data->subject_public_key_info;
-    cached_data.wrapped_key = new_key_data->wrapped_key;
-    cached_data.algorithm = new_key_data->algorithm;
-    ctor(key_id, std::move(cached_data));
-  });
+  key_cache_.try_emplace(key_id, new_key_data);
   std::move(original_callback).Run(key_id);
 }
 
@@ -185,6 +183,15 @@ UnexportableKeyServiceProxied::GetAlgorithm(UnexportableKeyId key_id) const {
     return base::unexpected(ServiceError::kKeyNotFound);
   }
   return it->second.algorithm;
+}
+
+ServiceErrorOr<std::string> UnexportableKeyServiceProxied::GetKeyTag(
+    UnexportableKeyId key_id) const {
+  auto it = key_cache_.find(key_id);
+  if (it == key_cache_.end()) {
+    return base::unexpected(ServiceError::kKeyNotFound);
+  }
+  return it->second.key_tag;
 }
 
 void UnexportableKeyServiceProxied::DeleteKeySlowlyAsync(

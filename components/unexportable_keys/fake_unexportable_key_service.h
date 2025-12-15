@@ -54,6 +54,8 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
       UnexportableKeyId key_id) const override;
+  ServiceErrorOr<std::string> GetKeyTag(
+      UnexportableKeyId key_id) const override;
 };
 
 }  // namespace unexportable_keys
