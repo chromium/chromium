@@ -563,7 +563,6 @@ void XuCameraService::GetDevicePath(
     return;
   }
 
-  // TODO(b/295912291): Check get_device_id is in a map
   auto hashed_device_id = id->get_device_id();
 
   if (!host_id || hashed_device_id.empty()) {
