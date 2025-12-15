@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -22,6 +23,11 @@ void IOSPromoTriggerService::NotifyPromoShouldBeShown(
 }
 
 const syncer::DeviceInfo* IOSPromoTriggerService::GetIOSDeviceToRemind() {
+  if (GetMobilePromoOnDesktopForcePromoType() ==
+      IOSPromoBubbleForceType::kQRCode) {
+    return nullptr;
+  }
+
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile_);
   if (!device_info_sync_service) {

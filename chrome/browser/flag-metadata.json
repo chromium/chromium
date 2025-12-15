@@ -7092,6 +7092,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "mobile-promo-on-desktop-force-promo-type",
+    "owners": [ "hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "mojo-use-eventfd",
     "owners": ["bgeffon@chromium.org", "pasko@chromium.org"],
     "expiry_milestone": 150

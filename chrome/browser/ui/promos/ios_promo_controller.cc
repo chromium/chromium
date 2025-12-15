@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/views/widget/widget.h"
@@ -75,23 +76,26 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
     return;
   }
 
-  // Don't show the promo if the user has a recent active Android device.
-  if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
-    return;
-  }
+  if (GetMobilePromoOnDesktopForcePromoType() ==
+      IOSPromoBubbleForceType::kNoOverride) {
+    // Don't show the promo if the user has a recent active Android device.
+    if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
+      return;
+    }
 
-  // Do not show the promo if the user does not meet one of the two
-  // conditions:
-  // 1. Does not have Chrome installed on any iOS device
-  // 2. Is active for no more than 16 days in the last 28
-  IOSPromoTriggerService* service =
-      IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
-  if (!service) {
-    return;
-  }
-  const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
-  if (device && ios_promos_utils::IsUserActiveOnIOS(browser_->profile())) {
-    return;
+    // Do not show the promo if the user does not meet one of the two
+    // conditions:
+    // 1. Does not have Chrome installed on any iOS device
+    // 2. Is active for no more than 16 days in the last 28
+    IOSPromoTriggerService* service =
+        IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
+    if (!service) {
+      return;
+    }
+    const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
+    if (device && ios_promos_utils::IsUserActiveOnIOS(browser_->profile())) {
+      return;
+    }
   }
 
   auto* user_education_interface =

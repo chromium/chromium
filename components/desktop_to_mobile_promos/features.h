@@ -16,13 +16,27 @@ enum class MobilePromoOnDesktopPromoType {
   kAutofillPromo = 3,
 };
 
+// Enum to represent the forced promo type of feature
+// kMobilePromoOnDesktopForcePromoType.
+enum class IOSPromoBubbleForceType {
+  kQRCode = 0,
+  kReminder = 1,
+  kNoOverride = 2,
+};
+
 // If this feature is enabled, show mobile promo on desktop.
 BASE_DECLARE_FEATURE(kMobilePromoOnDesktop);
+
+// If this feature is enabled, force the iOS promo to be a specific type.
+BASE_DECLARE_FEATURE(kMobilePromoOnDesktopForcePromoType);
 
 // Parameter of `kMobilePromoOnDesktop` for promo type.
 extern const char kMobilePromoOnDesktopPromoTypeParam[];
 // Parameter of `kMobilePromoOnDesktop` for showing the iOS push notification.
 extern const char kMobilePromoOnDesktopNotificationParam[];
+
+// Parameter of `kMobilePromoOnDesktopForcePromoType` for the promo type.
+extern const char kMobilePromoOnDesktopForcePromoTypeParam[];
 
 // Returns true if the `kMobilePromoOnDesktop` feature is enabled.
 bool MobilePromoOnDesktopEnabled();
@@ -35,5 +49,9 @@ bool MobilePromoOnDesktopTypeEnabled(MobilePromoOnDesktopPromoType type);
 // Returns true if feature `kMobilePromoOnDesktop` is enabled with a push
 // notification arm, false otherwise.
 bool IsMobilePromoOnDesktopNotificationsEnabled();
+
+// Returns the forced promo type if `kMobilePromoOnDesktopForcePromoType` is
+// enabled, otherwise returns `IOSPromoBubbleType::kNoOverride`.
+IOSPromoBubbleForceType GetMobilePromoOnDesktopForcePromoType();
 
 #endif  // COMPONENTS_DESKTOP_TO_MOBILE_PROMOS_FEATURES_H_
