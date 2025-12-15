@@ -586,6 +586,9 @@ extern const base::FeatureParam<std::string>
     kGlicRecordActorJournalFeedbackCategoryTag;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicRecordMemoryFootprintMetrics);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicWebClientUnresponsiveMetrics);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
