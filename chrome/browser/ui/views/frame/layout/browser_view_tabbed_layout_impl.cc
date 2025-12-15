@@ -161,6 +161,33 @@ bool BrowserViewTabbedLayoutImpl::ShadowOverlayVisible() const {
   return views().toolbar_height_side_panel->GetVisible();
 }
 
+int BrowserViewTabbedLayoutImpl::GetCollapsedVerticalTabStripRelativeTop(
+    const BrowserLayoutParams& params) const {
+  // When the top container isn't in the browser view, the exclusion won't apply
+  // and the tabstrip goes all the way to the top.
+  if (!IsParentedTo(views().top_container, views().browser_view)) {
+    return 0;
+  }
+
+  // If there is no leading exclusion, the tabstrip goes all the way to the top.
+  if (params.leading_exclusion.IsEmpty()) {
+    return 0;
+  }
+
+  const int exclusion_height =
+      base::ClampCeil(params.leading_exclusion.ContentWithPadding().height());
+
+  // Try to align with toolbar. But if it's not visible, then don't.
+  if (!delegate().IsToolbarVisible()) {
+    return exclusion_height;
+  }
+
+  // Gets where the bottom of the toolbar will be laid out.
+  const int provisional_toolbar_height =
+      GetBoundsWithExclusion(params, views().toolbar).height();
+  return std::max(exclusion_height, provisional_toolbar_height);
+}
+
 gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
     const views::View* host) const {
   // This is a simplified version of the same method in
@@ -271,8 +298,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           views().vertical_tab_strip_container->GetPreferredSize().width();
       if (delegate().IsVerticalTabStripCollapsed()) {
         // Collapsed tabstrip sits underneath caption buttons when present.
-        vertical_tab_strip_relative_top = base::ClampCeil(
-            params.leading_exclusion.ContentWithPadding().height());
+        vertical_tab_strip_relative_top =
+            GetCollapsedVerticalTabStripRelativeTop(params);
         collapsed_vertical_tab_strip_adjustment =
             vertical_tab_strip_relative_top > 0 ? vertical_tab_strip_width : 0;
       } else {

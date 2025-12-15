@@ -56,6 +56,13 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // toolbar-height side panel, but may not be in some browser states.
   bool ShadowOverlayVisible() const;
 
+  // Returns where the vertical tabstrip starts vertically in collapsed mode.
+  // This is relative to the top of the visual client area of `params`, and will
+  // be zero if the vertical tabstrip should go all the way to the top of the
+  // visual area.
+  int GetCollapsedVerticalTabStripRelativeTop(
+      const BrowserLayoutParams& params) const;
+
   // Returns the type of top separator.
   enum class TopSeparatorType {
     kNone,
