@@ -4,7 +4,7 @@
 
 #include "ui/base/interaction/element_identifier.h"
 
-#include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -40,7 +40,7 @@ ElementIdentifier ElementIdentifier::FromRawValue(intptr_t value) {
 // static
 ElementIdentifier ElementIdentifier::FromName(const char* name) {
   for (const auto* impl : GetKnownIdentifiers()) {
-    if (!UNSAFE_TODO(strcmp(impl->name, name))) {
+    if (std::string_view(impl->name) == name) {
       return ElementIdentifier(impl);
     }
   }
