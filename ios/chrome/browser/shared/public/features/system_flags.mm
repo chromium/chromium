@@ -34,6 +34,7 @@ NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
+NSString* const kHomeSurfaceDuration = @"HomeSurfaceDuration";
 NSString* const kFirstRunRecency = @"FirstRunRecency";
 NSString* const kIgnoreDeviceLocaleConditions = @"IgnoreDeviceLocaleConditions";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
@@ -204,6 +205,15 @@ std::optional<int> GetSafetyCheckWeakPasswordsCount() {
   }
 
   return weakPasswordsCount;
+}
+
+base::TimeDelta GetReturnToHomeSurfaceDuration() {
+  int duration = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kHomeSurfaceDuration];
+  if (duration == 0) {
+    return base::Hours(4);
+  }
+  return base::Seconds(duration);
 }
 
 std::optional<int> GetFirstRunRecency() {

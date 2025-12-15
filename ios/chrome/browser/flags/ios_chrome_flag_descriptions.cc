@@ -1593,11 +1593,6 @@ const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "
     "the spotlight default index";
 
-const char kStartSurfaceName[] = "Start Surface";
-const char kStartSurfaceDescription[] =
-    "Enable showing the Start Surface when launching Chrome via clicking the "
-    "icon or the app switcher.";
-
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";

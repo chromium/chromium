@@ -254,7 +254,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 - (void)triggerRestore {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
-                                  disabled:{kStartSurface}
+                                  disabled:{}
                             relaunchPolicy:ForceRelaunchByCleanShutdown];
 }
 

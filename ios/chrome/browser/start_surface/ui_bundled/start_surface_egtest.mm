@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/home_surface_egtest_utils.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
@@ -56,7 +57,6 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 NSString* const kGroupName = @"1group";
 const char kZeroSecondsThreshold[] = "0";
-const char kThreeSecondsThreshold[] = "3";
 
 }  // namespace
 
@@ -79,25 +79,22 @@ const char kThreeSecondsThreshold[] = "3";
         {kShowTabGroupInGridOnStart,
          {{{kShowTabGroupInGridInactiveDurationInSeconds,
             kZeroSecondsThreshold}}}});
-    config.features_enabled_and_params.push_back(
-        {kStartSurface,
-         {{{kReturnToStartSurfaceInactiveDurationInSeconds,
-            kThreeSecondsThreshold}}}});
     return config;
   }
-
-  config.features_enabled_and_params.push_back(
-      {kStartSurface,
-       {{{kReturnToStartSurfaceInactiveDurationInSeconds,
-          kZeroSecondsThreshold}}}});
 
   return config;
 }
 
 - (void)setUp {
   [super setUp];
+  MakeHomeSurfaceOpenImmediately();
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
+}
+
+- (void)tearDownHelper {
+  ResetMakeHomeSurfaceOpenImmediately();
+  [super tearDownHelper];
 }
 
 // Loads the first tab with an URL.

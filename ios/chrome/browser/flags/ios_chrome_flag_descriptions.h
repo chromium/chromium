@@ -955,9 +955,6 @@ extern const char kSmartTabGroupingDescription[];
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];
 
-extern const char kStartSurfaceName[];
-extern const char kStartSurfaceDescription[];
-
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 

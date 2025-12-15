@@ -48,6 +48,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/tab_insertion/model",
@@ -103,6 +104,7 @@ source_set("eg2_tests") {
 
   deps = [
     ":feature_flags",
+    ":test_utils",
     "//build:branding_buildflags",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -119,4 +121,13 @@ source_set("eg2_tests") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "home_surface_egtest_utils.h",
+    "home_surface_egtest_utils.mm",
+  ]
+  deps = [ "//ios/chrome/test/earl_grey:eg_test_support+eg2" ]
 }

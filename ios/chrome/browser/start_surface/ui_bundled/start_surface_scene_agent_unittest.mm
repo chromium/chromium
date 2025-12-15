@@ -48,7 +48,6 @@ namespace {
 
 const char kURL[] = "https://chromium.org/";
 const char kOneHourTreshold[] = "3600";
-const char kFourHoursTreshold[] = "14400";
 
 }  // namespace
 
@@ -80,9 +79,14 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
     TabInsertionBrowserAgent::CreateForBrowser(browser);
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    [[NSUserDefaults standardUserDefaults] setObject:@14400
+                                              forKey:@"HomeSurfaceDuration"];
   }
 
   void TearDown() override {
+    // Make sure background duration time is reset back to 4 hour default value.
+    [[NSUserDefaults standardUserDefaults] setObject:@14400
+                                              forKey:@"HomeSurfaceDuration"];
     // Close all WebState to make sure no Objective-C object reference the
     // ProfileIOS after its destruction (as the SceneState destruction may
     // be delayed).
@@ -371,12 +375,11 @@ TEST_F(StartSurfaceSceneAgentTest,
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid warm start
 // open.
 TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
-  std::map<std::string, std::string> parameters;
-  parameters[kReturnToStartSurfaceInactiveDurationInSeconds] = "0";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
-                                                         parameters);
-
+  [[NSUserDefaults standardUserDefaults] setObject:@1
+                                            forKey:@"HomeSurfaceDuration"];
+  base::Time time_last_background = base::Time::Now() - base::Seconds(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -394,12 +397,11 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid cold start
 // open.
 TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
-  std::map<std::string, std::string> parameters;
-  parameters[kReturnToStartSurfaceInactiveDurationInSeconds] = "0";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
-                                                         parameters);
-
+  [[NSUserDefaults standardUserDefaults] setObject:@1
+                                            forKey:@"HomeSurfaceDuration"];
+  base::Time time_last_background = base::Time::Now() - base::Seconds(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
   [startup_information_ setIsColdStart:YES];
 
   InsertNewWebState(0, GURL(kURL));
@@ -447,59 +449,16 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
                   .AreAllCapabilitiesKnown());
 }
 
-// Tests that the StartSurfaceSceneAgent saves the index of a valid NTP WebState
-// during excess NTP cleanup and reuses the saved WebState when showing the
-// Start Surface.
-TEST_F(StartSurfaceSceneAgentTest, ActivateSavedNTPWebStateIndex) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-  base::FieldTrialParams startup_remediation_params = {
-      {kIOSStartTimeStartupRemediationsSaveNTPWebState, "true"}};
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kIOSStartTimeStartupRemediations, startup_remediation_params}},
-      /*disabled_features=*/{});
-
-  InsertNewWebState(0, GURL(kChromeUINewTabURL));
-  InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  InsertNewWebState(2, GURL(kURL));
-  InsertNewWebState(3, GURL(kChromeUINewTabURL));
-
-  WebStateList* web_state_list = GetWebStateList();
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  web_state_list->ActivateWebStateAt(2);
-  favicon::WebFaviconDriver::CreateForWebState(
-      web_state_list->GetActiveWebState(),
-      /*favicon_service=*/nullptr);
-
-  // Transition to the background, triggering the NTP clean up.
-  scene_state_.activationLevel = SceneActivationLevelBackground;
-  ASSERT_EQ(2, web_state_list->count());
-
-  // Transition again to foreground, triggering activating the start surface.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  // The existing NTP should be the active WebState (no new NTPs added).
-  EXPECT_TRUE(IsUrlNtp(web_state_list->GetActiveWebState()->GetVisibleURL()));
-  ASSERT_EQ(2, web_state_list->count());
-}
-
 // Tests that the tab group in grid view is opened if Chrome is activated in the
 // right time interval.
 TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Within the interval.
@@ -530,16 +489,12 @@ TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
 TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartInIncognitoMode) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Within the interval
@@ -577,16 +532,12 @@ TEST_F(StartSurfaceSceneAgentTest,
 TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfOpenedTooEarly) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Not in interval.
@@ -617,16 +568,12 @@ TEST_F(StartSurfaceSceneAgentTest,
 TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfOpenedTooLate) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Not in interval.
@@ -660,16 +607,12 @@ TEST_F(StartSurfaceSceneAgentTest,
 TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfNotInAGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Within the interval but no group.
@@ -700,16 +643,12 @@ TEST_F(StartSurfaceSceneAgentTest,
 TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartBeforeForegroundActivation) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   // Within the interval.
@@ -740,16 +679,12 @@ TEST_F(StartSurfaceSceneAgentTest,
 // in background.
 TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   base::Time time_last_background = base::Time::Now() - base::Hours(5);
@@ -776,16 +711,12 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
 // foregrounded after being +4 hours in background.
 TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
-  // ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams start_time_params = {
-      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
   base::FieldTrialParams show_tab_grid_treshold = {
       {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kStartSurface, start_time_params},
-       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
       /*disabled_features=*/{});
 
   base::Time time_last_background = base::Time::Now() - base::Hours(5);

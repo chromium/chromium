@@ -10,6 +10,8 @@
 #import <optional>
 #import <string>
 
+#include "base/time/time.h"
+
 enum class UpdateChromeSafetyCheckState;
 enum class PasswordSafetyCheckState;
 enum class SafeBrowsingSafetyCheckState;
@@ -105,6 +107,10 @@ std::optional<int> GetSafetyCheckReusedPasswordsCount();
 // Returns the forced number of compromised passwords for the Safety Check
 // (Magic Stack) module.
 std::optional<int> GetSafetyCheckCompromisedPasswordsCount();
+
+// Returns the background duration needed before opening the Home Surface upon
+// app open.
+base::TimeDelta GetReturnToHomeSurfaceDuration();
 
 // Returns the forced number of days since first run.
 std::optional<int> GetFirstRunRecency();

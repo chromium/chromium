@@ -15,9 +15,6 @@ enum class StartupRemediationsType {
   kDisabled = 2,
 };
 
-// The feature to enable or disable the Start Surface.
-BASE_DECLARE_FEATURE(kStartSurface);
-
 // Feature to enable Browser Background Termination remediations in the Start
 // Surface.
 BASE_DECLARE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations);
@@ -48,14 +45,8 @@ extern const char kIOSStartTimeStartupRemediationsSaveNTPWebState[];
 // group in grid view in seconds.
 extern const char kShowTabGroupInGridInactiveDurationInSeconds[];
 
-// Checks whether the Start Surface should be enabled.
-bool IsStartSurfaceEnabled();
-
 // Checks whether the showTabGroupInGrid feature should be enabled.
 bool IsShowTabGroupInGridOnStartEnabled();
-
-// Returns the inactive duration to show the Start Surface.
-base::TimeDelta GetReturnToStartSurfaceDuration();
 
 // Returns the state of the IOSStartTimeStartupRemediations feature.
 StartupRemediationsType GetIOSStartTimeStartupRemediationsEnabledType();

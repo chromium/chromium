@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -59,7 +60,8 @@ bool ShouldShowTabGroupInGridForSceneState(SceneState* scene_state) {
   }
 
   const base::TimeDelta min_duration = GetReturnToTabGroupInGridDuration();
-  const base::TimeDelta max_duration = GetReturnToStartSurfaceDuration();
+  const base::TimeDelta max_duration =
+      experimental_flags::GetReturnToHomeSurfaceDuration();
 
   if (*elapsed <= min_duration || *elapsed >= max_duration) {
     return false;
@@ -74,7 +76,8 @@ bool ShouldShowTabGroupInGridForSceneState(SceneState* scene_state) {
 bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
   const std::optional<base::TimeDelta> elapsed =
       GetTimeSinceMostRecentTabWasOpenForSceneState(scene_state);
-  if (!elapsed.has_value() || *elapsed < GetReturnToStartSurfaceDuration()) {
+  if (!elapsed.has_value() ||
+      *elapsed < experimental_flags::GetReturnToHomeSurfaceDuration()) {
     return false;
   }
   if (scene_state.presentingModalOverlay ||

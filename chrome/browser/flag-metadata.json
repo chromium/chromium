@@ -9633,11 +9633,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "start-surface",
-    "owners": [ "gogerald@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full
