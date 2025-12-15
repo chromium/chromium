@@ -6,17 +6,29 @@
 
 #import <memory>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/feature_engagement/test/scoped_iph_feature_list.h"
+#import "components/feature_engagement/test/test_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
+#import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -34,6 +46,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -44,6 +59,7 @@
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -52,6 +68,65 @@
 namespace {
 NSString* const kTestAccessibilityLabel = @"testBadge";
 }
+
+// Test fake to allow easier triggering of ContextualPanelTabHelperObserver
+// methods.
+class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
+ public:
+  explicit FakeContextualPanelTabHelper(
+      web::WebState* web_state,
+      std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
+      : ContextualPanelTabHelper(web_state, models) {}
+
+  static void CreateForWebState(
+      web::WebState* web_state,
+      std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models) {
+    web_state->SetUserData(
+        UserDataKey(),
+        std::make_unique<FakeContextualPanelTabHelper>(web_state, models));
+  }
+
+  void AddObserver(ContextualPanelTabHelperObserver* observer) override {
+    ContextualPanelTabHelper::AddObserver(observer);
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(ContextualPanelTabHelperObserver* observer) override {
+    ContextualPanelTabHelper::RemoveObserver(observer);
+    observers_.RemoveObserver(observer);
+  }
+
+  void CallContextualPanelTabHelperDestroyed() {
+    for (auto& observer : observers_) {
+      observer.ContextualPanelTabHelperDestroyed(this);
+    }
+  }
+
+  void CallContextualPanelHasNewData(
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+          item_configurations) {
+    for (auto& observer : observers_) {
+      observer.ContextualPanelHasNewData(this, item_configurations);
+    }
+  }
+
+  base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig()
+      override {
+    return !configs_.empty() ? configs_[0]->weak_ptr_factory.GetWeakPtr()
+                             : nullptr;
+  }
+
+  // Helper to add configs to the front of the Fake tab helper cached
+  // `configs_`.
+  void AddToCachedConfigs(
+      std::unique_ptr<SamplePanelItemConfiguration> configuration) {
+    configs_.insert(configs_.begin(), std::move(configuration));
+  }
+
+  base::ObserverList<ContextualPanelTabHelperObserver, true> observers_;
+  std::vector<std::unique_ptr<ContextualPanelItemConfiguration>> configs_;
+};
 
 namespace {
 std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
@@ -65,9 +140,13 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
  protected:
   LocationBarBadgeMediatorTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {/*enabled_features=*/{kPageActionMenu, {}},
-         {kAskGeminiChip, {{kAskGeminiChipPrepopulateFloaty, "true"}}}},
-        /*disabled_features=*/{});
+        {{kPageActionMenu, {}},
+         {kAskGeminiChip, {{kAskGeminiChipPrepopulateFloaty, "true"}}},
+         {kLocationBarBadgeMigration, {}}},
+        {});
+
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHiOSContextualPanelSampleModelFeature});
 
     // Set up test factories.
     TestProfileIOS::Builder builder;
@@ -92,17 +171,26 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
     SetUpPrefs(profile_.get()->GetPrefs());
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+    tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
     web_state_list_ = browser_->GetWebStateList();
 
     // Create WebState to pass Gemini eligibility.
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
-    BwgTabHelper::CreateForWebState(web_state.get());
     web_state->SetBrowserState(profile_.get());
     web_state->SetCurrentURL(GURL("https://www.google.com"));
     web_state->SetContentsMimeType("text/html");
+
+    // Contextual Panel setup.
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+        models;
+    FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
+    InfoBarManagerImpl::CreateForWebState(web_state.get());
+    InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
+    BwgTabHelper::CreateForWebState(web_state.get());
+
     web_state_list_->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
@@ -122,6 +210,20 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     mediator_.delegate = mock_delegate_;
     mock_bwg_command_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mediator_.BWGCommandHandler = mock_bwg_command_handler_;
+
+    mock_contextual_sheet_handler_ =
+        OCMProtocolMock(@protocol(ContextualSheetCommands));
+    mock_entrypoint_iph_handler_ =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    mediator_.contextualSheetHandler = mock_contextual_sheet_handler_;
+    mediator_.entrypointHelpHandler = mock_entrypoint_iph_handler_;
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_contextual_sheet_handler_
+                     forProtocol:@protocol(ContextualSheetCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_entrypoint_iph_handler_
+                     forProtocol:@protocol(
+                                     ContextualPanelEntrypointIPHCommands)];
   }
 
   ~LocationBarBadgeMediatorTest() override { [mediator_ disconnect]; }
@@ -159,7 +261,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
   void AllowGeminiChipToShow(bool show_gemini_chip,
                              bool trigger_help_ui,
                              bool badge_is_visible) {
-    EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::_))
+    EXPECT_CALL(*tracker_, ShouldTriggerHelpUI(testing::_))
         .WillRepeatedly(testing::Return(trigger_help_ui));
     if (show_gemini_chip) {
       OCMExpect([mock_consumer_ isBadgeVisible]).andReturn(badge_is_visible);
@@ -169,18 +271,22 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;
-  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  raw_ptr<feature_engagement::test::MockTracker> tracker_;
   LocationBarBadgeMediator* mediator_;
   id mock_bwg_command_handler_;
   id mock_consumer_;
   id mock_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
+  id mock_contextual_sheet_handler_;
+  id mock_entrypoint_iph_handler_;
 };
 
 // Tests that the consumer is updated when the badge configuration is updated.
@@ -188,7 +294,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestBadgeUpdateRequest) {
   OCMExpect([mock_consumer_ showBadge]);
 
   LocationBarBadgeConfiguration* config =
-      CreateBadgeConfiguration(LocationBarBadgeType::kIncognito);
+      CreateBadgeConfiguration(LocationBarBadgeType::kReaderMode);
   [mediator_ updateBadgeConfig:config];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
@@ -246,7 +352,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipFETMetricsLogged) {
   AllowGeminiChipToShow(/*show_gemini_chip=*/true, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
   EXPECT_CALL(
-      *mock_tracker_,
+      *tracker_,
       NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipTriggered));
   LocationBarBadgeConfiguration* config =
@@ -262,7 +368,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   OCMExpect([mock_bwg_command_handler
       startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip]);
   EXPECT_CALL(
-      *mock_tracker_,
+      *tracker_,
       NotifyEvent(feature_engagement::events::kIOSGeminiContextualCueChipUsed));
   LocationBarBadgeConfiguration* config =
       CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
@@ -281,7 +387,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfTooRecent) {
   AllowGeminiChipToShow(/*show_gemini_chip=*/true, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
   EXPECT_CALL(
-      *mock_tracker_,
+      *tracker_,
       NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipTriggered))
       .Times(1);
@@ -297,5 +403,287 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfTooRecent) {
   AllowGeminiChipToShow(/*show_gemini_chip=*/false, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
   [mediator_ updateBadgeConfig:config];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+#pragma mark - Contextual Panel Tests
+
+// Tests that tapping the entrypoint opens the panel if it's closed and vice
+// versa.
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelEntrypointTapped) {
+  const base::HistogramTester histogram_tester;
+  ContextualPanelTabHelper* tab_helper = ContextualPanelTabHelper::FromWebState(
+      web_state_list_->GetActiveWebState());
+
+  // Set the metrics data for the current entrypoint appearing.
+  ContextualPanelTabHelper::EntrypointMetricsData metrics_data;
+  metrics_data.entrypoint_item_type = ContextualPanelItemType::SamplePanelItem;
+  metrics_data.appearance_time = base::Time::Now() - base::Seconds(10);
+  tab_helper->SetMetricsData(metrics_data);
+
+  OCMExpect([mock_contextual_sheet_handler_ openContextualSheet]);
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:YES]);
+  LocationBarBadgeConfiguration* config = CreateBadgeConfiguration(
+      LocationBarBadgeType::kContextualPanelEntryPointSample);
+  [mediator_ badgeTapped:config];
+  tab_helper->OpenContextualPanel();
+
+  OCMExpect([mock_contextual_sheet_handler_ closeContextualSheet]);
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:YES]);
+  [mediator_ badgeTapped:config];
+  tab_helper->CloseContextualPanel();
+
+  EXPECT_OCMOCK_VERIFY(mock_contextual_sheet_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Tapped, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Tapped, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointTapped",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.ContextualPanel.Entrypoint.Regular.UptimeBeforeTap",
+      base::Seconds(10), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem.UptimeBeforeTap",
+      base::Seconds(10), 1);
+}
+
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelTabHelperDestroyed) {
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
+  OCMExpect([mock_consumer_ hideBadge]);
+
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_->GetActiveWebState()));
+  tab_helper->CallContextualPanelTabHelperDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that if one configuration is provided, the entrypoint becomes shown.
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelOneConfiguration) {
+  const base::HistogramTester histogram_tester;
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
+  OCMExpect([mock_consumer_ showBadge]);
+  OCMExpect([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+  OCMReject([mock_consumer_ expandBadgeContainer]);
+
+  ContextualPanelItemConfiguration configuration(
+      ContextualPanelItemType::SamplePanelItem);
+  configuration.entrypoint_image_name = "chrome_product";
+  configuration.image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_->GetActiveWebState()));
+
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      item_configurations;
+  item_configurations.push_back(configuration.weak_ptr_factory.GetWeakPtr());
+
+  tab_helper->CallContextualPanelHasNewData(item_configurations);
+
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+}
+
+// Tests that -disconnect doesn't crash and that nothing is observing the tab
+// helper after disconnecting.
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelDisconnect) {
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_->GetActiveWebState()));
+
+  EXPECT_FALSE(tab_helper->observers_.empty());
+  [mediator_ disconnect];
+  mediator_ = nil;
+  EXPECT_TRUE(tab_helper->observers_.empty());
+}
+
+TEST_F(LocationBarBadgeMediatorTest,
+       TestContextualPanelLargeEntrypointAppears) {
+  const base::HistogramTester histogram_tester;
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
+  OCMStub([mock_delegate_ canShowLargeContextualPanelEntrypoint:[OCMArg any]])
+      .andReturn(YES);
+
+  OCMExpect([mock_consumer_ showBadge]);
+  OCMExpect([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+
+  std::unique_ptr<SamplePanelItemConfiguration> configuration =
+      std::make_unique<SamplePanelItemConfiguration>();
+  configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
+  configuration->entrypoint_message = "test";
+  configuration->entrypoint_image_name = "chrome_product";
+  configuration->image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_->GetActiveWebState()));
+
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      item_configurations;
+  item_configurations.push_back(configuration->weak_ptr_factory.GetWeakPtr());
+  tab_helper->AddToCachedConfigs(std::move(configuration));
+
+  tab_helper->CallContextualPanelHasNewData(item_configurations);
+
+  // At first, the small entrypoint should be displayed.
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  // Advance time so that the large entrypoint is displayed.
+  OCMExpect([mock_consumer_ expandBadgeContainer]);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  OCMExpect([mock_consumer_ collapseBadgeContainer]);
+  // Advance time until the large entrypoint transitions back to small.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Large",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Large.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+}
+
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelIPHEntrypointAppears) {
+  OCMStub([mock_delegate_ canShowLargeContextualPanelEntrypoint:[OCMArg any]])
+      .andReturn(YES);
+  EXPECT_CALL(
+      *tracker_,
+      WouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSContextualPanelSampleModelFeature)))
+      .WillRepeatedly(testing::Return(true));
+
+  const base::HistogramTester histogram_tester;
+  std::unique_ptr<SamplePanelItemConfiguration> configuration =
+      std::make_unique<SamplePanelItemConfiguration>();
+  configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
+  configuration->entrypoint_message = "test";
+  configuration->iph_entrypoint_used_event_name = "testUsedEvent";
+  configuration->iph_entrypoint_explicitly_dismissed =
+      "testExplicitlyDismissedEvent";
+  configuration->iph_feature =
+      &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
+  configuration->iph_text = "test_text";
+  configuration->iph_title = "test_title";
+  configuration->entrypoint_image_name = "chrome_product";
+  configuration->image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+
+  OCMStub([mock_entrypoint_iph_handler_
+              showContextualPanelEntrypointIPHWithConfig:configuration.get()
+                                             anchorPoint:CGPointMake(0, 0)
+                                         isBottomOmnibox:NO])
+      .andReturn(YES);
+
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
+
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_->GetActiveWebState()));
+
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      item_configurations;
+  item_configurations.push_back(configuration->weak_ptr_factory.GetWeakPtr());
+  tab_helper->AddToCachedConfigs(std::move(configuration));
+
+  tab_helper->CallContextualPanelHasNewData(item_configurations);
+
+  OCMExpect([mock_consumer_ highlightBadge:YES]);
+  // Advance time so that the IPH entrypoint is displayed.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Advance time until the IPH is dismissed.
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:YES]);
+  OCMExpect([mock_delegate_ enableFullscreen]);
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.IPH",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.IPH.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+}
+
+// Tests a change in the active WebState.
+TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelWebStateListChanged) {
+  OCMExpect(
+      [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
+  OCMExpect([mock_consumer_ hideBadge]);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  std::map<ContextualPanelItemType,
+           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+      models;
+  FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
+
+  web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  EXPECT_OCMOCK_VERIFY(mock_entrypoint_iph_handler_);
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
