@@ -696,6 +696,8 @@ bool CompleteProfileCustomizationDialog(Browser* browser,
 }
 
 void WaitForSigninPageToLoad(content::WebContents* web_contents) {
+  ASSERT_TRUE(
+      WaitUntilAnyElementExistsInSigninFrame(web_contents, {"identifierId"}));
   ASSERT_TRUE(WaitUntilAnyElementExistsInSigninFrame(
       web_contents, {"identifierNext", "next"}));
 }

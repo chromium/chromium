@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -46,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -672,17 +675,24 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
-using LiveSignInGaiaIntegrationTest =
-    InteractiveBrowserTestMixin<LiveSignInTest>;
+class LiveSignInGaiaIntegrationTest : public LiveSignInTest,
+                                      public testing::WithParamInterface<bool> {
+};
 
 // Regression test for crbug.com/420635510.
 // Tests that a doing a web signin from a tab that was previously opened for
 // a browser signin, does not sign in the user in the browser.
-IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
+// TODO(crbug.com/467170772): Remove the logging once flakiness reason is identified.
+IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
+  LOG(WARNING) << "Test starting.";
   base::HistogramTester histogram_tester;
   sign_in_functions.StartSignInFromSettings();
   int current_tab_count = browser()->tab_strip_model()->count();
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
+  LOG(WARNING) << "Browser signin page open.";
 
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -694,21 +704,32 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
   browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
       params, /*navigation_handle_callback=*/{});
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  LOG(WARNING) << "Moved to web sign in tab.";
+
+  GURL interception_bubble_url(
+      chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL);
+  content::TestNavigationObserver interception_bubble_observer(
+      interception_bubble_url);
+  interception_bubble_observer.StartWatchingNewWebContents();
 
   sign_in_functions.SignInFromCurrentPage(
       browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  LOG(WARNING) << "Signin in done.";
 
+  if (GetParam()) {
+    interception_bubble_observer.Wait();
+    LOG(WARNING) << "Interception bubble awaited";
+    histogram_tester.ExpectBucketCount(
+        "Signin.Intercept.HeuristicOutcome",
+        SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
+  }
   // The user should not be signed-in in the browser.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-
-  RunTestSequence(WaitForShow(
-      DiceWebSigninInterceptionBubbleView::kDiceWebSigninInterceptionBubble));
-
-  histogram_tester.ExpectBucketCount(
-      "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
+  LOG(WARNING) << "Signin complete with no primary user.";
 }
+
+INSTANTIATE_TEST_SUITE_P(All, LiveSignInGaiaIntegrationTest, ::testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
