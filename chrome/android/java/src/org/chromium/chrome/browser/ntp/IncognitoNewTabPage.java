@@ -18,6 +18,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -26,7 +29,9 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.url.GURL;
 
 /** Provides functionality when the user interacts with the Incognito NTP. */
 @NullMarked
@@ -44,7 +49,10 @@ public class IncognitoNewTabPage extends BasicNativePage
     private boolean mIsLoaded;
 
     private final IncognitoNewTabPageManager mIncognitoNewTabPageManager;
+    private final @Nullable IncognitoNtpMetrics mIncognitoNtpMetrics;
+    private final Tab mTab;
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable TabObserver mTabObserver;
 
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -59,18 +67,21 @@ public class IncognitoNewTabPage extends BasicNativePage
      *
      * @param activity The activity used to create the new tab page's View.
      * @param host The view that's hosting this incognito NTP.
-     * @param profile The profile associated with this incognito NTP.
+     * @param tab The {@link Tab} that contains this incognito NTP.
      * @param edgeToEdgeControllerSupplier The supplier for e2e status and the bottom inset.
+     * @param incognitoNtpMetrics The metrics recorder for the incognito NTP.
      */
     public IncognitoNewTabPage(
             Activity activity,
             NativePageHost host,
-            Profile profile,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            Tab tab,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @Nullable IncognitoNtpMetrics incognitoNtpMetrics) {
         super(host);
 
         mActivity = activity;
-        mProfile = profile;
+        mTab = tab;
+        mProfile = tab.getProfile();
 
         if (!mProfile.isOffTheRecord()) {
             throw new IllegalStateException(
@@ -97,6 +108,9 @@ public class IncognitoNewTabPage extends BasicNativePage
         mEdgeToEdgePadAdjuster =
                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                         mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
+        mIncognitoNtpMetrics = incognitoNtpMetrics;
+
+        initIncognitoNtpMetrics();
     }
 
     /**
@@ -117,6 +131,11 @@ public class IncognitoNewTabPage extends BasicNativePage
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
+        }
+
+        if (mTabObserver != null) {
+            mTab.removeObserver(mTabObserver);
+            mTabObserver = null;
         }
 
         super.destroy();
@@ -181,8 +200,35 @@ public class IncognitoNewTabPage extends BasicNativePage
             @Override
             public void onLoadingComplete() {
                 mIsLoaded = true;
+                if (mIncognitoNtpMetrics != null) {
+                    mIncognitoNtpMetrics.markNtpLoaded();
+                }
             }
         };
+    }
+
+    private void initIncognitoNtpMetrics() {
+        if (mIncognitoNtpMetrics == null) {
+            return;
+        }
+
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        if (!UrlUtilities.isNtpUrl(url)) {
+                            if (mIncognitoNtpMetrics != null) {
+                                mIncognitoNtpMetrics.recordNavigatedAway();
+                            }
+
+                            if (mTabObserver != null) {
+                                tab.removeObserver(mTabObserver);
+                                mTabObserver = null;
+                            }
+                        }
+                    }
+                };
+        mTab.addObserver(mTabObserver);
     }
 
     /** Set a stubbed {@link IncognitoNewTabPageManager} for testing. */
