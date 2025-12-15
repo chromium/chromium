@@ -302,7 +302,7 @@ void LoginOnUff() {
 }
 
 - (std::optional<std::string_view>)enterpriseReportingEventForTest {
-  if ([self isRunningTest:@selector(FLAKY_testLoginEventReported)]) {
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
     return "loginEvent";
   } else if ([self isRunningTest:@selector
                    (DISABLED_testPasswordBreachEventReported)]) {
@@ -884,9 +884,8 @@ void LoginOnUff() {
                                 password:passwordValue];
 }
 
-// TODO(crbug.com/428877349): Re-enable after fixing the test flakiness.
 // Tests that a login event is reported to an enterprise connector.
-- (void)FLAKY_testLoginEventReported {
+- (void)testLoginEventReported {
   [self loadLoginPage];
 
   // Simulate login.
