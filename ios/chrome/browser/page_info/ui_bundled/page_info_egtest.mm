@@ -334,9 +334,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // toggle.
 - (void)testShowTwoAccessiblePermissionsInPageInfo {
   // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
-  // 17.5.
-  if (@available(iOS 17.5, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.5.");
+  // 17.
+  if (!@available(iOS 18, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.");
   }
   // Open a page that requests microphone permissions.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -503,15 +503,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testLastVisitedSectionDisplaysYesterday \
-  DISABLED_testLastVisitedSectionDisplaysYesterday
-#else
-#define MAYBE_testLastVisitedSectionDisplaysYesterday \
-  testLastVisitedSectionDisplaysYesterday
-#endif
-- (void)MAYBE_testLastVisitedSectionDisplaysYesterday {
+- (void)testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on `URL`.
@@ -536,9 +528,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests if the Last Visited UIs, i.e. the Last Visited page and Last Visited
 // row, are correctly updated when history entries get deleted.
-//
-// TODO(crbug.com/377674245): Flaky on iphone-device.
-- (void)DISABLED_testLastVisitedUpdatesOnDeletion {
+- (void)testLastVisitedUpdatesOnDeletion {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on `URL`.
@@ -578,20 +568,22 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Go back to Page Info and wait for the Last Visited row to disappear.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_PAGE_INFO_SITE_INFORMATION)),
+                                   grey_kindOfClassName(
+                                       @"UIAccessibilityBackButtonElement"),
+                                   grey_ancestor(grey_kindOfClass(
+                                       [UINavigationBar class])),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
                       grey_text(l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY))];
 }
 
 // Tests that tapping on the Last Visited row reveals the Last Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testLastVisitedSubpage DISABLED_testLastVisitedSubpage
-#else
-#define MAYBE_testLastVisitedSubpage testLastVisitedSubpage
-#endif
-- (void)MAYBE_testLastVisitedSubpage {
+- (void)testLastVisitedSubpage {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -627,15 +619,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on the show full history button leads to the history page.
 // Additionally, it tests that dismissing full history reveals back the Last
 // Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testLastVisitedSubpageOpensFullHistory \
-  DISABLED_testLastVisitedSubpageOpensFullHistory
-#else
-#define MAYBE_testLastVisitedSubpageOpensFullHistory \
-  testLastVisitedSubpageOpensFullHistory
-#endif
-- (void)MAYBE_testLastVisitedSubpageOpensFullHistory {
+- (void)testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -686,15 +670,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on a history entry from the Last Visited subpage dismisses
 // Page Info (which presents the Last Visited subpage) and opens the
 // corresponding URL.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
-  DISABLED_testOpeningURLFromLastVisitedDismissesPageInfo
-#else
-#define MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo \
-  testOpeningURLFromLastVisitedDismissesPageInfo
-#endif
-- (void)MAYBE_testOpeningURLFromLastVisitedDismissesPageInfo {
+- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -732,15 +708,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
-  DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo
-#else
-#define MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo \
-  testOpeningURLFromFullHistoryDismissesPageInfo
-#endif
-- (void)MAYBE_testOpeningURLFromFullHistoryDismissesPageInfo {
+- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -783,13 +751,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry from the Last Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuOpenInNewTab DISABLED_testContextMenuOpenInNewTab
-#else
-#define MAYBE_testContextMenuOpenInNewTab testContextMenuOpenInNewTab
-#endif
-- (void)MAYBE_testContextMenuOpenInNewTab {
+- (void)testContextMenuOpenInNewTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -884,15 +846,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry from the Last Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuOpenInNewIncognitoTab \
-  DISABLED_testContextMenuOpenInNewIncognitoTab
-#else
-#define MAYBE_testContextMenuOpenInNewIncognitoTab \
-  testContextMenuOpenInNewIncognitoTab
-#endif
-- (void)MAYBE_testContextMenuOpenInNewIncognitoTab {
+- (void)testContextMenuOpenInNewIncognitoTab {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -937,13 +891,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of 'Copy URL' in a context menu on a history
 // entry from the Last Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuCopy DISABLED_testContextMenuCopy
-#else
-#define MAYBE_testContextMenuCopy testContextMenuCopy
-#endif
-- (void)MAYBE_testContextMenuCopy {
+- (void)testContextMenuCopy {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -991,13 +939,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry from the Last Visited subpage.
-// TODO(crbug.com/374063042): Flaky on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuShare DISABLED_testContextMenuShare
-#else
-#define MAYBE_testContextMenuShare testContextMenuShare
-#endif
-- (void)MAYBE_testContextMenuShare {
+- (void)testContextMenuShare {
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
