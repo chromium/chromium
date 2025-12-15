@@ -883,6 +883,11 @@ void SerializeLayer(LayerImpl& layer,
     wire.rare_properties = std::move(rare_properties);
   }
   switch (layer.GetLayerType()) {
+    case mojom::LayerType::kLayer: {
+      // This is intentionally empty, as there are no extra properties
+      // to serialize.
+      break;
+    }
     case mojom::LayerType::kHeadsUpDisplay: {
       // For Viz, this should look like a Texture layer.
       wire.type = mojom::LayerType::kTexture;
@@ -1012,6 +1017,10 @@ void SerializeLayer(LayerImpl& layer,
     }
     default:
       // TODO(zmo): handle other types of LayerImpl.
+      // Unhandled layer types: set it to SolidColor. This is because
+      // viz side defaults to SolidColor. Avoid a layer type mismatch
+      // in LayerContextImpl which leads to mojo error and test failure.
+      wire.type = mojom::LayerType::kSolidColor;
       break;
   }
 }
