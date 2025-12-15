@@ -139,10 +139,12 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  if (GetTopContainer()->bounds().Contains(point)) {
-    return GetTopContainer()->IsPositionInWindowCaption(point);
+  gfx::Point point_in_target = point;
+  views::View::ConvertPointToTarget(this, top_button_container_,
+                                    &point_in_target);
+  if (top_button_container_->HitTestPoint(point_in_target)) {
+    return top_button_container_->IsPositionInWindowCaption(point_in_target);
   }
-
   return false;
 }
 

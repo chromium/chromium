@@ -2621,6 +2621,7 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
+
 void BrowserView::ShowChromeLabs() {
   CHECK(IsChromeLabsEnabled());
   browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
@@ -4950,11 +4951,15 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
             ->ShouldDisplayVerticalTabs()) {
       // See if the mouse pointer is within the bounds of the
       // VerticalTabStripRegionView.
-      if (vertical_tab_strip_container_->IsPositionInWindowCaption(
-              point_in_browser_view_coords)) {
-        return HTCAPTION;
+      gfx::Point test_point(point);
+      if (ConvertedHitTest(parent(), vertical_tab_strip_container_,
+                           &test_point)) {
+        if (vertical_tab_strip_container_->IsPositionInWindowCaption(
+                test_point)) {
+          return HTCAPTION;
+        }
+        return HTCLIENT;
       }
-      return HTCLIENT;
     } else {
       // See if the mouse pointer is within the bounds of the
       // HorizontalTabStripRegionView.

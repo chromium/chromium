@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,18 +19,50 @@
 namespace {
 constexpr int kTopButtonContainerHeight = 28;
 constexpr int kTopButtonPadding = 4;
-}  // namespace
-
-namespace {
 
 class TopContainerButton : public views::LabelButton {
   METADATA_HEADER(TopContainerButton, views::LabelButton)
  public:
-  TopContainerButton() { ConfigureInkDropForToolbar(this); }
+  TopContainerButton() {
+    views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
+    ConfigureInkDropForToolbar(this);
+  }
+
+  void UpdateIcon(const ui::ImageModel& icon_image) {
+    CHECK(icon_image.IsVectorIcon());
+
+    const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+        *icon_image.GetVectorIcon().vector_icon(), GetForegroundColor(),
+        GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE));
+
+    SetImageModel(views::Button::STATE_NORMAL, image_model);
+    SetImageModel(views::Button::STATE_HOVERED, image_model);
+    SetImageModel(views::Button::STATE_PRESSED, image_model);
+    SetImageModel(views::Button::STATE_DISABLED, image_model);
+  }
 
   // views::LabelButton:
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
+
+ private:
+  // views::View:
+  void AddedToWidget() override {
+    paint_as_active_subscription_ =
+        GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+            &View::NotifyViewControllerCallback, base::Unretained(this)));
+  }
+
+  void RemovedFromWidget() override { paint_as_active_subscription_ = {}; }
+
+  ui::ColorId GetForegroundColor() const {
+    return GetWidget() && GetWidget()->ShouldPaintAsActive()
+               ? kColorNewTabButtonCRForegroundFrameActive
+               : kColorNewTabButtonCRForegroundFrameInactive;
+  }
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
+
 BEGIN_METADATA(TopContainerButton)
 END_METADATA
 
@@ -43,8 +76,9 @@ class TopContainerButtonActionViewInterface
 
   void ActionItemChangedImpl(actions::ActionItem* action_item) override {
     ButtonActionViewInterface::ActionItemChangedImpl(action_item);
-    action_view_->SetImageModel(views::Button::STATE_NORMAL,
-                                action_item->GetImage());
+    if (action_item->GetImage().IsVectorIcon()) {
+      action_view_->UpdateIcon(action_item->GetImage());
+    }
   }
 
  private:
@@ -66,12 +100,10 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
   tab_search_button_ = AddChildButtonFor(kActionTabSearch);
-
-  collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
-
   tab_search_button_->SetProperty(views::kElementIdentifierKey,
                                   kTabSearchButtonElementId);
 
+  collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
 
@@ -151,32 +183,28 @@ views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
   action_view_controller_->CreateActionViewRelationship(
       container_button.get(), action_item->GetAsWeakPtr());
 
-  TopContainerButton* raw_container_button =
+  TopContainerButton* container_button_ptr =
       AddChildView(std::move(container_button));
 
-  raw_container_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  container_button_ptr->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
-  return raw_container_button;
+  return container_button_ptr;
 }
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  const auto get_target_rect = [&](views::View* target) {
-    const gfx::Rect& rect = gfx::Rect(point, gfx::Size(1, 1));
-    gfx::RectF rect_in_target_coords_f(rect);
-    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
-    return gfx::ToEnclosingRect(rect_in_target_coords_f);
+  const auto is_hit_in_view = [&](views::View* target) {
+    gfx::Point point_in_target = point;
+    View::ConvertPointToTarget(this, target, &point_in_target);
+    return target->HitTestPoint(point_in_target);
   };
 
-  if (tab_search_button_ && tab_search_button_->GetLocalBounds().Intersects(
-                                get_target_rect(tab_search_button_))) {
-    return !tab_search_button_->HitTestRect(
-        get_target_rect(tab_search_button_));
+  if (tab_search_button_ && is_hit_in_view(tab_search_button_)) {
+    return false;
   }
 
-  if (collapse_button_ && collapse_button_->GetLocalBounds().Intersects(
-                              get_target_rect(collapse_button_))) {
-    return !collapse_button_->HitTestRect(get_target_rect(collapse_button_));
+  if (collapse_button_ && is_hit_in_view(collapse_button_)) {
+    return false;
   }
 
   return true;
@@ -186,6 +214,7 @@ void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
     const int toolbar_height) {
   toolbar_height_ = toolbar_height;
 }
+
 void VerticalTabStripTopContainer::SetExclusionWidthForLayout(
     const int exclusion_width) {
   exclusion_width_ = exclusion_width;

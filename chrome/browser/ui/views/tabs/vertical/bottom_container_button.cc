@@ -38,23 +38,6 @@ class BottomContainerButtonActionViewInterface
  private:
   raw_ptr<BottomContainerButton> action_view_;
 };
-class BottomContainerButtonHighlightPathGenerator
-    : public views::HighlightPathGenerator {
- public:
-  explicit BottomContainerButtonHighlightPathGenerator(const int radius)
-      : radius_(radius) {}
-
-  // HighlightPathGenerator:
-  SkPath GetHighlightPath(const views::View* view) override {
-    gfx::Rect rect = view->GetLocalBounds();
-    rect.Inset(GetToolbarInkDropInsets(view));
-    return SkPath::RRect(
-        SkRRect::MakeRectXY(gfx::RectToSkRect(rect), radius_, radius_));
-  }
-
- private:
-  const int radius_;
-};
 }  // namespace
 
 BottomContainerButton::BottomContainerButton() {
@@ -63,8 +46,8 @@ BottomContainerButton::BottomContainerButton() {
   SetBackground(views::CreateRoundedRectBackground(
       kColorVerticalTabStripBottomButtonBackground, radius));
   ConfigureInkDropForToolbar(
-      this,
-      std::make_unique<BottomContainerButtonHighlightPathGenerator>(radius));
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                GetToolbarInkDropInsets(this), radius));
 }
 
 std::unique_ptr<views::ActionViewInterface>
