@@ -780,20 +780,7 @@ DownloadToolbarUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-// If the browser was inactive when the bubble was shown, then the bubble would
-// be inactive. This would prevent close-on-deactivate, making the bubble
-// unclosable. To work around this, we activate the bubble when the current
-// browser becomes active, so that clicking outside the bubble will deactivate
-// and close it.
 void DownloadToolbarUIController::OnBrowserSetLastActive(Browser* browser) {
-  if (browser_view_ && browser == browser_view_->browser() &&
-      bubble_delegate_ && !bubble_delegate_->GetWidget()->IsClosed()) {
-    // We need to defer activating the download bubble when the browser window
-    // is being activated, otherwise this is ineffective on macOS.
-    content::GetUIThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&views::Widget::Activate,
-                                  bubble_delegate_->GetWidget()->GetWeakPtr()));
-  }
   UpdateIconDormant();
 }
 
@@ -865,9 +852,12 @@ views::ImageView* DownloadToolbarUIController::GetImageBadgeForTesting() {
 
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(
     views::Button* toolbar_button,
+    views::Widget* bubble_widget,
     base::WeakPtr<DownloadDisplay> download_display)
     : download_display_(download_display) {
   CHECK(toolbar_button);
+  CHECK(bubble_widget);
+  bubble_widget_observation_.Observe(bubble_widget);
   if (toolbar_button->GetWidget() &&
       toolbar_button->GetWidget()->GetTopLevelWidget()->GetNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
@@ -882,6 +872,14 @@ DownloadToolbarUIController::BubbleCloser::~BubbleCloser() = default;
 
 void DownloadToolbarUIController::BubbleCloser::OnEvent(
     const ui::Event& event) {
+  // If the bubble widget has become active in the meantime (since starting as
+  // inactive), we should do nothing and defer to the close-on-deactivate
+  // behavior from BubbleDialogDelegate which is in effect when the bubble is
+  // active.
+  if (bubble_widget_observation_.IsObserving() &&
+      bubble_widget_observation_.GetSource()->IsActive()) {
+    return;
+  }
   CHECK(event_monitor_);
   if (event.IsKeyEvent() && event.AsKeyEvent()->key_code() != ui::VKEY_ESCAPE) {
     return;
@@ -891,6 +889,13 @@ void DownloadToolbarUIController::BubbleCloser::OnEvent(
     download_display_->HideDetails();
   }
   // `this` will be deleted.
+}
+
+void DownloadToolbarUIController::BubbleCloser::OnWidgetDestroyed(
+    views::Widget* widget) {
+  if (bubble_widget_observation_.IsObservingSource(widget)) {
+    bubble_widget_observation_.Reset();
+  }
 }
 
 void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
@@ -945,14 +950,15 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+  views::Widget* bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+  CHECK(bubble_widget);
 
   if (!is_primary_partial_view_ && !button_click_time_.is_null()) {
     // If the main view was shown after clicking on the toolbar button,
     // record the time from click to shown. (The main view can be shown without
     // clicking the toolbar button, e.g. from clicking on a notification.)
-    bubble_delegate_->GetWidget()
-        ->GetCompositor()
+    bubble_widget->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
             [](base::TimeTicks click_time,
                const viz::FrameTimingDetails& frame_timing_details) {
@@ -969,18 +975,14 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
 
   CloseAutofillPopup();
   if (ShouldShowBubbleAsInactive()) {
-    if (button) {
-      bubble_delegate_->GetWidget()->ShowInactive();
-      bubble_closer_ =
-          std::make_unique<BubbleCloser>(button, weak_factory_.GetWeakPtr());
-      bubble_delegate_->GetWidget()
-          ->GetRootView()
-          ->GetViewAccessibility()
-          .AnnounceText(
-              l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
-    }
+    CHECK(button);
+    bubble_widget->ShowInactive();
+    bubble_closer_ = std::make_unique<BubbleCloser>(button, bubble_widget,
+                                                    weak_factory_.GetWeakPtr());
+    bubble_widget->GetRootView()->GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
   } else {
-    bubble_delegate_->GetWidget()->Show();
+    bubble_widget->Show();
   }
 
   action_item_->SetIsShowingBubble(true);

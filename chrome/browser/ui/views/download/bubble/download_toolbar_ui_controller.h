@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace offline_items_collection {
 struct ContentId;
@@ -28,9 +29,9 @@ struct ContentId;
 
 namespace views {
 class EventMonitor;
+class Widget;
 }
 
-class Browser;
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleContentsView;
@@ -127,17 +128,24 @@ class DownloadToolbarUIController
  private:
   // Closes the bubble when it detects an event such as a mouse click, escape
   // key press, etc., which indicates the user's intent to close the bubble.
-  // This is needed when the bubble is inactive (shown with ShowInactive)
-  // because the normal close-on-deactivate mechanism doesn't work from an
-  // already-inactive state. This is created by the DownloadToolbarButtonView
-  // when the bubble is shown with ShowInactive, and is destroyed when the
-  // bubble is closed.
+  //
+  // When the bubble is shown as active, the close-on-deactivate functionality
+  // provided by BubbleDialogDelegate allows the download bubble to be closed
+  // when it becomes inactive. On the other hand, BubbleCloser is needed when
+  // the bubble starts inactive to allow input events to close the bubble,
+  // because the close-on-deactivate mechanism doesn't work from an
+  // already-inactive state. BubbleCloser is instantiated when the bubble is
+  // shown with ShownInactive(), and lives until the bubble is closed. If the
+  // bubble becomes active in the meantime, it just ignores events and defers to
+  // the close-on-deactivate functionality provided by BubbleDialogDelegate.
+  //
   // TODO(crbug.com/40943500): Factor out common logic copied from translate
   // bubble.
-  class BubbleCloser : public ui::EventObserver {
+  class BubbleCloser : public ui::EventObserver, public views::WidgetObserver {
    public:
-    explicit BubbleCloser(views::Button* toolbar_button,
-                          base::WeakPtr<DownloadDisplay> download_display);
+    BubbleCloser(views::Button* toolbar_button,
+                 views::Widget* bubble_widget,
+                 base::WeakPtr<DownloadDisplay> download_display);
 
     BubbleCloser(const BubbleCloser& other) = delete;
     BubbleCloser& operator=(const BubbleCloser& other) = delete;
@@ -147,9 +155,14 @@ class DownloadToolbarUIController
     // ui::EventObserver:
     void OnEvent(const ui::Event& event) override;
 
+    // views::WidgetObserver:
+    void OnWidgetDestroyed(views::Widget* widget) override;
+
    private:
     base::WeakPtr<DownloadDisplay> download_display_;
     std::unique_ptr<views::EventMonitor> event_monitor_;
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        bubble_widget_observation_{this};
   };
 
   void CreateBubbleDialogDelegate();
