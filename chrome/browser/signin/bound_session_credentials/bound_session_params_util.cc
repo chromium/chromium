@@ -162,8 +162,10 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
     const RegisterBoundSessionPayload& payload,
     const GURL& request_url,
     const GURL& site,
-    std::string_view wrapped_key) {
+    std::string_view wrapped_key,
+    SessionOrigin session_origin) {
   CHECK(!payload.parsed_for_dbsc_standard);
+  CHECK_NE(session_origin, SessionOrigin::SESSION_ORIGIN_UNSPECIFIED);
   BoundSessionParams params;
   if (!site.is_valid()) {
     return BoundSessionParams();
@@ -177,6 +179,7 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
   params.set_site(site.spec());
   params.set_session_id(payload.session_id);
   params.set_wrapped_key(wrapped_key);
+  params.set_session_origin(session_origin);
   for (const RegisterBoundSessionPayload::Credential& credential :
        payload.credentials) {
     *params.add_credentials() = CreateCookieCredential(
@@ -184,6 +187,20 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
   }
   *params.mutable_creation_time() = TimeToTimestamp(base::Time::Now());
   return params;
+}
+
+std::optional<std::string_view> GetSessionOriginHistogramSuffix(
+    SessionOrigin session_origin) {
+  // LINT.IfChange(GetSessionOriginHistogramSuffix)
+  switch (session_origin) {
+    case SessionOrigin::SESSION_ORIGIN_REGISTRATION:
+      return ".FromRegistration";
+    case SessionOrigin::SESSION_ORIGIN_OAML:
+      return ".FromOAuthMultiLogin";
+    case SessionOrigin::SESSION_ORIGIN_UNSPECIFIED:
+      return std::nullopt;
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:BoundSessionOrigin)
 }
 
 }  // namespace bound_session_credentials

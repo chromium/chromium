@@ -305,8 +305,8 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher(
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                    *session_binding_helper_, session_id_, refresh_url_,
-                   scope_url_, bound_cookie_names(), is_off_the_record_profile_,
-                   trigger, debug_info_)
+                   scope_url_, session_origin_, bound_cookie_names(),
+                   is_off_the_record_profile_, trigger, debug_info_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
                    scope_url_, bound_cookie_names(), trigger);

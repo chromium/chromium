@@ -128,6 +128,9 @@ bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
       CreateTestBoundSessionCredential("auth_cookie_1P", ".google.com", "/");
   *params.add_credentials() =
       CreateTestBoundSessionCredential("auth_cookie_3P", ".google.com", "/");
+
+  params.set_session_origin(
+      bound_session_credentials::SessionOrigin::SESSION_ORIGIN_REGISTRATION);
   return params;
 }
 

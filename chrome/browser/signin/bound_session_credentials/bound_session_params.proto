@@ -4,10 +4,10 @@
 
 syntax = "proto2";
 
+package bound_session_credentials;
+
 // Required in Chrome.
 option optimize_for = LITE_RUNTIME;
-
-package bound_session_credentials;
 
 // Represents a single bound cookie that the browser periodically refreshes
 // to keep the bound session running.
@@ -30,6 +30,18 @@ message Timestamp {
   required int64 microseconds = 1;
 }
 
+enum SessionOrigin {
+  // The session origin is unspecified. This should be used only for sessions
+  // that were created before the session origin was tracked.
+  SESSION_ORIGIN_UNSPECIFIED = 0;
+
+  // The session originated from DBSC registration header.
+  SESSION_ORIGIN_REGISTRATION = 1;
+
+  // The session originated from OAuthMultilogin.
+  SESSION_ORIGIN_OAML = 2;
+}
+
 // Set of parameters for a single device bound session.
 message BoundSessionParams {
   // Site on which the bound session is running.
@@ -46,4 +58,6 @@ message BoundSessionParams {
   optional Timestamp creation_time = 5;
   // URL of the refresh endpoint.
   optional string refresh_url = 6;
+  // Where the session originated from.
+  optional SessionOrigin session_origin = 7;
 }

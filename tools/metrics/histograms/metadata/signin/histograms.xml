@@ -48,6 +48,20 @@ chromium-metrics-reviews@google.com.
   <variant name="_Periodic" summary="Emitted once per 24 hours."/>
 </variants>
 
+<!--LINT.IfChange(BoundSessionOrigin) -->
+
+<variants name="BoundSessionOrigin">
+  <variant name="" summary="Recorded for all sessions, no matter the origin."/>
+  <variant name=".FromOAuthMultiLogin"
+      summary="Recorded only for sessions originated from the OAuthMultilogin
+               flow."/>
+  <variant name=".FromRegistration"
+      summary="Recorded only for sessions originated from the DBSC
+               registration flow."/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_util.cc:GetSessionOriginHistogramSuffix) -->
+
 <!-- LINT.IfChange(BoundSessionRefreshCookieFetcherTrigger) -->
 
 <variants name="BoundSessionRefreshCookieFetcherTrigger">
@@ -936,7 +950,8 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.BoundSessionCredentials.CookieRotationResult{Trigger}"
+<histogram
+    name="Signin.BoundSessionCredentials.CookieRotationResult{SessionOrigin}{Trigger}"
     enum="BoundSessionCredentialsCookieRotationResult"
     expires_after="2026-04-05">
   <owner>alexilin@chromium.org</owner>
@@ -944,12 +959,13 @@ prefs when the profile is loaded.  -->
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the result of the cookie rotation request triggered by the bound
-    session credentials feature. {Trigger}
+    session credentials feature. {SessionOrigin} {Trigger}
 
     Cookie rotation is triggered if there is a bound session on startup, bound
     cookies soon to expire/expired and/or requests to the bound site are blocked
     on bound cookies.
   </summary>
+  <token key="SessionOrigin" variants="BoundSessionOrigin"/>
   <token key="Trigger" variants="BoundSessionRefreshCookieFetcherTrigger"/>
 </histogram>
 
@@ -1202,7 +1218,8 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.BoundSessionCredentials.SessionTerminationTrigger"
+<histogram
+    name="Signin.BoundSessionCredentials.SessionTerminationTrigger{SessionOrigin}"
     enum="SessionTerminationTrigger" expires_after="2026-04-26">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
@@ -1210,7 +1227,9 @@ prefs when the profile is loaded.  -->
   <summary>
     Records the trigger for a bound session termination on the Chrome side (e.g.
     Clear cookie). Recorded immediately after the session is terminated.
+    {SessionOrigin}
   </summary>
+  <token key="SessionOrigin" variants="BoundSessionOrigin"/>
 </histogram>
 
 <histogram name="Signin.BoundSessionCredentials.StorageReadError"

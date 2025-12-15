@@ -97,6 +97,10 @@ class BoundSessionCookieController {
   // eTLD+1 of the session serving as a hard session boundary. Session IDs must
   // be unique within a single site.
   const GURL& site() const { return site_; }
+  // Where the session has been originated from.
+  bound_session_credentials::SessionOrigin session_origin() const {
+    return session_origin_;
+  }
   // The earliest time at which one of the bound cookies expires.
   base::Time min_cookie_expiration_time() const;
   chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params()
@@ -121,6 +125,8 @@ class BoundSessionCookieController {
   const base::Time session_creation_time_;
   const GURL refresh_url_;
   const GURL site_;
+  const bound_session_credentials::SessionOrigin session_origin_ =
+      bound_session_credentials::SessionOrigin::SESSION_ORIGIN_UNSPECIFIED;
   // Map from cookie name to cookie expiration time, it is expected to have two
   // elements the 1P and 3P cookies.
   // Cookie expiration time is reduced by threshold to guarantee cookie will be

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.h"
@@ -42,6 +44,10 @@
 #include "url/origin.h"
 
 namespace {
+
+using SessionTerminationTrigger =
+    ::BoundSessionCookieRefreshServiceImpl::SessionTerminationTrigger;
+
 constexpr std::string_view kGoogleSessionTerminationHeader =
     "Sec-Session-Google-Termination";
 constexpr std::string_view kGoogleSessionTerminationSessionIdKey = "session_id";
@@ -162,6 +168,21 @@ bool IsSessionInitializationEnabled(const PrefService* profile_prefs) {
          base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity);
 }
 
+void RecordSessionTerminationTrigger(
+    SessionTerminationTrigger trigger,
+    bound_session_credentials::SessionOrigin session_origin) {
+  static constexpr std::string_view kHistogramName =
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger";
+  base::UmaHistogramEnumeration(kHistogramName, trigger);
+  if (const std::optional<std::string_view> session_origin_suffix =
+          bound_session_credentials::GetSessionOriginHistogramSuffix(
+              session_origin);
+      session_origin_suffix.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({kHistogramName, *session_origin_suffix}), trigger);
+  }
+}
+
 }  // namespace
 
 BASE_FEATURE(kEnableBoundSessionCredentialsContinuity,
@@ -230,9 +251,9 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
   auto it = cookie_controllers_.find(
       bound_session_credentials::GetBoundSessionKey(params));
   if (it != cookie_controllers_.end()) {
+    RecordSessionTerminationTrigger(SessionTerminationTrigger::kSessionOverride,
+                                    it->second->session_origin());
     cookie_controllers_.erase(it);
-    RecordSessionTerminationTrigger(
-        SessionTerminationTrigger::kSessionOverride);
     // Note: `NotifyBoundSessionTerminated()` is not called as new session is
     // starting with the same scope.
   }
@@ -572,21 +593,15 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
   base::flat_set<std::string> bound_cookie_names =
       controller->bound_cookie_names();
   MaybeReportTerminationReason(controller, trigger, refresh_error);
+  RecordSessionTerminationTrigger(trigger, controller->session_origin());
   cookie_controllers_.erase(it);
   // `controller` is no longer valid and must not be used.
 
   session_params_storage_->ClearParams(session_key.site,
                                        session_key.session_id);
   UpdateAllRenderers();
-  RecordSessionTerminationTrigger(trigger);
 
   NotifyBoundSessionTerminated(session_key.site, bound_cookie_names);
-}
-
-void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
-    SessionTerminationTrigger trigger) {
-  base::UmaHistogramEnumeration(
-      "Signin.BoundSessionCredentials.SessionTerminationTrigger", trigger);
 }
 
 void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated(

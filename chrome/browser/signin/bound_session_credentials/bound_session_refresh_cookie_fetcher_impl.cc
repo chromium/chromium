@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
@@ -125,6 +126,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     std::string_view session_id,
     const GURL& refresh_url,
     const GURL& cookie_url,
+    bound_session_credentials::SessionOrigin session_origin,
     base::flat_set<std::string> cookie_names,
     bool is_off_the_record_profile,
     Trigger trigger,
@@ -133,6 +135,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       session_binding_helper_(session_binding_helper),
       session_id_(session_id),
       refresh_url_(refresh_url),
+      session_origin_(session_origin),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
@@ -341,12 +344,27 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",
               perfetto::TerminatingFlow::FromPointer(this), "result", result_);
+  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
+
   const std::string_view histogram_trigger_suffix =
       GetRotationHistogramTriggerSuffix(trigger_);
-  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
   base::UmaHistogramEnumeration(
       base::StrCat({kRotationResultHistogramName, histogram_trigger_suffix}),
       result_);
+  if (const std::optional<std::string_view> histogram_session_origin_suffix =
+          bound_session_credentials::GetSessionOriginHistogramSuffix(
+              session_origin_);
+      histogram_session_origin_suffix.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kRotationResultHistogramName, *histogram_session_origin_suffix}),
+        result_);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kRotationResultHistogramName,
+                      *histogram_session_origin_suffix,
+                      histogram_trigger_suffix}),
+        result_);
+  }
 
   CHECK(cookie_refresh_duration_.has_value());
   base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;

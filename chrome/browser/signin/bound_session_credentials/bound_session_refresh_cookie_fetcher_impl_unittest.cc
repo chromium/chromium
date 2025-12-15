@@ -25,6 +25,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
@@ -142,6 +143,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
         test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
         kSessionId, kRefreshUrl, kGaiaUrl,
+        bound_session_credentials::SessionOrigin::SESSION_ORIGIN_REGISTRATION,
         base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
         /*is_off_the_record_profile=*/false,
         BoundSessionRefreshCookieFetcher::Trigger::kOther,
@@ -234,11 +236,22 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
         "Signin.BoundSessionCredentials.CookieRotationTotalDuration", 1);
 
     // Tests in this file use
-    // `BoundSessionRefreshCookieFetcher::Trigger::kOther` for the histogram
-    // suffix.
+    // `bound_session_credentials::SessionOrigin::SESSION_ORIGIN_REGISTRATION`
+    // and `BoundSessionRefreshCookieFetcher::Trigger::kOther` for the histogram
+    // suffixes.
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "Signin.BoundSessionCredentials.CookieRotationResult."
+                    "FromRegistration"),
+                ElementsAre(base::Bucket(expected_result, /*count=*/1)));
     EXPECT_THAT(
-        histogram_tester_.GetAllSamples(
-            "Signin.BoundSessionCredentials.CookieRotationResult.Other"),
+        histogram_tester_.GetAllSamples("Signin.BoundSessionCredentials."
+                                        "CookieRotationResult."
+                                        "Other"),
+        ElementsAre(base::Bucket(expected_result, /*count=*/1)));
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples("Signin.BoundSessionCredentials."
+                                        "CookieRotationResult.FromRegistration."
+                                        "Other"),
         ElementsAre(base::Bucket(expected_result, /*count=*/1)));
     histogram_tester_.ExpectTotalCount(
         "Signin.BoundSessionCredentials.CookieRotationTotalDuration.Other", 1);
@@ -819,6 +832,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, DebugHeaderSent) {
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
       kSessionId, kRefreshUrl, kGaiaUrl,
+      bound_session_credentials::SessionOrigin::SESSION_ORIGIN_REGISTRATION,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false,
       BoundSessionRefreshCookieFetcher::Trigger::kOther, info);
@@ -889,6 +903,7 @@ TEST_P(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
       kSessionId, kRefreshUrl, kGaiaUrl,
+      bound_session_credentials::SessionOrigin::SESSION_ORIGIN_REGISTRATION,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false,
       BoundSessionRefreshCookieFetcher::Trigger::kOther,
