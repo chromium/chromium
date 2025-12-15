@@ -4624,7 +4624,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4169" label="OBSOLETE_BlobStoreAccessAcrossTopLevelSite"/>
   <int value="4170" label="OBSOLETE_BlobStoreAccessUnknownTopLevelSite"/>
   <int value="4171" label="CrossOriginAccessBasedOnDocumentDomain"/>
-  <int value="4172" label="CookieWithTruncatingChar"/>
+  <int value="4172" label="OBSOLETE_CookieWithTruncatingChar"/>
   <int value="4173" label="VideoTrackGenerator"/>
   <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
   <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>

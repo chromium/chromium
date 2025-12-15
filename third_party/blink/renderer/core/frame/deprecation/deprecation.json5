@@ -126,15 +126,6 @@
       chrome_status_feature: 5637885046816768,
     },
     {
-      name: "CookieWithTruncatingChar",
-      message: "Cookies containing a `\\(0|r|n)` character will be rejected instead of truncated.",
-      translation_note: "This warning occurs when the browser attempts to store a cookie containing a banned character. Rather than the cookie string being truncated at the banned character, the entire cookie will be rejected now.",
-      web_features: [
-        "kCookieWithTruncatingChar",
-      ],
-      milestone: 103,
-    },
-    {
       name: "CrossOriginAccessBasedOnDocumentDomain",
       message: "Relaxing the same-origin policy by setting `document.domain` is deprecated, and will be disabled by default. This deprecation warning is for a cross-origin access that was enabled by setting `document.domain`.",
       translation_note: "This warning occurs when a frame accesses another frame's data after having set `document.domain` without having set the `Origin-Agent-Cluster` http header. This is a companion warning to `documentDomainSettingWithoutOriginAgentClusterHeader`, where that warning occurs when `document.domain` is set, and this warning occurs when an access has been made, based on that previous `document.domain` setting.",

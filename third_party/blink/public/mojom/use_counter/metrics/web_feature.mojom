@@ -3435,7 +3435,7 @@ enum WebFeature {
   kOBSOLETE_BlobStoreAccessAcrossTopLevelSite = 4169,
   kOBSOLETE_BlobStoreAccessUnknownTopLevelSite = 4170,
   kCrossOriginAccessBasedOnDocumentDomain = 4171,
-  kCookieWithTruncatingChar = 4172,
+  kOBSOLETE_CookieWithTruncatingChar = 4172,
   kVideoTrackGenerator = 4173,
   kMediaCapabilitiesDecodingInfoWebrtc = 4174,
   kMediaCapabilitiesEncodingInfoWebrtc = 4175,
