@@ -140,5 +140,6 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
         } else {
             indexData.removeEntryForKey(prefFrag, PREF_WAS_FULLY_ENABLED_SWITCH);
         }
+        indexData.setRefreshResult(true);
     }
 }

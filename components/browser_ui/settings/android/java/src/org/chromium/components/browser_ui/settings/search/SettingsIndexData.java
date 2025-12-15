@@ -43,6 +43,12 @@ public class SettingsIndexData {
 
     // LINT.ThenChange(//chrome/android/chrome_java_sources.gni:MainSettingsBuildRule)
 
+    // Whether the search results needs refreshing when coming back from result-browsing state
+    // to search state. It is possible for the index to be modified while browsing search results.
+    // In such case the search result display needs refreshing accordingly; otherwise it could
+    // show the results that are already hidden, or vice versa.
+    private boolean mShouldRefreshResult;
+
     @EnsuresNonNull("sInstance")
     public static SettingsIndexData createInstance() {
         assert sInstance == null;
@@ -405,6 +411,16 @@ public class SettingsIndexData {
     /** Return whether the index data needs to be refreshed. */
     public boolean needsIndexing() {
         return sNeedsIndexing;
+    }
+
+    /** Set the flag indicating whether the search results fragment needs refreshing. */
+    public void setRefreshResult(boolean refresh) {
+        mShouldRefreshResult = refresh;
+    }
+
+    /** Returns whether whether the search results fragment needs refreshing. */
+    public boolean shouldRefreshResult() {
+        return mShouldRefreshResult;
     }
 
     /**

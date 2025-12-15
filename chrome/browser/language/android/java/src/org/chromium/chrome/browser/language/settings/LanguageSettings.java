@@ -252,7 +252,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         boolean enabled = (boolean) newValue;
                         getPrefService().setBoolean(Pref.OFFER_TRANSLATE_ENABLED, enabled);
-                        updateTranslateAdvancedSectionIndex(enabled);
+                        updateTranslateAdvancedSectionIndex(enabled, /* refreshResult= */ true);
                         contentLanguagesPreference.notifyPrefChanged();
                         translationAdvancedSection.setVisible(enabled);
                         LanguagesManager.recordAction(
@@ -476,13 +476,14 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                                 APP_LANGUAGE_PREFERENCE_KEY,
                                 R.string.default_lang_subtitle);
                         if (!UserPrefs.get(profile).getBoolean(Pref.OFFER_TRANSLATE_ENABLED)) {
-                            updateTranslateAdvancedSectionIndex(false);
+                            updateTranslateAdvancedSectionIndex(false, /* refreshResult= */ false);
                         }
                     }
                 }
             };
 
-    private static void updateTranslateAdvancedSectionIndex(boolean enabled) {
+    private static void updateTranslateAdvancedSectionIndex(
+            boolean enabled, boolean refreshResult) {
         var indexData = SettingsIndexData.getInstance();
         if (indexData == null) return;
 
@@ -494,10 +495,12 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     prefFrag, ALWAYS_LANGUAGES_KEY, R.string.languages_settings_automatic);
             indexData.addEntryForKey(
                     prefFrag, NEVER_LANGUAGES_KEY, R.string.languages_settings_dont_offer_langs);
+            indexData.resolveIndex(); // Restores the header of the added entries.
         } else {
             indexData.removeEntryForKey(prefFrag, TARGET_LANGUAGE_KEY);
             indexData.removeEntryForKey(prefFrag, ALWAYS_LANGUAGES_KEY);
             indexData.removeEntryForKey(prefFrag, NEVER_LANGUAGES_KEY);
         }
+        if (refreshResult) indexData.setRefreshResult(true);
     }
 }

@@ -395,6 +395,12 @@ public class SettingsSearchCoordinator {
                 mActivity.findViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
                 EditText queryEdit = mActivity.findViewById(R.id.search_query);
                 queryEdit.requestFocus();
+                // Search again to reflect the changes to the index that might have been made
+                // while browsing results.
+                if (mIndexData.shouldRefreshResult()) {
+                    onQueryUpdated(queryEdit.getText().toString());
+                    mIndexData.setRefreshResult(false);
+                }
             }
         }
         // Clearing the fragment before popping the back stack. Otherwise the existing
@@ -585,9 +591,7 @@ public class SettingsSearchCoordinator {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        String query = s.toString().trim();
-                        performSearch(
-                                query, SettingsSearchCoordinator.this::displayResultsFragment);
+                        onQueryUpdated(s.toString().trim());
                     }
                 });
         queryEdit.setOnFocusChangeListener(
@@ -604,6 +608,10 @@ public class SettingsSearchCoordinator {
                         }
                     }
                 });
+    }
+
+    private void onQueryUpdated(String query) {
+        performSearch(query, SettingsSearchCoordinator.this::displayResultsFragment);
     }
 
     public void onTitleTapped(@Nullable String entryName) {
