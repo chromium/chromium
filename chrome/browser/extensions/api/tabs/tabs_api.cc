@@ -843,7 +843,17 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   if (!initialized_type && !extension_id.empty()) {
     // extension_id is only set for CREATE_TYPE_POPUP.
-    create_params.type = BrowserWindowInterface::TYPE_APP_POPUP;
+
+    // On non-Android platforms, we use TYPE_APP_POPUP. On Android, this is
+    // unsupported, so we use TYPE_POPUP.
+    // TODO(https://crbug.com/469000733): Investigate if we can just use
+    // TYPE_POPUP everywhere.
+    create_params.type =
+#if BUILDFLAG(IS_ANDROID)
+        BrowserWindowInterface::TYPE_POPUP;
+#else
+        BrowserWindowInterface::TYPE_APP_POPUP;
+#endif
 
     // TODO(https://crbug.com/431004500): Initialize app name on android, or
     // verify this is unnecessary.
@@ -869,11 +879,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       OnBrowserWindowCreated(new_window, source_window, tab_index);
   return RespondNow(std::move(response));
 #else
-  // TODO(https://crbug.com/431004500): Support other window types besides
-  // TYPE_NORMAL.
-  if (create_params.type != BrowserWindowInterface::TYPE_NORMAL) {
-    return RespondNow(Error("Only 'normal' windows are supported (for now)."));
-  }
+
+  CHECK(create_params.type == BrowserWindowInterface::TYPE_NORMAL ||
+        create_params.type == BrowserWindowInterface::TYPE_POPUP)
+      << "Unexpected window type: " << static_cast<int>(create_params.type);
 
   CreateBrowserWindow(
       std::move(create_params),
