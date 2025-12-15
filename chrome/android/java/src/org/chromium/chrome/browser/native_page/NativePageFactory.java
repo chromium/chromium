@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -92,7 +93,7 @@ public class NativePageFactory {
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
@@ -118,7 +119,7 @@ public class NativePageFactory {
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
@@ -200,7 +201,7 @@ public class NativePageFactory {
         private final Supplier<Toolbar> mToolbarSupplier;
         private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-        private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+        private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
         private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
         private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
@@ -223,7 +224,7 @@ public class NativePageFactory {
                 Supplier<Toolbar> toolbarSupplier,
                 @Nullable HomeSurfaceTracker homeSurfaceTracker,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-                ObservableSupplier<Integer> tabStripHeightSupplier,
+                NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,

@@ -22,14 +22,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -55,10 +54,11 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock private Configuration mConfiguration;
     @Mock private ScrimManager mScrimManager;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
-    @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private BottomControlsStacker mBottomControlsStacker;
 
     LocationBarFocusScrimHandler mScrimHandler;
+    private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     @Before
     public void setUp() {
@@ -123,17 +123,12 @@ public class LocationBarFocusScrimHandlerTest {
 
     @Test
     public void testTabStripHeightChangeCallback() {
-        ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
-        verify(mTabStripHeightSupplier).addObserver(captor.capture());
-        Callback<Integer> tabStripHeightChangeCallback = captor.getValue();
-        int newTabStripHeight = 10;
-        doReturn(newTabStripHeight)
-                .when(mResources)
-                .getDimensionPixelSize(R.dimen.tab_strip_height);
-        tabStripHeightChangeCallback.onResult(newTabStripHeight);
+        int newHeight = 10;
+        doReturn(newHeight).when(mResources).getDimensionPixelSize(R.dimen.tab_strip_height);
+        mTabStripHeightSupplier.set(newHeight);
         assertEquals(
                 "Scrim top margin should be updated when tab strip height changes.",
-                newTabStripHeight,
+                newHeight,
                 mScrimHandler.getScrimModelForTesting().get(ScrimProperties.TOP_MARGIN));
     }
 }

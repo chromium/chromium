@@ -54,10 +54,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -212,12 +212,13 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Tracker mTracker;
     @Mock private ScrollableContainerDelegate mScrollableContainerDelegate;
-    @Mock ObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
+            ObservableSuppliers.createNonNull(0);
     private FeedSurfaceMediator mMediatorSpy;
     private int mTabStripHeight;
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
@@ -279,7 +280,7 @@ public class FeedSurfaceCoordinatorTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
-        when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
+        mTabStripHeightSupplier.set(mTabStripHeight);
 
         mCoordinator = createCoordinator(mRecyclerView);
 
@@ -471,10 +472,6 @@ public class FeedSurfaceCoordinatorTest {
 
     @Test
     public void testTabStripHeightChangeCallback() {
-        ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
-        verify(mTabStripHeightSupplier).addObserver(captor.capture());
-        Callback<Integer> tabStripHeightChangeCallback = captor.getValue();
-        tabStripHeightChangeCallback.onResult(mTabStripHeight);
         assertEquals(
                 "Top padding of root view should be updated when tab strip height changes.",
                 mTabStripHeight,

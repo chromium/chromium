@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -38,7 +38,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final Runnable mClickDelegate;
     private final Context mContext;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
     private final BottomControlsStacker mBottomControlsStacker;
 
@@ -59,7 +59,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
             LocationBarDataProvider locationBarDataProvider,
             Runnable clickDelegate,
             View scrimTarget,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             BottomControlsStacker bottomControlsStacker) {
         mScrimManager = scrimManager;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -67,7 +67,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mClickDelegate = clickDelegate;
         mContext = context;
 
-        int topMargin = tabStripHeightSupplier.get() == null ? 0 : tabStripHeightSupplier.get();
+        int topMargin = tabStripHeightSupplier.get();
         mLightScrimColor = context.getColor(R.color.omnibox_focused_fading_background_color_light);
         mScrimModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)

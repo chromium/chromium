@@ -76,7 +76,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlStateProvider;
     private final float mPxToDp;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Supplier<Integer> mTabStripHeightSupplier;
 
     /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -123,7 +123,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
             Supplier<@Nullable Activity> activitySupplier,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            Supplier<Integer> tabStripHeightSupplier,
             Supplier<Boolean> isAppInDesktopWindowSupplier) {
         super(
                 activitySupplier,

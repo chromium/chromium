@@ -60,7 +60,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Supplier<Integer> mTabStripHeightSupplier;
     private final @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
 
     /**

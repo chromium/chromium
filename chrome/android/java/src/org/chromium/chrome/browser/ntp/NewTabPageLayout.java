@@ -29,7 +29,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -152,7 +151,7 @@ public class NewTabPageLayout extends LinearLayout
     private boolean mMvtContentFits;
     private float mTransitionEndOffset;
     private boolean mIsTablet;
-    private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private Supplier<Integer> mTabStripHeightSupplier;
     private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
@@ -247,7 +246,7 @@ public class NewTabPageLayout extends LinearLayout
             Profile profile,
             WindowAndroid windowAndroid,
             boolean isTablet,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            Supplier<Integer> tabStripHeightSupplier,
             Supplier<GURL> composeplateUrlSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;

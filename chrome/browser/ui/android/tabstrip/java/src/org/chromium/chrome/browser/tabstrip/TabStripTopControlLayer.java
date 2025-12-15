@@ -8,7 +8,9 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -30,12 +32,12 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
  * during tab strip height transition.
  */
 @NullMarked
-public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
-        implements TopControlLayer, TabStripTransitionHandler {
+public class TabStripTopControlLayer implements TopControlLayer, TabStripTransitionHandler {
     private static final String TAG = "TabStripLayer";
     private final TopControlsStacker mTopControlsStacker;
     private final BrowserControlsStateProvider mBrowserControls;
     private final ControlContainer mControlContainer;
+    private final SettableNonNullObservableSupplier<Integer> mSupplier;
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
@@ -104,10 +106,10 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
             TopControlsStacker topControlsStacker,
             BrowserControlsStateProvider browserControls,
             ControlContainer controlContainer) {
-        super(tabStripHeight);
         mTopControlsStacker = topControlsStacker;
         mBrowserControls = browserControls;
         mControlContainer = controlContainer;
+        mSupplier = ObservableSuppliers.createNonNull(tabStripHeight);
 
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
             mTopControlsStacker.addControl(this);
@@ -115,10 +117,9 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
     }
 
     /** Destroy the instance and remove all dependencies. */
-    @Override
     public void destroy() {
         mTopControlsStacker.removeControl(this);
-        super.destroy();
+        mSupplier.destroy();
     }
 
     /**
@@ -130,6 +131,14 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         mTabStrip = tabStrip;
     }
 
+    public NonNullObservableSupplier<Integer> getSupplier() {
+        return mSupplier;
+    }
+
+    public void set(int tabStripHeight) {
+        mSupplier.set(tabStripHeight);
+    }
+
     // Implements TopControlLayer
 
     @Override
@@ -139,7 +148,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
 
     @Override
     public int getTopControlHeight() {
-        return get();
+        return mSupplier.get();
     }
 
     @Override
@@ -153,7 +162,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         // when scrolled offscreen or obscured, except when hidden by height transition.
         //
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        boolean isTabStripVisibleAsLayer = get() > 0;
+        boolean isTabStripVisibleAsLayer = getTopControlHeight() > 0;
         return isTabStripVisibleAsLayer
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
@@ -211,7 +220,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
 
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
-        set(newHeight);
+        mSupplier.set(newHeight);
     }
 
     private void prepForTransitionRequested(

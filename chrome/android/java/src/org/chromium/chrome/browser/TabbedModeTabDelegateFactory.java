@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -82,7 +83,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final WindowAndroid mWindowAndroid;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
@@ -115,7 +116,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,

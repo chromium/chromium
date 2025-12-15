@@ -43,6 +43,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -180,7 +181,7 @@ public class FeedSurfaceCoordinator
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private boolean mWebFeedHasContent;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
 
     // Used to handle padding adjustment when edge to edge is enabled.
@@ -441,7 +442,7 @@ public class FeedSurfaceCoordinator
             boolean overScrollDisabled,
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;

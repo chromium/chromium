@@ -1195,7 +1195,7 @@ public class ToolbarManager
                         mActivity,
                         mActionBarDelegate,
                         toolbarActionModeCallback,
-                        mTabStripTopControlLayer);
+                        mTabStripTopControlLayer.getSupplier());
 
         tabObscuringHandler.addObserver(this);
 
@@ -1298,7 +1298,7 @@ public class ToolbarManager
                         mLocationBarModel,
                         clickDelegate,
                         scrimTarget,
-                        mTabStripTopControlLayer,
+                        mTabStripTopControlLayer.getSupplier(),
                         mBottomControlsStacker);
 
         var omnibox = mLocationBar.getOmniboxStub();
@@ -2825,8 +2825,8 @@ public class ToolbarManager
     }
 
     /** Get the supplier for the current height of the tab strip. Always returns a valid integer. */
-    public ObservableSupplier<Integer> getTabStripHeightSupplier() {
-        return mTabStripTopControlLayer;
+    public NonNullObservableSupplier<Integer> getTabStripHeightSupplier() {
+        return mTabStripTopControlLayer.getSupplier();
     }
 
     /** Return the TabStripTransitionCoordinator. */
