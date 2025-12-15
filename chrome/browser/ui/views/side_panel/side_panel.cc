@@ -222,8 +222,9 @@ class ContentParentView : public views::View, public views::ViewObserver {
   METADATA_HEADER(ContentParentView, views::View)
 
  public:
-  explicit ContentParentView(bool should_round_corners)
-      : should_round_corners_(should_round_corners) {
+  explicit ContentParentView(bool should_round_corners,
+                             SidePanelEntry::PanelType type)
+      : should_round_corners_(should_round_corners), type_(type) {
     SetUseDefaultFillLayout(true);
     SetProperty(
         views::kFlexBehaviorKey,
@@ -266,11 +267,16 @@ class ContentParentView : public views::View, public views::ViewObserver {
     return should_round_corners_ && GetLayoutProvider()
                ? gfx::RoundedCornersF(
                      GetLayoutProvider()->GetCornerRadiusMetric(
-                         views::ShapeContextTokens::kSidePanelContentRadius))
+                         type_ == SidePanelEntry::PanelType::kToolbar
+                             ? views::ShapeContextTokens::
+                                   kToolbarHeightSidePanelContentRadius
+                             : views::ShapeContextTokens::
+                                   kSidePanelContentRadius))
                : gfx::RoundedCornersF();
   }
 
   bool should_round_corners_ = false;
+  SidePanelEntry::PanelType type_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 };
@@ -393,7 +399,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
   // parent view. content_parent_view_ is added first so it exists behind
   // border_view_ and resize_area_.
   content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
-      /*should_round_corners=*/!has_border));
+      /*should_round_corners=*/!has_border, type));
   content_parent_view_->SetVisible(false);
 
   if (has_border) {
