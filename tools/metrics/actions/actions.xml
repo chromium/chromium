@@ -28958,6 +28958,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileRecentTabManagerRecentWindowOpened">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    A recently closed window was opened from the recent tabs manager. This
+    corresponds to restoring an entire instance and all its associated tabs.
+    This action is distinct from restoring multiple tabs that were closed via a
+    multi-select bulk event, which is tracked separately as
+    MobileRecentTabManagerRecentBulkEventOpened.
+  </description>
+</action>
+
 <action name="MobileRecentTabManagerShowFullHistory">
   <owner>gambard@google.com</owner>
   <owner>sczs@chromium.org</owner>

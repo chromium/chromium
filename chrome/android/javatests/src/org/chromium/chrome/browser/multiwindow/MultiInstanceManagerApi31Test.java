@@ -82,6 +82,7 @@ import java.util.Set;
 @DoNotBatch(reason = "This class tests creating, destroying and managing multiple windows.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 @MinAndroidSdkLevel(VERSION_CODES.S)
 @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 public class MultiInstanceManagerApi31Test {
@@ -343,6 +344,55 @@ public class MultiInstanceManagerApi31Test {
         assertTrue(
                 "The recently closed entry should be RecentlyClosedWindow type",
                 entries.get(0) instanceof RecentlyClosedWindow);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void restoreWindow_RecentlyClosedEntriesUpdated() {
+        // Set initial instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity[] otherActivities =
+                createNewWindows(
+                        firstActivity, /* numWindows= */ 2, /* addIncognitoExtras= */ false);
+
+        // Check initial state of instances.
+        verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
+
+        // Verify there is 0 entry in the RecentlyClosedEntriesManager.
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                firstActivity.getRecentlyClosedEntriesManagerForTesting();
+        assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+
+        // Close one window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMultiInstanceManager.closeWindow(
+                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                                CloseWindowAppSource.WINDOW_MANAGER));
+
+        // Check state of instances after one instance is closed - the closed window should become
+        // an inactive one.
+        verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
+
+        // Verify there is 1 window entry in the RecentlyClosedEntriesManager after the window
+        // closure.
+        List<RecentlyClosedEntry> entries = recentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals("There should be 1 recently closed entry", 1, entries.size());
+        assertTrue(
+                "The recently closed entry should be RecentlyClosedWindow type",
+                entries.get(0) instanceof RecentlyClosedWindow);
+        RecentlyClosedWindow window = (RecentlyClosedWindow) entries.get(0);
+
+        // Restore window.
+        recentlyClosedEntriesManager.openRecentlyClosedEntry(window);
+
+        // Verify window is restored and removed from recentlyClosedEntries.
+        entries = recentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals("There should be 0 recently closed entry", 0, entries.size());
+        verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
     }
 
     @Test

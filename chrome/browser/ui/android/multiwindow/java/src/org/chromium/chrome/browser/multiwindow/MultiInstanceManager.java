@@ -51,16 +51,18 @@ public abstract class MultiInstanceManager {
         NewWindowAppSource.OTHER,
         NewWindowAppSource.MENU,
         NewWindowAppSource.WINDOW_MANAGER,
-        NewWindowAppSource.KEYBOARD_SHORTCUT
+        NewWindowAppSource.KEYBOARD_SHORTCUT,
+        NewWindowAppSource.RECENT_TABS
     })
     public @interface NewWindowAppSource {
         int OTHER = 0;
         int MENU = 1;
         int WINDOW_MANAGER = 2;
         int KEYBOARD_SHORTCUT = 3;
+        int RECENT_TABS = 4;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
