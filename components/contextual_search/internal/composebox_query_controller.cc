@@ -68,6 +68,7 @@ constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
+constexpr char kVisualRequestIdQueryParameterKey[] = "vsrid";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -380,6 +381,39 @@ void ComposeboxQueryController::CreateSearchUrl(
       }
 
       if (num_valid_files > 0) {
+        // Trigger the interaction request on the last file if needed.
+        // TODO(crbug.com/462509148): Determine how to support interaction
+        // requests for multi-context input flow.
+        if (search_url_request_info->lens_overlay_selection_type.has_value()) {
+          auto* last_file =
+              GetMutableFileInfo(search_url_request_info->file_tokens.back());
+          SendInteractionRequest(
+              request_id_generator_.GetNextRequestId(
+                  lens::RequestIdUpdateMode::kInteractionRequest,
+                  last_file->request_id.media_type()),
+              search_url_request_info->query_text,
+              search_url_request_info->image_crop,
+              search_url_request_info->client_logs,
+              search_url_request_info->lens_overlay_selection_type);
+
+          auto* interaction_contextual_input = contextual_inputs->add_inputs();
+          interaction_contextual_input->mutable_request_id()->CopyFrom(
+              *latest_interaction_request_data_->request_id_);
+
+          auto search_url_request_id = request_id_generator_.GetNextRequestId(
+              lens::RequestIdUpdateMode::kSearchUrl,
+              last_file->request_id.media_type());
+          std::string serialized_request_id;
+          CHECK(
+              search_url_request_id->SerializeToString(&serialized_request_id));
+          std::string encoded_request_id;
+          base::Base64UrlEncode(serialized_request_id,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING,
+                                &encoded_request_id);
+          search_url_request_info->additional_params.insert(
+              {kVisualRequestIdQueryParameterKey, encoded_request_id});
+        }
+
         AddEncodedVisualSearchInteractionLogDataParam(
             search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
