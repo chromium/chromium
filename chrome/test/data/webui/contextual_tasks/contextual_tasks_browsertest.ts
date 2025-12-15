@@ -159,4 +159,28 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(!!webview);
     assertEquals(webview.getAttribute('src'), fixtureUrl);
   });
+
+  test('composebox visibility toggles', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const composebox =
+        appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+    assertTrue(!!composebox);
+    assertFalse(composebox.hasAttribute('hidden'));
+
+    // Hide the compose box.
+    proxy.callbackRouterRemote.hideInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(composebox.hasAttribute('hidden'));
+
+    // Restore the compose box.
+    proxy.callbackRouterRemote.restoreInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    assertFalse(composebox.hasAttribute('hidden'));
+  });
 });

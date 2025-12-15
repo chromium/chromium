@@ -42,6 +42,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       threadUrl_: {type: String},
       threadTitle_: {type: String},
       contextTabs_: {type: Array},
+      showComposebox_: {type: Boolean, reflect: true},
     };
   }
 
@@ -51,6 +52,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
+  protected accessor showComposebox_: boolean = true;
   private listenerIds_: number[] = [];
   private oauthToken_: string = '';
   private postMessageHandler_!: PostMessageHandler;
@@ -99,7 +101,13 @@ export class ContextualTasksAppElement extends CrLitElement {
                 this.threadUrl_ = this.pendingUrl_;
                 this.pendingUrl_ = '';
               }
-            }));
+            }),
+        this.browserProxy_.callbackRouter.hideInput.addListener(() => {
+          this.showComposebox_ = false;
+        }),
+        this.browserProxy_.callbackRouter.restoreInput.addListener(() => {
+          this.showComposebox_ = true;
+        }));
 
     this.updateToolbarVisibility();
 

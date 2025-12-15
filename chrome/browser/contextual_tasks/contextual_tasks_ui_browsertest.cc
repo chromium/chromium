@@ -57,6 +57,8 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               OnContextUpdated,
               (std::vector<contextual_tasks::mojom::TabPtr>),
               (override));
+  MOCK_METHOD(void, HideInput, (), (override));
+  MOCK_METHOD(void, RestoreInput, (), (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();

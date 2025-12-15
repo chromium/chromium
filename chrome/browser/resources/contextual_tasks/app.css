@@ -15,6 +15,10 @@
   height: 100%;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 #threadFrame {
   border: none;
   flex-grow: 1;
