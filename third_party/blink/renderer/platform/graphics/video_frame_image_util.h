@@ -45,28 +45,18 @@ ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
-// |snapshot_provider| is given to CreateImageFromVideoFrame().
+// `snapshot_provider` is given to CreateImageFromVideoFrame().
 PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 
 // Returns a StaticBitmapImage for the given frame. Accelerated images will be
-// preferred if possible.
+// preferred if possible. `snapshot_provider` must be non-null and should have a
+// size equal to frame->natural_size() and color space equal to
+// frame->CompatRGBColorSpace().
 //
-// |video_renderer| may optionally be provided in cases where the same frame may
+// `video_renderer` may optionally be provided in cases where the same frame may
 // end up repeatedly converted.
 //
-// Likewise |snapshot_provider| may be provided to prevent thrashing when this
-// method is called with high frequency.
-//
-// The default snapshot provider size is the frame's visible size. The default
-// |dest_rect| is the visible size aligned to the origin. Callers may choose to
-// provide their own |snapshot_provider| and |dest_rect| for rendering to the
-// frame's natural size.
-//
-// When an external |snapshot_provider| is provided a |dest_rect| may also be
-// provided to control where in the canvas the VideoFrame will be drawn. A
-// non-empty |dest_rect| will disable zero copy image support.
-//
-// If |prefer_tagged_orientation| is true, CreateImageFromVideoFrame() will just
+// If `prefer_tagged_orientation` is true, CreateImageFromVideoFrame() will just
 // tag the StaticBitmapImage with the correct orientation ("soft flip") instead
 // of drawing the frame with the correct orientation ("hard flip").
 //
@@ -76,7 +66,7 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasSnapshotProvider* snapshot_provider = nullptr,
+    CanvasSnapshotProvider* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
@@ -93,7 +83,7 @@ GetRasterContextProvider();
 
 // Creates a CanvasSnapshotProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
-// their snapshot providers. If |raster_context_provider| is null a software
+// their snapshot providers. If `raster_context_provider` is null a software
 // snapshot provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasSnapshotProvider>
 CreateSnapshotProviderForVideoFrame(
