@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
@@ -43,8 +44,9 @@ void TokenizedString::Tokenize() {
   }
 
   while (break_iter.Advance()) {
-    if (!break_iter.IsWord())
+    if (!break_iter.IsWord()) {
       continue;
+    }
 
     const std::u16string word(break_iter.GetString());
     const size_t word_start = break_iter.prev();
