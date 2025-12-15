@@ -20,6 +20,8 @@ build_webui("build") {
     "composebox.ts",
     "composebox.html.ts",
     "contextual_tasks_browser_proxy.ts",
+    "favicon_group.ts",
+    "favicon_group.html.ts",
     "icons.html.ts",
     "post_message_handler.ts",
     "top_toolbar.ts",
@@ -32,6 +34,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "composebox.css",
+    "favicon_group.css",
     "top_toolbar.css",
     "internals/app.css",
   ]

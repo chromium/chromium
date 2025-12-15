@@ -24,10 +24,10 @@ export function getHtml(this: TopToolbarElement) {
   </div>
   <div class="rightSide">
     <div id="rightButtonContainer">
-      <cr-icon-button id="sources" iron-icon="cr:attachment"
-          ?hidden="${this.shouldHideSourcesButton_()}"
+      <contextual-tasks-favicon-group id="sources"
+          .urls="${this.attachedTabs.map(t => t.url.url)}"
           title="Sources" @click="${this.onSourcesClick_}">
-      </cr-icon-button>
+      </contextual-tasks-favicon-group>
       <cr-icon-button @click="${this.onNewThreadClick_}"
           iron-icon="contextual_tasks:edit_square"
           title="New Thread">
