@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('Keyboard utils', () => {
@@ -53,6 +53,17 @@ suite('Keyboard utils', () => {
     assertFalse(isHorizontalArrow('w'));
     assertFalse(isHorizontalArrow('Tab'));
     assertFalse(isHorizontalArrow('Space'));
+  });
+
+  test('isVerticalArrow', () => {
+    assertFalse(isVerticalArrow('ArrowRight'));
+    assertFalse(isVerticalArrow('ArrowLeft'));
+    assertTrue(isVerticalArrow('ArrowUp'));
+    assertTrue(isVerticalArrow('ArrowDown'));
+    assertFalse(isVerticalArrow('not a key'));
+    assertFalse(isVerticalArrow('w'));
+    assertFalse(isVerticalArrow('Tab'));
+    assertFalse(isVerticalArrow('Space'));
   });
 
   suite('getNewIndex', () => {

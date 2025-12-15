@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {currentReadHighlightClass, LineFocusController, LineFocusType, PARENT_OF_HIGHLIGHT_CLASS, previousReadHighlightClass, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setContent, setupBasicSpeech} from './common.js';
@@ -408,6 +408,155 @@ suite('LineFocusController', () => {
     parentHighlight.appendChild(innerHighlight);
     container.appendChild(parentHighlight);
     await microtasksFinished();
+
+    assertFalse(lineFocusMoved);
+  });
+
+  test('snapToNextLine with line moves by line', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = document.createElement('p');
+    container.innerText =
+        'Like a siege rocked by a sky bird\nin a distant wood';
+    document.body.appendChild(container);
+    lineFocusController.onLineFocusChange(
+        {type: LineFocusType.LINE, lines: 1}, container, defaultHeight);
+    let oldTop = lineFocusController.getTop();
+
+    // Snap to the first line.
+    lineFocusController.snapToNextLine(true, container);
+    let newTop = lineFocusController.getTop();
+    assertLT(oldTop, newTop);
+
+    // Snap to the last line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(true, container);
+    newTop = lineFocusController.getTop();
+    assertLT(oldTop, newTop);
+
+    // The container only has two lines, so moving forward should not change
+    // position.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(true, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+
+    // Snap back to the first line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(false, container);
+    newTop = lineFocusController.getTop();
+    assertGT(oldTop, newTop);
+
+    // Moving back again should not change position.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(false, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+  });
+
+  test('snapToNextLine scrolls to line if out of view', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const height = 100;
+    const scroller = document.createElement('div');
+    scroller.style.height = `${height}px`;
+    scroller.style.overflow = 'auto';
+    const container = document.createElement('p');
+    container.innerText =
+        'Like a siege rocked by a sky bird\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n';
+    let scrolled = false;
+    container.scrollTo = () => {
+      scrolled = true;
+    };
+    scroller.appendChild(container);
+    document.body.appendChild(scroller);
+    lineFocusController.onLineFocusChange(
+        {type: LineFocusType.LINE, lines: 1}, container, height);
+    let oldTop = lineFocusController.getTop();
+
+    // Snap to the first line.
+    lineFocusController.snapToNextLine(true, container);
+    let newTop = lineFocusController.getTop();
+    // Continue moving to the next line until scrolling occurs.
+    while (oldTop < newTop) {
+      assertFalse(scrolled);
+      oldTop = newTop;
+      lineFocusController.snapToNextLine(true, container);
+      newTop = lineFocusController.getTop();
+    }
+    assertTrue(scrolled);
+
+    // Snap to the next line to scroll again.
+    oldTop = newTop;
+    scrolled = false;
+    lineFocusController.snapToNextLine(true, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+    assertTrue(scrolled);
+
+    // Snap to the previous line to scroll back up.
+    oldTop = newTop;
+    scrolled = false;
+    lineFocusController.snapToNextLine(false, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+    assertTrue(scrolled);
+  });
+
+  test('snapToNextLine with window moves by line', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = document.createElement('p');
+    container.innerText = 'Who can say if I\'ve been changed for the better\n' +
+        'But Because I knew you I have been changed for good\n' +
+        'And just to clear the air I ask forgiveness\n' +
+        'for the things I\'ve done you blame before';
+    document.body.appendChild(container);
+    lineFocusController.onLineFocusChange(
+        {type: LineFocusType.WINDOW, lines: 3}, container, defaultHeight);
+    let oldTop = lineFocusController.getTop();
+
+    // Snap to the third line.
+    lineFocusController.snapToNextLine(true, container);
+    let newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+
+    // Snap to the last line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(true, container);
+    newTop = lineFocusController.getTop();
+    assertLT(oldTop, newTop);
+
+    // Moving forward should not change position.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(true, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+
+    // Snap back to the third line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(false, container);
+    newTop = lineFocusController.getTop();
+    assertGT(oldTop, newTop);
+
+    // Moving back again should not change position since the window is 3 lines
+    // long and we are already at the third line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(false, container);
+    newTop = lineFocusController.getTop();
+    assertEquals(oldTop, newTop);
+  });
+
+  test('snapToNextLine does nothing when speech active', () => {
+    readAloudModel.setInitialized(false);
+    const container = createLongContainer();
+    lineFocusController.onLineFocusChange(
+        {type: LineFocusType.LINE, lines: 1}, container, defaultHeight);
+    chrome.readingMode.isLineFocusEnabled = true;
+    speechController.onPlayPauseToggle(container);
+    lineFocusMoved = false;
+
+    lineFocusController.snapToNextLine(true, container);
+    lineFocusController.snapToNextLine(false, container);
 
     assertFalse(lineFocusMoved);
   });

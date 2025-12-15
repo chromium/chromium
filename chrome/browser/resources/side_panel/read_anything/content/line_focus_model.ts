@@ -30,6 +30,12 @@ export class LineFocusModel {
   // The current line focus mode.
   private currentLineFocus_?: LineFocus;
 
+  // The index of the current line in textLineBottoms_ being focused. Null if
+  // line focus is moving continuously with the mouse instead of discretely.
+  private currentLineIndex_: number|null = null;
+  // The precomputed bottom positions of each line of text.
+  private textLineBottoms_: number[] = [];
+
   getMinY(): number {
     return this.minY_;
   }
@@ -84,5 +90,21 @@ export class LineFocusModel {
 
   setCurrentLineFocus(lineFocus: LineFocus): void {
     this.currentLineFocus_ = lineFocus;
+  }
+
+  getCurrentLineIndex(): number|null {
+    return this.currentLineIndex_;
+  }
+
+  setCurrentLineIndex(index: number|null): void {
+    this.currentLineIndex_ = index;
+  }
+
+  getTextLineBottoms(): number[] {
+    return this.textLineBottoms_;
+  }
+
+  setTextLineBottoms(bottoms: number[]): void {
+    this.textLineBottoms_ = bottoms;
   }
 }

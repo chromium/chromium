@@ -53,6 +53,7 @@ export class LineFocusController {
     // Line focus should follow along with speech if it's active, so ignore
     // mouse movements.
     if (this.isEnabled() && !this.speechController_.isSpeechActive()) {
+      this.model_.setCurrentLineIndex(null);
       this.setY_(Math.max(this.model_.getMinY(), y));
     }
   }
@@ -80,10 +81,85 @@ export class LineFocusController {
       this.model_.setTop(0);
       this.model_.setWindowHeight(0);
       this.model_.setDefaultWindowHeight(0);
+      this.model_.setTextLineBottoms([]);
+      this.model_.setCurrentLineIndex(null);
+      this.highlightObserver_.disconnect();
     } else {
       this.calculateNewPositions_(container, height);
       this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
     }
+  }
+
+  snapToNextLine(isForward: boolean, scrollContainer: HTMLElement) {
+    if (!this.isEnabled() || this.speechController_.isSpeechActive()) {
+      return;
+    }
+
+    const lines = this.model_.getTextLineBottoms();
+    if (!lines.length) {
+      return;
+    }
+
+    // If this is the first time snapping after mouse movement, move to the
+    // closest line to the current Y.
+    const currentLineIndex = this.model_.getCurrentLineIndex();
+    if (currentLineIndex === null) {
+      const firstIndex =
+          this.clampLineIndex_(this.getFirstLineIndex_(isForward));
+      this.model_.setCurrentLineIndex(firstIndex);
+      this.setY_(lines[firstIndex]!);
+      return;
+    }
+
+    const diff = isForward ? 1 : -1;
+    const previousLineIndex = currentLineIndex;
+    const newIndex = currentLineIndex + diff;
+    if (newIndex >= 0 && newIndex < lines.length) {
+      this.model_.setCurrentLineIndex(this.clampLineIndex_(newIndex));
+      const lineFocusTop =
+          this.getCurrentLineFocusType() === LineFocusType.LINE ?
+          lines[newIndex]! :
+          lines[newIndex - this.getCurrentLineFocusLines_()]!;
+      // Scroll the container to keep line focus in view if it would go out of
+      // view.
+      if (lines[newIndex]! > this.model_.getMaxY() ||
+          lineFocusTop < this.model_.getMinY()) {
+        // TODO(crbug.com/447427066): Consider whether to instead scroll one
+        // line at a time. If so, uncomment the code below and remove the center
+        // logic below.
+        // scrollContainer.scrollTop += lines[newIndex]! -
+        // lines[currentLineIndex]!;
+
+        // Center it vertically.
+        const newTop = scrollContainer.scrollTop +
+            (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
+        scrollContainer.scrollTo({top: newTop, behavior: 'smooth'});
+      } else if (this.model_.getCurrentLineIndex() !== previousLineIndex) {
+        this.setY_(lines[newIndex]!);
+      }
+
+      // If the user has navigated back to the top of the panel, but there's
+      // still a little bit left to scroll, scroll to the top.
+      if (this.model_.getCurrentLineIndex() === previousLineIndex &&
+          scrollContainer.scrollTop !== 0) {
+        scrollContainer.scrollTo({top: 0, behavior: 'smooth'});
+      }
+    }
+  }
+
+  private getCurrentLineFocusLines_(): number {
+    return this.model_.getCurrentLineFocus() ?
+        this.model_.getCurrentLineFocus()!.lines :
+        0;
+  }
+
+
+  // If line focus is a window of > 1 line, the bottom of the window should not
+  // go above the number of lines in the window.
+  private clampLineIndex_(index: number): number {
+    return this.getCurrentLineFocusType() === LineFocusType.LINE ?
+        index :
+        Math.max(index, this.getCurrentLineFocusLines_() - 1);
   }
 
   private setY_(y: number) {
@@ -102,7 +178,8 @@ export class LineFocusController {
   }
 
   private calculateHeight_() {
-    if (!this.model_.getCurrentLineFocus()) {
+    const currentLineFocus = this.model_.getCurrentLineFocus();
+    if (!currentLineFocus) {
       return;
     }
 
@@ -113,11 +190,29 @@ export class LineFocusController {
 
     // If the line focus is a window being controlled with smooth mouse movement
     // then use the default window height.
-    if (this.getCurrentLineFocusType() === LineFocusType.WINDOW) {
+    const currentLineIndex = this.model_.getCurrentLineIndex();
+    if (currentLineIndex === null) {
       this.model_.setWindowHeight(this.model_.getDefaultWindowHeight());
       this.model_.setTop(Math.max(
           this.model_.getMinY(),
           this.model_.getY() - this.model_.getWindowHeight()));
+      return;
+    }
+
+    // If the line focus is a window being controlled with discrete keyboard
+    // presses, then use the calculated line locations to set the top and height
+    // of the window.
+    const topIndex = currentLineIndex - currentLineFocus.lines;
+    const index = Math.max(
+        0, Math.min(this.model_.getTextLineBottoms().length - 1, topIndex));
+    const shouldUseMinY = topIndex < 0 ||
+        this.model_.getTextLineBottoms()[index]! < this.model_.getMinY();
+    this.model_.setTop(
+        shouldUseMinY ? this.model_.getMinY() :
+                        this.model_.getTextLineBottoms()[index]!);
+    if (!shouldUseMinY || topIndex === -1) {
+      this.model_.setWindowHeight(
+          this.model_.getTextLineBottoms()[currentLineIndex]! - this.getTop());
     }
   }
 
@@ -129,15 +224,24 @@ export class LineFocusController {
 
     const range = document.createRange();
     range.selectNodeContents(container);
-    const visibleLines =
-        Array.from(range.getClientRects())
-            .map(rect => rect.bottom)
-            .filter(
-                y => y >= this.model_.getMinY() && y <= this.model_.getMaxY());
-    const uniqueLines = Array.from(new Set(visibleLines));
+
+    const newLines =
+        this.combineIntersectingRects_(Array.from(range.getClientRects()))
+            .map(rect => rect.bottom);
+    this.model_.setTextLineBottoms(newLines);
+    const visibleLines = newLines.filter(
+        y => y >= this.model_.getMinY() && y <= this.model_.getMaxY());
     this.model_.setDefaultWindowHeight(
-        currentLineFocus.lines * (uniqueLines.at(-1)! - uniqueLines.at(0)!) /
-        (uniqueLines.length - 1));
+        currentLineFocus.lines * (visibleLines.at(-1)! - visibleLines.at(0)!) /
+        (visibleLines.length - 1));
+
+    // Adjust line focus to remain at the same text line even if it's moved,
+    // due to font or other spacing changes.
+    const currentLineIndex = this.model_.getCurrentLineIndex();
+    if (currentLineIndex && currentLineIndex >= 0 &&
+        currentLineIndex < newLines.length - 1) {
+      this.setY_(newLines[currentLineIndex]!);
+    }
 
     this.highlightObserver_.disconnect();
     // Listen for node additions because speech is highlighted by replacing a
@@ -171,6 +275,56 @@ export class LineFocusController {
           Math.max(...highlights.map(h => h.getBoundingClientRect().bottom));
       this.setY_(maxY);
     }
+  }
+
+  private combineIntersectingRects_(unsortedRects: DOMRect[]): DOMRect[] {
+    if (unsortedRects.length === 0) {
+      return [];
+    }
+
+    const sortedRects =
+        Array.from(new Set(unsortedRects)).sort((a, b) => a.bottom - b.bottom);
+    const combinedRects: DOMRect[] = [sortedRects[0]!];
+    for (let i = 1; i < sortedRects.length; i++) {
+      const currentRect = sortedRects[i]!;
+      const lastRect = combinedRects[combinedRects.length - 1]!;
+
+      // Skip duplicate rects.
+      if (lastRect.top === currentRect.top &&
+          lastRect.bottom === currentRect.bottom) {
+        continue;
+      }
+
+      // If the next rect intersects with the last rect, and the intersection is
+      // larger than a threshold, merge them by removing the last rect and
+      // keeping the new one with a higher bottom value. The threshold is > 0
+      // because some fonts may cause their returned rects to slightly overlap,
+      // even though the lines are visually distinct.
+      const isIntersecting = lastRect.bottom > currentRect.top &&
+          lastRect.bottom <= currentRect.bottom;
+      const threshold = Math.max(1, chrome.readingMode.fontSize);
+      if (isIntersecting && (lastRect.bottom - currentRect.top) > threshold) {
+        combinedRects.pop();
+      }
+      combinedRects.push(currentRect);
+    }
+
+    return combinedRects;
+  }
+
+  // Returns the closest line index based on the current Y position.
+  private getFirstLineIndex_(isForward: boolean): number {
+    let previousLine = 0;
+    const lines = this.model_.getTextLineBottoms();
+    for (let index = 0; index < lines.length; index++) {
+      const line = lines[index]!;
+      if (this.model_.getY() >= previousLine && this.model_.getY() < line) {
+        return (isForward || (index <= 0)) ? index : index - 1;
+      }
+      previousLine = line;
+    }
+
+    return 0;
   }
 
   static getInstance(): LineFocusController {

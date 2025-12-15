@@ -57,7 +57,7 @@ export type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';
 export {getWordCount, isRectMostlyVisible, isRectVisible, LOG_EMPTY_DELAY_MS, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout} from './shared/common.js';
-export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './shared/keyboard_util.js';
+export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow, isVerticalArrow} from './shared/keyboard_util.js';
 export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';
 export {ReadAnythingLogger, SpeechControls, TimeFrom} from './shared/read_anything_logger.js';
