@@ -305,6 +305,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
               std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
             })));
     run_loop.Run();
+    // The previous EXPECT posts the limitation that there must not be more
+    // calls to ExecuteModel after login check. This causes flakiness in many
+    // tests, that proceed with filling and submitting the form. So this
+    // should allow further calls to ExecuteModel for the following steps, which
+    // may or may not follow depending on the test.
+    testing::Mock::VerifyAndClearExpectations(
+        mock_optimization_guide_keyed_service());
   }
 
   void MockSuccessfulSubmitButtonClick(PasswordChangeDelegate* delegate) {
