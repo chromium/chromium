@@ -25,6 +25,8 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -89,6 +91,18 @@ syncer::SyncData CreateRemoteSyncData(const std::string& name,
   return syncer::SyncData::CreateRemoteData(
       specifics,
       syncer::ClientTagHash::FromUnhashed(syncer::DataType::PREFERENCES, name));
+}
+
+syncer::SyncData CreateLocalSyncData(const std::string& name,
+                                     base::ValueView value) {
+  std::string serialized;
+  JSONStringValueSerializer json(&serialized);
+  EXPECT_TRUE(json.Serialize(value));
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::PreferenceSpecifics* pref_specifics = specifics.mutable_preference();
+  pref_specifics->set_name(name);
+  pref_specifics->set_value(serialized);
+  return syncer::SyncData::CreateLocalData(name, name, specifics);
 }
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
@@ -759,12 +773,16 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
     pref_service_ = factory.CreateSyncable(pref_registry_);
     pref_model_associator_ = static_cast<PrefModelAssociator*>(
         pref_service_->GetSyncableService(syncer::PREFERENCES));
+
+    sync_change_processor_ =
+        std::make_unique<syncer::FakeSyncChangeProcessor>();
   }
 
   void MergeDataAndStartSyncing(const syncer::SyncDataList& initial_data) {
     auto error = pref_model_associator_->MergeDataAndStartSyncing(
         syncer::PREFERENCES, initial_data,
-        std::make_unique<syncer::FakeSyncChangeProcessor>());
+        std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+            sync_change_processor_.get()));
     EXPECT_FALSE(error.has_value());
   }
 
@@ -776,6 +794,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
   scoped_refptr<TestingPrefStore> account_pref_store_;
   std::unique_ptr<PrefServiceSyncable> pref_service_;
   raw_ptr<PrefModelAssociator> pref_model_associator_ = nullptr;
+  std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_change_processor_;
 };
 
 // Tests that no notification is issued if the effective value is unchanged upon
@@ -838,33 +857,6 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
        ShouldNotifyUponInitIfDifferentValueExistsInLocalStoreOnly) {
   // Load value to local store before initial merge.
   local_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
-  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
-
-  // Listen to pref changes.
-  MockPrefChangeCallback observer(pref_service_.get());
-  PrefChangeRegistrar registrar;
-  registrar.Init(pref_service_.get());
-  registrar.Add(kStringPrefName, observer.GetCallback());
-
-  // Observer should get notified since the effective value changes.
-  EXPECT_CALL(observer, OnPreferenceChanged);
-
-  // Create initial sync data with a different pref value than that in the
-  // local store.
-  syncer::SyncDataList initial_data;
-  initial_data.push_back(
-      CreateRemoteSyncData(kStringPrefName, base::Value("new value")));
-
-  MergeDataAndStartSyncing(initial_data);
-  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
-}
-
-// Tests that notification is issued if the effective value changes upon
-// initial merge.
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
-       ShouldNotifyUponInitIfDifferentValueExistsInAccountStoreOnly) {
-  // Load value to account store before initial merge.
-  account_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "value");
 
   // Listen to pref changes.
@@ -950,6 +942,201 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
+class ScopedSyncServiceInitializer {
+ public:
+  ScopedSyncServiceInitializer(syncer::TestSyncService* sync_service,
+                               PrefServiceSyncable* pref_service)
+      : sync_service_(sync_service) {
+    pref_service->OnSyncServiceInitialized(sync_service_);
+  }
+  ~ScopedSyncServiceInitializer() { sync_service_->Shutdown(); }
+
+ private:
+  raw_ptr<syncer::TestSyncService> sync_service_;
+};
+
+class PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes
+    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
+ public:
+  PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kSyncPreferencesUseSelectedTypes);
+
+    sync_service_.GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPreferences, true);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  syncer::TestSyncService sync_service_;
+  ScopedSyncServiceInitializer sync_service_initializer_{&sync_service_,
+                                                         pref_service_.get()};
+};
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
+       DoesNotCommitPrefAddedBeforeMergeDataAndStartSyncing) {
+  pref_service_->SetString(kStringPrefName, "value");
+
+  // Value is not written to the account store because the data types are not
+  // active yet.
+  EXPECT_FALSE(account_pref_store_->GetValue(kStringPrefName, nullptr));
+  ASSERT_TRUE(local_pref_store_->GetValue(kStringPrefName, nullptr));
+
+  MergeDataAndStartSyncing(/*initial_data=*/{});
+
+  // No changes are committed to sync.
+  EXPECT_TRUE(sync_change_processor_->changes().empty());
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
+       OverridesPrefUpdatedBeforeMergeDataAndStartSyncing) {
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPreferences, true);
+  pref_service_->SetString(kStringPrefName, "new_value");
+
+  // Value is not written to the account store.
+  ASSERT_FALSE(account_pref_store_->GetValue(kStringPrefName, nullptr));
+  ASSERT_TRUE(local_pref_store_->GetValue(kStringPrefName, nullptr));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
+  MergeDataAndStartSyncing(initial_data);
+
+  // Updated value is hidden by the stale remote value. The remote value is
+  // considered stale because the local value, written before sync init, is more
+  // recent but is still hidden by the account value. See crbug.com/464008640
+  // for more details.
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "old_value");
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
+       OverwritesAccountPrefValueUponMergeDataAndStartSyncing) {
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPreferences, true);
+
+  // Pre-existing value in the account store.
+  account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should get notified since the effective value changes.
+  EXPECT_CALL(observer, OnPreferenceChanged);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
+  MergeDataAndStartSyncing(initial_data);
+
+  // Updated value is overwritten by the stale remote value.
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "old_value");
+  const base::Value* value = nullptr;
+  account_pref_store_->GetValue(kStringPrefName, &value);
+  EXPECT_THAT(value, Pointee(Eq("old_value")));
+}
+
+class PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes
+    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSyncPreferencesUseSelectedTypes};
+  syncer::TestSyncService sync_service_;
+  ScopedSyncServiceInitializer sync_service_initializer_{&sync_service_,
+                                                         pref_service_.get()};
+};
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+       ShouldCommitPrefAddedBeforeMergeDataAndStartSyncing) {
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPreferences, true);
+  pref_service_->SetString(kStringPrefName, "value");
+
+  // Before sync starts up, the user changes a pref value. This gets written to
+  // the account store.
+  const base::Value* value = nullptr;
+  account_pref_store_->GetValue(kStringPrefName, &value);
+  EXPECT_THAT(value, Pointee(Eq("value")));
+
+  MergeDataAndStartSyncing(/*initial_data=*/{});
+
+  const syncer::SyncChangeList& changes = sync_change_processor_->changes();
+  ASSERT_EQ(1u, changes.size());
+  EXPECT_EQ(changes[0].change_type(), syncer::SyncChange::ACTION_ADD);
+  EXPECT_EQ(
+      changes[0].sync_data().ToString(),
+      CreateLocalSyncData(kStringPrefName, base::Value("value")).ToString());
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+       ShouldCommitPrefUpdatedBeforeMergeDataAndStartSyncing) {
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPreferences, true);
+  pref_service_->SetString(kStringPrefName, "new_value");
+
+  // Before sync starts up, the user changes a pref value. This gets written to
+  // the account store.
+  const base::Value* value = nullptr;
+  account_pref_store_->GetValue(kStringPrefName, &value);
+  EXPECT_THAT(value, Pointee(Eq("new_value")));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
+  MergeDataAndStartSyncing(initial_data);
+
+  // The new value remains and is committed to the server.
+  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
+  account_pref_store_->GetValue(kStringPrefName, &value);
+  EXPECT_THAT(value, Pointee(Eq("new_value")));
+
+  const syncer::SyncChangeList& changes = sync_change_processor_->changes();
+  ASSERT_EQ(1u, changes.size());
+  EXPECT_EQ(changes[0].change_type(), syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ(changes[0].sync_data().ToString(),
+            CreateLocalSyncData(kStringPrefName, base::Value("new_value"))
+                .ToString());
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+       ShouldCommitPreExistingAccountValueUponMergeDataAndStartSyncing) {
+  // Load value to account store before initial merge.
+  account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
+
+  // Listen to pref changes.
+  MockPrefChangeCallback observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kStringPrefName, observer.GetCallback());
+
+  // Observer should not get notified since the effective value does not change.
+  EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
+
+  // Create initial sync data with a different pref value than that in the
+  // local store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
+
+  MergeDataAndStartSyncing(initial_data);
+
+  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
+  const base::Value* value = nullptr;
+  account_pref_store_->GetValue(kStringPrefName, &value);
+  EXPECT_THAT(value, Pointee(Eq("new_value")));
+
+  const syncer::SyncChangeList& changes = sync_change_processor_->changes();
+  ASSERT_EQ(1u, changes.size());
+  EXPECT_EQ(changes[0].change_type(), syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ(changes[0].sync_data().ToString(),
+            CreateLocalSyncData(kStringPrefName, base::Value("new_value"))
+                .ToString());
+}
 }  // namespace
 
 }  // namespace sync_preferences

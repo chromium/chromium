@@ -444,11 +444,19 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
   }
   auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                       .GetSyncablePrefMetadata(key);
-  // Checks if the pref type is active.
-  if (!active_types_.contains(metadata->data_type()) &&
+  const bool is_pref_type_enabled =
+      base::FeatureList::IsEnabled(syncer::kSyncPreferencesUseSelectedTypes)
+          ?
+          // TODO(crbug.com/464008640): Also consider kOsPreferences for
+          // OS_{,PRIORITY_}PREFERENCES.
+          GetInterestingUserSelectedTypes().Has(
+              syncer::UserSelectableType::kPreferences)
+          : active_types_.contains(metadata->data_type());
+  if (!is_pref_type_enabled &&
       // Checks if the pref already exists in the account store.
-      // This is to handle cases where a pref might pre-exist before sync is
-      // initialized and the type is marked as active.
+      // This is to handle cases where a pref might pre-exist before
+      // `is_pref_type_enabled` can be correctly computed and the type is
+      // considered enabled.
       !account_pref_store_->GetValue(key, nullptr)) {
     return false;
   }
@@ -572,6 +580,8 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
       account_pref_store_->RemoveValuesByPrefixSilently(key);
     }
     // Clear the user selected types pref in the local store.
+    // TODO(crbug.com/464008640): Consider removing this, since the selected
+    // types should get cleared anyway when sync is disabled.
     SetInterestingUserSelectedTypes(syncer::UserSelectableTypeSet());
   }
 }
