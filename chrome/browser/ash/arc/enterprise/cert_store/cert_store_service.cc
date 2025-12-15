@@ -391,7 +391,7 @@ void CertStoreService::OnCertificatesListed(
       slot, std::move(cert_queue), std::move(cert_descriptions));
 }
 
-// TODO(b/193785308) Try to simplify these recursive calls.
+// Recursive calls can be simplified here (see b/193785308).
 void CertStoreService::BuildAllowedCertDescriptionsRecursively(
     BuildAllowedCertDescriptionsCallback callback,
     keymanagement::mojom::ChapsSlot slot,
