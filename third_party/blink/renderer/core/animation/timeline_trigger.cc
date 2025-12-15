@@ -29,6 +29,9 @@ namespace blink {
 
 namespace {
 
+constexpr double kTimelineTriggerBoundaryTolerance =
+    1.f / LayoutUnit::kFixedPointDenominator;
+
 bool ValidateBoundary(ExecutionContext* execution_context,
                       const TimelineTrigger::RangeBoundary* boundary,
                       ExceptionState& exception_state,
@@ -65,6 +68,17 @@ bool ValidateBoundary(ExecutionContext* execution_context,
     }
   }
   return true;
+}
+
+bool LessThanOrEqualWithinTolerance(double a, double b) {
+  return a <= b + kTimelineTriggerBoundaryTolerance;
+}
+
+// Fuzzy matching is needed at the boundary of the scroll container so that we
+// don't fail to detect entering a range due to round-off error.
+bool WithinRange(double offset, double range_start, double range_end) {
+  return LessThanOrEqualWithinTolerance(range_start, offset) &&
+         LessThanOrEqualWithinTolerance(offset, range_end);
 }
 
 double ComputeTriggerBoundary(std::optional<TimelineOffset> offset,
@@ -283,10 +297,10 @@ std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
                   .current_offset = 0};
   }
 
-  bool within_trigger_range = boundaries.current_offset >= boundaries.start &&
-                              boundaries.current_offset <= boundaries.end;
-  bool within_exit_range = boundaries.current_offset >= boundaries.exit_start &&
-                           boundaries.current_offset <= boundaries.exit_end;
+  bool within_trigger_range =
+      WithinRange(boundaries.current_offset, boundaries.start, boundaries.end);
+  bool within_exit_range = WithinRange(
+      boundaries.current_offset, boundaries.exit_start, boundaries.exit_end);
 
   State previous_state = state_;
   State new_state = previous_state;
