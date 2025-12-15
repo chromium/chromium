@@ -1258,22 +1258,20 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                                      (const BookmarkNode*)folder {
   CHECK(_folderChooserCoordinator, base::NotFatalUntil::M152);
   CHECK(folder, base::NotFatalUntil::M152);
+  CHECK(!folder->is_url(), base::NotFatalUntil::M152);
 
-  // Copy the list of edited nodes from BookmarksFolderChooserCoordinator
-  // as the reference may become invalid when `_folderChooserCoordinator`
-  // is set to nil (if `self` holds the last reference to the object).
+  // Copy the list of edited nodes from BookmarksFolderChooserCoordinator before
+  // `stopFolderChooserCoordinator` sets `_folderChooserCoordinator` to nil.
   std::set<const BookmarkNode*> editedNodesSet =
       _folderChooserCoordinator.editedNodes;
-  // TODO(crbug.com/40268466): Change the type of `editedNodes` to std::vector.
-  std::vector<const BookmarkNode*> editedNodesVector(editedNodesSet.begin(),
-                                                     editedNodesSet.end());
-  [self stopFolderChooserCoordinator];
+  CHECK_GE(editedNodesSet.size(), 1u, base::NotFatalUntil::M152);
 
-  CHECK(!folder->is_url(), base::NotFatalUntil::M152);
-  CHECK_GE(editedNodesVector.size(), 1u, base::NotFatalUntil::M152);
+  [self stopFolderChooserCoordinator];
 
   [self setTableViewEditing:NO];
   ProfileIOS* profile = self.profile;
+  std::vector<const BookmarkNode*> editedNodesVector(editedNodesSet.begin(),
+                                                     editedNodesSet.end());
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoSnackbar(
                               editedNodesVector, _bookmarkModel.get(), folder,
