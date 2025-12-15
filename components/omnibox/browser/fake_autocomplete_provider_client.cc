@@ -40,7 +40,8 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
       search_engines_test_enviroment_.pref_service(),
       search_engines_test_enviroment_.template_url_service(),
       /*url_loader_factory=*/nullptr,
-      /*identity_manager=*/nullptr);
+      /*identity_manager=*/nullptr,
+      /*is_off_the_record=*/false);
 }
 
 FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
