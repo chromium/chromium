@@ -81,6 +81,8 @@ _TEST_TARGET_ALLOWLIST = [
     '//chrome/installer/test:upgrade_test',
     '//chromeos/ash/components/kiosk/vision:kiosk_vision_unit_tests',
     '//chrome/test/android:chrome_public_apk_baseline_profile_generator',
+    '//chrome/test:browser_tests',
+    '//chrome/test:interactive_ui_tests',
     '//chrome/test:unit_tests',
     '//clank/javatests:chrome_apk_baseline_profile_generator',
     '//clank/javatests:chrome_smoke_test',
