@@ -377,7 +377,9 @@ bool PasswordProtectionRequestContent::ShouldCollectVisualFeatures() {
   // straight to sending the ping.
   bool trigger_type_supports_visual_features =
       trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
-      trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
+      trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+      trigger_type() ==
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED;
 
   return trigger_type_supports_visual_features &&
          can_extract_visual_features_result ==
