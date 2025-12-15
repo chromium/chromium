@@ -5,6 +5,7 @@
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
 
 #include "base/files/file_path.h"
+#include "net/base/lookup_string_in_fixed_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,6 +162,36 @@ domain6, 1
 domain7, 5
 %%
 )"));
+}
+
+TEST(TldCleanupUtilTest, RuleSerialize) {
+  EXPECT_EQ(Rule(/*exception=*/false, /*wildcard=*/false, /*is_private=*/false)
+                .Serialize(),
+            kDafsaFound);
+  EXPECT_EQ(Rule(/*exception=*/true, /*wildcard=*/false, /*is_private=*/false)
+                .Serialize(),
+            kDafsaExceptionRule);
+  EXPECT_EQ(Rule(/*exception=*/false, /*wildcard=*/true, /*is_private=*/false)
+                .Serialize(),
+            kDafsaWildcardRule);
+  // `exception` takes precedence over `wildcard`.
+  EXPECT_EQ(Rule(/*exception=*/true, /*wildcard=*/true, /*is_private=*/false)
+                .Serialize(),
+            kDafsaExceptionRule);
+
+  EXPECT_EQ(Rule(/*exception=*/false, /*wildcard=*/false, /*is_private=*/true)
+                .Serialize(),
+            kDafsaFound | kDafsaPrivateRule);
+  EXPECT_EQ(Rule(/*exception=*/true, /*wildcard=*/false, /*is_private=*/true)
+                .Serialize(),
+            kDafsaExceptionRule | kDafsaPrivateRule);
+  EXPECT_EQ(Rule(/*exception=*/false, /*wildcard=*/true, /*is_private=*/true)
+                .Serialize(),
+            kDafsaWildcardRule | kDafsaPrivateRule);
+  // `exception` takes precedence over `wildcard`.
+  EXPECT_EQ(Rule(/*exception=*/true, /*wildcard=*/true, /*is_private=*/true)
+                .Serialize(),
+            kDafsaExceptionRule | kDafsaPrivateRule);
 }
 
 }  // namespace net::tld_cleanup
