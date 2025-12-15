@@ -6,8 +6,5 @@
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-BEGIN_METADATA(TabDragContextBase)
-END_METADATA
-
 BEGIN_METADATA(TabDragContext)
 END_METADATA

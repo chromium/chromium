@@ -201,7 +201,7 @@ class TabDragController : public views::WidgetObserver,
   // `tab_strip`.
   // NOTE: this returns false if the TabDragController is in the process of
   // finishing the drag.
-  static bool IsAttachedTo(const TabDragContextBase* tab_strip);
+  static bool IsAttachedTo(const TabDragContext* context);
 
   // Returns true if there is a drag underway.
   static bool IsActive();

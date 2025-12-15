@@ -798,7 +798,8 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   std::vector<TabSlotView*> tabs{dragged_tab};
   std::vector<gfx::Rect> bounds{gfx::Rect({kXOffset, 0}, dragged_tab->size())};
   SizeChangeObserver view_observer(tab_strip_);
-  tab_strip_->GetDragContext()->SetBoundsForDrag(tabs, bounds);
+  tab_strip_->GetDragContext()->GetPositioningDelegate()->SetBoundsForDrag(
+      tabs, bounds);
   EXPECT_EQ(1, view_observer.size_change_count);
 }
 
@@ -817,8 +818,8 @@ TEST_P(TabStripTest, PreferredWidthDuringDrag) {
   tab_strip_->GetDragContext()->StartedDragging({dragged_tab});
   constexpr int kXOffset = 10;
   dragged_tab_bounds.Offset(kXOffset, 0);
-  tab_strip_->GetDragContext()->SetBoundsForDrag({dragged_tab},
-                                                 {dragged_tab_bounds});
+  tab_strip_->GetDragContext()->GetPositioningDelegate()->SetBoundsForDrag(
+      {dragged_tab}, {dragged_tab_bounds});
 
   // Preferred width should be larger by Y.
   EXPECT_EQ(original_preferred_width + kXOffset,

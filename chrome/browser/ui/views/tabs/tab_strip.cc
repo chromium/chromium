@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
@@ -134,8 +135,9 @@ std::unique_ptr<TabContainer> MakeTabContainer(
     TabStrip* tab_strip,
     TabHoverCardController* hover_card_controller,
     TabDragContext* drag_context) {
-  return std::make_unique<TabContainerImpl>(*tab_strip, hover_card_controller,
-                                            drag_context, *tab_strip);
+  return std::make_unique<TabContainerImpl>(
+      *tab_strip, hover_card_controller, drag_context->GetPositioningDelegate(),
+      *tab_strip);
 }
 
 void UpdateDragEventSourceCrashKey(
@@ -155,6 +157,7 @@ void UpdateDragEventSourceCrashKey(
 // TabStrip::TabDragContextImpl
 //
 class TabStrip::TabDragContextImpl : public TabDragContext,
+                                     public TabDragPositioningDelegate,
                                      public views::BoundsAnimatorObserver {
   METADATA_HEADER(TabDragContextImpl, TabDragContext)
 
@@ -401,6 +404,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   // TabDragContext:
+  TabDragPositioningDelegate* GetPositioningDelegate() override { return this; }
+
   TabSlotView* GetTabForContents(content::WebContents* contents) override {
     const int model_index = GetTabStripModel()->GetIndexOfWebContents(contents);
     if (model_index == TabStripModel::kNoTab) {
@@ -422,8 +427,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return !(web_app::HasPinnedHomeTab(GetTabStripModel()) &&
              GetIndexOf(view) == 0);
   }
-
-  TabSlotView* GetTabAt(int i) const override { return tab_strip_->tab_at(i); }
 
   int GetTabCount() const override { return tab_strip_->GetTabCount(); }
 
@@ -472,6 +475,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       base::OnceCallback<void(TabDragController*)> callback) override {
     drag_controller_set_callback_ = std::move(callback);
   }
+
+  // TabDragPositioningDelegate
+  TabDragContext* GetContext() override { return this; }
+
+  TabSlotView* GetTabAt(int i) const override { return tab_strip_->tab_at(i); }
 
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              const gfx::Rect& target_bounds) override {

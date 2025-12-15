@@ -22,6 +22,7 @@ class TabSlotView;
 class TabStrip;
 class TabStripModel;
 class TabDragController;
+class TabDragContext;
 
 namespace tab_groups {
 class TabGroupId;
@@ -31,12 +32,11 @@ namespace content {
 class WebContents;
 }
 
-// A limited subset of TabDragContext for use by non-TabDragController clients.
-class TabDragContextBase : public views::View {
-  METADATA_HEADER(TabDragContextBase, views::View)
-
+// A limited subset of TabDragPositioningDelegate for use by
+// non-TabDragController clients.
+class TabDragPositioningDelegateBase {
  public:
-  ~TabDragContextBase() override = default;
+  virtual ~TabDragPositioningDelegateBase() = default;
 
   // Called when the TabStrip is changed during a drag session.
   virtual void UpdateAnimationTarget(TabSlotView* tab_slot_view,
@@ -55,47 +55,21 @@ class TabDragContextBase : public views::View {
 
   // Returns the width of the region in which dragged tabs are allowed to exist.
   virtual int GetTabDragAreaWidth() const = 0;
+
+  // Returns the drag context this belongs to.
+  virtual TabDragContext* GetContext() = 0;
 };
 
-// Provides tabstrip functionality specifically for TabDragController, much of
-// which should not otherwise be in TabStrip's public interface.
-class TabDragContext : public TabDragContextBase {
-  METADATA_HEADER(TabDragContext, TabDragContextBase)
-
+// A delegate that returns necessary information for `DraggingTabsSession`
+// to correctly position the dragged tabs in the horizontal tab strip.
+// This does not apply for vertical tabs, which relies on `TabDragDelegate`
+// instead for positioning. Eventually, the horizontal tab strip should use
+// a separate pattern, which will make this class obsolete.
+class TabDragPositioningDelegate : public TabDragPositioningDelegateBase {
  public:
-  ~TabDragContext() override = default;
+  ~TabDragPositioningDelegate() override = default;
 
-  virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
-  virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
-  virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
   virtual TabSlotView* GetTabAt(int index) const = 0;
-  virtual int GetTabCount() const = 0;
-  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
-  virtual int GetPinnedTabCount() const = 0;
-  virtual TabGroupHeader* GetTabGroupHeader(
-      const tab_groups::TabGroupId& group) const = 0;
-  virtual TabStripModel* GetTabStripModel() = 0;
-
-  // Returns the tab drag controller owned by this delegate, or null if none.
-  virtual TabDragController* GetDragController() = 0;
-
-  // Takes ownership of `controller`.
-  virtual void OwnDragController(
-      std::unique_ptr<TabDragController> controller) = 0;
-
-  // Releases ownership of the current TabDragController.
-  [[nodiscard]] virtual std::unique_ptr<TabDragController>
-  ReleaseDragController() = 0;
-
-  // Set a callback to be called with the controller upon assignment by
-  // OwnDragController(controller). Allows tests to get the TabDragController
-  // instance as soon as its assigned.
-  virtual void SetDragControllerCallbackForTesting(
-      base::OnceCallback<void(TabDragController*)> callback) = 0;
-
-  // Destroys the current TabDragController. This cancel the existing drag
-  // operation.
-  virtual void DestroyDragController() = 0;
 
   // Returns true if a tab is being dragged into this tab strip.
   virtual bool IsActiveDropTarget() const = 0;
@@ -128,15 +102,6 @@ class TabDragContext : public TabDragContextBase {
   virtual void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
                                 const std::vector<gfx::Rect>& bounds) = 0;
 
-  // Used by TabDragController when the user starts or stops dragging.
-  virtual void StartedDragging(const std::vector<TabSlotView*>& views) = 0;
-
-  // Invoked when TabDragController detaches a set of tabs.
-  virtual void DraggedTabsDetached() = 0;
-
-  // Used by TabDragController when the user stops dragging.
-  virtual void StoppedDragging() = 0;
-
   // Invoked during drag to layout the views being dragged in `views` at
   // `location`. If `initial_drag` is true, this is the initial layout after the
   // user moved the mouse far enough to trigger a drag.
@@ -147,6 +112,57 @@ class TabDragContext : public TabDragContextBase {
 
   // Forces the entire tabstrip to lay out.
   virtual void ForceLayout() = 0;
+};
+
+// Provides tabstrip functionality specifically for TabDragController, much of
+// which should not otherwise be in TabStrip's public interface.
+class TabDragContext : public views::View {
+  METADATA_HEADER(TabDragContext, views::View)
+
+ public:
+  ~TabDragContext() override = default;
+
+  virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
+  virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
+  virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
+  virtual int GetTabCount() const = 0;
+  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
+  virtual int GetPinnedTabCount() const = 0;
+  virtual TabGroupHeader* GetTabGroupHeader(
+      const tab_groups::TabGroupId& group) const = 0;
+  virtual TabStripModel* GetTabStripModel() = 0;
+
+  // Returns the tab drag controller owned by this delegate, or null if none.
+  virtual TabDragController* GetDragController() = 0;
+
+  // Takes ownership of `controller`.
+  virtual void OwnDragController(
+      std::unique_ptr<TabDragController> controller) = 0;
+
+  // Releases ownership of the current TabDragController.
+  [[nodiscard]] virtual std::unique_ptr<TabDragController>
+  ReleaseDragController() = 0;
+
+  // Destroys the current TabDragController. This cancel the existing drag
+  // operation.
+  virtual void DestroyDragController() = 0;
+
+  // Set a callback to be called with the controller upon assignment by
+  // OwnDragController(controller). Allows tests to get the TabDragController
+  // instance as soon as its assigned.
+  virtual void SetDragControllerCallbackForTesting(
+      base::OnceCallback<void(TabDragController*)> callback) = 0;
+
+  // Used by TabDragController when the user starts or stops dragging.
+  virtual void StartedDragging(const std::vector<TabSlotView*>& views) = 0;
+
+  // Invoked when TabDragController detaches a set of tabs.
+  virtual void DraggedTabsDetached() = 0;
+
+  // Used by TabDragController when the user stops dragging.
+  virtual void StoppedDragging() = 0;
+
+  virtual TabDragPositioningDelegate* GetPositioningDelegate() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -50,9 +51,13 @@ views::View* FindTabView(views::View* view) {
   return current;
 }
 
-class FakeTabDragContext : public TabDragContextBase {
-  METADATA_HEADER(FakeTabDragContext, TabDragContextBase)
-
+// An extension of both `TabDragContext` and `TabDragPositionDelegateBase`.
+// The `TabDragContext` base class is needed for `TabContainerImpl` to
+// create `TabGroupViews`. The implementation of the methods is not needed
+// for the test, which is why `MockTabDrabContext` is used here.
+class FakeTabDragContext : public TabDragPositioningDelegateBase,
+                           public MockTabDragContext {
+  METADATA_HEADER(FakeTabDragContext, MockTabDragContext)
  public:
   FakeTabDragContext() = default;
   ~FakeTabDragContext() override = default;
@@ -63,6 +68,7 @@ class FakeTabDragContext : public TabDragContextBase {
   bool IsAnimatingDragEnd() const override { return false; }
   void CompleteEndDragAnimations() override {}
   int GetTabDragAreaWidth() const override { return width(); }
+  TabDragContext* GetContext() override { return this; }
 
   void set_drag_session_active(bool active) { drag_session_active_ = active; }
 
@@ -377,8 +383,8 @@ class TabContainerTest : public ChromeViewsTestBase {
   void SetTabContainerWidth(int width) {
     tab_container_width_ = width;
     gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_STRIP_HEIGHT));
-    widget_->SetSize(size);
     drag_context_->SetSize(size);
+    widget_->SetSize(size);
     tab_container_->SetSize(size);
   }
 

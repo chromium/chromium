@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -38,17 +39,20 @@ int CalculateMouseOffset(const DragSessionData& drag_data_,
 
 }  // namespace
 
-DraggingTabsSession::DraggingTabsSession(DragSessionData drag_data,
-                                         TabDragContext* attached_context,
-                                         float offset_to_width_ratio_,
-                                         bool initial_move,
-                                         gfx::Point start_point_in_screen)
+DraggingTabsSession::DraggingTabsSession(
+    DragSessionData drag_data,
+    TabDragContext& attached_context,
+    TabDragPositioningDelegate& drag_position_delegate,
+    float offset_to_width_ratio_,
+    bool initial_move,
+    gfx::Point start_point_in_screen)
     : drag_data_(drag_data),
       attached_context_(attached_context),
+      drag_position_delegate_(drag_position_delegate),
       mouse_offset_(CalculateMouseOffset(drag_data_, offset_to_width_ratio_)),
       initial_move_(initial_move),
       last_move_attached_context_loc_(
-          views::View::ConvertPointFromScreen(attached_context,
+          views::View::ConvertPointFromScreen(&attached_context,
                                               start_point_in_screen)
               .x()),
       last_point_in_screen_(start_point_in_screen) {
@@ -59,33 +63,6 @@ DraggingTabsSession::~DraggingTabsSession() = default;
 
 void DraggingTabsSession::MoveAttached(gfx::Point point_in_screen) {
   MoveAttachedImpl(point_in_screen, false);
-}
-
-gfx::Rect DraggingTabsSession::GetEnclosingRectForDraggedTabs() {
-  CHECK_GT(drag_data_.tab_drag_data_.size(), 0UL);
-
-  const TabSlotView* const last_tab =
-      drag_data_.tab_drag_data_.back().attached_view;
-  const TabSlotView* const first_tab =
-      drag_data_.tab_drag_data_.front().attached_view;
-
-  DCHECK(attached_context_);
-  DCHECK(first_tab->parent() == attached_context_);
-
-  const gfx::Point right_point_of_last_tab = last_tab->bounds().bottom_right();
-  const gfx::Point left_point_of_first_tab = first_tab->bounds().origin();
-
-  return gfx::Rect(left_point_of_first_tab.x(), 0,
-                   right_point_of_last_tab.x() - left_point_of_first_tab.x(),
-                   0);
-}
-
-gfx::Point DraggingTabsSession::GetLastPointInScreen() {
-  return last_point_in_screen_;
-}
-
-views::View* DraggingTabsSession::GetAttachedContext() {
-  return attached_context_;
 }
 
 void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
@@ -102,16 +79,18 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
   bool did_layout = false;
 
   const gfx::Point point_in_attached_context =
-      views::View::ConvertPointFromScreen(attached_context_, point_in_screen);
+      views::View::ConvertPointFromScreen(base::to_address(attached_context_),
+                                          point_in_screen);
 
-  const int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
-      GetDraggedViewTabStripBounds(dragged_view_point),
-      drag_data_.attached_views(), drag_data_.num_dragging_tabs());
+  const int to_index =
+      drag_position_delegate_->GetInsertionIndexForDraggedBounds(
+          GetDraggedViewTabStripBounds(dragged_view_point),
+          drag_data_.attached_views(), drag_data_.num_dragging_tabs());
 
   constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
   const int threshold = base::ClampRound(
       static_cast<double>(
-          attached_context_->GetTabAt(to_index)->bounds().width()) /
+          drag_position_delegate_->GetTabAt(to_index)->bounds().width()) /
       TabStyle::Get()->GetStandardWidth(/*is_split=*/false) *
       kHorizontalMoveThreshold);
 
@@ -134,7 +113,7 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
       // TabDragContext determines if the tabs needs to be animated
       // based on model position. This means we need to invoke
       // LayoutDraggedTabsAt before changing the model.
-      attached_context_->LayoutDraggedViewsAt(
+      drag_position_delegate_->LayoutDraggedViewsAt(
           views, drag_data_.source_view_drag_data()->attached_view,
           dragged_view_point, initial_move_);
       did_layout = true;
@@ -173,7 +152,7 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
   }
 
   if (!did_layout) {
-    attached_context_->LayoutDraggedViewsAt(
+    drag_position_delegate_->LayoutDraggedViewsAt(
         views, drag_data_.source_view_drag_data()->attached_view,
         dragged_view_point, initial_move_);
   }
@@ -182,7 +161,7 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
   // will animate to those bounds after attach, which looks flickery/bad. See
   // https://crbug.com/1360330.
   if (just_attached && !initial_move_) {
-    attached_context_->ForceLayout();
+    drag_position_delegate_->ForceLayout();
   }
 
   initial_move_ = false;
@@ -193,7 +172,7 @@ gfx::Rect DraggingTabsSession::GetDraggedViewTabStripBounds(
   // attached_view is null when inserting into a new context.
   if (drag_data_.source_view_drag_data()->attached_view) {
     std::vector<gfx::Rect> all_bounds =
-        attached_context_->CalculateBoundsForDraggedViews(
+        drag_position_delegate_->CalculateBoundsForDraggedViews(
             drag_data_.attached_views());
     int total_width = all_bounds.back().right() - all_bounds.front().x();
     return gfx::Rect(
@@ -274,7 +253,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   // ungrouped.
 
   const TabSlotView* left_most_selected_tab =
-      attached_context_->GetTabAt(selected_unpinned[0]);
+      drag_position_delegate_->GetTabAt(selected_unpinned[0]);
 
   const int buffer = left_most_selected_tab->width() / 4;
 
@@ -285,9 +264,11 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
-    const TabSlotView* const tab = attached_context_->GetTabAt(model_index);
+    const TabSlotView* const tab =
+        drag_position_delegate_->GetTabAt(model_index);
     return ToEnclosingRect(views::View::ConvertRectToTarget(
-        tab->parent(), attached_context_, gfx::RectF(tab->bounds())));
+        tab->parent(), base::to_address(attached_context_),
+        gfx::RectF(tab->bounds())));
   };
 
   // Use the left edge for a reliable fallback, e.g. if this is the leftmost
@@ -322,7 +303,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
     // the tabstrip, it will never go "beyond" the left_group and therefore
     // never leave it unless we add this check. See crbug.com/1134376.
     if (tab_bounds_in_drag_context_coords(selected_unpinned.back()).right() >=
-        attached_context_->TabDragAreaEndX()) {
+        drag_position_delegate_->TabDragAreaEndX()) {
       return std::nullopt;
     }
 
@@ -340,8 +321,8 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
 
 gfx::Point DraggingTabsSession::GetAttachedDragPoint(
     gfx::Point point_in_screen) {
-  const gfx::Point tab_loc =
-      views::View::ConvertPointFromScreen(attached_context_, point_in_screen);
+  const gfx::Point tab_loc = views::View::ConvertPointFromScreen(
+      base::to_address(attached_context_), point_in_screen);
   const int x =
       attached_context_->GetMirroredXInView(tab_loc.x()) - mouse_offset_;
 
@@ -350,7 +331,7 @@ gfx::Point DraggingTabsSession::GetAttachedDragPoint(
   // beginning of the tab strip. Once attached the `attached_views_` will simply
   // overflow as usual (see https://crbug.com/1250184).
   const int max_x = std::max(
-      0, attached_context_->GetTabDragAreaWidth() -
+      0, drag_position_delegate_->GetTabDragAreaWidth() -
              TabStrip::GetSizeNeededForViews(drag_data_.attached_views()));
   return gfx::Point(std::clamp(x, 0, max_x), 0);
 }

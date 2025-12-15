@@ -4,5 +4,10 @@
 
 #include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
+
 MockTabDragContext::MockTabDragContext() = default;
 MockTabDragContext::~MockTabDragContext() = default;
+
+BEGIN_METADATA(MockTabDragContext)
+END_METADATA

@@ -90,11 +90,11 @@ void TabContainerImpl::RemoveTabDelegate::AnimationCanceled(
 TabContainerImpl::TabContainerImpl(
     TabContainerController& controller,
     TabHoverCardController* hover_card_controller,
-    TabDragContextBase* drag_context,
+    TabDragPositioningDelegateBase* drag_position_delegate,
     TabSlotController& tab_slot_controller)
     : controller_(controller),
       hover_card_controller_(hover_card_controller),
-      drag_context_(drag_context),
+      drag_position_delegate_(drag_position_delegate),
       tab_slot_controller_(tab_slot_controller),
       overall_bounds_view_(*AddChildView(std::make_unique<views::View>())),
       bounds_animator_(this),
@@ -257,8 +257,7 @@ void TabContainerImpl::SetActiveTab(std::optional<size_t> prev_active_index,
     // When tabs are wide enough, selecting a new tab cannot change the
     // ideal bounds, so only a repaint is necessary.
     SchedulePaint();
-  } else if (controller_->IsAnimatingInTabStrip() ||
-             drag_context_->IsDragSessionActive()) {
+  } else if (controller_->IsAnimatingInTabStrip() || IsDragSessionActive()) {
     // The selection change will have modified the ideal bounds of the tabs. We
     // need to recompute and retarget the animation to these new bounds. Note:
     // This is safe even if we're in the midst of mouse-based tab closure--we
@@ -332,7 +331,8 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
 
 void TabContainerImpl::OnGroupCreated(const tab_groups::TabGroupId& group) {
   auto group_view = std::make_unique<TabGroupViews>(
-      this, drag_context_, *tab_slot_controller_, group);
+      this, drag_position_delegate_->GetContext(), *tab_slot_controller_,
+      group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
   MarkZOrderCacheDirty();
@@ -675,7 +675,7 @@ bool TabContainerImpl::IsAnimating() const {
 }
 
 void TabContainerImpl::CancelAnimation() {
-  drag_context_->CompleteEndDragAnimations();
+  drag_position_delegate_->CompleteEndDragAnimations();
   bounds_animator_.Cancel();
 }
 
@@ -1220,7 +1220,7 @@ void TabContainerImpl::SnapToIdealBounds() {
   // preferred size of the tab strip might have changed due to the drag
   // operation. This ensures proper resizing and alignment of the tab strip
   // during drag interactions.
-  if (drag_context_->IsDragSessionActive()) {
+  if (drag_position_delegate_->IsDragSessionActive()) {
     PreferredSizeChanged();
   }
 }
@@ -1491,13 +1491,15 @@ void TabContainerImpl::StartResizeLayoutTabsFromTouchTimer() {
 }
 
 bool TabContainerImpl::IsDragSessionActive() const {
-  // `drag_context_` may be null in tests.
-  return drag_context_ && drag_context_->IsDragSessionActive();
+  // `drag_position_delegate_` may be null in tests.
+  return drag_position_delegate_ &&
+         drag_position_delegate_->IsDragSessionActive();
 }
 
 bool TabContainerImpl::IsDragSessionEnding() const {
-  // `drag_context_` may be null in tests.
-  return drag_context_ && drag_context_->IsAnimatingDragEnd();
+  // `drag_position_delegate_` may be null in tests.
+  return drag_position_delegate_ &&
+         drag_position_delegate_->IsAnimatingDragEnd();
 }
 
 void TabContainerImpl::AddMessageLoopObserver() {
@@ -1612,9 +1614,9 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
   // tabstrip were resized to its greatest possible width, it shouldn't be
   // visible.
   int right_edge = tab->bounds().right();
-  const int tabstrip_right = tab->parent() != this
-                                 ? drag_context_->GetTabDragAreaWidth()
-                                 : GetAvailableWidthForTabContainer();
+  const int tabstrip_right =
+      tab->parent() != this ? drag_position_delegate_->GetTabDragAreaWidth()
+                            : GetAvailableWidthForTabContainer();
   if (right_edge > tabstrip_right) {
     return false;
   }
