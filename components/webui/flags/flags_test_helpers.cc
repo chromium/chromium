@@ -261,7 +261,9 @@ void EnsureEveryFlagHasMetadata(
   std::sort(missing_flags.begin(), missing_flags.end());
 
   EXPECT_EQ(0u, missing_flags.size())
-      << "Missing flags: " << base::JoinString(missing_flags, "\n  ");
+      << "Every flag must have a metadata entry in chrome/browser/"
+      << kMetadataFileName << ". Please add an entry for these flags:\n"
+      << base::JoinString(missing_flags, "\n  ");
 }
 
 void EnsureOnlyPermittedFlagsNeverExpire() {
@@ -279,6 +281,8 @@ void EnsureOnlyPermittedFlagsNeverExpire() {
   std::sort(missing_flags.begin(), missing_flags.end());
 
   EXPECT_EQ(0u, missing_flags.size())
+      << "Flags with expiry_milestone: -1 must be listed in chrome/browser/"
+      << kNeverExpireFileName << ".\n"
       << "Flags not listed for no-expire: "
       << base::JoinString(missing_flags, "\n  ");
 }
@@ -296,6 +300,8 @@ void EnsureEveryFlagHasNonEmptyOwners() {
   std::sort(sad_flags.begin(), sad_flags.end());
 
   EXPECT_EQ(0u, sad_flags.size())
+      << "Flags must have owners in chrome/browser/" << kMetadataFileName
+      << ".\n"
       << "Flags missing owners: " << base::JoinString(sad_flags, "\n  ");
 }
 
@@ -311,8 +317,11 @@ void EnsureOwnersLookValid() {
     }
   }
 
-  EXPECT_EQ(0u, sad_flags.size()) << "Flags with invalid-looking owners: "
-                                  << base::JoinString(sad_flags, "\n");
+  EXPECT_EQ(0u, sad_flags.size())
+      << "Flags in chrome/browser/" << kMetadataFileName
+      << " have invalid-looking owners.\n"
+      << "Owners must be valid emails or paths to OWNERS files.\n"
+      << "Flags with invalid owners: " << base::JoinString(sad_flags, "\n");
 }
 
 void EnsureFlagsAreListedInAlphabeticalOrder() {
