@@ -11,9 +11,9 @@ rootWebArea
 ++++++++listBoxOption name='Apple' selected=true
 ++++++++++staticText name='Apple'
 ++++++++++++inlineTextBox name='Apple'
-++++++++listBoxOption name='Banana' selected=false
+++++++++listBoxOption name='Banana'
 ++++++++++staticText name='Banana'
 ++++++++++++inlineTextBox name='Banana'
-++++++++listBoxOption name='Cherry' selected=false
+++++++++listBoxOption name='Cherry'
 ++++++++++staticText name='Cherry'
 ++++++++++++inlineTextBox name='Cherry'

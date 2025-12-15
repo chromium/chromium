@@ -355,5 +355,67 @@ TEST_F(AccessibilityTest, ScrollButtonAndMarkerGroupParent) {
   EXPECT_EQ(marker_group_parent, wrapper->GetNode());
 }
 
+TEST_F(AccessibilityTest,
+       TreeItemWithAriaCheckedShouldNotHaveImplicitAriaSelected) {
+  SetBodyInnerHTML(R"HTML(
+      <div role="tree" aria-multiselectable="true">
+        <button role="treeitem" aria-checked="true" id="item1">Item 1</button>
+        <button role="treeitem" aria-checked="false" id="item2">Item 2</button>
+      </div>)HTML");
+
+  const AXObject* item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item1->RoleValue());
+  // When aria-checked is present and tree is multiselectable,
+  // implicit aria-selected should NOT be provided per spec.
+  EXPECT_EQ(kSelectedStateUndefined, item1->IsSelected());
+
+  const AXObject* item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item2->RoleValue());
+  EXPECT_EQ(kSelectedStateUndefined, item2->IsSelected());
+}
+
+TEST_F(AccessibilityTest,
+       SingleSelectTreeWithAriaCheckedShouldNotHaveImplicitAriaSelected) {
+  SetBodyInnerHTML(R"HTML(
+      <div role="tree">
+        <button role="treeitem" aria-checked="true" id="item1">Item 1</button>
+        <button role="treeitem" aria-checked="false" id="item2">Item 2</button>
+      </div>)HTML");
+
+  const AXObject* item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item1->RoleValue());
+  // When aria-checked is present on any item, implicit aria-selected
+  // should NOT be provided for any items per spec.
+  EXPECT_EQ(kSelectedStateUndefined, item1->IsSelected());
+
+  const AXObject* item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item2->RoleValue());
+  EXPECT_EQ(kSelectedStateUndefined, item2->IsSelected());
+}
+
+TEST_F(AccessibilityTest,
+       MultiSelectTreeWithoutAriaCheckedShouldNotHaveImplicitAriaSelected) {
+  SetBodyInnerHTML(R"HTML(
+      <div role="tree" aria-multiselectable="true">
+        <button role="treeitem" id="item1">Item 1</button>
+        <button role="treeitem" id="item2">Item 2</button>
+      </div>)HTML");
+
+  const AXObject* item1 = GetAXObjectByElementId("item1");
+  ASSERT_NE(nullptr, item1);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item1->RoleValue());
+  // Multiselectable containers should not provide implicit aria-selected.
+  EXPECT_EQ(kSelectedStateUndefined, item1->IsSelected());
+
+  const AXObject* item2 = GetAXObjectByElementId("item2");
+  ASSERT_NE(nullptr, item2);
+  EXPECT_EQ(ax::mojom::Role::kTreeItem, item2->RoleValue());
+  EXPECT_EQ(kSelectedStateUndefined, item2->IsSelected());
+}
+
 }  // namespace test
 }  // namespace blink

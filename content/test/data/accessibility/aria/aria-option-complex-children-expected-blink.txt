@@ -12,7 +12,7 @@ rootWebArea focusable
 ++++++++++button focusable name='Close'
 ++++++++++++staticText name='Close'
 ++++++++++++++inlineTextBox name='Close'
-++++++++listBoxOption focusable name='1234567' selected=false
+++++++++listBoxOption focusable name='1234567'
 ++++++++++staticText name='href-WAI-ARIA 1.1 '
 ++++++++++++inlineTextBox name='href-WAI-ARIA 1.1 '
 ++++++++++button focusable name='Close'

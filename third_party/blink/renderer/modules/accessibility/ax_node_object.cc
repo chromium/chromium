@@ -3200,7 +3200,19 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
 
   // Selection follows focus, but ONLY in single selection containers, and only
   // if aria-selected was not present to override.
-  return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
+  if (IsSelectedFromFocus()) {
+    return kSelectedStateTrue;
+  }
+
+  // Per ARIA spec, implicit selection is not allowed when:
+  // - Container is multiselectable, or
+  // - Any item has aria-checked.
+  const AXObject* container = ContainerWidget();
+  if (container && (container->IsMultiSelectable() ||
+                    !AXObjectCache().IsImplicitSelectionAllowed(container))) {
+    return kSelectedStateUndefined;
+  }
+  return kSelectedStateFalse;
 }
 
 bool AXNodeObject::IsSelectedFromFocusSupported() const {

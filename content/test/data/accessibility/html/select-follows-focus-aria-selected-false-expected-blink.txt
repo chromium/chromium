@@ -5,7 +5,7 @@ rootWebArea
 ++++++++tab name='tab1' selected=false selectedFromFocus=false
 ++++++++++staticText name='tab1'
 ++++++++++++inlineTextBox name='tab1'
-++++++++tab name='tab2' selected=false selectedFromFocus=false
+++++++++tab name='tab2'
 ++++++++++staticText name='tab2'
 ++++++++++++inlineTextBox name='tab2'
 ++++++staticText name='Done'

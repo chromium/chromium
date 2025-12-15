@@ -13,7 +13,7 @@ rootWebArea
 ++++++++++++listBoxOption name='2' selected=true
 ++++++++++++++staticText name='2'
 ++++++++++++++++inlineTextBox name='2'
-++++++++++++listBoxOption name='3' selected=false
+++++++++++++listBoxOption name='3'
 ++++++++++++++staticText name='3'
 ++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
@@ -32,7 +32,7 @@ rootWebArea
 ++++++++++++++listBoxOption name='2' selected=true
 ++++++++++++++++staticText name='2'
 ++++++++++++++++++inlineTextBox name='2'
-++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++listBoxOption name='3'
 ++++++++++++++++staticText name='3'
 ++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
@@ -49,7 +49,7 @@ rootWebArea
 ++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++staticText name='2'
 ++++++++++++++++inlineTextBox name='2'
-++++++++++++listBoxOption name='3' selected=false
+++++++++++++listBoxOption name='3'
 ++++++++++++++staticText name='3'
 ++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
@@ -68,7 +68,7 @@ rootWebArea
 ++++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++++staticText name='2'
 ++++++++++++++++++inlineTextBox name='2'
-++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++listBoxOption name='3'
 ++++++++++++++++staticText name='3'
 ++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
@@ -86,7 +86,7 @@ rootWebArea
 ++++++++++++++listBoxOption name='two' selected=true
 ++++++++++++++++staticText name='2'
 ++++++++++++++++++inlineTextBox name='2'
-++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++listBoxOption name='3'
 ++++++++++++++++staticText name='3'
 ++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
