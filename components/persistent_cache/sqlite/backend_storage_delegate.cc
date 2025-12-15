@@ -161,14 +161,20 @@ std::optional<PendingBackend> BackendStorageDelegate::ShareReadOnlyConnection(
     const base::FilePath& directory,
     const base::FilePath& base_name,
     const Backend& backend) {
-  return ShareConnection(directory, base_name, backend, /*read_write=*/false);
+  return ShareConnection(
+      directory, base_name,
+      static_cast<const SqliteBackendImpl&>(backend).file_set(),
+      /*read_write=*/false);
 }
 
 std::optional<PendingBackend> BackendStorageDelegate::ShareReadWriteConnection(
     const base::FilePath& directory,
     const base::FilePath& base_name,
     const Backend& backend) {
-  return ShareConnection(directory, base_name, backend, /*read_write=*/true);
+  return ShareConnection(
+      directory, base_name,
+      static_cast<const SqliteBackendImpl&>(backend).file_set(),
+      /*read_write=*/true);
 }
 
 base::FilePath BackendStorageDelegate::GetBaseName(const base::FilePath& file) {
@@ -217,12 +223,8 @@ int64_t BackendStorageDelegate::DeleteFiles(const base::FilePath& directory,
 std::optional<PendingBackend> BackendStorageDelegate::ShareConnection(
     const base::FilePath& directory,
     const base::FilePath& base_name,
-    const Backend& backend,
+    const SqliteVfsFileSet& file_set,
     bool read_write) {
-  const SqliteBackendImpl& sqlite_backend =
-      static_cast<const SqliteBackendImpl&>(backend);
-  const SqliteVfsFileSet& file_set = sqlite_backend.file_set();
-
   // Cannot share a single-connection backend. If it ever becomes interesting to
   // connect to a backend in one process and then move it to another process,
   // we shall introduce a way to `Unbind()` a backend to convert it back into a

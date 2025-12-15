@@ -228,6 +228,18 @@ INSTANTIATE_TEST_SUITE_P(JournalModeWal,
                          testing::Combine(testing::Values(true),
                                           testing::Values(true)));
 
+TEST(SqliteVfsFileSetStaticsTest, GetVirtualFilePathType) {
+  ASSERT_EQ(SqliteVfsFileSet::GetVirtualFileHistogramVariant(
+                base::FilePath(FILE_PATH_LITERAL("47/data"))),
+            "DbFile");
+  ASSERT_EQ(SqliteVfsFileSet::GetVirtualFileHistogramVariant(
+                base::FilePath(FILE_PATH_LITERAL("47/data-journal"))),
+            "JournalFile");
+  ASSERT_EQ(SqliteVfsFileSet::GetVirtualFileHistogramVariant(
+                base::FilePath(FILE_PATH_LITERAL("47/data-wal"))),
+            "WalJournalFile");
+}
+
 }  // namespace
 
 }  // namespace persistent_cache

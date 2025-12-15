@@ -37,6 +37,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   base::FilePath GetJournalVirtualFilePath() const;
   base::FilePath GetWalJournalVirtualFilePath() const;
 
+  // Returns the histogram variant for the file at `virtual_file_path`.
+  // - "DbFile" if `virtual_file_path` names a main database file.
+  // - "JournalFile" if `virtual_file_path` names a main journal file.
+  // - "WalJournalFile" if `virtual_file_path` names a write-ahead log file.
+  // Crashes the process on unexpected values.
+  static std::string_view GetVirtualFileHistogramVariant(
+      const base::FilePath& virtual_file_path);
+
   SandboxedFile* GetSandboxedDbFile() const { return db_file_.get(); }
   SandboxedFile* GetSandboxedJournalFile() const { return journal_file_.get(); }
   SandboxedFile* GetSandboxedWalJournalFile() const {
