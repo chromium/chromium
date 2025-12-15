@@ -18,3 +18,8 @@ update the modded_src/version and update the list of changes below.
 
 - Preserve <img> in <figure> during distillation (crbug.com/457771156).
   - Does not affect tests.
+- Add support for extracting a lead image and its caption when they appear
+  before the main article content. The affected containers are removed after
+  extraction to prevent duplication. The extracted data are added as a <figure>
+  element that's added to the start of returned content.
+
