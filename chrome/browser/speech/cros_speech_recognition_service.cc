@@ -114,6 +114,8 @@ void CrosSpeechRecognitionService::BindRecognizer(
     language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
   }
 
+  language_name = speech::MaybeMapToChineseLocale(language_name);
+
   PopulateFilePaths(binary_path, config_paths);
 
   // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS so that
@@ -158,6 +160,9 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
       PrefService* profile_prefs = user_prefs::UserPrefs::Get(context());
       language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
     }
+
+    language_name = speech::MaybeMapToChineseLocale(language_name);
+
     // `mask_offensive_words` is always true for
     // `RecognizerClientType::kSchoolTools`.
     // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS for
