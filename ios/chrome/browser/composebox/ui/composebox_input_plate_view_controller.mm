@@ -70,7 +70,10 @@ const CGFloat kInputPlateStackViewExpandedWithAttachmentsTopPadding = 10.0f;
 /// The bottom padding with the expanded input plate when AIM is available.
 const CGFloat kInputPlateStackViewExpandedBottomPadding = 10.0f;
 /// The horizontal padding for the input plate stack view.
-const CGFloat kInputPlateStackViewHorizontalPadding = 10.0f;
+const CGFloat kInputPlateStackViewHorizontalPadding = 2.0f;
+/// The side padding for the input plate stack view content (e.g. omnibox,
+/// toolbar).
+const CGFloat kInputPlateSidePadding = 8.0f;
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
@@ -150,6 +153,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   /// The view containing containing the plusButton, mic, send, etc.. in
   /// expanded mode.
   UIView* _toolbarView;
+  /// An internal container that clips its bounds. This ensures extra AIM
+  /// attachments do not overflow their container, and allows the input to flow
+  /// closer to the edge of the box. Note that the external container still has
+  /// shadows and glow effects attached; the use of a child view avoids
+  /// interference with those.
+  UIView* _inputPlateInternalContainerView;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   UIImageView* _aimButtonXIndicator;
@@ -251,19 +260,19 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _inputPlateStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[ _omniboxContainer ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_inputPlateContainerView addSubview:_inputPlateStackView];
+  [_inputPlateInternalContainerView addSubview:_inputPlateStackView];
 
   _bottomPaddingConstraint = [_inputPlateStackView.bottomAnchor
-      constraintEqualToAnchor:_inputPlateContainerView.bottomAnchor
+      constraintEqualToAnchor:_inputPlateInternalContainerView.bottomAnchor
                      constant:-kInputPlateStackViewVerticalPadding];
   _topPaddingConstraint = [_inputPlateStackView.topAnchor
-      constraintEqualToAnchor:_inputPlateContainerView.topAnchor
+      constraintEqualToAnchor:_inputPlateInternalContainerView.topAnchor
                      constant:kInputPlateStackViewVerticalPadding];
   [NSLayoutConstraint
       activateConstraints:@[ _bottomPaddingConstraint, _topPaddingConstraint ]];
 
   AddSameConstraintsToSidesWithInsets(
-      _inputPlateStackView, _inputPlateContainerView,
+      _inputPlateStackView, _inputPlateInternalContainerView,
       (LayoutSides::kLeading | LayoutSides::kTrailing),
       NSDirectionalEdgeInsetsMake(0, kInputPlateStackViewHorizontalPadding, 0,
                                   kInputPlateStackViewHorizontalPadding));
@@ -286,6 +295,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (self.compact) {
     _inputPlateContainerView.layer.cornerRadius =
         _inputPlateContainerView.frame.size.height / 2;
+    _inputPlateInternalContainerView.layer.cornerRadius =
+        _inputPlateContainerView.layer.cornerRadius;
   }
   [self updateCarouselFade];
 }
@@ -306,7 +317,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _editView.minimumHeight = kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:editView];
-  AddSameConstraints(_editView, _omniboxContainer);
+  AddSameConstraintsToSidesWithInsets(
+      _editView, _omniboxContainer,
+      LayoutSides::kLeading | LayoutSides::kTrailing,
+      NSDirectionalEdgeInsetsMake(0, kInputPlateSidePadding, 0,
+                                  kInputPlateSidePadding));
+  AddSameConstraintsToSides(_editView, _omniboxContainer,
+                            LayoutSides::kTop | LayoutSides::kBottom);
 
   [self.mutator requestUIRefresh];
 }
@@ -1096,6 +1113,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [buttonsStackView.heightAnchor
         constraintEqualToConstant:kButtonStackViewDimension]
   ]];
+  buttonsStackView.layoutMarginsRelativeArrangement = YES;
+  buttonsStackView.layoutMargins =
+      UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
   return buttonsStackView;
 }
 
@@ -1278,6 +1298,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _carouselView.delegate = self;
   [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
       .active = YES;
+  // The outer view has minimal padding to allow the carousel space for multiple
+  // attachments when they overflow. This ensures that there's still some
+  // padding when the carousel is scrolled to either end.
+  _carouselView.contentInset =
+      UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
   _carouselView.showsHorizontalScrollIndicator = NO;
 
   _carouselContainer = [[UIView alloc] init];
@@ -1333,6 +1358,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
   _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
 
+  _inputPlateInternalContainerView = [[UIView alloc] init];
+  _inputPlateInternalContainerView.clipsToBounds = YES;
+  _inputPlateInternalContainerView.layer.cornerRadius = kInputPlateCornerRadius;
+  _inputPlateInternalContainerView.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [_inputPlateContainerView addSubview:_inputPlateInternalContainerView];
+  AddSameConstraints(_inputPlateInternalContainerView,
+                     _inputPlateContainerView);
+
   [self updateDepthShadowAppearance];
   [self.view addSubview:_inputPlateContainerView];
 
@@ -1370,6 +1404,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_inputPlateStackView setCustomSpacing:kShortcutsSpacing
                                  afterView:_micButton];
     _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
+    _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
+    // Ensure we do not lose the margins on the sides when in compact mode.
+    _inputPlateStackView.layoutMargins =
+        UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
   } else {
     _toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
@@ -1379,6 +1417,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     // `_bottomPaddingConstraint` is updated in `updateToolbarVisibility`.
     [self updateToolbarVisibility];
     _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
+    _inputPlateInternalContainerView.layer.cornerRadius =
+        kInputPlateCornerRadius;
+    _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
   }
   [self updateInputPlateStackViewTopConstraint];
 }
