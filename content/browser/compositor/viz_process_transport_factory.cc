@@ -68,7 +68,6 @@ constexpr uint32_t kBrowserClientId = 0u;
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     bool supports_locking,
-    bool supports_gpu_rasterization,
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
@@ -532,17 +531,11 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     worker_context_provider_.reset();
   }
 
-  const bool enable_gpu_rasterization =
-      features::IsUiGpuRasterizationEnabled() &&
-      gpu_feature_info
-              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
-
   if (!worker_context_provider_) {
     // If the worker context supports GPU rasterization then UI tiles will be
     // rasterized on the GPU.
     auto worker_context_provider = CreateContextProvider(
-        gpu_channel_host, /*supports_locking=*/true, enable_gpu_rasterization,
+        gpu_channel_host, /*supports_locking=*/true,
         viz::command_buffer_metrics::ContextType::BROWSER_RASTER_WORKER);
 
     // Don't observer context loss on |worker_context_provider_| here,
@@ -565,7 +558,6 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     // enabled for tiles.
     main_context_provider_ = CreateContextProvider(
         std::move(gpu_channel_host), /*supports_locking=*/false,
-        enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_MAIN_THREAD);
     main_context_provider_->SetDefaultTaskRunner(resize_task_runner_);
 
