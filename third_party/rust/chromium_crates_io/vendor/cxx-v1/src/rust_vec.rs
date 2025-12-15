@@ -24,11 +24,11 @@ impl<T> RustVec<T> {
     }
 
     pub fn from_ref(v: &Vec<T>) -> &Self {
-        unsafe { &*(v as *const Vec<T> as *const RustVec<T>) }
+        unsafe { &*(ptr::from_ref::<Vec<T>>(v).cast::<RustVec<T>>()) }
     }
 
     pub fn from_mut(v: &mut Vec<T>) -> &mut Self {
-        unsafe { &mut *(v as *mut Vec<T> as *mut RustVec<T>) }
+        unsafe { &mut *(ptr::from_mut::<Vec<T>>(v).cast::<RustVec<T>>()) }
     }
 
     pub fn into_vec(self) -> Vec<T> {
@@ -36,11 +36,11 @@ impl<T> RustVec<T> {
     }
 
     pub fn as_vec(&self) -> &Vec<T> {
-        unsafe { &*(self as *const RustVec<T> as *const Vec<T>) }
+        unsafe { &*(ptr::from_ref::<RustVec<T>>(self).cast::<Vec<T>>()) }
     }
 
     pub fn as_mut_vec(&mut self) -> &mut Vec<T> {
-        unsafe { &mut *(self as *mut RustVec<T> as *mut Vec<T>) }
+        unsafe { &mut *(ptr::from_mut::<RustVec<T>>(self).cast::<Vec<T>>()) }
     }
 
     pub fn len(&self) -> usize {

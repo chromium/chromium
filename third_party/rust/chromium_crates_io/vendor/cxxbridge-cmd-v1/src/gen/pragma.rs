@@ -6,6 +6,7 @@ pub(crate) struct Pragma<'a> {
     pub gnu_diagnostic_ignore: BTreeSet<&'a str>,
     pub clang_diagnostic_ignore: BTreeSet<&'a str>,
     pub dollar_in_identifier: bool,
+    pub mismatched_new_delete: bool,
     pub missing_declarations: bool,
     pub return_type_c_linkage: bool,
     pub begin: Content<'a>,
@@ -23,6 +24,7 @@ pub(super) fn write(out: &mut OutFile) {
         ref mut gnu_diagnostic_ignore,
         ref mut clang_diagnostic_ignore,
         dollar_in_identifier,
+        mismatched_new_delete,
         missing_declarations,
         return_type_c_linkage,
         ref mut begin,
@@ -31,6 +33,9 @@ pub(super) fn write(out: &mut OutFile) {
 
     if dollar_in_identifier {
         clang_diagnostic_ignore.insert("-Wdollar-in-identifier-extension");
+    }
+    if mismatched_new_delete {
+        gnu_diagnostic_ignore.insert("-Wmismatched-new-delete");
     }
     if missing_declarations {
         gnu_diagnostic_ignore.insert("-Wmissing-declarations");

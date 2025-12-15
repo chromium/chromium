@@ -4,7 +4,6 @@
     clippy::cast_possible_wrap,
     clippy::float_cmp,
     clippy::needless_pass_by_value,
-    clippy::ptr_cast_constness,
     clippy::unit_cmp
 )]
 
@@ -246,7 +245,7 @@ fn test_c_call_r() {
         }
         let failure = unsafe { cxx_run_test() };
         if !failure.is_null() {
-            let msg = unsafe { CStr::from_ptr(failure as *mut std::os::raw::c_char) };
+            let msg = unsafe { CStr::from_ptr(failure.cast::<std::os::raw::c_char>().cast_mut()) };
             eprintln!("{}", msg.to_string_lossy());
         }
     }
@@ -449,7 +448,7 @@ fn test_raw_ptr() {
 
     let c3 = ffi::c_return_const_ptr(2025);
     assert_eq!(2025, unsafe { ffi::c_take_const_ptr(c3) });
-    assert_eq!(2025, unsafe { ffi::c_take_mut_ptr(c3 as *mut ffi::C) }); // deletes c3
+    assert_eq!(2025, unsafe { ffi::c_take_mut_ptr(c3.cast_mut()) }); // deletes c3
 }
 
 #[test]

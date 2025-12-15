@@ -12,6 +12,7 @@ use core::marker::PhantomData;
 use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::pin::Pin;
+use core::ptr;
 
 /// Binding to C++ `std::shared_ptr<T>`.
 ///
@@ -128,7 +129,7 @@ where
     ///
     /// </div>
     pub fn is_null(&self) -> bool {
-        let this = self as *const Self as *const c_void;
+        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
         let ptr = unsafe { T::__get(this) };
         ptr.is_null()
     }
@@ -191,7 +192,7 @@ where
 
     /// Returns the SharedPtr's stored pointer as a raw const pointer.
     pub fn as_ptr(&self) -> *const T {
-        let this = self as *const Self as *const c_void;
+        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
         unsafe { T::__get(this) }
     }
 
@@ -202,7 +203,7 @@ where
     /// SharedPtr. This differs from Rust norms, so extra care should be taken
     /// in the way the pointer is used.
     pub fn as_mut_ptr(&self) -> *mut T {
-        self.as_ptr() as *mut T
+        self.as_ptr().cast_mut()
     }
 
     /// Constructs new WeakPtr as a non-owning reference to the object managed
@@ -214,7 +215,7 @@ where
     where
         T: WeakPtrTarget,
     {
-        let this = self as *const Self as *const c_void;
+        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
         let mut weak_ptr = MaybeUninit::<WeakPtr<T>>::uninit();
         let new = weak_ptr.as_mut_ptr().cast();
         unsafe {
@@ -234,7 +235,7 @@ where
     fn clone(&self) -> Self {
         let mut shared_ptr = MaybeUninit::<SharedPtr<T>>::uninit();
         let new = shared_ptr.as_mut_ptr().cast();
-        let this = self as *const Self as *mut c_void;
+        let this = ptr::from_ref::<Self>(self).cast::<c_void>();
         unsafe {
             T::__clone(this, new);
             shared_ptr.assume_init()
@@ -251,7 +252,7 @@ where
     T: SharedPtrTarget,
 {
     fn drop(&mut self) {
-        let this = self as *mut Self as *mut c_void;
+        let this = ptr::from_mut::<Self>(self).cast::<c_void>();
         unsafe { T::__drop(this) }
     }
 }
@@ -423,7 +424,7 @@ macro_rules! impl_shared_ptr_target {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$raw")]
                     fn __raw(new: *mut c_void, raw: *mut c_void);
                 }
-                unsafe { __raw(new, raw as *mut c_void) }
+                unsafe { __raw(new, raw.cast::<c_void>()) }
             }
             unsafe fn __clone(this: *const c_void, new: *mut c_void) {
                 extern "C" {

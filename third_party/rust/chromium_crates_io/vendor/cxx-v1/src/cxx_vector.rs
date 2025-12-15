@@ -11,6 +11,7 @@ use core::iter::FusedIterator;
 use core::marker::{PhantomData, PhantomPinned};
 use core::mem::{self, ManuallyDrop, MaybeUninit};
 use core::pin::Pin;
+use core::ptr;
 use core::slice;
 
 /// Binding to C++ `std::vector<T, std::allocator<T>>`.
@@ -106,9 +107,9 @@ where
     ///
     /// [operator_at]: https://en.cppreference.com/w/cpp/container/vector/operator_at
     pub unsafe fn get_unchecked(&self, pos: usize) -> &T {
-        let this = self as *const CxxVector<T> as *mut CxxVector<T>;
+        let this = ptr::from_ref::<CxxVector<T>>(self).cast_mut();
         unsafe {
-            let ptr = T::__get_unchecked(this, pos) as *const T;
+            let ptr = T::__get_unchecked(this, pos).cast_const();
             &*ptr
         }
     }
@@ -150,7 +151,7 @@ where
             // which upholds the invariants.
             &[]
         } else {
-            let this = self as *const CxxVector<T> as *mut CxxVector<T>;
+            let this = ptr::from_ref::<CxxVector<T>>(self).cast_mut();
             let ptr = unsafe { T::__get_unchecked(this, 0) };
             unsafe { slice::from_raw_parts(ptr, len) }
         }
@@ -341,7 +342,7 @@ where
         // Extend lifetime to allow simultaneous holding of nonoverlapping
         // elements, analogous to slice::split_first_mut.
         unsafe {
-            let ptr = Pin::into_inner_unchecked(next) as *mut T;
+            let ptr = ptr::from_mut::<T>(Pin::into_inner_unchecked(next));
             Some(Pin::new_unchecked(&mut *ptr))
         }
     }
