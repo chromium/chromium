@@ -307,16 +307,6 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   }
 }
 
-raw_ptr<contextual_search::ContextualSearchContextController>
-OmniboxContextMenuController::GetQueryController() const {
-  auto* helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get());
-  if (!helper) {
-    return nullptr;
-  }
-  return helper->session_handle()->GetController();
-}
-
 raw_ptr<OmniboxController> OmniboxContextMenuController::GetOmniboxController()
     const {
   auto* helper =
@@ -412,8 +402,13 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  auto query_controller = GetQueryController();
-  if (!query_controller) {
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get());
+  if (!helper) {
+    return false;
+  }
+  auto* handle = helper->session_handle();
+  if (!handle) {
     return false;
   }
 
@@ -429,7 +424,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   }
 
   auto file_upload_count =
-      static_cast<int>(query_controller->GetFileInfoList().size());
+      static_cast<int>(handle->GetUploadedContextTokens().size());
   if (file_upload_count > 0) {
     auto max_num_files =
         omnibox::FeatureConfig::Get().config.composebox().max_num_files();

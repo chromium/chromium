@@ -34,10 +34,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace contextual_search {
-class ContextualSearchContextController;
-}
-
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
@@ -100,8 +96,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
-  raw_ptr<contextual_search::ContextualSearchContextController>
-  GetQueryController() const;
   raw_ptr<OmniboxController> GetOmniboxController() const;
   raw_ptr<OmniboxEditModel> GetEditModel();
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
