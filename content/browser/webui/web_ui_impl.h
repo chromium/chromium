@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 class NavigationRequest;
@@ -46,7 +47,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // crash) or when a WebUI is created for a RenderFrame (i.e. navigating from
   // chrome://downloads to chrome://bookmarks) or when both are new (i.e.
   // opening a new tab).
-  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host);
+  // |origin_to_commit| is the origin that the frame is committing to.
+  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host,
+                               const url::Origin& origin_to_commit);
 
   // Called when the owning RenderFrameHost has started unloading.
   void RenderFrameHostUnloading();
@@ -100,7 +103,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   bool HasRenderFrameHost() const;
 
   static blink::mojom::LocalResourceLoaderConfigPtr
-  GetLocalResourceLoaderConfigForTesting(URLDataManagerBackend* data_backend);
+  GetLocalResourceLoaderConfigForTesting(URLDataManagerBackend* data_backend,
+                                         const url::Origin& current_origin);
 
  private:
   friend class WebUIMainFrameObserver;
@@ -114,7 +118,11 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // Called internally and by the owned WebUIMainFrameObserver.
   void DisallowJavascriptOnAllHandlers();
 
-  blink::mojom::LocalResourceLoaderConfigPtr GetLocalResourceLoaderConfig();
+  // Called internally and by the owned WebUIMainFrameObserver.
+  // Returns the LocalResourceLoaderConfig for the current WebUI.
+  // |origin_to_commit| is the origin that the frame is committing to.
+  blink::mojom::LocalResourceLoaderConfigPtr GetLocalResourceLoaderConfig(
+      const url::Origin& origin_to_commit);
 
   // A map of message name -> message handling callback.
   std::map<std::string, MessageCallback> message_callbacks_;

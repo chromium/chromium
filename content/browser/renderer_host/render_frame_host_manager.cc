@@ -2163,7 +2163,15 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     // If a WebUI was created in a speculative RenderFrameHost, or a new
     // RenderFrame was created for an existing WebUI, then the WebUI never
     // interacted with the RenderFrame. Notify using WebUIRenderFrameCreated.
-    navigation_rfh->web_ui()->WebUIRenderFrameCreated(navigation_rfh);
+    url::Origin origin_to_commit;
+    if (request->state() >= NavigationRequest::WILL_PROCESS_RESPONSE) {
+      CHECK(request->GetOriginToCommit().has_value());
+      origin_to_commit = request->GetOriginToCommit().value();
+    } else {
+      origin_to_commit = request->GetTentativeOriginAtRequestTime();
+    }
+    navigation_rfh->web_ui()->WebUIRenderFrameCreated(navigation_rfh,
+                                                      origin_to_commit);
   }
 
   // The following call is here to make sure that explicit opt-out requests,

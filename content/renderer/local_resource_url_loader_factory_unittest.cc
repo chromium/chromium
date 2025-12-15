@@ -103,13 +103,20 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
     UpdateLoaderFactory();
   }
 
+  void AddPathToResponse(const std::string& path, const std::string& content) {
+    source_->path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResponseBody(content);
+    UpdateLoaderFactory();
+  }
+
   void AddReplacementString(const std::string& key, const std::string& value) {
     source_->replacement_strings[key] = value;
     UpdateLoaderFactory();
   }
 
   void AddResourceID(const std::string& path, int id) {
-    source_->path_to_resource_id_map[path] = id;
+    source_->path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResourceId(id);
     UpdateLoaderFactory();
   }
 
@@ -262,6 +269,29 @@ TEST_P(LocalResourceURLLoaderFactoryServeTest, Serve) {
   ASSERT_TRUE(client.response_body().is_valid());
   std::string response_body = ReadAllData(client);
   EXPECT_EQ(GetParam().response_body, response_body);
+}
+
+TEST_F(LocalResourceURLLoaderFactoryTest, PathToResponseMap) {
+  AddPathToResponse("strings.m.js",
+                    "import {loadTimeData} ... \"foo\":\"bar\"");
+  // Even if replacement string is added, no replacement will be performed.
+  AddReplacementString("foo", "bar");
+
+  network::TestURLLoaderClient client;
+  network::ResourceRequest request;
+  request.url = GURL("chrome://sourcename/strings.m.js");
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  loader_factory()->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
+      client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+  client.RunUntilComplete();
+
+  ASSERT_EQ(net::OK, client.completion_status().error_code);
+  EXPECT_EQ("text/javascript", client.response_head()->mime_type);
+  ASSERT_TRUE(client.response_body().is_valid());
+  std::string response_body = ReadAllData(client);
+  EXPECT_THAT(response_body, testing::HasSubstr("import {loadTimeData}"));
+  EXPECT_THAT(response_body, testing::HasSubstr("\"foo\":\"bar\""));
 }
 
 INSTANTIATE_TEST_SUITE_P(
