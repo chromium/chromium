@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -2292,7 +2293,7 @@ class CORE_EXPORT Document : public ContainerNode,
     }
   }
 
-  const HashSet<AtomicString>& OverscrollCommandTargets() const {
+  const HashCountedSet<AtomicString>& OverscrollCommandTargets() const {
     return overscroll_command_targets_;
   }
   void AddOverscrollCommandTarget(const AtomicString& target);
@@ -3220,12 +3221,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool responsive_embedded_sizing_ = false;
 
-  // A set of idrefs that have been identified by commandfor with an overscroll
+  // A map of idrefs that have been identified by commandfor with an overscroll
   // related command (e.g. toggle-overscroll). This determines a
   // :-internal-overscroll-target pseudo class. Whenever adding or removing
   // entries here, the element identified by the target needs to invalidate that
   // pseudo class.
-  HashSet<AtomicString> overscroll_command_targets_;
+  HashCountedSet<AtomicString> overscroll_command_targets_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

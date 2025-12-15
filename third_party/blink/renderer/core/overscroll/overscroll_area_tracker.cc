@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -21,7 +22,11 @@ void OverscrollAreaTracker::AddOverscroll(Element* element) {
 
 const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
   if (needs_dom_sort_) {
-    // TODO(crbug.com/463970475): Implement.
+    std::sort(overscroll_members_.begin(), overscroll_members_.end(),
+              [](const Member<Element>& a, const Member<Element>& b) {
+                return a->compareDocumentPosition(b) &
+                       Node::kDocumentPositionFollowing;
+              });
     needs_dom_sort_ = false;
   }
   return overscroll_members_;

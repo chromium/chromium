@@ -10286,16 +10286,20 @@ CustomElementRegistry* Document::EffectiveGlobalCustomElementRegistry() const {
 }
 
 void Document::AddOverscrollCommandTarget(const AtomicString& target) {
-  overscroll_command_targets_.insert(target);
-  if (auto* element = getElementById(target)) {
-    element->OverscrollTargetStateChanged();
+  auto result = overscroll_command_targets_.insert(target);
+  if (result.is_new_entry) {
+    if (auto* element = getElementById(target)) {
+      element->OverscrollTargetStateChanged();
+    }
   }
 }
 
 void Document::RemoveOverscrollCommandTarget(const AtomicString& target) {
-  overscroll_command_targets_.erase(target);
-  if (auto* element = getElementById(target)) {
-    element->OverscrollTargetStateChanged();
+  bool erased_last = overscroll_command_targets_.erase(target);
+  if (erased_last) {
+    if (auto* element = getElementById(target)) {
+      element->OverscrollTargetStateChanged();
+    }
   }
 }
 

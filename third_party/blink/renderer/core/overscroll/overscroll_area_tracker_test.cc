@@ -237,9 +237,8 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   // container0 is a container.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(c0tracker.DOMSortedElements().size(), 2);
-  // TODO(crbug.com/463970475): These should be DOM sorted.
-  EXPECT_EQ(c0tracker.DOMSortedElements()[0], menu1);
-  EXPECT_EQ(c0tracker.DOMSortedElements()[1], menu0);
+  EXPECT_EQ(c0tracker.DOMSortedElements()[0], menu0);
+  EXPECT_EQ(c0tracker.DOMSortedElements()[1], menu1);
   EXPECT_EQ(c1tracker.DOMSortedElements().size(), 0);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 0);
 
@@ -260,6 +259,71 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c1tracker.DOMSortedElements()[0], menu1);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 1);
   EXPECT_EQ(c2tracker.DOMSortedElements()[0], menu0);
+}
+
+TEST_F(OverscrollAreaTrackerTest, OverscrollElementsAreDOMSorted) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div><div id="menu1"></div></div>
+      <div><div id="menu2"></div></div>
+      <div><div id="menu3"></div></div>
+    </div>
+    <button id="button1" command="toggle-overscroll" commandfor="menu1"></button>
+    <button id="button2" command="toggle-overscroll" commandfor="menu2"></button>
+    <button id="button3" command="toggle-overscroll" commandfor="menu3"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* container = GetDocument().getElementById(AtomicString("container"));
+  auto& tracker = container->EnsureOverscrollAreaTracker();
+
+  auto* menu1 = GetDocument().getElementById(AtomicString("menu1"));
+  auto* menu2 = GetDocument().getElementById(AtomicString("menu2"));
+  auto* menu3 = GetDocument().getElementById(AtomicString("menu3"));
+
+  auto* button1 = GetDocument().getElementById(AtomicString("button1"));
+  auto* button2 = GetDocument().getElementById(AtomicString("button2"));
+  auto* button3 = GetDocument().getElementById(AtomicString("button3"));
+
+  auto verify_order = [&](const char* scope) {
+    SCOPED_TRACE(scope);
+    EXPECT_EQ(tracker.DOMSortedElements().size(), 3);
+    EXPECT_EQ(tracker.DOMSortedElements()[0], menu1);
+    EXPECT_EQ(tracker.DOMSortedElements()[1], menu2);
+    EXPECT_EQ(tracker.DOMSortedElements()[2], menu3);
+  };
+
+  verify_order("initial");
+
+  button2->SetAttributeWithoutValidation(html_names::kCommandAttr, "--foo");
+  UpdateAllLifecyclePhasesForTest();
+  button2->SetAttributeWithoutValidation(html_names::kCommandAttr,
+                                         "toggle-overscroll");
+  UpdateAllLifecyclePhasesForTest();
+
+  verify_order("menu2 command changed");
+
+  menu1->SetAttributeWithoutValidation(html_names::kIdAttr, "foo");
+  UpdateAllLifecyclePhasesForTest();
+  menu1->SetAttributeWithoutValidation(html_names::kIdAttr, "menu1");
+  UpdateAllLifecyclePhasesForTest();
+
+  verify_order("menu1 id changed");
+
+  button3->SetAttributeWithoutValidation(html_names::kCommandforAttr, "foo");
+  UpdateAllLifecyclePhasesForTest();
+  button3->SetAttributeWithoutValidation(html_names::kCommandforAttr, "menu3");
+  UpdateAllLifecyclePhasesForTest();
+
+  verify_order("button3 commandfor changed");
+
+  button1->SetAttributeWithoutValidation(html_names::kCommandforAttr, "menu3");
+  UpdateAllLifecyclePhasesForTest();
+  button3->SetAttributeWithoutValidation(html_names::kCommandforAttr, "menu1");
+  UpdateAllLifecyclePhasesForTest();
+
+  verify_order("button1 and button3 commandfor swapped");
 }
 
 }  // namespace blink
