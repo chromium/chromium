@@ -249,6 +249,10 @@ class WindowsCreateFunction : public ExtensionFunction {
 
   // The set of parsed URLs to open in the newly-created window.
   std::vector<GURL> urls_;
+
+  // Whether to set the calling extension context as the opener of the newly-
+  // created window. Not supported for service worker callers.
+  bool set_self_as_opener_ = false;
 };
 class WindowsUpdateFunction : public ExtensionFunction {
   ~WindowsUpdateFunction() override = default;

@@ -816,6 +816,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
                               window_bounds.width());
     UMA_HISTOGRAM_COUNTS_1000("Extensions.CreateWindowHeight",
                               window_bounds.height());
+
+    set_self_as_opener_ =
+        create_data_->set_self_as_opener && *create_data_->set_self_as_opener;
+    if (is_from_service_worker() && set_self_as_opener_) {
+      // TODO(crbug.com/40636155): Add test for this.
+      return RespondNow(
+          Error("Cannot specify setSelfAsOpener Service Worker extension."));
+    }
   }
 
   // Create a new BrowserWindow if possible.
@@ -912,8 +920,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   // initialized on non-desktop platforms. See documentation on
   // CreateBrowserWindow().
 
-  auto create_nav_params =
-      [&](const GURL& url) -> base::expected<NavigateParams, std::string> {
+  auto create_nav_params = [&](const GURL& url) {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
     navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     // Ensure that these navigations will not get 'captured' into PWA windows,
@@ -926,15 +933,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     // Depending on the |setSelfAsOpener| option, we need to put the new
     // contents in the same BrowsingInstance as their opener.  See also
     // https://crbug.com/713888.
-    bool set_self_as_opener =
-        create_data_->set_self_as_opener &&  // present?
-        *create_data_->set_self_as_opener;   // set to true?
-    if (set_self_as_opener) {
-      if (is_from_service_worker()) {
-        // TODO(crbug.com/40636155): Add test for this.
-        return base::unexpected(
-            "Cannot specify setSelfAsOpener Service Worker extension.");
-      }
+    if (set_self_as_opener_) {
       // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
       // See ExtensionApiTest.WindowsCreate* tests for details.
@@ -965,9 +964,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     // extension's ability to figure out which IWAs are installed without the
     // `tabs` permission.
     if (registrar.AppMatches(iwa_id, web_app::WebAppFilter::IsIsolatedApp())) {
-      ASSIGN_OR_RETURN(NavigateParams navigate_params,
-                       create_nav_params(registrar.GetAppStartUrl(iwa_id)),
-                       [&](const std::string& error) { return Error(error); });
+      NavigateParams navigate_params =
+          create_nav_params(registrar.GetAppStartUrl(iwa_id));
       base::WeakPtr<content::NavigationHandle> handle =
           Navigate(&navigate_params);
       CHECK(handle);
@@ -981,13 +979,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 
   if (!navigated) {
     for (const GURL& url : urls_) {
-      base::expected<NavigateParams, std::string> nav_params =
-          create_nav_params(url);
-      if (!nav_params.has_value()) {
-        return Error(std::move(nav_params.error()));
-      }
-
-      Navigate(&nav_params.value());
+      NavigateParams navigate_params = create_nav_params(url);
+      Navigate(&navigate_params);
     }
   }
 
