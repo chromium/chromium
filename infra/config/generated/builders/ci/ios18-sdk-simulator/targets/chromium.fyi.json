@@ -13,7 +13,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -45,7 +45,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -64,7 +64,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -96,7 +96,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -115,7 +115,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -147,7 +147,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -166,7 +166,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -198,7 +198,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -217,7 +217,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -249,7 +249,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -268,7 +268,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -300,7 +300,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -319,7 +319,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -351,7 +351,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -370,7 +370,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -402,7 +402,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -421,7 +421,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -453,7 +453,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -472,7 +472,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -504,7 +504,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -523,7 +523,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -555,7 +555,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -574,7 +574,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -606,7 +606,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -625,7 +625,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -657,7 +657,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -676,7 +676,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -708,7 +708,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -727,7 +727,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -759,7 +759,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -778,7 +778,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -810,7 +810,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -829,7 +829,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -861,7 +861,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -880,7 +880,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -912,7 +912,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -931,7 +931,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -963,7 +963,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -982,7 +982,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1014,7 +1014,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1033,7 +1033,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1065,7 +1065,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1087,7 +1087,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1119,7 +1119,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1142,7 +1142,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1174,7 +1174,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1197,7 +1197,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1229,7 +1229,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1254,7 +1254,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1286,7 +1286,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1311,7 +1311,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1343,7 +1343,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1368,7 +1368,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1400,7 +1400,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1425,7 +1425,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1457,7 +1457,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1482,7 +1482,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1514,7 +1514,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1539,7 +1539,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1571,7 +1571,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1594,7 +1594,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1626,7 +1626,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1649,7 +1649,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1681,7 +1681,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1704,7 +1704,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1736,7 +1736,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1759,7 +1759,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1791,7 +1791,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1813,7 +1813,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1845,7 +1845,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1867,7 +1867,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1899,7 +1899,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1923,7 +1923,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -1955,7 +1955,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -1980,7 +1980,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2012,7 +2012,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2037,7 +2037,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2069,7 +2069,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2089,7 +2089,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2121,7 +2121,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2140,7 +2140,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2172,7 +2172,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2191,7 +2191,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2223,7 +2223,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2245,7 +2245,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2277,7 +2277,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2300,7 +2300,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2332,7 +2332,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2355,7 +2355,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2387,7 +2387,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2407,7 +2407,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2439,7 +2439,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2458,7 +2458,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2490,7 +2490,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2510,7 +2510,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2542,7 +2542,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2562,7 +2562,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2594,7 +2594,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2613,7 +2613,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2645,7 +2645,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2664,7 +2664,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2696,7 +2696,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2715,7 +2715,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2747,7 +2747,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2766,7 +2766,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2798,7 +2798,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2818,7 +2818,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2850,7 +2850,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2870,7 +2870,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2902,7 +2902,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2921,7 +2921,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -2953,7 +2953,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -2972,7 +2972,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3004,7 +3004,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3023,7 +3023,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3055,7 +3055,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3074,7 +3074,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3106,7 +3106,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3128,7 +3128,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3160,7 +3160,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3182,7 +3182,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3214,7 +3214,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3236,7 +3236,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3268,7 +3268,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3287,7 +3287,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3319,7 +3319,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3338,7 +3338,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3370,7 +3370,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3389,7 +3389,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3421,7 +3421,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3440,7 +3440,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3472,7 +3472,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3491,7 +3491,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3523,7 +3523,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3542,7 +3542,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3574,7 +3574,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3593,7 +3593,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3625,7 +3625,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3644,7 +3644,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3676,7 +3676,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3695,7 +3695,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3727,7 +3727,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3746,7 +3746,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3778,7 +3778,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3797,7 +3797,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3829,7 +3829,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3848,7 +3848,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3880,7 +3880,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3899,7 +3899,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3931,7 +3931,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -3950,7 +3950,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -3982,7 +3982,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4001,7 +4001,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4033,7 +4033,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4052,7 +4052,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4084,7 +4084,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4103,7 +4103,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4135,7 +4135,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4154,7 +4154,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4186,7 +4186,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4205,7 +4205,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4237,7 +4237,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4256,7 +4256,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4288,7 +4288,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4307,7 +4307,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4339,7 +4339,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4358,7 +4358,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4390,7 +4390,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
@@ -4409,7 +4409,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17c48",
+          "17c52",
           "--xctest"
         ],
         "merge": {
@@ -4441,7 +4441,7 @@
               "path": "Runtime-ios-18.5"
             },
             {
-              "name": "xcode_ios_17c48",
+              "name": "xcode_ios_17c52",
               "path": "Xcode.app"
             }
           ],
