@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 class InteractionEffectsMonitor;
@@ -129,10 +128,6 @@ class CORE_EXPORT SoftNavigationHeuristics
     return paint_attribution_tracker_.Get();
   }
 
-  // This method is called during the weakness processing stage of garbage
-  // collection to remove items from `potential_soft_navigations_`.
-  void ProcessCustomWeakness(const LivenessBroker& info);
-
   bool IsTrackingSoftNavigationsForTest() const {
     return !potential_soft_navigations_.empty();
   }
@@ -141,6 +136,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   void UnregisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
   void ForEachInteractionEffectsMonitor(
       base::FunctionRef<void(InteractionEffectsMonitor&)>);
+
+  void OnContextDisposed(SoftNavigationContext*);
 
  private:
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
@@ -176,9 +173,8 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // The set of ongoing potential soft navigations. `SoftNavigationContext`
   // objects are added when they are the active context during an event handler
-  // running in an `EventScope`. Entries are stored as untraced members to do
-  // custom weak processing (see `ProcessCustomWeakness()`).
-  HashSet<UntracedMember<SoftNavigationContext>> potential_soft_navigations_;
+  // running in an `EventScope`.
+  HeapHashSet<WeakMember<SoftNavigationContext>> potential_soft_navigations_;
 
   // The `SoftNavigationContext` of the "active interaction", if any.
   //

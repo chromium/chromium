@@ -539,44 +539,16 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(paint_attribution_tracker_);
   visitor->Trace(contexts_waiting_for_paint_timestamp_);
   visitor->Trace(interaction_effects_monitors_);
-  // Register a custom weak callback, which runs after processing weakness for
-  // the container. This allows us to observe the collection becoming empty
-  // without needing to observe individual element disposal.
-  visitor->RegisterWeakCallbackMethod<
-      SoftNavigationHeuristics,
-      &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
+  visitor->Trace(potential_soft_navigations_);
 }
 
-void SoftNavigationHeuristics::ProcessCustomWeakness(
-    const LivenessBroker& info) {
-  if (potential_soft_navigations_.empty()) {
+void SoftNavigationHeuristics::OnContextDisposed(
+    SoftNavigationContext* context) {
+  if (!potential_soft_navigations_.Contains(context)) {
     return;
   }
-  // When all the soft navigation tasks were garbage collected, that means that
-  // all their descendant tasks are done, and there's no need to continue
-  // searching for soft navigation signals, at least not until the next user
-  // interaction.
-  //
-  // Note: This is not allowed to do Oilpan allocations. If that's needed, this
-  // can schedule a task or microtask to reset the heuristic.
-  const auto required_paint_area = CalculateRequiredPaintArea();
-  potential_soft_navigations_.erase_if([&](const auto& context) {
-    if (!info.IsHeapObjectAlive(context)) {
-      OnSoftNavigationContextWasExhausted(
-          *context.Get(), CalculateViewportArea(), required_paint_area);
-      return true;
-    }
-    return false;
-  });
-
-  // The set should not become empty if we're still tracking contexts for the
-  // current interaction of current URL change.
-  // TODO(crbug.com/416706750, crbug.com/420402247): Consider enabling some
-  // mechanism for eventually resetting things.
-  CHECK(!potential_soft_navigations_.empty() || !active_interaction_context_,
-        base::NotFatalUntil::M142);
-  CHECK(!potential_soft_navigations_.empty() || !context_for_current_url_,
-        base::NotFatalUntil::M142);
+  OnSoftNavigationContextWasExhausted(*context, CalculateViewportArea(),
+                                      CalculateRequiredPaintArea());
 }
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(

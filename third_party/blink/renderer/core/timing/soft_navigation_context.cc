@@ -233,6 +233,21 @@ void SoftNavigationContext::Shutdown() {
   window_ = nullptr;
 }
 
+void SoftNavigationContext::Dispose() {
+  // `window_` will be null if this context was already shut down.
+  if (!window_) {
+    return;
+  }
+  // `heuristics` will be null if the `window_` was detached but this context
+  // wasn't shut down by the associated `SoftNavigationHeuristics`, which
+  // happens in some unit tests where the context isn't created by the SNH.
+  SoftNavigationHeuristics* heuristics = window_->GetSoftNavigationHeuristics();
+  if (!heuristics) {
+    return;
+  }
+  heuristics->OnContextDisposed(this);
+}
+
 void SoftNavigationContext::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
     uint64_t paint_size,
