@@ -937,18 +937,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 
   // When site setting is set to 'block all extensions':
   //   - site access toggle is hidden
-  //   - site permissions button is hidden.
-  //     TODO(emiliapaz): An enterprise extension should be able to get access
-  //     to the site. Investigate if this is true for 'on click' enterprise
-  //     extensions, and update the button state to 'disabled' instead of
-  //     'hidden' to reflect this.
+  //   - site permissions button is disabled.
   menu_model()->UpdateSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   menu_item_state = menu_model()->GetMenuItemState(extension->id());
   EXPECT_EQ(menu_item_state.site_access_toggle.status,
             ExtensionsMenuViewModel::ControlState::Status::kHidden);
   EXPECT_EQ(menu_item_state.site_permissions_button.status,
-            ExtensionsMenuViewModel::ControlState::Status::kHidden);
+            ExtensionsMenuViewModel::ControlState::Status::kDisabled);
+  EXPECT_EQ(menu_item_state.site_permissions_button.text,
+            u"Ask on every visit");
+  EXPECT_EQ(menu_item_state.site_permissions_button.accessible_name,
+            u"Ask on every visit. Installed by your administrator");
+  EXPECT_EQ(menu_item_state.site_permissions_button.tooltip_text,
+            u"Installed by your administrator");
 }
 
 // Tests the menu item state for an enterprise extension that requests access to

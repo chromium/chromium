@@ -126,44 +126,6 @@ bool CanUserCustomizeExtensionSiteAccess(
          PermissionsManager::UserSiteSetting::kCustomizeByExtension;
 }
 
-// Returns whether the site permissions button should be visible.
-bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
-                                    Profile& profile,
-                                    const ToolbarActionsModel& toolbar_model,
-                                    content::WebContents& web_contents) {
-  // Button is never visible when site is restricted.
-  if (toolbar_model.IsRestrictedUrl(web_contents.GetLastCommittedURL())) {
-    return false;
-  }
-
-  PermissionsManager::UserSiteSetting user_site_setting =
-      PermissionsManager::Get(&profile)->GetUserSiteSetting(
-          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  switch (user_site_setting) {
-    case PermissionsManager::UserSiteSetting::kCustomizeByExtension: {
-      // Extensions should always display the button.
-      return true;
-    }
-    case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
-      // Extension should only display the button when it's an enterprise
-      // extension and has granted access.
-      bool enterprise_forced_access =
-          extensions::ExtensionSystem::Get(&profile)
-              ->management_policy()
-              ->HasEnterpriseForcedAccess(extension);
-      SitePermissionsHelper::SiteInteraction site_interaction =
-          SitePermissionsHelper(&profile).GetSiteInteraction(extension,
-                                                             &web_contents);
-      return enterprise_forced_access &&
-             site_interaction ==
-                 SitePermissionsHelper::SiteInteraction::kGranted;
-    }
-    case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
-      NOTREACHED();
-    }
-  }
-}
-
 // Returns the status for the site permissions button.
 ExtensionsMenuViewModel::ControlState::Status GetSitePermissionsButtonStatus(
     const extensions::Extension& extension,
@@ -172,16 +134,53 @@ ExtensionsMenuViewModel::ControlState::Status GetSitePermissionsButtonStatus(
     content::WebContents& web_contents,
     bool is_enterprise,
     SitePermissionsHelper::SiteInteraction site_interaction) {
-  bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
-      extension, profile, toolbar_model, web_contents);
-  if (!is_site_permissions_button_visible) {
+  auto url = web_contents.GetLastCommittedURL();
+
+  // Button is hidden when site is restricted.
+  if (toolbar_model.IsRestrictedUrl(url)) {
     return ExtensionsMenuViewModel::ControlState::Status::kHidden;
   }
 
-  return CanUserCustomizeExtensionSiteAccess(extension, profile, toolbar_model,
-                                             web_contents)
-             ? ExtensionsMenuViewModel::ControlState::Status::kEnabled
-             : ExtensionsMenuViewModel::ControlState::Status::kDisabled;
+  // Button is disabled when site is blocked by policy.
+  // TODO(crbug.com/40879945): Consider only showing the site permissions
+  // button only for enterprise installed extensions on policy-blocked
+  // sites, similar to how we do for user-blocked sites.
+  if (extension.permissions_data()->IsPolicyBlockedHost(url)) {
+    return ExtensionsMenuViewModel::ControlState::Status::kDisabled;
+  }
+
+  auto user_site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  if (is_enterprise) {
+    // Button is hidden when enterprise extension has no granted access on a
+    // user-blocked site.
+    if (user_site_setting ==
+            PermissionsManager::UserSiteSetting::kBlockAllExtensions &&
+        site_interaction == SitePermissionsHelper::SiteInteraction::kNone) {
+      return ExtensionsMenuViewModel::ControlState::Status::kHidden;
+    }
+    // Otherwise, button is disabled.
+    return ExtensionsMenuViewModel::ControlState::Status::kDisabled;
+  }
+
+  // Button is hidden for non-enterprise extension when user blocked extensions
+  // on the site.
+  if (user_site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return ExtensionsMenuViewModel::ControlState::Status::kHidden;
+  }
+
+  // Button is enabled for non-enterprise extension when user can customize the
+  // extension's site access.
+  if (CanUserCustomizeExtensionSiteAccess(extension, profile, toolbar_model,
+                                          web_contents)) {
+    return ExtensionsMenuViewModel::ControlState::Status::kEnabled;
+  }
+
+  // Otherwise, button is disabled for non-enterprise extensions.
+  return ExtensionsMenuViewModel::ControlState::Status::kDisabled;
 }
 
 std::u16string GetSitePermissionsButtonText(
