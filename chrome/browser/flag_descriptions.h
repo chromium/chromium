@@ -1406,6 +1406,11 @@ inline constexpr char kGlicButtonPressedStateName[] =
     "Glic Button Pressed State";
 inline constexpr char kGlicButtonPressedStateDescription[] =
     "Enables visual changes to the Glic entry button when Glic is open.";
+
+inline constexpr char kGlicButtonAltLabelName[] = "Glic Button Alt Label";
+inline constexpr char kGlicButtonAltLabelDescription[] =
+    "Enables an alternative label for the Glic button.";
+
 inline constexpr char kGlicDaisyChainNewTabsName[] =
     "Glic Daisy chain new tabs";
 inline constexpr char kGlicDaisyChainNewTabsDescription[] =

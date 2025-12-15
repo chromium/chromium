@@ -5639,6 +5639,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-button-alt-label",
+    "owners": [
+      "iwells@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-button-pressed-state",
     "owners": [
       "iwells@chromium.org",

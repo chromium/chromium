@@ -4646,6 +4646,21 @@ const FeatureEntry::FeatureVariation kGlicEntrypointVariations[] = {
      kGlicEntrypointVariationsLabelAndIconAndHighlight,
      std::size(kGlicEntrypointVariationsLabelAndIconAndHighlight), nullptr},
 };
+
+const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant0[] = {
+    {"glic-button-alt-label-variant", "0"}};
+const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant1[] = {
+    {"glic-button-alt-label-variant", "1"}};
+const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant2[] = {
+    {"glic-button-alt-label-variant", "2"}};
+
+const FeatureEntry::FeatureVariation kGlicButtonAltLabelVariations[] = {
+    {"A", kGlicButtonAltLabelVariant0, std::size(kGlicButtonAltLabelVariant0),
+     nullptr},
+    {"B", kGlicButtonAltLabelVariant1, std::size(kGlicButtonAltLabelVariant1),
+     nullptr},
+    {"C", kGlicButtonAltLabelVariant2, std::size(kGlicButtonAltLabelVariant2),
+     nullptr}};
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
@@ -11802,6 +11817,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicButtonPressedStateName,
      flag_descriptions::kGlicButtonPressedStateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicButtonPressedState)},
+    {"glic-button-alt-label", flag_descriptions::kGlicButtonAltLabelName,
+     flag_descriptions::kGlicButtonAltLabelDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicButtonAltLabel,
+                                    kGlicButtonAltLabelVariations,
+                                    "GlicButtonAltLabel")},
     {"glic-capture-region", flag_descriptions::kGlicCaptureRegionName,
      flag_descriptions::kGlicCaptureRegionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kGlicCaptureRegion)},

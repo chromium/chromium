@@ -647,6 +647,11 @@ extern const base::FeatureParam<bool> kGlicEntrypointVariationsAltIcon;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicButtonAltLabel);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicButtonAltLabelVariant;
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicDaisyChainNewTabs);
 
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -14110,6 +14110,7 @@ from previous Chrome versions.
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>
   <int value="-87554952" label="EnableRootNsDnsProxy:disabled"/>
   <int value="-87405369" label="PageInfoDiscoverability:enabled"/>
+  <int value="-87313934" label="GlicButtonAltLabel:disabled"/>
   <int value="-86857743" label="OsSettingsSearchFeedback:disabled"/>
   <int value="-86788587" label="allow-autofill-sync-credential"/>
   <int value="-86626539" label="WebAppInstallation:enabled"/>
@@ -14531,6 +14532,7 @@ from previous Chrome versions.
   <int value="61130490" label="WebViewBrotliSupport:enabled"/>
   <int value="61141457" label="DecodeScriptSourceOffThread:enabled"/>
   <int value="61205887" label="enable-text-input-focus-manager"/>
+  <int value="61374931" label="GlicButtonAltLabel:enabled"/>
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="61770125" label="LinkPreview:enabled"/>
   <int value="62547894"
