@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.0...chromium-bidi-v12.0.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* reliably detect default user context ([#3947](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3947)) ([4184afc](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4184afc241f75bf79d19eb5f38bd568bd4e8e9ec))
+
 ## [12.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.1...chromium-bidi-v12.0.0) (2025-12-12)
 
 
