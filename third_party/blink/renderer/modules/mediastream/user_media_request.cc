@@ -957,6 +957,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // TODO(crbug.com/453600255): Use `result_enum` kNotSupportedError for
       // MULTI_CAPTURE_NOT_SUPPORTED once all new enum values are added.
     case Result::KILL_SWITCH_ON:
+    case Result::PERMISSION_DENIED_BY_CONTROLLER:
       exception_code = DOMExceptionCode::kNotAllowedError;
       result_enum = UserMediaRequestResult::kNotAllowedError;
       break;

@@ -662,7 +662,7 @@ struct ContentSettingsTestData {
         return MediaStreamRequestResult::OK;
       }
     }
-    return MediaStreamRequestResult::PERMISSION_DENIED;
+    return MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER;
   }
 };
 
@@ -965,7 +965,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
 
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
 
-  VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED, false, false);
+  VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER,
+                    false, false);
   EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().empty());
 }
 
@@ -992,7 +993,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
 
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
 
-  VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED, false, false);
+  VerifyResultState(MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER,
+                    false, false);
   EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().empty());
 }
 

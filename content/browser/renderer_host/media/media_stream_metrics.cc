@@ -161,6 +161,10 @@ MediaStreamRequestResult2 MapResultToResult2(
       // TODO(crbug.com/453600255): Add a new value once all new enum values are
       // added.
       return MediaStreamRequestResult2::kInvalidState;
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kPermissionDenied;
   }
   NOTREACHED();
 }

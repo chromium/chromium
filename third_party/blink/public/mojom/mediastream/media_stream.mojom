@@ -114,6 +114,7 @@ enum MediaStreamRequestResult {
   SAFE_BROWSING_OBSERVER,
   CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC,
   CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS,
+  PERMISSION_DENIED_BY_CONTROLLER,
 };
 
 // Type of state change for the corresponding requests.

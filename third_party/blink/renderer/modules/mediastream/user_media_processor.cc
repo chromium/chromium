@@ -267,6 +267,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
     case MediaStreamRequestResult::DLP_PERMISSION_DENIED:
     case MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_CONTROLLER:
       return "Permission denied";
     case MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "Permission dismissed";
