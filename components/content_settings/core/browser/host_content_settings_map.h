@@ -425,6 +425,11 @@ class HostContentSettingsMap : public content_settings::Observer,
       OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
       TestExpiryEnforcement);
   FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
+                           MigrateSettingsEmbeddingOriginToWildcard);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostContentSettingsMapTest,
+      MigrateSettingsEmbeddingOriginToWildcardForGeolocationWithOptions);
+  FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
                            MigrateRequestingAndTopLevelOriginSettings);
   FRIEND_TEST_ALL_PREFIXES(
       HostContentSettingsMapTest,

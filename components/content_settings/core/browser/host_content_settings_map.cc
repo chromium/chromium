@@ -1291,29 +1291,29 @@ void HostContentSettingsMap::
 
     if (pattern.secondary_pattern.IsValid() &&
         pattern.secondary_pattern != pattern.primary_pattern) {
-      SetContentSettingCustomScope(pattern.primary_pattern,
+      SetWebsiteSettingCustomScope(pattern.primary_pattern,
                                    pattern.secondary_pattern, type,
-                                   CONTENT_SETTING_DEFAULT);
+                                   base::Value());
       // Also clear the setting for the top level origin so that the user
       // receives another prompt. This is necessary in case they have allowed
       // the top level origin but blocked an embedded origin in which case
       // they should have another opportunity to block a request from an
       // embedded origin.
-      SetContentSettingCustomScope(pattern.secondary_pattern,
+      SetWebsiteSettingCustomScope(pattern.secondary_pattern,
                                    pattern.secondary_pattern, type,
-                                   CONTENT_SETTING_DEFAULT);
-      SetContentSettingCustomScope(pattern.secondary_pattern,
+                                   base::Value());
+      SetWebsiteSettingCustomScope(pattern.secondary_pattern,
                                    ContentSettingsPattern::Wildcard(), type,
-                                   CONTENT_SETTING_DEFAULT);
+                                   base::Value());
     } else if (pattern.primary_pattern.IsValid() &&
                pattern.primary_pattern == pattern.secondary_pattern) {
       // Migrate settings from (x,x) -> (x,*).
-      SetContentSettingCustomScope(pattern.primary_pattern,
+      SetWebsiteSettingCustomScope(pattern.primary_pattern,
                                    pattern.secondary_pattern, type,
-                                   CONTENT_SETTING_DEFAULT);
-      SetContentSettingCustomScope(pattern.primary_pattern,
+                                   base::Value());
+      SetWebsiteSettingCustomScope(pattern.primary_pattern,
                                    ContentSettingsPattern::Wildcard(), type,
-                                   pattern.GetContentSetting());
+                                   pattern.setting_value.Clone());
     }
   }
 }

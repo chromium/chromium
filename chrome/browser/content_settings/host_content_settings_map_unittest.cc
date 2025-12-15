@@ -69,8 +69,13 @@
 using content_settings::SettingSource;
 using content_settings::mojom::SessionModel;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
 using ::testing::MockFunction;
+using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -2069,6 +2074,91 @@ TEST_F(HostContentSettingsMapTest, CanSetNarrowestSetting) {
   GURL invalid_url("about:blank");
   EXPECT_FALSE(map->CanSetNarrowestContentSetting(invalid_url, invalid_url,
                                                   ContentSettingsType::POPUPS));
+}
+
+TEST_F(HostContentSettingsMapTest, MigrateSettingsEmbeddingOriginToWildcard) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  GURL origin("https://requester.com");
+
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromURLNoWildcard(origin);
+
+  map->AllowInvalidSecondaryPatternForTesting(true);
+
+  map->SetContentSettingCustomScope(pattern, pattern,
+                                    ContentSettingsType::GEOLOCATION,
+                                    CONTENT_SETTING_ALLOW);
+
+  map->MigrateSettingsPrecedingPermissionDelegationActivation();
+
+  EXPECT_THAT(
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION),
+      UnorderedElementsAre(
+          AllOf(Field(&ContentSettingPatternSource::primary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Field(&ContentSettingPatternSource::secondary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Property(&ContentSettingPatternSource::GetContentSetting,
+                         CONTENT_SETTING_ASK)),
+          AllOf(Field(&ContentSettingPatternSource::primary_pattern, pattern),
+                Field(&ContentSettingPatternSource::secondary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Property(&ContentSettingPatternSource::GetContentSetting,
+                         CONTENT_SETTING_ALLOW))));
+}
+
+TEST_F(HostContentSettingsMapTest,
+       MigrateSettingsEmbeddingOriginToWildcardForGeolocationWithOptions) {
+  base::test::ScopedFeatureList enable_approx_geolocation(
+      content_settings::features::kApproximateGeolocationPermission);
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  GURL origin("https://requester.com");
+
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromURLNoWildcard(origin);
+
+  map->AllowInvalidSecondaryPatternForTesting(true);
+
+  GeolocationSetting geolocation_setting =
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kDenied};
+  map->SetPermissionSettingCustomScope(
+      pattern, pattern, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      geolocation_setting);
+
+  map->MigrateSettingsPrecedingPermissionDelegationActivation();
+
+  auto value_to_permission_setting = [](const base::Value& value) {
+    return content_settings::ValueToPermissionSetting(
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+        value);
+  };
+
+  EXPECT_THAT(
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+      UnorderedElementsAre(
+          AllOf(Field(&ContentSettingPatternSource::primary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Field(&ContentSettingPatternSource::secondary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Field(&ContentSettingPatternSource::setting_value,
+                      ResultOf(value_to_permission_setting,
+                               GeolocationSetting{
+                                   .approximate = PermissionOption::kAsk,
+                                   .precise = PermissionOption::kAsk}))),
+          AllOf(Field(&ContentSettingPatternSource::primary_pattern, pattern),
+                Field(&ContentSettingPatternSource::secondary_pattern,
+                      ContentSettingsPattern::Wildcard()),
+                Field(&ContentSettingPatternSource::setting_value,
+                      ResultOf(value_to_permission_setting,
+                               geolocation_setting)))));
 }
 
 TEST_F(HostContentSettingsMapTest, MigrateRequestingAndTopLevelOriginSettings) {
