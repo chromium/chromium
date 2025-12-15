@@ -307,6 +307,171 @@ TEST_F(UnexportableKeyMacTest, GeneratedSpkiIsValid) {
   EXPECT_TRUE(imported->IsEcP256());
 }
 
+TEST_F(UnexportableKeyMacTest, DeleteAllSigningKeys) {
+  // Generate two keys.
+  std::unique_ptr<UnexportableSigningKey> key1 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key1);
+  std::unique_ptr<UnexportableSigningKey> key2 =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key2);
+
+  // Verify they exist.
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key1->GetWrappedKey()));
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key2->GetWrappedKey()));
+
+  // Delete all.
+  std::optional<size_t> count = provider_->AsStatefulUnexportableKeyProvider()
+                                    ->DeleteAllSigningKeysSlowly();
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 2u);
+
+  // Verify they are gone.
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key1->GetWrappedKey()));
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key2->GetWrappedKey()));
+  EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteAllSigningKeysPrefixMatching) {
+  // Provider with tag "com.example"
+  const UnexportableKeyProvider::Config config_prefix{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_prefix =
+      GetUnexportableKeyProvider(config_prefix);
+  ASSERT_TRUE(provider_prefix);
+
+  // Provider with tag "com.example.foo"
+  const UnexportableKeyProvider::Config config_foo{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example.foo",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_foo =
+      GetUnexportableKeyProvider(config_foo);
+  ASSERT_TRUE(provider_foo);
+
+  // Provider with tag "com.example.bar"
+  const UnexportableKeyProvider::Config config_bar{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example.bar",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_bar =
+      GetUnexportableKeyProvider(config_bar);
+  ASSERT_TRUE(provider_bar);
+
+  // Generate keys.
+  auto key_foo = provider_foo->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_foo);
+  auto key_bar = provider_bar->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_bar);
+
+  // Use prefix provider to delete all starting with "com.example".
+  std::optional<size_t> count =
+      provider_prefix->AsStatefulUnexportableKeyProvider()
+          ->DeleteAllSigningKeysSlowly();
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 2u);
+
+  // Verify both are gone.
+  EXPECT_FALSE(
+      provider_foo->FromWrappedSigningKeySlowly(key_foo->GetWrappedKey()));
+  EXPECT_FALSE(
+      provider_bar->FromWrappedSigningKeySlowly(key_bar->GetWrappedKey()));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteAllSigningKeysPrefixMatchingSeparation) {
+  // Provider with tag "com.example.foo"
+  const UnexportableKeyProvider::Config config_foo{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example.foo",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_foo =
+      GetUnexportableKeyProvider(config_foo);
+  ASSERT_TRUE(provider_foo);
+
+  // Provider with tag "com.example.bar"
+  const UnexportableKeyProvider::Config config_bar{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example.bar",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_bar =
+      GetUnexportableKeyProvider(config_bar);
+  ASSERT_TRUE(provider_bar);
+
+  // Generate keys.
+  auto key_foo = provider_foo->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_foo);
+  auto key_bar = provider_bar->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_bar);
+
+  // Use foo provider to delete. Should only delete foo key.
+  std::optional<size_t> count =
+      provider_foo->AsStatefulUnexportableKeyProvider()
+          ->DeleteAllSigningKeysSlowly();
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 1u);
+
+  // Verify foo is gone, bar remains.
+  EXPECT_FALSE(
+      provider_foo->FromWrappedSigningKeySlowly(key_foo->GetWrappedKey()));
+  EXPECT_TRUE(
+      provider_bar->FromWrappedSigningKeySlowly(key_bar->GetWrappedKey()));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteAllSigningKeysEmptyPrefix) {
+  // Provider with empty tag. This should effectively act as a wildcard
+  // and match all keys in the access group.
+  const UnexportableKeyProvider::Config config_empty{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_empty =
+      GetUnexportableKeyProvider(config_empty);
+  ASSERT_TRUE(provider_empty);
+
+  // Provider with a specific tag "com.example".
+  const UnexportableKeyProvider::Config config_specific{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "com.example",
+  };
+  std::unique_ptr<UnexportableKeyProvider> provider_specific =
+      GetUnexportableKeyProvider(config_specific);
+  ASSERT_TRUE(provider_specific);
+
+  // Generate a key with the specific tag "com.example".
+  auto key_specific =
+      provider_specific->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_specific);
+
+  // Generate a key with the empty tag.
+  auto key_empty = provider_empty->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_empty);
+
+  // Verify both keys exist.
+  ASSERT_TRUE(provider_specific->FromWrappedSigningKeySlowly(
+      key_specific->GetWrappedKey()));
+  ASSERT_TRUE(
+      provider_empty->FromWrappedSigningKeySlowly(key_empty->GetWrappedKey()));
+
+  // Delete using the empty-tag provider.
+  // Since the empty string is a prefix of everything, the risk is too high to
+  // accidentally delete all keys. Thus we should only delete keys that also
+  // have an empty application_tag.
+  std::optional<size_t> count =
+      provider_empty->AsStatefulUnexportableKeyProvider()
+          ->DeleteAllSigningKeysSlowly();
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), 1u);
+
+  // Verify that the key with the empty tag is gone, but the other one still
+  // exists.
+  EXPECT_FALSE(
+      provider_empty->FromWrappedSigningKeySlowly(key_empty->GetWrappedKey()));
+  EXPECT_TRUE(provider_specific->FromWrappedSigningKeySlowly(
+      key_specific->GetWrappedKey()));
+}
+
 }  // namespace
 
 }  // namespace crypto::apple

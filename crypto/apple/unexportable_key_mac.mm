@@ -11,8 +11,11 @@
 #import <Security/Security.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,6 +36,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/unexportable_key_mac.h"
@@ -507,9 +511,33 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
 }
 
 std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
-  // TODO(crbug.com/455539044): Implement this.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  ASSIGN_OR_RETURN(
+      std::vector<std::unique_ptr<UnexportableSigningKey>> all_keys,
+      GetAllSigningKeysSlowly());
+
+  // As a safeguard, don't perform prefix matching if the application_tag used
+  // in the query was empty.
+  std::erase_if(all_keys, [&](const auto& key) {
+    return base::SysNSStringToUTF8(objc_storage_->application_tag_).empty() &&
+           !key->AsStatefulUnexportableSigningKey()->GetKeyTag().empty();
+  });
+
+  return std::ranges::count_if(all_keys, [&](const auto& key) {
+    const std::vector<uint8_t> wrapped_key = key->GetWrappedKey();
+    NSDictionary* query = @{
+      CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
+      CFToNSPtrCast(kSecAttrKeyType) :
+          CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+      CFToNSPtrCast(kSecAttrAccessGroup) :
+          objc_storage_->keychain_access_group_,
+      CFToNSPtrCast(kSecAttrApplicationTag) : base::SysUTF8ToNSString(
+          key->AsStatefulUnexportableSigningKey()->GetKeyTag()),
+      CFToNSPtrCast(kSecAttrApplicationLabel) :
+          [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
+    };
+    return crypto::apple::KeychainV2::GetInstance().ItemDelete(
+               NSToCFPtrCast(query)) == errSecSuccess;
+  });
 }
 
 }  // namespace crypto::apple
