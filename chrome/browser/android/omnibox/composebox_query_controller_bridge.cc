@@ -194,14 +194,12 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
       page_content_annotations::PageContentExtractionServiceFactory::
           GetForProfile(profile_);
   if (!service) {
-    LOG(ERROR) << "no service";
     return {};
   }
 
   page_content_annotations::PageContentCache* cache =
       service->GetPageContentCache();
   if (!cache) {
-    LOG(ERROR) << "no cache";
     return {};
   }
 
@@ -339,6 +337,10 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   // TODO(crbug.com/457869241): Merge this and the code in
   // TabContextualizationController.
   if (!page_context.has_value()) {
+    OnFileUploadStatusChanged(
+        context_token, lens::MimeType::kUnknown,
+        contextual_search::FileUploadStatus::kValidationFailed,
+        contextual_search::FileUploadErrorType::kBrowserProcessingError);
     return;
   }
 

@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,6 +31,7 @@ public final class FuseboxAttachment extends ListItem {
     public final @Nullable Tab tab;
     public final @Nullable Integer tabId;
     private boolean mIsUploadComplete;
+    private boolean mIsFetchingTabDataFromCache;
     private @Nullable String mToken;
 
     private FuseboxAttachment(
@@ -88,17 +90,36 @@ public final class FuseboxAttachment extends ListItem {
      *
      * @param bridge The bridge to use for uploading
      * @param currentlySelectedTab The currently selected tab, if any.
+     * @param forceFreshTabFetch Whether to to bypass the cache for a Tab attachment.
      * @return true if upload succeeded, false otherwise
      */
     /* package */ boolean uploadToBackend(
-            ComposeBoxQueryControllerBridge bridge, @Nullable Tab currentlySelectedTab) {
-        assert !hasToken() : "Attachment should not have a token when uploaded";
+            ComposeBoxQueryControllerBridge bridge,
+            @Nullable Tab currentlySelectedTab,
+            boolean forceFreshTabFetch) {
+        assert !hasToken() || forceFreshTabFetch
+                : "Attachment should not have a token when uploaded except for tab data retries";
 
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            if (FuseboxTabUtils.isTabActive(tab) && tab == currentlySelectedTab) {
+            mIsFetchingTabDataFromCache = false;
+            if (FuseboxTabUtils.isTabActive(tab)
+                    && (tab == currentlySelectedTab
+                            // There is no cache for incognito tabs.
+                            || assumeNonNull(tab).isIncognitoBranded()
+                            || forceFreshTabFetch)) {
                 mToken = bridge.addTabContext(assumeNonNull(tab));
+            } else if (forceFreshTabFetch) {
+                // The caller asked for a fresh fetch and we can't give them one; upload cannot
+                // succeed.
+                return false;
             } else {
+                mIsFetchingTabDataFromCache = true;
                 mToken = bridge.addTabContextFromCache(assumeNonNull(tab).getId());
+                // If cache fetch fails, try to fetch fresh data.
+                if (TextUtils.isEmpty(mToken) && FuseboxTabUtils.isTabActive(tab)) {
+                    mIsFetchingTabDataFromCache = false;
+                    mToken = bridge.addTabContext(assumeNonNull(tab));
+                }
             }
         } else {
             mToken = bridge.addFile(title, mimeType, data);
@@ -139,5 +160,20 @@ public final class FuseboxAttachment extends ListItem {
 
     public void setUploadIsComplete() {
         mIsUploadComplete = true;
+    }
+
+    public boolean retryUpload(
+            @Nullable TabModelSelector tabModelSelector,
+            ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
+        if (type == FuseboxAttachmentType.ATTACHMENT_TAB && mIsFetchingTabDataFromCache) {
+            // Fetch from cache can fail with a delay. Try to fetch fresh data instead of
+            // giving up entirely.
+            @Nullable Tab currentlySelectedTab =
+                    tabModelSelector != null ? tabModelSelector.getCurrentTab() : null;
+            uploadToBackend(
+                    assumeNonNull(composeBoxQueryControllerBridge), currentlySelectedTab, true);
+            return true;
+        }
+        return false;
     }
 }
