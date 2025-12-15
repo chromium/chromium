@@ -1131,4 +1131,10 @@ BASE_DECLARE_FEATURE(kCloseOtherTabs);
 // Returns true if the CloseOtherTabs feature is enabled.
 bool IsCloseOtherTabsEnabled();
 
+// Enables the AssistantSheet feature.
+BASE_DECLARE_FEATURE(kAssistantSheet);
+
+// Returns true if the AssistantSheet feature is enabled.
+bool IsAssistantSheetEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

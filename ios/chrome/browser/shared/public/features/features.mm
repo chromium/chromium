@@ -1207,3 +1207,9 @@ BASE_FEATURE(kCloseOtherTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsCloseOtherTabsEnabled() {
   return base::FeatureList::IsEnabled(kCloseOtherTabs);
 }
+
+BASE_FEATURE(kAssistantSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAssistantSheetEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantSheet);
+}
