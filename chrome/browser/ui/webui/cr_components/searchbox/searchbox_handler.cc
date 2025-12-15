@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -329,6 +330,9 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
       {"addTab", IDS_NTP_COMPOSE_MOST_RECENT_TABS},
       {"dismissButton", IDS_NTP_DISMISS},
+      // TODO(b/467036804): Update the value of `lensSearchAriaLabel`.
+      {"lensSearchAriaLabel", IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL},
+      {"lensSearchLabel", IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},

@@ -193,6 +193,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString("composeCreateImagePlaceholder", "[i18n] Create image...");
   source->AddBoolean("composeboxSmartComposeEnabled", false);
   AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
+  source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);

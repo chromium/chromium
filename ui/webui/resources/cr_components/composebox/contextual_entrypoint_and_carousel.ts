@@ -4,6 +4,7 @@
 
 import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
+import './composebox_lens_search.js';
 import './file_carousel.js';
 import './icons.html.js';
 import './recent_tab_chip.js';
@@ -175,6 +176,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected accessor showContextMenuDescription_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
+  protected showLensSearchChip_: boolean =
+      loadTimeData.getBoolean('composeboxShowLensSearchChip');
   protected accessor showRecentTabChip_: boolean =
       loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor showFileCarousel_: boolean = false;

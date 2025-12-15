@@ -53,6 +53,12 @@
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
 }
 
+contextual-entrypoint-and-carousel {
+  --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
+  --composebox-lens-search-button-text-color: var(--color-omnibox-text);
+  --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
+}
+
 contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }

@@ -81,7 +81,9 @@ extern const base::FeatureParam<bool> kShowContextMenuDescription;
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
 // Whether to show the create image button in the composebox context menu.
 extern const base::FeatureParam<bool> kShowCreateImageTool;
-// Whether to show the recent tab chip in the realbox and composebox.
+// Whether to show the lens search chip in the composebox.
+extern const base::FeatureParam<bool> kShowLensSearchChip;
+// Whether to show the recent tab chip in the composebox.
 extern const base::FeatureParam<bool> kShowRecentTabChip;
 // Whether to show the smart compose in the composebox.
 extern const base::FeatureParam<bool> kShowSmartCompose;
