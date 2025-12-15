@@ -28,6 +28,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatch
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.withItemType;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -155,6 +157,12 @@ public class TabListEditorTestingRobot {
 
         public TabListEditorTestingRobot.Action clickToolbarMenuItem(String text) {
             onView(withText(text)).perform(click());
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action mouseClickToolbarMenuItem(String text) {
+            onView(withText(text))
+                    .perform(click(InputDevice.SOURCE_MOUSE, MotionEvent.BUTTON_PRIMARY));
             return this;
         }
 

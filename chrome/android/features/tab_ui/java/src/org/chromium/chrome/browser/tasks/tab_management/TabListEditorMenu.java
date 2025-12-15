@@ -9,9 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import androidx.annotation.IntDef;
 
@@ -20,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout.ActionViewLayoutDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -43,7 +41,6 @@ import java.util.Set;
 @NullMarked
 public class TabListEditorMenu
         implements ListMenu,
-                OnItemClickListener,
                 SelectionDelegate.SelectionObserver<TabListEditorItemSelectionId>,
                 ActionViewLayoutDelegate {
     @Retention(RetentionPolicy.SOURCE)
@@ -57,7 +54,7 @@ public class TabListEditorMenu
     private final Map<Integer, TabListEditorMenuItem> mMenuItems = new LinkedHashMap<>();
 
     private final View mContentView;
-    private final ListView mListView;
+    private final TouchTrackingListView mListView;
     private final TabListEditorActionViewLayout mActionViewLayout;
     private final ModelList mModelList;
     private final ModelListAdapter mAdapter;
@@ -90,7 +87,7 @@ public class TabListEditorMenu
         mListView = mContentView.findViewById(R.id.app_menu_list);
         mListView.setAdapter(mAdapter);
         mListView.setDivider(null);
-        mListView.setOnItemClickListener(this);
+        mListView.setItemsCanFocus(true);
 
         mActionViewLayout.setListMenuDelegate(() -> this);
         mActionViewLayout.setActionViewLayoutDelegate(this);
@@ -112,6 +109,16 @@ public class TabListEditorMenu
                         .with(
                                 TabListEditorActionProperties.TEXT_APPEARANCE_ID,
                                 BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
+                        .with(
+                                TabListEditorActionProperties.CLICK_LISTENER,
+                                (v) -> {
+                                    TabListEditorMenuItem item = mMenuItems.get(menuItemId);
+                                    assumeNonNull(item);
+
+                                    if (!item.onClick(mListView.getLastSingleTapUp())) return;
+
+                                    if (item.shouldDismissMenu()) mActionViewLayout.dismissMenu();
+                                })
                         .build());
     }
 
@@ -165,21 +172,6 @@ public class TabListEditorMenu
         for (TabListEditorMenuItem menuItem : mMenuItems.values()) {
             menuItem.onSelectionStateChange(selectedItems);
         }
-    }
-
-    /** {@link OnItemClickListener} implementation. */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        TabListEditorMenuItem item =
-                mMenuItems.get(
-                        ((ListItem) mAdapter.getItem(position))
-                                .model.get(TabListEditorActionProperties.MENU_ITEM_ID));
-        assumeNonNull(item);
-
-        // TODO(crbug.com/419085605): Use TouchTrackingListView to pass triggeringMotion.
-        if (!item.onClick(/* triggeringMotion= */ null)) return;
-
-        if (item.shouldDismissMenu()) mActionViewLayout.dismissMenu();
     }
 
     /** {@link ActionViewLayoutDelegate} implementation. */

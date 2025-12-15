@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -69,13 +70,13 @@ public class TabListEditorCloseAction extends TabListEditorAction {
             List<String> tabGroupSyncIds,
             @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
-
+        // We only allow undo for non peripherals.
         getTabGroupModelFilter()
                 .getTabModel()
                 .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs)
-                                .allowUndo(true)
+                                .allowUndo(TabClosureParamsUtils.shouldAllowUndo(triggeringMotion))
                                 .hideTabGroups(editorSupportsActionOnRelatedTabs())
                                 .build(),
                         /* allowDialog= */ true);
