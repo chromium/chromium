@@ -203,29 +203,14 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
   ): Promise<BidiServer> {
-    // The default context is not exposed in Target.getBrowserContexts but can
-    // be observed via Target.getTargets. To determine the default browser
-    // context, we check which one is mentioned in Target.getTargets and not in
-    // Target.getBrowserContexts.
-    const [{browserContextIds}, {targetInfos}] = await Promise.all([
-      browserCdpClient.sendCommand('Target.getBrowserContexts'),
-      browserCdpClient.sendCommand('Target.getTargets'),
+    const [defaultUserContextId] = await Promise.all([
+      this.#getDefaultUserContextId(browserCdpClient),
       // Required for `Browser.downloadWillBegin` events.
       browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
         behavior: 'default',
         eventsEnabled: true,
       }),
     ]);
-    let defaultUserContextId = 'default';
-    for (const info of targetInfos) {
-      if (
-        info.browserContextId &&
-        !browserContextIds.includes(info.browserContextId)
-      ) {
-        defaultUserContextId = info.browserContextId;
-        break;
-      }
-    }
 
     const server = new BidiServer(
       bidiTransport,
@@ -238,6 +223,40 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     );
 
     return server;
+  }
+
+  static async #getDefaultUserContextId(
+    browserCdpClient: CdpClient,
+  ): Promise<string> {
+    // In chromium before `145.0.7578.0`, the default context is not exposed in
+    // `Target.getBrowserContexts`, but can be observed via `Target.getTargets`.
+    // If so, try to determine the default browser context by checking which one
+    // is mentioned in `Target.getTargets` and not in
+    // `Target.getBrowserContexts`.
+    // TODO(after 2026-02-24): rely only on `defaultBrowserContextId` from
+    // `Target.getBrowserContexts` after Chromium 145 reaches stable.
+    const [{defaultBrowserContextId, browserContextIds}, {targetInfos}] =
+      await Promise.all([
+        browserCdpClient.sendCommand('Target.getBrowserContexts'),
+        browserCdpClient.sendCommand('Target.getTargets'),
+      ]);
+
+    if (defaultBrowserContextId) {
+      return defaultBrowserContextId;
+    }
+
+    for (const info of targetInfos) {
+      if (
+        info.browserContextId &&
+        !browserContextIds.includes(info.browserContextId)
+      ) {
+        // The target belongs to a browser context that is not mentioned in
+        // `Target.getBrowserContexts`. This is the default browser context.
+        return info.browserContextId;
+      }
+    }
+    // The browser context is unknown.
+    return 'default';
   }
 
   /**
