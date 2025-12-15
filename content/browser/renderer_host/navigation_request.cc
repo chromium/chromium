@@ -6442,27 +6442,7 @@ void NavigationRequest::CommitNavigation() {
   // If a WebUI was created for this navigation, it must have been moved to the
   // RenderFrameHost we're about to commit in already.
   CHECK(!HasWebUI());
-#if !BUILDFLAG(IS_ANDROID)
-  // Initial WebUI navigations must use an initial WebUI process.
-  if (IsInitialWebUINavigation() &&
-      !GetRenderFrameHost()->GetProcess()->IsForInitialWebUI()) {
-    SCOPED_CRASH_KEY_STRING256("Bug467811037", "nav_url", GetURL().spec());
-    SCOPED_CRASH_KEY_STRING256(
-        "Bug467811037", "cur_rfh_url",
-        frame_tree_node_->current_frame_host()->GetLastCommittedURL().spec());
-    SCOPED_CRASH_KEY_STRING256(
-        "Bug467811037", "nav_rfh_url",
-        GetRenderFrameHost()->GetLastCommittedURL().spec());
-    SCOPED_CRASH_KEY_STRING256(
-        "Bug467811037", "site_url",
-        GetRenderFrameHost()->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_BOOL(
-        "Bug467811037", "same_si",
-        frame_tree_node_->current_frame_host()->GetSiteInstance() ==
-            GetRenderFrameHost()->GetSiteInstance());
-    base::debug::DumpWithoutCrashing();
-  }
-#endif
+
   CheckSoftNavigationHeuristicsInvariants();
 
   CoopCoepSanityCheck();
