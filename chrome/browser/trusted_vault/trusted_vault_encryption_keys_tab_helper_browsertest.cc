@@ -276,20 +276,7 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
         prerender_helper_(base::BindRepeating(
             &TrustedVaultEncryptionKeysTabHelperBrowserTest::web_contents,
             base::Unretained(this))) {
-#if BUILDFLAG(IS_ANDROID)
-    // Avoid the disabling of site isolation due to memory constraints, required
-    // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
-    // of available memory when running the test (otherwise low-memory bots may
-    // run into test failures).
-    feature_list_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
-        {{site_isolation::features::
-              kStrictSiteIsolationMemoryThresholdParamName,
-          "0"},
-         {site_isolation::features::
-              kPartialSiteIsolationMemoryThresholdParamName,
-          "0"}});
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {trusted_vault::kSetClientEncryptionKeysJsApi,
@@ -301,8 +288,8 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          // simulate the presence of the system UV for ensuring that the passkey
          // secret can be stored in the test `SetPasskeysKeyInEnclaveManager`.
          device::kWebAuthnUseInsecureSoftwareUnexportableKeys},
-        /*disabled_features=*/{});
-#else
+         /*disabled_features=*/{});
+#elif !BUILDFLAG(IS_ANDROID)
     feature_list_.InitAndEnableFeature(
         trusted_vault::kSetClientEncryptionKeysJsApi);
 #endif
