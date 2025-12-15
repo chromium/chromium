@@ -15444,6 +15444,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "PopupBlocker": "false"
+                    },
                     "enable_features": [
                         "AskGeminiChip",
                         "ProactiveSuggestionsFramework"
