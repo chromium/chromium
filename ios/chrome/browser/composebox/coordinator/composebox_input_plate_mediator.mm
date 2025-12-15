@@ -457,7 +457,7 @@ CreateInputDataFromAnnotatedPageContent(
         _contextualSearchSession->ClearFiles();
       }
       [_items removeAllObjects];
-      [self.consumer setItems:_items];
+      [self updateConsumerItems];
       break;
     case ComposeboxMode::kAIM:
       break;
