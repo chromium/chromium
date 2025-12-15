@@ -2449,8 +2449,6 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
   // have made the user consent to sync.
   CHECK(!HasSyncConsent());
 
-  // TODO(crbug.com/386752831): Add a metric here.
-
   std::optional<UserSelectableType> user_selectable_type =
       GetUserSelectableTypeFromDataType(data_type);
   CHECK(user_selectable_type.has_value());
