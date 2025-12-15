@@ -22,8 +22,6 @@ static_library("browser") {
     "walletable_pass_client.h",
     "walletable_pass_ingestion_controller.cc",
     "walletable_pass_ingestion_controller.h",
-    "walletable_pass_service.cc",
-    "walletable_pass_service.h",
     "walletable_permission_utils.cc",
     "walletable_permission_utils.h",
   ]
@@ -57,7 +55,6 @@ source_set("unit_tests") {
   sources = [
     "data_models/boarding_pass_unittest.cc",
     "data_models/walletable_pass_unittest.cc",
-    "walletable_pass_service_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]
   if (build_with_model_execution) {
