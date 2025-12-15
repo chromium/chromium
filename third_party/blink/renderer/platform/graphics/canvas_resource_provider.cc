@@ -1238,8 +1238,9 @@ CanvasResourceProviderExternalBitmap::Create(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space) {
-  auto provider = std::make_unique<CanvasResourceProviderExternalBitmap>(
-      size, format, alpha_type, color_space);
+  auto provider = base::WrapUnique<CanvasResourceProviderExternalBitmap>(
+      new CanvasResourceProviderExternalBitmap(size, format, alpha_type,
+                                               color_space));
   if (provider->IsValid()) {
     return provider;
   }

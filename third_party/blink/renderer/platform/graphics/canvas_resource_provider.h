@@ -452,11 +452,6 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space);
 
-  CanvasResourceProviderExternalBitmap(gfx::Size size,
-                                       viz::SharedImageFormat format,
-                                       SkAlphaType alpha_type,
-                                       const gfx::ColorSpace& color_space);
-
   ~CanvasResourceProviderExternalBitmap() override;
 
   bool IsGpuContextLost() const override;
@@ -475,6 +470,11 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
   gfx::Size Size() const override { return size_; }
 
  private:
+  CanvasResourceProviderExternalBitmap(gfx::Size size,
+                                       viz::SharedImageFormat format,
+                                       SkAlphaType alpha_type,
+                                       const gfx::ColorSpace& color_space);
+
   class SoftwareImageProvider;
   std::unique_ptr<SoftwareImageProvider> image_provider_;
 
