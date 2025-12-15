@@ -57,6 +57,9 @@ public class ContentFeatureList {
 
     public static final String ANDROID_PK_AUTOCORRECT_UNDERLINE = "AndroidPkAutocorrectUnderline";
 
+    public static final String ANDROID_SPELLING_UNDERLINE_IN_COMPOSITION_MODE =
+            "AndroidSpellingUnderlineInCompositionMode";
+
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
     public static final String JAVALESS_RENDERERS = "JavalessRenderers";

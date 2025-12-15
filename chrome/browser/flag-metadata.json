@@ -3007,6 +3007,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-android-spelling-underline-in-composition-mode",
+    "owners": [
+      "hdchuong@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-android-window-controls-overlay",
     "owners": [ "asraine@google.com", "japhet@google.com" ],
     "expiry_milestone": 150

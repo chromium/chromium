@@ -14281,6 +14281,8 @@ from previous Chrome versions.
   <int value="-25303818" label="CCTResizableSideSheetForThirdParties:disabled"/>
   <int value="-25025176" label="PerformantSplitViewResizing:enabled"/>
   <int value="-24570936" label="DestroyProfileOnBrowserClose:disabled"/>
+  <int value="-24226801"
+      label="AndroidSpellingUnderlineInCompositionMode:disabled"/>
   <int value="-24217468" label="QuickAnswersTextAnnotator:enabled"/>
   <int value="-23804418"
       label="NTPArticleSuggestionsExpandableHeader:disabled"/>
@@ -19282,6 +19284,8 @@ from previous Chrome versions.
   <int value="1710067851" label="AndroidDesktopWebPrefsLargeDisplays:disabled"/>
   <int value="1710590340" label="NavigationCaptureRefactorAndroid:disabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
+  <int value="1710712672"
+      label="AndroidSpellingUnderlineInCompositionMode:enabled"/>
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>

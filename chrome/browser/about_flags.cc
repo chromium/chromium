@@ -13554,6 +13554,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidPkAutocorrectUnderline)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-spelling-underline-in-composition-mode",
+     flag_descriptions::kAndroidSpellingUnderlineInCompositionModeName,
+     flag_descriptions::kAndroidSpellingUnderlineInCompositionModeDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidSpellingUnderlineInCompositionMode)},
+#endif
+
 #if BUILDFLAG(IS_MAC)
     {"mac-enable-okta-sso", flag_descriptions::kEnableOktaSSOName,
      flag_descriptions::kEnableOktaSSODescription, kOsMac,
