@@ -59,7 +59,7 @@ class CanvasRenderingContext2D;
 class CanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProviderBitmap;
-class CanvasResourceProviderExternalBitmap;
+class CanvasSnapshotProviderExternalBitmap;
 class CanvasResourceProviderSharedImage;
 class MemoryManagedPaintCanvas;
 class OffscreenCanvasRenderingContext2D;
@@ -443,16 +443,16 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 
 // * Renders to a Skia RAM-backed bitmap via an external (client-supplied) draw.
 // * Mailboxing is not supported : cannot be directly composited.
-class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
+class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
     : public CanvasSnapshotProvider {
  public:
-  static std::unique_ptr<CanvasResourceProviderExternalBitmap> Create(
+  static std::unique_ptr<CanvasSnapshotProviderExternalBitmap> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space);
 
-  ~CanvasResourceProviderExternalBitmap() override;
+  ~CanvasSnapshotProviderExternalBitmap() override;
 
   bool IsGpuContextLost() const override;
   bool IsValid() const override;
@@ -470,7 +470,7 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
   gfx::Size Size() const override { return size_; }
 
  private:
-  CanvasResourceProviderExternalBitmap(gfx::Size size,
+  CanvasSnapshotProviderExternalBitmap(gfx::Size size,
                                        viz::SharedImageFormat format,
                                        SkAlphaType alpha_type,
                                        const gfx::ColorSpace& color_space);
