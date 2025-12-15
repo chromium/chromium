@@ -18,6 +18,26 @@ export interface ActorOverlayAppElement {
   $: {magicCursor: HTMLDivElement};
 }
 
+/**
+ * Magic Cursor Kinematics Tuning Parameters for CSS Transitions.
+ *
+ * These constants define the cursor's movement (speed, duration, and
+ * responsiveness). Adjusting these values controls the perceived pace and
+ * smoothness of the cursor.
+ */
+
+// Constant speed the cursor maintains during animation, measured in pixels per
+// millisecond.
+const DESIRED_SPEED_PX_PER_MS = 0.667;
+// The minimum allowed duration (in ms) for any single cursor movement.
+// Increasing this value makes short movements appear slower and smoother;
+// decreasing it makes them pop into position more instantly.
+const MIN_DURATION_MS = 50;
+// The maximum allowed duration (in ms) for any single cursor movement.
+// Increasing this value allows long movements to take more time; decreasing it
+// makes all long movements finish faster.
+const MAX_DURATION_MS = 675;
+
 export class ActorOverlayAppElement extends CrLitElement {
   static get is() {
     return 'actor-overlay-app';
@@ -48,6 +68,10 @@ export class ActorOverlayAppElement extends CrLitElement {
   private isCursorInitialized_: boolean = false;
   private isStandaloneBorderGlowEnabled_: boolean =
       loadTimeData.getBoolean('isStandaloneBorderGlowEnabled');
+
+  // Position State for Magic Cursor (Logical Pixels)
+  private currentX_: number = 0;
+  private currentY_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -82,6 +106,7 @@ export class ActorOverlayAppElement extends CrLitElement {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
     this.removeEventListener('wheel', this.onWheelEvent_);
+
     assert(this.setScrimBackgroundListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
       this.setScrimBackgroundListenerId_);
@@ -113,14 +138,34 @@ export class ActorOverlayAppElement extends CrLitElement {
     if (!this.$.magicCursor || !this.shouldShowCursor_) {
       return Promise.resolve();
     }
+
+    const scale = window.devicePixelRatio;
+    const targetX = point.x / scale;
+    const targetY = point.y / scale;
+    // Get current position, using target if not initialized.
+    const currentX = this.isCursorInitialized_ ? this.currentX_ : targetX;
+    const currentY = this.isCursorInitialized_ ? this.currentY_ : targetY;
+
+    // Initialize cursor position and state if first movement.
     if (!this.isCursorInitialized_) {
       this.$.magicCursor.style.opacity = '1';
       this.isCursorInitialized_ = true;
+      this.setCursorTransform(targetX, targetY);
+      this.currentX_ = targetX;
+      this.currentY_ = targetY;
+      // TODO(crbug.com/468313184): Determine if first coordinate should still
+      // have a moving animation from a random location or if it should be set
+      // initially without transition.
+      return Promise.resolve();
     }
 
-    const scale = window.devicePixelRatio;
-    const cssX = point.x / scale;
-    const cssY = point.y / scale;
+    // Calculate distance and duration for animation
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const distance = Math.hypot(dx, dy);
+    let durationMs = Math.round(distance / DESIRED_SPEED_PX_PER_MS);
+    durationMs =
+        Math.max(MIN_DURATION_MS, Math.min(MAX_DURATION_MS, durationMs));
 
     const transitionFinished = new Promise<void>(resolve => {
       this.$.magicCursor.addEventListener('transitionend', () => {
@@ -128,8 +173,20 @@ export class ActorOverlayAppElement extends CrLitElement {
       }, {once: true});
     });
 
-    this.$.magicCursor.style.transform = `translate(${cssX}px, ${cssY}px)`;
+    // Update transition duration based on the distance and apply the new cursor
+    // position.
+    this.$.magicCursor.style.transitionDuration = `${durationMs}ms`;
+    this.setCursorTransform(targetX, targetY);
+
+    // Update internal position state
+    this.currentX_ = targetX;
+    this.currentY_ = targetY;
     return transitionFinished;
+  }
+
+  private setCursorTransform(drawX: number, drawY: number) {
+    this.$.magicCursor.style.transform =
+        `translate(${Math.round(drawX)}px, ${Math.round(drawY)}px)`;
   }
 }
 

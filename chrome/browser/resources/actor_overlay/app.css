@@ -81,6 +81,7 @@
   background-repeat: no-repeat;
   pointer-events: none;
   z-index: 9999;
-  transition: transform 0.1s linear, box-shadow 0.2s ease-out;
   transform-origin: 50% 100%;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.6, 0.0, 0.4, 1.0);
 }

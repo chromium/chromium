@@ -293,4 +293,91 @@ suite('MagicCursor', function() {
     magicCursor.dispatchEvent(new Event('transitionend'));
     await movePromise2;
   });
+
+  test('VerifyStyleProperties', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Verify default style
+    const style = window.getComputedStyle(magicCursor);
+    assertEquals(
+        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
+    assertEquals(style.transitionProperty, 'transform');
+    assertEquals(magicCursor.style.transitionDuration, '');
+
+    /* Verify that cursor movements don't modify the transition animation
+     * properties. */
+    const point1 = {x: 100, y: 100};
+    const movePromise1 = testRemote.moveCursorTo(point1);
+    await microtasksFinished();
+    assertEquals(
+        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
+    assertEquals(style.transitionProperty, 'transform');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise1;
+
+    const point2 = {x: 400, y: 100};
+    const movePromise2 = testRemote.moveCursorTo(point2);
+    await microtasksFinished();
+    assertEquals(magicCursor.style.transitionDuration, '450ms');
+    assertEquals(
+        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
+    assertEquals(style.transitionProperty, 'transform');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise2;
+  });
+
+  test('DynamicDurationCalculation', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+    assertEquals('', magicCursor.style.opacity);
+    assertEquals('', magicCursor.style.transform);
+
+    // First cursor move, no distance calculation for initialization.
+    const point1 = {x: 100, y: 100};
+    const movePromise1 = testRemote.moveCursorTo(point1);
+    await microtasksFinished();
+    // Verify initialization state has no transition duration set.
+    assertEquals(magicCursor.style.transitionDuration, '');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise1;
+
+    // Start: (100, 100). Target: (400, 100). Distance: 300px.
+    // Calculation: 300px / 0.667 px/ms = 450ms.
+    const point2 = {x: 400, y: 100};
+    const movePromise2 = testRemote.moveCursorTo(point2);
+    await microtasksFinished();
+    assertEquals(magicCursor.style.transitionDuration, '450ms');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise2;
+
+    // Start: (400, 100). Target: (267, 233). Distance: hypot(133, 133) ≈ 188px.
+    // Calculation: 188px / 0.667 px/ms ≈ 282ms.
+    const point3 = {x: 267, y: 233};
+    const movePromise3 = testRemote.moveCursorTo(point3);
+    await microtasksFinished();
+    assertEquals(magicCursor.style.transitionDuration, '282ms');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise3;
+
+    // Start: (267, 233). Target: (270, 236). Distance: hypot(3, 3) ≈ 4.24px.
+    // Natural Time: 4.24 / 0.667 ≈ 6.35ms. Expected Capped Time: 50ms.
+    const point4 = {x: 270, y: 236};
+    const movePromise4 = testRemote.moveCursorTo(point4);
+    await microtasksFinished();
+    assertEquals(magicCursor.style.transitionDuration, '50ms');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise4;
+
+    // Start: (270, 236). Target: (1800, 236). Distance: 1530px.
+    // Natural Time: 1530 / 0.667 ≈ 2293ms. Expected Capped Time: 675ms.
+    const point5 = {x: 1800, y: 236};
+    const movePromise5 = testRemote.moveCursorTo(point5);
+    await microtasksFinished();
+    assertEquals(magicCursor.style.transitionDuration, '675ms');
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise5;
+  });
 });
