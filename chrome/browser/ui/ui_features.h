@@ -188,27 +188,7 @@ BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeShownLimit);
 // stop showing the nudge.
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeUsedLimit);
 
-enum class MiniToolbarActiveConfiguration {
-  // Hides the toolbar in the active view.
-  Hide,
-  // Shows only the menu button in the active view.
-  ShowMenu,
-  // Shows only the close button in the active view.
-  ShowClose,
-};
-
-BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,
-                           kSideBySideMiniToolbarActiveConfiguration);
-
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideSnapDistance);
-
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideIphTabSwitchCount);
-
-bool IsRestoringSplitViewEnabled();
-
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
-
-bool IsSideBySideKeyboardShortcutEnabled();
 
 BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
 

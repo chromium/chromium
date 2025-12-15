@@ -83,10 +83,7 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
              SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
              SkPoint(local_bounds.right(), local_bounds.y() + corner_radius));
 
-  if (is_active_ &&
-      (is_highlighted_ ||
-       features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-           features::MiniToolbarActiveConfiguration::Hide)) {
+  if (is_active_ && is_highlighted_) {
     // If the mini toolbar is hidden on active view, just draw the rounded rect.
     path.lineTo(local_bounds.right(), local_bounds.bottom() - corner_radius);
     path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,

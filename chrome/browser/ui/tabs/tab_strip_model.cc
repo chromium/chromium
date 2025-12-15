@@ -1997,7 +1997,6 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(std::ranges::is_sorted(indices));
   CHECK_EQ(indices.size(), 2u);
-  CHECK(features::IsRestoringSplitViewEnabled());
 
   // Ideally these are consecutive indices from the restore flow and the pivot
   // index does not matter. However, given there are numerous steps in restore

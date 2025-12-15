@@ -736,13 +736,11 @@ void SessionServiceBase::BuildCommandsForBrowser(
     }
   }
 
-  if (features::IsRestoringSplitViewEnabled()) {
     for (split_tabs::SplitTabId split_id : tab_strip->ListSplits()) {
       command_storage_manager()->AppendRebuildCommand(
           sessions::CreateSplitTabDataUpdateCommand(
               split_id, tab_strip->GetSplitData(split_id)->visual_data()));
     }
-  }
 
   for (int i = 0; i < tab_strip->count(); ++i) {
     WebContents* tab = tab_strip->GetWebContentsAt(i);

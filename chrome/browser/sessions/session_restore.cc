@@ -935,7 +935,6 @@ class SessionRestoreImpl : public BrowserListObserver {
                  did_show_browser);
     }
 
-    if (features::IsRestoringSplitViewEnabled()) {
       for (const auto& pair : tabs_by_split_id) {
         const split_tabs::SplitTabId split_id = pair.first;
         const std::vector<tabs::TabInterface*> tab_contents_list = pair.second;
@@ -952,7 +951,6 @@ class SessionRestoreImpl : public BrowserListObserver {
               split_id, tab_index_list, split_tabs::SplitTabVisualData());
         }
       }
-    }
   }
 
   // |tab_index| is ignored for pinned tabs which will always be pushed behind
@@ -1019,7 +1017,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                              new_group, tab.split_id);
     restored_tabs.push_back(restored_tab);
 
-    if (features::IsRestoringSplitViewEnabled() && tab.split_id) {
+    if (tab.split_id) {
       // add tab to tabs_by_split_id.
       tabs::TabInterface* tab_interface =
           browser->GetTabStripModel()->GetTabForWebContents(
@@ -1043,10 +1041,6 @@ class SessionRestoreImpl : public BrowserListObserver {
       const Browser* browser,
       const std::vector<std::unique_ptr<sessions::SessionSplitTab>>&
           split_tabs) {
-    if (!features::IsRestoringSplitViewEnabled()) {
-      return;
-    }
-
     for (const std::unique_ptr<sessions::SessionSplitTab>& session_split_tab :
          split_tabs) {
       if (!browser->tab_strip_model()->ContainsSplit(session_split_tab->id_)) {

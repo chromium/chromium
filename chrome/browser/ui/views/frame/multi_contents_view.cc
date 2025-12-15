@@ -45,6 +45,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr int kSnapDistance = 15;
+}
+
 void MultiContentsView::ContentsSeparators::Reset() {
   top_separator = nullptr;
   leading_separator = nullptr;
@@ -344,8 +348,7 @@ double MultiContentsView::CalculateRatioWithSnapPoints(
     double total_width) const {
   for (const double& snap_point : snap_points_) {
     double dp_snap_point = snap_point * total_width;
-    if (std::abs(dp_snap_point - end_width) <
-        features::kSideBySideSnapDistance.Get()) {
+    if (std::abs(dp_snap_point - end_width) < kSnapDistance) {
       return snap_point;
     }
   }

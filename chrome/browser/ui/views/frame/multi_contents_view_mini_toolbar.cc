@@ -113,29 +113,19 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   alert_state_indicator_ = AddChildView(std::make_unique<views::ImageView>());
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
                                       icon_flex_spec.WithOrder(2));
-  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-      features::MiniToolbarActiveConfiguration::ShowClose) {
-    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
-                            base::Unretained(this)),
-        kCloseTabChromeRefreshIcon, 16,
-        kColorMultiContentsViewMiniToolbarForeground));
-    SetAccessibleNameAndTooltip(image_button_, IDS_SPLIT_TAB_CLOSE);
-  } else {
-    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
-        kColorMultiContentsViewMiniToolbarForeground));
-    SetAccessibleNameAndTooltip(
-        image_button_, IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
-    image_button_->SetButtonController(
-        std::make_unique<views::MenuButtonController>(
-            image_button_,
-            base::BindRepeating(
-                &MultiContentsViewMiniToolbar::OpenSplitViewMenu,
-                base::Unretained(this)),
-            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-                image_button_)));
-  }
+
+  image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+      base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
+      kColorMultiContentsViewMiniToolbarForeground));
+  SetAccessibleNameAndTooltip(image_button_,
+                              IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
+  image_button_->SetButtonController(
+      std::make_unique<views::MenuButtonController>(
+          image_button_,
+          base::BindRepeating(&MultiContentsViewMiniToolbar::OpenSplitViewMenu,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              image_button_)));
   image_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -188,12 +178,6 @@ void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
   static_cast<views::FlexLayout*>(GetLayoutManager())
       ->SetInteriorMargin(is_active ? kActiveInteriorMargins
                                     : kInactiveInteriorMargins);
-
-  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-      features::MiniToolbarActiveConfiguration::Hide) {
-    SetVisible(!is_active);
-    return;
-  }
 
   SetVisible(!is_highlighted);
 

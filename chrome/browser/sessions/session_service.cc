@@ -242,8 +242,7 @@ void SessionService::DeleteLastSession() {
 void SessionService::SetSplitTab(SessionID window_id,
                                  SessionID tab_id,
                                  std::optional<split_tabs::SplitTabId> split) {
-  if (!ShouldTrackChangesToWindow(window_id) ||
-      !features::IsRestoringSplitViewEnabled()) {
+  if (!ShouldTrackChangesToWindow(window_id)) {
     return;
   }
 
@@ -261,8 +260,7 @@ void SessionService::SetSplitTabData(
     SessionID window_id,
     const split_tabs::SplitTabId split,
     const split_tabs::SplitTabVisualData* visual_data) {
-  if (!ShouldTrackChangesToWindow(window_id) ||
-      !features::IsRestoringSplitViewEnabled()) {
+  if (!ShouldTrackChangesToWindow(window_id)) {
     return;
   }
 
@@ -638,7 +636,7 @@ void SessionService::BuildCommandsForTab(
         sessions::CreateTabGroupCommand(session_id, std::move(group)));
   }
 
-  if (features::IsRestoringSplitViewEnabled() && split.has_value()) {
+  if (split.has_value()) {
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateSplitTabCommand(session_id, std::move(split)));
   }
