@@ -587,7 +587,8 @@ final class ChromeAndroidTaskImpl
                     @GuardedBy("mActivityScopedObjectsLock")
                     public Void use(
                             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
-                        if (!isActiveInternalLocked(activityWindowAndroid)) {
+                        if (!isDesktopWindowingMode(activity)
+                                || !isActiveInternalLocked(activityWindowAndroid)) {
                             return null;
                         }
 
@@ -695,8 +696,10 @@ final class ChromeAndroidTaskImpl
                 new ActivityUser<>() {
                     @Override
                     @GuardedBy("mActivityScopedObjectsLock")
-                    public Void use(Activity unused, ActivityWindowAndroid activityWindowAndroid) {
-                        if (!isActiveInternalLocked(activityWindowAndroid)) {
+                    public Void use(
+                            Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+                        if (!isDesktopWindowingMode(activity)
+                                || !isActiveInternalLocked(activityWindowAndroid)) {
                             return null;
                         }
 
@@ -736,6 +739,8 @@ final class ChromeAndroidTaskImpl
                     @GuardedBy("mActivityScopedObjectsLock")
                     public Void use(
                             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+                        // No maximize action in non desktop window mode.
+                        if (!isDesktopWindowingMode(activity)) return null;
                         maximizeInternalLocked(activity, activityWindowAndroid);
                         return null;
                     }
@@ -785,6 +790,7 @@ final class ChromeAndroidTaskImpl
                     @GuardedBy("mActivityScopedObjectsLock")
                     public Void use(
                             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+                        if (!isDesktopWindowingMode(activity)) return null;
                         restoreInternalLocked(activity, activityWindowAndroid);
                         return null;
                     }
@@ -809,8 +815,9 @@ final class ChromeAndroidTaskImpl
                     @GuardedBy("mActivityScopedObjectsLock")
                     public Void use(
                             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
-                        if (getCurrentBoundsInDpLocked(activity, activityWindowAndroid)
-                                .equals(boundsInDp)) {
+                        if (!isDesktopWindowingMode(activity)
+                                || getCurrentBoundsInDpLocked(activity, activityWindowAndroid)
+                                        .equals(boundsInDp)) {
                             return null;
                         }
                         mPendingActionManager.requestSetBounds(boundsInDp);
@@ -1101,6 +1108,12 @@ final class ChromeAndroidTaskImpl
                 : "This Task is neither pending create nor idle.";
     }
 
+    private static boolean isDesktopWindowingMode(Activity activity) {
+        // TODO(crbug.com/467457794): Identify a more reliable alternative for desktop windowing
+        //  mode detection.
+        return activity.isInMultiWindowMode();
+    }
+
     private static boolean isActiveInternalLocked(ActivityWindowAndroid activityWindowAndroid) {
         return activityWindowAndroid.isTopResumedActivity();
     }
@@ -1119,7 +1132,8 @@ final class ChromeAndroidTaskImpl
     @RequiresApi(api = VERSION_CODES.R)
     private static boolean isMaximizedInternalLocked(Activity activity) {
         if (activity.isInMultiWindowMode()) {
-            // Desktop windowing mode is also a multi-window mode.
+            // Desktop windowing mode is also a multi-window mode. This should return false
+            // if the task is in split-screen mode.
             Rect maxBoundsInPx =
                     ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(
                             activity.getWindowManager());
@@ -1219,8 +1233,6 @@ final class ChromeAndroidTaskImpl
     @RequiresApi(api = VERSION_CODES.R)
     private void maximizeInternalLocked(
             Activity activity, ActivityWindowAndroid activityWindowAndroid) {
-        // No maximize action in non desktop window mode.
-        if (!activity.isInMultiWindowMode()) return;
 
         if (isRestoredInternalLocked(activity)) {
             mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activity);

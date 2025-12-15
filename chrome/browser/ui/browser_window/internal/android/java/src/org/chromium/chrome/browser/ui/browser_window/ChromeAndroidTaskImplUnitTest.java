@@ -1526,6 +1526,33 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void deactivate_notInDesktopWindowingMode_shouldDoNothing() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
+        Assert.assertTrue("Set up task to be active", chromeAndroidTask.isActive());
+        when(mockActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.deactivate();
+
+        // Assert
+        Assert.assertNull(
+                "No future state as deactivate is a no-op in this case",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertTrue(chromeAndroidTask.isActive());
+    }
+
+    @Test
     public void maximize_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var task =
@@ -1706,6 +1733,24 @@ public class ChromeAndroidTaskImplUnitTest {
                 "Initial bounds default to empty",
                 new Rect(),
                 pendingActionManager.getFutureBoundsInDp());
+    }
+
+    @Test
+    public void setBounds_notInDesktopWindowingMode_shouldDoNothing() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        when(mockActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.setBoundsInDp(new Rect());
+
+        // Assert.
+        Assert.assertNull(
+                "no future state of setBounds() as task is not in desktop windowing mode",
+                chromeAndroidTask.getPendingActionManagerForTesting().getFutureBoundsInDp());
     }
 
     @Test
