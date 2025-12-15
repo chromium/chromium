@@ -63,6 +63,7 @@ inline constexpr char kPDFStructureTypeForm[] = "Form";
 // Standard attribute owners from PDF 32000-1:2008 spec, section 14.8.5.2
 // (Attribute owners are kind of like "categories" for structure node
 // attributes.)
+inline constexpr char kPDFPrintFieldAttributeOwner[] = "PrintField";
 inline constexpr char kPDFTableAttributeOwner[] = "Table";
 
 // Table Attributes from PDF 32000-1:2008 spec, section 14.8.5.7
@@ -72,6 +73,21 @@ inline constexpr char kPDFTableCellRowSpanAttribute[] = "RowSpan";
 inline constexpr char kPDFTableHeaderScopeAttribute[] = "Scope";
 inline constexpr char kPDFTableHeaderScopeColumn[] = "Column";
 inline constexpr char kPDFTableHeaderScopeRow[] = "Row";
+
+// PrintField Attributes from PDF 32000-1:2008 spec, section 14.8.5.6
+inline constexpr char kPDFPrintFieldRoleAttribute[] = "Role";
+inline constexpr char kPDFPrintFieldCheckedAttribute[] = "checked";
+inline constexpr char kPDFPrintFieldDescAttribute[] = "Desc";
+
+// PrintField Attribute Role values from PDF 32000-1:2008 spec Table 348
+inline constexpr char kPDFRoleRadioButtonAttribute[] = "rb";
+inline constexpr char kPDFRoleCheckBoxAttribute[] = "cb";
+inline constexpr char kPDFRolePushButtonAttribute[] = "pb";
+inline constexpr char kPDFRoleTextValueAttribute[] = "tv";
+
+// PrintField Attribute checked values from PDF 32000-1:2008 spec Table 348
+inline constexpr char kPDFCheckedOnAttribute[] = "on";
+inline constexpr char kPDFCheckedOffAttribute[] = "off";
 
 // PDF structure type constants from PDF 32000-2:2020 spec.
 
