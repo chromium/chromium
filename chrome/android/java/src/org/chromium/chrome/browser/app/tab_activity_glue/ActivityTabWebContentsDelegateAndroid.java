@@ -8,17 +8,14 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.media.AudioManager;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -39,6 +36,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
@@ -59,7 +57,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -67,8 +64,6 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -361,40 +356,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    protected void setContentsBounds(WebContents source, Rect bounds) {
+    public void setContentsBounds(WebContents source, Rect bounds) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
             return;
         }
 
-        if (!isPopup()) {
+        if (!isPopup() || mActivity == null) {
             return;
         }
 
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            return;
-        }
-
-        if (mActivity == null) return;
-        final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
-        if (appTask == null) {
-            Log.e(TAG, "Got a null AppTask in setContentsBounds()");
-            return;
-        }
-
-        final Pair<DisplayAndroid, Rect> localCoordinates =
-                DisplayUtil.convertGlobalDipToLocalPxCoordinates(bounds);
-        if (localCoordinates == null) {
-            return;
-        }
-
-        final DisplayAndroid display = localCoordinates.first;
-        final Rect localBounds = localCoordinates.second;
-
-        delegate.moveTaskTo(
-                appTask,
-                display.getDisplayId(),
-                DisplayUtil.clampWindowToDisplay(localBounds, display));
+        MultiWindowUtils.moveActivityToBounds(mActivity, bounds);
     }
 
     @Override

@@ -7,10 +7,12 @@ package org.chromium.components.embedder_support.delegate;
 import static android.view.Display.INVALID_DISPLAY;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
@@ -299,6 +301,16 @@ public class WebContentsDelegateAndroid {
         // Inherit UA override of the last committed navigation regardless of URL as fallback.
         return UserAgentOverrideOption.INHERIT;
     }
+
+    /**
+     * Repositions the window containing this tab to given bounds. Applicable only for multi-window
+     * mode in Android.
+     *
+     * @param source Source WebContents which requested the repositioning.
+     * @param bounds Rectangle specifying desired bounds in global work area coordinate system.
+     */
+    @CalledByNative
+    public void setContentsBounds(WebContents source, @JniType("gfx::Rect") Rect bounds) {}
 
     /**
      * Capture current visible native view as a bitmap.

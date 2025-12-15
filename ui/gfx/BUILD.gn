@@ -205,6 +205,7 @@ component("gfx") {
       "android/android_surface_control_compat.h",
       "android/java_bitmap.cc",
       "android/java_bitmap.h",
+      "android/rect_jni_conversion.h",
       "android/surface_control_frame_rate.h",
       "android/view_configuration.cc",
       "android/view_configuration.h",
@@ -993,6 +994,7 @@ if (is_android) {
   generate_jni("gfx_jni_headers") {
     sources = [
       "../android/java/src/org/chromium/ui/gfx/BitmapHelper.java",
+      "../android/java/src/org/chromium/ui/gfx/RectJniConversion.java",
       "../android/java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
     ]
   }

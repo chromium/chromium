@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AndroidInfo;
@@ -93,17 +94,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         while (observers.hasNext()) observers.next().onFindMatchRectsAvailable(result);
     }
 
-    // Helper functions used to create types that are part of the public interface
-    @CalledByNative
-    private static Rect createRect(int x, int y, int right, int bottom) {
-        return new Rect(x, y, right, bottom);
-    }
-
-    @CalledByNative
-    private static RectF createRectF(float x, float y, float right, float bottom) {
-        return new RectF(x, y, right, bottom);
-    }
-
     @CalledByNative
     public List<Rect> createRectList() {
         return new ArrayList<Rect>();
@@ -134,7 +124,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @CalledByNative
     private static FindNotificationDetails createFindNotificationDetails(
             int numberOfMatches,
-            Rect rendererSelectionRect,
+            @JniType("gfx::Rect") Rect rendererSelectionRect,
             int activeMatchOrdinal,
             boolean finalUpdate) {
         return new FindNotificationDetails(
@@ -143,13 +133,15 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     private static FindMatchRectsDetails createFindMatchRectsDetails(
-            int version, int numRects, RectF activeRect) {
+            int version, int numRects, @JniType("gfx::RectF") RectF activeRect) {
         return new FindMatchRectsDetails(version, numRects, activeRect);
     }
 
     @CalledByNative
     private static void setMatchRectByIndex(
-            FindMatchRectsDetails findMatchRectsDetails, int index, RectF rect) {
+            FindMatchRectsDetails findMatchRectsDetails,
+            int index,
+            @JniType("gfx::RectF") RectF rect) {
         findMatchRectsDetails.rects[index] = rect;
     }
 
@@ -182,9 +174,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
                 userGesture);
     }
 
-    @CalledByNative
     @Override
-    protected void setContentsBounds(WebContents source, Rect bounds) {
+    public void setContentsBounds(WebContents source, Rect bounds) {
         mDelegate.setContentsBounds(source, bounds);
     }
 

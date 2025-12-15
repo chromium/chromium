@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import org.jni_zero.NativeMethods;
@@ -18,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -229,6 +231,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 int disposition,
                 boolean isRendererInitiated) {
             finish();
+        }
+
+        @Override
+        public void setContentsBounds(WebContents source, Rect bounds) {
+            MultiWindowUtils.moveActivityToBounds(DocumentPictureInPictureActivity.this, bounds);
         }
     }
 

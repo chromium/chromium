@@ -143,6 +143,10 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void ContentsZoomChange(bool zoom_in) override;
   content::NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPreloading(const GURL& url) override;
+  // TODO(crbug.com/466004152): WebContents shouldn't be null, pass it by
+  // reference instead.
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

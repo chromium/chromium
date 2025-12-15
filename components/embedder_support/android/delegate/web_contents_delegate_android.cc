@@ -40,6 +40,7 @@
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/android/rect_jni_conversion.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -751,6 +752,19 @@ WebContentsDelegateAndroid::ShouldOverrideUserAgentForPreloading(
           env, obj, j_url);
   return static_cast<content::NavigationController::UserAgentOverrideOption>(
       j_override_option);
+}
+
+void WebContentsDelegateAndroid::SetContentsBounds(content::WebContents* source,
+                                                   const gfx::Rect& bounds) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  ScopedJavaLocalRef<jobject> jsource = source->GetJavaWebContents();
+
+  Java_WebContentsDelegateAndroid_setContentsBounds(env, obj, jsource, bounds);
 }
 
 }  // namespace web_contents_delegate_android

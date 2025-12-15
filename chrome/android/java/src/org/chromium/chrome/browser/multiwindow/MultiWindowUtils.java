@@ -19,17 +19,20 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Build.VERSION_CODES_FULL;
 import android.provider.Browser;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
@@ -74,6 +77,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -1221,6 +1226,40 @@ public class MultiWindowUtils implements ActivityStateListener {
                         .build();
 
         messageDispatcher.enqueueWindowScopedMessage(message, false);
+    }
+
+    /**
+     * Moves the activity to the given bounds.
+     *
+     * @param activity The activity to move.
+     * @param bounds The bounds to move the activity to.
+     * @return Whether the activity was moved.
+     */
+    public static boolean moveActivityToBounds(Activity activity, Rect bounds) {
+        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate == null) {
+            return false;
+        }
+
+        final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        if (appTask == null) {
+            return false;
+        }
+
+        final Pair<DisplayAndroid, Rect> localCoordinates =
+                DisplayUtil.convertGlobalDipToLocalPxCoordinates(bounds);
+        if (localCoordinates == null) {
+            return false;
+        }
+
+        final DisplayAndroid display = localCoordinates.first;
+        final Rect localBounds = localCoordinates.second;
+
+        delegate.moveTaskTo(
+                appTask,
+                display.getDisplayId(),
+                DisplayUtil.clampWindowToDisplay(localBounds, display));
+        return true;
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {
