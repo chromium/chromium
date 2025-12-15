@@ -339,25 +339,20 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 // Regression test: crbug.com/438979.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
-                       SettingsZoomAfterSigninWorks) {
-  GURL signin_url(std::string(chrome::kChromeUIChromeSigninURL)
-                      .append("?access_point=0&reason=5"));
-  // We open the signin page in a new tab so that the ZoomController is
-  // created against the HostZoomMap of the special StoragePartition that
-  // backs the signin page. When we subsequently navigate away from the
-  // signin page, the HostZoomMap changes, and we need to test that the
-  // ZoomController correctly detects this.
+                       SettingsZoomAfterLoadingWorks) {
+  GURL url = GURL("chrome://newtab");
+  // When we navigate away from the NTP, the HostZoomMap changes, and we need to
+  // test that the ZoomController correctly detects this.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), signin_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  login_ui_test_utils::WaitUntilUIReady(browser());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(
       content::PAGE_TYPE_ERROR,
       web_contents->GetController().GetLastCommittedEntry()->GetPageType());
 
-  EXPECT_EQ(signin_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
   ZoomController* zoom_controller =
       ZoomController::FromWebContents(web_contents);
 

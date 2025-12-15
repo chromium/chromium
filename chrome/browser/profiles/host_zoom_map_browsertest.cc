@@ -254,13 +254,13 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ZoomEventsWorkForOffTheRecord) {
                                 test_scheme, test_host));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(
     HostZoomMapBrowserTest,
     WebviewBasedSigninUsesDefaultStoragePartitionForEmbedder) {
-  GURL signin_url = signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::kStartPage,
-      signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
+  GURL signin_url =
+      signin::GetEmbeddedPromoURL(signin_metrics::AccessPoint::kStartPage,
+                                  signin_metrics::Reason::kFetchLstOnly, false);
   GURL test_url = SubstituteTestServerPort(signin_url);
   std::string test_host(test_url.GetHost());
   std::string test_scheme(test_url.GetScheme());
