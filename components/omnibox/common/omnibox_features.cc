@@ -328,7 +328,7 @@ BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
 
 // When enabled, unblocks omnibox height on small form factor devices, allowing
 // users to type in multiline / longer text.
-BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
+BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", ENABLED);
 
 // Controls whether the composebox
 BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);

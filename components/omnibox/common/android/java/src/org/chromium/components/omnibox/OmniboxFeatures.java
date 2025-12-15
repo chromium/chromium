@@ -153,7 +153,7 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
 
     public static final CachedFlag sMultilineEditField =
-            newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
 
     public static final BooleanCachedFeatureParam sWrapAutocompleteText =
             newBooleanParam(sOmniboxMultimodalInput, "wrap_autocomplete_text", false);
