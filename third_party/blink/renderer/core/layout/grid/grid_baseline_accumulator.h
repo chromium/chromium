@@ -40,7 +40,7 @@ class GridBaselineAccumulator : public BaselineAccumulator {
                   const LayoutUnit block_offset) {
     auto StartsBefore = [](const GridArea& a, const GridArea& b) -> bool {
       // Me need to check for `IsTranslatedDefinite` everywhere because this is
-      // also used with masonry which only has one grid axis.
+      // also used with grid-lanes which only has one grid axis.
       if (a.rows.IsTranslatedDefinite() && b.rows.IsTranslatedDefinite()) {
         if (a.rows.StartLine() < b.rows.StartLine()) {
           return true;

@@ -119,7 +119,7 @@ struct FlexLine;
 // fragmented, each fragment will have its own `GapGeometry`.
 //
 // TODO(javiercon): Consider refactoring this code to be able to be reused for
-// masonry, by abstracting away the flex-specific logic.
+// grid-lanes, by abstracting away the flex-specific logic.
 class CORE_EXPORT FlexGapAccumulator {
  public:
   explicit FlexGapAccumulator(LayoutUnit gap_between_items,

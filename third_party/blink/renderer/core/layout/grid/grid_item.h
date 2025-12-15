@@ -330,18 +330,19 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   OutOfFlowItemPlacement column_placement;
   OutOfFlowItemPlacement row_placement;
 
-  // Virtual masonry items don't have a node, so we cache the maximum of every
-  // intrinsic contribution among the items that make up its respective group,
-  // which may be the min/max sizes if parallel to the grid-axis, and the block
-  // contribution size if perpendicular.
+  // Virtual grid-lanes items don't have a node, so we cache the maximum of
+  // every intrinsic contribution among the items that make up its respective
+  // group, which may be the min/max sizes if parallel to the grid-axis, and the
+  // block contribution size if perpendicular.
   struct VirtualItemContributions {
     MinMaxSizes min_max_contribution;
 
     // Intrinsic minimums have special contribution size logic as outlined in
-    // [1]. Virtual masonry items don't have a node, so we cache this value for
-    // later. Note that some of the logic depends on the tracks spanned, which
-    // we don't know when creating the virtual item. Some of the logic also
-    // requires clamping based on the total track size an item spans. Store:
+    // [1]. Virtual grid-lanes items don't have a node, so we cache this value
+    // for later. Note that some of the logic depends on the tracks spanned,
+    // which we don't know when creating the virtual item. Some of the logic
+    // also requires clamping based on the total track size an item spans.
+    // Store:
     //
     // - `intrinsic_min_assuming_track_placement` - The max intrinsic min
     // contribution assuming the tracks it spans will lead us to use the
