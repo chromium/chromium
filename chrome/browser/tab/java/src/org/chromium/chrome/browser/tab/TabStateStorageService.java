@@ -16,6 +16,24 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("tabs")
 @NullMarked
 public class TabStateStorageService {
+    /**
+     * Represents a batch of operations which will be saved to storage on {@link #close()}.
+     * Operations must be called on the UI thread.
+     */
+    public static class ScopedBatch implements AutoCloseable {
+        private long mNativeScopedBatch;
+
+        private ScopedBatch(long nativeScopedBatch) {
+            mNativeScopedBatch = nativeScopedBatch;
+        }
+
+        @Override
+        public void close() {
+            assert mNativeScopedBatch != 0;
+            TabStateStorageServiceJni.get().commitBatch(mNativeScopedBatch);
+            mNativeScopedBatch = 0;
+        }
+    }
 
     private final long mNativeTabStateStorageService;
 
@@ -71,6 +89,12 @@ public class TabStateStorageService {
         TabStateStorageServiceJni.get().clearWindow(mNativeTabStateStorageService, windowTag);
     }
 
+    /** Starts a scoped batch of operations. */
+    public ScopedBatch createBatch() {
+        long batchPtr = TabStateStorageServiceJni.get().createBatch(mNativeTabStateStorageService);
+        return new ScopedBatch(batchPtr);
+    }
+
     @NativeMethods
     interface Natives {
         void boostPriority(long nativeTabStateStorageServiceAndroid);
@@ -87,5 +111,9 @@ public class TabStateStorageService {
 
         void clearWindow(
                 long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
+
+        long createBatch(long nativeTabStateStorageServiceAndroid);
+
+        void commitBatch(long scopedBatchAndroid);
     }
 }

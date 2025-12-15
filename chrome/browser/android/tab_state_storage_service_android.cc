@@ -45,6 +45,19 @@ void RunJavaCallbackLoadAll(
 
 }  // namespace
 
+using ScopedBatchAndroid = TabStateStorageServiceAndroid::ScopedBatchAndroid;
+
+ScopedBatchAndroid::ScopedBatchAndroid(
+    TabStateStorageService::ScopedBatch batch)
+    : batch(std::move(batch)) {}
+
+ScopedBatchAndroid::~ScopedBatchAndroid() = default;
+
+static void JNI_TabStateStorageService_CommitBatch(JNIEnv* env,
+                                                   jlong batch_android_ptr) {
+  delete reinterpret_cast<ScopedBatchAndroid*>(batch_android_ptr);
+}
+
 TabStateStorageServiceAndroid::TabStateStorageServiceAndroid(
     TabStateStorageService* tab_state_storage_service)
     : tab_state_storage_service_(tab_state_storage_service) {
@@ -82,6 +95,11 @@ void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
 void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
                                                 const std::string& window_tag) {
   tab_state_storage_service_->ClearWindow(window_tag);
+}
+
+jlong TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
+  return reinterpret_cast<jlong>(
+      new ScopedBatchAndroid(tab_state_storage_service_->CreateScopedBatch()));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

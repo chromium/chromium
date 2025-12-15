@@ -19,6 +19,16 @@ const char kTabStateStorageServiceAndroidKey[] =
 
 class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
  public:
+  // ScopedBatchAndroid is a wrapper for TabStateStorageService::ScopedBatch
+  // that allows it to be used across the JNI boundary. The destructor of
+  // ScopedBatchAndroid will commit the batched operations.
+  struct ScopedBatchAndroid {
+    explicit ScopedBatchAndroid(TabStateStorageService::ScopedBatch batch);
+    ~ScopedBatchAndroid();
+
+    TabStateStorageService::ScopedBatch batch;
+  };
+
   explicit TabStateStorageServiceAndroid(
       TabStateStorageService* tab_state_storage_service);
   ~TabStateStorageServiceAndroid() override;
@@ -35,6 +45,8 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
   void ClearState(JNIEnv* env);
 
   void ClearWindow(JNIEnv* env, const std::string& window_tag);
+
+  jlong CreateBatch(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
