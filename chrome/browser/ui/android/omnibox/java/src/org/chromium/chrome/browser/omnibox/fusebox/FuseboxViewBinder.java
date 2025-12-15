@@ -50,6 +50,7 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+            reanchorViewsForCompactFusebox(model, view);
             updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
@@ -378,7 +379,9 @@ class FuseboxViewBinder {
     }
 
     static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {
-        boolean shouldShowCompactUi = model.get(FuseboxProperties.COMPACT_UI);
+        boolean shouldShowCompactUi =
+                model.get(FuseboxProperties.COMPACT_UI)
+                        || !model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
 
         int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
         int topToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : R.id.url_bar;
