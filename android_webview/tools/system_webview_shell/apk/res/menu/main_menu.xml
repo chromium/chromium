@@ -50,4 +50,8 @@ found in the LICENSE file.
           android:title="@string/menu_hide"/>
     <item android:id="@+id/menu_preconnect"
           android:title="@string/menu_preconnect"/>
+    <item android:id="@+id/menu_add_quic_hint"
+          android:title="@string/menu_add_quic_hint"/>
+    <item android:id="@+id/menu_check_protocol"
+          android:title="@string/menu_check_protocol"/>
 </menu>
