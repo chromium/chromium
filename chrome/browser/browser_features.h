@@ -94,10 +94,6 @@ BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
-#endif
-
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)
