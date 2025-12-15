@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
@@ -19,76 +19,6 @@
 namespace {
 constexpr int kTopButtonContainerHeight = 28;
 constexpr int kTopButtonPadding = 4;
-
-class TopContainerButton : public views::LabelButton {
-  METADATA_HEADER(TopContainerButton, views::LabelButton)
- public:
-  TopContainerButton() {
-    views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
-    ConfigureInkDropForToolbar(this);
-  }
-
-  void UpdateIcon(const ui::ImageModel& icon_image) {
-    CHECK(icon_image.IsVectorIcon());
-
-    const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-        *icon_image.GetVectorIcon().vector_icon(), GetForegroundColor(),
-        GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE));
-
-    SetImageModel(views::Button::STATE_NORMAL, image_model);
-    SetImageModel(views::Button::STATE_HOVERED, image_model);
-    SetImageModel(views::Button::STATE_PRESSED, image_model);
-    SetImageModel(views::Button::STATE_DISABLED, image_model);
-  }
-
-  // views::LabelButton:
-  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
-
- private:
-  // views::View:
-  void AddedToWidget() override {
-    paint_as_active_subscription_ =
-        GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-            &View::NotifyViewControllerCallback, base::Unretained(this)));
-  }
-
-  void RemovedFromWidget() override { paint_as_active_subscription_ = {}; }
-
-  ui::ColorId GetForegroundColor() const {
-    return GetWidget() && GetWidget()->ShouldPaintAsActive()
-               ? kColorNewTabButtonCRForegroundFrameActive
-               : kColorNewTabButtonCRForegroundFrameInactive;
-  }
-
-  base::CallbackListSubscription paint_as_active_subscription_;
-};
-
-BEGIN_METADATA(TopContainerButton)
-END_METADATA
-
-class TopContainerButtonActionViewInterface
-    : public views::LabelButtonActionViewInterface {
- public:
-  explicit TopContainerButtonActionViewInterface(
-      TopContainerButton* action_view)
-      : views::LabelButtonActionViewInterface(action_view),
-        action_view_(action_view) {}
-
-  void ActionItemChangedImpl(actions::ActionItem* action_item) override {
-    ButtonActionViewInterface::ActionItemChangedImpl(action_item);
-    if (action_item->GetImage().IsVectorIcon()) {
-      action_view_->UpdateIcon(action_item->GetImage());
-    }
-  }
-
- private:
-  raw_ptr<TopContainerButton> action_view_ = nullptr;
-};
-
-std::unique_ptr<views::ActionViewInterface>
-TopContainerButton::GetActionViewInterface() {
-  return std::make_unique<TopContainerButtonActionViewInterface>(this);
-}
 }  // namespace
 
 VerticalTabStripTopContainer::VerticalTabStripTopContainer(
