@@ -40,8 +40,9 @@ void TestSharedWorkerServiceImpl::TerminateAllWorkers(
     worker_hosts.push_back(host.get());
   }
 
-  for (SharedWorkerHost* worker_host : worker_hosts)
+  for (SharedWorkerHost* worker_host : worker_hosts) {
     DestroyHost(worker_host);
+  }
 }
 
 void TestSharedWorkerServiceImpl::SetWorkerTerminationCallback(
@@ -59,7 +60,8 @@ void TestSharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
   mojo::Remote<blink::mojom::SharedWorker> remote_shared_worker =
       host->TerminateRemoteWorkerForTesting();
 
-  worker_hosts_.erase(worker_hosts_.find(host));
+  // Deletes `host` and removes it from all maps.
+  SharedWorkerServiceImpl::DestroyHost(host);
 
   if (remote_shared_worker && remote_shared_worker.is_connected()) {
     // The remote shared worker for this host is still connected. Track its
