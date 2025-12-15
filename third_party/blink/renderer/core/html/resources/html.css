@@ -1439,14 +1439,6 @@ input[type="week" i]::-webkit-calendar-picker-indicator {
   padding: 2px;
 }
 
-input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
-input[type="datetime-local" i]::-webkit-calendar-picker-indicator:focus-visible,
-input[type="month" i]::-webkit-calendar-picker-indicator:focus-visible,
-input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
-  outline: solid 2px -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
 input[type="time" i]::-webkit-calendar-picker-indicator {
   background-image: light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
   background-origin: content-box;
@@ -1462,8 +1454,17 @@ input[type="time" i]::-webkit-calendar-picker-indicator {
   inline-size: 1.05em;
 }
 
+input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="datetime-local" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="month" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible,
 input[type="time" i]::-webkit-calendar-picker-indicator:focus-visible {
-  outline: solid 2px -webkit-focus-ring-color;
+  outline-style: solid;
+  outline-width: 2px;
+  /* -webkit-focus-ring-color would ideally change from black to white when
+  * color-scheme:dark is present, but it doesn't when we also set
+  * outline-style:solid. */
+  outline-color: light-dark(-webkit-focus-ring-color, white);
   outline-offset: -2px;
 }
 

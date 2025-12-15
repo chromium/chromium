@@ -1,0 +1,1 @@
+lightColor: rgb(229, 151, 0), darkColor: rgb(255, 255, 255)
