@@ -527,10 +527,17 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 return;
             }
 
+            boolean updated = false;
+
             // This is coming from the click on header pane pref.
             int backStackCount = fm.getBackStackEntryCount();
             if (backStackCount == 0) {
-                mTitles.clear();
+                if (!(f instanceof EmbeddableSettingsPage page)
+                        || mTitles.size() != 1
+                        || mTitles.get(0).titleSupplier != page.getPageTitle()) {
+                    mTitles.clear();
+                    updated = true;
+                }
             }
 
             if (f instanceof EmbeddableSettingsPage page) {
@@ -550,16 +557,20 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                     // Enter into more detailed page.
                     mTitles.add(
                             new Title(uuid, titleSupplier, backStackCount, page.getMainMenuKey()));
+                    updated = true;
                 } else {
                     // Move back from the detailed page.
                     for (int i = mTitles.size() - 1; i > index; --i) {
                         mTitles.remove(i);
+                        updated = true;
                     }
                 }
             }
 
-            for (Observer o : mObservers) {
-                o.onTitleUpdated();
+            if (updated) {
+                for (Observer o : mObservers) {
+                    o.onTitleUpdated();
+                }
             }
         }
 

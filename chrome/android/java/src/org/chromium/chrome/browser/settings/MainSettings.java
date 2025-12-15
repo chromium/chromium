@@ -255,6 +255,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void onPreferenceSelected(Preference preference) {
+        if (mSelectionDecoration != null) {
+            mSelectionDecoration.setSelectedPreference(preference);
+        }
+
         for (var observer : mObserverList) {
             observer.onPreferenceSelected(preference);
         }
