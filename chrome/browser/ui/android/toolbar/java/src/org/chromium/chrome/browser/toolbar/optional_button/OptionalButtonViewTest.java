@@ -644,16 +644,22 @@ public class OptionalButtonViewTest {
         ButtonData secondButton = getDataForReaderModeIconButton();
         ButtonData actionChipButton = getDataForReaderModeActionChip();
 
+        Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
+        Runnable beforeShowTransitionCallback = mock(Runnable.class);
         Runnable beforeHideTransitionCallback = mock(Runnable.class);
         Callback<Integer> transitionStartedCallback = mock(Callback.class);
         Callback<Integer> transitionFinishedCallback = mock(Callback.class);
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
+        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(beforeDelayedTransitionCallback);
+        mOptionalButtonView.setOnBeforeShowTransitionCallback(beforeShowTransitionCallback);
         mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
 
         InOrder inOrder =
                 Mockito.inOrder(
+                        beforeDelayedTransitionCallback,
+                        beforeShowTransitionCallback,
                         beforeHideTransitionCallback,
                         transitionStartedCallback,
                         transitionFinishedCallback);
@@ -691,16 +697,23 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Verify that callbacks are called in the expected order with the right arguments.
+        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(beforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SWAPPING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SWAPPING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SWAPPING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SWAPPING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.EXPANDING_ACTION_CHIP);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.EXPANDING_ACTION_CHIP);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(beforeHideTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.HIDING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.HIDING);
@@ -713,16 +726,22 @@ public class OptionalButtonViewTest {
         ButtonData actionChipButton = getDataForReaderModeActionChip();
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(false);
 
+        Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
+        Runnable beforeShowTransitionCallback = mock(Runnable.class);
         Runnable beforeHideTransitionCallback = mock(Runnable.class);
         Callback<Integer> transitionStartedCallback = mock(Callback.class);
         Callback<Integer> transitionFinishedCallback = mock(Callback.class);
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
+        mOptionalButtonView.setOnBeforeDelayedTransitionCallback(beforeDelayedTransitionCallback);
+        mOptionalButtonView.setOnBeforeShowTransitionCallback(beforeShowTransitionCallback);
         mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
 
         InOrder inOrder =
                 Mockito.inOrder(
+                        beforeDelayedTransitionCallback,
+                        beforeShowTransitionCallback,
                         beforeHideTransitionCallback,
                         transitionStartedCallback,
                         transitionFinishedCallback);
@@ -757,14 +776,23 @@ public class OptionalButtonViewTest {
 
         // Verify that callbacks are called in the expected order with the right arguments,
         // non-animated updates use either SHOWING or HIDING.
+        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(beforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(beforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(beforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
+        inOrder.verify(beforeShowTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.SHOWING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.SHOWING);
+        inOrder.verify(beforeDelayedTransitionCallback).run();
         inOrder.verify(beforeHideTransitionCallback).run();
         inOrder.verify(transitionStartedCallback).onResult(TransitionType.HIDING);
         inOrder.verify(transitionFinishedCallback).onResult(TransitionType.HIDING);

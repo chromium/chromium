@@ -49,6 +49,10 @@ class OptionalButtonProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_BEFORE_HIDE_TRANSITION_CALLBACK =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ON_BEFORE_SHOW_TRANSITION_CALLBACK =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ON_BEFORE_DELAYED_TRANSITION_CALLBACK =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ViewGroup> TRANSITION_ROOT =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ColorStateList> ICON_TINT_LIST =
@@ -71,6 +75,8 @@ class OptionalButtonProperties {
         ON_BEFORE_WIDTH_TRANSITION_CALLBACK,
         TRANSITION_FINISHED_CALLBACK,
         ON_BEFORE_HIDE_TRANSITION_CALLBACK,
+        ON_BEFORE_SHOW_TRANSITION_CALLBACK,
+        ON_BEFORE_DELAYED_TRANSITION_CALLBACK,
         TRANSITION_ROOT,
         ICON_TINT_LIST,
         ICON_BACKGROUND_COLOR,

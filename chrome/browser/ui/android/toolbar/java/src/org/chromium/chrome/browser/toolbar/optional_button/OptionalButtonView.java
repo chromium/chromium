@@ -40,6 +40,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -91,7 +92,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private boolean mIsIncognitoBranded;
     private @Nullable ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
-    private @Nullable Runnable mOnBeforeHideTransitionCallback;
+    private Runnable mOnBeforeHideTransitionCallback = CallbackUtils.emptyRunnable();
+    private Runnable mOnBeforeShowTransitionCallback = CallbackUtils.emptyRunnable();
+    private Runnable mOnBeforeDelayedTransitionCallback = CallbackUtils.emptyRunnable();
     private @Nullable Callback<Transition> mFakeBeginTransitionForTesting;
     private @Nullable Handler mHandler;
     private @Nullable Handler mHandlerForTesting;
@@ -174,6 +177,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     void setOnBeforeHideTransitionCallback(Runnable callback) {
         mOnBeforeHideTransitionCallback = callback;
+    }
+
+    void setOnBeforeShowTransitionCallback(Runnable callback) {
+        mOnBeforeShowTransitionCallback = callback;
+    }
+
+    void setOnBeforeDelayedTransitionCallback(Runnable callback) {
+        mOnBeforeDelayedTransitionCallback = callback;
     }
 
     void setPaddingStart(int paddingStart) {
@@ -876,9 +887,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setVisibility(GONE);
         setWidth(0);
 
-        if (mOnBeforeHideTransitionCallback != null) {
-            mOnBeforeHideTransitionCallback.run();
-        }
+        mOnBeforeHideTransitionCallback.run();
 
         mState = State.RUNNING_HIDE_TRANSITION;
     }
@@ -926,6 +935,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mBackground.setColorFilter(mBackgroundColorFilter);
         mBackground.setVisibility(mNextButtonType == ButtonType.DYNAMIC ? VISIBLE : GONE);
+        mOnBeforeShowTransitionCallback.run();
 
         mState = State.RUNNING_SHOW_TRANSITION;
     }
@@ -936,12 +946,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void beginDelayedTransition(Transition transition) {
-        // TODO(crbug.com/425817689): The optional button transition was clobbering the URL focus
-        //  animations for the GTS and app menu buttons. Revisit to see if this is always safe to
-        //  add this target, or if we need to limit this to the URL focus change case.
-        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
-            transition.addTarget(this);
-        }
+        mOnBeforeDelayedTransitionCallback.run();
         if (mFakeBeginTransitionForTesting != null) {
             mFakeBeginTransitionForTesting.onResult(transition);
             return;

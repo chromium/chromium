@@ -185,6 +185,8 @@ public class ToolbarPhone extends ToolbarLayout
     protected boolean mDisableLocationBarRelayout;
     protected boolean mLayoutLocationBarInFocusedMode;
     private boolean mLayoutLocationBarWithoutExtraButton;
+    private boolean mOptionalButtonShowTransitionRunning;
+    private int mOptionalButtonTransitionWidthDelta;
     protected int mUnfocusedLocationBarLayoutWidth;
     protected int mUnfocusedLocationBarLayoutLeft;
     protected int mUnfocusedLocationBarLayoutRight;
@@ -852,10 +854,19 @@ public class ToolbarPhone extends ToolbarLayout
     private int getBoundsAfterAccountingForRightButtons() {
         int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
 
-        // MeasuredWidth() represents the desired width of the container which is accurate most
-        // time, except during the optional button animations, where the MeasuredWidth changes
-        // instantly to the final size and Width() represents the actual size at that frame.
-        if (mOptionalButtonAnimationRunning) {
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            // If the refactored animations are enabled, we'll only calculate this once (at the
+            // start of the transition). So we need to calculate the final width based on the
+            // OptionalButton state here.
+            toolbarButtonsContainerWidth += mOptionalButtonTransitionWidthDelta;
+            if (mOptionalButtonCoordinator != null && mOptionalButtonShowTransitionRunning) {
+                toolbarButtonsContainerWidth +=
+                        mOptionalButtonCoordinator.getViewWidthDuringTransition();
+            }
+        } else if (mOptionalButtonAnimationRunning) {
+            // MeasuredWidth() represents the desired width of the container which is accurate most
+            // time, except during the optional button animations, where the MeasuredWidth changes
+            // instantly to the final size and Width() represents the actual size at that frame.
             toolbarButtonsContainerWidth = mToolbarButtonsContainer.getWidth();
         }
 
@@ -1037,7 +1048,7 @@ public class ToolbarPhone extends ToolbarLayout
         //  we don't #triggerUrlFocusAnimation here, and instead only set up the transitions
         //  needed for this flow (size change, translation, etc.).
         updateLocationBarForNtp(mVisualState, /* hasFocus= */ false);
-        triggerUrlFocusAnimation(/* hasFocus= */ false);
+        createAndRunFocusAnimatorRefactored(/* hasFocus= */ false);
     }
 
     /**
@@ -2070,7 +2081,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void endUrlFocusAnimation() {
-        if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            endFocusTransition(/* hasFocus= */ false);
+        } else if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.end();
             mUrlFocusLayoutAnimator = null;
         }
@@ -2303,7 +2316,10 @@ public class ToolbarPhone extends ToolbarLayout
         mUrlFocusChangeInProgress = !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
         // Hide the optional button immediately when animating in the suggestions list (since other
         // toolbar buttons are also hidden immediately) or restore it when omnibox focus is lost.
-        if (animatingSuggestionsListOnNtp()) {
+        // If the animation refactor is enabled, this will instead be handled by the refactored
+        // flow's transitions.
+        if (animatingSuggestionsListOnNtp()
+                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             ButtonData copy = mButtonData;
             updateOptionalButton(hasFocus ? null : mButtonData);
             mButtonData = copy;
@@ -3195,7 +3211,12 @@ public class ToolbarPhone extends ToolbarLayout
             // color is not used on icons that don't support tinting (e.g. user profile pic).
             mOptionalButtonCoordinator.setIconForegroundColor(getTint());
             mOptionalButtonCoordinator.setOnBeforeHideTransitionCallback(
-                    () -> mLayoutLocationBarWithoutExtraButton = true);
+                    () -> {
+                        mLayoutLocationBarWithoutExtraButton = true;
+                        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                            createAndRunFocusAnimatorRefactored(urlHasFocus());
+                        }
+                    });
 
             mOptionalButtonCoordinator.setTransitionStartedCallback(
                     transitionType -> {
@@ -3232,6 +3253,8 @@ public class ToolbarPhone extends ToolbarLayout
                         }
 
                         mLayoutLocationBarWithoutExtraButton = false;
+                        mOptionalButtonShowTransitionRunning = false;
+                        mOptionalButtonTransitionWidthDelta = 0;
                         mDisableLocationBarRelayout =
                                 ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
                         mOptionalButtonAnimationRunning = false;
@@ -3241,6 +3264,22 @@ public class ToolbarPhone extends ToolbarLayout
                                 this,
                                 "ToolbarPhone.initializeOptionalButton.mOptionalButton.setTransitionFinishedCallback");
                     });
+            if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                mOptionalButtonCoordinator.setOnBeforeDelayedTransitionCallback(
+                        () -> {
+                            if (mUrlFocusChangeInProgress) endFocusTransition(urlHasFocus());
+                        });
+                mOptionalButtonCoordinator.setOnBeforeShowTransitionCallback(
+                        () -> {
+                            mOptionalButtonShowTransitionRunning = true;
+                            createAndRunFocusAnimatorRefactored(urlHasFocus());
+                        });
+                mOptionalButtonCoordinator.setOnBeforeWidthTransitionCallback(
+                        (type, widthDelta) -> {
+                            mOptionalButtonTransitionWidthDelta = widthDelta;
+                            createAndRunFocusAnimatorRefactored(urlHasFocus());
+                        });
+            }
 
             mHomeButtonDisplay.setOnKeyListener(
                     new KeyboardNavigationListener() {
