@@ -332,6 +332,10 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   if (builder.AffectedByFunctionalMedia()) {
     return false;
   }
+  if (builder.HasElementDependentRandomFunctions()) {
+    // The result of random() depends on the element's position in the DOM.
+    return false;
+  }
   return true;
 }
 

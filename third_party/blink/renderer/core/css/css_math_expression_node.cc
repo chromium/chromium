@@ -5563,6 +5563,9 @@ double CSSMathExpressionRandomFunction::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
   const Element* element = length_resolver.GetElement();
   CHECK(element);
+  if (!random_value_sharing_.IsElementShared()) {
+    length_resolver.ReferenceElementDependentRandom();
+  }
   // TODO(crbug.com/413385732): Pass correct property name and property value
   // index.
   double random_base_value =

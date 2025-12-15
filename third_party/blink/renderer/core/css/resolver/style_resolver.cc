@@ -499,6 +499,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kSiblingRelative)) {
     builder.SetHasSiblingFunctions();
   }
+  if (flags & static_cast<Flags>(Flag::kElementDependentRandom)) {
+    builder.SetHasElementDependentRandomFunctions();
+  }
 }
 
 void ApplyInertness(StyleResolverState& state) {

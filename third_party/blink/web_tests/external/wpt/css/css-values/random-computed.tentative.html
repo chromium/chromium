@@ -608,4 +608,31 @@ test(() => {
   }
 }, `Fixed: random(fixed <number>, a, b)`);
 
+// Test random value sharing
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomIdentifier';
+    holder.appendChild(el);
+    const elComputedHeight = getComputedStyle(el)['height'];
+
+    var allSame = true;
+    for (i = 0; i < iterations; ++i) {
+      const other = document.createElement('div');
+      other.className = 'randomIdentifier';
+      holder.appendChild(other);
+      const otherComputedHeight = getComputedStyle(other)['height'];
+      if (elComputedHeight != otherComputedHeight) {
+        allSame = false;
+      }
+    }
+    assert_false(allSame);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Different between elements with same identifier random(--identifier, a, b)`);
+
 </script>
