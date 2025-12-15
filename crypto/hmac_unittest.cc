@@ -23,22 +23,6 @@ TEST(HMACTest, OneShotSha1) {
   CHECK(base::HexStringToBytes("125d7342b9ac11cd91a39af48aa17b4f63f175d3",
                                &expected));
 
-  // Old API signing:
-  {
-    crypto::HMAC hmac(crypto::HMAC::SHA1);
-    ASSERT_TRUE(hmac.Init(key));
-    std::array<uint8_t, crypto::hash::kSha1Size> result;
-    EXPECT_TRUE(hmac.Sign(data, result));
-    EXPECT_EQ(base::as_byte_span(expected), result);
-  }
-
-  // Old API verification:
-  {
-    crypto::HMAC hmac(crypto::HMAC::SHA1);
-    ASSERT_TRUE(hmac.Init(key));
-    EXPECT_TRUE(hmac.Verify(data, expected));
-  }
-
   auto result = crypto::hmac::SignSha1(key, data);
   EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
   EXPECT_TRUE(crypto::hmac::VerifySha1(key, data, result));
@@ -54,22 +38,6 @@ TEST(HMACTest, OneShotSha256) {
   CHECK(base::HexStringToBytes(
       "773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe",
       &expected));
-
-  // Old API signing:
-  {
-    crypto::HMAC hmac(crypto::HMAC::SHA256);
-    ASSERT_TRUE(hmac.Init(key));
-    std::array<uint8_t, crypto::hash::kSha256Size> result;
-    EXPECT_TRUE(hmac.Sign(data, result));
-    EXPECT_EQ(base::as_byte_span(expected), result);
-  }
-
-  // Old API verification:
-  {
-    crypto::HMAC hmac(crypto::HMAC::SHA256);
-    ASSERT_TRUE(hmac.Init(key));
-    EXPECT_TRUE(hmac.Verify(data, expected));
-  }
 
   auto result = crypto::hmac::SignSha256(key, data);
   EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));

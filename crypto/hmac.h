@@ -26,68 +26,6 @@
 
 namespace crypto {
 
-// TODO(https://issues.chromium.org/issues/374334448): Rework this interface and
-// delete much of it.
-// Deprecated; don't add new uses. See the interfaces below this class instead.
-class CRYPTO_EXPORT HMAC {
- public:
-  // The set of supported hash functions. Extend as required.
-  enum HashAlgorithm {
-    SHA1,
-    SHA256,
-  };
-
-  explicit HMAC(HashAlgorithm hash_alg);
-
-  HMAC(const HMAC&) = delete;
-  HMAC& operator=(const HMAC&) = delete;
-
-  ~HMAC();
-
-  // Returns the length of digest that this HMAC will create.
-  size_t DigestLength() const;
-
-  // TODO(abarth): Add a PreferredKeyLength() member function.
-
-  // Initializes this instance using |key|. Call Init only once. It returns
-  // false on the second or later calls.
-  [[nodiscard]] bool Init(std::string_view key) {
-    return Init(base::as_byte_span(key));
-  }
-
-  // Initializes this instance using |key|. Call Init only once. It returns
-  // false on the second or later calls.
-  [[nodiscard]] bool Init(base::span<const uint8_t> key);
-
-  // Calculates the HMAC for the message in |data| using the algorithm supplied
-  // to the constructor and the key supplied to the Init method. The HMAC is
-  // returned in |digest|, which has |digest_length| bytes of storage available.
-  // If |digest_length| is smaller than DigestLength(), the output will be
-  // truncated. If it is larger, this method will fail.
-  [[nodiscard]] bool Sign(std::string_view data,
-                          unsigned char* digest,
-                          size_t digest_length) const;
-  [[nodiscard]] bool Sign(base::span<const uint8_t> data,
-                          base::span<uint8_t> digest) const;
-
-  // Verifies that the HMAC for the message in |data| equals the HMAC provided
-  // in |digest|, using the algorithm supplied to the constructor and the key
-  // supplied to the Init method. Use of this method is strongly recommended
-  // over using Sign() with a manual comparison (such as memcmp), as such
-  // comparisons may result in side-channel disclosures, such as timing, that
-  // undermine the cryptographic integrity. |digest| must be exactly
-  // |DigestLength()| bytes long.
-  [[nodiscard]] bool Verify(std::string_view data,
-                            std::string_view digest) const;
-  [[nodiscard]] bool Verify(base::span<const uint8_t> data,
-                            base::span<const uint8_t> digest) const;
-
- private:
-  HashAlgorithm hash_alg_;
-  bool initialized_;
-  std::vector<unsigned char> key_;
-};
-
 namespace hmac {
 
 // Single-shot interfaces for working with HMACs. Unless your code needs to be
