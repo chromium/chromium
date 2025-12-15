@@ -204,7 +204,8 @@
   * Deepest backdrop, behind .gradient, to block input text
   * in dragging mode.
   */
-  background-color: var(--search-animated-glow-background);
+  background-color: var(--cr-composebox-background-color,
+      --search-animated-glow-background);
   border-radius: inherit;
   content: '';
   inset: 0px;

@@ -162,7 +162,7 @@
 .title {
   color: var(--color-composebox-file-chip-text);
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--cr-composebox-file-chip-title-text-size, 12px);
   font-style: normal;
   font-weight: 500;
   line-height: 16px;
@@ -193,7 +193,7 @@
 
 .url {
   color: var(--color-composebox-file-carousel-url);
-  font-size: 12px;
+    font-size: var(--cr-composebox-file-chip-url-text-size, 12px);
   font-weight: 500;
   line-height: 16px;
   overflow: hidden;
