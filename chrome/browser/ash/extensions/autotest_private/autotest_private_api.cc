@@ -5785,15 +5785,16 @@ ExtensionFunction::ResponseAction AutotestPrivateGetAccessTokenFunction::Run() {
   OAuth2AccessTokenManager::ScopeSet scopes(
       params->access_token_params.scopes.begin(),
       params->access_token_params.scopes.end());
-  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      identity_manager
-          ->FindExtendedAccountInfoByEmailAddress(
-              params->access_token_params.email)
-          .account_id,
-      /*oauth_consumer_name=*/"cros_autotest_private", scopes,
-      base::BindOnce(&AutotestPrivateGetAccessTokenFunction::OnAccessToken,
-                     this),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+  access_token_fetcher_ =
+      identity_manager->CreateAccessTokenFetcherWithDynamicScopesForAccount(
+          identity_manager
+              ->FindExtendedAccountInfoByEmailAddress(
+                  params->access_token_params.email)
+              .account_id,
+          signin::OAuthConsumerId::kAshAutotestPrivateApi, scopes,
+          base::BindOnce(&AutotestPrivateGetAccessTokenFunction::OnAccessToken,
+                         this),
+          signin::AccessTokenFetcher::Mode::kImmediate);
   return RespondLater();
 }
 

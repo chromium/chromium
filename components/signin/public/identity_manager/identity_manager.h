@@ -228,14 +228,24 @@ class IdentityManager : public KeyedService,
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
+  //
+  // Only use this method if the feature requires dynamic scopes each time it
+  // requests an access token. Don't use this method if the feature gets it's
+  // scopes from finch. In that case you should add your finch logic in the
+  // OAuthConsumerRegistry subclasses.
+  //
+  // If you create a new OAuthConsumerId for this method then it will also need
+  // to be added in oauth_consumer_registry.cc. Otherwise this method will
+  // crash.
   [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
-  CreateAccessTokenFetcherForAccount(const CoreAccountId& account_id,
-                                     const std::string& oauth_consumer_name,
-                                     const ScopeSet& scopes,
-                                     AccessTokenFetcher::TokenCallback callback,
-                                     AccessTokenFetcher::Mode mode,
-                                     AccessTokenFetcher::Source token_source =
-                                         AccessTokenFetcher::Source::kProfile);
+  CreateAccessTokenFetcherWithDynamicScopesForAccount(
+      const CoreAccountId& account_id,
+      OAuthConsumerId oauth_consumer_id,
+      const ScopeSet& scopes,
+      AccessTokenFetcher::TokenCallback callback,
+      AccessTokenFetcher::Mode mode,
+      AccessTokenFetcher::Source token_source =
+          AccessTokenFetcher::Source::kProfile);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing
   // to specify a custom |url_loader_factory| as well.

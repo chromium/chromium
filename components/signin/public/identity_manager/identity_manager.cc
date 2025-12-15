@@ -165,16 +165,18 @@ bool IdentityManager::HasPrimaryAccount(ConsentLevel consent) const {
 }
 
 std::unique_ptr<AccessTokenFetcher>
-IdentityManager::CreateAccessTokenFetcherForAccount(
+IdentityManager::CreateAccessTokenFetcherWithDynamicScopesForAccount(
     const CoreAccountId& account_id,
-    const std::string& oauth_consumer_name,
+    OAuthConsumerId oauth_consumer_id,
     const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode,
     AccessTokenFetcher::Source token_source) {
+  signin::OAuthConsumer oauth_consumer =
+      signin::GetOAuthConsumerForDynamicScopes(oauth_consumer_id, scopes);
   return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_name, token_service_.get(),
-      primary_account_manager_.get(), scopes, std::move(callback), mode,
+      account_id, oauth_consumer_id, oauth_consumer, token_service_.get(),
+      primary_account_manager_.get(), std::move(callback), mode,
       require_sync_consent_for_scope_verification_, token_source);
 }
 
