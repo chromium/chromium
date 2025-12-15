@@ -236,6 +236,22 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
   EXPECT_FALSE(future.Get().value().is_dynamic);
 }
 
+TEST_F(ContextualCueingPageDataTestDynamicCue, UseDynamicCueWithoutStaticCue) {
+  base::test::TestFuture<
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_dynamic_cue_label("dynamic label");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("dynamic label", future.Get().value().cue_label);
+  EXPECT_TRUE(future.Get().value().is_dynamic);
+}
+
 TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
   base::test::TestFuture<
       base::expected<CueingResult, contextual_cueing::NudgeDecision>>
