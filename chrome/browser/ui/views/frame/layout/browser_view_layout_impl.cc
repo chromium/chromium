@@ -312,9 +312,6 @@ gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
   gfx::Rect dialog_rect(dialog_x, dialog_y, dialog_size.width(),
                         dialog_size.height());
 
-  // Convert to widget coordinates.
-  dialog_rect = views().browser_view->ConvertRectToWidget(dialog_rect);
-
   // TODO: consider whether this should change in RTL?
   return gfx::Point(dialog_rect.origin());
 }

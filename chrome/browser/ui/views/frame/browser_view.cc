@@ -252,6 +252,7 @@
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/view_subregion_anchor.h"
 #include "components/version_info/channel.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -300,6 +301,7 @@
 #include "ui/gfx/animation/animation_runner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -5089,6 +5091,28 @@ void BrowserView::Layout(PassKey) {
         ->UpdateAnchor();
   }
 
+  // Update dialog and bubble anchors.
+
+  if (dialog_anchor_) {
+    // This needs to be enough that any bubble is visually overlapping the
+    // toolbar, to keep it from rendering entirely in the contents area.
+    constexpr int kAdditionalDialogToolbarOverlap = 3;
+    gfx::Rect rect(GetBrowserViewLayout()
+                       ->GetWebContentsModalDialogHost()
+                       ->GetDialogPosition(gfx::Size()),
+                   gfx::Size());
+    // Move up and make its size nonzero.
+    rect.Outset(gfx::Outsets::TLBR(1, 1, 0, 1));
+    rect.Offset(0, -kAdditionalDialogToolbarOverlap);
+    // When the dialog anchor is still within the bounds of the contents
+    // container, it is hidden. This handles immersive fullscreen cases,
+    // including "always show toolbar" mode on Mac, where it is not possible to
+    // position the dialog safely.
+    dialog_anchor_->SetHidden(
+        contents_container_->bounds().Contains(rect.bottom_center()));
+    dialog_anchor_->MaybeUpdateAnchor(rect);
+  }
+
   if (auto* const user_education =
           UserEducationServiceFactory::GetForBrowserContext(GetProfile())) {
     user_education->help_bubble_factory_registry().NotifyAnchorBoundsChanged(
@@ -5280,6 +5304,9 @@ void BrowserView::AddedToWidget() {
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     vertical_tab_strip_container_->CreateTabStripController(this);
   }
+
+  dialog_anchor_ = std::make_unique<user_education::ViewSubregionAnchor>(
+      kBrowserDialogAnchorElementId, *this);
 
   initialized_ = true;
 }

@@ -526,7 +526,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
-          kTopContainerElementId,
+          kBrowserDialogAnchorElementId,
           IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
           IDS_PROMO_SHOW_TUTORIAL_BUTTON,
           base::BindRepeating(
@@ -825,8 +825,9 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHPdfSearchifyFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHPdfSearchifyFeature, kTopContainerElementId,
-          IDS_PDF_SEARCHIFY_IPH_BODY, IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER,
+          feature_engagement::kIPHPdfSearchifyFeature,
+          kBrowserDialogAnchorElementId, IDS_PDF_SEARCHIFY_IPH_BODY,
+          IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleTitleText(IDS_PDF_SEARCHIFY_IPH_TITLE)
@@ -1035,8 +1036,8 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHSideBySideTabSwitchFeature,
-          kTopContainerElementId, IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY,
-          kSplitViewTutorialId)
+          kBrowserDialogAnchorElementId,
+          IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY, kSplitViewTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE)
@@ -1169,8 +1170,8 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForCustomAction(
             feature_engagement::kIPHTabGroupsSharedTabChangedFeature,
-            kTopContainerElementId, IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE,
-            IDS_LEARN_MORE,
+            kBrowserDialogAnchorElementId,
+            IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE, IDS_LEARN_MORE,
             CreateNavigationAction(GURL(
                 data_sharing::features::kLearnMoreSharedTabGroupPageURL.Get())))
             .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
@@ -1302,11 +1303,11 @@ void MaybeRegisterChromeFeaturePromos(
                        "into the toolbar.")));
 
   // kIPHDesktopSharedHighlightingFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::kIPHDesktopSharedHighlightingFeature,
-                    kTopContainerElementId, IDS_SHARED_HIGHLIGHTING_PROMO)
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHDesktopSharedHighlightingFeature,
+          kBrowserDialogAnchorElementId, IDS_SHARED_HIGHLIGHTING_PROMO)
+          .SetBubbleArrow(HelpBubbleArrow::kNone)));
 
   // kIPHWebUiHelpBubbleTestFeature
   registry.RegisterFeature(std::move(

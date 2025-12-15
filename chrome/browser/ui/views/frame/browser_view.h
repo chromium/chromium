@@ -40,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/views/view_subregion_anchor.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/page_user_data.h"
@@ -1317,6 +1318,10 @@ class BrowserView : public BrowserWindow,
   // This is currently not used on macOS where the platform draws a native
   // scrim for window modals (NSWindow sheet).
   raw_ptr<ScrimView> window_scrim_view_ = nullptr;
+
+  // Anchor point for help bubbles and other dialogs that want to reliably
+  // anchor outside the content area of the window.
+  std::unique_ptr<user_education::ViewSubregionAnchor> dialog_anchor_;
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
