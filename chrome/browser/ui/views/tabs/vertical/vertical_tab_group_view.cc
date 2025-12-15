@@ -70,9 +70,9 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   gfx::Rect header_bounds;
   header_bounds.set_y(height);
   header_bounds.set_height(kGroupHeaderHeight);
-  // If fully bounded, the group header should respect width constraints and
-  // take up the available width excluding trailing horizontal padding.
-  if (size_bounds.is_fully_bounded()) {
+  // If width is bounded, the group header should respect the width constraints
+  // and take up the available width excluding trailing horizontal padding.
+  if (size_bounds.width().is_bounded()) {
     header_bounds.set_width(size_bounds.width().value());
   }
   layouts.child_layouts.emplace_back(
@@ -91,9 +91,9 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
     bounds.set_y(height);
     bounds.set_x(kTabLeadingPadding);
-    // If fully bounded, child views should respect width constraints and take
-    // up the available width excluding trailing horizontal padding.
-    if (size_bounds.is_fully_bounded()) {
+    // If width is bounded, child views should respect the width constraints and
+    // take up the available width excluding trailing horizontal padding.
+    if (size_bounds.width().is_bounded()) {
       bounds.set_width(size_bounds.width().value() - kTabLeadingPadding);
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);

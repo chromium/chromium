@@ -43,9 +43,9 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   for (auto* child : children) {
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
     bounds.set_y(height);
-    // If fully bounded, child views should respect width constraints and take
-    // up the available width excluding trailing horizontal padding.
-    if (size_bounds.is_fully_bounded()) {
+    // If width is bounded, child views should respect the width constraints and
+    // take up the available width excluding trailing horizontal padding.
+    if (size_bounds.width().is_bounded()) {
       bounds.set_width(size_bounds.width().value() - horizontal_padding);
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
