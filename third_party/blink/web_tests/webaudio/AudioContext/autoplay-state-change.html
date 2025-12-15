@@ -6,44 +6,10 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      const audit = new Audit.createTaskRunner();
-
-      let autoplayIgnoresWebAudioEnabled;
-
-      audit.define('autoplay-policy-setup', function(task) {
-        autoplayIgnoresWebAudioEnabled =
-            internals.runtimeFlags.autoplayIgnoresWebAudioEnabled;
-        internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = false;
-        internals.settings.setAutoplayPolicy(
-            'document-user-activation-required');
-        task.done();
-      });
-
-      audit.define('test-context-state', function(task, should) {
-        const context = new AudioContext();
-        const osc = new OscillatorNode(context);
-        osc.connect(context.destination);
-
-        activateDocument().then(() => {
-          should(context.state, 'Context state').beEqualTo('suspended');
-          osc.start();
-          should(context.state, 'Context state').beEqualTo('running');
-          task.done();
-        });
-      });
-
-      audit.define('post-test-cleanup', function(task) {
-        internals.runtimeFlags.autoplayIgnoresWebAudioEnabled =
-            autoplayIgnoresWebAudioEnabled;
-        internals.settings.setAutoplayPolicy('no-user-gesture-required');
-        task.done();
-      });
-
-      function activateDocument() {
+    <script>
+      const activateDocument = () => {
         return new Promise((resolve, reject) => {
           chrome.gpuBenchmarking.pointerActionSequence([
             {
@@ -55,9 +21,38 @@
             }
           ], resolve);
         });
-      }
+      };
 
-      audit.run();
+      promise_test(async () => {
+        const autoplayIgnoresWebAudioEnabled =
+            internals.runtimeFlags.autoplayIgnoresWebAudioEnabled;
+        internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = false;
+        internals.settings.setAutoplayPolicy(
+            'document-user-activation-required');
+
+        try {
+          const context = new AudioContext();
+          const osc = new OscillatorNode(context);
+          osc.connect(context.destination);
+
+          await activateDocument();
+
+          assert_equals(
+              context.state,
+              'suspended',
+              'Context state should be suspended before start');
+          osc.start();
+          assert_equals(
+              context.state,
+              'running',
+              'Context state should be running after start');
+
+        } finally {
+          internals.runtimeFlags.autoplayIgnoresWebAudioEnabled =
+              autoplayIgnoresWebAudioEnabled;
+          internals.settings.setAutoplayPolicy('no-user-gesture-required');
+        }
+      }, `Test if AudioContext state changes correctly after a source starts.`);
     </script>
   </body>
 </html>
