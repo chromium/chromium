@@ -395,8 +395,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+  [[[EarlGrey selectElementWithMatcher:
+                  base::ios::IsRunningOnIOS26OrLater()
+                      ? chrome_test_util::NavigationBarCloseButton()
+                      : chrome_test_util::NavigationBarDoneButton()]
+      inRoot:grey_kindOfClassName(@"UINavigationBar")]
       performAction:grey_tap()];
 
   // Check the History.

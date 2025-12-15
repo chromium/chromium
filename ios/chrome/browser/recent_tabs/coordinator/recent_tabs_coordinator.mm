@@ -116,12 +116,17 @@
       self.baseViewController.view.window.windowScene.session;
 
   // Adds the "Done" button and hooks it up to `stop`.
+  UIBarButtonSystemItem buttonItem;
+  if (@available(iOS 26, *)) {
+    buttonItem = UIBarButtonSystemItemClose;
+  } else {
+    buttonItem = UIBarButtonSystemItemDone;
+  }
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:buttonItem
                            target:self
                            action:@selector(dismissButtonTapped)];
-  [dismissButton
-      setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
+  dismissButton.accessibilityIdentifier = kTableViewNavigationDismissButtonId;
   self.recentTabsTableViewController.navigationItem.rightBarButtonItem =
       dismissButton;
 
