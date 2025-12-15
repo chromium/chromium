@@ -141,7 +141,8 @@ TEST_F(SpellCheckProviderTest, ShouldNotUseBrowserSpellCheck) {
   FakeTextCheckingResult completion;
   std::u16string text = u"This is a test";
   provider_.RequestTextChecking(
-      text, blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
+      text, /*spelling_markers=*/{},
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion));
 
   EXPECT_EQ(provider_.spelling_service_call_count_, 1U);
@@ -181,6 +182,7 @@ TEST_P(HybridSpellCheckTest, ShouldUseBrowserSpellCheckOnlyWhenNeeded) {
       test_case.language_count, test_case.enabled_language_count);
   provider_.RequestTextChecking(
       u"This is a test",
+      /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion));
 

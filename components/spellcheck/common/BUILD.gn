@@ -44,7 +44,10 @@ mojom("interfaces") {
     sources += [ "spellcheck_panel.mojom" ]
   }
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/range/mojom",
+  ]
 
   enabled_features = []
   if (use_browser_spellchecker) {

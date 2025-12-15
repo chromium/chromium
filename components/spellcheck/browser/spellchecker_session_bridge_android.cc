@@ -10,17 +10,43 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/gfx/range/range.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 
 using base::android::JavaRef;
+
+namespace {
+
+base::android::ScopedJavaLocalRef<jobjectArray> ToRangeJniArray(
+    JNIEnv* env,
+    const std::vector<gfx::Range>& spelling_markers) {
+  base::android::ScopedJavaLocalRef<jclass> range_clazz =
+      base::android::GetClass(env, "android/util/Range");
+  jobjectArray range_array =
+      env->NewObjectArray(spelling_markers.size(), range_clazz.obj(), nullptr);
+
+  base::android::CheckException(env);
+
+  int i = 0;
+  for (const auto& range : spelling_markers) {
+    base::android::ScopedJavaLocalRef<jobject> j_range =
+        Java_SpellCheckerSessionBridge_createRange(env, range.start(),
+                                                   range.end());
+    env->SetObjectArrayElement(range_array, i++, j_range.obj());
+  }
+  return base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(env,
+                                                                range_array);
+}
+}  // namespace
 
 SpellCheckerSessionBridge::SpellCheckerSessionBridge()
     : java_object_initialization_failed_(false) {}
@@ -33,13 +59,15 @@ SpellCheckerSessionBridge::~SpellCheckerSessionBridge() {
 
 void SpellCheckerSessionBridge::RequestTextCheck(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     RequestTextCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // This allows us to discard |callback| safely in case it's not run due to
   // failures in initialization of |java_object_|.
   std::unique_ptr<SpellingRequest> incoming_request =
-      std::make_unique<SpellingRequest>(text, std::move(callback));
+      std::make_unique<SpellingRequest>(text, spelling_markers,
+                                        std::move(callback));
 
   // SpellCheckerSessionBridge#create() will return null if spell checker
   // service is unavailable.
@@ -82,7 +110,8 @@ void SpellCheckerSessionBridge::RequestTextCheck(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SpellCheckerSessionBridge_requestTextCheck(
-      env, java_object_, base::android::ConvertUTF16ToJavaString(env, text));
+      env, java_object_, base::android::ConvertUTF16ToJavaString(env, text),
+      ToRangeJniArray(env, spelling_markers));
 }
 
 void SpellCheckerSessionBridge::ProcessSpellCheckResults(
@@ -128,7 +157,8 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
   if (active_request_) {
     Java_SpellCheckerSessionBridge_requestTextCheck(
         env, java_object_,
-        base::android::ConvertUTF16ToJavaString(env, active_request_->text_));
+        base::android::ConvertUTF16ToJavaString(env, active_request_->text_),
+        ToRangeJniArray(env, active_request_->spelling_markers_));
   }
 }
 
@@ -149,8 +179,11 @@ void SpellCheckerSessionBridge::DisconnectSession() {
 
 SpellCheckerSessionBridge::SpellingRequest::SpellingRequest(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     RequestTextCheckCallback callback)
-    : text_(text), callback_(std::move(callback)) {}
+    : text_(text),
+      spelling_markers_(spelling_markers),
+      callback_(std::move(callback)) {}
 
 SpellCheckerSessionBridge::SpellingRequest::~SpellingRequest() {
   // Ensure that we don't clear an uncalled RequestTextCheckCallback

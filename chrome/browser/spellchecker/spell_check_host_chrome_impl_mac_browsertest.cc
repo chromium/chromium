@@ -57,8 +57,9 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplMacBrowserTest,
                        SpellCheckReturnMessage) {
   spell_check_host_->RequestTextCheck(
-      u"zz.", base::BindOnce(&SpellCheckHostChromeImplMacBrowserTest::LogResult,
-                             base::Unretained(this)));
+      u"zz.", /*spelling_markers=*/{},
+      base::BindOnce(&SpellCheckHostChromeImplMacBrowserTest::LogResult,
+                     base::Unretained(this)));
   RunUntilResultReceived();
 
   ASSERT_EQ(1U, result_.size());

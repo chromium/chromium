@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
@@ -120,6 +121,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void RequestTextCheck(const std::u16string& text,
+                        const std::vector<gfx::Range>& spelling_markers,
                         RequestTextCheckCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::move(callback).Run(std::vector<SpellCheckResult>());

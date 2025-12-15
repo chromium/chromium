@@ -51,6 +51,7 @@ class SpellCheckClient : public blink::WebTextCheckClient {
       std::vector<blink::WebString>* optional_suggestions) override;
   void RequestCheckingOfText(
       const blink::WebString& text,
+      const std::vector<gfx::Range>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;

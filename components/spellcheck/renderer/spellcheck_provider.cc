@@ -34,6 +34,7 @@
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 #include "third_party/blink/public/web/web_text_decoration_type.h"
+#include "ui/gfx/range/range.h"
 
 using blink::WebElement;
 using blink::WebLocalFrame;
@@ -106,6 +107,7 @@ void SpellCheckProvider::ResetDictionaryUpdateObserverForTesting() {
 
 void SpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<WebTextCheckingCompletion> completion) {
@@ -149,7 +151,7 @@ void SpellCheckProvider::RequestTextChecking(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
-    RequestTextCheckingFromBrowser(text);
+    RequestTextCheckingFromBrowser(text, spelling_markers);
   }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
@@ -165,7 +167,8 @@ void SpellCheckProvider::RequestTextChecking(
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellCheckProvider::RequestTextCheckingFromBrowser(
-    const std::u16string& text) {
+    const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers) {
   DCHECK(spellcheck::UseBrowserSpellChecker());
 #if BUILDFLAG(IS_WIN)
 
@@ -203,8 +206,9 @@ void SpellCheckProvider::RequestTextCheckingFromBrowser(
   // available for browser process, so we ask the system spellchecker
   // over mojo or return an empty result if the checker is not available.
   GetSpellCheckHost().RequestTextCheck(
-      text, base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
-                           weak_factory_.GetWeakPtr(), last_identifier_, text));
+      text, spelling_markers,
+      base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
+                     weak_factory_.GetWeakPtr(), last_identifier_, text));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -224,7 +228,7 @@ void SpellCheckProvider::OnRespondInitializeDictionaries(
   // the SpellChecker is initialized before performing a spellcheck.
   spellcheck_->Initialize(std::move(dictionaries), custom_words, enable);
 
-  RequestTextCheckingFromBrowser(text);
+  RequestTextCheckingFromBrowser(text, /*spelling_markers=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -304,10 +308,11 @@ void SpellCheckProvider::CheckSpelling(
 
 void SpellCheckProvider::RequestCheckingOfText(
     const WebString& text,
+    const std::vector<gfx::Range>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<WebTextCheckingCompletion> completion) {
-  RequestTextChecking(text.Utf16(), should_force_refresh,
+  RequestTextChecking(text.Utf16(), spelling_markers, should_force_refresh,
                       std::move(completion));
   spellcheck_renderer_metrics::RecordAsyncCheckedTextLength(
       base::saturated_cast<int>(text.length()));

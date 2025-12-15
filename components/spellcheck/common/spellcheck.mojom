@@ -6,6 +6,7 @@ module spellcheck.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 // Render process interface exposed to the browser for receiving process-
 // wide spellcheck control and updates from the browser process.
@@ -55,9 +56,11 @@ interface SpellCheckHost {
       => (bool success, array<SpellCheckResult> results);
 
   // Asks the host to spellcheck the |text| using a platform-specific spell
-  // checker, and returns the spellchecked |results|.
+  // checker, and returns the spellchecked |results|. The spell checker is
+  // also informed about the existing spelling markers.
   [EnableIf=USE_BROWSER_SPELLCHECKER]
-  RequestTextCheck(mojo_base.mojom.String16 text)
+  RequestTextCheck(mojo_base.mojom.String16 text,
+    array<gfx.mojom.Range> spelling_markers)
       => (array<SpellCheckResult> results);
 
   // Disconnects the Android spell checker session bridge.

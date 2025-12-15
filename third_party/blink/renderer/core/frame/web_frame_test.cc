@@ -6978,6 +6978,7 @@ class TextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      const std::vector<gfx::Range>& spelling_markers,
       WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     ++number_of_times_checked_;
@@ -7124,6 +7125,7 @@ class StubbornTextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      const std::vector<gfx::Range>& spelling_markers,
       WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     completion_ = std::move(completion);

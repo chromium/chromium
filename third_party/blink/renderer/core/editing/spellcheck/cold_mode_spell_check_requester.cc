@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/scheduler/idle_deadline.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "ui/gfx/range/range.h"
 
 namespace blink {
 
@@ -230,8 +231,9 @@ bool ColdModeSpellCheckRequester::RequestCheckingForNextChunk() {
           : std::min(extended_end, remaining_range.EndPosition());
   const EphemeralRange check_range(chunk_start, check_end);
 
-  GetSpellCheckRequester().RequestCheckingFor(check_range, chunk_index,
-                                              /*should_force_refresh=*/false);
+  GetSpellCheckRequester().RequestCheckingFor(
+      check_range, /*spelling_markers=*/{}, chunk_index,
+      /*should_force_refresh=*/false);
 
   last_chunk_index_ = chunk_index;
   remaining_check_range_->setStart(check_range.EndPosition());

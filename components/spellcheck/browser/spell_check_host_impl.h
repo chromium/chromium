@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
@@ -43,6 +44,7 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
   void RequestTextCheck(const std::u16string& text,
+                        const std::vector<gfx::Range>& spelling_markers,
                         RequestTextCheckCallback callback) override;
 
 #if BUILDFLAG(IS_WIN)

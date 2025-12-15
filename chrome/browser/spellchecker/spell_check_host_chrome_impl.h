@@ -14,6 +14,7 @@
 #include "components/spellcheck/browser/spell_check_host_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(ENABLE_SPELLING_SERVICE)
 #include "components/spellcheck/browser/spelling_service_client.h"
@@ -81,6 +82,7 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
   void RequestTextCheck(const std::u16string& text,
+                        const std::vector<gfx::Range>& spelling_markers,
                         RequestTextCheckCallback callback) override;
 
 #if BUILDFLAG(IS_WIN)

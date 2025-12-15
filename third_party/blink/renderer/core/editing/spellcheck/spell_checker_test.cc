@@ -151,7 +151,8 @@ TEST_F(SpellCheckerTest,
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check, /*spelling_markers=*/{},
+      /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -178,7 +179,8 @@ TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check, /*spelling_markers=*/{},
+      /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -206,7 +208,8 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check, /*spelling_markers=*/{},
+      /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;

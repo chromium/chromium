@@ -125,11 +125,12 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
-  SpellCheckProvider::RequestTextChecking(text, should_force_refresh,
-                                          std::move(completion));
+  SpellCheckProvider::RequestTextChecking(
+      text, spelling_markers, should_force_refresh, std::move(completion));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -172,8 +173,10 @@ void TestingSpellCheckProvider::ResetResult() {
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void TestingSpellCheckProvider::RequestTextCheck(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     RequestTextCheckCallback callback) {
-  text_check_requests_.push_back(std::make_pair(text, std::move(callback)));
+  text_check_requests_.emplace_back(text, spelling_markers,
+                                    std::move(callback));
 }
 
 #if BUILDFLAG(ENABLE_SPELLING_SERVICE)

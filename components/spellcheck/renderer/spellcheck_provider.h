@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include <unordered_map>
@@ -69,6 +70,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // when typing in the middle of a word.
   void RequestTextChecking(
       const std::u16string& text,
+      const std::vector<gfx::Range>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
@@ -118,6 +120,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
       std::vector<blink::WebString>* optional_suggestions) override;
   void RequestCheckingOfText(
       const blink::WebString& text,
+      const std::vector<gfx::Range>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
@@ -139,7 +142,9 @@ class SpellCheckProvider : public content::RenderFrameObserver,
                           const std::vector<SpellCheckResult>& results);
 
   // Makes mojo calls to the browser process to perform platform spellchecking.
-  void RequestTextCheckingFromBrowser(const std::u16string& text);
+  void RequestTextCheckingFromBrowser(
+      const std::u16string& text,
+      const std::vector<gfx::Range>& spelling_markers);
 
 #if BUILDFLAG(IS_WIN)
   // Callback for when spellcheck service has been initialized on demand.

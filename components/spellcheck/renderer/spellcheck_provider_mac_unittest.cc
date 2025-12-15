@@ -20,16 +20,22 @@ TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
   FakeTextCheckingResult completion;
 
   provider_.RequestTextChecking(
-      u"hello ",
+      u"helo worldd",
+      /*spelling_markers=*/{gfx::Range(0, 4), gfx::Range(5, 11)},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(completion.completion_count_, 0U);
   EXPECT_EQ(provider_.text_check_requests_.size(), 1U);
   EXPECT_EQ(provider_.pending_text_request_size(), 1U);
 
-  const auto& text = provider_.text_check_requests_.back().first;
-  auto& callback = provider_.text_check_requests_.back().second;
-  EXPECT_EQ(text, u"hello ");
+  const auto& text = std::get<0>(provider_.text_check_requests_.back());
+  const auto& spelling_markers =
+      std::get<1>(provider_.text_check_requests_.back());
+  auto& callback = std::get<2>(provider_.text_check_requests_.back());
+  EXPECT_EQ(text, u"helo worldd");
+  EXPECT_EQ(spelling_markers.size(), 2U);
+  EXPECT_EQ(spelling_markers[0], gfx::Range(0, 4));
+  EXPECT_EQ(spelling_markers[1], gfx::Range(5, 11));
   EXPECT_TRUE(callback);
 
   std::vector<SpellCheckResult> fake_results;
@@ -45,12 +51,12 @@ TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
 TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
   FakeTextCheckingResult completion1;
   provider_.RequestTextChecking(
-      u"hello ",
+      u"hello ", /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion1));
   FakeTextCheckingResult completion2;
   provider_.RequestTextChecking(
-      u"bye ",
+      u"byee ", /*spelling_markers=*/{gfx::Range(0, 4)},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion2));
 
@@ -59,14 +65,21 @@ TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
   EXPECT_EQ(provider_.text_check_requests_.size(), 2U);
   EXPECT_EQ(provider_.pending_text_request_size(), 2U);
 
-  const auto& text1 = provider_.text_check_requests_[0].first;
-  auto& callback1 = provider_.text_check_requests_[0].second;
+  const auto& text1 = std::get<0>(provider_.text_check_requests_[0]);
+  const auto& spelling_markers1 =
+      std::get<1>(provider_.text_check_requests_[0]);
+  auto& callback1 = std::get<2>(provider_.text_check_requests_[0]);
   EXPECT_EQ(text1, u"hello ");
+  EXPECT_EQ(spelling_markers1.size(), 0U);
   EXPECT_TRUE(callback1);
 
-  const auto& text2 = provider_.text_check_requests_[1].first;
-  auto& callback2 = provider_.text_check_requests_[1].second;
-  EXPECT_EQ(text2, u"bye ");
+  const auto& text2 = std::get<0>(provider_.text_check_requests_[1]);
+  const auto& spelling_markers2 =
+      std::get<1>(provider_.text_check_requests_[1]);
+  auto& callback2 = std::get<2>(provider_.text_check_requests_[1]);
+  EXPECT_EQ(text2, u"byee ");
+  EXPECT_EQ(spelling_markers2.size(), 1U);
+  EXPECT_EQ(spelling_markers2[0], gfx::Range(0, 4));
   EXPECT_TRUE(callback2);
 
   std::vector<SpellCheckResult> fake_results;
@@ -89,16 +102,19 @@ TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
 TEST_F(SpellCheckProviderMacTest, CancelOneIfTwoRoundtripsAreIdentical) {
   FakeTextCheckingResult completion1;
   provider_.RequestTextChecking(
-      u"hello ",
+      u"hello ", /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion1));
 
   EXPECT_EQ(completion1.completion_count_, 0U);
   EXPECT_EQ(provider_.text_check_requests_.size(), 1U);
 
-  const auto& text1 = provider_.text_check_requests_[0].first;
-  auto& callback1 = provider_.text_check_requests_[0].second;
+  const auto& text1 = std::get<0>(provider_.text_check_requests_[0]);
+  const auto& spelling_markers1 =
+      std::get<1>(provider_.text_check_requests_[0]);
+  auto& callback1 = std::get<2>(provider_.text_check_requests_[0]);
   EXPECT_EQ(text1, u"hello ");
+  EXPECT_EQ(spelling_markers1.size(), 0U);
   EXPECT_TRUE(callback1);
 
   std::vector<SpellCheckResult> fake_results;
@@ -108,7 +124,7 @@ TEST_F(SpellCheckProviderMacTest, CancelOneIfTwoRoundtripsAreIdentical) {
 
   FakeTextCheckingResult completion2;
   provider_.RequestTextChecking(
-      u"hello ",
+      u"hello ", /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion2));
 
@@ -123,16 +139,19 @@ TEST_F(SpellCheckProviderMacTest,
        SendAllIdenticalRequestsIfShouldForceRefreshFlagIsEnabled) {
   FakeTextCheckingResult completion1;
   provider_.RequestTextChecking(
-      u"hello ",
+      u"hello ", /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kYes,
       std::make_unique<FakeTextCheckingCompletion>(&completion1));
 
   EXPECT_EQ(completion1.completion_count_, 0U);
   EXPECT_EQ(provider_.text_check_requests_.size(), 1U);
 
-  const auto& text1 = provider_.text_check_requests_[0].first;
-  auto& callback1 = provider_.text_check_requests_[0].second;
+  const auto& text1 = std::get<0>(provider_.text_check_requests_[0]);
+  const auto& spelling_markers1 =
+      std::get<1>(provider_.text_check_requests_[0]);
+  auto& callback1 = std::get<2>(provider_.text_check_requests_[0]);
   EXPECT_EQ(text1, u"hello ");
+  EXPECT_EQ(spelling_markers1.size(), 0U);
   EXPECT_TRUE(callback1);
 
   std::vector<SpellCheckResult> fake_results;
@@ -142,7 +161,7 @@ TEST_F(SpellCheckProviderMacTest,
 
   FakeTextCheckingResult completion2;
   provider_.RequestTextChecking(
-      u"hello ",
+      u"hello ", /*spelling_markers=*/{},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kYes,
       std::make_unique<FakeTextCheckingCompletion>(&completion2));
 
@@ -150,9 +169,12 @@ TEST_F(SpellCheckProviderMacTest,
   EXPECT_EQ(provider_.text_check_requests_.size(), 2U);
   EXPECT_EQ(provider_.pending_text_request_size(), 1U);
 
-  const auto& text2 = provider_.text_check_requests_[1].first;
-  auto& callback2 = provider_.text_check_requests_[1].second;
+  const auto& text2 = std::get<0>(provider_.text_check_requests_[1]);
+  const auto& spelling_markers2 =
+      std::get<1>(provider_.text_check_requests_[1]);
+  auto& callback2 = std::get<2>(provider_.text_check_requests_[1]);
   EXPECT_EQ(text2, u"hello ");
+  EXPECT_EQ(spelling_markers2.size(), 0U);
   EXPECT_TRUE(callback2);
   std::move(callback2).Run(fake_results);
   base::RunLoop().RunUntilIdle();

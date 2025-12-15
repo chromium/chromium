@@ -158,6 +158,7 @@ void SpellCheckHostChromeImpl::FillSuggestionList(
 
 void SpellCheckHostChromeImpl::RequestTextCheck(
     const std::u16string& text,
+    const std::vector<gfx::Range>& spelling_markers,
     RequestTextCheckCallback callback) {
   DCHECK(!text.empty());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
