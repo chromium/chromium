@@ -20,7 +20,6 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/common/features.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -71,22 +70,11 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     // https), but the embedded test server runs on a random port and adds it to
     // the url spec.
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
-
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, we disable the feature that automatically scales web content
-    // because it is not meaningful and would change expected values.
-    scoped_feature_list_.InitWithFeatureStates(
-        {{kPropagateDeviceContentFiltersToSupervisedUser, true},
-         { features::kAndroidDesktopZoomScaling,
-           false }});
-#else
-    feature_list_.InitWithFeatureStates(
-        {{kPropagateDeviceContentFiltersToSupervisedUser, true}});
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
 };
 
 // With disabled search content filters, the navigation is unchanged and safe
@@ -172,22 +160,9 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     navigation_observer.Wait();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, we disable the feature that automatically scales web content
-    // because it is not meaningful and would change expected values.
-    scoped_feature_list_.InitWithFeatureStates(
-        {{kSupervisedUserInterstitialWithoutApprovals, true},
-         { features::kAndroidDesktopZoomScaling,
-           false }});
-#else
-    feature_list_.InitWithFeatureStates(
-        {{kSupervisedUserInterstitialWithoutApprovals, true}});
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kSupervisedUserInterstitialWithoutApprovals};
 };
 
 // Shows the interstitial page when the search content filter is enabled.

@@ -6,7 +6,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -45,19 +44,9 @@ class StandardizedBrowserZoomPolicyBrowserTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, we disable the feature that automatically scales web content
-    // because it is not meaningful and would change expected values.
-    feature_list_.InitWithFeatureStates(
-        {{blink::features::kStandardizedBrowserZoom, true},
-         {blink::features::kStandardizedBrowserZoomOptOut, false},
-         { features::kAndroidDesktopZoomScaling,
-           false }});
-#else
     feature_list_.InitWithFeatureStates(
         {{blink::features::kStandardizedBrowserZoom, true},
          {blink::features::kStandardizedBrowserZoomOptOut, false}});
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUpInProcessBrowserTestFixture() override {
