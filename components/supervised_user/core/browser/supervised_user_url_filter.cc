@@ -217,7 +217,7 @@ bool IsAlwaysAllowedHost(const GURL& effective_url) {
   constexpr auto kAllowedHosts = base::MakeFixedFlatSet<std::string_view>(
       {"accounts.google.com", "families.google.com", "familylink.google.com",
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
-       "support.google.com", "myactivity.google.com"});
+       "support.google.com", "myactivity.google.com", "families.google"});
 
   return base::Contains(kAllowedHosts, effective_url.host());
 }
