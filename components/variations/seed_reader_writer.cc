@@ -858,7 +858,8 @@ StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
                                    &compressed_seed_data)) {
       return StoreSeedResult::kFailedGzip;
     }
-    seed_data = base::Base64Encode(compressed_seed_data);
+    seed_data = base::Base64EncodeEarlyStartup(
+        base::as_byte_span(compressed_seed_data));
   }
   local_state_->SetString(fields_prefs_->seed, seed_data);
   local_state_->SetString(fields_prefs_->signature, seed_info.signature);
@@ -901,7 +902,8 @@ void SeedReaderWriter::MigrateToLocalState() {
   if (success && !seed_file_data.empty()) {
     std::string seed_data = seed_file_data == kIdenticalToSafeSeedSentinel
                                 ? kIdenticalToSafeSeedSentinel
-                                : base::Base64Encode(seed_file_data);
+                                : base::Base64EncodeEarlyStartup(
+                                      base::as_byte_span(seed_file_data));
     local_state_->SetString(fields_prefs_->seed, seed_data);
   }
   DeleteOldSeedFile();
