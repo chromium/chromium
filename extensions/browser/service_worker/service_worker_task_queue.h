@@ -531,6 +531,10 @@ class ServiceWorkerTaskQueue
   // Manages worker registration retries for an activation token.
   RetryMap worker_registration_retries_;
 
+  // Manages worker registration retries for an activation token when waiting
+  // for an unregistration to complete.
+  RetryMap worker_unregistration_wait_retries_;
+
   // A set of service worker registrations that are pending storage.
   // These are registrations that succeeded in the first step (triggering
   // `DidRegisterServiceWorker`), but have not yet been stored.
@@ -538,6 +542,12 @@ class ServiceWorkerTaskQueue
   // `OnRegistrationStoredSync`. The key is the extension's ID and the value is
   // the activation token expected for that registration.
   std::map<ExtensionId, base::UnguessableToken> pending_storage_registrations_;
+
+  // A set of service worker unregistrations that are pending completion.
+  // These are cleared out once `DidUnregisterServiceWorker` is called.
+  // New requests to register a service worker for the same extension will get
+  // retried to allow the unregistration to complete first.
+  std::set<ExtensionId> pending_unregistrations_;
 
   // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`
   // or could we used `ExtensionId` instead?
