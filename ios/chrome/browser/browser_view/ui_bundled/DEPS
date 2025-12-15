@@ -3,7 +3,7 @@ include_rules = [
   "+components/collaboration/public",
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/app_launcher/model",
-  "+ios/chrome/browser/app_store_rating/ui_bundled/features.h",
+  "+ios/chrome/browser/app_store_rating/model/features.h",
   "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/autofill/model",

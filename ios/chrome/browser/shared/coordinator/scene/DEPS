@@ -1,7 +1,7 @@
 include_rules = [
   "+components/data_sharing/public",
   "+ios/chrome/browser/ai_prototyping/coordinator",
-  "+ios/chrome/browser/app_store_rating/ui_bundled",
+  "+ios/chrome/browser/app_store_rating/model",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/authentication/account_menu",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
+#import "ios/chrome/browser/app_store_rating/model/app_store_rating_scene_agent.h"
 
 #import <algorithm>
 
@@ -10,7 +10,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"

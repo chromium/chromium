@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ui_bundled") {
+source_set("model") {
   sources = [
     "app_store_rating_display_handler.h",
     "app_store_rating_display_handler.mm",
@@ -46,7 +46,7 @@ source_set("unit_tests") {
   sources = [ "app_store_rating_scene_agent_unittest.mm" ]
   deps = [
     ":features",
-    ":ui_bundled",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/metrics",

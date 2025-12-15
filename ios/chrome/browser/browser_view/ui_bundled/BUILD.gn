@@ -57,7 +57,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ai_prototyping/coordinator",
     "//ios/chrome/browser/app_launcher/model",
-    "//ios/chrome/browser/app_store_rating/ui_bundled:features",
+    "//ios/chrome/browser/app_store_rating/model:features",
     "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",

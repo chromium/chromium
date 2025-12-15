@@ -188,7 +188,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ai_prototyping/utils:unit_tests",
     "//ios/chrome/browser/alert_view/ui_bundled:unit_tests",
     "//ios/chrome/browser/app_launcher/model:unit_tests",
-    "//ios/chrome/browser/app_store_rating/ui_bundled:unit_tests",
+    "//ios/chrome/browser/app_store_rating/model:unit_tests",
     "//ios/chrome/browser/authentication/account_menu/coordinator:unit_tests",
     "//ios/chrome/browser/authentication/account_menu/ui:unit_tests",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator:unit_tests",

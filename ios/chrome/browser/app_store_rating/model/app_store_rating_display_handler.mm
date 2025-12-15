@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_display_handler.h"
+#import "ios/chrome/browser/app_store_rating/model/app_store_rating_display_handler.h"
 
 #import "base/check.h"
 #import "components/feature_engagement/public/feature_constants.h"
