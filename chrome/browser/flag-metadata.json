@@ -1932,6 +1932,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "composebox-attachments-typed-state",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name":"composebox-autoattach-tab",
     "owners": ["stkhapugin@google.com","christianxu@google.com"],
     "expiry_milestone": 145
@@ -1945,6 +1950,16 @@
     "name": "composebox-devtools",
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145
+  },
+  {
+    "name": "composebox-fetch-contextual-suggestions-for-image",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "composebox-fetch-contextual-suggestions-for-multiple-attachments",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "composebox-force-top",
