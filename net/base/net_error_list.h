@@ -137,6 +137,10 @@ NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
 // The request was blocked by fingerprinting protections.
 NET_ERROR(BLOCKED_BY_FINGERPRINTING_PROTECTION, -34)
 
+// The request was blocked by the Incognito Mode URL block list configured by
+// the domain administrator.
+NET_ERROR(BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR, -35)
+
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
 

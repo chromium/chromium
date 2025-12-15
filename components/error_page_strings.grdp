@@ -421,4 +421,13 @@
   <message name="IDS_ERRORPAGE_DINO_SLOW_SPEED_TOGGLE" desc="Label for a toggle which allows a user to select a slower speed for the dino game.">
     Start slower
   </message>
+  <message name="IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR" desc="Heading of the error page when an administrator policy blocks a URL in Incognito mode.">
+    You can’t visit this page in Incognito mode
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR" desc="Summary in the error page when an administrator policy blocks a URL in Incognito mode.">
+    Your organization has blocked <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.example.com</ex></ph> in Incognito mode.
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR_SCHEME" desc="Summary in the error page when an administrator policy blocks a URL scheme in Incognito mode.">
+    Your organization has blocked “<ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>mailto</ex></ph>” links in Incognito mode.
+  </message>
 </grit-part>

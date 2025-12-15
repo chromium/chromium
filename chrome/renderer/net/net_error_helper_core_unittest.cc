@@ -478,6 +478,12 @@ TEST_F(NetErrorHelperCoreTest, GetErrorPageStateStringPlaceholders) {
           {{"summary.msg", failed_url_host}},
       },
       {
+          "case IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR",
+          net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
           "case IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED",
           net::ERR_CONNECTION_FAILED,
           error_page::Error::kNetErrorDomain,

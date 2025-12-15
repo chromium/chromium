@@ -79,6 +79,10 @@ class LocalizedError {
   static bool HasStrings(const std::string& error_domain, int error_code);
 
   static bool IsOfflineError(const std::string& error_domain, int error_code);
+
+  // Returns true if the error is due to a URL blocked by administrator through
+  // a URL blocklist policy.
+  static bool IsBlockedByAdministratorError(int error_code);
 };
 
 }  // namespace error_page
