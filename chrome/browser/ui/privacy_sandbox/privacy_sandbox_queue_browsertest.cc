@@ -451,8 +451,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueNoticeWithEsbNoticeBrowserTest,
 }
 
 // The tailored security notice should show after the privacy sandbox notice.
+// TODO(crbug.com/466923026): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EsbNoticeShowsAfterPS DISABLED_EsbNoticeShowsAfterPS
+#else
+#define MAYBE_EsbNoticeShowsAfterPS EsbNoticeShowsAfterPS
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueNoticeWithEsbNoticeBrowserTest,
-                       EsbNoticeShowsAfterPS) {
+                       MAYBE_EsbNoticeShowsAfterPS) {
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       PrivacySandboxDialogView::kViewClassName);
