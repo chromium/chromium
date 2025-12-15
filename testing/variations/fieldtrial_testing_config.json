@@ -23329,7 +23329,7 @@
                         "respect_navigation_preload": "true",
                         "use_allowlist": "false"
                     },
-                    "enable_features": [
+                    "disable_features": [
                         "ServiceWorkerAutoPreload"
                     ]
                 }
