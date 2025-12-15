@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.view.View;
 
@@ -22,9 +23,11 @@ import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -56,6 +59,9 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     public Item unpinTab;
     public Item closeTab;
 
+    /**
+     * @param tabId the id of the tab that this context menu is for.
+     */
     public TabSwitcherTabCardContextMenuFacility(@TabId int tabId) {
         mTabId = tabId;
     }
@@ -72,10 +78,6 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
         pinTab = declarePossibleItemWithText(items, "Pin tab");
         unpinTab = declarePossibleItemWithText(items, "Unpin tab");
         closeTab = declarePossibleItemWithText(items, "Close tab");
-    }
-
-    private Item declarePossibleItemWithText(ItemsBuilder builder, String text) {
-        return builder.declarePossibleItem(getItemViewSpec(text), withMenuItemTitle(text));
     }
 
     /**
@@ -113,6 +115,36 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
                         .enterFacility(newTabGroupDialogFacility);
         softKeyboard.close(newTabGroupDialogFacility.dialogElement);
         return newTabGroupDialogFacility;
+    }
+
+    /** Click Pin Tab. This should only be possible if the tab is unpinned. */
+    public void pinTab() {
+        checkItemsAbsent(unpinTab);
+        changePinnedState(/* newPinnedState= */ true, pinTab);
+    }
+
+    /** Click Unpin Tab. This should only be possible if the tab is pinned. */
+    public void unpinTab() {
+        checkItemsAbsent(pinTab);
+        changePinnedState(/* newPinnedState= */ false, unpinTab);
+    }
+
+    private void changePinnedState(boolean newPinnedState, Item pinListItem) {
+        assertTrue(ChromeFeatureList.sAndroidPinnedTabs.isEnabled());
+
+        noopTo().waitFor(
+                        new TabsPinnedStatusCondition(
+                                mHostStation.getTabModel(), List.of(mTabId), !newPinnedState));
+
+        pinListItem
+                .scrollToAndSelectTo()
+                .waitFor(
+                        new TabsPinnedStatusCondition(
+                                mHostStation.getTabModel(), List.of(mTabId), newPinnedState));
+    }
+
+    private Item declarePossibleItemWithText(ItemsBuilder builder, String text) {
+        return builder.declarePossibleItem(getItemViewSpec(text), withMenuItemTitle(text));
     }
 
     private ViewSpec<View> getItemViewSpec(String text) {

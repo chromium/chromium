@@ -331,7 +331,10 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 }
             }
 
-            return scrollToItemTo().enterFacility(focusedItem);
+            // The earlier check requires 100% of the item to be displayed, while scrolling logic
+            // only guarantees 90%>= will be displayed at this moment.
+            // For this reason, this may already be fulfilled.
+            return scrollToItemTo().withPossiblyAlreadyFulfilled().enterFacility(focusedItem);
         }
 
         public @Presence int getPresence() {

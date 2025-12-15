@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -80,6 +81,8 @@ public class TabSwitcherCardContextMenuTest {
                 .clickAddTabToNewGroup()
                 .pressDone();
 
+        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
+        // the Tab Switcher.
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
         assertFinalDestination(ntp);
     }
@@ -115,6 +118,8 @@ public class TabSwitcherCardContextMenuTest {
         assertNotNull(secondTab.getTabGroupId());
         assertNotEquals(firstTab.getTabGroupId(), secondTab.getTabGroupId());
 
+        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
+        // the Tab Switcher.
         ntp = tabSwitcher.openNewTab();
         assertFinalDestination(ntp);
     }
@@ -133,6 +138,49 @@ public class TabSwitcherCardContextMenuTest {
         contextMenu.share.checkAbsent();
         contextMenu.pressBackTo().exitFacility();
 
+        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
+        // the Tab Switcher.
+        ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testTabCardMenuInTabSwitcher_pinAndUnpinTab() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.value();
+        int firstTabId = firstTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
+
+        tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().pinTab();
+        tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().unpinTab();
+
+        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
+        // the Tab Switcher.
+        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testTabCardMenuInTabSwitcher_pinnedTabsDisabled() {
+        RegularNewTabPageStation ntp = mFirstPage.openRegularTabSwitcher().openNewTab();
+        Tab secondTab = ntp.loadedTabElement.value();
+        @TabId int secondTabId = secondTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher = ntp.openRegularTabSwitcher();
+
+        TabSwitcherTabCardContextMenuFacility<TabSwitcherStation> contextMenu =
+                tabSwitcher.expectTabCard(secondTabId, secondTab.getTitle()).showContextMenu();
+        contextMenu.pinTab.checkAbsent();
+        contextMenu.unpinTab.checkAbsent();
+        contextMenu.pressBackTo().exitFacility();
+
+        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
+        // the Tab Switcher.
         ntp = tabSwitcher.openNewTab();
         assertFinalDestination(ntp);
     }
