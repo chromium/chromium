@@ -181,6 +181,11 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);
 
+  // Notifies the ActiveTaskContextProvider about the current session state.
+  // This checks both the side panel and the active tab for a valid session
+  // handle.
+  void NotifyActiveTaskContextProvider();
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
