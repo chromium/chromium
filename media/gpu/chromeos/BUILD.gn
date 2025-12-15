@@ -216,8 +216,8 @@ source_set("video_frame_mapper") {
   sources = [
     "generic_dmabuf_video_frame_mapper.cc",
     "generic_dmabuf_video_frame_mapper.h",
-    "gpu_memory_buffer_video_frame_mapper.cc",
-    "gpu_memory_buffer_video_frame_mapper.h",
+    "mappable_si_video_frame_mapper.cc",
+    "mappable_si_video_frame_mapper.h",
   ]
 
   deps = [

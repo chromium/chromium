@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/chromeos/gpu_memory_buffer_video_frame_mapper.h"
+#include "media/gpu/chromeos/mappable_si_video_frame_mapper.h"
 
 #include <sys/mman.h>
 
@@ -14,16 +14,15 @@
 
 namespace media {
 // static
-std::unique_ptr<GpuMemoryBufferVideoFrameMapper>
-GpuMemoryBufferVideoFrameMapper::Create(VideoPixelFormat format) {
-  return base::WrapUnique(new GpuMemoryBufferVideoFrameMapper(format));
+std::unique_ptr<MappableSIVideoFrameMapper> MappableSIVideoFrameMapper::Create(
+    VideoPixelFormat format) {
+  return base::WrapUnique(new MappableSIVideoFrameMapper(format));
 }
 
-GpuMemoryBufferVideoFrameMapper::GpuMemoryBufferVideoFrameMapper(
-    VideoPixelFormat format)
+MappableSIVideoFrameMapper::MappableSIVideoFrameMapper(VideoPixelFormat format)
     : VideoFrameMapper(format) {}
 
-scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
+scoped_refptr<VideoFrame> MappableSIVideoFrameMapper::MapFrame(
     scoped_refptr<const FrameResource> video_frame,
     int permissions) {
   if (!video_frame) {

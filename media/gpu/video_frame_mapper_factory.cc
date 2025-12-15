@@ -11,7 +11,7 @@
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 // These includes are used for non-ChromeOS platforms as well.
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
-#include "media/gpu/chromeos/gpu_memory_buffer_video_frame_mapper.h"
+#include "media/gpu/chromeos/mappable_si_video_frame_mapper.h"
 #endif
 
 #if BUILDFLAG(USE_VAAPI)
@@ -38,7 +38,7 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoFrame::StorageType storage_type,
     bool force_linear_buffer_mapper) {
   if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    return GpuMemoryBufferVideoFrameMapper::Create(format);
+    return MappableSIVideoFrameMapper::Create(format);
   }
 
   if (force_linear_buffer_mapper) {
