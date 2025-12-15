@@ -13861,21 +13861,6 @@
             ]
         }
     ],
-    "IOSProactiveSuggestionsFramework": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProactiveSuggestionsFramework"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReaderModeWithTranslate": [
         {
             "platforms": [
@@ -15460,7 +15445,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AskGeminiChip"
+                        "AskGeminiChip",
+                        "ProactiveSuggestionsFramework"
                     ]
                 }
             ]
