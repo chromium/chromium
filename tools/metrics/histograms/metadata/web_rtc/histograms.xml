@@ -2499,7 +2499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Decode.{Codec}" enum="Boolean"
-    expires_after="2026-01-04">
+    expires_after="2027-01-04">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -2516,7 +2516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Encode.{Codec}"
-    enum="EncodeScalabilityMode" expires_after="2026-01-04">
+    enum="EncodeScalabilityMode" expires_after="2027-01-04">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
