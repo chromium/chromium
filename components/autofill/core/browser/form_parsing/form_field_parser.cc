@@ -219,7 +219,7 @@ bool FormFieldParser::MatchesRegexWithCache(
   }
   const icu::RegexPattern* regex_pattern =
       context.regex_cache->GetRegexPattern(pattern);
-  bool result = MatchesRegex(input, *regex_pattern, groups);
+  bool result = MatchesRegex(input, regex_pattern, groups);
   if (!groups && context.matches_cache) {
     context.matches_cache->Put(key, result);
   }

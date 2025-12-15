@@ -26,7 +26,7 @@ bool MatchesRegex(std::u16string_view input,
                   std::u16string_view regex,
                   std::vector<std::u16string>* groups = nullptr) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
-  return autofill::MatchesRegex(input, *cache->GetRegexPattern(regex), groups);
+  return autofill::MatchesRegex(input, cache->GetRegexPattern(regex), groups);
 }
 
 std::optional<std::vector<std::u16string>> SplitByRegex(

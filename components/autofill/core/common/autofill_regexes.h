@@ -37,7 +37,7 @@ std::unique_ptr<const icu::RegexPattern> CompileRegex(
 // are written into it.
 // Thread-safe.
 bool MatchesRegex(std::u16string_view input,
-                  const icu::RegexPattern& regex_pattern,
+                  const icu::RegexPattern* regex_pattern,
                   std::vector<std::u16string>* groups = nullptr);
 
 // Calls MatchesRegex() after compiling the `regex` on the first call and
@@ -49,7 +49,7 @@ bool MatchesRegex(std::u16string_view input,
                   std::vector<std::u16string>* groups = nullptr) {
   static base::NoDestructor<std::unique_ptr<const icu::RegexPattern>>
       regex_pattern(CompileRegex(regex));
-  return MatchesRegex(input, **regex_pattern, groups);
+  return MatchesRegex(input, regex_pattern->get(), groups);
 }
 
 // Splits `input` into up to `max_groups` segments. Returns a vector of segments

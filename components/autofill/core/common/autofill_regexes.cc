@@ -8,9 +8,12 @@
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace {
 
@@ -28,13 +31,27 @@ std::unique_ptr<const icu::RegexPattern> CompileRegex(
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::RegexPattern> regex_pattern = base::WrapUnique(
       icu::RegexPattern::compile(icu_regex, UREGEX_CASE_INSENSITIVE, status));
-  DCHECK(U_SUCCESS(status));
+
+  // TODO(crbug.com/468309430): The following is temporary instrumentation to
+  // investigate regex compilation failures. Once fixed, replace this with
+  // `CHECK(U_SUCCESS(status));`
+  if (U_FAILURE(status)) {
+    SCOPED_CRASH_KEY_STRING32("autofill", "bad-regex",
+                              base::UTF16ToUTF8(regex));
+    DUMP_WILL_BE_NOTREACHED();
+    return nullptr;
+  }
   return regex_pattern;
 }
 
 bool MatchesRegex(std::u16string_view input,
-                  const icu::RegexPattern& regex_pattern,
+                  const icu::RegexPattern* regex_pattern,
                   std::vector<std::u16string>* groups) {
+  // TODO(crbug.com/468309430): Make this a `CHECK` once issue is fixed.
+  if (!regex_pattern) {
+    return false;
+  }
+
   if (input.size() > kMaxStringLength)
     return false;
 
@@ -43,7 +60,7 @@ bool MatchesRegex(std::u16string_view input,
   // it.
   icu::UnicodeString icu_input(false, input.data(), input.length());
   std::unique_ptr<icu::RegexMatcher> regex_matcher =
-      base::WrapUnique(regex_pattern.matcher(icu_input, status));
+      base::WrapUnique(regex_pattern->matcher(icu_input, status));
   UBool matched = regex_matcher->find(0, status);
   DCHECK(U_SUCCESS(status));
 

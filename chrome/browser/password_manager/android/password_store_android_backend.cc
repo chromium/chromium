@@ -89,7 +89,7 @@ bool MatchesRegexWithCache(std::u16string_view input,
   static base::NoDestructor<autofill::AutofillRegexCache> cache(
       autofill::ThreadSafe(true));
   const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);
-  return autofill::MatchesRegex(input, *regex_pattern);
+  return autofill::MatchesRegex(input, regex_pattern);
 }
 
 bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,

@@ -24,7 +24,7 @@ bool MatchesPattern(std::u16string_view input, std::string_view pattern_name) {
       GetMatchPatterns(pattern_name, LanguageCode(""), *GetActivePatternFile());
   return std::ranges::any_of(patterns, [&](MatchPatternRef pattern_ref) {
     return MatchesRegex(
-        input, *cache->GetRegexPattern((*pattern_ref).positive_pattern));
+        input, cache->GetRegexPattern((*pattern_ref).positive_pattern));
   });
 }
 

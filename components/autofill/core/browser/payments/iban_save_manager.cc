@@ -322,7 +322,8 @@ void IbanSaveManager::OnDidGetUploadDetails(
   // Upload should only be offered when result is `kSuccess` and the IBAN passes
   // regex validation.
   if (result == PaymentsRpcResult::kSuccess &&
-      MatchesRegex(import_candidate.value(), *CompileRegex(validation_regex))) {
+      MatchesRegex(import_candidate.value(),
+                   CompileRegex(validation_regex).get())) {
     // Upload should only be offered when legal messages are parsed
     // successfully.
     LegalMessageLines parsed_legal_message_lines;

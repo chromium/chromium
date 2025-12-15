@@ -199,7 +199,7 @@ class MetricsScraper {
     for (base::HistogramBase* histogram :
          base::StatisticsRecorder::GetHistograms()) {
       const auto& name = histogram->histogram_name();
-      if (MatchesRegex(base::UTF8ToUTF16(name), *histogram_regex_)) {
+      if (MatchesRegex(base::UTF8ToUTF16(name), histogram_regex_.get())) {
         histogram_names.emplace_back(name);
       }
     }

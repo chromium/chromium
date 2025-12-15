@@ -615,7 +615,7 @@ void FormInteractionsUkmLogger::
 
   // Determine whether `pattern` matches `value`.
   auto matches = [](const std::u16string& value,
-                    const icu::RegexPattern& pattern) {
+                    const icu::RegexPattern* pattern) {
     return !value.empty() && MatchesRegex(value, pattern);
   };
   // Count in `num_experimental_fields[i]` if `pattern[i]` matches the label,
@@ -625,9 +625,9 @@ void FormInteractionsUkmLogger::
     bool found_experimental_fields = false;
     for (size_t i = 0; i < kRegexPatterns->size(); ++i) {
       const icu::RegexPattern* pattern = (*kRegexPatterns)[i].get();
-      if (pattern && (matches(field.label(), *pattern) ||
-                      matches(field.id_attribute(), *pattern) ||
-                      matches(field.name_attribute(), *pattern))) {
+      if (pattern && (matches(field.label(), pattern) ||
+                      matches(field.id_attribute(), pattern) ||
+                      matches(field.name_attribute(), pattern))) {
         ++num_experimental_fields[i];
         found_experimental_fields = true;
       }
