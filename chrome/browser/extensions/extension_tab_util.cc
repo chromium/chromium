@@ -277,19 +277,45 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     ExtensionFunction* function,
     const OpenTabParams& params,
     bool user_gesture) {
-  ChromeExtensionFunctionDetails chrome_details(function);
+  // First, do as much validation as we can. This helps limit the user-visible
+  // side effects (like opening a new tab or browser) that might happen in a
+  // case that the API call fails.
+
+  auto* const extension = function->extension();
+  GURL url(chrome::kChromeUINewTabURL);
+  if (params.url) {
+    ASSIGN_OR_RETURN(url, PrepareURLForNavigation(*params.url, extension,
+                                                  function->browser_context()));
+  }
+
   Profile* profile = Profile::FromBrowserContext(function->browser_context());
-  // windowId defaults to "current" window.
-  int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
+  // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
+  // represents the active tab.
+  WebContents* opener = nullptr;
+  WindowController* opener_window = nullptr;
+  if (params.opener_tab_id) {
+    if (!GetTabById(*params.opener_tab_id, profile,
+                    function->include_incognito_information(), &opener_window,
+                    &opener, nullptr) ||
+        !opener_window) {
+      return base::unexpected(ErrorUtils::FormatErrorMessage(
+          kTabNotFoundError, base::NumberToString(*params.opener_tab_id)));
+    }
+  }
+
+  BrowserWindowInterface* opener_browser =
+      opener_window ? opener_window->GetBrowserWindowInterface() : nullptr;
 
   // Try to find a suitable browser.
   // TODO(https://crbug.com/468223125): This is a wild set of tangled
   // conditions, most of which are inconsistent.
 
+  // windowId defaults to "current" window.
+  int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
   BrowserWindowInterface* browser = nullptr;
   std::string error;
-  if (WindowController* controller =
-          GetControllerFromWindowID(chrome_details, window_id, &error)) {
+  if (WindowController* controller = GetControllerFromWindowID(
+          ChromeExtensionFunctionDetails(function), window_id, &error)) {
     browser = controller->GetBrowserWindowInterface();
   }
 
@@ -300,13 +326,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // we *will* create a new browser below.
   if (!browser && !params.create_browser_if_needed) {
     return base::unexpected(error);
-  }
-
-  auto* const extension = function->extension();
-  GURL url(chrome::kChromeUINewTabURL);
-  if (params.url) {
-    ASSIGN_OR_RETURN(url, PrepareURLForNavigation(*params.url, extension,
-                                                  function->browser_context()));
   }
 
   // We can't load extension URLs into incognito windows unless the extension
@@ -343,6 +362,14 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     create_new_if_none_found = true;
   }
 
+  // This check (for opener browser) comes last. It will fail (by design) if
+  // we're intending to create a new browser; that's good, because the new
+  // browser would never match the one with the opener.
+  if (opener_browser && browser != opener_browser) {
+    return base::unexpected(
+        "Tab opener must be in the same window as the updated tab.");
+  }
+
   Profile* profile_to_use =
       needs_original_profile ? profile->GetOriginalProfile() : profile;
 
@@ -363,20 +390,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     return base::unexpected(kNoCurrentWindowError);
   }
 
-  // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
-  // represents the active tab.
-  WebContents* opener = nullptr;
-  WindowController* opener_window = nullptr;
-  if (params.opener_tab_id) {
-    if (!GetTabById(*params.opener_tab_id, profile,
-                    function->include_incognito_information(), &opener_window,
-                    &opener, nullptr) ||
-        !opener_window) {
-      return base::unexpected(ErrorUtils::FormatErrorMessage(
-          kTabNotFoundError, base::NumberToString(*params.opener_tab_id)));
-    }
-  }
-
   // TODO(rafaelw): handle setting remaining tab properties:
   // -title
   // -favIconUrl
@@ -392,13 +405,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // Default to not pinning the tab. Setting the 'pinned' property to true
   // will override this default.
   bool pinned = params.pinned.value_or(false);
-
-  BrowserWindowInterface* opener_browser =
-      opener_window ? opener_window->GetBrowserWindowInterface() : nullptr;
-  if (opener_browser && browser != opener_browser) {
-    return base::unexpected(
-        "Tab opener must be in the same window as the updated tab.");
-  }
 
   // If index is specified, honor the value, but keep it bound to
   // -1 <= index <= tab_strip->count() where -1 invokes the default behavior.
