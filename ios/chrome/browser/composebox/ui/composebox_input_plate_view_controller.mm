@@ -380,6 +380,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _sendButton.hidden = !(controls & ComposeboxInputPlateControls::kSend);
   _imageGenerationButton.hidden =
       !(controls & ComposeboxInputPlateControls::kCreateImage);
+  [self.editView
+      hideLeadingImage:!(controls &
+                         ComposeboxInputPlateControls::kLeadingImage)];
 }
 
 - (void)setCompact:(BOOL)compact {
@@ -1192,7 +1195,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)updateInputPlateStackViewAnimated:(BOOL)animated {
   if (!animated) {
     [self updateInputPlateStackViewContent];
-    [self.editView hideLeadingImage:self.compact];
     return;
   }
 
@@ -1201,15 +1203,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.editView setLeadingImageAlpha:initialAlpha];
   self.sendButton.alpha = initialAlpha;
 
-  [self.editView hideLeadingImage:self.compact];
-
   auto animations = ^() {
     [UIView addKeyframeWithRelativeStartTime:0
                             relativeDuration:1.0
                                   animations:^{
                                     [self updateInputPlateStackViewContent];
-                                    [self.editView
-                                        hideLeadingImage:self.compact];
                                     [self.inputPlateStackView layoutIfNeeded];
                                     [self.view layoutIfNeeded];
                                   }];

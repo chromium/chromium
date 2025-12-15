@@ -6,6 +6,7 @@
 
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/contextual_search/contextual_search_context_controller.h"
 #import "components/contextual_search/contextual_search_service.h"
@@ -23,6 +24,7 @@
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -147,6 +149,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     template_url_service()->Load();
     TemplateURLServiceLoadWaiter waiter;
     waiter.WaitForLoadComplete(*template_url_service());
+    SetCompactModeEnabled(NO);
   }
 
   void TearDown() override {
@@ -203,6 +206,20 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
 
   void EraseOmniboxText() { SetOmniboxText(u""); }
 
+  void SetCompactModeEnabled(bool enabled) {
+    scoped_feature_list_.Reset();
+
+    if (enabled) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kComposeboxCompactMode},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kComposeboxCompactMode});
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -218,6 +235,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
   TestComposeboxInputPlateConsumer* consumer_;
   ComposeboxInputPlateMediator* mediator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
@@ -234,6 +252,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
        DisablesMultimodalActionsWhenAIMNotEligible) {
   SetAIMEligible(false);
   SetDSEGoogle(true);
+  EXPECT_TRUE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
@@ -256,13 +276,15 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   SetAIMEligible(true);
   SetDSEGoogle(false);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
+  EXPECT_TRUE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
 // Tests that the send button is shown when there is text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithText) {
-  this->SetOmniboxText(u"some text");
+  SetOmniboxText(u"some text");
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
@@ -270,6 +292,20 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithText) {
 TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
   EraseOmniboxText();
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
+}
+
+// Tests that the leading image is hidden when in compact mode with Google DSE.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       HidesLeadingImageForCompactModeWithGoogleDSE) {
+  SetCompactModeEnabled(true);
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  // A text short enough it does not wrap and leds to compact mode.
+  SetOmniboxText(u"some text");
+
+  EXPECT_FALSE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
 }  // namespace
