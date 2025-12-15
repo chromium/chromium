@@ -62,11 +62,6 @@ constexpr char kUdmAiValue[] = "50";
 constexpr char kNemParam[] = "nem";
 constexpr char kNemAiValue[] = "143";
 
-bool IsContextualTasksHost(const GURL& url) {
-  return url.scheme() == content::kChromeUIScheme &&
-         url.host() == chrome::kChromeUIContextualTasksHost;
-}
-
 bool IsSignInDomain(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return false;
@@ -294,7 +289,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   }
 
   // Allow any navigation to the contextual tasks host.
-  if (IsContextualTasksHost(url_params.url)) {
+  if (IsContextualTasksUrl(url_params.url)) {
     return false;
   }
 
@@ -321,7 +316,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
   if (is_from_embedded_page &&
-      IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
+      IsContextualTasksUrl(source_contents->GetLastCommittedURL())) {
     // Ignore navigation triggered by UI.
     if (!url_params.is_renderer_initiated) {
       return false;
@@ -646,6 +641,11 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   }
 
   return false;
+}
+
+bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
+  return url.scheme() == content::kChromeUIScheme &&
+         url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
 bool ContextualTasksUiService::IsSearchResultsPage(const GURL& url) {
