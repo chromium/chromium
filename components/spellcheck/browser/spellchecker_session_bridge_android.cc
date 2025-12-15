@@ -146,9 +146,9 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     SpellCheckResult::Decoration decoration =
         static_cast<SpellCheckResult::Decoration>(
             spellcheck_result_decorations[i]);
-    results.push_back(SpellCheckResult(decoration, offsets[i], lengths[i],
-                                       suggestions_for_word,
-                                       hide_suggestion_menu_booleans[i]));
+    results.emplace_back(decoration, offsets[i], lengths[i],
+                         suggestions_for_word,
+                         hide_suggestion_menu_booleans[i]);
   }
 
   std::move(active_request_->callback_).Run(results);

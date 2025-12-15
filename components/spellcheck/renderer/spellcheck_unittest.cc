@@ -1047,8 +1047,7 @@ TEST_F(SpellCheckTest, SpellCheckParagraphNoMisspellings) {
 TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
   const std::u16string text = u"zz";
   std::vector<SpellCheckResult> expected;
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 0, 2));
+  expected.emplace_back(SpellCheckResult::SPELLING, 0, 2);
 
   TestSpellCheckParagraph(text, expected);
 }
@@ -1057,10 +1056,8 @@ TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
 TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
   const std::u16string text = u"zz, zz";
   std::vector<SpellCheckResult> expected;
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 0, 2));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 4, 2));
+  expected.emplace_back(SpellCheckResult::SPELLING, 0, 2);
+  expected.emplace_back(SpellCheckResult::SPELLING, 4, 2);
 
   TestSpellCheckParagraph(text, expected);
 }
@@ -1091,18 +1088,12 @@ TEST_F(SpellCheckTest, SpellCheckParagraphLongSentenceMultipleMisspellings) {
       u"blessings of liberty to ourselves and our posterity, do ordain and "
       u"establish this Constitution for hte United States of America.";
 
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 3, 3));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 17, 3));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 135, 3));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 163, 3));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 195, 3));
-  expected.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 298, 3));
+  expected.emplace_back(SpellCheckResult::SPELLING, 3, 3);
+  expected.emplace_back(SpellCheckResult::SPELLING, 17, 3);
+  expected.emplace_back(SpellCheckResult::SPELLING, 135, 3);
+  expected.emplace_back(SpellCheckResult::SPELLING, 163, 3);
+  expected.emplace_back(SpellCheckResult::SPELLING, 195, 3);
+  expected.emplace_back(SpellCheckResult::SPELLING, 298, 3);
 
   TestSpellCheckParagraph(text, expected);
 }
@@ -1253,9 +1244,9 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
 TEST_F(SpellCheckTest, CreateTextCheckingResultPassesHideSuggestionWindowTrue) {
   std::u16string text = u"zz";
   std::vector<SpellCheckResult> spellcheck_results;
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string(),
-                       /* should_hide_suggestion_menu= */ true));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 2,
+                                  std::u16string(),
+                                  /* should_hide_suggestion_menu= */ true);
 
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
@@ -1270,9 +1261,9 @@ TEST_F(SpellCheckTest,
        CreateTextCheckingResultPassesHideSuggestionWindowFalse) {
   std::u16string text = u"zz";
   std::vector<SpellCheckResult> spellcheck_results;
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string(),
-                       /* should_hide_suggestion_menu= */ false));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 2,
+                                  std::u16string(),
+                                  /* should_hide_suggestion_menu= */ false);
 
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
@@ -1288,8 +1279,8 @@ TEST_F(SpellCheckTest,
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
   std::u16string text = u"zz";
   std::vector<SpellCheckResult> spellcheck_results;
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string()));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 2,
+                                  std::u16string());
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
@@ -1306,8 +1297,8 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
 TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
   std::u16string text = u"I have bean to USA.";
   std::vector<SpellCheckResult> spellcheck_results;
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, std::u16string()));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 7, 4,
+                                  std::u16string());
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
@@ -1326,61 +1317,53 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
   std::vector<SpellCheckResult> spellcheck_results;
 
   // All typewriter apostrophe results.
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I've"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven't"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in'n'out's"));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 5, u"I've");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 6, 6, u"haven't");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 13, 10,
+                                  u"in'n'out's");
 
   // Replacements that differ only by apostrophe type should be ignored.
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I've"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I've"));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 24, 4, u"I've");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 29, 4, u"I've");
 
   // All typographical apostrophe results.
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I’ve"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven’t"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in’n’out’s"));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 5, u"I’ve");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 6, 6, u"haven’t");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 13, 10,
+                                  u"in’n’out’s");
 
   // Replacements that differ only by apostrophe type should be ignored.
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I’ve"));
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I’ve"));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 24, 4, u"I’ve");
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 29, 4, u"I’ve");
 
   // If we have no suggested replacements, we should keep this misspelling.
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 0, 5, std::vector<std::u16string>()));
+  spellcheck_results.emplace_back(SpellCheckResult::SPELLING, 0, 5,
+                                  std::vector<std::u16string>());
 
   // If we have multiple replacements that all differ only by apostrophe type,
   // we should ignore this misspelling.
-  spellcheck_results.push_back(SpellCheckResult(
+  spellcheck_results.emplace_back(
       SpellCheckResult::SPELLING, 0, 11,
-      std::vector<std::u16string>({u"Ik've havn'", u"Ik’ve havn’"})));
+      std::vector<std::u16string>({u"Ik've havn'", u"Ik’ve havn’"}));
 
   // If we have multiple replacements where some only differ by apostrophe type
   // and some don't, we should keep this misspelling, but remove the
   // replacements that only differ by apostrophe type.
-  spellcheck_results.push_back(SpellCheckResult(
+  spellcheck_results.emplace_back(
       SpellCheckResult::SPELLING, 0, 5,
-      std::vector<std::u16string>({u"I've", u"Ive", u"Ik’ve"})));
+      std::vector<std::u16string>({u"I've", u"Ive", u"Ik’ve"}));
 
   // Similar to the previous case except with the apostrophe changing from
   // typographical to straight instead of the other direction
-  spellcheck_results.push_back(SpellCheckResult(
+  spellcheck_results.emplace_back(
       SpellCheckResult::SPELLING, 6, 6,
-      std::vector<std::u16string>({u"havn't", u"havnt", u"haven't"})));
+      std::vector<std::u16string>({u"havn't", u"havnt", u"haven't"}));
 
   // If we have multiple replacements, none of which differ only by apostrophe
   // type, we should keep this misspelling.
-  spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6,
-                       std::vector<std::u16string>({u"have", u"haven't"})));
+  spellcheck_results.emplace_back(
+      SpellCheckResult::SPELLING, 6, 6,
+      std::vector<std::u16string>({u"have", u"haven't"}));
 
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(
