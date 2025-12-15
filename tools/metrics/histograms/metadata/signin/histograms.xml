@@ -3887,6 +3887,28 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   </token>
 </histogram>
 
+<!-- LINT.IfChange(WebSignintrackerLatency) -->
+
+<histogram name="Signin.WebSigninTracker.Latency.{Result}" units="ms"
+    expires_after="2026-05-03">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    The time taken for an to have cookies minted after a web sign-in or an
+    account is added to android. Recorded from the creation of the
+    WebSigninTracker until the account is successfully detected in the cookie,
+    or until an error or timeout occurs.
+  </summary>
+  <token key="Result">
+    <variant name="AuthError" summary="An auth error occurred"/>
+    <variant name="OtherError" summary="An other error occurred"/>
+    <variant name="Success" summary="The web sign-in succeeded"/>
+    <variant name="Timeout" summary="A timeout occurred"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//components/signin/public/browser/web_signin_tracker.cc:GetHistogramResultSuffix) -->
+
 </histograms>
 
 </histogram-configuration>

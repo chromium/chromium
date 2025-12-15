@@ -76,6 +76,7 @@ class WebSigninTracker : public IdentityManager::Observer,
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
       account_reconcilor_observation_{this};
   base::OneShotTimer timeout_timer_;
+  base::TimeTicks web_signin_tracker_start_time_;
 };
 
 }  // namespace signin

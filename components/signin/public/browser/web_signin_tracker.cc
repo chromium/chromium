@@ -7,11 +7,37 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+namespace {
+constexpr std::string_view kLatencyResultHistogramName =
+    "Signin.WebSigninTracker.Latency";
+
+// LINT.IfChange(GetHistogramResultSuffix)
+std::string_view GetHistogramResultSuffix(
+    signin::WebSigninTracker::Result result) {
+  using enum signin::WebSigninTracker::Result;
+  switch (result) {
+    case kSuccess:
+      return ".Success";
+    case kAuthError:
+      return ".AuthError";
+    case kOtherError:
+      return ".OtherError";
+    case kTimeout:
+      return ".Timeout";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:WebSignintrackerLatency)
+
+}  // namespace
 namespace signin {
 
 WebSigninTracker::WebSigninTracker(
@@ -25,6 +51,7 @@ WebSigninTracker::WebSigninTracker(
       signin_account_(signin_account),
       callback_(std::move(callback)) {
   CHECK(callback_);
+  web_signin_tracker_start_time_ = base::TimeTicks::Now();
 
   identity_manager_observation_.Observe(identity_manager_);
   account_reconcilor_observation_.Observe(account_reconcilor_);
@@ -95,6 +122,10 @@ void WebSigninTracker::OnTimeoutReached() {
 }
 
 void WebSigninTracker::FinishWithResult(WebSigninTracker::Result result) {
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {kLatencyResultHistogramName, GetHistogramResultSuffix(result)}),
+      base::TimeTicks::Now() - web_signin_tracker_start_time_);
   identity_manager_observation_.Reset();
   account_reconcilor_observation_.Reset();
   timeout_timer_.Stop();
