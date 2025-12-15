@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_status_message_view.h"
 
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -24,8 +25,8 @@ using MessageInfo = ::TabSharingStatusMessageView::MessageInfo;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
 constexpr auto kButtonInsets = gfx::Insets::VH(2, 8);
+constexpr auto kRefreshSeparatorInsets = gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr auto kSeparatorInsets = gfx::Insets::TLBR(0, 16, 0, 0);
-
 std::vector<std::u16string> EndpointInfosToStrings(
     const std::vector<EndpointInfo>& endpoint_infos) {
   std::vector<std::u16string> res;
@@ -239,8 +240,12 @@ TabSharingStatusMessageView::TabSharingStatusMessageView(
     base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger)
     : uma_logger_(uma_logger) {
   SetupMessage(info);
+  const auto& separator_insets =
+      base::FeatureList::IsEnabled(features::kInfobarRefresh)
+          ? kRefreshSeparatorInsets
+          : kSeparatorInsets;
   AddChildView(views::Builder<views::Separator>()
-                   .SetProperty(views::kMarginsKey, kSeparatorInsets)
+                   .SetProperty(views::kMarginsKey, separator_insets)
                    .SetProperty(views::kFlexBehaviorKey,
                                 views::FlexSpecification(
                                     views::MinimumFlexSizeRule::kPreferred))
@@ -335,8 +340,16 @@ void TabSharingStatusMessageView::AddButton(
               &ActivateWebContents, endpoint_info.focus_target_id,
               endpoint_info.target_type, tab_role_for_uma, uma_logger_),
           endpoint_info.text, views::style::CONTEXT_LABEL));
+
   button->SetStyle(ui::ButtonStyle::kTonal);
-  button->SetCustomPadding(kButtonInsets);
+
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    button->SetCustomPadding(gfx::Insets::VH(4, 12));
+    button->SetProperty(views::kCrossAxisAlignmentKey,
+                        views::LayoutAlignment::kCenter);
+  } else {
+    button->SetCustomPadding(kButtonInsets);
+  }
   button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
                        ui::kColorLinkForeground);
   button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,

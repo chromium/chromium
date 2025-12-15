@@ -38,7 +38,7 @@ namespace {
 using InteractionWithControls = GetDisplayMediaUserInteractionWithControls;
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
-
+constexpr auto kRefreshButtonInsets = gfx::Insets::VH(6, 12);
 url::Origin GetOriginFromId(content::GlobalRenderFrameHostId rfh_id) {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (!rfh) {
@@ -88,11 +88,11 @@ TabSharingInfoBar::TabSharingInfoBar(
                 use_text_color_for_icon));
 
         if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-          button->SetCustomPadding(
-              gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING),
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING)));
+          button->SetCustomPadding(kRefreshButtonInsets);
+
+          button->SetProperty(views::kCrossAxisAlignmentKey,
+                              views::LayoutAlignment::kCenter);
+
         } else {
           button->SetProperty(
               views::kMarginsKey,
@@ -120,6 +120,13 @@ TabSharingInfoBar::TabSharingInfoBar(
     share_this_tab_instead_button_ =
         create_button(TabSharingInfoBarDelegate::kShareThisTabInstead,
                       &TabSharingInfoBar::ShareThisTabInsteadButtonPressed);
+
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      bool has_stop_button = (buttons & TabSharingInfoBarDelegate::kStop);
+      int left_margin = has_stop_button ? 8 : 0;
+      share_this_tab_instead_button_->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, left_margin, 0, 0));
+    }
   }
 
   if (buttons & TabSharingInfoBarDelegate::kQuickNav &&
@@ -141,6 +148,11 @@ TabSharingInfoBar::TabSharingInfoBar(
         kCapturedSurfaceControlIndicatorButtonInsets);
     csc_indicator_button_->SetTextColor(
         views::Button::ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
+
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      csc_indicator_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                                         views::LayoutAlignment::kCenter);
+    }
   }
 
   // TODO(crbug.com/378107817): It seems like link_ isn't always needed, but
