@@ -1601,6 +1601,8 @@ _CONFIG = [
             # Commands from the DevTools window are parsed from a JSON string in
             # the devtools renderer and sent on as base::Value.
             'base::Value',
+            # PRF inputs are validated in AuthenticationCredentialsContainer.
+            'device::kMaxPRFInputSize',
         ],
     },
     {

@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "device/fido/public/fido_constants.h"
 #include "mojo/public/mojom/base/values.mojom-blink.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -971,10 +972,9 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
 
 const char* validatePRFInputs(
     const blink::AuthenticationExtensionsPRFValues& values) {
-  constexpr size_t kMaxInputSize = 256;
-  if (DOMArrayPiece(values.first()).ByteLength() > kMaxInputSize ||
-      (values.hasSecond() &&
-       DOMArrayPiece(values.second()).ByteLength() > kMaxInputSize)) {
+  if (DOMArrayPiece(values.first()).ByteLength() > device::kMaxPRFInputSize ||
+      (values.hasSecond() && DOMArrayPiece(values.second()).ByteLength() >
+                                 device::kMaxPRFInputSize)) {
     return "'prf' extension contains excessively large input";
   }
   return nullptr;

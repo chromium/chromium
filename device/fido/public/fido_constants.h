@@ -40,6 +40,9 @@ inline constexpr size_t kClientDataHashLength = 32;
 // https://www.w3.org/TR/webauthn/#sec-authenticator-data
 inline constexpr size_t kRpIdHashLength = 32;
 
+// Maximum length of each PRF inputs.
+inline constexpr size_t kMaxPRFInputSize = 256;
+
 // Length of the key used to encrypt large blobs.
 // TODO(nsatragno): add a link to the spec once it's published.
 inline constexpr size_t kLargeBlobKeyLength = 32;
