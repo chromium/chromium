@@ -90,7 +90,7 @@ inline constexpr size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
 // than programmatic refills, which can be triggered by JavaScript.
 inline constexpr base::TimeDelta kLimitBeforeAutomaticRefill = base::Seconds(1);
 inline constexpr base::TimeDelta kLimitBeforeProgrammaticRefill =
-    base::Seconds(5);
+    base::Seconds(3);
 
 // The time the renderer waits for a response from the browser to a
 // RequestRefill() message.
