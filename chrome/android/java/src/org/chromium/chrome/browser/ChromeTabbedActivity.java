@@ -16,8 +16,10 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.BaseBundle;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -3542,9 +3544,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     protected boolean isStartedUpCorrectly(Intent intent) {
         mWindowId = 0;
         mInstanceAllocationType = InstanceAllocationType.DEFAULT;
+        PersistableBundle persistentState = getPersistentInstanceState();
         Bundle savedInstanceState = getSavedInstanceState();
         int windowId = getExtraWindowIdFromIntent(intent);
-        if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
+        if (persistentState != null && persistentState.containsKey(WINDOW_INDEX)) {
+            mWindowId = persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID);
+
+            assert windowId != INVALID_WINDOW_ID;
+            if (mWindowId == INVALID_WINDOW_ID) mWindowId = 0;
+        } else if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
             // Activity is recreated after destruction. |windowId| must not be valid in this case.
             assert windowId == INVALID_WINDOW_ID;
             Log.i(TAG_MULTI_INSTANCE, "Retrieved windowId from saved instance state.");
@@ -4305,8 +4313,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onSaveInstanceState")) {
             super.onSaveInstanceState(outState);
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
-            outState.putInt(
-                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
+            saveToBaseBundle(outState);
             Boolean isIncognito = getCurrentTabModel().isIncognito();
             outState.putBoolean(IS_INCOGNITO_SELECTED, isIncognito);
             // If it's Incognito and native is initialized and profile exists, serialize duration
@@ -4316,6 +4323,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         outState, getCurrentTabModel().getProfile());
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        if (shouldPersistAcrossReboots()) {
+            saveToBaseBundle(outPersistentState);
+        }
+    }
+
+    private void saveToBaseBundle(BaseBundle bundle) {
+        bundle.putInt(WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.view.Display;
 import android.view.View;
@@ -95,6 +96,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private @Nullable ActivityWindowAndroid mWindowAndroid;
     private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private @Nullable Bundle mSavedInstanceState;
+    private @Nullable PersistableBundle mPersistentInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
     private boolean mIsTablet;
@@ -342,9 +344,18 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         TraceEvent.end("AsyncInitializationActivity.onCreate()");
     }
 
+    @Override
+    public void onCreate(
+            @Nullable Bundle savedInstanceState, @Nullable PersistableBundle outPersistentState) {
+        if (shouldPersistAcrossReboots()) {
+            mPersistentInstanceState = outPersistentState;
+        }
+        super.onCreate(savedInstanceState, outPersistentState);
+    }
+
     /**
-     * Override to perform operations in the first opportunity after the framework calls
-     * {@link #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
+     * Override to perform operations in the first opportunity after the framework calls {@link
+     * #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
      */
     protected void onPreCreate() {}
 
@@ -541,9 +552,25 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         return mSavedInstanceState;
     }
 
+    /**
+     * @return The saved {@link PersistableBundle} for the last persisted state.
+     */
+    public @Nullable PersistableBundle getPersistentInstanceState() {
+        assert shouldPersistAcrossReboots() || mPersistentInstanceState == null
+                : "Persistent state should be null if the feature is not enabled.";
+        return mPersistentInstanceState;
+    }
+
     /** Resets the saved state and makes it unavailable for the rest of the activity lifecycle. */
     protected void resetSavedInstanceState() {
         mSavedInstanceState = null;
+    }
+
+    /**
+     * Resets the persistent state and makes it unavailable for the rest of the activity lifecycle.
+     */
+    protected void resetPersistentInstanceState() {
+        mPersistentInstanceState = null;
     }
 
     @CallSuper
