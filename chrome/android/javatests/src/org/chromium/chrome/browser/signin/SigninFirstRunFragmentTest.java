@@ -256,7 +256,7 @@ public class SigninFirstRunFragmentTest {
         Assert.assertFalse(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown());
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(isDisplayed()));
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -266,10 +266,28 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithDefaultDismissButtonText() {
+        launchActivityWithFragment();
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithAlternativeDismissButtonText() {
+        launchActivityWithFragment();
+        onView(withText(R.string.signin_fre_stay_signed_out_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenAddingChildAccountDynamically() {
         launchActivityWithFragment();
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(isDisplayed()));
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -298,7 +316,7 @@ public class SigninFirstRunFragmentTest {
                             .isShown();
                 });
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
     }
 
@@ -331,7 +349,7 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.signin_account_picker_dialog_title)).check(doesNotExist());
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -805,7 +823,7 @@ public class SigninFirstRunFragmentTest {
                 primaryAccount.getEmail());
         launchActivityWithFragment();
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(new SimpleTap());
+        onView(withId(R.id.signin_fre_dismiss_button)).perform(new SimpleTap());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -827,7 +845,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        onView(withId(R.id.signin_fre_dismiss_button)).perform(click());
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
@@ -1278,7 +1296,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
         onView(withText(R.string.done)).perform(click());
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        onView(withId(R.id.signin_fre_dismiss_button)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
         verify(mFirstRunPageDelegateMock, timeout(1000)).advanceToNextPage();
@@ -1299,7 +1317,7 @@ public class SigninFirstRunFragmentTest {
                 .check(matches(not(isChecked())))
                 .perform(click());
         onView(withText(R.string.done)).perform(click());
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        onView(withId(R.id.signin_fre_dismiss_button)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
@@ -1541,7 +1559,7 @@ public class SigninFirstRunFragmentTest {
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
         launchActivityWithFragment();
 
-        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+        onView(withId(R.id.signin_fre_dismiss_button)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
@@ -1644,7 +1662,7 @@ public class SigninFirstRunFragmentTest {
                         R.string.sync_promo_continue_as,
                         profileData.getGivenNameOrFullNameOrEmail());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
     }
 
@@ -1700,7 +1718,7 @@ public class SigninFirstRunFragmentTest {
         final String continueAsText = getContinueAsButtonText(accountInfo, hasDisplayableFullName);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
         onView(withId(R.id.privacy_disclaimer)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
@@ -1766,7 +1784,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_selected_account_expand_icon))
                 .check(matches(not(isDisplayed())));
         onView(withText(continueAsText)).check(matches(not(isDisplayed())));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
     }
 
