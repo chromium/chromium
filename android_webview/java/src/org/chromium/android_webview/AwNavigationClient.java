@@ -134,10 +134,10 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     }
 
     @CalledByNative
-    public void onFirstContentfulPaint(Page page, long durationUs) {
+    public void onFirstContentfulPaint(Page page, long durationMs) {
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onFirstContentfulPaint(awPage, durationUs);
+            listener.onFirstContentfulPaint(awPage, durationMs);
         }
     }
 

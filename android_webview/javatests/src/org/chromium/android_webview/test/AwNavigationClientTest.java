@@ -26,8 +26,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /** Tests for the AwNavigationClient class. */
@@ -142,15 +140,13 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         // Wait for paint event to occur and js fcp load time to be returned via postmessage
         TestWebMessageListener.Data data = listener.waitForOnPostMessage();
 
-        // Note: js value is in milliseconds, navigation client value is in microseconds
         JSONObject jsFCPTimeData = new JSONArray(data.getAsString()).getJSONObject(1);
-        Duration jsFCP = Duration.ofMillis((long) jsFCPTimeData.getDouble("startTime"));
+        long jsFCP = jsFCPTimeData.getLong("startTime");
 
         // Wait for FCP callback on the listener
         mCallbackHelper.waitForCallback(callBackCount, 1);
-        Long navigationFCPTime = mNavigationListener.getLastFirstContentfulPaintLoadTime();
-        Assert.assertNotNull(navigationFCPTime);
-        Duration navigationFCP = Duration.of(navigationFCPTime, ChronoUnit.MICROS);
+        Long navigationFCP = mNavigationListener.getLastFirstContentfulPaintLoadTime();
+        Assert.assertNotNull(navigationFCP);
 
         // Note: The two time values may differ slightly. This is primarily due to
         // coarsening for security reasons. We check here for a difference of 5 milliseconds
@@ -160,7 +156,7 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         // and https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
         // and
         // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing.cc
-        long diffFCP = jsFCP.minus(navigationFCP).toMillis();
+        long diffFCP = jsFCP - navigationFCP;
         assertThat(diffFCP, lessThan(5L));
         assertThat(diffFCP, greaterThan(-5L));
     }

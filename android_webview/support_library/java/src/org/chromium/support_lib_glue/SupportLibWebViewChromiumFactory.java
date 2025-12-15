@@ -129,6 +129,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ON_NAVIGATION_COMPLETED_NON_COMMITTED,
                 Features.COMMITTED_NAVIGATION_GET_PAGE_NON_NULL,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V2 + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_LISTENER_V2 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.

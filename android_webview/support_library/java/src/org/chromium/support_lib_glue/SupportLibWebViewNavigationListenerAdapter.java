@@ -15,6 +15,7 @@ import org.chromium.support_lib_boundary.util.Features;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /** Support library glue navigation listener callback adapter. */
 @Lifetime.Temporary
@@ -133,24 +134,54 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
-        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+    public void onFirstContentfulPaint(AwPage page, long durationMillis) {
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onFirstContentfulPaint(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageAdapter(page)),
+                                    TimeUnit.MILLISECONDS.toMicros(durationMillis)));
+        }
+
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onFirstContentfulPaintMillis(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewPageAdapter(page)),
+                                    durationMillis));
+        }
+    }
+
+    @Override
+    public void onLargestContentfulPaint(AwPage page, long durationMillis) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
             return;
         }
         mExecutor.execute(
                 () ->
-                        mImpl.onFirstContentfulPaint(
+                        mImpl.onLargestContentfulPaintMillis(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                         new SupportLibWebViewPageAdapter(page)),
-                                loadTimeUs));
+                                durationMillis));
     }
 
-    // TODO: crbug.com/432696062 - Implement AndroidX methods
     @Override
-    public void onLargestContentfulPaint(AwPage page, long durationMs) {}
-
-    // TODO: crbug.com/432696062 - Implement AndroidX methods
-    @Override
-    public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
+    public void onPerformanceMark(AwPage page, String markName, long markTimeMillis) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
+            return;
+        }
+        mExecutor.execute(
+                () ->
+                        mImpl.onPerformanceMarkMillis(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibWebViewPageAdapter(page)),
+                                markName,
+                                markTimeMillis));
+    }
 }

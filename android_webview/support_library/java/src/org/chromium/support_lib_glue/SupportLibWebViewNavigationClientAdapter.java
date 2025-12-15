@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
- * Support library glue navigation client callback dapter.
+ * Support library glue navigation client callback adapter.
  *
  * <p>A new instance of this class is created transiently for every shared library WebViewCompat
  * call. Do not store state here.
@@ -115,11 +115,13 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
                         new SupportLibWebViewPageAdapter(page)));
     }
 
-    // TODO: crbug.com/432696062 - Implement AndroidX methods
+    // Not implemented as this navigation client is set to be deprecated in favour of
+    // {@link #AwNavigationListener}
     @Override
     public void onLargestContentfulPaint(AwPage page, long durationMs) {}
 
-    // TODO: crbug.com/432696062 - Implement AndroidX methods
+    // Not implemented as this navigation client is set to be deprecated in favour of
+    // {@link #AwNavigationListener}
     @Override
     public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
 }

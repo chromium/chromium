@@ -26,7 +26,7 @@ void AwNavigationClient::OnFirstContentfulPaint(
     const base::TimeDelta& duration) {
   JNIEnv* env = AttachCurrentThread();
   Java_AwNavigationClient_onFirstContentfulPaint(
-      env, java_ref_.get(env), page.GetJavaPage(), duration.InMicroseconds());
+      env, java_ref_.get(env), page.GetJavaPage(), duration.InMilliseconds());
 }
 
 void AwNavigationClient::OnLargestContentfulPaint(
