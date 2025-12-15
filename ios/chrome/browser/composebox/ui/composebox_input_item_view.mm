@@ -160,13 +160,12 @@ const CGFloat kTrailingMargin = 8.0;
   _previewImageView.translatesAutoresizingMaskIntoConstraints = NO;
   _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
   _previewImageView.layer.cornerRadius =
-      composeboxAttachments::kImageInputItemSize.height / 2;
+      composeboxAttachments::kAttachmentCornerRadius;
   _previewImageView.clipsToBounds = YES;
   [self addSubview:_previewImageView];
 
   self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.layer.cornerRadius =
-      composeboxAttachments::kTabFileInputItemSize.height / 2;
+  self.layer.cornerRadius = composeboxAttachments::kAttachmentCornerRadius;
   self.clipsToBounds = YES;
 }
 
