@@ -3638,6 +3638,7 @@ if (!is_android) {
       "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
       "../browser/supervised_user/supervised_user_service_browsertest.cc",
       "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
+      "../browser/supervised_user/supervised_user_url_filtering_service_common_browsertest.cc",
       "../browser/supervised_user/url_filter_interactive_uitest.cc",
       "../browser/support_tool/policy_data_collector_browsertest.cc",
       "../browser/support_tool/support_tool_util_browsertest.cc",

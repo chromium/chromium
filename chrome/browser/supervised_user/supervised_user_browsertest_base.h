@@ -5,7 +5,16 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSERTEST_BASE_H_
 
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,21 +38,46 @@ class MockUrlCheckerClient : public ::safe_search_api::URLCheckerClient {
   base::WeakPtrFactory<MockUrlCheckerClient> weak_ptr_factory_{this};
 };
 
-// Base class for supervised user Android browser tests. This class provides
-// common functionality and members for supervised user Android browser tests,
-// notably sets up the supervised user service with required fakes.
-class SupervisedUserBrowserTestBase : public AndroidBrowserTest {
- protected:
+// Base class for supervised user browser tests. It offers a common
+// scaffolding for supervised user browser tests across Desktop and Android,
+// focusing on abstracting user-transition related details, and providing
+// entry-points for interacting with the services typically owned by the
+// supervised user.
+//
+// Tests based on this base intentionally lack "SupervisionMixin" support, as
+// they typically ignore profile-specific configuration (and instead focus of
+// supervised features).
+//
+// The main rationale for having this base class is to offer an opportunity to
+// share tests common to both platforms - where implementations differ, but
+// functionalities are expected to remain consistent.
+class SupervisedUserBrowserTestBase :
+#if BUILDFLAG(IS_ANDROID)
+    public AndroidBrowserTest
+#else
+    public MixinBasedInProcessBrowserTest
+#endif  // BUILDFLAG(IS_ANDROID)
+{
+ public:
+#if BUILDFLAG(IS_ANDROID)
+  struct AndroidParentalControlsState {
+    // Android parental controls browser filter state (enabled or disabled).
+    bool browser_filter = false;
+    // Android parental controls search filter state (enabled or disabled).
+    bool search_filter = false;
+  };
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Describes status of the supervised user just before creating the services.
   struct InitialSupervisedUserState {
-    // ACP browser filter initial state.
-    bool android_parental_controls_browser_filter = false;
-    // ACP search filter initial state.
-    bool android_parental_controls_search_filter = false;
+#if BUILDFLAG(IS_ANDROID)
+    AndroidParentalControlsState android_parental_controls;
+#endif  // BUILDFLAG(IS_ANDROID)
     // Family Link parental controls initial state.
     bool family_link_parental_controls = false;
   };
 
+ protected:
   SupervisedUserBrowserTestBase();
   ~SupervisedUserBrowserTestBase() override;
 
@@ -52,10 +86,6 @@ class SupervisedUserBrowserTestBase : public AndroidBrowserTest {
       content::BrowserContext* context) override;
 
   SupervisedUserService* GetSupervisedUserService() const;
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetSearchContentFiltersObserverWeakPtr() const;
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetBrowserContentFiltersObserverWeakPtr() const;
   // Returns a pointer to the mock url checker client (transitively)owned by the
   // supervised user service.
   MockUrlCheckerClient& GetMockUrlCheckerClient();
@@ -64,16 +94,24 @@ class SupervisedUserBrowserTestBase : public AndroidBrowserTest {
   // experience.
   void SetInitialSupervisedUserState(InitialSupervisedUserState initial_state);
 
- private:
-  // Builds a SupervisedUserService with fakes. See
-  // "SetInitialSupervisedUserState" to customize its behavior.
-  std::unique_ptr<KeyedService> BuildSupervisedUserService(
-      content::BrowserContext* browser_context);
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a weak pointer to the search content filters observer bridge owned
+  // by the supervised user service.
+  base::WeakPtr<ContentFiltersObserverBridge>
+  GetSearchContentFiltersObserverWeakPtr() const;
+  // Returns a weak pointer to the browser content filters observer bridge owned
+  // by the supervised user service.
+  base::WeakPtr<ContentFiltersObserverBridge>
+  GetBrowserContentFiltersObserverWeakPtr() const;
+#endif  // BUILDFLAG(IS_ANDROID)
 
+ private:
   InitialSupervisedUserState initial_state_;
   MockUrlCheckerClient mock_url_checker_client_;
-
-  bool mocks_set_up_ = false;  // Whether mocks were set up already.
+  // Whether fakes of browser context keyed services were set up. This is used
+  // to assert that some configurations can only be set before the services are
+  // created.
+  bool browser_context_keyed_services_set_up_ = false;
 };
 
 }  // namespace supervised_user

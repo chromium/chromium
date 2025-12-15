@@ -18,7 +18,10 @@ source_set("supervised_user") {
 
 static_library("test_support") {
   testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "supervised_user_browsertest_base.cc",
+    "supervised_user_browsertest_base.h",
     "supervised_user_test_util.cc",
     "supervised_user_test_util.h",
   ]
@@ -43,12 +46,9 @@ static_library("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources += [
       "android/supervised_user_service_test_bridge.cc",
       "android/supervised_user_settings_test_bridge.cc",
-      "supervised_user_browsertest_base.cc",
-      "supervised_user_browsertest_base.h",
     ]
     deps += [
       ":test_support_jni_headers",
@@ -58,6 +58,8 @@ static_library("test_support") {
       "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
       "//services/network:test_support",
     ]
+  } else {
+    deps += [ "//chrome/test:test_support_ui" ]
   }
 }
 
@@ -318,6 +320,8 @@ if (is_android) {
       sources = [
         "supervised_user_navigation_observer_android_browsertest.cc",
         "supervised_user_service_android_browsertest.cc",
+        "supervised_user_url_filtering_service_android_browsertest.cc",
+        "supervised_user_url_filtering_service_common_browsertest.cc",
       ]
       deps = [
         "//base",

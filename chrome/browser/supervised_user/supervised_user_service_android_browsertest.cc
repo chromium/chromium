@@ -102,10 +102,10 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
  protected:
   SupervisedUserServiceBootstrapAndroidBrowserTest() {
     SetInitialSupervisedUserState(
-        {.android_parental_controls_browser_filter =
-             GetParam().initial_browser_content_filters_value,
-         .android_parental_controls_search_filter =
-             GetParam().initial_search_content_filters_value});
+        {.android_parental_controls = {
+             .browser_filter = GetParam().initial_browser_content_filters_value,
+             .search_filter =
+                 GetParam().initial_search_content_filters_value}});
   }
 };
 
