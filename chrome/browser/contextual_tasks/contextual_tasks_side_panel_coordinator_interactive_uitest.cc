@@ -140,6 +140,10 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+MATCHER(IsNullSuggestedTabContext, "is a null TabContextPtr") {
+  return arg.is_null();
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        SwitchTabChangeSidePanelWebContents) {
   SetUpTasks();
@@ -554,9 +558,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   SetUpTasks();
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
+  GURL foo("https://foo.com");
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), foo));
   coordinator->Show();
   ContextualTasksUI* ui = GetContextualTasksUI();
   mojo::PendingRemote<composebox::mojom::Page> composebox_page_remote;
@@ -592,8 +596,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   // Expectations are set before running the sequence.
   // This should trigger UpdateSuggestedTabContext with valid tab info.
   EXPECT_CALL(*mock_handler,
-              UpdateSuggestedTabContext(Pointee(
-                  Field(&TabInfo::url, GURL(chrome::kChromeUIAboutURL)))))
+              UpdateSuggestedTabContext(Pointee(Field(&TabInfo::url, foo))))
       .Times(1);
 
   RunTestSequence(
@@ -603,10 +606,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       // Verify that `OnActiveTabContextStatusChanged` is called on the UI.
       Check([&]() {
         Mock::VerifyAndClearExpectations(mock_handler);
-        // Set next expectation.
+        // Set next expectation. Because the other tab has a chrome:// URL,
+        // `UpdateSuggestedTabContext` will be called with a nullptr.
+        searchbox::mojom::TabInfoPtr null_tab_info;
         EXPECT_CALL(*mock_handler,
-                    UpdateSuggestedTabContext(Pointee(Field(
-                        &TabInfo::url, GURL(chrome::kChromeUISettingsURL)))))
+                    UpdateSuggestedTabContext(IsNullSuggestedTabContext()))
             .Times(1);
         return true;
       }),

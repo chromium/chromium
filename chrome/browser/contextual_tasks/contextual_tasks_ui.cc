@@ -462,7 +462,8 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged(
   content::WebContents* web_contents = tab->GetContents();
   GURL last_committed_url = web_contents->GetLastCommittedURL();
 
-  if (!last_committed_url.is_valid() || last_committed_url.is_empty()) {
+  if (!last_committed_url.is_valid() ||
+      !last_committed_url.SchemeIsHTTPOrHTTPS()) {
     composebox_handler_->UpdateSuggestedTabContext(nullptr);
     return;
   }
