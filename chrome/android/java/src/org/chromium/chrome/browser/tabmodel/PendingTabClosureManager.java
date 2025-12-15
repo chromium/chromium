@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,6 +66,7 @@ public class PendingTabClosureManager {
         private final List<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
         private final @Nullable Runnable mUndoRunnable;
+        private final long mTimestamp;
 
         /**
          * @param tabs The list of closing tabs.
@@ -74,6 +76,7 @@ public class PendingTabClosureManager {
             mClosingTabs = new ArrayList<>(tabs);
             mUnhandledTabs = new HashSet<>(mClosingTabs);
             mUndoRunnable = undoRunnable;
+            mTimestamp = TimeUtils.currentTimeMillis();
         }
 
         /**
@@ -109,6 +112,11 @@ public class PendingTabClosureManager {
         /** Returns the undo runnable. */
         public @Nullable Runnable getUndoRunnable() {
             return mUndoRunnable;
+        }
+
+        /** Returns the timestamp (in millis) of the tab closure event. */
+        public long getTimestamp() {
+            return mTimestamp;
         }
     }
 
@@ -424,6 +432,14 @@ public class PendingTabClosureManager {
             cancelClosureInternal(tab);
         }
         return true;
+    }
+
+    long getMostRecentClosureTime() {
+        mThreadChecker.assertOnValidThread();
+        if (mTabClosureEvents.isEmpty()) return TabModel.INVALID_TIMESTAMP;
+
+        TabClosureEvent event = mTabClosureEvents.get(mTabClosureEvents.size() - 1);
+        return event.getTimestamp();
     }
 
     private void commitClosuresInternal(List<Tab> tabs) {

@@ -38,6 +38,17 @@ public interface TabModelDelegate {
      */
     default void openMostRecentlyClosedEntry(TabModel model) {}
 
+    /**
+     * Gets the timestamp of the most recent tab closure event stored by the native
+     * TabRestoreService. If a valid, non-zero timestamp is not available, this should return {@link
+     * TabModel#INVALID_TIMESTAMP}.
+     *
+     * @return The closure timestamp, in millis.
+     */
+    default long getMostRecentClosureTime() {
+        return TabModel.INVALID_TIMESTAMP;
+    }
+
     // TODO(aurimas): clean these methods up.
     TabModel getCurrentModel();
 

@@ -226,6 +226,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void openMostRecentlyClosedEntry() {}
 
     @Override
+    public long getMostRecentClosureTime() {
+        return TabModel.INVALID_TIMESTAMP;
+    }
+
+    @Override
     public void addDelegateModelObserver(Callback<TabModelInternal> callback) {}
 
     @Override

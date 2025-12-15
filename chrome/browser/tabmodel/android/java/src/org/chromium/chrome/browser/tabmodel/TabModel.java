@@ -28,6 +28,7 @@ import java.util.Set;
  */
 @NullMarked
 public interface TabModel extends SupportsTabModelObserver, TabList {
+    static final long INVALID_TIMESTAMP = -1L;
     Map<Integer, Long> sTabPinTimestampMap = new HashMap<>();
 
     /** Returns the profile associated with the current model. */
@@ -97,6 +98,14 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * this model if the original model no longer exists.
      */
     void openMostRecentlyClosedEntry();
+
+    /**
+     * Gets the timestamp of the most recent tab closure event. If a valid, non-zero timestamp is
+     * not available, this should return {@link TabModel#INVALID_TIMESTAMP}.
+     *
+     * @return The closure timestamp, in millis.
+     */
+    long getMostRecentClosureTime();
 
     /**
      * @return The complete {@link TabList} this {@link TabModel} represents. Note that this may be

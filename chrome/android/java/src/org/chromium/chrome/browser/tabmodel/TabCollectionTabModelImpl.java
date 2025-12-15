@@ -22,6 +22,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -517,6 +518,17 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (!supportsPendingClosures()) return;
 
         mPendingTabClosureManager.cancelTabClosure(tabId);
+    }
+
+    @Override
+    public long getMostRecentClosureTime() {
+        if (supportsPendingClosures()
+                && mPendingTabClosureManager.getMostRecentClosureTime()
+                        != TabModel.INVALID_TIMESTAMP
+                && mPendingTabClosureManager.getMostRecentClosureTime() > 0) {
+            return mPendingTabClosureManager.getMostRecentClosureTime();
+        }
+        return mModelDelegate.getMostRecentClosureTime();
     }
 
     @Override
@@ -2294,6 +2306,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert mNativeTabCollectionTabModelImplPtr != 0;
         return TabCollectionTabModelImplJni.get()
                 .detachedTabGroupExists(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    void setPendingTabClosureManagerForTesting(
+            @Nullable PendingTabClosureManager pendingTabClosureManager) {
+        mPendingTabClosureManager = pendingTabClosureManager;
+        ResettersForTesting.register(() -> mPendingTabClosureManager = null);
     }
 
     @NativeMethods

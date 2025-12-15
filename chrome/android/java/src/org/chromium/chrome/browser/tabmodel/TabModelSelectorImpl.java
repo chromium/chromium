@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
+import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,6 +45,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -291,6 +293,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 : "Trying to restore a tab from an off-the-record tab model.";
         assumeNonNull(mRecentlyClosedBridge);
         mRecentlyClosedBridge.openMostRecentlyClosedEntry(tabModel);
+    }
+
+    @Override
+    public long getMostRecentClosureTime() {
+        assumeNonNull(mRecentlyClosedBridge);
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedBridge.getRecentlyClosedEntries(/* maxEntryCount= */ 1);
+        if (entries == null || entries.isEmpty()) return TabModel.INVALID_TIMESTAMP;
+        return entries.get(0).getDate().getTime();
     }
 
     @Override

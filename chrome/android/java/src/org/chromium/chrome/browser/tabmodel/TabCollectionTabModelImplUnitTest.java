@@ -70,6 +70,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private TabRemover mTabRemover;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabModelObserver mTabModelObserver;
+    @Mock private PendingTabClosureManager mPendingTabClosureManager;
 
     private TabCollectionTabModelImpl mTabModel;
 
@@ -462,6 +463,23 @@ public class TabCollectionTabModelImplUnitTest {
                         false);
 
         assertEquals(mIncognitoTabCreator, incognitoModel.getTabCreator());
+    }
+
+    @Test
+    public void testGetMostRecentClosureTime() {
+        // With pending closures supported, should return pending closure manager's time.
+        when(mPendingTabClosureManager.getMostRecentClosureTime()).thenReturn(10L);
+        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
+        assertEquals(10L, mTabModel.getMostRecentClosureTime());
+
+        // With pending closures supported but no time, should return model delegate's time.
+        when(mPendingTabClosureManager.getMostRecentClosureTime()).thenReturn(0L);
+        when(mTabModelDelegate.getMostRecentClosureTime()).thenReturn(5L);
+        assertEquals(5L, mTabModel.getMostRecentClosureTime());
+
+        // Without pending closures, should return model delegate's time.
+        mTabModel.setPendingTabClosureManagerForTesting(null);
+        assertEquals(5L, mTabModel.getMostRecentClosureTime());
     }
 
     private static TabCollectionTabModelImpl getModel(

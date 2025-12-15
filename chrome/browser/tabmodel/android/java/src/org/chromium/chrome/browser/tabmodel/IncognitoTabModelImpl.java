@@ -393,6 +393,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public void openMostRecentlyClosedEntry() {}
 
     @Override
+    public long getMostRecentClosureTime() {
+        return TabModel.INVALID_TIMESTAMP;
+    }
+
+    @Override
     public void setActive(boolean active) {
         mActive = active;
         if (active) ensureTabModelImpl();
