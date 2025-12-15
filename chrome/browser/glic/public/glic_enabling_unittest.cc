@@ -90,24 +90,23 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   ~GlicEnablingProfileEligibilityTest() override = default;
 
   void SetUp() override {
-    testing_profile_manager_ =
+    raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
-        testing_profile_manager_->profile_manager());
+        testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    profile_ = testing_profile_manager_->CreateTestingProfile(
+    profile_ = testing_profile_manager->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
   }
 
   void TearDown() override {
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
@@ -123,7 +122,6 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 

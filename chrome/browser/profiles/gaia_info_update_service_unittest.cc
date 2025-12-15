@@ -132,8 +132,8 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    testing_profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   TestingProfile* profile() {
@@ -183,7 +183,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   glic::GlicUnitTestEnvironment glic_test_env_;
 #endif
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<TestingProfileManager> testing_profile_manager_ = nullptr;
   raw_ptr<TestingProfile> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;

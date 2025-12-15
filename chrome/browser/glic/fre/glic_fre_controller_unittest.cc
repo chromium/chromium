@@ -33,11 +33,11 @@ class GlicFreControllerTest : public testing::Test {
   }
 
   void SetUp() override {
-    testing_profile_manager_ =
+    raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
     identity_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    profile_ = testing_profile_manager->CreateTestingProfile("profile");
 
     glic_fre_controller_ = std::make_unique<GlicFreController>(
         profile_, identity_env_->identity_manager());
@@ -47,8 +47,7 @@ class GlicFreControllerTest : public testing::Test {
     glic_fre_controller_.reset();
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   Profile* profile() { return profile_; }
@@ -61,7 +60,6 @@ class GlicFreControllerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
   std::unique_ptr<GlicFreController> glic_fre_controller_;
   raw_ptr<Profile> profile_ = nullptr;

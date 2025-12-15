@@ -138,15 +138,15 @@ class GlicMetricsTestBase : public testing::Test {
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
-    testing_profile_manager_ =
+    raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
-        testing_profile_manager_->profile_manager());
+        testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    profile_ = testing_profile_manager->CreateTestingProfile("profile");
     ForceSigninAndGlicCapability(profile_);
   }
 
@@ -155,8 +155,7 @@ class GlicMetricsTestBase : public testing::Test {
     // dangling pointer crashes.
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
@@ -187,7 +186,7 @@ class GlicMetricsTestBase : public testing::Test {
   ukm::TestAutoSetUkmRecorder& ukm_tester() { return ukm_tester_; }
 
   ProfileManager* profile_manager() {
-    return testing_profile_manager_->profile_manager();
+    return TestingBrowserProcess::GetGlobal()->profile_manager();
   }
 
   Profile* profile() { return profile_.get(); }
@@ -213,7 +212,6 @@ class GlicMetricsTestBase : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   signin::IdentityTestEnvironment identity_env_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 

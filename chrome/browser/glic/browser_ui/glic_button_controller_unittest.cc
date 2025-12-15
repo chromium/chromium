@@ -82,23 +82,23 @@ class GlicButtonControllerTest : public testing::Test {
          features::kGlicRollout},
         {});
 
-    testing_profile_manager_ =
+    raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
-        testing_profile_manager_->profile_manager());
+        testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    profile_ = testing_profile_manager->CreateTestingProfile("profile");
 
     actor_keyed_service_ =
         std::make_unique<actor::ActorKeyedServiceFake>(profile_);
 
     mock_glic_service_ = std::make_unique<MockGlicKeyedService>(
         profile_, identity_test_environment.identity_manager(),
-        testing_profile_manager_->profile_manager(), &glic_profile_manager_,
+        testing_profile_manager->profile_manager(), &glic_profile_manager_,
         /*contextual_cueing_service=*/nullptr, actor_keyed_service_.get());
 
     mock_browser_window_interface_ =
@@ -119,8 +119,7 @@ class GlicButtonControllerTest : public testing::Test {
     actor_keyed_service_.reset();
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
@@ -147,7 +146,6 @@ class GlicButtonControllerTest : public testing::Test {
   // manually on ChromeOS.
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
   signin::IdentityTestEnvironment identity_test_environment;
 
