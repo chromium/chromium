@@ -57,11 +57,10 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -102,7 +101,7 @@ public class InstanceSwitcherCoordinator {
     private @Nullable PropertyModel mNewWindowModel;
     private @MonotonicNonNull LinearLayout mNewWindowLayout;
     private @MonotonicNonNull TextView mMaxInfoView;
-    private final HashMap<Integer, InstanceInfo> mSelectedItems;
+    private final HashSet<Integer> mSelectedItems;
     private boolean mNewWindowEnabled;
     private boolean mIsInactiveListShowing;
     private @MonotonicNonNull FrameLayout mInstanceListContainer;
@@ -153,7 +152,7 @@ public class InstanceSwitcherCoordinator {
         mDelegate = delegate;
         mMaxInstanceCount = maxInstanceCount;
         mIsIncognitoWindow = isIncognitoWindow;
-        mSelectedItems = new HashMap<>();
+        mSelectedItems = new HashSet<>();
 
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
             var activeListAdapter = getInstanceListV2Adapter(/* active= */ true);
@@ -208,7 +207,8 @@ public class InstanceSwitcherCoordinator {
                                     mActiveInstancesList,
                                     mIsInactiveListShowing);
                             updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
-                            unselectItems();
+                            unselectItems(/* hideVisibleList= */ false);
+                            updateMoreMenu();
                             updatePositiveButtonText();
                         }
 
@@ -339,6 +339,8 @@ public class InstanceSwitcherCoordinator {
         }
 
         mDialog = createDialog(mDialogView);
+        updateMoreMenu();
+        updateActionButtons();
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
     }
 
@@ -359,8 +361,7 @@ public class InstanceSwitcherCoordinator {
                                 break;
                             case ModalDialogProperties.ButtonType.POSITIVE:
                                 assert mSelectedItems.size() == 1;
-                                InstanceInfo selectedItem =
-                                        mSelectedItems.entrySet().iterator().next().getValue();
+                                Integer selectedItem = mSelectedItems.iterator().next();
                                 String userAction =
                                         mIsInactiveListShowing
                                                 ? "Android.WindowManager.OpenInactiveWindow"
@@ -396,6 +397,16 @@ public class InstanceSwitcherCoordinator {
                     mIsInactiveListShowing ? R.string.restore : R.string.open);
             builder.with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
         }
+
+        if (UiUtils.isRobustWindowManagementBulkCloseEnabled()) {
+            builder.with(
+                    ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER,
+                    v -> {
+                        unselectItems(/* hideVisibleList= */ true);
+                    });
+
+            buildWindowManagerMoreMenu(builder);
+        }
         return builder.build();
     }
 
@@ -413,8 +424,9 @@ public class InstanceSwitcherCoordinator {
                                 (view) -> {
                                     if (UiUtils.isInstanceSwitcherV2Enabled()) {
                                         selectInstance(item);
+                                        updateMoreMenu();
                                     } else {
-                                        switchToInstance(item);
+                                        switchToInstance(item.instanceId);
                                     }
                                 });
 
@@ -508,55 +520,57 @@ public class InstanceSwitcherCoordinator {
 
     private void closeWindow(InstanceInfo item) {
         if (canSkipConfirm(item)) {
-            removeInstance(item);
+            removeInstance(item.instanceId);
         } else {
             showConfirmationMessage(item);
         }
     }
 
-    private void switchToInstance(InstanceInfo item) {
-        if (!UiUtils.isInstanceSwitcherV2Enabled() && item.type == InstanceInfo.Type.CURRENT) {
-            Toast.makeText(
-                            mContext,
-                            R.string.instance_switcher_already_running_foreground,
-                            Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
+    private void switchToInstance(Integer instanceId) {
         dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
-        mDelegate.openInstance(item.instanceId);
+        mDelegate.openInstance(instanceId);
     }
 
     private void selectInstance(InstanceInfo clickedItem) {
         int instanceId = clickedItem.instanceId;
-        boolean wasSelected = mSelectedItems.containsKey(instanceId);
+        boolean wasSelected = mSelectedItems.contains(instanceId);
 
         if (UiUtils.isRobustWindowManagementBulkCloseEnabled()) {
             // Multi-selection is allowed. Toggle the clicked item.
             if (wasSelected) {
                 mSelectedItems.remove(instanceId);
             } else {
-                mSelectedItems.put(instanceId, clickedItem);
+                mSelectedItems.add(instanceId);
             }
         } else {
             // Single-selection. Clear everything, then select if it wasn't selected.
             mSelectedItems.clear();
             if (!wasSelected) {
-                mSelectedItems.put(instanceId, clickedItem);
+                mSelectedItems.add(instanceId);
             }
         }
 
         // Update the UI models to reflect the new selection state.
         for (ListItem li : getCurrentList()) {
             int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
-            li.model.set(
-                    InstanceSwitcherItemProperties.IS_SELECTED, mSelectedItems.containsKey(id));
+            li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, mSelectedItems.contains(id));
         }
 
-        updateWindowActionButtons();
+        updateActionButtons();
     }
 
-    private void updateWindowActionButtons() {
+    private void selectAllItems() {
+        for (ListItem li : getCurrentList()) {
+            if (li.type == EntryType.INSTANCE) {
+                int instanceId = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
+                mSelectedItems.add(instanceId);
+                li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, true);
+            }
+        }
+        updateActionButtons();
+    }
+
+    private void updateActionButtons() {
         assumeNonNull(mDialog);
         int selectionCount = mSelectedItems.size();
 
@@ -575,8 +589,20 @@ public class InstanceSwitcherCoordinator {
         }
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, positiveButtonDisabled);
 
-        // 2. Update per-item buttons (for robust mode).
+        // Return early if Robust Window Management is not enabled.
         if (!UiUtils.isRobustWindowManagementBulkCloseEnabled()) return;
+        // 2. Update title and back button visibility.
+        mDialog.set(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE, selectionCount > 0);
+        String title =
+                selectionCount > 0
+                        ? mContext.getResources()
+                                .getQuantityString(
+                                        R.plurals.instance_switcher_windows_selected_header,
+                                        selectionCount,
+                                        String.valueOf(selectionCount))
+                        : mContext.getString(R.string.instance_switcher_header);
+        mDialog.set(ModalDialogProperties.TITLE, title);
+        // 3. Update per-item buttons.
         boolean itemButtonsEnabled = selectionCount <= 1;
         for (ListItem li : getCurrentList()) {
             if (mIsInactiveListShowing) {
@@ -596,12 +622,11 @@ public class InstanceSwitcherCoordinator {
                 ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getString(buttonLabelResId));
     }
 
-    private void unselectItems() {
-        // Unselect the items from the list that is being hidden.
+    private void unselectItems(boolean hideVisibleList) {
         Iterator<ListItem> it =
-                mIsInactiveListShowing
-                        ? mActiveModelList.iterator()
-                        : mInactiveModelList.iterator();
+                (hideVisibleList == mIsInactiveListShowing)
+                        ? mInactiveModelList.iterator()
+                        : mActiveModelList.iterator();
         while (it.hasNext()) {
             ListItem li = it.next();
             if (li.model.get(InstanceSwitcherItemProperties.IS_SELECTED)) {
@@ -609,7 +634,7 @@ public class InstanceSwitcherCoordinator {
             }
         }
         mSelectedItems.clear();
-        updateWindowActionButtons();
+        updateActionButtons();
     }
 
     void dismissDialog(@DialogDismissalCause int cause) {
@@ -669,29 +694,27 @@ public class InstanceSwitcherCoordinator {
         return numActiveInstances + numInactiveInstances;
     }
 
-    private void removeInstance(InstanceInfo item) {
-        int instanceId = item.instanceId;
+    private void removeInstance(Integer instanceId) {
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
             addInstanceListGlobalLayoutListener(
                     assumeNonNull(mInstanceListContainer),
                     assumeNonNull(mActiveInstancesList),
                     mIsInactiveListShowing);
-            InstanceInfo selectedItem = mSelectedItems.get(instanceId);
-            if (selectedItem != null && selectedItem.instanceId == item.instanceId) {
                 assert mDialog != null;
-                mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
-            }
+            mSelectedItems.remove(instanceId);
+            updateActionButtons();
             removeItemFromModelList(
-                    instanceId,
-                    item.taskId == INVALID_TASK_ID ? mInactiveModelList : mActiveModelList);
+                    instanceId, mIsInactiveListShowing ? mInactiveModelList : mActiveModelList);
+            updateActionButtons();
             updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
             updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
+            updateMoreMenu();
         } else {
             removeItemFromModelList(instanceId, mModelList);
             // Update new window item based on instance count after instance removal.
             enableNewWindowCommand(getTotalInstanceCount() < mMaxInstanceCount);
         }
-        mDelegate.closeInstance(item.instanceId);
+        mDelegate.closeInstance(instanceId);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
     }
 
@@ -741,7 +764,7 @@ public class InstanceSwitcherCoordinator {
                     CheckBox skipConfirm = dialog.findViewById(R.id.no_more_check);
                     if (skipConfirm.isChecked()) setSkipCloseConfirmation();
                     dialog.dismiss();
-                    removeInstance(mItemToDelete);
+                    removeInstance(mItemToDelete.instanceId);
                 });
         TextView negativeButton = dialog.findViewById(R.id.negative_button);
         negativeButton.setText(res.getString(R.string.cancel));
@@ -801,5 +824,74 @@ public class InstanceSwitcherCoordinator {
                 mContext.getString(R.string.instance_switcher_tabs_active, numActiveInstances));
         inactiveTab.setText(
                 mContext.getString(R.string.instance_switcher_tabs_inactive, numInactiveInstances));
+    }
+
+    private void updateMoreMenu() {
+        if (!UiUtils.isRobustWindowManagementBulkCloseEnabled()) return;
+        assumeNonNull(mDialog);
+
+        // If there are no visible instances in the current list, hide the more menu.
+        mDialog.set(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE, getCurrentList().size() > 0);
+        if (getCurrentList().size() == 0) {
+            return;
+        }
+
+        ModelList menuItems = new ModelList();
+
+        if (mSelectedItems.size() < getCurrentList().size()) {
+            menuItems.add(buildSimpleMenuItem(R.string.instance_switcher_select_all));
+        }
+        if (mSelectedItems.size() >= 1) {
+            menuItems.add(buildSimpleMenuItem(R.string.instance_switcher_deselect_all));
+        }
+        if (mSelectedItems.size() >= 2) {
+            menuItems.add(buildSimpleMenuItem(R.string.instance_switcher_close_windows));
+        } else if (mSelectedItems.size() == 1) {
+            menuItems.add(buildSimpleMenuItem(R.string.instance_switcher_close_window));
+        }
+
+        ListMenu.Delegate delegate =
+                (model, view) -> {
+                    int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.instance_switcher_select_all) {
+                        selectAllItems();
+                        updateMoreMenu();
+                    } else if (textId == R.string.instance_switcher_deselect_all) {
+                        unselectItems(/* hideVisibleList= */ true);
+                        updateMoreMenu();
+                    } else if (textId == R.string.instance_switcher_close_window
+                            || textId == R.string.instance_switcher_close_windows) {
+                        closeSelectedInstances();
+                        updateMoreMenu();
+                    }
+                };
+
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, delegate);
+
+        mDialog.set(ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE, () -> listMenu);
+    }
+
+    private void buildWindowManagerMoreMenu(PropertyModel.Builder builder) {
+        ModelList menuItems = new ModelList();
+        menuItems.add(buildSimpleMenuItem(R.string.instance_switcher_select_all));
+        ListMenu.Delegate delegate =
+                (model, view) -> {
+                    int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                    if (textId == R.string.instance_switcher_select_all) {
+                        selectAllItems();
+                    }
+                };
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, delegate);
+        builder.with(ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE, () -> listMenu);
+    }
+
+    private void closeSelectedInstances() {
+        // Create a copy of the set to iterate over, to avoid ConcurrentModificationException.
+        for (Integer instanceId : new HashSet<>(mSelectedItems)) {
+            removeInstance(instanceId);
+        }
+        unselectItems(/* hideVisibleList= */ true);
     }
 }

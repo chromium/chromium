@@ -12,6 +12,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -291,6 +292,22 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
+    /** The delegate for the 'more' button in the title. */
+    public static final PropertyModel.WritableObjectPropertyKey<ListMenuDelegate>
+            TITLE_MORE_BUTTON_DELEGATE = new PropertyModel.WritableObjectPropertyKey<>();
+
+    /** Whether the 'more' menu is visible. */
+    public static final WritableBooleanPropertyKey TITLE_MORE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** The click listener for the 'back' button in the title. */
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            TITLE_BACK_BUTTON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    /** Whether the 'back' button in the title is visible. */
+    public static final WritableBooleanPropertyKey TITLE_BACK_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /**
      * Whether the custom view should be wrapped in a ScrollView. The custom view must not be a
      * ScrollView itself if this is set.
@@ -385,6 +402,10 @@ public class ModalDialogProperties {
                 FILTER_TOUCH_FOR_SECURITY,
                 WRAP_CUSTOM_VIEW_IN_SCROLLABLE,
                 TITLE_SCROLLABLE,
+                TITLE_MORE_BUTTON_DELEGATE,
+                TITLE_MORE_BUTTON_VISIBLE,
+                TITLE_BACK_BUTTON_CLICK_LISTENER,
+                TITLE_BACK_BUTTON_VISIBLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
                 FOCUS_DIALOG,

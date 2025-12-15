@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -1536,6 +1537,386 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(atPosition(0, hasDescendant(allOf(withId(R.id.close_button), isEnabled())))));
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
+    })
+    public void testTitleUpdateOnSelection() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Default title
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDescendantOfA(withId(R.id.title_container))))
+                .inRoot(isDialog())
+                .check(matches(withText(R.string.instance_switcher_header)));
+
+        // Select one item
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify title for 1 item
+        String title1 =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.instance_switcher_windows_selected_header, 1, "1");
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDescendantOfA(withId(R.id.title_container))))
+                .inRoot(isDialog())
+                .check(matches(withText(title1)));
+
+        // Select another item
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify title for 2 items
+        String title2 =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.instance_switcher_windows_selected_header, 2, "2");
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDescendantOfA(withId(R.id.title_container))))
+                .inRoot(isDialog())
+                .check(matches(withText(title2)));
+
+        // Deselect one item
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify title for 1 item again
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDescendantOfA(withId(R.id.title_container))))
+                .inRoot(isDialog())
+                .check(matches(withText(title1)));
+
+        // Deselect the last item
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify title is back to default
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDescendantOfA(withId(R.id.title_container))))
+                .inRoot(isDialog())
+                .check(matches(withText(R.string.instance_switcher_header)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
+    })
+    public void testSelectAll() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Select one item to make the more menu visible.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Click on the 'more' button in the title.
+        onView(allOf(withId(R.id.title_more_button), isDisplayed()))
+                .inRoot(isDialog())
+                .perform(click());
+
+        // Click "Select all".
+        onView(withText(R.string.instance_switcher_select_all))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+
+        // Verify all items are selected.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(0, isSelected())))
+                .check(matches(atPosition(1, isSelected())))
+                .check(matches(atPosition(2, isSelected())));
+
+        // Verify title is updated.
+        String expectedTitle =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.instance_switcher_windows_selected_header, 3, "3");
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDisplayed()))
+                .inRoot(isDialog())
+                .check(matches(withText(expectedTitle)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
+    })
+    public void testDeselectAll() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Select all items.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()))
+                .perform(actionOnItemAtPosition(1, click()))
+                .perform(actionOnItemAtPosition(2, click()));
+
+        // Verify all are selected
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(0, isSelected())))
+                .check(matches(atPosition(1, isSelected())))
+                .check(matches(atPosition(2, isSelected())));
+        String expectedTitle =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.instance_switcher_windows_selected_header, 3, "3");
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDisplayed()))
+                .inRoot(isDialog())
+                .check(matches(withText(expectedTitle)));
+
+        // Click on the 'more' button in the title.
+        onView(allOf(withId(R.id.title_more_button), isDisplayed()))
+                .inRoot(isDialog())
+                .perform(click());
+
+        // Click "Deselect all".
+        onView(withText(R.string.instance_switcher_deselect_all))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+
+        // Verify all items are deselected.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(0, not(isSelected()))))
+                .check(matches(atPosition(1, not(isSelected()))))
+                .check(matches(atPosition(2, not(isSelected()))));
+
+        // Verify title is updated back to default.
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withClassName(containsString("DialogTitle")),
+                                isDisplayed()))
+                .inRoot(isDialog())
+                .check(matches(withText(R.string.instance_switcher_header)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
+    })
+    public void testCloseSelectedInstances() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 4, /* numInactiveInstances= */ 0);
+        InstanceSwitcherCoordinator.setSkipCloseConfirmation();
+
+        final CallbackHelper closeCallbackHelper = new CallbackHelper();
+        int initialCloseCallCount = closeCallbackHelper.getCallCount();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Select items at position 1 and 3.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()))
+                .perform(actionOnItemAtPosition(3, click()));
+
+        // Click on the 'more' button in the title.
+        onView(allOf(withId(R.id.title_more_button), isDisplayed()))
+                .inRoot(isDialog())
+                .perform(click());
+
+        // Click "Close windows".
+        onView(withText(R.string.instance_switcher_close_windows))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+
+        // Expect 2 calls to closeCallback.
+        closeCallbackHelper.waitForCallback(initialCloseCallCount, 2);
+        assertEquals(initialCloseCallCount + 2, closeCallbackHelper.getCallCount());
+
+        // After closing 2 instances, there should be 2 left.
+        onView(withId(R.id.active_instance_list)).check(matches(withItemCount(2)));
+
+        // Check remaining items are correct
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(0, hasDescendant(withText("title0")))))
+                .check(matches(atPosition(1, hasDescendant(withText("title2")))));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT + ":bulk_close/true"
+    })
+    public void testMoreButtonHiddenWhenListIsEmpty() throws Exception {
+        // 1 active, 1 inactive instance.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 1, /* numInactiveInstances= */ 1);
+
+        final CallbackHelper closeCallbackHelper = new CallbackHelper();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Switch to inactive list.
+        onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // The "more" button should be visible since there's one item.
+        onView(allOf(withId(R.id.title_more_button), isDisplayed()))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        // Close the single inactive instance. This will show a confirmation dialog.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .perform(
+                        actionOnItemAtPosition(
+                                0,
+                                new ViewAction() {
+                                    @Override
+                                    public Matcher<View> getConstraints() {
+                                        return isDisplayed();
+                                    }
+
+                                    @Override
+                                    public String getDescription() {
+                                        return "Click on the close button of an item.";
+                                    }
+
+                                    @Override
+                                    public void perform(UiController uiController, View view) {
+                                        view.findViewById(R.id.close_button).performClick();
+                                    }
+                                }));
+
+        // Handle confirmation dialog
+        onView(withText(R.string.instance_switcher_close_confirm_header))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.close)).inRoot(isDialog()).perform(click());
+
+        closeCallbackHelper.waitForCallback(0);
+
+        // After closing, the inactive list should be empty.
+        onView(withId(R.id.inactive_instance_list)).check(matches(withItemCount(0)));
+
+        // The "more" button should now be hidden.
+        onView(allOf(withId(R.id.title_more_button), isDisplayed())).check(doesNotExist());
+    }
+
     private InstanceInfo[] createPersistedInstances(
             int numActiveInstances, int numInactiveInstances) {
         int totalInstances = numActiveInstances + numInactiveInstances;
@@ -1658,7 +2039,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
 
-        onView(withText(R.string.close)).perform(click());
+        onView(withText(R.string.close)).inRoot(isDialog()).perform(click());
         closeCallbackHelper.waitForCallback(closeCallbackCount);
     }
 
@@ -1718,5 +2099,19 @@ public class InstanceSwitcherCoordinatorTest {
                                         view.findViewById(R.id.more).performClick();
                                     }
                                 }));
+    }
+
+    private static Matcher<View> withItemCount(final int count) {
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has " + count + " items");
+            }
+
+            @Override
+            protected boolean matchesSafely(RecyclerView recyclerView) {
+                return recyclerView.getAdapter().getItemCount() == count;
+            }
+        };
     }
 }

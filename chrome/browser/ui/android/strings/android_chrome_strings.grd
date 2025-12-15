@@ -5838,6 +5838,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_INSTANCE_SWITCHER_HEADER" desc="The header of multi-instance switcher dialog.">
         Manage windows
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_WINDOWS_SELECTED_HEADER" desc="The header of multi-instance switcher dialog when at least one window is selected.">
+        {WINDOW_COUNT, plural,
+          =1 {<ph name="WINDOW_COUNT_ONE">%1$s</ph> Window Selected}
+          other {<ph name="WINDOW_COUNT_NORMAL">%1$s<ex>2</ex></ph> Windows Selected}}
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_TITLE_INCOGNITO_WINDOW" desc="Title of an instance entry that has incognito tabs in it.">
         Incognito window
       </message>
@@ -5874,17 +5879,23 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
        <message name="IDS_INSTANCE_SWITCHER_NAME_WINDOW_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming to name the selected window.">
         Name this window
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_SELECT_ALL" desc="The menu item for the 3-dot more button to select all instances.">
+        Select all
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_DESELECT_ALL" desc="The menu item for the 3-dot more button to deselect all instances.">
+        Deselect all
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOW" desc="The menu item for the 3-dot more button to close the instance.">
         Close window
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOWS" desc="The menu item for the 3-dot more button to close all selected instances.">
+        Close windows
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CURRENT_WINDOW" desc="The description for an instance entry saying that it is the entry for the current window.">
         Current
       </message>
       <message name="IDS_INSTANCE_SWITCHER_ADJACENT_WINDOW" desc="The description for an instance entry running in the foreground.">
         Window is open
-      </message>
-      <message name="IDS_INSTANCE_SWITCHER_ALREADY_RUNNING_FOREGROUND" desc="Toast message to show when user tries to switch to a window that is already running in the foreground.">
-        Chrome is already running here.
       </message>
       <message name="IDS_TARGET_SELECTOR_MOVE" desc="The message in the button in target selector dialog that starts moving a tab.">
         Move tab

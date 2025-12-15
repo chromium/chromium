@@ -268,6 +268,49 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testTitleButtons_Visibility() {
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(ModalDialogProperties.TITLE, "Test Title")
+                                .with(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE, true)
+                                .with(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE, true));
+
+        onView(allOf(withId(R.id.title_back), isDisplayed())).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.title_more_button), isDisplayed())).check(matches(isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.set(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE, false);
+                    model.set(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE, false);
+                });
+
+        onView(allOf(withId(R.id.title_back), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.title_more_button), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testTitleBackButton_ClickListener() throws Exception {
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, "Test Title")
+                        .with(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE, true)
+                        .with(
+                                ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER,
+                                (v) -> callbackHelper.notifyCalled()));
+
+        onView(allOf(withId(R.id.title_back), isDisplayed())).perform(click());
+        callbackHelper.waitForCallback(0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testMessageParagraph1_Convenience() {
         // Verify that the message set via MESSAGE_PARAGRAPH_1 is displayed in the paragraphs
         // container.

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.widget.ButtonCompat;
@@ -60,6 +62,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
+    private int mTitleDefaultHorizontalPadding;
+    private ImageButton mTitleBackButton;
+    private ListMenuButton mTitleMoreButton;
     private LinearLayout mMessageParagraphsContainer;
     private View mMessageParagraphsSpacer;
 
@@ -138,6 +143,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
+        mTitleDefaultHorizontalPadding = mTitleContainer.getPaddingLeft();
+        mTitleBackButton = mTitleContainer.findViewById(R.id.title_back);
+        mTitleMoreButton = mTitleContainer.findViewById(R.id.title_more_button);
         mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
         mMessageParagraphsSpacer = findViewById(R.id.message_paragraphs_bottom_spacer);
         mMenuItemsContainer = findViewById(R.id.menu_items_container);
@@ -683,6 +691,21 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean modalDialogScrollViewVisible =
                 mShouldWrapCustomViewScrollable || mButtonGroup.getVisibility() == View.VISIBLE;
 
+        final int titleHorizontalPadding;
+        if (mTitleBackButton.getVisibility() == View.VISIBLE) {
+            titleHorizontalPadding =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.modal_dialog_title_with_icons_padding);
+        } else {
+            titleHorizontalPadding = mTitleDefaultHorizontalPadding;
+        }
+        mTitleContainer.setPaddingRelative(
+                titleHorizontalPadding,
+                mTitleContainer.getPaddingTop(),
+                mTitleContainer.getPaddingEnd(),
+                mTitleContainer.getPaddingBottom());
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
@@ -731,5 +754,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    void setTitleMoreButtonClickListener(OnClickListener listener) {
+        mTitleMoreButton.setOnClickListener(listener);
+    }
+
+    void setTitleBackButtonClickListener(OnClickListener listener) {
+        mTitleBackButton.setOnClickListener(listener);
+    }
+
+    void setTitleBackButtonVisible(boolean visible) {
+        mTitleBackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
+    }
+
+    void setMoreMenuVisible(boolean visible) {
+        mTitleMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
     }
 }

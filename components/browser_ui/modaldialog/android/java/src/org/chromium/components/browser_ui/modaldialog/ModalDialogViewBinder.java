@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -35,6 +37,17 @@ public class ModalDialogViewBinder
             view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));
         } else if (ModalDialogProperties.TITLE_ICON == propertyKey) {
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
+        } else if (ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER == propertyKey) {
+            view.setTitleBackButtonClickListener(
+                    model.get(ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER));
+        } else if (ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE == propertyKey) {
+            view.setTitleBackButtonVisible(
+                    model.get(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE));
+        } else if (ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE == propertyKey) {
+            view.setMoreMenuVisible(model.get(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE));
+        } else if (ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE == propertyKey) {
+            ListMenuDelegate delegate = model.get(ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE);
+            ((ListMenuButton) view.findViewById(R.id.title_more_button)).setDelegate(delegate);
         } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_1 == propertyKey) {
             assert model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS) == null
                     : "Do not use MESSAGE_PARAGRAPH_1 and MESSAGE_PARAGRAPHS at the same time.";
