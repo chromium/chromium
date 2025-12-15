@@ -1180,7 +1180,9 @@ void FormFiller::TriggerRefill(const FormData& form,
     return;
   }
   RefillContext* refill_context = GetRefillContext(form_structure->global_id());
-  DCHECK(refill_context);
+  if (!refill_context) {
+    return;
+  }
 
   // The refill attempt can happen from different paths, some of which happen
   // after waiting for a while. Therefore, although this condition has been
