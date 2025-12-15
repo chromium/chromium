@@ -210,10 +210,6 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         assertEquals(
                 mSingleThemeCollectionRecyclerView, mBottomSheetContent.getActiveRecyclerView());
 
-        // Returns the chrome colors recycler view for CHROME_COLORS type.
-        mBottomSheetTypeSupplier = () -> CHROME_COLORS;
-        assertEquals(mChromeColorsRecyclerView, mBottomSheetContent.getActiveRecyclerView());
-
         // Returns null for other types like MAIN.
         mBottomSheetTypeSupplier = () -> MAIN;
         assertNull(mBottomSheetContent.getActiveRecyclerView());

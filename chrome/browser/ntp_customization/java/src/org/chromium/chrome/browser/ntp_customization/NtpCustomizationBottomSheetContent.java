@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
@@ -206,13 +205,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
                         View.MeasureSpec.AT_MOST);
         mContentView.measure(widthSpec, heightSpec);
 
-        Integer bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
-        View viewToPad = recyclerView;
-        if (bottomSheetType != null && bottomSheetType == CHROME_COLORS) {
-            viewToPad = mContentView.findViewById(R.id.chrome_colors_recycler_view_container);
-        }
-
-        float viewBottom = viewToPad.getBottom();
+        float viewBottom = recyclerView.getBottom();
         if (viewBottom == 0) {
             return RECYCLER_VIEW_INVALID_HEIGHT;
         }
@@ -222,10 +215,10 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         if (viewBottom > maxHeight) {
             viewBottomPadding = (int) Math.ceil(viewBottom - maxHeight);
         }
-        viewToPad.setPaddingRelative(
-                viewToPad.getPaddingStart(),
-                viewToPad.getPaddingTop(),
-                viewToPad.getPaddingEnd(),
+        recyclerView.setPaddingRelative(
+                recyclerView.getPaddingStart(),
+                recyclerView.getPaddingTop(),
+                recyclerView.getPaddingEnd(),
                 viewBottomPadding);
 
         mContentView.measure(widthSpec, heightSpec);
@@ -255,8 +248,6 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
             return mContentView.findViewById(R.id.theme_collections_recycler_view);
         } else if (bottomSheetType == SINGLE_THEME_COLLECTION) {
             return mContentView.findViewById(R.id.single_theme_collection_recycler_view);
-        } else if (bottomSheetType == CHROME_COLORS) {
-            return mContentView.findViewById(R.id.chrome_colors_recycler_view);
         }
         return null;
     }

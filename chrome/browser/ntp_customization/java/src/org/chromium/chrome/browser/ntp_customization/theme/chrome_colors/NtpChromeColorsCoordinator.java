@@ -49,7 +49,6 @@ public class NtpChromeColorsCoordinator {
     private final Context mContext;
     private final BottomSheetDelegate mDelegate;
     private final PropertyModel mPropertyModel;
-    private final NtpChromeColorGridRecyclerView mChromeColorsRecyclerView;
     private final int mItemWidth;
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
@@ -105,8 +104,6 @@ public class NtpChromeColorsCoordinator {
             setupColorInputs();
         }
 
-        mChromeColorsRecyclerView =
-                ntpChromeColorsBottomSheetView.findViewById(R.id.chrome_colors_recycler_view);
         mItemWidth =
                 context.getResources()
                         .getDimensionPixelSize(
@@ -119,13 +116,6 @@ public class NtpChromeColorsCoordinator {
         mPrimaryColorInfo = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
         buildRecyclerView();
         setRecyclerViewMaxWidth();
-
-        // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
-        // has a height, allowing it to correctly open to the half-height state.
-        mChromeColorsRecyclerView.post(
-                () -> {
-                    delegate.getBottomSheetController().expandSheet();
-                });
     }
 
     private void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {

@@ -4,11 +4,16 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ntp_customization_chrome_colors_bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
@@ -91,7 +96,10 @@ found in the LICENSE file.
             class="org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorGridRecyclerView"
             android:id="@+id/chrome_colors_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"/>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
