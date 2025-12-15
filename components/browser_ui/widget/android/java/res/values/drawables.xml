@@ -8,5 +8,5 @@ found in the LICENSE file.
     <drawable name="ic_more_vert_24dp">
         @drawable/ic_more_vert_24dp_on_light_bg
     </drawable>
-    <drawable name="btn_delete_24dp">@drawable/ic_cancel_24dp</drawable>
+    <drawable name="btn_delete_24dp">@drawable/ic_cancel_fill_24dp</drawable>
 </resources>
