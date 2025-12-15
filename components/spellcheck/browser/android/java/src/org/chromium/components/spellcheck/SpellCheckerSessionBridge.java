@@ -30,14 +30,14 @@ import java.util.ArrayList;
 /** JNI interface for native SpellCheckerSessionBridge to use Android's spellchecker. */
 @NullMarked
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
-    // LINT.IfChange(SpellCheckResultDecoration)
-    /** Values from SpellCheckResult::Decoration on the C++ side * */
-    private static class SpellCheckResultDecoration {
+    // LINT.IfChange(SpellCheckDecoration)
+    /** Values from spellcheck::Decoration on the C++ side * */
+    private static class SpellCheckDecoration {
         public static final int SPELLING = 0;
         public static final int GRAMMAR = 1;
     }
 
-    // LINT.ThenChange(/components/spellcheck/common/spellcheck_result.h:DecorationEnum)
+    // LINT.ThenChange(/components/spellcheck/common/spellcheck_decoration.h:DecorationEnum)
 
     private long mNativeSpellCheckerSessionBridge;
     private final boolean mAllowGrammarChecks;
@@ -156,7 +156,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         ArrayList<Integer> offsets = new ArrayList<Integer>();
         ArrayList<Integer> lengths = new ArrayList<Integer>();
         ArrayList<String[]> suggestions = new ArrayList<String[]>();
-        ArrayList<Integer> spellcheckResultDecorations = new ArrayList<Integer>();
+        ArrayList<Integer> spellCheckDecorations = new ArrayList<Integer>();
         ArrayList<Boolean> hideSuggestionMenuBooleans = new ArrayList<Boolean>();
 
         for (SentenceSuggestionsInfo result : results) {
@@ -189,9 +189,9 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                     // set.
                     final int decoration =
                             (attributes & grammarBitMask) != 0
-                                    ? SpellCheckResultDecoration.GRAMMAR
-                                    : SpellCheckResultDecoration.SPELLING;
-                    spellcheckResultDecorations.add(decoration);
+                                    ? SpellCheckDecoration.GRAMMAR
+                                    : SpellCheckDecoration.SPELLING;
+                    spellCheckDecorations.add(decoration);
                     ArrayList<String> suggestionsForWord = new ArrayList<String>();
                     for (int j = 0; j < info.getSuggestionsCount(); ++j) {
                         String suggestion = info.getSuggestionAt(j);
@@ -213,7 +213,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                         convertIntListToArray(offsets),
                         convertIntListToArray(lengths),
                         suggestions.toArray(new String[suggestions.size()][]),
-                        convertIntListToArray(spellcheckResultDecorations),
+                        convertIntListToArray(spellCheckDecorations),
                         convertBoolListToArray(hideSuggestionMenuBooleans));
     }
 
@@ -260,7 +260,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                 int[] offsets,
                 int[] lengths,
                 String[][] suggestions,
-                int[] spellcheckResultDecorations,
+                int[] spellCheckDecorations,
                 boolean[] hideSuggestionMenuBooleans);
     }
 }

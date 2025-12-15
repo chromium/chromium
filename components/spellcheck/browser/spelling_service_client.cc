@@ -297,7 +297,7 @@ bool SpellingServiceClient::ParseResponse(
     if (!replacement) {
       return false;
     }
-    SpellCheckResult result(SpellCheckResult::SPELLING, *start, *length,
+    SpellCheckResult result(spellcheck::Decoration::SPELLING, *start, *length,
                             base::UTF8ToUTF16(*replacement));
     results->push_back(result);
     }

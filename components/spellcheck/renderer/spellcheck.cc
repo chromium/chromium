@@ -540,7 +540,7 @@ void SpellCheck::CreateTextCheckingResults(
         line_text.substr(spellcheck_result.location, spellcheck_result.length);
     const std::vector<std::u16string>& replacements =
         spellcheck_result.replacements;
-    SpellCheckResult::Decoration decoration = spellcheck_result.decoration;
+    spellcheck::Decoration decoration = spellcheck_result.decoration;
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // Ignore words that are in a script not supported by any of the enabled
     // spellcheck languages.
@@ -571,10 +571,10 @@ void SpellCheck::CreateTextCheckingResults(
       // probably contextually-misspelled words.
       size_t unused_misspelling_start = 0;
       size_t unused_misspelling_length = 0;
-      if (decoration == SpellCheckResult::SPELLING &&
+      if (decoration == spellcheck::Decoration::SPELLING &&
           SpellCheckWord(misspelled_word, host, &unused_misspelling_start,
                          &unused_misspelling_length, nullptr)) {
-        decoration = SpellCheckResult::GRAMMAR;
+        decoration = spellcheck::Decoration::GRAMMAR;
       }
     }
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -601,7 +601,7 @@ void SpellCheck::CreateTextCheckingResults(
         // misspelled). If enhanced spell check wasn't used, remove this
         // misspelling.
         if (spellcheck_result.spelling_service_used) {
-          decoration = SpellCheckResult::GRAMMAR;
+          decoration = spellcheck::Decoration::GRAMMAR;
         } else {
           continue;
         }

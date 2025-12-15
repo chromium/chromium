@@ -15,6 +15,7 @@ source_set("common") {
 
   public_deps = [
     ":interfaces",
+    ":spellcheck_decoration",
     ":spellcheck_result",
     "//components/spellcheck:buildflags",
   ]
@@ -26,6 +27,12 @@ source_set("common") {
   ]
 }
 
+source_set("spellcheck_decoration") {
+  sources = [ "spellcheck_decoration.h" ]
+
+  deps = [ "//base" ]
+}
+
 # This is separated out because it is used by both the mojo interfaces below
 # (see spellcheck.typemap) and by "common" above.
 source_set("spellcheck_result") {
@@ -33,6 +40,8 @@ source_set("spellcheck_result") {
     "spellcheck_result.cc",
     "spellcheck_result.h",
   ]
+
+  public_deps = [ ":spellcheck_decoration" ]
 
   deps = [ "//base" ]
 }
@@ -66,7 +75,7 @@ mojom("interfaces") {
       types = [
         {
           mojom = "spellcheck.mojom.Decoration"
-          cpp = "::SpellCheckResult::Decoration"
+          cpp = "::spellcheck::Decoration"
         },
         {
           mojom = "spellcheck.mojom.SpellCheckResult"
@@ -75,7 +84,10 @@ mojom("interfaces") {
       ]
       traits_headers = [ "spellcheck_mojom_traits.h" ]
       traits_sources = [ "spellcheck_mojom_traits.cc" ]
-      traits_public_deps = [ "//components/spellcheck:buildflags" ]
+      traits_public_deps = [
+        ":spellcheck_decoration",
+        "//components/spellcheck:buildflags",
+      ]
     },
   ]
 }

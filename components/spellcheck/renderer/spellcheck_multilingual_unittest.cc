@@ -213,8 +213,8 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphCorrect) {
 TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
   ReinitializeSpellCheck("en-US,es-ES");
   std::vector<SpellCheckResult> expected;
-  expected.emplace_back(SpellCheckResult::SPELLING, 7, 15);
-  expected.emplace_back(SpellCheckResult::SPELLING, 33, 7);
+  expected.emplace_back(spellcheck::Decoration::SPELLING, 7, 15);
+  expected.emplace_back(spellcheck::Decoration::SPELLING, 33, 7);
 
   ExpectSpellCheckParagraphResults(
       // English, German, Spanish, and a misspelled word.

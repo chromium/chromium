@@ -143,9 +143,8 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     std::vector<std::u16string> suggestions_for_word;
     base::android::AppendJavaStringArrayToStringVector(
         env, suggestions_for_word_array, &suggestions_for_word);
-    SpellCheckResult::Decoration decoration =
-        static_cast<SpellCheckResult::Decoration>(
-            spellcheck_result_decorations[i]);
+    spellcheck::Decoration decoration =
+        static_cast<spellcheck::Decoration>(spellcheck_result_decorations[i]);
     results.emplace_back(decoration, offsets[i], lengths[i],
                          suggestions_for_word,
                          hide_suggestion_menu_booleans[i]);

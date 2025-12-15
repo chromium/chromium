@@ -50,8 +50,10 @@ class TestSpellCheckHostChromeImpl {
 // results returned by the remote Spelling service.
 TEST(SpellCheckHostChromeImplTest, CustomSpellingResults) {
   std::vector<SpellCheckResult> service_results;
-  service_results.emplace_back(SpellCheckResult::SPELLING, 0, 6, u"Hello");
-  service_results.emplace_back(SpellCheckResult::SPELLING, 7, 5, u"World");
+  service_results.emplace_back(spellcheck::Decoration::SPELLING, 0, 6,
+                               u"Hello");
+  service_results.emplace_back(spellcheck::Decoration::SPELLING, 7, 5,
+                               u"World");
   TestSpellCheckHostChromeImpl host_impl;
   host_impl.GetCustomDictionary().AddWord("Helllo");
   std::vector<SpellCheckResult> results =
@@ -70,8 +72,10 @@ TEST(SpellCheckHostChromeImplTest, CustomSpellingResults) {
 // be retained in the results returned by the remote Spelling service.
 TEST(SpellCheckHostChromeImplTest, SpellingServiceResults) {
   std::vector<SpellCheckResult> service_results;
-  service_results.emplace_back(SpellCheckResult::SPELLING, 0, 6, u"Hello");
-  service_results.emplace_back(SpellCheckResult::SPELLING, 7, 5, u"World");
+  service_results.emplace_back(spellcheck::Decoration::SPELLING, 0, 6,
+                               u"Hello");
+  service_results.emplace_back(spellcheck::Decoration::SPELLING, 7, 5,
+                               u"World");
   TestSpellCheckHostChromeImpl host_impl;
   host_impl.GetCustomDictionary().AddWord("Hulo");
   std::vector<SpellCheckResult> results =

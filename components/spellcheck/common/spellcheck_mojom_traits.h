@@ -6,22 +6,21 @@
 #define COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_MOJOM_TRAITS_H_
 
 #include "components/spellcheck/common/spellcheck.mojom-shared.h"
+#include "components/spellcheck/common/spellcheck_decoration.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration> {
-  static spellcheck::mojom::Decoration ToMojom(SpellCheckResult::Decoration);
-  static bool FromMojom(spellcheck::mojom::Decoration,
-                        SpellCheckResult::Decoration*);
+struct EnumTraits<spellcheck::mojom::Decoration, spellcheck::Decoration> {
+  static spellcheck::mojom::Decoration ToMojom(spellcheck::Decoration);
+  static bool FromMojom(spellcheck::mojom::Decoration, spellcheck::Decoration*);
 };
 
 template <>
 struct StructTraits<spellcheck::mojom::SpellCheckResultDataView,
                     SpellCheckResult> {
-  static SpellCheckResult::Decoration decoration(
-      const SpellCheckResult& result) {
+  static spellcheck::Decoration decoration(const SpellCheckResult& result) {
     return result.decoration;
   }
 

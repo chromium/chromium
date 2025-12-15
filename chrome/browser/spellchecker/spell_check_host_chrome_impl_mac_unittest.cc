@@ -24,13 +24,16 @@ TEST_F(SpellCheckHostChromeImplMacTest, CombineResults) {
   std::u16string local_suggestion = u"local";
 
   // Remote-only result - must be flagged as GRAMMAR after combine
-  remote_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0, 5));
+  remote_results.push_back(
+      SpellCheckResult(spellcheck::Decoration::SPELLING, 0, 5));
 
   // Local-only result - must be discarded after combine
-  local_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 10, 5));
+  local_results.push_back(
+      SpellCheckResult(spellcheck::Decoration::SPELLING, 10, 5));
 
   // local & remote result - must be flagged SPELLING, uses remote suggestion.
-  SpellCheckResult result(SpellCheckResult::SPELLING, 20, 5, local_suggestion);
+  SpellCheckResult result(spellcheck::Decoration::SPELLING, 20, 5,
+                          local_suggestion);
   local_results.push_back(result);
   result.replacements[0] = remote_suggestion;
   remote_results.push_back(result);
@@ -38,9 +41,9 @@ TEST_F(SpellCheckHostChromeImplMacTest, CombineResults) {
   CombineResults(&remote_results, local_results);
 
   ASSERT_EQ(2U, remote_results.size());
-  EXPECT_EQ(SpellCheckResult::GRAMMAR, remote_results[0].decoration);
+  EXPECT_EQ(spellcheck::Decoration::GRAMMAR, remote_results[0].decoration);
   EXPECT_EQ(0, remote_results[0].location);
-  EXPECT_EQ(SpellCheckResult::SPELLING, remote_results[1].decoration);
+  EXPECT_EQ(spellcheck::Decoration::SPELLING, remote_results[1].decoration);
   EXPECT_EQ(20, remote_results[1].location);
   EXPECT_EQ(remote_suggestion, remote_results[1].replacements[0]);
 }
