@@ -13,7 +13,8 @@ you want to be confident that this test functionality is not used outside tests.
 * The commonly-used class only needs "test access" from its own tests or
   closely-related tests; in this case, simply [friend the tests].
 * Only a handful of simple test-access methods are needed, like trivial setters;
-  in this case, the [ForTesting methods] pattern is lighter-weight.
+  in this case, the [ForTesting methods] pattern is lighter-weight, or creating
+  a test subclass that exposes normally-protected members as public.
 
 ## Alternatives / See also:
 
