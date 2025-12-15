@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -230,11 +231,24 @@ void ReadAnythingController::TransferWebUiOwnership(
 }
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     return;
   }
+
+  if (GetPresentationState() == PresentationState::kInSidePanel) {
+    SidePanelUI* side_panel_ui = GetSidePanelUI();
+    CHECK(side_panel_ui);
+    side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
+                         SidePanelEntryHideReason::kSidePanelClosed,
+                         /*suppress_animations=*/false);
+    // Ensure we got the web_ui_wrapper_ back from the Side Panel if one ever
+    // existed.
+    CHECK(!has_shown_ui_ || web_ui_wrapper_);
+  }
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
+
   if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
     return;
   }
@@ -251,6 +265,13 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
 // ReadAnythingController when is_immersive_read_anything_enabled_ flag is
 // enabled.
 void ReadAnythingController::ShowUI(SidePanelOpenTrigger trigger) {
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+    // Ensure we got the web_ui_wrapper_ back from the immersive overlay if one
+    // ever existed.
+    CHECK(!has_shown_ui_ || web_ui_wrapper_);
+  }
+
   if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything, trigger);
   }
@@ -284,6 +305,12 @@ void ReadAnythingController::CloseImmersiveUI() {
 // enabled.
 void ReadAnythingController::ToggleReadAnythingSidePanel(
     SidePanelOpenTrigger trigger) {
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+    // Ensure we got the web_ui_wrapper_ back from the immersive overlay if one
+    // ever existed.
+    CHECK(!has_shown_ui_ || web_ui_wrapper_);
+  }
   if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
     side_panel_ui->Toggle(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
                           trigger);

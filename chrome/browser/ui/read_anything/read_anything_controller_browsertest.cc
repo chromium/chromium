@@ -41,6 +41,40 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ReadAnythingControllerTestBase
+    : public ReadAnythingControllerBrowserTest {
+ public:
+  content::WebContents* GetSidePanelWebContents() {
+    auto* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
+                           ->contents_height_side_panel();
+    auto* content_wrapper = side_panel->GetContentParentView();
+    if (content_wrapper->children().empty()) {
+      return nullptr;
+    }
+    auto* side_panel_view =
+        static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
+    return side_panel_view->web_contents();
+  }
+
+  views::View* GetImmersiveOverlay() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->GetWidget()->GetContentsView()->GetViewByID(
+        VIEW_ID_READ_ANYTHING_OVERLAY);
+  }
+
+  content::WebContents* GetImmersiveWebContents() {
+    views::View* overlay_view = GetImmersiveOverlay();
+    if (!overlay_view || !overlay_view->GetVisible() ||
+        overlay_view->children().empty()) {
+      return nullptr;
+    }
+    views::WebView* web_view =
+        static_cast<views::WebView*>(overlay_view->children()[0]);
+    return web_view->GetWebContents();
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowSidePanelFromAppMenu) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
@@ -432,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_TRUE(wrapper->web_contents()->GetWebUI());
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
                        WebUIContentsWrapperIsPassedToSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
@@ -458,14 +492,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   }));
 
   // Get the WebContents from the side panel and assert it's the same one.
-  auto* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
-                         ->contents_height_side_panel();
-  auto* content_wrapper = side_panel->GetContentParentView();
-  ASSERT_EQ(1u, content_wrapper->children().size());
-  auto* side_panel_view =
-      static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
-  content::WebContents* side_panel_web_contents =
-      side_panel_view->web_contents();
+  content::WebContents* side_panel_web_contents = GetSidePanelWebContents();
   ASSERT_TRUE(side_panel_web_contents);
 
   EXPECT_EQ(controller_web_contents, side_panel_web_contents);
@@ -552,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 // TODO(crbug.com/463939639): Change this test to confirm that the WebUI is
 // passed back and forth between IRM and SP, instead of checking that the same
 // WebUI is reused on open and close of the SP.
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
                        ReusesWebUIOnOpenCloseAndReopen) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
@@ -568,13 +595,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
-  auto* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
-                         ->contents_height_side_panel();
-  auto* content_wrapper = side_panel->GetContentParentView();
-  ASSERT_EQ(1u, content_wrapper->children().size());
-  auto* side_panel_view =
-      static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
-  content::WebContents* web_contents1 = side_panel_view->web_contents();
+  content::WebContents* web_contents1 = GetSidePanelWebContents();
   ASSERT_TRUE(web_contents1);
 
   // Close the side panel.
@@ -600,13 +621,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   }));
 
   // Get the new WebContents from the side panel and assert it's the same one.
-  side_panel = BrowserView::GetBrowserViewForBrowser(browser())
-                   ->contents_height_side_panel();
-  content_wrapper = side_panel->GetContentParentView();
-  ASSERT_EQ(1u, content_wrapper->children().size());
-  side_panel_view =
-      static_cast<SidePanelWebUIView*>(content_wrapper->children()[0]);
-  content::WebContents* web_contents2 = side_panel_view->web_contents();
+  content::WebContents* web_contents2 = GetSidePanelWebContents();
   ASSERT_TRUE(web_contents2);
 
   EXPECT_EQ(web_contents1, web_contents2);
@@ -651,4 +666,135 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_doc_url));
 
   ASSERT_EQ(controller->GetNavCounterForTesting(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerTestBase,
+    ShowImmersiveUIImmediatelyFollowedByShowSidePanelUI_DoesNotCrash) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Open Side Panel immediately followed by opening Immersive UI (before the
+  // WebUI has a chance to load)
+  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Verify Immersive UI is open (and did not crash)
+  views::View* overlay_view = GetImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  EXPECT_TRUE(overlay_view->GetVisible());
+  EXPECT_FALSE(overlay_view->children().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
+                       ShowImmersiveUI_ClosesSidePanel) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Open Side Panel
+  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Get the WebUI from the side panel
+  content::WebContents* side_panel_web_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_web_contents);
+
+  // Open Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Verify Side Panel is closed
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Verify Immersive UI is open
+  views::View* overlay_view = GetImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  EXPECT_TRUE(overlay_view->GetVisible());
+  EXPECT_FALSE(overlay_view->children().empty());
+
+  // Verify the same WebUI is used in the immersive overlay
+  EXPECT_EQ(side_panel_web_contents, GetImmersiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
+                       ShowSidePanelUI_ClosesImmersiveUI) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Open Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Get the WebUI from the immersive overlay
+  content::WebContents* immersive_ui_web_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_ui_web_contents);
+
+  // Open Side Panel via ShowUI
+  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+
+  // Verify Immersive UI is closed
+  views::View* overlay_view = GetImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  EXPECT_FALSE(overlay_view->GetVisible());
+  EXPECT_TRUE(overlay_view->children().empty());
+
+  // Verify Side Panel is showing
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Verify the same WebUI is used in the side panel
+  EXPECT_EQ(immersive_ui_web_contents, GetSidePanelWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
+                       ToggleReadAnythingSidePanel_ClosesImmersiveUI) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Open Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Get the WebUI from the immersive overlay
+  content::WebContents* immersive_ui_web_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_ui_web_contents);
+
+  // Toggle Side Panel
+  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
+
+  // Verify Immersive UI is closed
+  views::View* overlay_view = GetImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  EXPECT_FALSE(overlay_view->GetVisible());
+  EXPECT_TRUE(overlay_view->children().empty());
+
+  // Verify Side Panel is showing
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Verify the same WebUI is used in the side panel
+  EXPECT_EQ(immersive_ui_web_contents, GetSidePanelWebContents());
 }
