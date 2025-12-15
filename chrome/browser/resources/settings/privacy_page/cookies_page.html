@@ -4,7 +4,6 @@
       padding: 0 var(--cr-section-padding);
     }
 
-    #default,
     #additionalProtections {
       padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
     }
@@ -14,32 +13,9 @@
       padding-bottom: 6px;
     }
 
-    #exceptionHeader3pcd {
+    #exceptionHeader {
       padding: 0 var(--cr-section-padding);
       margin-bottom: -32px;
-    }
-
-    #explanationText {
-      padding-bottom: var(--cr-section-vertical-padding);
-    }
-
-    #blockThirdPartyToggle {
-      padding: 0 var(--cr-section-padding);
-    }
-
-    .radio-group-sub-heading {
-      padding-bottom: 10px;
-    }
-
-    .bullet-row {
-      align-items: center;
-      display: flex;
-      padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
-    }
-
-    .bullet-row > div {
-      padding-left: var(--cr-section-padding);
-      padding-right: 40px;
     }
 
     .bullet-line {
@@ -68,7 +44,7 @@
       padding-bottom: 12px;
     }
 
-    #relatedWebsiteSetsToggle, #relatedWebsiteSetsToggle3pcSetting {
+    #relatedWebsiteSetsToggle {
       padding-inline-end: 0;
       padding-inline-start: 0;
     }
@@ -86,131 +62,88 @@
       search-label="$i18n{siteSettingsAllSitesFilter}"
       search-icon="settings20:filter-list"
       search-term="{{searchTerm}}" route-path$="[[routePath]]">
-    <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
-      <div id="explanationText" class="secondary">
-        $i18n{thirdPartyCookiesPageDescription}
-      </div>
-      <div id="generalControls">
-        <settings-radio-group id="thirdPartyCookieBlockingSettingGroup" no-set-pref
-            pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
-            selectable-elements="cr-radio-button, settings-collapse-radio-button"
-            on-change="onThirdPartyCookieBlockingSettingChanged_">
-          <settings-collapse-radio-button id="block3pcIncognito"
-              pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-              name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
-              label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
-              expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}">
-            <div slot="collapse">
-              <div class="bullet-line">
-                <cr-icon icon="privacy:cookie"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsAllowBulletOne}
-                </div>
-              </div>
-              <div class="bullet-line one-line">
-                <cr-icon icon="settings20:web"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsAllowBulletTwo}
-                </div>
-              </div>
-              <div class="bullet-line one-line">
-                <cr-icon icon="settings20:incognito-unfilled"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsAllowBulletThree}
-                </div>
+    <div id="explanationText" class="secondary">
+      $i18n{thirdPartyCookiesPageDescription}
+    </div>
+    <div id="generalControls">
+      <settings-radio-group id="thirdPartyCookieBlockingSettingGroup"
+          no-set-pref
+          pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
+          selectable-elements="cr-radio-button, settings-collapse-radio-button"
+          on-change="onThirdPartyCookieBlockingSettingChanged_">
+        <settings-collapse-radio-button id="block3pcIncognito"
+            pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+            name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+            label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
+            expand-aria-label="$i18n{allowThirdPartyCookiesExpandA11yLabel}">
+          <div slot="collapse">
+            <div class="bullet-line">
+              <cr-icon icon="privacy:cookie"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsAllowBulletOne}
               </div>
             </div>
-          </settings-collapse-radio-button>
-          <settings-collapse-radio-button id="blockAll3pc"
-              pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
-              name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
-              label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
-              expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}">
-            <div slot="collapse">
-              <div class="bullet-line">
-                <cr-icon icon="settings:block"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsBlockBulletOne}
-                </div>
-              </div>
-              <div class="bullet-line one-line">
-                <cr-icon icon="privacy:cookie"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsBlockBulletTwo}
-                </div>
-              </div>
-              <div class="bullet-line one-line">
-                <cr-icon icon="settings20:broken"></cr-icon>
-                <div class="secondary">
-                  $i18n{cookiePageSettingsBlockBulletThree}
-                </div>
+            <div class="bullet-line one-line">
+              <cr-icon icon="settings20:web"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsAllowBulletTwo}
               </div>
             </div>
-            <div slot="noSelectionCollapse">
-              <settings-toggle-button id="relatedWebsiteSetsToggle3pcSetting"
-                  pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                  label="$i18n{cookiePageRwsLabel}"
-                  sub-label="$i18n{cookiePageRwsSubLabel}"
-                  disabled="[[relatedWebsiteSetsToggle3pcSettingDisabled_(
-                                prefs.generated.third_party_cookie_blocking_setting.value)]]">
-              </settings-toggle-button>
-            </div>
-          </settings-collapse-radio-button>
-        </settings-radio-group>
-      </div>
-    </template>
-    <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-      <div id="default" class="secondary">
-        $i18n{trackingProtectionPageDescription}
-      </div>
-      <div>
-        <div class="bullet-row">
-          <cr-icon icon="settings:visibility-off" aria-hidden="true">
-          </cr-icon>
-          <div>
-            $i18n{trackingProtectionBulletOne}
-            <div class="secondary">
-              $i18n{trackingProtectionBulletOneDescription}
+            <div class="bullet-line one-line">
+              <cr-icon icon="settings20:incognito-unfilled"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsAllowBulletThree}
+              </div>
             </div>
           </div>
-        </div>
-        <div class="bullet-row">
-          <cr-icon icon="settings:domain-verification" aria-hidden="true">
-          </cr-icon>
-          <div>
-            $i18n{trackingProtectionBulletTwo}
-            <div class="secondary">
-              $i18nRaw{trackingProtectionBulletTwoDescription}
+        </settings-collapse-radio-button>
+        <settings-collapse-radio-button id="blockAll3pc"
+            pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+            name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+            label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
+            expand-aria-label="$i18n{blockThirdPartyCookiesExpandA11yLabel}">
+          <div slot="collapse">
+            <div class="bullet-line">
+              <cr-icon icon="settings:block"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsBlockBulletOne}
+              </div>
+            </div>
+            <div class="bullet-line one-line">
+              <cr-icon icon="privacy:cookie"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsBlockBulletTwo}
+              </div>
+            </div>
+            <div class="bullet-line one-line">
+              <cr-icon icon="settings20:broken"></cr-icon>
+              <div class="secondary">
+                $i18n{cookiePageSettingsBlockBulletThree}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </template>
+          <div slot="noSelectionCollapse">
+            <settings-toggle-button id="relatedWebsiteSetsToggle"
+                pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                label="$i18n{cookiePageRwsLabel}"
+                sub-label="$i18n{cookiePageRwsSubLabel}"
+                disabled="[[relatedWebsiteSetsToggleDisabled_(
+                              prefs.generated.third_party_cookie_blocking_setting.value)]]">
+            </settings-toggle-button>
+          </div>
+        </settings-collapse-radio-button>
+      </settings-radio-group>
+    </div>
     <h2 id="additionalProtections">
       $i18n{trackingProtectionAdvancedLabel}
     </h2>
-    <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-      <settings-toggle-button
-          id="blockThirdPartyToggle"
-          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-          sub-label="
-            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-          learn-more-url="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-          learn-more-aria-label="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
-          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-          icon="settings:visibility-off">
-      </settings-toggle-button>
-    </template>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="siteDataTrigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <div id="exceptionHeader3pcd">
+    <div id="exceptionHeader">
       <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
     </div>
     <site-list id="allow3pcExceptionsList"

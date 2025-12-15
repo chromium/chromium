@@ -308,23 +308,13 @@ class SettingsSiteSettingsListElement extends
     }
 
     let label;
-    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-      if (this.getPref('tracking_protection.block_all_3pc_toggle_enabled')
-              .value) {
-        label = 'thirdPartyCookiesLinkRowSublabelDisabled';
-      } else {
-        label = 'thirdPartyCookiesLinkRowSublabelLimited';
-      }
-    } else {
-      const state = this.getPref('profile.cookie_controls_mode').value;
-      if (state === CookieControlsMode.OFF ||
-          state === CookieControlsMode.INCOGNITO_ONLY) {
-        label = 'thirdPartyCookiesLinkRowSublabelEnabled';
-      } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
-        label = 'thirdPartyCookiesLinkRowSublabelDisabled';
-      }
+    const state = this.getPref('profile.cookie_controls_mode').value;
+    if (state === CookieControlsMode.OFF ||
+        state === CookieControlsMode.INCOGNITO_ONLY) {
+      label = 'thirdPartyCookiesLinkRowSublabelEnabled';
+    } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
+      label = 'thirdPartyCookiesLinkRowSublabelDisabled';
     }
-
     assert(!!label);
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }

@@ -536,9 +536,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       // Prefs are not available yet. Show the card until they become available.
       return true;
     }
-    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-      return false;
-    }
     // Don't show the 3PC card if the user has chosen to block 1PCs.
     return this.getPref('generated.cookie_default_content_setting').value !==
         ContentSetting.BLOCK;

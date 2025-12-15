@@ -148,10 +148,7 @@ export function setupPrivacyGuidePageForTest(
     page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy): void {
   setSafeBrowsingSetting(page, SafeBrowsingSetting.STANDARD);
-  // TODO(b:306414714): Clean up with Mode B.
-  if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    setThirdPartyCookieSetting(page, CookieControlsMode.INCOGNITO_ONLY);
-  }
+  setThirdPartyCookieSetting(page, CookieControlsMode.INCOGNITO_ONLY);
   setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
   setupSync({
     syncBrowserProxy: syncBrowserProxy,
@@ -191,6 +188,8 @@ export function setParametersForCookiesStep(
   setThirdPartyCookieSetting(page, CookieControlsMode.BLOCK_THIRD_PARTY);
   if (!isEligible) {
     setFirstPartyCookieSetting(page, ContentSetting.BLOCK);
+  } else {
+    setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
   }
   assertEquals(
       isEligible, shouldShowCookiesCard(page),

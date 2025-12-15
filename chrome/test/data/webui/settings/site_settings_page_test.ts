@@ -118,37 +118,7 @@ suite('SiteSettingsPage', function() {
     assertEquals('c', defaultSettingLabel(ContentSetting.ASK, 'a', 'b', 'c'));
   });
 
-  test('CookiesLinkRowSublabelInModeB', async function() {
-    // This test verifies the Tracking Protection rewind label.
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
-    setupPage();
-    const cookiesLinkRow = getCookiesLinkRow();
-
-    page.set(
-        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', true);
-    await flushTasks;
-    assertTrue(Boolean(page.get(
-        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
-        cookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
-    await flushTasks;
-    assertFalse(Boolean(page.get(
-        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelLimited'),
-        cookiesLinkRow.subLabel);
-  });
-
   test('CookiesLinkRowSublabel', async function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
     setupPage();
     const cookiesLinkRow = getCookiesLinkRow();
 

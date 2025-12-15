@@ -234,9 +234,6 @@ suite('CookiesSubpageRedesignDisabled', function() {
 
   test(
       'cookiesLinkRowSublabel', async function() {
-        loadTimeData.overrideValues({
-          is3pcdCookieSettingsRedesignEnabled: false,
-        });
         resetRouterForTesting();
 
         await createPage();
