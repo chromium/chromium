@@ -35,6 +35,10 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // Forwards an `OnWidgetShown()` call to the page.
   void OnWidgetShown(std::unique_ptr<SearchboxContextData::Context> context);
 
+  // Sets whether the context should be preserved when the popup is closed. This
+  // value is reset to false when the popup is shown again.
+  void SetPreserveContextOnClose(bool preserve_context_on_close);
+
   // Forwards an `OnWidgetClosed()` call to the page.
   void OnWidgetClosed();
 

@@ -42,4 +42,12 @@ interface Page {
   // Called when the widget in which the AIM popup view is embedded in closes.
   // The page is expected to return the input text via the callback.
   OnWidgetClosed() => (string input);
+
+  // Sets whether the context should be preserved when the popup is closed.
+  // Intended to be called while the popup is open before an interstitial
+  // dialog (eg. file selector dialog) is shown to the user to stop the default
+  // behavior of clearing the context when the popup is closed.
+  // `preserve_context_on_close` is reset to false when the popup is shown
+  // again.
+  SetPreserveContextOnClose(bool preserve_context_on_close);
 };

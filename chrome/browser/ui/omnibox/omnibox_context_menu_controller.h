@@ -20,6 +20,7 @@ class FaviconService;
 class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
 class OmniboxEditModel;
+class OmniboxController;
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -101,8 +102,13 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   raw_ptr<contextual_search::ContextualSearchContextController>
   GetQueryController() const;
+  raw_ptr<OmniboxController> GetOmniboxController() const;
   raw_ptr<OmniboxEditModel> GetEditModel();
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
+
+  // Sets preserveContextOnClose to `preserve_context_on_close` if the AIM popup
+  // is currently open.
+  void SetPreserveContextOnCloseIfAimPopupIsOpen(bool preserve_context_on_close);
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
