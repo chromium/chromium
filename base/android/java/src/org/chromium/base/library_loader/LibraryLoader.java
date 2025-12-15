@@ -569,7 +569,7 @@ public class LibraryLoader {
      * Checks whether the native library is fully loaded.
      *
      * @deprecated please avoid using in new code:
-     *     https://crsrc.org/c/base/android/jni_generator/README.md#testing-for-readiness-use-get
+     *     https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero/README.md#chrome_specific-guidance
      */
     @Deprecated
     @VisibleForTesting
@@ -587,7 +587,7 @@ public class LibraryLoader {
      * Checks whether the native library is fully loaded and initialized.
      *
      * @deprecated please avoid using in new code:
-     *     https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
+     *     https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero/README.md#chrome_specific-guidance
      */
     @Deprecated
     public boolean isInitialized() {
@@ -802,7 +802,7 @@ public class LibraryLoader {
      * Overrides the library loader (normally with a mock) for testing.
      *
      * @deprecated please avoid using in new code:
-     *     https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
+     *     https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero/README.md#chrome_specific-guidance
      * @param loader the mock library loader.
      */
     @Deprecated
@@ -839,9 +839,8 @@ public class LibraryLoader {
      * be used by clients like NativeTests which manually load their native libraries without using
      * the LibraryLoader.
      *
-     * Don't use in new code. Tests that require this call should be migrated to
-     * NativeUnitTest.
-     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
+     * <p>Don't use in new code. Tests that require this call should be migrated to NativeUnitTest.
+     * https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero/README.md#chrome_specific-guidance
      */
     protected static void setLibrariesLoadedForNativeTests() {
         LibraryLoader self = getInstance();
