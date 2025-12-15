@@ -149,8 +149,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // approximate signale for when the overlays are presented.
   virtual void OverlayPresentationComplete();
 
-  // These two functions are used by Android SurfaceControl, and SetViewportSize
-  // is also used for Windows DC layers.
+  // These two functions are used by Android SurfaceControl.
   virtual void SetDisplayTransformHint(gfx::OverlayTransform transform) {}
   virtual void SetViewportSize(const gfx::Size& size) {}
 

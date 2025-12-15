@@ -286,8 +286,8 @@ void DirectRenderer::DrawFrame(
 #endif
   if (overlay_processor_) {
     // Display transform and viewport size are needed for overlay validator on
-    // Android SurfaceControl, and viewport size is need on Windows. These need
-    // to be called before ProcessForOverlays.
+    // Android SurfaceControl. These need to be called before
+    // ProcessForOverlays.
     overlay_processor_->SetDisplayTransformHint(
         output_surface_->GetDisplayTransform());
     overlay_processor_->SetViewportSize(device_viewport_size);

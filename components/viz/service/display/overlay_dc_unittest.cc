@@ -2591,7 +2591,6 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
         /*allowed_yuv_overlay_count=*/1,
         /*disable_video_overlay_if_moving=*/false);
     overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, true);
-    overlay_processor_->SetViewportSize(gfx::Size(256, 256));
 
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
   }
