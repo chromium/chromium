@@ -10289,6 +10289,15 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="ContextualTasks.ActiveTab.UserAction.LinkClicked">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user clicked a link on the active tab shown alongside the contextual
+    tasks panel.
+  </description>
+</action>
+
 <action name="ContextualTasks.AiResponse.UserAction.LinkClicked{SurfaceType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
