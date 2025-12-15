@@ -115,7 +115,8 @@ class ComposeboxQueryControllerTest
       bool enable_viewport_images = true,
       bool use_separate_request_ids_for_multi_context_viewport_images = true,
       bool enable_cluster_info_ttl = false,
-      bool prioritize_suggestions_for_the_first_attached_document = false) {
+      bool prioritize_suggestions_for_the_first_attached_document = false,
+      bool enable_context_id_migration = false) {
     // Create the config params.
     auto config_params =
         std::make_unique<ContextualSearchContextController::ConfigParams>();
@@ -127,8 +128,11 @@ class ComposeboxQueryControllerTest
     config_params->enable_viewport_images = enable_viewport_images;
     config_params->use_separate_request_ids_for_multi_context_viewport_images =
         use_separate_request_ids_for_multi_context_viewport_images;
+    config_params->use_separate_request_ids_for_multi_context_viewport_images =
+        use_separate_request_ids_for_multi_context_viewport_images;
     config_params->prioritize_suggestions_for_the_first_attached_document =
         prioritize_suggestions_for_the_first_attached_document;
+    config_params->enable_context_id_migration = enable_context_id_migration;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
@@ -200,14 +204,17 @@ class ComposeboxQueryControllerTest
                 testing::Contains(kVariationsHeaderKey));
   }
 
-  void StartPdfFileUploadFlow(const base::UnguessableToken& file_token,
-                              const std::vector<uint8_t>& file_data) {
+  void StartPdfFileUploadFlow(
+      const base::UnguessableToken& file_token,
+      const std::vector<uint8_t>& file_data,
+      std::optional<uint64_t> context_id = std::nullopt) {
     std::unique_ptr<lens::ContextualInputData> input_data =
         std::make_unique<lens::ContextualInputData>();
     input_data->primary_content_type = lens::MimeType::kPdf;
     input_data->context_input = std::vector<lens::ContextualInput>();
     input_data->context_input->push_back(
         lens::ContextualInput(file_data, lens::MimeType::kPdf));
+    input_data->context_id = context_id;
 
     controller().StartFileUploadFlow(file_token, std::move(input_data),
                                      /*image_options=*/std::nullopt);
@@ -216,13 +223,15 @@ class ComposeboxQueryControllerTest
   void StartImageFileUploadFlow(
       const base::UnguessableToken& file_token,
       const std::vector<uint8_t>& file_data,
-      std::optional<lens::ImageEncodingOptions> image_options = std::nullopt) {
+      std::optional<lens::ImageEncodingOptions> image_options = std::nullopt,
+      std::optional<uint64_t> context_id = std::nullopt) {
     std::unique_ptr<lens::ContextualInputData> input_data =
         std::make_unique<lens::ContextualInputData>();
     input_data->primary_content_type = lens::MimeType::kImage;
     input_data->context_input = std::vector<lens::ContextualInput>();
     input_data->context_input->push_back(
         lens::ContextualInput(file_data, lens::MimeType::kImage));
+    input_data->context_id = context_id;
 
     controller().StartFileUploadFlow(file_token, std::move(input_data),
                                      image_options);
@@ -685,6 +694,180 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   auto suggest_inputs = controller().CreateSuggestInputs({file_token});
   EXPECT_EQ(suggest_inputs->search_session_id(), kTestSearchSessionId);
   EXPECT_TRUE(suggest_inputs->send_gsession_vsrid_for_contextual_suggest());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequestWithContextIdMigrationEnabled_SetsContextId) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*enable_context_id_migration=*/true);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  uint64_t context_id = 12345;
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+  // Validate the file upload request payload.
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .compression_type(),
+            kExpectedPdfCompressionType);
+  // Check that the vsrid matches that for a pdf upload using the context_id
+  // migration flow - i.e. no sequence_id, image_sequence_id, or
+  // long_context_id.
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .sequence_id(),
+            0);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .image_sequence_id(),
+            0);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .long_context_id(),
+            0);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .context_id(),
+            context_id);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            0);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            0);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            0);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .context_id(),
+            context_id);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+
+  // Check that the routing info is in the vsrid.
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .routing_info()
+                .cell_address(),
+            kTestCellAddress);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .routing_info()
+                .server_address(),
+            kTestServerAddress);
+
+  auto suggest_inputs = controller().CreateSuggestInputs({file_token});
+  EXPECT_EQ(suggest_inputs->search_session_id(), kTestSearchSessionId);
+  EXPECT_TRUE(suggest_inputs->send_gsession_vsrid_for_contextual_suggest());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequestWithContextIdMigrationDisabled_DoesNotSetContextId) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*enable_context_id_migration=*/false);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  uint64_t context_id = 12345;
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>(), context_id);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Check that the vsrid matches that for a pdf upload.
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .long_context_id(),
+            1);
+  EXPECT_NE(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .context_id(),
+            context_id);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .context_id(),
+            0u);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
@@ -2611,7 +2794,8 @@ TEST_F(ComposeboxQueryControllerTest,
               EqualsProto(second_file_request_id));
 }
 
-TEST_F(ComposeboxQueryControllerTest, UploadFileBeforeClusterInfoUpdatesRequestId) {
+TEST_F(ComposeboxQueryControllerTest,
+       UploadFileBeforeClusterInfoUpdatesRequestId) {
   // Act: Start the file upload flow BEFORE cluster info is received.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   StartPdfFileUploadFlow(file_token,

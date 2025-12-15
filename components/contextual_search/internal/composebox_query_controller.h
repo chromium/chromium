@@ -484,6 +484,10 @@ class ComposeboxQueryController
   // attachment is available (false).
   bool prioritize_suggestions_for_the_first_attached_document_;
 
+  // Whether or not to support the context_id migration on the server, for
+  // the multi-context input flow.
+  bool enable_context_id_migration_;
+
   // The data for the interaction request in progress. Is null if no
   // interaction request has been made.
   std::unique_ptr<LensServerInteractionRequest>
