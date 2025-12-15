@@ -290,8 +290,9 @@ TEST_F(AVCConversionTest, AnalyzeSEI) {
 
   auto result = AVC::AnalyzeAnnexB(kStream, {});
   EXPECT_TRUE(result.is_conformant);
-  EXPECT_TRUE(result.is_keyframe.has_value());
-  EXPECT_TRUE(result.is_keyframe.value());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+  EXPECT_TRUE(result.is_sei_recovery_point.has_value());
+  EXPECT_TRUE(result.is_sei_recovery_point.value());
 }
 
 TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
@@ -318,6 +319,7 @@ TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
   auto result = AVC::AnalyzeAnnexB(kStream, {});
   EXPECT_TRUE(result.is_conformant);
   EXPECT_FALSE(result.is_keyframe.has_value());
+  EXPECT_FALSE(result.is_sei_recovery_point.has_value());
 }
 
 TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
