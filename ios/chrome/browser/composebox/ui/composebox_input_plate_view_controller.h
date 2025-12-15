@@ -18,7 +18,7 @@
 @class ComposeboxInputPlateViewController;
 @protocol TextFieldViewContaining;
 
-/// Delegate for the composebox composebox view controller.
+/// Delegate for the composebox input plate view controller.
 @protocol ComposeboxInputPlateViewControllerDelegate
 /// Informs the delegate that a user did tap on the gallery button.
 - (void)composeboxViewControllerDidTapGalleryButton:
