@@ -414,26 +414,24 @@ UIViewController* TopPresentedViewController() {
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
   }
 
-  if (@available(iOS 17.0, *)) {
-    [self openAddAddressView:YES];
+  [self openAddAddressView:YES];
 
-    // Change trait collection to use extra large content size so that the
-    // 'Save' button becomes hidden.
-    ScopedTraitOverrider overrider(TopPresentedViewController());
-    overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
-    [ChromeEarlGreyUI waitForAppToIdle];
+  // Change trait collection to use extra large content size so that the
+  // 'Save' button becomes hidden.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-    // Fill the required fields.
-    [self fillRequiredFields];
+  // Fill the required fields.
+  [self fillRequiredFields];
 
-    // Scroll down to show the 'Save' button.
-    [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-    // Ensure the 'Save' button's status changed to enabled.
-    [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
-        assertWithMatcher:grey_enabled()];
-  }
+  // Ensure the 'Save' button's status changed to enabled.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end
