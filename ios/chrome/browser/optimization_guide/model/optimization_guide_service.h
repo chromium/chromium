@@ -184,9 +184,6 @@ class OptimizationGuideService
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
 
-  // Manages the storing, loading, and fetching of hints.
-  std::unique_ptr<optimization_guide::HintsManager> hints_manager_;
-
   // The top host provider to use for fetching information for the user's top
   // hosts. Will be null if the user has not consented to this type of browser
   // behavior.
@@ -195,6 +192,9 @@ class OptimizationGuideService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
+  // Manages the storing, loading, and fetching of hints.
+  std::unique_ptr<optimization_guide::HintsManager> hints_manager_;
 
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
