@@ -74,7 +74,13 @@ void BatchingMediaLog::Stop() {
 }
 
 void BatchingMediaLog::OnWebMediaPlayerDestroyedLocked() {
+  // The inspector handler will fail to send events after this, so send queued
+  // events now.
   base::AutoLock lock(lock_);
+  if (ipc_send_pending_) {
+    SendQueuedMediaEvents_Locked();
+  }
+
   for (const auto& handler : event_handlers_)
     handler->OnWebMediaPlayerDestroyed();
 }
@@ -221,6 +227,16 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(lock_);
 
+  // This is called as a posted task and another task may
+  // decide to immediate emit queued events, so we must
+  // check `ipc_send_pending_` first here.
+  if (ipc_send_pending_) {
+    SendQueuedMediaEvents_Locked();
+  }
+}
+
+void BatchingMediaLog::SendQueuedMediaEvents_Locked() {
+  lock_.AssertAcquired();
   DCHECK(ipc_send_pending_);
   ipc_send_pending_ = false;
 
