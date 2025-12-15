@@ -11,6 +11,8 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
@@ -36,12 +38,24 @@ AccountCapabilities& AccountCapabilities::operator=(
 // static
 base::span<const std::string_view>
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
-  static constexpr auto kCapabilityNames = std::to_array<std::string_view>({
-#define ACCOUNT_CAPABILITY(cpp_label, java_label, value) cpp_label,
+  static const base::NoDestructor<std::vector<std::string_view>>
+      supported_capabilities([] {
+        std::vector<std::string_view> capabilities;
+    // Add the capabilities which are unconditionally supported.
+#define ACCOUNT_CAPABILITY(cpp_label, java_label, value) \
+  capabilities.push_back(cpp_label);
+#define ACCOUNT_CAPABILITY_F(cpp_label, java_label, value, feature) \
+  if (base::FeatureList::IsEnabled(feature)) {                      \
+    capabilities.push_back(cpp_label);                              \
+  }
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
-  });
-  return kCapabilityNames;
+#undef ACCOUNT_CAPABILITY_F
+
+        return capabilities;
+      }());
+
+  return *supported_capabilities;
 }
 
 bool AccountCapabilities::AreAnyCapabilitiesKnown() const {

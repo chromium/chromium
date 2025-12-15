@@ -10,7 +10,10 @@
 // will deduplicate them into a single definition.
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
   inline constexpr char cpp_label[] = name;
+#define ACCOUNT_CAPABILITY_F(cpp_label, java_label, name, feature) \
+  inline constexpr char cpp_label[] = name;
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
+#undef ACCOUNT_CAPABILITY_F
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_

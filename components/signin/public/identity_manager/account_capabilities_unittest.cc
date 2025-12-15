@@ -4,15 +4,30 @@
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
+#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #endif
 
+namespace {
+using testing::Contains;
+}  // namespace
+
 class AccountCapabilitiesTest : public testing::Test {};
+
+TEST_F(AccountCapabilitiesTest, GetSupportedAccountCapabilityNames) {
+  base::span<const std::string_view> names =
+      AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames();
+
+  // Check one of the existing expected account capabilities.
+  EXPECT_THAT(names, Contains(kCanUseModelExecutionFeaturesName));
+}
 
 TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
   AccountCapabilities capabilities;
