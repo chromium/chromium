@@ -144,6 +144,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
 
+  protected presentationState: number|undefined = undefined;
+
   constructor() {
     super();
     this.logger_.logTimeFrom(TimeFrom.APP, this.startTime_, Date.now());
@@ -294,6 +296,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
       this.contentController_.onNodeWillBeDeleted(nodeId);
     };
+
+    chrome.readingMode.onPresentationStateReceived =
+        (presentationState: number) => {
+          // TODO (crbug.com/450950100): The Read Anything app should determine
+          // which content to display based on the presentation state.
+          this.presentationState = presentationState;
+        };
   }
 
   protected onContainerScroll_() {

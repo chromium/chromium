@@ -60,6 +60,10 @@ declare namespace chrome {
     let lowContrastTheme: number;
     let sepiaLightTheme: number;
     let sepiaDarkTheme: number;
+    let undefinedPresentationState: number;
+    let hiddenPresentationState: number;
+    let inSidePanelPresentationState: number;
+    let inImmersiveOverlayPresentationState: number;
     let autoHighlighting: number;
     let wordHighlighting: number;
     let phraseHighlighting: number;
@@ -307,6 +311,9 @@ declare namespace chrome {
     // Called when the Read Anything panel is scrolled all the way down.
     function onScrolledToBottom(): void;
 
+    // Called by the Read Anything app to request the presentation state.
+    function sendGetPresentationStateRequest(): void;
+
     // Whether the Google Docs load more button is visible.
     let isDocsLoadMoreButtonVisible: boolean;
 
@@ -316,6 +323,9 @@ declare namespace chrome {
 
     // Display a loading screen to tell the user we are distilling the page.
     function showLoading(): void;
+
+    // Sets the current presentation state.
+    function onPresentationStateReceived(presentationState: number): void;
 
     // Display the empty state page to tell the user we can't distill the page.
     function showEmpty(): void;

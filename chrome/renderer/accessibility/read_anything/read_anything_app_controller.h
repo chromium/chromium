@@ -87,6 +87,15 @@ class ReadAnythingAppController
   static constexpr char kWordsHeardHistogramName[] =
       "Accessibility.ReadAnything.WordsHeard";
 
+  // TODO (crbug.com/460774262): Move ReadAnythingPresentationState enum to
+  // mojom file.
+  enum class ReadAnythingPresentationState {
+    kUndefined,
+    kHidden,
+    kInSidePanel,
+    kInImmersiveOverlay,
+  };
+
   static const int kMaxWordsConsumed = 25000;
   static const int kWordsConsumedBuckets = 100;
 
@@ -146,6 +155,7 @@ class ReadAnythingAppController
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
+  void OnGetPresentationState(std::string presentation_state);
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
   void OnReadingModeHidden(bool tab_active) override;
@@ -224,6 +234,10 @@ class ReadAnythingAppController
   int ContentFinishedStopSource() const;
   int UnexpectedUpdateContentStopSource() const;
   int MaxLineWidth() const;
+  int UndefinedPresentationState() const;
+  int HiddenPresentationState() const;
+  int InSidePanelPresentationState() const;
+  int InImmersiveOverlayPresentationState() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
@@ -235,6 +249,9 @@ class ReadAnythingAppController
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
+  // Will only return a state if IsImmersiveReadAnythingEnabled() is true.
+  // Returns the presentation through the OnGetPresentationState callback.
+  void SendGetPresentationStateRequest();
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
   void SendGetVoicePackInfoRequest(const std::string& language) const;
   void SendInstallVoicePackRequest(const std::string& language) const;

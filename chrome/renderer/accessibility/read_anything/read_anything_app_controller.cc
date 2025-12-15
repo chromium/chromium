@@ -1163,6 +1163,15 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
       .SetProperty("isPhraseHighlightingEnabled",
                    &ReadAnythingAppController::IsPhraseHighlightingEnabled)
+      .SetProperty("undefinedPresentationState",
+                   &ReadAnythingAppController::UndefinedPresentationState)
+      .SetProperty("hiddenPresentationState",
+                   &ReadAnythingAppController::HiddenPresentationState)
+      .SetProperty("inSidePanelPresentationState",
+                   &ReadAnythingAppController::InSidePanelPresentationState)
+      .SetProperty(
+          "inImmersiveOverlayPresentationState",
+          &ReadAnythingAppController::InImmersiveOverlayPresentationState)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
@@ -1266,7 +1275,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onScrolledToBottom",
                  &ReadAnythingAppController::OnScrolledToBottom)
       .SetProperty("isDocsLoadMoreButtonVisible",
-                   &ReadAnythingAppController::IsDocsLoadMoreButtonVisible);
+                   &ReadAnythingAppController::IsDocsLoadMoreButtonVisible)
+      .SetMethod("sendGetPresentationStateRequest",
+                 &ReadAnythingAppController::SendGetPresentationStateRequest);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1474,6 +1485,22 @@ int ReadAnythingAppController::MaxLineWidth() const {
   return a11y::kMaxLineWidth;
 }
 
+int ReadAnythingAppController::UndefinedPresentationState() const {
+  return static_cast<int>(ReadAnythingPresentationState::kUndefined);
+}
+
+int ReadAnythingAppController::HiddenPresentationState() const {
+  return static_cast<int>(ReadAnythingPresentationState::kHidden);
+}
+
+int ReadAnythingAppController::InSidePanelPresentationState() const {
+  return static_cast<int>(ReadAnythingPresentationState::kInSidePanel);
+}
+
+int ReadAnythingAppController::InImmersiveOverlayPresentationState() const {
+  return static_cast<int>(ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
     ui::AXNodeID ax_node_id) const {
   std::vector<ui::AXNodeID> child_ids;
@@ -1563,6 +1590,32 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
     return url;
   }
   return "";
+}
+
+// TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
+// longer flag-guarded code.
+void ReadAnythingAppController::SendGetPresentationStateRequest() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    // TODO (crbug.com/460774262): Make mojo call to untrusted page handler
+    // requesting presentation state.
+  }
+}
+
+// TODO (crbug.com/460774262): Adjust OnGetPresentationState to use
+// ReadAnythingPresentationState from mojom file instead of std::string.
+void ReadAnythingAppController::OnGetPresentationState(
+    std::string presentation_state) {
+  ReadAnythingPresentationState state_enum =
+      ReadAnythingPresentationState::kUndefined;
+  if (presentation_state == "kHidden") {
+    state_enum = ReadAnythingPresentationState::kHidden;
+  } else if (presentation_state == "kInSidePanel") {
+    state_enum = ReadAnythingPresentationState::kInSidePanel;
+  } else if (presentation_state == "kInImmersiveOverlay") {
+    state_enum = ReadAnythingPresentationState::kInImmersiveOverlay;
+  }
+  ExecuteJavaScript("chrome.readingMode.onPresentationStateReceived(" +
+                    base::ToString(static_cast<int>(state_enum)) + ");");
 }
 
 void ReadAnythingAppController::SendGetVoicePackInfoRequest(
