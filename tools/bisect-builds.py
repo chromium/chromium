@@ -101,14 +101,18 @@ SOURCE_TAG_URL = ('https://chromium.googlesource.com/chromium/src/'
                   '+/refs/tags/%s?format=JSON')
 
 
-DONE_MESSAGE_GOOD_MIN = ('You are probably looking for a change made after %s ('
-                         'known good), but no later than %s (first known bad).')
-DONE_MESSAGE_GOOD_MAX = ('You are probably looking for a change made after %s ('
-                         'known bad), but no later than %s (first known good).')
+DONE_MESSAGE_GOOD_MIN = (
+    'You are probably looking for a change made after %s%s ('
+    'known good), but no later than %s%s (first known bad).')
+DONE_MESSAGE_GOOD_MAX = (
+    'You are probably looking for a change made after %s%s ('
+    'known bad), but no later than %s%s (first known good).')
 
 VERSION_INFO_URL = ('https://chromiumdash.appspot.com/fetch_version?version=%s')
 
 MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones?mstone=%s')
+
+COMMITS_URL = ('https://chromiumdash.appspot.com/fetch_commits?revision=r%s')
 
 CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
@@ -2187,6 +2191,38 @@ def GetRevisionFromMilestone(milestone):
   raise BisectException(f'Can not find revision for milestone {milestone}')
 
 
+def GetEarliestBuildVersionFromRevision(revision):
+  """Returns the earliest Chromium build version for a given revision.
+
+  Args:
+    revision: An Cr-Commit-Position number.
+
+  Returns:
+    A ChromiumVersion object for the earliest build version.
+
+  Raises:
+    BisectException: If "commits" has no or multiple values.
+  """
+  if not isinstance(revision, int):
+    return None
+  commits_url = COMMITS_URL % str(revision)
+  data = FetchJsonFromURL(commits_url)
+  if not data or not data.get('commits'):
+    raise BisectException(f'No commits found for revision {revision}')
+
+  commits = data.get('commits')
+  if len(commits) != 1:
+    raise BisectException(f'Expected exactly 1 commit for revision {revision}, '
+                          f'but got {len(commits)}')
+
+  earliest = commits[0].get('earliest')
+  if not earliest:
+    raise BisectException(
+        f'No earliest build version found for revision {revision}')
+
+  return ChromiumVersion(earliest)
+
+
 def GetRevision(revision):
   """Get revision from either milestone M85, full version 85.0.4183.0,
      or a commit position.
@@ -2794,13 +2830,25 @@ def main():
   if min_chromium_rev is None or max_chromium_rev is None:
     return
   # We're done. Let the user know the results in an official manner.
+  min_chromium_version_str = ''
+  min_ver = GetEarliestBuildVersionFromRevision(min_chromium_rev)
+  if min_ver:
+    min_chromium_version_str = f' (build version: {min_ver})'
+
+  max_chromium_version_str = ''
+  max_ver = GetEarliestBuildVersionFromRevision(max_chromium_rev)
+  if max_ver:
+    max_chromium_version_str = f' (build version: {max_ver})'
+
   if good_rev > bad_rev:
     print(DONE_MESSAGE_GOOD_MAX %
-          (str(min_chromium_rev), str(max_chromium_rev)))
+          (str(min_chromium_rev), min_chromium_version_str,
+           str(max_chromium_rev), max_chromium_version_str))
     good_rev, bad_rev = max_chromium_rev, min_chromium_rev
   else:
     print(DONE_MESSAGE_GOOD_MIN %
-          (str(min_chromium_rev), str(max_chromium_rev)))
+          (str(min_chromium_rev), min_chromium_version_str,
+           str(max_chromium_rev), max_chromium_version_str))
     good_rev, bad_rev = min_chromium_rev, max_chromium_rev
 
   print('CHANGELOG URL:')

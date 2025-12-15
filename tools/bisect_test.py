@@ -1840,5 +1840,48 @@ class ChromiumVersionTest(BisectTestCase):
     self.assertEqual(v127_0_6533_75, v127_0_6533_75_with_space)
     self.assertLess(v127, v127_0_6533_74)
 
+
+class GetEarliestBuildVersionFromRevisionTest(BisectTestCase):
+
+  @patch('bisect-builds.FetchJsonFromURL')
+  def test_get_build_versions_from_revision(self, mock_fetch_json):
+    mock_fetch_json.return_value = {'commits': [{'earliest': '144.0.7502.0'}]}
+    version = bisect_builds.GetEarliestBuildVersionFromRevision(1537356)
+    self.assertIsNotNone(version)
+    self.assertEqual(str(version), '144.0.7502.0')
+
+  @patch('bisect-builds.FetchJsonFromURL')
+  def test_get_build_versions_from_revision_multiple_commits(
+      self, mock_fetch_json):
+    mock_fetch_json.return_value = {
+        'commits': [{
+            'earliest': '144.0.7559.3'
+        }, {
+            'earliest': '144.0.7502.0'
+        }]
+    }
+    with self.assertRaises(bisect_builds.BisectException):
+      bisect_builds.GetEarliestBuildVersionFromRevision(1537356)
+
+  @patch('bisect-builds.FetchJsonFromURL')
+  def test_get_build_versions_from_revision_no_commits(self, mock_fetch_json):
+    mock_fetch_json.return_value = {'commits': []}
+    with self.assertRaises(bisect_builds.BisectException):
+      bisect_builds.GetEarliestBuildVersionFromRevision(1537356)
+
+  @patch('bisect-builds.FetchJsonFromURL')
+  def test_get_build_versions_from_revision_no_earliest(self, mock_fetch_json):
+    mock_fetch_json.return_value = {'commits': [{}]}
+    with self.assertRaises(bisect_builds.BisectException):
+      bisect_builds.GetEarliestBuildVersionFromRevision(1537356)
+
+  @patch('bisect-builds.FetchJsonFromURL')
+  def test_get_build_versions_from_revision_non_integer_revision(
+      self, mock_fetch_json):
+    version = bisect_builds.GetEarliestBuildVersionFromRevision('not-a-number')
+    self.assertIsNone(version)
+    mock_fetch_json.assert_not_called()
+
+
 if __name__ == '__main__':
   unittest.main()
