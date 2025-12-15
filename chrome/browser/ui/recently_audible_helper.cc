@@ -123,4 +123,8 @@ void RecentlyAudibleHelper::SetNotRecentlyAudibleForTesting() {
   recently_audible_timer_.Stop();
 }
 
+void RecentlyAudibleHelper::FireRecentlyAudibleTimerForTesting() {
+  OnRecentlyAudibleTimerFired();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentlyAudibleHelper);

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
@@ -149,9 +150,67 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
           ->alert_indicator_for_testing();
 
-  // Expect the alert indicator to not be visible initially.
-  EXPECT_FALSE(alert_indicator->GetVisible());
-  EXPECT_EQ(std::nullopt, alert_indicator->showing_alert_state());
+  // The alert indicator should not be visible initially.
+  ASSERT_FALSE(alert_indicator->GetVisible());
+  ASSERT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
+  ASSERT_EQ(std::nullopt, alert_indicator->showing_alert_state());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // After changing the tab alert state, expect the indicator to be visible.
+  base::ScopedClosureRunner scoped_closure_runner = web_contents->MarkAudible();
+  web_contents->SetAudioMuted(false);
+  browser()->tab_strip_model()->NotifyTabChanged(
+      browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->showing_alert_state());
+
+  // After changing the tab alert, expect the indicator state to change.
+  web_contents->SetAudioMuted(true);
+  browser()->tab_strip_model()->NotifyTabChanged(
+      browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->showing_alert_state());
+
+  // After removing the tab alert, expect the indicator to still be visible
+  // (because it is fading out).
+  scoped_closure_runner.RunAndReset();
+  // There is a 2 second hysteresis for the audible state, controlled by
+  // RecentlyAudibleHelper. Fire the timer manually to remove the tab alert.
+  RecentlyAudibleHelper* recently_audible_helper =
+      RecentlyAudibleHelper::FromWebContents(web_contents);
+  recently_audible_helper->SetNotRecentlyAudibleForTesting();
+  recently_audible_helper->FireRecentlyAudibleTimerForTesting();
+  browser()->tab_strip_model()->NotifyTabChanged(
+      browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->showing_alert_state());
+}
+
+// This test doesn't need the EnableTabMuting feature flag because it directly
+// calls NotifyClick() on the button controller.
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
+  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
+  RootTabCollectionNode root_node(
+      browser()->tab_strip_model(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // The initial tab is the first child of the unpinned collection which is the
+  // second child of the root node.
+  TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
+  AlertIndicatorButton* alert_indicator =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
+          ->alert_indicator_for_testing();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -159,41 +218,25 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
   browser()->tab_strip_model()->NotifyTabChanged(
       browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
 
-  // After changing the tab alert state, expect the indicator to be visible.
-  {
-    web_contents->SetAudioMuted(false);
-    browser()->tab_strip_model()->NotifyTabChanged(
-        browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
+  // Audio should be playing initially.
+  ASSERT_TRUE(alert_indicator->GetVisible());
+  ASSERT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->alert_state_for_testing());
+  ASSERT_FALSE(web_contents->IsAudioMuted());
 
-    EXPECT_TRUE(alert_indicator->GetVisible());
-    EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
-              alert_indicator->alert_state_for_testing());
-  }
+  // After clicking the alert indicator, audio should be muted.
+  alert_indicator->button_controller()->NotifyClick();
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_TRUE(web_contents->IsAudioMuted());
 
-  // After changing the tab alert, expect the indicator state to change.
-  {
-    web_contents->SetAudioMuted(true);
-    browser()->tab_strip_model()->NotifyTabChanged(
-        browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
-
-    EXPECT_TRUE(alert_indicator->GetVisible());
-    EXPECT_EQ(tabs::TabAlert::kAudioMuting,
-              alert_indicator->alert_state_for_testing());
-  }
-
-  // After removing the tab alert, expect the indicator to still be visible
-  // (because it is fading out).
-  {
-    web_contents->SetAudioMuted(false);
-    browser()->tab_strip_model()->NotifyTabChanged(
-        browser()->tab_strip_model()->GetActiveTab(), TabChangeType::kAll);
-
-    EXPECT_TRUE(alert_indicator->GetVisible());
-    EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
-              alert_indicator->alert_state_for_testing());
-    EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
-              alert_indicator->showing_alert_state());
-  }
+  // After clicking the alert indicator again, audio should no longer be muted.
+  alert_indicator->button_controller()->NotifyClick();
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_FALSE(web_contents->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {

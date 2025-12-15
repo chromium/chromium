@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -329,8 +332,11 @@ bool VerticalTabView::ShouldEnableMuteToggle(int required_width) {
 }
 
 void VerticalTabView::ToggleTabAudioMute() {
-  // TODO(crbug.com/462151622): Hook up tab muting through the tab strip model.
-  NOTIMPLEMENTED();
+  content::WebContents* const contents = GetTabInterface()->GetContents();
+  bool mute = !contents->IsAudioMuted();
+  // TODO(crbug.com/468033457): Log tab audio muted metric.
+  SetTabAudioMuted(contents, mute, TabMutedReason::kAudioIndicator,
+                   /*extension_id=*/std::string());
 }
 
 bool VerticalTabView::IsApparentlyActive() const {
