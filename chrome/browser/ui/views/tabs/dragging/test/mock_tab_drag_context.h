@@ -17,6 +17,10 @@ class MockTabDragContext : public TabDragContext {
   MockTabDragContext();
   ~MockTabDragContext() override;
   // TabDragContext methods:
+  MOCK_METHOD(TabDragContext*,
+              GetContextForNewBrowser,
+              (BrowserView * browser_view),
+              (const, override));
   MOCK_METHOD(TabSlotView*,
               GetTabForContents,
               (content::WebContents * contents),

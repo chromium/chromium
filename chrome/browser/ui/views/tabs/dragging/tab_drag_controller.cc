@@ -1559,9 +1559,9 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       can_release_capture_ ? ReleaseCapture::kReleaseCapture
                            : ReleaseCapture::kDontReleaseCapture;
 #endif
-  DetachAndAttachToNewContext(
-      release_capture,
-      dragged_browser_view->tab_strip_view()->GetDragContext());
+  TabDragContext* new_context =
+      attached_context_->GetContextForNewBrowser(dragged_browser_view);
+  DetachAndAttachToNewContext(release_capture, new_context);
 
   if (ShouldDragWindowUsingSystemDnD()) {
     // Keep the new window hidden and start a system DnD session.

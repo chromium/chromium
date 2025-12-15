@@ -404,6 +404,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   // TabDragContext:
+  TabDragContext* GetContextForNewBrowser(
+      BrowserView* browser_view) const override {
+    return browser_view->tab_strip_view()->GetDragContext();
+  }
+
   TabDragPositioningDelegate* GetPositioningDelegate() override { return this; }
 
   TabSlotView* GetTabForContents(content::WebContents* contents) override {

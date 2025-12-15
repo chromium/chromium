@@ -122,6 +122,11 @@ class TabDragContext : public views::View {
  public:
   ~TabDragContext() override = default;
 
+  // Returns the new drag context that should take over the drag when detaching
+  // into a new window.
+  virtual TabDragContext* GetContextForNewBrowser(
+      BrowserView* browser_view) const = 0;
+
   virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
   virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
   virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
