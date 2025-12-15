@@ -50,8 +50,9 @@ std::string HashToString(const flat::Hash* hash) {
 }
 
 void RecordScorerCreationStatus(ScorerCreationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.FlatBufferScorer.CreationStatus",
-                            status, SCORER_STATUS_MAX);
+  base::UmaHistogramExactLinear(
+      "SBClientPhishing.FlatBufferScorer.CreationStatus", status,
+      SCORER_STATUS_MAX);
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

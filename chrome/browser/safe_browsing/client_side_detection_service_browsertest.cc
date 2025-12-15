@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -106,30 +107,10 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
 
     return waiter;
   }
-};
 
-// TODO(crbug.com/40904444): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_ModelUpdatesPropagated DISABLED_ModelUpdatesPropagated
-#else
-#define MAYBE_ModelUpdatesPropagated ModelUpdatesPropagated
-#endif
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       MAYBE_ModelUpdatesPropagated) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() >= 13) {
-    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
-  }
-#endif
-  GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  content::RenderProcessHost* rph = rfh->GetProcess();
-
-  // Update the model and wait for confirmation
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
+  void LoadVisualTfLiteModel() {
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+    content::RenderProcessHost* rph = rfh->GetProcess();
 
     std::unique_ptr<PhishingModelWaiter> waiter =
         CreatePhishingModelWaiter(rph);
@@ -161,280 +142,44 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     run_loop.Run();
   }
 
-  // Check that the update was successful
-  {
-    base::RunLoop run_loop;
-
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-    ASSERT_TRUE(request.has_value());
-    EXPECT_EQ(27, request->model_version());  // Example model file version
+  ClientPhishingRequest CreateMinimumClientPhishingRequest() {
+    ClientPhishingRequest request;
+    safe_browsing::ClientSideDetectionService* csd_service =
+        ClientSideDetectionServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    size_t thresholds_size =
+        csd_service->GetVisualTfLiteModelThresholds().size();
+    for (size_t i = 0; i < thresholds_size; i++) {
+      ClientPhishingRequest::CategoryScore* category =
+          request.add_tflite_model_scores();
+      category->set_label("dummy_label");
+      category->set_value(0.0);
+    }
+    return request;
   }
-}
+};
 
-// TODO(crbug.com/40904444): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
-#else
-#define MAYBE_TfLiteClassification TfLiteClassification
-#endif
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       MAYBE_TfLiteClassification) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() >= 13) {
-    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
-  }
-#endif
-
+                       ModelUpdatesPropagated) {
+  base::HistogramTester histogram_tester;
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  content::RenderProcessHost* rph = rfh->GetProcess();
+  // Bucket 0 is success, no direct enum reference call due to illegal include.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.FlatBufferScorer.CreationStatus", 0, 0);
 
-  base::HistogramTester histogram_tester;
+  LoadVisualTfLiteModel();
 
-  safe_browsing::ClientSideDetectionService* csd_service =
-      ClientSideDetectionServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  // Because the histogram data from renderer takes time to propagate to the
+  // browser process, this function must be called to reduce flakiness.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  // Update the model and wait for confirmation
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
-
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
-
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    base::FilePath model_file_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
-    model_file_path = model_file_path.AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-
-    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
-                                                   tflite_path);
-    run_loop.Run();
-  }
-
-  // Check that the update was successful
-  {
-    base::RunLoop run_loop;
-
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-    ASSERT_TRUE(request.has_value());
-    EXPECT_EQ(27, request->model_version());
-    csd_service->ClassifyPhishingThroughThresholds(&request.value());
-
-    histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.ClassifyThresholdsResult",
-        safe_browsing::SBClientDetectionClassifyThresholdsResult::kSuccess,
-        1);  // Example model file version
-  }
-}
-
-// TODO(crbug.com/40904444): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
-  DISABLED_TfLiteClassificationAfterTwoModelUploads
-#else
-#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
-  TfLiteClassificationAfterTwoModelUploads
-#endif
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       MAYBE_TfLiteClassificationAfterTwoModelUploads) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() >= 13) {
-    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
-  }
-#endif
-
-  GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  content::RenderProcessHost* rph = rfh->GetProcess();
-
-  base::HistogramTester histogram_tester;
-
-  safe_browsing::ClientSideDetectionService* csd_service =
-      ClientSideDetectionServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-
-  // Update the model and wait for confirmation
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
-
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
-
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    base::FilePath model_file_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
-    model_file_path = model_file_path.AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
-                                                   tflite_path);
-
-    run_loop.Run();
-  }
-
-  size_t first_thresholds_map_size =
-      csd_service->GetVisualTfLiteModelThresholds().size();
-
-  // Second time
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
-
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
-
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    base::FilePath model_file_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
-    model_file_path = model_file_path.AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-
-    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
-                                                   tflite_path);
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(first_thresholds_map_size,
-            csd_service->GetVisualTfLiteModelThresholds().size());
-
-  // Check that the update was successful
-  {
-    base::RunLoop run_loop;
-
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-    ASSERT_TRUE(request.has_value());
-    EXPECT_EQ(27, request->model_version());  // Example model file version
-
-    csd_service->ClassifyPhishingThroughThresholds(&request.value());
-
-    histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.ClassifyThresholdsResult",
-        safe_browsing::SBClientDetectionClassifyThresholdsResult::kSuccess, 1);
-  }
+  // Check that the update was successful. The histogram value can flakily range
+  // from 1-3 depending on platform, hence the EXPECT_GE is used.
+  EXPECT_GE(histogram_tester.GetBucketCount(
+                "SBClientPhishing.FlatBufferScorer.CreationStatus", 0),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
@@ -442,48 +187,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  content::RenderProcessHost* rph = rfh->GetProcess();
+  LoadVisualTfLiteModel();
 
-  safe_browsing::ClientSideDetectionService* csd_service =
-      ClientSideDetectionServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  ASSERT_TRUE(csd_service);
-  // Update the model and wait for confirmation.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
-
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
-
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    base::FilePath model_file_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
-    model_file_path = model_file_path.AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-
-    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
-                                                   tflite_path);
-    run_loop.Run();
-  }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Setup TargetEmbeddings.
   float threshold = 0.95;
   tflite::task::vision::FeatureVector target_fv;
@@ -493,100 +198,45 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   TargetEmbedding target(target_fv, threshold);
   std::vector<TargetEmbedding> test_targets;
   test_targets.push_back(std::move(target));
+
+  safe_browsing::ClientSideDetectionService* csd_service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
   // Case 1: ClientPhishingRequest's image embedding doesn't meet threshold.
-  {
-    // First obtain the verdict through the phishing detector.
-    base::RunLoop run_loop;
+  ClientPhishingRequest request = CreateMinimumClientPhishingRequest();
 
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-
-    // Add an image_feature_embedding that will match.
-    auto* features = request->mutable_image_feature_embedding();
-    for (int i = 0; i < 64; ++i) {
-      features->add_embedding_value(100);  // No match.
-    }
-
-    // Call the classification function.
-    csd_service->ClassifyPhishingThroughThresholds(&request.value());
-
-    EXPECT_FALSE(request->is_phishing());
-    ASSERT_FALSE(request->has_target_image_embedding_score());
+  // Add an image_feature_embedding that will match.
+  auto* features = request.mutable_image_feature_embedding();
+  for (int i = 0; i < 64; ++i) {
+    features->add_embedding_value(100);  // No match.
   }
+
+  // Call the classification function.
+  csd_service->ClassifyPhishingThroughThresholds(&request);
+
+  EXPECT_FALSE(request.is_phishing());
+  ASSERT_FALSE(request.has_target_image_embedding_score());
+
   // Case 2: Visual TFLite already flagged the page phishy.
-  {
-    // First obtain the verdict through the phishing detector.
-    base::RunLoop run_loop;
+  ClientPhishingRequest request2 = CreateMinimumClientPhishingRequest();
 
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-
-    // Add an image_feature_embedding that will match.
-    auto* features = request->mutable_image_feature_embedding();
-    for (int i = 0; i < 64; ++i) {
-      features->add_embedding_value(i / 100.0);  // Perfect match.
-    }
-
-    // Preemptively set the phishing to true.
-    request->set_is_phishing(true);
-
-    // Call the classification function.
-    csd_service->ClassifyPhishingThroughThresholds(&request.value());
-
-    EXPECT_TRUE(request->is_phishing());
-    ASSERT_FALSE(
-        request->has_target_image_embedding_score());  // Not set despite
-                                                       // perfect match.
+  // Add an image_feature_embedding that will match.
+  auto* features2 = request2.mutable_image_feature_embedding();
+  for (int i = 0; i < 64; ++i) {
+    features2->add_embedding_value(i / 100.0);  // Perfect match.
   }
-#endif
+
+  // Preemptively set the phishing to true.
+  request2.set_is_phishing(true);
+
+  // Call the classification function.
+  csd_service->ClassifyPhishingThroughThresholds(&request2);
+
+  EXPECT_TRUE(request2.is_phishing());
+  ASSERT_FALSE(request2.has_target_image_embedding_score());  // Not set despite
+                                                              // perfect match.
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
@@ -594,108 +244,40 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  content::RenderProcessHost* rph = rfh->GetProcess();
-
   safe_browsing::ClientSideDetectionService* csd_service =
       ClientSideDetectionServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  ASSERT_TRUE(csd_service);
-  // Update the model and wait for confirmation.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
 
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
+  LoadVisualTfLiteModel();
 
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
+  ClientPhishingRequest request = CreateMinimumClientPhishingRequest();
 
-    base::FilePath tflite_path;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &tflite_path));
-#if BUILDFLAG(IS_ANDROID)
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_android.tflite");
-#else
-    tflite_path = tflite_path.AppendASCII("safe_browsing")
-                      .AppendASCII("visual_model_desktop.tflite");
-#endif
-    base::File tflite_model(tflite_path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(tflite_model.IsValid());
-
-    base::FilePath model_file_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
-    model_file_path = model_file_path.AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-
-    csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
-                                                   tflite_path);
-    run_loop.Run();
+  // Setup TargetEmbeddings.
+  float threshold = 0.95;
+  tflite::task::vision::FeatureVector target_fv;
+  for (int i = 0; i < 64; ++i) {
+    target_fv.add_value_float(0.1);
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  {
-    // First obtain the verdict through the phishing detector.
-    base::RunLoop run_loop;
+  TargetEmbedding target(target_fv, threshold);
+  std::vector<TargetEmbedding> test_targets;
+  test_targets.push_back(std::move(target));
+  csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
-    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
-
-    mojom::PhishingDetectorResult result;
-    std::optional<mojo_base::ProtoWrapper> verdict;
-    phishing_detector->StartPhishingDetection(
-        url,
-        safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::optional<mojo_base::ProtoWrapper>* out_verdict,
-               mojom::PhishingDetectorResult result,
-               std::optional<mojo_base::ProtoWrapper> verdict) {
-              *out_result = result;
-              *out_verdict = std::move(verdict);
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
-
-    run_loop.Run();
-
-    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
-
-    ASSERT_TRUE(verdict.has_value());
-    auto request = verdict->As<ClientPhishingRequest>();
-
-    // Setup TargetEmbeddings.
-    float threshold = 0.95;
-    tflite::task::vision::FeatureVector target_fv;
-    for (int i = 0; i < 64; ++i) {
-      target_fv.add_value_float(0.1);
-    }
-    TargetEmbedding target(target_fv, threshold);
-    std::vector<TargetEmbedding> test_targets;
-    test_targets.push_back(std::move(target));
-    csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
-
-    // Add an image_feature_embedding that will match.
-    auto* features = request->mutable_image_feature_embedding();
-    for (int i = 0; i < 64; ++i) {
-      features->add_embedding_value(0.1);  // Perfect match.
-    }
-
-    // Call the classification function.
-    csd_service->ClassifyPhishingThroughThresholds(&request.value());
-
-    EXPECT_TRUE(request->is_phishing());
-    ASSERT_TRUE(request->has_target_image_embedding_score());
-    EXPECT_EQ(
-        request->target_image_embedding_score().id(),
-        "ac7d206f95fb23a5ad4d52d76c4acd22d16bdcdbb3a6decc66f8eaabc9b40534");
-    EXPECT_NEAR(request->target_image_embedding_score().score(), 1.0, 0.001);
+  // Add an image_feature_embedding that will match.
+  auto* features = request.mutable_image_feature_embedding();
+  for (int i = 0; i < 64; ++i) {
+    features->add_embedding_value(0.1);  // Perfect match.
   }
 
-#endif
+  // Call the classification function.
+  csd_service->ClassifyPhishingThroughThresholds(&request);
+
+  EXPECT_TRUE(request.is_phishing());
+  ASSERT_TRUE(request.has_target_image_embedding_score());
+  EXPECT_EQ(request.target_image_embedding_score().id(),
+            "ac7d206f95fb23a5ad4d52d76c4acd22d16bdcdbb3a6decc66f8eaabc9b40534");
+  EXPECT_NEAR(request.target_image_embedding_score().score(), 1.0, 0.001);
 }
 
 }  // namespace safe_browsing
