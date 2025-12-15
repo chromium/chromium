@@ -9,39 +9,38 @@ import type {TopToolbarElement} from './top_toolbar.js';
 // clang-format off
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
-  <div class="leftSide">
-    <if expr="_google_chrome">
-      <img id="topToolbarLogo"
-          src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
-          class="toolbarLogo">
-    </if>
-    <if expr="not _google_chrome">
-      <img id="topToolbarLogo"
-          src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
-          class="toolbarLogo">
-    </if>
+  <if expr="_google_chrome">
+    <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
+        class="top-toolbar-logo">
+  </if>
+  <if expr="not _google_chrome">
+    <img class="top-toolbar-logo chrome-logo-light"
+        src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+        alt="Chrome Logo">
+    <img class="top-toolbar-logo chrome-logo-dark"
+        src="chrome://resources/images/chrome_logo_dark.svg" alt="Chrome Logo">
+  </if>
+  <div class="top-toolbar-title">
     ${this.title}
   </div>
-  <div class="rightSide">
-    <div id="rightButtonContainer">
-      <contextual-tasks-favicon-group id="sources"
-          .urls="${this.attachedTabs.map(t => t.url.url)}"
-          title="Sources" @click="${this.onSourcesClick_}">
-      </contextual-tasks-favicon-group>
-      <cr-icon-button @click="${this.onNewThreadClick_}"
-          iron-icon="contextual_tasks:edit_square"
-          title="New Thread">
-      </cr-icon-button>
-      <cr-icon-button @click="${this.onThreadHistoryClick_}"
-          iron-icon="contextual_tasks:schedule_auto" title="Thread History">
-      </cr-icon-button>
-      <cr-icon-button id="more" iron-icon="cr:more-vert"
-          title="More" @click="${this.onMoreClick_}">
-      </cr-icon-button>
-      <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close"
-          title="Close">
-      </cr-icon-button>
-    </div>
+  <div class="top-toolbar-action-buttons">
+    <contextual-tasks-favicon-group id="sources"
+        .urls="${this.attachedTabs.map(t => t.url.url)}"
+        title="Sources" @click="${this.onSourcesClick_}">
+    </contextual-tasks-favicon-group>
+    <cr-icon-button @click="${this.onNewThreadClick_}"
+        iron-icon="contextual_tasks:edit_square"
+        title="New Thread">
+    </cr-icon-button>
+    <cr-icon-button @click="${this.onThreadHistoryClick_}"
+        iron-icon="contextual_tasks:schedule_auto" title="Thread History">
+    </cr-icon-button>
+    <cr-icon-button id="more" iron-icon="cr:more-vert"
+        title="More" @click="${this.onMoreClick_}">
+    </cr-icon-button>
+    <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close"
+        title="Close">
+    </cr-icon-button>
   </div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .attachedTabs="${this.attachedTabs}">
