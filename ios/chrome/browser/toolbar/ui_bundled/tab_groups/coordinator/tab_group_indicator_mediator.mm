@@ -154,6 +154,7 @@ using tab_groups::SharingState;
   switch (change.type()) {
     case WebStateListChange::Type::kGroupVisualDataUpdate:
     case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kMove:
       groupUpdate = YES;
       break;
     default:
