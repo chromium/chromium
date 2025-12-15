@@ -9475,7 +9475,6 @@ crbug.com/390162928 external/wpt/css/css-contain/contain-size-select-elem-003.ht
 crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ Failure Skip ]
 
 #Disable due to high frequency flakiness
-crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
 # Gardener 2025-01-21
