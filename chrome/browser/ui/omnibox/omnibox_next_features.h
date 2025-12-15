@@ -91,6 +91,10 @@ extern const base::FeatureParam<bool> kShowSmartCompose;
 extern const base::FeatureParam<bool> kShowSubmit;
 // Whether to show the tools and models picker in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
+// Whether to show the voice search button in steady state composebox.
+extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
+// Whether to show the voice search button in expanded composebox.
+extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
 // If kSendLnsSurfaceParam is true, whether to suppress the `lns_surface`
 // parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
 // is false.
