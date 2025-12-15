@@ -2618,6 +2618,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   ForegroundTabAnimationView* animatedView =
       [[ForegroundTabAnimationView alloc] initWithFrame:frame];
   animatedView.contentView = newPage;
+  animatedView.backgroundView =
+      [self.contentArea snapshotViewAfterScreenUpdates:NO];
+
   __weak UIView* weakAnimatedView = animatedView;
   auto completionBlock = ^() {
     [weakAnimatedView removeFromSuperview];
