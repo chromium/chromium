@@ -11,12 +11,17 @@
 #import "base/functional/bind.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
@@ -37,12 +42,43 @@ constexpr std::string kPersistedTabContextsDir = "persisted_tab_contexts";
 constexpr base::TimeDelta kPurgeTaskDelay = base::Seconds(3);
 }  // namespace
 
-class PersistTabContextBrowserAgentTest : public PlatformTest {
+class PersistTabContextBrowserAgentTest
+    : public PlatformTest,
+      public testing::WithParamInterface<PersistTabStorageType> {
  protected:
   PersistTabContextBrowserAgentTest()
-      : task_environment_(web::WebTaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeatures(
-        {kCleanupPersistedTabContexts, kPersistTabContext}, {});
+      : task_environment_(web::WebTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    if (GetParam() == PersistTabStorageType::kSQLite) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{kPersistTabContext, {{kPersistTabContextStorageParam, "1"}}},
+           {page_content_annotations::features::kPageContentCache, {}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{kPersistTabContext, {{kPersistTabContextStorageParam, "0"}}},
+           {kCleanupPersistedTabContexts, {}}},
+          {});
+    }
+
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build(temp_dir_.GetPath());
+
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    web_state_list_ = browser_->GetWebStateList();
+    PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
+    agent_ = PersistTabContextBrowserAgent::FromBrowser(browser_.get());
+    if (GetParam() == PersistTabStorageType::kSQLite) {
+      PageContentCacheBridgeService* service =
+          PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
+      ASSERT_TRUE(base::test::RunUntil(
+          [&]() { return service->IsCacheInitialized(); }));
+    }
   }
 
   base::FilePath GetStorageDir() {
@@ -56,43 +92,50 @@ class PersistTabContextBrowserAgentTest : public PlatformTest {
         kProtoSuffix));
   }
 
-  void SetUp() override {
-    PlatformTest::SetUp();
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    TestProfileIOS::Builder builder;
-    profile_ = std::move(builder).Build(temp_dir_.GetPath());
-
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
-    web_state_list_ = browser_->GetWebStateList();
-    PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
-    agent_ = PersistTabContextBrowserAgent::FromBrowser(browser_.get());
-  }
-
   void CreateDummyContextFile(
       web::WebStateID web_state_id,
       base::Time last_modified_time = base::Time::Now()) {
     optimization_guide::proto::PageContext context;
-    context.set_title("test_title_" +
-                      base::NumberToString(web_state_id.identifier()));
-    context.set_url("http://example.com/" +
-                    base::NumberToString(web_state_id.identifier()));
-    std::string serialized_context;
-    ASSERT_TRUE(context.SerializeToString(&serialized_context));
+    std::string title =
+        "test_title_" + base::NumberToString(web_state_id.identifier());
+    std::string url_spec =
+        "http://example.com/" + base::NumberToString(web_state_id.identifier());
 
-    base::FilePath path = GetPathForWebStateId(web_state_id);
-    ASSERT_TRUE(base::CreateDirectory(path.DirName()));
-    ASSERT_TRUE(base::WriteFile(path, serialized_context));
-    ASSERT_TRUE(base::TouchFile(path, last_modified_time, last_modified_time));
+    context.set_title(title);
+    context.set_url(url_spec);
+
+    if (GetParam() == PersistTabStorageType::kSQLite) {
+      PageContentCacheBridgeService* service =
+          PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
+
+      service->CachePageContent(web_state_id.identifier(), GURL(url_spec),
+                                last_modified_time, last_modified_time,
+                                context);
+
+      base::test::TestFuture<std::vector<int64_t>> future;
+      service->GetAllTabIds(future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+
+    } else {
+      std::string serialized_context;
+      ASSERT_TRUE(context.SerializeToString(&serialized_context));
+
+      base::FilePath path = GetPathForWebStateIdForTest(web_state_id);
+      ASSERT_TRUE(base::CreateDirectory(path.DirName()));
+      ASSERT_TRUE(base::WriteFile(path, serialized_context));
+      ASSERT_TRUE(
+          base::TouchFile(path, last_modified_time, last_modified_time));
+    }
   }
 
-  base::FilePath GetPathForWebStateId(web::WebStateID web_state_id) {
-    return temp_dir_.GetPath()
-        .Append(FILE_PATH_LITERAL("Test"))
-        .Append(FILE_PATH_LITERAL("persisted_tab_contexts"))
-        .Append(FILE_PATH_LITERAL(
-            kPageContextPrefix +
-            base::NumberToString(web_state_id.identifier()) + kProtoSuffix));
+  // Helper to wait for the service's background sequence to process pending
+  // tasks.
+  void WaitForServiceSequence(PageContentCacheBridgeService* bridge) {
+    base::RunLoop run_loop;
+    bridge->GetAllTabIds(base::BindOnce(
+        [](base::RunLoop* loop, std::vector<int64_t> ignored) { loop->Quit(); },
+        &run_loop));
+    run_loop.Run();
   }
 
   std::unique_ptr<web::WebState> CreateAndLoadWebState(const std::string& html,
@@ -101,11 +144,6 @@ class PersistTabContextBrowserAgentTest : public PlatformTest {
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
     web::test::LoadHtml(base::SysUTF8ToNSString(html), url, web_state.get());
     return web_state;
-  }
-
-  void AddWebState(std::unique_ptr<web::WebState> web_state) {
-    web_state_list_->InsertWebState(std::move(web_state),
-                                    WebStateList::InsertionParams::Automatic());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -118,7 +156,13 @@ class PersistTabContextBrowserAgentTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
+// Instantiate the test suite for both FileSystem and SQLite configurations.
+INSTANTIATE_TEST_SUITE_P(PersistTabContextStorageTests,
+                         PersistTabContextBrowserAgentTest,
+                         testing::Values(PersistTabStorageType::kFileSystem,
+                                         PersistTabStorageType::kSQLite));
+
+TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
   base::RunLoop run_loop;
   agent_->GetSingleContextAsync(
       base::NumberToString(test_web_state_id_.identifier()),
@@ -133,7 +177,7 @@ TEST_F(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
   run_loop.Run();
 }
 
-TEST_F(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
+TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
   CreateDummyContextFile(test_web_state_id_);
   base::RunLoop run_loop;
   agent_->GetSingleContextAsync(
@@ -144,13 +188,14 @@ TEST_F(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
                  optimization_guide::proto::PageContext>> context) {
             ASSERT_TRUE(context.has_value());
             EXPECT_EQ((*context)->title(), "test_title_1");
+            EXPECT_EQ((*context)->url(), "http://example.com/1");
             run_loop->Quit();
           },
           &run_loop));
   run_loop.Run();
 }
 
-TEST_F(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
+TEST_P(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
   web::WebStateID id1 = web::WebStateID::FromSerializedValue(1);
   web::WebStateID id2 = web::WebStateID::FromSerializedValue(2);
   web::WebStateID id3 = web::WebStateID::FromSerializedValue(3);
@@ -174,19 +219,24 @@ TEST_F(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
   run_loop.Run();
 }
 
-TEST_F(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
+TEST_P(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
+  if (GetParam() == PersistTabStorageType::kSQLite) {
+    // Expiration handling is internal to PageContentCache.
+    return;
+  }
+
   base::TimeDelta test_ttl = base::Days(21);
 
   web::WebStateID id_expired = web::WebStateID::FromSerializedValue(100);
   base::Time expired_time = base::Time::Now() - test_ttl - base::Days(1);
   CreateDummyContextFile(id_expired, expired_time);
-  base::FilePath path_expired = GetPathForWebStateId(id_expired);
+  base::FilePath path_expired = GetPathForWebStateIdForTest(id_expired);
   ASSERT_TRUE(base::PathExists(path_expired));
 
   web::WebStateID id_valid = web::WebStateID::FromSerializedValue(101);
   base::Time valid_time = base::Time::Now() - test_ttl + base::Days(1);
   CreateDummyContextFile(id_valid, valid_time);
-  base::FilePath path_valid = GetPathForWebStateId(id_valid);
+  base::FilePath path_valid = GetPathForWebStateIdForTest(id_valid);
   ASSERT_TRUE(base::PathExists(path_valid));
 
   task_environment_.FastForwardBy(kPurgeTaskDelay + base::Milliseconds(100));
@@ -199,26 +249,58 @@ TEST_F(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
   EXPECT_TRUE(base::PathExists(path_valid))
       << "Valid context file was incorrectly purged.";
 }
-
-TEST_F(PersistTabContextBrowserAgentTest, WasHiddenWithNullWebState) {
+TEST_P(PersistTabContextBrowserAgentTest, WasHiddenWithNullWebState) {
   agent_->WasHidden(nullptr);
-  task_environment_.FastForwardBy(base::Milliseconds(100));
+  if (GetParam() == PersistTabStorageType::kSQLite) {
+    PageContentCacheBridgeService* bridge =
+        PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
 
-  base::FilePath storage_dir = GetStorageDir();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return base::DirectoryExists(storage_dir); }));
+    base::RunLoop run_loop;
+    bridge->GetAllTabIds(base::BindOnce(
+        [](base::RunLoop* run_loop, std::vector<int64_t> tab_ids) {
+          EXPECT_TRUE(tab_ids.empty())
+              << "Database contains entries but should be empty!";
+          run_loop->Quit();
+        },
+        &run_loop));
+    run_loop.Run();
+  } else {
+    task_environment_.FastForwardBy(base::Milliseconds(100));
 
-  base::FileEnumerator enumerator(storage_dir, /*recursive=*/false,
-                                  base::FileEnumerator::FILES);
-  EXPECT_TRUE(enumerator.Next().empty())
-      << "File was created for null web state";
+    base::FilePath storage_dir = GetStorageDir();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return base::DirectoryExists(storage_dir); }));
+
+    base::FileEnumerator enumerator(storage_dir, /*recursive=*/false,
+                                    base::FileEnumerator::FILES);
+    EXPECT_TRUE(enumerator.Next().empty())
+        << "File was created for null web state";
+  }
 }
 
-TEST_F(PersistTabContextBrowserAgentTest,
+TEST_P(PersistTabContextBrowserAgentTest,
        WasHiddenWithNullWebStateDoesNotCrash) {
-  // This test ensures that calling WasHidden with a null web_state does not
-  // cause a crash and is handled gracefully.
   EXPECT_NO_FATAL_FAILURE(agent_->WasHidden(nullptr));
+}
+
+TEST_P(PersistTabContextBrowserAgentTest, TestMigrationDeletesLegacyFiles) {
+  if (GetParam() != PersistTabStorageType::kSQLite) {
+    return;
+  }
+
+  // We explicitly create a file on disk here (bypassing CreateDummyContextFile)
+  // because we want to test that the Agent deletes files it sees on disk
+  // when it is configured for SQLite.
+  web::WebStateID id1 = web::WebStateID::FromSerializedValue(1);
+  base::FilePath legacy_file = GetPathForWebStateIdForTest(id1);
+
+  ASSERT_TRUE(base::CreateDirectory(legacy_file.DirName()));
+  ASSERT_TRUE(base::WriteFile(legacy_file, "legacy_proto_data"));
+  ASSERT_TRUE(base::PathExists(legacy_file));
+
+  task_environment_.FastForwardBy(kPurgeTaskDelay + base::Milliseconds(100));
+
+  EXPECT_FALSE(base::PathExists(legacy_file));
 }
 
 class PersistTabContextBrowserAgentDisabledTest : public PlatformTest {

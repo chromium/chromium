@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 
+#import "base/barrier_callback.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -16,6 +17,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -323,6 +326,22 @@ int GetPersistedWebStateCountForProfile(ProfileIOS* profile) {
   return total_web_state_count;
 }
 
+// Helper function to adapt the GetPageContentCache callback to the one used in
+// this component, which uses unique_ptr.
+void OnGetPageContent(
+    base::OnceCallback<void(
+        std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
+        callback,
+    std::optional<optimization_guide::proto::PageContext> page_context) {
+  if (!page_context) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(
+      std::make_unique<optimization_guide::proto::PageContext>(*page_context));
+}
+
 }  // namespace
 
 #pragma mark - Public
@@ -331,7 +350,14 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      use_page_content_cache_(GetPersistTabContextStorageType() ==
+                              PersistTabStorageType::kSQLite),
+      extract_context_on_page_load_(
+          GetPersistTabContextExtractionTiming() ==
+          PersistTabExtractionTiming::kOnWasHiddenAndPageLoad),
+      store_inner_text_only_(GetPersistTabContextDataExtracted() ==
+                             PersistTabDataExtracted::kInnerTextOnly) {
   ProfileIOS* profile = browser->GetProfile();
   CHECK(profile);
   base::FilePath cache_directory_path;
@@ -339,9 +365,6 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
   storage_directory_path_ = cache_directory_path.Append(kPersistedTabContexts);
 
   if (IsPersistTabContextEnabled()) {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(&CreateStorageDirectory,
-                                                     storage_directory_path_));
-
     persist_tab_context_state_agent_ = [[PersistTabContextStateAgent alloc]
         initWithTransitionCallback:
             base::BindRepeating(
@@ -352,12 +375,30 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
 
     PrefService* prefs = profile->GetPrefs();
     CHECK(prefs);
-    base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
-    // Schedule a cleanup task with a delay.
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_, ttl),
-        kPurgeTaskDelay);
+
+    if (use_page_content_cache_) {
+      page_content_cache_service_ =
+          PageContentCacheBridgeServiceFactory::GetForProfile(profile);
+
+      // Purge the direct storage system. Intended for clients migrating to the
+      // SQLite storage system from the direct filesystem.
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&DeletePersistedContextsDirectory,
+                         storage_directory_path_),
+          kPurgeTaskDelay);
+    } else {
+      base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CreateStorageDirectory, storage_directory_path_));
+      // Schedule a cleanup task with a delay.
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_,
+                         ttl),
+          kPurgeTaskDelay);
+    }
   } else {
     task_runner_->PostDelayedTask(
         FROM_HERE,
@@ -387,11 +428,16 @@ void PersistTabContextBrowserAgent::GetSingleContextAsync(
     base::OnceCallback<void(
         std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
         callback) {
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ReadAndParseContextFromStorage, storage_directory_path_,
-                     webstate_unique_id),
-      std::move(callback));
+  if (use_page_content_cache_) {
+    ReadAndParseContextFromContentCache(webstate_unique_id,
+                                        std::move(callback));
+  } else {
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ReadAndParseContextFromStorage, storage_directory_path_,
+                       webstate_unique_id),
+        std::move(callback));
+  }
 }
 
 void PersistTabContextBrowserAgent::GetMultipleContextsAsync(
@@ -402,11 +448,27 @@ void PersistTabContextBrowserAgent::GetMultipleContextsAsync(
     return;
   }
 
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DoMultipleContextReads, storage_directory_path_,
-                     webstate_unique_ids),
-      base::BindOnce(std::move(callback)));
+  if (use_page_content_cache_) {
+    auto barrier_callback = base::BarrierCallback<ContextPair>(
+        webstate_unique_ids.size(),
+        base::BindOnce(&PersistTabContextBrowserAgent::OnAllContextsRetrieved,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+
+    for (const std::string& unique_id : webstate_unique_ids) {
+      auto id_binding_callback = base::BindOnce(
+          &PersistTabContextBrowserAgent::OnSingleContextRetrieved,
+          weak_factory_.GetWeakPtr(), unique_id, barrier_callback);
+
+      ReadAndParseContextFromContentCache(unique_id,
+                                          std::move(id_binding_callback));
+    }
+  } else {
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&DoMultipleContextReads, storage_directory_path_,
+                       webstate_unique_ids),
+        base::BindOnce(std::move(callback)));
+  }
 }
 
 void PersistTabContextBrowserAgent::OnWebStateInserted(
@@ -428,9 +490,19 @@ void PersistTabContextBrowserAgent::OnWebStateDeleted(
   std::string webstate_unique_id =
       base::NumberToString(web_state->GetUniqueIdentifier().identifier());
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
-                                storage_directory_path_));
+  if (use_page_content_cache_) {
+    // TODO(crbug.com/467065000):  - Update the agents public methods to take in
+    // WebStateID's, or at least int64's
+    int64_t tab_id;
+    if (!base::StringToInt64(webstate_unique_id, &tab_id)) {
+      return;
+    }
+    DeleteContextFromContentCache(tab_id);
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
+                                  storage_directory_path_));
+  }
 }
 
 void PersistTabContextBrowserAgent::OnActiveWebStateChanged(
@@ -445,6 +517,22 @@ void PersistTabContextBrowserAgent::OnActiveWebStateChanged(
 #pragma mark - WebStateObserver
 
 void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
+  ExtractAndStoreContext(web_state);
+}
+
+void PersistTabContextBrowserAgent::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (extract_context_on_page_load_ &&
+      load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    ExtractAndStoreContext(web_state);
+  }
+}
+
+#pragma mark - Private
+
+void PersistTabContextBrowserAgent::ExtractAndStoreContext(
+    web::WebState* web_state) {
   if (!web_state) {
     return;
   }
@@ -455,10 +543,15 @@ void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
   // Check if the tab should be persisted, and skip + clean up any remaining
   // context if it shouldn't.
   if (!CanExtractPageContextForWebState(web_state)) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
-                                  storage_directory_path_));
-    return;
+    if (use_page_content_cache_) {
+      DeleteContextFromContentCache(
+          web_state->GetUniqueIdentifier().identifier());
+    } else {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
+                         storage_directory_path_));
+    }
   }
 
   // Cancel any ongoing page context operation.
@@ -470,14 +563,17 @@ void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
         initWithWebState:web_state
       completionCallback:
           base::BindOnce(&PersistTabContextBrowserAgent::OnPageContextExtracted,
-                         weak_factory_.GetWeakPtr(), webstate_unique_id)];
-  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
+                         weak_factory_.GetWeakPtr(), web_state->GetWeakPtr())];
+  if (store_inner_text_only_) {
+    [page_context_wrapper_ setShouldGetAnnotatedPageContent:NO];
+  } else {
+    [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
+  }
+
   [page_context_wrapper_ setShouldGetInnerText:YES];
   [page_context_wrapper_ setIsLowPriorityExtraction:YES];
   [page_context_wrapper_ populatePageContextFieldsAsync];
 }
-
-#pragma mark - Private
 
 void PersistTabContextBrowserAgent::OnSceneActivationLevelChanged(
     SceneActivationLevel level) {
@@ -493,17 +589,85 @@ void PersistTabContextBrowserAgent::OnSceneActivationLevelChanged(
 }
 
 void PersistTabContextBrowserAgent::OnPageContextExtracted(
-    const std::string& webstate_unique_id,
+    base::WeakPtr<web::WebState> weak_web_state,
     PageContextWrapperCallbackResponse response) {
-  if (!response.has_value()) {
+  web::WebState* web_state = weak_web_state.get();
+  if (!response.has_value() || !web_state) {
     return;
   }
 
-  std::string serialized_page_context;
-  response.value()->SerializeToString(&serialized_page_context);
+  if (use_page_content_cache_) {
+    WriteContextToContentCache(web_state, response);
+  } else {
+    std::string webstate_unique_id =
+        base::NumberToString(web_state->GetUniqueIdentifier().identifier());
+    std::string serialized_page_context;
+    response.value()->SerializeToString(&serialized_page_context);
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WriteContextToStorage, std::move(serialized_page_context),
-                     webstate_unique_id, storage_directory_path_));
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WriteContextToStorage,
+                                  std::move(serialized_page_context),
+                                  webstate_unique_id, storage_directory_path_));
+  }
+}
+
+void PersistTabContextBrowserAgent::WriteContextToContentCache(
+    web::WebState* web_state,
+    const PageContextWrapperCallbackResponse& response) {
+  if (!page_content_cache_service_) {
+    return;
+  }
+  int64_t tab_id = web_state->GetUniqueIdentifier().identifier();
+  const GURL& url = web_state->GetLastCommittedURL();
+  const base::Time visit_timestamp = web_state->GetLastActiveTime();
+  const base::Time extraction_timestamp = base::Time::Now();
+  const optimization_guide::proto::PageContext& page_context =
+      *response.value();
+
+  page_content_cache_service_->CachePageContent(
+      tab_id, url, visit_timestamp, extraction_timestamp, page_context);
+}
+
+void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(
+    const std::string& webstate_unique_id,
+    base::OnceCallback<void(
+        std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
+        callback) {
+  // TODO(crbug.com/467065000): Update the agents public methods to take in
+  // WebStateID's, or at least int64's
+  int64_t tab_id;
+  if (!base::StringToInt64(webstate_unique_id, &tab_id) ||
+      !page_content_cache_service_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  page_content_cache_service_->GetPageContentForTab(
+      tab_id, base::BindOnce(&OnGetPageContent, std::move(callback)));
+}
+
+void PersistTabContextBrowserAgent::DeleteContextFromContentCache(
+    int64_t tab_id) {
+  if (!page_content_cache_service_) {
+    return;
+  }
+  page_content_cache_service_->RemovePageContentForTab(tab_id);
+}
+
+void PersistTabContextBrowserAgent::OnAllContextsRetrieved(
+    base::OnceCallback<void(PageContextMap)> final_callback,
+    std::vector<ContextPair> results) {
+  PageContextMap result_map;
+  for (auto& [id, context] : results) {
+    result_map[id] = std::move(context);
+  }
+  std::move(final_callback).Run(std::move(result_map));
+}
+
+void PersistTabContextBrowserAgent::OnSingleContextRetrieved(
+    std::string web_state_id,
+    base::RepeatingCallback<void(ContextPair)> barrier_callback,
+    std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+        result) {
+  std::move(barrier_callback)
+      .Run(std::make_pair(web_state_id, std::move(result)));
 }
