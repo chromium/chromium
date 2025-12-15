@@ -639,6 +639,12 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 // trivial refill operations, which are refills that do not modify any field.
 BASE_FEATURE(kAutofillFewerTrivialRefills, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, improves heuristic regexes for state classification to avoid
+// misclassification as civil state.
+// TODO(crbug.com/465491175): Cleanup when launched.
+BASE_FEATURE(kAutofillFixCivilStateMisclassificationForESPT,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch: Changes the behavior of Form[Field]Data::DeepEqual().
 // TODO(crbug.com/40183094): Turn this into a kill switch after a few
 // weeks on canary.

@@ -605,6 +605,7 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       {features::kAutofillUseNegativePatternForAllAttributes, true},
       {features::kAutofillDisallowMoreHyphenLikeLabels, true},
       {features::kAutofillFixStateCountryMisclassification, true},
+      {features::kAutofillFixCivilStateMisclassificationForESPT, true},
       // TODO(crbug.com/320965828): Understand the changes to the expectations
       // caused by this feature.
       {features::kAutofillBetterLocalHeuristicPlaceholderSupport, false},
