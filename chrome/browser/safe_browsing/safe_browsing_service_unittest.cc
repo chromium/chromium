@@ -812,4 +812,142 @@ TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenUserIsIncognito) {
       notification_url3, display_duration));
 }
 
+class SafeBrowsingServiceEnhancedSecurityBundleMigrationTest
+    : public testing::Test {
+ public:
+  SafeBrowsingServiceEnhancedSecurityBundleMigrationTest() {
+    feature_list_.InitAndEnableFeature(kMigrateEnhancedSbUserToEnhancedBundle);
+  }
+
+  void SetUp() override {
+    browser_process_ = TestingBrowserProcess::GetGlobal();
+
+    safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(
+        GetSafeBrowsingServiceFactory());
+    // TODO(crbug.com/41437292): Port consumers of the |sb_service_| to use
+    // the interface in components/safe_browsing, and remove this cast.
+    sb_service_ = static_cast<SafeBrowsingService*>(
+        safe_browsing::SafeBrowsingService::CreateSafeBrowsingService());
+    auto ref_counted_url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    sb_service_->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
+    browser_process_->SetSafeBrowsingService(sb_service_.get());
+    sb_service_->Initialize();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    sb_service_->SetURLLoaderFactoryForTesting(nullptr);
+    browser_process_->safe_browsing_service()->ShutDown();
+    browser_process_->SetSafeBrowsingService(nullptr);
+    safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void MigrateUserToEnhancedBundleIfNeeded(Profile* profile) {
+    sb_service_->OnProfileAdded(profile);
+    task_environment_.FastForwardBy(base::Seconds(1));
+    // Call OnProfileWillBeDestroyed() so that
+    // MigrateUserToEnhancedBundleIfNeeded() can be called for the same profile
+    // multiple times.
+    sb_service_->OnProfileWillBeDestroyed(profile);
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  raw_ptr<TestingBrowserProcess> browser_process_;
+
+  scoped_refptr<SafeBrowsingService> sb_service_;
+
+ private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       MigrationOccursOnce) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+
+  {
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::ENHANCED,
+              GetSecurityBundleSetting(*prefs));
+  }
+
+  {
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       MigrateOnlyOnLaunchAfterFeatureEnabled) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  {
+    // Migration should not occur because the user has standard safe-browsing.
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::STANDARD_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+
+  {
+    // Migration should not occur because this is not the first browser-launch
+    // after the migration-feature was enabled.
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       DontMigrateIfUsingStandardSafeBrowsing) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*prefs));
+}
+
+class SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest
+    : public SafeBrowsingServiceEnhancedSecurityBundleMigrationTest {
+ public:
+  SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest() = default;
+  ~SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest() override =
+      default;
+
+  void SetUp() override {
+    SafeBrowsingServiceEnhancedSecurityBundleMigrationTest::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        kMigrateEnhancedSbUserToEnhancedBundle);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest,
+       DontMigrateIfFeatureIsDisabled) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*prefs));
+}
+
 }  // namespace safe_browsing

@@ -203,6 +203,12 @@ inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
 inline constexpr char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
 
+// Whether a profile has been checked as to whether it should be migrated to
+// the enhanced security bundle. The migration checking is triggered by the
+// kMigrateEnhancedSbUserToEnhancedBundle experiment.
+inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
+    "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
+
 // A boolean indicating if Enhanced Protection was enabled in sync with
 // account tailored security. This value will only ever be true if Enhanced
 // Protection is enabled and it was enabled through the Tailored Security flow.
@@ -402,6 +408,10 @@ enum class SecuritySettingsBundleSetting {
 // settings controlled by the bundle from the bundle defaults.
 SecuritySettingsBundleSetting GetSecurityBundleSetting(
     const PrefService& prefs);
+
+// Set the user's security-settings-bundle.
+void SetSecurityBundleSetting(PrefService& prefs,
+                              SecuritySettingsBundleSetting bundle);
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);
 

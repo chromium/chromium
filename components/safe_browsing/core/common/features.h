@@ -299,6 +299,10 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
 #endif
 
+// Enables one-time migration of enhanced-safe-browsing users to the enhanced
+// bundle.
+BASE_DECLARE_FEATURE(kMigrateEnhancedSbUserToEnhancedBundle);
+
 // TODO(crbug.com/449960661): Remove this flag once the MigrateAccountPrefs
 // feature is launched and the regression of users with ESB enhanced protection
 // is resolved.

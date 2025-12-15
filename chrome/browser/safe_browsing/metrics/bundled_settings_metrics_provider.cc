@@ -29,16 +29,17 @@ void BundledSettingsMetricsProvider::ProvideCurrentSessionData(
       (bundle == SecuritySettingsBundleSetting::ENHANCED);
   base::UmaHistogramBoolean("Security.EnhancedBundle.IsEnhancedSelected",
                             is_using_enhanced_bundle);
+
+  // LINT.IfChange
   bool is_default_safe_browsing_state =
       GetDefaultSafeBrowsingState(bundle) == GetSafeBrowsingState(*prefs);
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   base::UmaHistogramBoolean(
       is_using_enhanced_bundle
           ? "Security.EnhancedBundle.SafeBrowsingSetting.WasModifiedFromDefault"
           : "Security.StandardBundle.SafeBrowsingSetting."
             "WasModifiedFromDefault",
       !is_default_safe_browsing_state);
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // LINT.ThenChange(//chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,//chrome/browser/safe_browsing/safe_browsing_service.cc)
 }
 
 }  // namespace safe_browsing

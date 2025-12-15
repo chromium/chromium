@@ -42,7 +42,9 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
   }
 
   // Update Security Settings Bundle preference to match selection.
-  profile_->GetPrefs()->SetInteger(prefs::kSecuritySettingsBundle, selection);
+  SetSecurityBundleSetting(
+      *(profile_->GetPrefs()),
+      static_cast<SecuritySettingsBundleSetting>(selection));
 
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }

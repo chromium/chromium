@@ -289,6 +289,9 @@ constexpr base::FeatureParam<std::string>
                                                  /*default_value=*/""};
 #endif
 
+BASE_FEATURE(kMigrateEnhancedSbUserToEnhancedBundle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kModifiedESBFetchErrorHandling, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMovePasswordLeakDetectionToggleIos,
@@ -405,6 +408,7 @@ base::Value::List GetFeatureStatusList() {
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
       &kLocalListsUseSBv5,
+      &kMigrateEnhancedSbUserToEnhancedBundle,
       &kNotificationTelemetrySwb,
       &kReportNotificationContentDetectionData,
       &kShowManualNotificationRevocationsSafetyHub,

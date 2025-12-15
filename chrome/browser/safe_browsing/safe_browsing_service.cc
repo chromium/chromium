@@ -170,6 +170,44 @@ void OnGotCookies(
   }
 }
 
+// Migrate enhanced-safe-browsing user to enhanced-secrity bundle if needed.
+void MigrateUserToEnhancedSecurityBundleIfNeeded(
+    base::WeakPtr<Profile> profile) {
+  if (!profile) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (!base::FeatureList::IsEnabled(kMigrateEnhancedSbUserToEnhancedBundle)) {
+    return;
+  }
+
+  if (prefs->GetBoolean(
+          ::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle)) {
+    return;
+  }
+  prefs->SetBoolean(::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle,
+                    true);
+
+  // Don't migrate if the user is already using the enhanced bundle.
+  if (GetSecurityBundleSetting(*prefs) ==
+      SecuritySettingsBundleSetting::ENHANCED) {
+    return;
+  }
+
+  // Only migrate enhanced safe-browsing users.
+  if (GetSafeBrowsingState(*prefs) != SafeBrowsingState::ENHANCED_PROTECTION) {
+    return;
+  }
+
+  // LINT.IfChange
+  // TODO(http://crbug.com/464331450): Add migration code once https-first
+  // feature row is added.
+  // LINT.ThenChange(//chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
+
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
+}
+
 }  // namespace
 
 // static
@@ -528,6 +566,15 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
   RecordStartupCookieMetrics(profile);
 
   CleanupExternalAppRedirectTimestamps(*pref_service);
+
+  // Post task to isolate enhanced-security-bundle migration from other code
+  // which reads settings controlled by the bundle on startup. Migration should
+  // be viewed similarly to user changing individual settings in the bundle via
+  // chrome://settings.
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&MigrateUserToEnhancedSecurityBundleIfNeeded,
+                                profile->GetWeakPtr()));
 }
 
 void SafeBrowsingServiceImpl::OnOffTheRecordProfileCreated(

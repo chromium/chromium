@@ -333,10 +333,12 @@ export class SettingsSecurityPageV2Element extends
 
     const bundleSetting = this.getBundleSetting_();
 
+    // LINT.IfChange
     const prefsToCheck = [{
       prefKey: 'generated.safe_browsing',
       defaultValue: this.getDefaultSafeBrowsingValue_(bundleSetting),
     }];
+    // LINT.ThenChange(//chrome/browser/safe_browsing/safe_browsing_service.cc,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
     for (const prefToCheck of prefsToCheck) {
       const pref = this.getPref(prefToCheck.prefKey);
       if (pref.value !== prefToCheck.defaultValue &&
