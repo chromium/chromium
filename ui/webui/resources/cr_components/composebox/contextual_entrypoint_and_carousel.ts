@@ -631,12 +631,22 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected openImageUpload_() {
-    assert(this.$.imageInput);
-    this.$.imageInput.click();
+    if (this.entrypointName === 'ContextualTasks') {
+      // Open file dialog using top level primary window
+      // in contextual tasks composebox.
+      this.fire('open-file-dialog', {isImage: true});
+    } else {
+      assert(this.$.imageInput);
+      this.$.imageInput.click();
+    }
   }
 
   protected openFileUpload_() {
-    if (this.$.fileInput) {
+    if (this.entrypointName === 'ContextualTasks') {
+      // Open file dialog using top level primary window
+      // in contextual tasks composebox.
+      this.fire('open-file-dialog', {isImage: false});
+    } else if (this.$.fileInput) {
       this.$.fileInput.click();
     }
   }

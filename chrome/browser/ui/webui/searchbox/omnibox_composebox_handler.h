@@ -25,6 +25,9 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
       content::WebContents* web_contents);
 
   ~OmniboxComposeboxHandler() override;
+
+  // composebox::mojom::PageHandler:
+  void HandleFileUpload(bool is_image) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_

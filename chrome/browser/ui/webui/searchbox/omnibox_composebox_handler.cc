@@ -93,3 +93,5 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
                                                              this))) {}
 
 OmniboxComposeboxHandler::~OmniboxComposeboxHandler() = default;
+
+void OmniboxComposeboxHandler::HandleFileUpload(bool is_image) {}

@@ -89,6 +89,7 @@ export function getHtml(this: ComposeboxElement) {
           @set-deep-search-mode="${this.setDeepSearchMode_}"
           @set-create-image-mode="${this.setCreateImageMode_}"
           @get-tab-preview="${this.getTabPreview_}"
+          @open-file-dialog="${this.onOpenFileDialog_}"
           @context-menu-container-click="${this.searchboxLayoutMode === 'Compact' ?  nothing : this.focusInput}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"

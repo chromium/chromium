@@ -63,4 +63,49 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
 
     await whenOpenVoiceSearch;
   });
+
+  test('image upload button clicks file input or fires event', async () => {
+    loadTimeData.overrideValues({
+      'composeboxShowContextMenu': false,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = new ContextualEntrypointAndCarouselElement();
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    const imageUploadClickEventPromise =
+        eventToPromise('click', element.$.imageInput);
+    element.$.imageUploadButton.click();
+    await imageUploadClickEventPromise;
+
+    element.entrypointName = 'ContextualTasks';
+    await microtasksFinished();
+    const openFileDialogPromise = eventToPromise('open-file-dialog', element);
+    element.$.imageUploadButton.click();
+    const event = await openFileDialogPromise;
+    assertTrue(event.detail.isImage);
+  });
+
+  test('file upload button clicks file input or fires event', async () => {
+    loadTimeData.overrideValues({
+      'composeboxShowPdfUpload': true,
+      'composeboxShowContextMenu': false,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = new ContextualEntrypointAndCarouselElement();
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    const fileUploadClickEventPromise =
+        eventToPromise('click', element.$.fileInput);
+    element.$.fileUploadButton.click();
+    await fileUploadClickEventPromise;
+
+    element.entrypointName = 'ContextualTasks';
+    await microtasksFinished();
+    const openFileDialogPromise = eventToPromise('open-file-dialog', element);
+    element.$.fileUploadButton.click();
+    const event = await openFileDialogPromise;
+    assertFalse(event.detail.isImage);
+  });
 });
