@@ -6504,6 +6504,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ApiCall.TracingController"
+    enum="WebViewApiCallTracingController" expires_after="2026-04-29">
+  <owner>etiennep@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <summary>
+    Records calls to TracingController WebView APIs through the platform
+    (framework) APIs. This is logged each time an API is called.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AppliedProcessGlobalCacheDirectoryBasePath"
     enum="Boolean" expires_after="2026-02-01">
   <owner>abhijithnair@chromium.org</owner>

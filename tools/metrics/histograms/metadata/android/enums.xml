@@ -2389,6 +2389,15 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="WebView.onWindowFocusChanged"/>
 </enum>
 
+<enum name="WebViewApiCallTracingController">
+<!-- LINT.IfChange(WebViewApiCallTracingController) -->
+
+  <int value="0" label="WebView.TracingStart"/>
+  <int value="1" label="WebView.TracingStartWithMemoryDump"/>
+<!-- LINT.ThenChange(/android_webview/browser/tracing/aw_tracing_controller.h:WebViewApiCallTracingController) -->
+
+</enum>
+
 <enum name="WebViewCallbackType">
   <int value="0" label="WebViewClient.onReceivedLoginRequest"/>
   <int value="1" label="WebViewClient.onReceivedClientCertRequest"/>

@@ -9,6 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -80,6 +82,14 @@ bool AwTracingController::Start(JNIEnv* env,
                                 jint jmode) {
   base::trace_event::TraceConfig trace_config(
       categories, static_cast<base::trace_event::TraceRecordMode>(jmode));
+
+  UMA_HISTOGRAM_ENUMERATION("Android.WebView.ApiCall.TracingController",
+                            ApiCall::kTracingStart);
+  if (trace_config.IsCategoryGroupEnabled(
+          base::trace_event::MemoryDumpManager::kTraceCategory)) {
+    UMA_HISTOGRAM_ENUMERATION("Android.WebView.ApiCall.TracingController",
+                              ApiCall::kTracingStartWithMemoryDump);
+  }
   return content::TracingController::GetInstance()->StartTracing(
       trace_config, content::TracingController::StartTracingDoneCallback());
 }
