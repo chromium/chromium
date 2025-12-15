@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 const protocolVersion = '1.3';
-const DETACHED_WHILE_HANDLING = 'Detached while handling command.';
+const DETACHED_WHILE_HANDLING =
+    '{"code":-32000,"message":"Navigating to a URL with a privileged scheme is not allowed"}';
 
 chrome.test.getConfig(config => chrome.test.runTests([
   async function testNavigateSubframe() {
