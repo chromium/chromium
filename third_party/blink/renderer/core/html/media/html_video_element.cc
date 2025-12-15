@@ -574,7 +574,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     return nullptr;
   }
 
-  gfx::ColorSpace dest_color_space =
+  const auto alpha_type = media::IsOpaque(media_video_frame->format())
+                              ? kOpaque_SkAlphaType
+                              : kPremul_SkAlphaType;
+
+  const gfx::ColorSpace dest_color_space =
       reinterpret_as_srgb ? gfx::ColorSpace::CreateSRGB()
                           : media_video_frame->CompatRGBColorSpace();
   if (!snapshot_provider_ ||
@@ -582,7 +586,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
        snapshot_provider_->IsGpuContextLost()) ||
       allow_accelerated_images != allow_accelerated_images_ ||
       dest_size != snapshot_provider_->Size() ||
-      dest_color_space != snapshot_provider_->GetColorSpace()) {
+      dest_color_space != snapshot_provider_->GetColorSpace() ||
+      alpha_type != snapshot_provider_->GetAlphaType()) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -591,12 +596,14 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       }
     }
     snapshot_provider_.reset();
+
     // Providing a null |raster_context_provider| creates a software provider.
-    // TODO(https://crbug.com/1341235): The choice of color type and alpha type
-    // is inappropriate in many circumstances.
+    //
+    // TODO(https://crbug.com/40230609): N32 may be incorrect when drawing high
+    // bit depth frames destined for a high bit depth canvas.
     snapshot_provider_ = CreateSnapshotProviderForVideoFrame(
-        dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
-        dest_color_space, raster_context_provider);
+        dest_size, GetN32FormatForCanvas(), alpha_type, dest_color_space,
+        raster_context_provider);
     if (!snapshot_provider_) {
       return nullptr;
     }
