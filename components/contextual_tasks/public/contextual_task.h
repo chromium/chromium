@@ -42,6 +42,7 @@ struct Thread {
 };
 
 struct UrlResource {
+  explicit UrlResource(const GURL& url);
   UrlResource(const base::Uuid& url_id, const GURL& url);
   UrlResource(const UrlResource& other);
   ~UrlResource();
@@ -51,6 +52,15 @@ struct UrlResource {
 
   // URL of the resource.
   GURL url;
+
+  // The tab ID that was added to the context.
+  std::optional<SessionID> tab_id;
+
+  // The title of the web page.
+  std::optional<std::string> title;
+
+  // The unique context ID for this resource.
+  std::optional<uint64_t> context_id;
 };
 
 // A task is a representation of a user's journey to accomplish a goal. It
@@ -91,6 +101,9 @@ class ContextualTask {
   // Adds a URL to the task. If the URL already exists, this method does
   // nothing and returns false. Otherwise, it will return true.
   bool AddUrlResource(const UrlResource& url_resource);
+
+  // Overrides the current URL resources with the ones provided.
+  void SetUrlResourcesFromServer(std::vector<UrlResource> url_resources);
 
   // Returns the URLs relevant to the task.
   std::vector<UrlResource> GetUrlResources() const;

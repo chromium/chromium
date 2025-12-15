@@ -81,6 +81,14 @@ class MockContextualTaskSyncBridge : public ContextualTaskSyncBridge {
   ~MockContextualTaskSyncBridge() override = default;
 
   MOCK_METHOD(std::vector<ContextualTask>, GetTasks, (), (const, override));
+  MOCK_METHOD(void,
+              OnUrlAddedToTaskLocally,
+              (const base::Uuid& task_id, const UrlResource& url_resource),
+              (override));
+  MOCK_METHOD(void,
+              OnUrlRemovedFromTaskLocally,
+              (const base::Uuid& url_id),
+              (override));
 };
 
 class MockContextualTasksObserver : public ContextualTasksService::Observer {
@@ -891,6 +899,240 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   }
   std::vector<ContextualTask> tasks_after_detach = GetTasks();
   EXPECT_TRUE(tasks_after_detach[0].GetUrlResources().empty());
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, SetUrlResourcesFromServer) {
+  service_->AddObserver(&observer_);
+  auto mock_bridge =
+      std::make_unique<testing::NiceMock<MockContextualTaskSyncBridge>>();
+  MockContextualTaskSyncBridge* bridge_ptr = mock_bridge.get();
+  SetContextualTaskSyncBridgeForTesting(std::move(mock_bridge));
+
+  ContextualTask task = service_->CreateTask();
+  base::Uuid task_id = task.GetTaskId();
+
+  // Setup existing resources
+  // 1. Resource to be matched by ID (and updated)
+  UrlResource res1(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/1"));
+  res1.title = "Old Title 1";
+
+  // 2. Resource to be matched by Context ID (and filled)
+  UrlResource res2(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/2"));
+  res2.context_id = 12345;
+  res2.title = "Old Title 2";
+
+  // 3. Resource to be matched by URL (and filled)
+  UrlResource res3(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/3"));
+  res3.title = "Old Title 3";
+
+  // 4. Resource to be removed
+  UrlResource res4(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/4"));
+
+  std::vector<UrlResource> initial_resources = {res1, res2, res3, res4};
+
+  // First call to set up initial state.
+  // Expect adds for all.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*bridge_ptr, OnUrlAddedToTaskLocally(task_id, testing::_))
+        .Times(4);
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->SetUrlResourcesFromServer(task_id, initial_resources);
+    run_loop.Run();
+  }
+
+  // Now prepare incoming resources for the test.
+
+  // 1. Update res1 (Match by ID)
+  UrlResource in1(res1.url_id, GURL("https://example.com/1"));
+  in1.title = "New Title 1";  // Changed
+
+  // 2. Update res2 (Match by Context ID)
+  UrlResource in2(GURL("https://example.com/2"));  // No ID
+  in2.context_id = 12345;
+  // Missing title, should copy "Old Title 2"
+
+  // 3. Update res3 (Match by URL)
+  UrlResource in3(GURL("https://example.com/3"));  // No ID, No Context ID
+  // Missing title, should copy "Old Title 3"
+
+  // 4. New resource (Added)
+  UrlResource in5(GURL("https://example.com/5"));
+  in5.title = "New Title 5";
+
+  std::vector<UrlResource> incoming_resources = {in1, in2, in3, in5};
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*bridge_ptr, OnUrlAddedToTaskLocally(task_id, testing::_))
+      .WillOnce([&](const base::Uuid& tid, const UrlResource& res) {
+        // First invocation: matches in1 (updated) or in5 (newly added).
+        if (res.url == in1.url) {
+          EXPECT_EQ(res.title, "New Title 1");
+          EXPECT_EQ(res.url_id, res1.url_id);
+        } else if (res.url == in5.url) {
+          EXPECT_EQ(res.title, "New Title 5");
+          EXPECT_TRUE(res.url_id.is_valid());
+        } else {
+          ADD_FAILURE() << "Unexpected add: " << res.url.spec();
+        }
+      })
+      .WillOnce([&](const base::Uuid& tid, const UrlResource& res) {
+        // Second invocation: matches the other resource (in1 or in5).
+        if (res.url == in1.url) {
+          EXPECT_EQ(res.title, "New Title 1");
+        } else if (res.url == in5.url) {
+          EXPECT_EQ(res.title, "New Title 5");
+        }
+      });
+
+  EXPECT_CALL(*bridge_ptr, OnUrlRemovedFromTaskLocally(res4.url_id));
+
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  service_->SetUrlResourcesFromServer(task_id, incoming_resources);
+  run_loop.Run();
+
+  // Verify final state
+  std::optional<ContextualTask> result_task = GetTaskById(task_id);
+  ASSERT_TRUE(result_task.has_value());
+  std::vector<UrlResource> final_urls = result_task->GetUrlResources();
+  ASSERT_EQ(4u, final_urls.size());  // 1, 2, 3, 5
+
+  // Check 1
+  auto it1 =
+      std::find_if(final_urls.begin(), final_urls.end(),
+                   [&](const auto& r) { return r.url_id == res1.url_id; });
+  ASSERT_NE(it1, final_urls.end());
+  EXPECT_EQ(it1->title, "New Title 1");
+
+  // Check 2 (ID should be preserved)
+  auto it2 =
+      std::find_if(final_urls.begin(), final_urls.end(),
+                   [&](const auto& r) { return r.url_id == res2.url_id; });
+  ASSERT_NE(it2, final_urls.end());
+  EXPECT_EQ(it2->title, "Old Title 2");  // Copied
+
+  // Check 3 (ID should be preserved)
+  auto it3 =
+      std::find_if(final_urls.begin(), final_urls.end(),
+                   [&](const auto& r) { return r.url_id == res3.url_id; });
+  ASSERT_NE(it3, final_urls.end());
+  EXPECT_EQ(it3->title, "Old Title 3");  // Copied
+
+  // Check 5
+  auto it5 = std::find_if(final_urls.begin(), final_urls.end(),
+                          [&](const auto& r) { return r.url == in5.url; });
+  ASSERT_NE(it5, final_urls.end());
+  EXPECT_EQ(it5->title, "New Title 5");
+  EXPECT_TRUE(it5->url_id.is_valid());
+
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, SetUrlResourcesFromServer_NoChange) {
+  service_->AddObserver(&observer_);
+  auto mock_bridge =
+      std::make_unique<testing::NiceMock<MockContextualTaskSyncBridge>>();
+  MockContextualTaskSyncBridge* bridge_ptr = mock_bridge.get();
+  SetContextualTaskSyncBridgeForTesting(std::move(mock_bridge));
+
+  ContextualTask task = service_->CreateTask();
+  base::Uuid task_id = task.GetTaskId();
+
+  UrlResource res1(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/1"));
+  res1.title = "Title 1";
+
+  std::vector<UrlResource> initial_resources = {res1};
+
+  // Setup initial state.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*bridge_ptr, OnUrlAddedToTaskLocally(task_id, testing::_))
+        .Times(1);
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->SetUrlResourcesFromServer(task_id, initial_resources);
+    run_loop.Run();
+  }
+
+  // Set the same resources again.
+  // Expect NO calls to observer or bridge.
+  EXPECT_CALL(observer_, OnTaskUpdated(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(*bridge_ptr, OnUrlAddedToTaskLocally(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(*bridge_ptr, OnUrlRemovedFromTaskLocally(testing::_)).Times(0);
+
+  service_->SetUrlResourcesFromServer(task_id, initial_resources);
+
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, SetUrlResourcesFromServer_Reorder) {
+  service_->AddObserver(&observer_);
+  auto mock_bridge =
+      std::make_unique<testing::NiceMock<MockContextualTaskSyncBridge>>();
+  MockContextualTaskSyncBridge* bridge_ptr = mock_bridge.get();
+  SetContextualTaskSyncBridgeForTesting(std::move(mock_bridge));
+
+  ContextualTask task = service_->CreateTask();
+  base::Uuid task_id = task.GetTaskId();
+
+  UrlResource res1(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/1"));
+  res1.title = "Title 1";
+  UrlResource res2(base::Uuid::GenerateRandomV4(),
+                   GURL("https://example.com/2"));
+  res2.title = "Title 2";
+
+  std::vector<UrlResource> initial_resources = {res1, res2};
+  std::vector<UrlResource> reordered_resources = {res2, res1};
+
+  // Setup initial state.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*bridge_ptr, OnUrlAddedToTaskLocally(task_id, testing::_))
+        .Times(2);
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->SetUrlResourcesFromServer(task_id, initial_resources);
+    run_loop.Run();
+  }
+
+  // Set the reordered resources.
+  // Expect observer notification because order changed.
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  service_->SetUrlResourcesFromServer(task_id, reordered_resources);
+  run_loop.Run();
+
+  std::optional<ContextualTask> result_task = GetTaskById(task_id);
+  ASSERT_TRUE(result_task.has_value());
+  std::vector<UrlResource> final_urls = result_task->GetUrlResources();
+  ASSERT_EQ(2u, final_urls.size());
+  EXPECT_EQ(final_urls[0].url, res2.url);
+  EXPECT_EQ(final_urls[1].url, res1.url);
+
   service_->RemoveObserver(&observer_);
 }
 

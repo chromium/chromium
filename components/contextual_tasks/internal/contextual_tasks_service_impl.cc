@@ -32,6 +32,128 @@
 
 namespace contextual_tasks {
 
+namespace {
+
+struct MergeUrlResourcesResult {
+  std::vector<UrlResource> final_resources;
+  std::vector<UrlResource> added_or_updated_resources;
+  std::vector<base::Uuid> removed_resource_ids;
+  bool has_changes = false;
+};
+
+// Helper to find the index of a matching resource in existing_resources.
+// Returns -1 if no match is found.
+int FindMatchingResourceIndex(
+    const UrlResource& incoming_res,
+    const std::vector<UrlResource>& existing_resources,
+    const std::vector<bool>& existing_matched) {
+  for (size_t i = 0; i < existing_resources.size(); ++i) {
+    if (existing_matched[i]) {
+      continue;
+    }
+
+    const auto& existing_res = existing_resources[i];
+    // 1. Match by url_id.
+    if (incoming_res.url_id.is_valid() &&
+        existing_res.url_id == incoming_res.url_id) {
+      return static_cast<int>(i);
+    }
+
+    // 2. Match by context_id.
+    if (incoming_res.context_id.has_value() &&
+        existing_res.context_id == incoming_res.context_id) {
+      return static_cast<int>(i);
+    }
+
+    // 3. Match by url.
+    if (incoming_res.url.is_valid() && existing_res.url == incoming_res.url) {
+      return static_cast<int>(i);
+    }
+  }
+
+  return -1;
+}
+
+// Merges incoming resources with existing ones.
+// Returns a result containing the final list of resources, as well as lists of
+// added/updated and removed resources to be used for sync notifications.
+MergeUrlResourcesResult MergeUrlResources(
+    const std::vector<UrlResource>& existing_resources,
+    std::vector<UrlResource> incoming_resources) {
+  MergeUrlResourcesResult result;
+  std::vector<bool> existing_matched(existing_resources.size(), false);
+  result.has_changes = false;
+
+  for (auto& incoming_res : incoming_resources) {
+    int matched_index = FindMatchingResourceIndex(
+        incoming_res, existing_resources, existing_matched);
+
+    if (matched_index != -1) {
+      existing_matched[matched_index] = true;
+      const auto& existing_res = existing_resources[matched_index];
+
+      // Copy over fields if missing.
+      if (!incoming_res.url_id.is_valid()) {
+        incoming_res.url_id = existing_res.url_id;
+      }
+      if (!incoming_res.url.is_valid()) {
+        incoming_res.url = existing_res.url;
+      }
+      if (!incoming_res.tab_id.has_value()) {
+        incoming_res.tab_id = existing_res.tab_id;
+      }
+      if (!incoming_res.title.has_value()) {
+        incoming_res.title = existing_res.title;
+      }
+      if (!incoming_res.context_id.has_value()) {
+        incoming_res.context_id = existing_res.context_id;
+      }
+
+      // Check if anything changed.
+      if (incoming_res.url_id != existing_res.url_id ||
+          incoming_res.url != existing_res.url ||
+          incoming_res.tab_id != existing_res.tab_id ||
+          incoming_res.title != existing_res.title ||
+          incoming_res.context_id != existing_res.context_id) {
+        result.has_changes = true;
+        result.added_or_updated_resources.push_back(incoming_res);
+      }
+    } else {
+      // New resource.
+      result.has_changes = true;
+      if (!incoming_res.url_id.is_valid()) {
+        incoming_res.url_id = base::Uuid::GenerateRandomV4();
+      }
+      result.added_or_updated_resources.push_back(incoming_res);
+    }
+  }
+
+  // Check for removed resources.
+  for (size_t i = 0; i < existing_resources.size(); ++i) {
+    if (!existing_matched[i]) {
+      result.has_changes = true;
+      result.removed_resource_ids.push_back(existing_resources[i].url_id);
+    }
+  }
+
+  // If no content changes, adds or removes were detected, check if the order
+  // has changed.
+  if (!result.has_changes &&
+      existing_resources.size() == incoming_resources.size()) {
+    for (size_t i = 0; i < existing_resources.size(); ++i) {
+      if (existing_resources[i].url_id != incoming_resources[i].url_id) {
+        result.has_changes = true;
+        break;
+      }
+    }
+  }
+
+  result.final_resources = std::move(incoming_resources);
+  return result;
+}
+
+}  // namespace
+
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
@@ -230,6 +352,40 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
                          TriggerSource::kLocal));
     }
   }
+}
+
+void ContextualTasksServiceImpl::SetUrlResourcesFromServer(
+    const base::Uuid& task_id,
+    std::vector<UrlResource> url_resources) {
+  auto it = tasks_.find(task_id);
+  if (it == tasks_.end()) {
+    return;
+  }
+
+  // Merge incoming resources with existing ones and calculate the diff.
+  ContextualTask& task = it->second;
+  MergeUrlResourcesResult result =
+      MergeUrlResources(task.GetUrlResources(), std::move(url_resources));
+
+  if (!result.has_changes) {
+    return;
+  }
+
+  // Notify sync bridge about changed resources.
+  for (const auto& res : result.added_or_updated_resources) {
+    contextual_task_sync_bridge_->OnUrlAddedToTaskLocally(task_id, res);
+  }
+  for (const auto& id : result.removed_resource_ids) {
+    contextual_task_sync_bridge_->OnUrlRemovedFromTaskLocally(id);
+  }
+
+  // Update the local in-memory task state.
+  task.SetUrlResourcesFromServer(std::move(result.final_resources));
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                                weak_ptr_factory_.GetWeakPtr(), task,
+                                TriggerSource::kLocal));
 }
 
 void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,

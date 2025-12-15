@@ -79,6 +79,11 @@ struct UrlAttachment {
   explicit UrlAttachment(const GURL& url);
   ~UrlAttachment();
 
+  UrlAttachment(const UrlAttachment&);
+  UrlAttachment(UrlAttachment&&);
+  UrlAttachment& operator=(const UrlAttachment&);
+  UrlAttachment& operator=(UrlAttachment&&);
+
   // Accessor methods.
   GURL GetURL() const;
   std::u16string GetTitle() const;
@@ -92,6 +97,7 @@ struct UrlAttachment {
 
  private:
   friend class ContextDecorator;
+  friend struct ContextualTaskContext;
 
   // ContextDecorator implementation can access this method through a protected
   // method.
@@ -99,6 +105,12 @@ struct UrlAttachment {
 
   // The URL that is attached.
   GURL url_;
+
+  // The title of the web page, if available from the ContextualTask directly.
+  std::optional<std::u16string> title_;
+
+  // The tab SessionID, if available from the ContextualTask directly.
+  std::optional<SessionID> tab_session_id_;
 
   // A data block that can be populated by decorators with additional metadata
   // about the URL.

@@ -94,6 +94,12 @@ void ContextualTasksContextControllerImpl::DetachUrlFromTask(
   service_->DetachUrlFromTask(task_id, url);
 }
 
+void ContextualTasksContextControllerImpl::SetUrlResourcesFromServer(
+    const base::Uuid& task_id,
+    std::vector<UrlResource> url_resources) {
+  service_->SetUrlResourcesFromServer(task_id, std::move(url_resources));
+}
+
 void ContextualTasksContextControllerImpl::GetContextForTask(
     const base::Uuid& task_id,
     const std::set<ContextualTaskContextSource>& sources,

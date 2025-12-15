@@ -4,6 +4,7 @@
 
 #include "components/contextual_tasks/public/contextual_task_context.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 
 namespace contextual_tasks {
@@ -23,11 +24,19 @@ UrlAttachment::UrlAttachment(const GURL& url) : url_(url) {}
 
 UrlAttachment::~UrlAttachment() = default;
 
+UrlAttachment::UrlAttachment(const UrlAttachment&) = default;
+UrlAttachment::UrlAttachment(UrlAttachment&&) = default;
+UrlAttachment& UrlAttachment::operator=(const UrlAttachment&) = default;
+UrlAttachment& UrlAttachment::operator=(UrlAttachment&&) = default;
+
 GURL UrlAttachment::GetURL() const {
   return url_;
 }
 
 std::u16string UrlAttachment::GetTitle() const {
+  if (title_.has_value()) {
+    return title_.value();
+  }
   if (!decorator_data_.contextual_search_context_data.title.empty()) {
     return decorator_data_.contextual_search_context_data.title;
   }
@@ -49,6 +58,9 @@ bool UrlAttachment::IsOpen() const {
 }
 
 SessionID UrlAttachment::GetTabSessionId() const {
+  if (tab_session_id_.has_value()) {
+    return tab_session_id_.value();
+  }
   return decorator_data_.contextual_search_context_data.tab_session_id;
 }
 
@@ -63,7 +75,14 @@ UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorData() {
 ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     : task_id_(task.GetTaskId()) {
   for (const auto& url_resource : task.GetUrlResources()) {
-    urls_.emplace_back(url_resource.url);
+    UrlAttachment attachment(url_resource.url);
+    if (url_resource.title.has_value()) {
+      attachment.title_ = base::UTF8ToUTF16(url_resource.title.value());
+    }
+    if (url_resource.tab_id.has_value()) {
+      attachment.tab_session_id_ = url_resource.tab_id.value();
+    }
+    urls_.push_back(std::move(attachment));
   }
 }
 
