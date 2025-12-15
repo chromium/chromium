@@ -17245,21 +17245,6 @@
             ]
         }
     ],
-    "OmniboxMobileParityUpdateV3": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxMobileParityUpdateV3"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxMultimodalInput": [
         {
             "platforms": [
