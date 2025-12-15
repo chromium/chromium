@@ -106,4 +106,57 @@ suite('ContextualTasksAppTest', function() {
 
     assertTrue(!!appElement.shadowRoot.querySelector('top-toolbar'));
   });
+
+  test('thread url pending until oauth token', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const app = document.createElement('contextual-tasks-app');
+    document.body.appendChild(app);
+
+    await proxy.handler.whenCalled('getThreadUrl');
+
+    const webview = app.shadowRoot.querySelector('webview');
+    assertTrue(!!webview);
+    assertEquals(webview.getAttribute('src'), '');
+
+    const token = 'test_token';
+    proxy.callbackRouterRemote.setOAuthToken(token);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(webview.getAttribute('src'), fixtureUrl);
+  });
+
+  test('thread url set immediately if oauth token available', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    // Delay getThreadUrl to simulate token arriving first.
+    let resolveThreadUrl: (val: any) => void;
+    const threadUrlPromise = new Promise<any>((resolve) => {
+      resolveThreadUrl = resolve;
+    });
+    proxy.handler.getThreadUrl = () => {
+      proxy.handler.methodCalled('getThreadUrl');
+      return threadUrlPromise;
+    };
+
+    const app = document.createElement('contextual-tasks-app');
+    document.body.appendChild(app);
+
+    // Send token.
+    const token = 'test_token';
+    proxy.callbackRouterRemote.setOAuthToken(token);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    // Resolve URL.
+    resolveThreadUrl!({url: {url: fixtureUrl}});
+    await proxy.handler.whenCalled('getThreadUrl');
+    await microtasksFinished();
+
+    const webview = app.shadowRoot.querySelector('webview');
+    assertTrue(!!webview);
+    assertEquals(webview.getAttribute('src'), fixtureUrl);
+  });
 });
