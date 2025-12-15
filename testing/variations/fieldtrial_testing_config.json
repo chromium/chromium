@@ -17908,29 +17908,6 @@
             ]
         }
     ],
-    "PartitionAllocFreeWithSize": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_with_strict_check_20251212",
-                    "params": {
-                        "strict-free-size-check": "true"
-                    },
-                    "enable_features": [
-                        "PartitionAllocFreeWithSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocLockTuneSpin": [
         {
             "platforms": [
