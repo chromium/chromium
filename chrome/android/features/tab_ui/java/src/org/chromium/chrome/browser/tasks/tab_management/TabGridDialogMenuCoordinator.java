@@ -92,7 +92,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 new ListItemBuilder()
                         .withTitleRes(R.string.tab_grid_dialog_toolbar_edit_group_name)
                         .withMenuId(R.id.edit_group_name)
-                        .withStartIconRes(R.drawable.material_ic_edit_24dp)
+                        .withStartIconRes(R.drawable.ic_edit_24dp)
                         .withIsIncognito(isIncognito)
                         .build());
         itemList.add(
