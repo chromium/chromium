@@ -179,7 +179,7 @@ wildcards (e.g., `*.example.com`).
 
 Prior to the full launch, you can also disable the default “Always Use Secure
 Connections” feature using
-`--disable-features=HttpsFirstBalancedModeAutoEnabled`. We’ll update this post
+`--disable-features=HttpsFirstBalancedModeAutoEnable`. We’ll update this post
 with any future capabilities and flags, and you can track updates on
 [this bug](http://crbug.com/378022921).
 
