@@ -77,7 +77,7 @@ public class SettingsSearchCoordinator {
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
     private @Nullable final MultiColumnSettings mMultiColumnSettings;
-    private final Map<Fragment, ContainmentItemDecoration> mItemDecorations;
+    private final Map<PreferenceFragmentCompat, ContainmentItemDecoration> mItemDecorations;
     private final Handler mHandler = new Handler();
     private final Profile mProfile;
     private final Callback<Integer> mUpdateFirstVisibleTitle;
@@ -144,7 +144,7 @@ public class SettingsSearchCoordinator {
             AppCompatActivity activity,
             BooleanSupplier useMultiColumnSupplier,
             @Nullable MultiColumnSettings multiColumnSettings,
-            Map<Fragment, ContainmentItemDecoration> itemDecorations,
+            Map<PreferenceFragmentCompat, ContainmentItemDecoration> itemDecorations,
             Profile profile,
             Callback<Integer> updateFirstVisibleTitle) {
         mActivity = activity;

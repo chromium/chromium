@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroupAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -153,6 +154,13 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
                 }
             }
 
+            if (mKey != null && preference instanceof PreferenceCategory) {
+                TextView headerTitleView = findTextView(view);
+                if (headerTitleView != null) {
+                    headerTitleView.setTextAppearance(
+                            R.style.TextAppearance_PreferenceCategoryStandard);
+                }
+            }
             if (selected) {
                 highlightFound = true;
                 view.setBackground(mSelectedBackground);
@@ -167,5 +175,20 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
                 }
             }
         }
+    }
+
+    private static @Nullable TextView findTextView(View view) {
+        if (view instanceof TextView textView) {
+            return textView;
+        }
+        if (view instanceof ViewGroup viewGroup) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                TextView found = findTextView(viewGroup.getChildAt(i));
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

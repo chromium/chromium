@@ -291,8 +291,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
-    /** Returns whether the current layout is in two-pane mode. */
-    boolean isTwoPane() {
+    /** Returns whether the current layout is in two-column mode. */
+    boolean isTwoColumn() {
         return !getSlidingPaneLayout().isSlideable();
     }
 

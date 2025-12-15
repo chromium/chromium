@@ -141,7 +141,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
 
         var titles = mMultiColumnSettings.getTitles();
-        if (mMultiColumnSettings.isTwoPane() || titles.isEmpty() || mMainMenuShown) {
+        if (mMultiColumnSettings.isTwoColumn() || titles.isEmpty() || mMainMenuShown) {
             // In the two pane mode, the main title is always "Settings".
             mMainTitleSetter.onResult(mContext.getString(R.string.settings));
             mCurrentPageTitle = null;
@@ -222,7 +222,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     public void onHeaderLayoutUpdated() {
         updateMainTitle();
 
-        if (!mMultiColumnSettings.isTwoPane()) {
+        if (!mMultiColumnSettings.isTwoColumn()) {
             // In the single pane mode, do not show the detailed title.
             mContainer.setVisibility(View.GONE);
             return;
