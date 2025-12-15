@@ -163,6 +163,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
+#include "chrome/browser/android/persisted_tab_data/language_persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
@@ -386,6 +387,29 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
+#if BUILDFLAG(IS_ANDROID)
+  // Register LanguagePersistedTabDataAndroid for non-incognito tabs to
+  // persist language details.
+  if (!profile->IsOffTheRecord()) {
+    if (auto* tab = TabAndroid::FromWebContents(web_contents); tab) {
+      ChromeTranslateClient* chrome_translate_client =
+          ChromeTranslateClient::FromWebContents(web_contents);
+
+      LanguagePersistedTabDataAndroid::From(
+          tab,
+          base::BindOnce(
+              [](ChromeTranslateClient* chrome_translate_client,
+                 PersistedTabDataAndroid* persisted_tab_data) {
+                auto* language_persisted_tab_data_android =
+                    static_cast<LanguagePersistedTabDataAndroid*>(
+                        persisted_tab_data);
+                language_persisted_tab_data_android->RegisterTranslateDriver(
+                    chrome_translate_client->translate_driver());
+              },
+              chrome_translate_client));
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
       web_contents);
   commerce::CommerceTabHelper::CreateForWebContents(

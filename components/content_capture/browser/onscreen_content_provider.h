@@ -65,7 +65,8 @@ class OnscreenContentProvider
 
   // The methods called by metadata providers.
   void DidUpdateSensitivityScore(float sensitivity_score);
-
+  void DidUpdateLanguageDetails(const std::string& detected_language,
+                                float language_confidence);
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

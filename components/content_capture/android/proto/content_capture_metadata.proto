@@ -14,4 +14,10 @@ option optimize_for = LITE_RUNTIME;
 message ContentCaptureMetadata {
   // A score from [0, 1], -1 if not evaluated. Lower score means more sensitive.
   float sensitivity_score = 1;
+
+  // The detected language code.
+  string detected_language = 2;
+
+  // A score from [0, 1] of the confidence of the detected language.
+  float language_confidence = 3;
 }

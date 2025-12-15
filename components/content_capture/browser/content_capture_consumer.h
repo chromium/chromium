@@ -65,6 +65,11 @@ class ContentCaptureConsumer {
   // been updated.
   virtual void DidUpdateSensitivityScore(const GURL& url,
                                          float sensitivity_score) = 0;
+  // Invoked when the language details for the corresponding WebContents has
+  // been updated.
+  virtual void DidUpdateLanguageDetails(const GURL& url,
+                                        const std::string& detected_language,
+                                        float language_confidence) = 0;
 
   // Return if the |url| shall be captured. Even return false, the content might
   // still be streamed because of the other consumers require it. Consumer can

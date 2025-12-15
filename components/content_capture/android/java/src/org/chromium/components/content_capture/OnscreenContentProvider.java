@@ -212,6 +212,30 @@ public class OnscreenContentProvider {
     }
 
     @CalledByNative
+    private void didUpdateLanguageDetails(
+            String url, String detectedLanguage, float languageConfidence) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        ContentCaptureMetadata metadata =
+                ContentCaptureMetadata.newBuilder()
+                        .setDetectedLanguage(detectedLanguage)
+                        .setLanguageConfidence(languageConfidence)
+                        .build();
+
+        assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
+
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(
+                    TAG,
+                    "Updated language: %s, confidence: %f",
+                    detectedLanguage,
+                    languageConfidence);
+        }
+    }
+
+    @CalledByNative
     private int getOffsetY(WebContents webContents) {
         return RenderCoordinates.fromWebContents(webContents).getContentOffsetYPixInt();
     }

@@ -2853,6 +2853,8 @@ static_library("browser") {
       "android/oom_intervention/oom_intervention_tab_helper.h",
       "android/partner_browser_customizations.cc",
       "android/partner_browser_customizations.h",
+      "android/persisted_tab_data/language_persisted_tab_data_android.cc",
+      "android/persisted_tab_data/language_persisted_tab_data_android.h",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.cc",
@@ -3362,6 +3364,7 @@ static_library("browser") {
 
     deps += [
       ":delta_file_proto",
+      ":language_data_proto",
       ":profile_token",
       ":sensitivity_data_proto",
       ":usage_stats_proto",
@@ -3456,6 +3459,7 @@ static_library("browser") {
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+      "//chrome/browser/translate",
       "//chrome/browser/translate/android",
       "//chrome/browser/translate/android:jni_headers",
       "//chrome/browser/ui/android/hats:impl",
@@ -3576,6 +3580,8 @@ static_library("browser") {
       "//components/thin_webview/internal",
       "//components/tpcd/metadata/browser",
       "//components/translate/content/android",
+      "//components/translate/core/browser",
+      "//components/translate/core/common",
       "//components/translate/core/language_detection",
       "//components/ukm/android:ukm_recorder",
       "//components/ukm/content",
@@ -8820,6 +8826,9 @@ if (is_android) {
     sources = [ "android/proto/delta_file.proto" ]
   }
 
+  proto_library("language_data_proto") {
+    sources = [ "android/persisted_tab_data/language_data.proto" ]
+  }
   proto_library("sensitivity_data_proto") {
     sources = [ "android/persisted_tab_data/sensitivity_data.proto" ]
   }

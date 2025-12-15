@@ -5,6 +5,7 @@
 package org.chromium.components.content_capture;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -71,5 +73,41 @@ public class OnscreenContentProviderTest {
                 ReflectionHelpers.ClassParameter.from(float.class, sensitivityScore));
 
         verify(mMockController).shareData(eq(url), any(ContentCaptureMetadata.class));
+    }
+
+    @Test
+    public void testDidUpdateLanguageDetails() {
+        final String url = "https://example.com/page/es";
+        final String detectedLanguage = "es";
+        final float languageConfidence = 0.98f;
+        ReflectionHelpers.callInstanceMethod(
+                mProvider,
+                "didUpdateLanguageDetails",
+                ReflectionHelpers.ClassParameter.from(String.class, url),
+                ReflectionHelpers.ClassParameter.from(String.class, detectedLanguage),
+                ReflectionHelpers.ClassParameter.from(float.class, languageConfidence));
+
+        ArgumentMatcher<ContentCaptureMetadata> metadataMatcher =
+                new ArgumentMatcher<ContentCaptureMetadata>() {
+                    @Override
+                    public boolean matches(ContentCaptureMetadata argument) {
+                        boolean languageMatch =
+                                argument.getDetectedLanguage().equals(detectedLanguage);
+                        boolean confidenceMatch =
+                                argument.getLanguageConfidence() == languageConfidence;
+                        boolean defaultSensitivity = argument.getSensitivityScore() == 0.0f;
+
+                        return languageMatch && confidenceMatch && defaultSensitivity;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return String.format(
+                                "ContentCaptureMetadata(lang=%s, conf=%f)",
+                                detectedLanguage, languageConfidence);
+                    }
+                };
+
+        verify(mMockController).shareData(eq(url), argThat(metadataMatcher));
     }
 }

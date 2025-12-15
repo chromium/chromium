@@ -276,6 +276,19 @@ void OnscreenContentProvider::DidUpdateSensitivityScore(
   }
 }
 
+void OnscreenContentProvider::DidUpdateLanguageDetails(
+    const std::string& detected_language,
+    float language_confidence) {
+  if (!content_capture::features::ShouldSendMetadataForDataShare() ||
+      !ShouldCapture(web_contents()->GetLastCommittedURL())) {
+    return;
+  }
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->DidUpdateLanguageDetails(web_contents()->GetLastCommittedURL(),
+                                       detected_language, language_confidence);
+  }
+}
+
 void OnscreenContentProvider::BuildContentCaptureSession(
     ContentCaptureReceiver* content_capture_receiver,
     bool ancestor_only,
