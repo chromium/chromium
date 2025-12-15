@@ -1187,6 +1187,12 @@ void LocalFrame::HookBackForwardCacheEviction() {
   // the frame must not be mutated e.g., by JavaScript execution, then the
   // frame must be evicted in such cases.
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
+  if (base::FeatureList::IsEnabled(
+          features::kBackForwardCachePauseMicrotasks)) {
+    if (LocalDOMWindow* window = DomWindow()) {
+      microtasks_pauser_ = window->GetAgent()->event_loop()->PauseMicrotasks();
+    }
+  }
   static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
       ->SetAbortScriptExecution(
           [](v8::Isolate* isolate, v8::Local<v8::Context> context) {
@@ -1225,6 +1231,7 @@ void LocalFrame::RemoveBackForwardCacheEviction() {
   // for any reason. Change the deferring state from |kBufferIncoming| to
   // |kStrict| so that network related eviction cannot happen.
   GetDocument()->Fetcher()->SetDefersLoading(LoaderFreezeMode::kStrict);
+  microtasks_pauser_.reset();
 }
 
 void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {

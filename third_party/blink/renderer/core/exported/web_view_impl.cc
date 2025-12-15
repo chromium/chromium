@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
@@ -2794,6 +2795,36 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
   }
 }
 
+namespace {
+
+void ValidatePausedStateConsistency() {
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCachePauseMicrotasks)) {
+    return;
+  }
+  for (const auto& page : Page::OrdinaryPages()) {
+    if (page->GetPageScheduler()->IsInBackForwardCache()) {
+      continue;
+    }
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      auto* local_frame = DynamicTo<LocalFrame>(frame);
+      const LocalDOMWindow* window =
+          local_frame ? local_frame->DomWindow() : nullptr;
+      if (!window) {
+        continue;
+      }
+      const bool microtasks_are_paused = window->GetAgent()
+                                             ->event_loop()
+                                             ->microtask_queue()
+                                             ->GetMicrotasksScopeDepth();
+      CHECK(!microtasks_are_paused, base::NotFatalUntil::M148);
+    }
+  }
+}
+
+}  // namespace
+
 void WebViewImpl::HookBackForwardCacheEviction(bool hook) {
   DCHECK(GetPage());
   for (Frame* frame = GetPage()->MainFrame(); frame;
@@ -2806,6 +2837,7 @@ void WebViewImpl::HookBackForwardCacheEviction(bool hook) {
     else
       local_frame->RemoveBackForwardCacheEviction();
   }
+  ValidatePausedStateConsistency();
 }
 
 void WebViewImpl::EnableAutoResizeMode(const gfx::Size& min_size,

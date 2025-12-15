@@ -156,6 +156,10 @@ BASE_FEATURE(kBFCacheWithSharedWorker, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              base::FEATURE_DISABLED_BY_DEFAULT);
+// This is a kill switch for pausing microtask while the page is in the BFCache.
+// Remove by m148 if things go well.
+BASE_FEATURE(kBackForwardCachePauseMicrotasks,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable background resource fetch in Blink. See https://crbug.com/1379780 for
 // more details.

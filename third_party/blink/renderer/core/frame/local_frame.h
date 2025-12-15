@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -1046,6 +1047,10 @@ class CORE_EXPORT LocalFrame final
 
   void EnsureLinkPreviewTriggererInitialized();
 
+  void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
+                               mojom::blink::StorageTypeAccessed storage_type,
+                               bool isAllowed);
+
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
   // Holds all PauseSubresourceLoadingHandles allowing either |this| to delete
@@ -1237,6 +1242,8 @@ class CORE_EXPORT LocalFrame final
   // not so it can block BFCache.
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
+  std::unique_ptr<scheduler::EventLoop::PauseMicrotasksHandle>
+      microtasks_pauser_;
 
   WebPrintParams print_params_;
 
@@ -1252,10 +1259,6 @@ class CORE_EXPORT LocalFrame final
 
   // Whether caret browsing mode has been overridden by the embedder or not.
   bool is_caret_browsing_overridden_ = false;
-
-  void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
-                               mojom::blink::StorageTypeAccessed storage_type,
-                               bool isAllowed);
 };
 
 inline FrameLoader& LocalFrame::Loader() const {
