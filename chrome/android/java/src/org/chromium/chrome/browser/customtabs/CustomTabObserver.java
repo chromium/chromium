@@ -433,6 +433,10 @@ public class CustomTabObserver extends EmptyTabObserver {
     public void onDestroyed(Tab tab) {
         TabInteractionRecorder observer = TabInteractionRecorder.getFromTab(tab);
         if (observer != null) observer.onTabClosing();
+        if (mPageLoadMetricsObserver != null) {
+            PageLoadMetrics.removeObserver(mPageLoadMetricsObserver);
+            mPageLoadMetricsObserver = null;
+        }
     }
 
     @Override
