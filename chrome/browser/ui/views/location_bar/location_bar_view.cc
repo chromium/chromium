@@ -120,6 +120,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -1303,15 +1304,11 @@ bool LocationBarView::ShouldHidePageActionIcon(
 bool LocationBarView::ShouldHidePageActionIconForContext(
     const PageActionIconView* icon_view,
     metrics::OmniboxEventProto::PageClassification page_context) const {
-  switch (page_context) {
-    case metrics::OmniboxEventProto::
-        INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS: {
-      return icon_view->action_id().value_or(kChromeActionsEnd) ==
-             kActionBookmarkThisTab;
-    }
-    default:
-      return false;
+  if (omnibox::IsNTPPage(page_context)) {
+    return icon_view->action_id().value_or(kChromeActionsEnd) ==
+           kActionBookmarkThisTab;
   }
+  return false;
 }
 
 /*
