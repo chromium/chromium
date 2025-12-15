@@ -103,6 +103,14 @@ void LogKeychainOperationError(
 // interface on top of Apple's Secure Enclave.
 class UnexportableSigningKeyMac : public UnexportableSigningKey {
  public:
+  explicit UnexportableSigningKeyMac(CFDictionaryRef key_attributes)
+      : UnexportableSigningKeyMac(
+            base::apple::ScopedCFTypeRef<SecKeyRef>(
+                base::apple::GetValueFromDictionary<SecKeyRef>(key_attributes,
+                                                               kSecValueRef),
+                base::scoped_policy::RETAIN),
+            key_attributes) {}
+
   UnexportableSigningKeyMac(base::apple::ScopedCFTypeRef<SecKeyRef> key,
                             CFDictionaryRef key_attributes)
       : key_(std::move(key)),
@@ -297,8 +305,8 @@ std::unique_ptr<UnexportableSigningKey>
 UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
     base::span<const uint8_t> wrapped_key,
     LAContext* lacontext) {
-  base::apple::ScopedCFTypeRef<CFTypeRef> key_data;
-
+  // Query for ALL items matching the wrapped key (label).
+  // We explicitly request kSecMatchLimitAll to see keys from all profiles.
   NSMutableDictionary* query = [NSMutableDictionary dictionaryWithDictionary:@{
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
     CFToNSPtrCast(kSecAttrKeyType) :
@@ -308,25 +316,75 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
     CFToNSPtrCast(kSecAttrAccessGroup) : objc_storage_->keychain_access_group_,
     CFToNSPtrCast(kSecAttrApplicationLabel) :
         [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
+    CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitAll),
   }];
   if (lacontext) {
     query[CFToNSPtrCast(kSecUseAuthenticationContext)] = lacontext;
   }
+
+  base::apple::ScopedCFTypeRef<CFTypeRef> result;
   OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
-      NSToCFPtrCast(query), key_data.InitializeInto());
-  CFDictionaryRef key_attributes =
-      base::apple::CFCast<CFDictionaryRef>(key_data.get());
-  if (!key_attributes) {
-    LOG(ERROR) << "Could not load private key from wrapped: " << status;
+      NSToCFPtrCast(query), result.InitializeInto());
+
+  // If no keys exist with this label at all, we can't do anything.
+  if (status != errSecSuccess) {
+    if (status != errSecItemNotFound) {
+      LogKeychainOperationError(TPMOperation::kWrappedKeyExport, status);
+    }
+    return nullptr;
+  }
+
+  CFArrayRef array = base::apple::CFCast<CFArrayRef>(result.get());
+  if (!array) {
+    return nullptr;
+  }
+
+  // Transform the returned CFArray into a vector of dictionaries, returning
+  // early if no key could be converted.
+  const CFIndex count = CFArrayGetCount(array);
+  std::vector<CFDictionaryRef> key_dicts;
+  key_dicts.reserve(count);
+  for (CFIndex i = 0; i < count; ++i) {
+    if (CFDictionaryRef key_dict = base::apple::CFCast<CFDictionaryRef>(
+            CFArrayGetValueAtIndex(array, i))) {
+      key_dicts.push_back(key_dict);
+    }
+  }
+
+  if (key_dicts.empty()) {
+    return nullptr;
+  }
+
+  // Try to find an exact match for the desired `application_tag`, return if
+  // found.
+  if (auto it = std::ranges::find(
+          key_dicts, base::SysNSStringToUTF8(objc_storage_->application_tag_),
+          &GetApplicationTag);
+      it != key_dicts.end()) {
+    return std::make_unique<UnexportableSigningKeyMac>(*it);
+  }
+
+  // Lastly, if there are matching entries for `wrapped_key`, but no exact match
+  // for `application_tag`, make a copy of the first partial match, explicitly
+  // set the application_tag, and write it to the keychain. Return this key if
+  // no error occurred.
+  NSMutableDictionary* key_attributes = [NSMutableDictionary
+      dictionaryWithDictionary:CFToNSPtrCast(key_dicts.front())];
+  key_attributes[CFToNSPtrCast(kSecAttrApplicationTag)] =
+      objc_storage_->application_tag_;
+  if (lacontext) {
+    key_attributes[CFToNSPtrCast(kSecUseAuthenticationContext)] = lacontext;
+  }
+
+  if (crypto::apple::KeychainV2::GetInstance().ItemAdd(
+          NSToCFPtrCast(key_attributes),
+          /*result=*/nil) != errSecSuccess) {
     LogKeychainOperationError(TPMOperation::kWrappedKeyExport, status);
     return nullptr;
   }
-  base::apple::ScopedCFTypeRef<SecKeyRef> key(
-      base::apple::GetValueFromDictionary<SecKeyRef>(key_attributes,
-                                                     kSecValueRef),
-      base::scoped_policy::RETAIN);
-  return std::make_unique<UnexportableSigningKeyMac>(std::move(key),
-                                                     key_attributes);
+
+  return std::make_unique<UnexportableSigningKeyMac>(
+      NSToCFPtrCast(key_attributes));
 }
 
 StatefulUnexportableKeyProvider*
@@ -376,27 +434,9 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
   for (CFIndex i = 0; i < count; ++i) {
     CFDictionaryRef dict =
         base::apple::CFCast<CFDictionaryRef>(CFArrayGetValueAtIndex(array, i));
-    if (!dict) {
-      continue;
+    if (dict && GetApplicationTag(dict).starts_with(application_tag_prefix)) {
+      keys.push_back(std::make_unique<UnexportableSigningKeyMac>(dict));
     }
-
-    if (!GetApplicationTag(dict).starts_with(application_tag_prefix)) {
-      continue;
-    }
-
-    SecKeyRef key_ref =
-        base::apple::GetValueFromDictionary<SecKeyRef>(dict, kSecValueRef);
-    if (!key_ref) {
-      continue;
-    }
-
-    // ScopedCFTypeRef takes ownership, so we retain the key obtained from the
-    // array (which follows the Get Rule).
-    base::apple::ScopedCFTypeRef<SecKeyRef> scoped_key(
-        key_ref, base::scoped_policy::RETAIN);
-
-    keys.push_back(std::make_unique<UnexportableSigningKeyMac>(
-        std::move(scoped_key), dict));
   }
 
   return keys;

@@ -162,6 +162,61 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeysPerformsPrefixMatching) {
               Optional(UnorderedElementsAre(WrappedKeyEq(key2.get()))));
 }
 
+TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyRepairsKey) {
+  // 1. Generate a key with the default provider (Tag A).
+  auto key_original = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key_original);
+  auto wrapped_key = key_original->GetWrappedKey();
+
+  // 2. Create a second provider with a different application tag (Tag B).
+  const UnexportableKeyProvider::Config other_config{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "other-application-tag",
+  };
+  std::unique_ptr<UnexportableKeyProvider> other_provider =
+      GetUnexportableKeyProvider(other_config);
+  ASSERT_TRUE(other_provider);
+
+  // 3. Initially, the second provider should not see any keys.
+  EXPECT_THAT(other_provider->AsStatefulUnexportableKeyProvider()
+                  ->GetAllSigningKeysSlowly(),
+              Optional(IsEmpty()));
+
+  // 4. Load the key using the second provider. This should trigger the
+  //    repair/copy logic because the wrapped key (label) exists but the tag
+  //    doesn't match.
+  auto key_repaired = other_provider->FromWrappedSigningKeySlowly(wrapped_key);
+  ASSERT_TRUE(key_repaired);
+  // The wrapped key (which is the application label/hash) should be identical.
+  EXPECT_THAT(key_repaired->GetWrappedKey(), Eq(wrapped_key));
+
+  // 5. Verify the repaired key functions correctly (can sign).
+  auto signature = key_repaired->SignSlowly(
+      base::as_bytes(base::span_from_cstring("test data")));
+  ASSERT_TRUE(signature);
+
+  // 6. Verify that the key is now persisted for the second provider.
+  //    GetAllSigningKeysSlowly filters by the provider's tag, so it should now
+  //    find the newly created entry.
+  EXPECT_THAT(other_provider->AsStatefulUnexportableKeyProvider()
+                  ->GetAllSigningKeysSlowly(),
+              Optional(UnorderedElementsAre(WrappedKeyEq(key_repaired.get()))));
+
+  // 7. Verify the original key is still accessible to the first provider.
+  //    The repair operation should copy the key, not move/steal it.
+  EXPECT_THAT(
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      Optional(UnorderedElementsAre(WrappedKeyEq(key_original.get()))));
+}
+
+TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyForNonExistentKey) {
+  // Verify that trying to load a completely non-existent key still returns null
+  // and doesn't crash or create phantom entries.
+  std::vector<uint8_t> bogus_wrapped_key = {1, 2, 3, 4, 5};
+  auto key = provider_->FromWrappedSigningKeySlowly(bogus_wrapped_key);
+  EXPECT_EQ(key, nullptr);
+}
+
 TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
   std::unique_ptr<UnexportableSigningKey> key =
       provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
