@@ -140,7 +140,9 @@ class GoogleTtsIntegrationTest : public AshIntegrationTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GoogleTtsIntegrationTest, Speak) {
+// TODO(crbug.com/468917699): Flaky on ChromeOS, which is the only platform that
+// runs this test.
+IN_PROC_BROWSER_TEST_F(GoogleTtsIntegrationTest, DISABLED_Speak) {
   SetupContextWidget();
   RunTestSequence(Log("Setting up Google TTS extension"), Do([this] {
                     EnableGoogleTts();
