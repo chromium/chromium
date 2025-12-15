@@ -33,21 +33,6 @@
 using web::wk_navigation_util::kReferrerHeaderName;
 using web::wk_navigation_util::URLNeedsUserAgentType;
 
-namespace {
-// Values for the histogram that counts slow/fast back/forward navigations.
-enum class BackForwardNavigationType {
-  // Fast back navigation through WKWebView back-forward list.
-  FAST_BACK = 0,
-  // Slow back navigation when back-forward list navigation is not possible.
-  SLOW_BACK = 1,
-  // Fast forward navigation through WKWebView back-forward list.
-  FAST_FORWARD = 2,
-  // Slow forward navigation when back-forward list navigation is not possible.
-  SLOW_FORWARD = 3,
-  BACK_FORWARD_NAVIGATION_TYPE_COUNT
-};
-}  // namespace
-
 @interface CRWWebRequestController ()
 
 @property(nonatomic, readonly) web::WebStateImpl* webState;
