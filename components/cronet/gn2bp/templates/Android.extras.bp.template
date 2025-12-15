@@ -66,8 +66,7 @@ java_library {
     sdk_version: "module_current",
     min_sdk_version: "30",
     visibility: [
-        "//packages/modules/Connectivity:__subpackages__",
-        "//external/cronet/android:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
     apex_available: [
         "com.android.tethering",
@@ -84,7 +83,7 @@ java_library {
     sdk_version: "module_current",
     min_sdk_version: "30",
     visibility: [
-        "//external/cronet/android:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
     apex_available: [
         "com.android.tethering",
