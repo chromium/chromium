@@ -85,17 +85,13 @@ class LensQueryFlowRouter {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
-  // TODO(crbug.com/): This is a temporary workaround to allow tests to set a
-  // session handle. In the future, this should be removed once the query
-  // router fetches a session handle for the currently active panel.
-  void create_session_handle_for_testing() {
-    pending_session_handle_ = CreateContextualSearchSessionHandle();
-  }
-
  protected:
   // Creates a contextual search session handle. Virtual for testing.
   virtual std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
   CreateContextualSearchSessionHandle();
+
+  // Returns the viewport screenshot. Virtual for testing.
+  virtual const SkBitmap& GetViewportScreenshot() const;
 
  private:
   LensOverlayQueryController* lens_overlay_query_controller() const {
@@ -122,6 +118,9 @@ class LensQueryFlowRouter {
   Profile* profile() const {
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
+
+  // Loads the provided query text in the contextual tasks panel.
+  void LoadQueryInContextualTasks(const std::string& query_text);
 
   // Sends the provided request info to the contextual tasks panel to create a
   // search URL which is then loaded into the contextual tasks panel.
@@ -165,6 +164,16 @@ class LensQueryFlowRouter {
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       base::Time query_start_time);
+
+  // Returns the contextual search session handle for the query router. If the
+  // handle does not exist, it will create one.
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSearchSessionHandle();
+
+  // Returns the contextual search session handle for the query router if it
+  // exists.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandle() const;
 
   // The contextual search session handle that is used to make requests to the
   // contextual search service. This is only stored by this query router in

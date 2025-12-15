@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                               task1.GetTaskId().AsLowercaseString());
         content::NavigationController::LoadURLParams load_params(source_url);
         content::WebContents* panel_contents =
-            coordinator->GetActiveWebContentsForTesting();
+            coordinator->GetActiveWebContents();
         panel_contents->GetController().LoadURLWithParams(load_params);
         content::WaitForLoadStop(panel_contents);
 
@@ -236,21 +236,73 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
           browser()->profile());
   ASSERT_TRUE(service);
 
+  const GURL search_url("https://google.com/search");
+
   // Call StartTaskUiInSidePanel and verify that the side panel is shown and the
   // task is associated with the active tab.
+  RunTestSequence(
+      Do([&]() {
+        service->StartTaskUiInSidePanel(
+            browser(), browser()->GetActiveTabInterface(), search_url, nullptr);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        ContextualTasksSidePanelCoordinator* coordinator =
+            ContextualTasksSidePanelCoordinator::From(browser());
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+        SessionID tab_id = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        std::optional<ContextualTask> task =
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id);
+        EXPECT_TRUE(task.has_value());
+        EXPECT_EQ(service->GetInitialUrlForTask(task->GetTaskId()), search_url);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       StartTaskUiInSidePanel_WhenSidePanelIsOpen) {
+  // Add a new tab.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
   const GURL search_url("https://google.com/search");
-  service->StartTaskUiInSidePanel(browser(), browser()->GetActiveTabInterface(),
-                                  search_url);
+  RunTestSequence(
+      Do([&]() {
+        service->StartTaskUiInSidePanel(
+            browser(), browser()->GetActiveTabInterface(), search_url, nullptr);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        ContextualTasksSidePanelCoordinator* coordinator =
+            ContextualTasksSidePanelCoordinator::From(browser());
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
 
-  ContextualTasksSidePanelCoordinator* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser());
-  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+        SessionID tab_id = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        std::optional<ContextualTask> task =
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id);
+        EXPECT_TRUE(task.has_value());
+        base::Uuid initial_task_id = task->GetTaskId();
 
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  std::optional<ContextualTask> task =
-      contextual_tasks_controller->GetContextualTaskForTab(tab_id);
-  EXPECT_TRUE(task.has_value());
+        // Call StartTaskUiInSidePanel again.
+        const GURL search_url2("https://google.com/search?q=foo");
+        service->StartTaskUiInSidePanel(browser(),
+                                        browser()->GetActiveTabInterface(),
+                                        search_url2, nullptr);
+
+        // Verify that the task ID is still the same.
+        std::optional<ContextualTask> task2 =
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id);
+        EXPECT_TRUE(task2.has_value());
+        EXPECT_EQ(task2->GetTaskId(), initial_task_id);
+        EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
@@ -273,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         content::WebContents* web_contents =
-            coordinator->GetActiveWebContentsForTesting();
+            coordinator->GetActiveWebContents();
         ContextualTasksUI* ui = static_cast<ContextualTasksUI*>(
             web_contents->GetWebUI()->GetController());
 

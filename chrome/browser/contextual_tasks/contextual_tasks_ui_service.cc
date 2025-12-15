@@ -549,17 +549,45 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
 void ContextualTasksUiService::StartTaskUiInSidePanel(
     BrowserWindowInterface* browser_window_interface,
     tabs::TabInterface* tab_interface,
-    const GURL& url) {
+    const GURL& url,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle) {
   CHECK(context_controller_);
 
-  // Create a task for the URL that was just intercepted.
-  ContextualTask task = context_controller_->CreateTaskFromUrl(url);
-  task_id_to_creation_url_[task.GetTaskId()] = url;
+  // Get the coordinator for the current window.
+  auto* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+  auto* panel_contents = coordinator->GetActiveWebContents();
 
-  // Associate the task with the active tab.
-  AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+  // Create a task for the URL if the side panel wasn't already showing a task.
+  if (!panel_contents || !coordinator->IsSidePanelOpenForContextualTask()) {
+    ContextualTask task = context_controller_->CreateTaskFromUrl(url);
+    task_id_to_creation_url_[task.GetTaskId()] = url;
+    AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+    coordinator->Show();
 
-  ContextualTasksSidePanelCoordinator::From(browser_window_interface)->Show();
+    // Associate the web contents with the task and set the session handle if
+    // provided.
+    content::WebContents* web_contents = coordinator->GetActiveWebContents();
+    AssociateWebContentsToTask(panel_contents, task.GetTaskId());
+    if (session_handle) {
+      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
+          ->set_session_handle(std::move(session_handle));
+    }
+    return;
+  }
+
+  // If the side panel contents already exist, get the WebUI controller to
+  // load the URL into the already loaded contextual tasks UI.
+  ContextualTasksUI* webui_controller = nullptr;
+  if (panel_contents->GetWebUI()) {
+    webui_controller =
+        panel_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
+    content::OpenURLParams url_params(
+        url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+        ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+    webui_controller->TransferNavigationToEmbeddedPage(url_params);
+  }
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {

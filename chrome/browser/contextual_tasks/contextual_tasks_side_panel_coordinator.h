@@ -90,7 +90,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   void PrimaryPageChanged(content::Page& page) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
-  content::WebContents* GetActiveWebContentsForTesting();
+  content::WebContents* GetActiveWebContents();
 
   // Detaches the WebContents for the given task and returns it.
   std::unique_ptr<content::WebContents> DetachWebContentsForTask(

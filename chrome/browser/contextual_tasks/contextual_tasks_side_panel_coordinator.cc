@@ -279,7 +279,7 @@ void ContextualTasksSidePanelCoordinator::TitleWasSet(
 }
 
 content::WebContents*
-ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
+ContextualTasksSidePanelCoordinator::GetActiveWebContents() {
   return web_view_ ? web_view_->web_contents() : nullptr;
 }
 

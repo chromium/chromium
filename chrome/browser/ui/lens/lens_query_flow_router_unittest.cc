@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -18,6 +19,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -102,28 +104,28 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
     // immediately.
     pending_mock_session_handle_ = std::make_unique<
         contextual_search::MockContextualSearchSessionHandle>();
+    viewport_screenshot_.allocN32Pixels(10, 10);
   }
   ~TestLensQueryFlowRouter() override = default;
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
   CreateContextualSearchSessionHandle() override {
     CHECK(pending_mock_session_handle_);
-    mock_session_handle_ = pending_mock_session_handle_.get();
     return std::move(pending_mock_session_handle_);
   }
 
+  const SkBitmap& GetViewportScreenshot() const override {
+    return viewport_screenshot_;
+  }
+
   contextual_search::MockContextualSearchSessionHandle* mock_session_handle() {
-    if (mock_session_handle_) {
-      return mock_session_handle_;
-    }
     return pending_mock_session_handle_.get();
   }
 
  private:
+  SkBitmap viewport_screenshot_;
   std::unique_ptr<contextual_search::MockContextualSearchSessionHandle>
       pending_mock_session_handle_;
-  raw_ptr<contextual_search::MockContextualSearchSessionHandle>
-      mock_session_handle_ = nullptr;
 };
 
 class MockContextualTasksUiService
@@ -137,8 +139,12 @@ class MockContextualTasksUiService
               StartTaskUiInSidePanel,
               (BrowserWindowInterface * browser_window_interface,
                tabs::TabInterface* tab_interface,
-               const GURL& url),
+               const GURL& url,
+               std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                   session_handle),
               (override));
+
+  MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
 };
 
 std::unique_ptr<KeyedService> CreateMockContextualTasksUiService(
@@ -377,13 +383,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
       .WillOnce(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get());
 
-  // Arrange: Set up the start query flow parameters and set a dummy viewport
-  // screenshot on the contextualization controller.
-  SkBitmap screenshot;
-  screenshot.allocN32Pixels(10, 10);
-  contextualization_controller_->set_viewport_screenshot_for_testing(
-      screenshot);
-
   GURL example_url("https://example.com");
   std::string page_title = "Title";
   lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
@@ -395,7 +394,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_input_data.page_url = example_url;
   expected_input_data.page_title = page_title;
   expected_input_data.primary_content_type = primary_content_type;
-  expected_input_data.viewport_screenshot = screenshot;
+  expected_input_data.viewport_screenshot = router.GetViewportScreenshot();
   expected_input_data.pdf_current_page = std::nullopt;
   expected_input_data.is_page_context_eligible = true;
 
@@ -419,26 +418,15 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
                   ImageEncodingOptionsMatches(expected_image_options)));
 
   // Act: Start query flow.
-  router.StartQueryFlow(screenshot, example_url, page_title, {}, {},
-                        primary_content_type, std::nullopt, ui_scale_factor,
-                        invocation_time);
+  router.StartQueryFlow(router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendRegionSearch_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
-  EXPECT_CALL(*mock_lens_search_controller_,
-              lens_search_contextualization_controller())
-      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get());
-  router.create_session_handle_for_testing();
-
-  // Arrange: Set a dummy viewport screenshot on the contextualization
-  // controller. This is needed for creating the image crop.
-  SkBitmap screenshot;
-  screenshot.allocN32Pixels(10, 10);
-  contextualization_controller_->set_viewport_screenshot_for_testing(
-      screenshot);
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -460,6 +448,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
@@ -470,7 +459,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*service,
               StartTaskUiInSidePanel(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test")))
+                  GURL("https://www.google.com/search?q=test"),
+                  testing::Pointer(router.mock_session_handle())))
       .Times(1);
 
   // Act: Call the method.
@@ -485,7 +475,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               lens_search_contextualization_controller())
       .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get());
-  router.create_session_handle_for_testing();
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -505,6 +494,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = std::nullopt;
 
   // Assert: Create expectation to call CreateSearchUrl.
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
@@ -515,7 +505,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*service,
               StartTaskUiInSidePanel(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test")))
+                  GURL("https://www.google.com/search?q=test"),
+                  testing::Pointer(router.mock_session_handle())))
       .Times(1);
 
   // Act: Call the method.
@@ -526,11 +517,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendContextualTextQuery_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
-  EXPECT_CALL(*mock_lens_search_controller_,
-              lens_search_contextualization_controller())
-      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get());
-  router.create_session_handle_for_testing();
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -539,28 +526,16 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
       lens::LensOverlaySelectionType::MULTIMODAL_SUGGEST_TYPEAHEAD;
   std::map<std::string, std::string> additional_params;
 
-  // Arrange: Create expected request info.
-  auto expected_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
-  expected_request_info->search_url_type = contextual_search::
-      ContextualSearchContextController::SearchUrlType::kStandard;
-  expected_request_info->query_text = query_text;
-  expected_request_info->query_start_time = query_start_time;
-  expected_request_info->lens_overlay_selection_type = selection_type;
-  expected_request_info->additional_params = additional_params;
-  expected_request_info->image_crop = std::nullopt;
-
-  // Assert: Create expectation to call CreateSearchUrl.
-  EXPECT_CALL(*router.mock_session_handle(),
-              CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
-                  expected_request_info.get())))
-      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  // Assert: Create expectation to call GetDefaultAiPageUrl.
   auto* service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));
+  EXPECT_CALL(*service, GetDefaultAiPageUrl())
+      .WillOnce(Return(GURL("https://example.com")));
   EXPECT_CALL(*service,
               StartTaskUiInSidePanel(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test")))
+                  GURL("https://example.com/?q=test+query"), testing::IsNull()))
       .Times(1);
 
   // Act: Call the method.
@@ -571,18 +546,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendMultimodalRequest_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
-  EXPECT_CALL(*mock_lens_search_controller_,
-              lens_search_contextualization_controller())
-      .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get());
-  router.create_session_handle_for_testing();
-
-  // Arrange: Set a dummy viewport screenshot on the contextualization
-  // controller. This is needed for creating the image crop.
-  SkBitmap screenshot;
-  screenshot.allocN32Pixels(10, 10);
-  contextualization_controller_->set_viewport_screenshot_for_testing(
-      screenshot);
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -606,6 +570,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
@@ -616,7 +581,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*service,
               StartTaskUiInSidePanel(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test")))
+                  GURL("https://www.google.com/search?q=test"),
+                  testing::Pointer(router.mock_session_handle())))
       .Times(1);
 
   // Act: Call the method.

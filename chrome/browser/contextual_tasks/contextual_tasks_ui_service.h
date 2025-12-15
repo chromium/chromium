@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
@@ -123,7 +124,9 @@ class ContextualTasksUiService : public KeyedService {
   virtual void StartTaskUiInSidePanel(
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
-      const GURL& url);
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle);
 
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
