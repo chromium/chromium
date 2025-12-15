@@ -869,7 +869,7 @@ class WebstorePrivateEnterprisePromotionApiTest
 IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
                        DeterminesAndSavesPromotionEligibility) {
   enterprise_management::GetUserEligiblePromotionsResponse mock_response;
-  mock_response.mutable_promotions()->set_policy_page_promotion(
+  mock_response.mutable_promotions()->set_cws_privacy_details_promotion(
       enterprise_management::CHROME_ENTERPRISE_CORE);
   auto function = base::MakeRefCounted<
       WebstorePrivateShouldShowEnterprisePromotionBannerFunction>();

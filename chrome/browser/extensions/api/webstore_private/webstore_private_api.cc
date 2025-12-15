@@ -1479,9 +1479,7 @@ void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
         enterprise_management::GetUserEligiblePromotionsResponse response) {
   enterprise::PromotionType pref_promotion_type;
 
-  // TODO(crbug.com/465709271) Switch to cws_privacy_details_promotion when
-  // server is ready.
-  switch (response.promotions().policy_page_promotion()) {
+  switch (response.promotions().cws_privacy_details_promotion()) {
     case enterprise_management::CHROME_ENTERPRISE_CORE:
       pref_promotion_type = enterprise::PromotionType::kChromeEnterpriseCore;
       break;
