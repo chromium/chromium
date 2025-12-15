@@ -1130,20 +1130,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Incognito.TimeToFirstNavigation" units="ms"
-    expires_after="2026-05-01">
-  <owner>kalinino@google.com</owner>
-  <owner>polonium@google.com</owner>
-  <summary>
-    Records the duration from when the Incognito New Tab Page completes loading
-    to the initiation of the first user navigation away from it. Emitted when
-    the navigation is initiated. This metric is logged on Android only.
-
-    Note: This is only recorded when the
-    RecordIncognitoNtpTimeToFirstNavigationMetric feature flag is enabled.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Lens.UploadDialog.DialogAction"
     enum="NewTabPageLensUploadDialogActions" expires_after="2025-02-10">
   <owner>nguyenbryan@google.com</owner>
