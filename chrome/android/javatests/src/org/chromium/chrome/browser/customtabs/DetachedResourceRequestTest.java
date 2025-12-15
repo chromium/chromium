@@ -326,7 +326,10 @@ public class DetachedResourceRequestTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS,
+        ChromeFeatureList.CCT_MULTIPLE_PARALLEL_REQUESTS
+    })
     public void testMultipleParallelRequestCompletionSuccessCallbacks() throws Exception {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

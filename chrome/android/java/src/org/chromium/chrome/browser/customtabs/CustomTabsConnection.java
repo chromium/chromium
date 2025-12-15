@@ -1252,6 +1252,10 @@ public class CustomTabsConnection {
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
             return ParallelRequestStatus.FAILURE_NOT_INITIALIZED;
         }
+        if (intent.hasExtra(PARALLEL_REQUEST_URL_LIST_KEY)
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_MULTIPLE_PARALLEL_REQUESTS)) {
+            return ParallelRequestStatus.NO_REQUEST;
+        }
         String packageName = mClientManager.getClientPackageNameForSession(session);
         if (session == null
                 || packageName == null

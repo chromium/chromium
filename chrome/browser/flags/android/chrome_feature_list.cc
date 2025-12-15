@@ -283,6 +283,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTGoogleBottomBarVariantLayouts,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTMinimizedEnabledByDefault,
+    &kCCTMultipleParallelRequests,
     &kCCTNavigationMetrics,
     &kCCTNavigationalPrefetch,
     &kCCTNestedSecurityIcon,
@@ -627,6 +628,7 @@ BASE_FEATURE(kCCTGoogleBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTGoogleBottomBarVariantLayouts, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTIncognitoAvailableToThirdParty, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTMinimizedEnabledByDefault, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCCTMultipleParallelRequests, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTNavigationMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTNavigationalPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTNestedSecurityIcon, base::FEATURE_ENABLED_BY_DEFAULT);
