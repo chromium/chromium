@@ -916,6 +916,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (UIButton*)createAIMButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler = ^(UIButton* updatedButton) {
+    BOOL isHighlighted = updatedButton.state == UIControlStateHighlighted;
+    CGFloat scale = isHighlighted ? 0.95 : 1.0;
+    CGFloat alpha = isHighlighted ? 0.85 : 1.0;
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       updatedButton.alpha = alpha;
+                       updatedButton.transform =
+                           CGAffineTransformMakeScale(scale, scale);
+                     }];
+  };
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
                 action:@selector(aimButtonTapped)
