@@ -5,7 +5,7 @@
 use proc_macro2::Span;
 use quote::quote;
 use syn::parse::{Parse, ParseStream};
-use syn::{parse_macro_input, Error, Ident, Lit, Token};
+use syn::{parse_macro_input, Error, Ident, Lit, Token, Visibility};
 
 #[proc_macro]
 pub fn import(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -13,11 +13,11 @@ pub fn import(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     let mut stream = proc_macro2::TokenStream::new();
     for i in imports {
-        let public = &i.reexport;
+        let visibility = &i.visibility;
         let mangled_crate_name = &i.target.mangled_crate_name;
         let name = i.alias.as_ref().unwrap_or(&i.target.gn_name);
         stream.extend(quote! {
-          #public extern crate #mangled_crate_name as #name;
+          #visibility extern crate #mangled_crate_name as #name;
         });
     }
     stream.into()
@@ -30,7 +30,7 @@ struct ImportList {
 struct Import {
     target: GnTarget,
     alias: Option<Ident>,
-    reexport: Option<Token![pub]>,
+    visibility: Option<Visibility>,
 }
 
 struct GnTarget {
@@ -87,7 +87,7 @@ impl Parse for ImportList {
         let mut imports: Vec<Import> = Vec::new();
 
         while !input.is_empty() {
-            let reexport = <Token![pub]>::parse(input).ok();
+            let visibility = Visibility::parse(input).ok();
 
             let str_span = input.span();
 
@@ -120,7 +120,7 @@ impl Parse for ImportList {
             };
             <syn::Token![;]>::parse(input)?;
 
-            imports.push(Import { target, alias, reexport });
+            imports.push(Import { target, alias, visibility });
         }
 
         Ok(Self { imports })

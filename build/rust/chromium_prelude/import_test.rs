@@ -28,8 +28,22 @@ mod test_pub {
     }
 }
 
+mod test_pub_crate {
+    chromium::import! {
+        pub(crate) "//build/rust/chromium_prelude:import_test_lib" as library;
+    }
+}
+
+mod test_pub_super {
+    chromium::import! {
+        pub(super) "//build/rust/chromium_prelude:import_test_lib" as library;
+    }
+}
+
 fn main() {
     test_direct::import_test();
     test_as::import_test();
     test_pub::library::import_test_lib();
+    test_pub_super::library::import_test_lib();
+    test_pub_crate::library::import_test_lib();
 }
