@@ -37,6 +37,10 @@ BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              "ContextualTasksSuggestionsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Forces the country code to be US.
+BASE_FEATURE(kContextualTasksForceCountryCodeUS,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
     0.8};
@@ -120,6 +124,10 @@ bool GetIsSteadyComposeboxVoiceSearchEnabled() {
 
 bool ShouldForceGscInTabMode() {
   return kForceGscInTabMode.Get();
+}
+
+bool ShouldForceCountryCodeUS() {
+  return base::FeatureList::IsEnabled(kContextualTasksForceCountryCodeUS);
 }
 
 std::string GetContextualTasksAiPageUrl() {
