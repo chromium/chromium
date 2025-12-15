@@ -1879,7 +1879,6 @@ static_library("browser") {
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
-    "//chrome/browser/legion",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",

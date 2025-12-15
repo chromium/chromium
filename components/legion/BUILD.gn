@@ -31,6 +31,8 @@ source_set("features") {
 }
 
 source_set("legion") {
+  assert(!is_android,
+         "The target //components/legion is not supported on Android.")
   sources = [
     "attestation_handler.h",
     "attestation_handler_impl.cc",

@@ -2,15 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("legion") {
-  sources = []
-
-  deps = [
-    "//base",
-    "//components/legion",
-  ]
-}
-
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
@@ -21,7 +12,6 @@ if (!is_android) {
     ]
 
     deps = [
-      ":legion",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
