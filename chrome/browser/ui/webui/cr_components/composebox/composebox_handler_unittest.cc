@@ -294,16 +294,18 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
       std::make_unique<contextual_search::FileInfo>();
   file_info->file_name = "test.png";
   file_info->mime_type = lens::MimeType::kImage;
+  file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
+  file_info->tab_session_id = SessionID::FromSerializedValue(123);
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
-  EXPECT_CALL(query_controller(), DeleteFile)
+  EXPECT_CALL(query_controller(), GetFileInfo(delete_file_token))
+      .Times(2)
+      .WillRepeatedly(testing::Return(file_info.get()));
+  EXPECT_CALL(query_controller(), DeleteFile(delete_file_token))
       .WillOnce([&token_arg](const base::UnguessableToken& token) {
         token_arg = token;
         return true;
       });
-
-  EXPECT_CALL(query_controller(), GetFileInfo)
-      .WillOnce(testing::Return(file_info.get()));
 
   handler().DeleteContext(delete_file_token, /*from_suggested_chip=*/false);
 
