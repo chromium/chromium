@@ -4,6 +4,8 @@
 
 #include "crypto/unexportable_key.h"
 
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/keypair.h"
@@ -274,6 +276,16 @@ TEST_F(UnexportableKeyMacTest, GetKeyTag) {
   ASSERT_TRUE(key);
   EXPECT_EQ(key->AsStatefulUnexportableSigningKey()->GetKeyTag(),
             kTestApplicationTag);
+}
+
+TEST_F(UnexportableKeyMacTest, GetCreationTime) {
+  ASSERT_TRUE(provider_);
+  auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+
+  // Check that the time returned is the one set in the fake keychain.
+  EXPECT_EQ(key->AsStatefulUnexportableSigningKey()->GetCreationTime(),
+            base::Time::UnixEpoch());
 }
 
 TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {

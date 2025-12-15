@@ -43,6 +43,7 @@ class SecureEnclaveSigningKey : public crypto::StatefulUnexportableSigningKey {
 
   // crypto::StatefulUnexportableSigningKey:
   std::string GetKeyTag() const override;
+  base::Time GetCreationTime() const override;
 
  private:
   base::apple::ScopedCFTypeRef<SecKeyRef> key_;
@@ -113,6 +114,15 @@ std::string SecureEnclaveSigningKey::GetKeyTag() const {
   // `kSecAttrApplicationTag` attribute. Since this is not set for
   // `SecureEnclaveSigningKey`, we return the empty string here for consistency.
   return "";
+}
+
+base::Time SecureEnclaveSigningKey::GetCreationTime() const {
+  // Reading the actual creation time from the keychain is an expensive
+  // operation, and not suitable for a synchronous method. Thus simply return
+  // Now() for the time being.
+  //
+  // TODO(crbug.com/319255700): Return the creation time.
+  return base::Time::Now();
 }
 
 }  // namespace

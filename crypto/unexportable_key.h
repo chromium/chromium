@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
@@ -94,6 +95,9 @@ class CRYPTO_EXPORT StatefulUnexportableSigningKey
   // Returns the tag of the stateful key stored by the platform. For example,
   // on macOS, this is the application tag set when creating the key.
   virtual std::string GetKeyTag() const = 0;
+
+  // Returns the creation time of the key.
+  virtual base::Time GetCreationTime() const = 0;
 };
 
 // UnexportableKeyProvider creates |UnexportableSigningKey|s.

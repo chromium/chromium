@@ -39,6 +39,7 @@ class MockUnexportableKey : public crypto::StatefulUnexportableSigningKey {
               (override));
   // crypto::StatefulUnexportableSigningKey:
   MOCK_METHOD(std::string, GetKeyTag, (), (const, override));
+  MOCK_METHOD(base::Time, GetCreationTime, (), (const, override));
 };
 
 }  // namespace unexportable_keys

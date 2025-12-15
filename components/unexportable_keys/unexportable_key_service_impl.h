@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<std::string> GetKeyTag(
       UnexportableKeyId key_id) const override;
+  ServiceErrorOr<base::Time> GetCreationTime(
+      UnexportableKeyId key_id) const override;
 
  private:
   // Hasher object that allows comparing containers of different types that

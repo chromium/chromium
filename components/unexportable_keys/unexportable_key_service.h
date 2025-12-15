@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -217,6 +218,12 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // Returns a `ServiceError` if `key_id` is not found, or if the key does not
   // support stateful operations.
   virtual ServiceErrorOr<std::string> GetKeyTag(
+      UnexportableKeyId key_id) const = 0;
+
+  // Returns the time a key that `key_id` refers to was created.
+  // Returns a `ServiceError` if `key_id` is not found, or if the key does not
+  // support stateful operations.
+  virtual ServiceErrorOr<base::Time> GetCreationTime(
       UnexportableKeyId key_id) const = 0;
 };
 

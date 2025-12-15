@@ -4,6 +4,7 @@
 
 module unexportable_keys.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Unfortunately //net depends on the unexportable_keys components. This means
@@ -64,6 +65,7 @@ struct NewKeyData {
   array<uint8> wrapped_key;
   SignatureAlgorithm algorithm;
   string? key_tag;
+  mojo_base.mojom.Time? creation_time;
 };
 
 // Interface for proxying calls to UnexportableKeyService from less privileged

@@ -87,6 +87,10 @@ class MockUnexportableKeyService : public UnexportableKeyService {
               GetKeyTag,
               (UnexportableKeyId key_id),
               (const, override));
+  MOCK_METHOD(ServiceErrorOr<base::Time>,
+              GetCreationTime,
+              (UnexportableKeyId key_id),
+              (const, override));
 };
 
 }  // namespace unexportable_keys

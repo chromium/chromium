@@ -48,7 +48,10 @@ UnexportableKeyServiceProxied::CachedKeyData::CachedKeyData(
       wrapped_key(new_key_data->wrapped_key),
       algorithm(new_key_data->algorithm),
       key_tag(base::OptionalToExpected(new_key_data->key_tag,
-                                       ServiceError::kOperationNotSupported)) {}
+                                       ServiceError::kOperationNotSupported)),
+      creation_time(
+          base::OptionalToExpected(new_key_data->creation_time,
+                                   ServiceError::kOperationNotSupported)) {}
 
 UnexportableKeyServiceProxied::CachedKeyData::CachedKeyData(
     const UnexportableKeyServiceProxied::CachedKeyData& other) = default;
@@ -192,6 +195,15 @@ ServiceErrorOr<std::string> UnexportableKeyServiceProxied::GetKeyTag(
     return base::unexpected(ServiceError::kKeyNotFound);
   }
   return it->second.key_tag;
+}
+
+ServiceErrorOr<base::Time> UnexportableKeyServiceProxied::GetCreationTime(
+    UnexportableKeyId key_id) const {
+  auto it = key_cache_.find(key_id);
+  if (it == key_cache_.end()) {
+    return base::unexpected(ServiceError::kKeyNotFound);
+  }
+  return it->second.creation_time;
 }
 
 void UnexportableKeyServiceProxied::DeleteKeySlowlyAsync(

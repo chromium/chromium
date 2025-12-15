@@ -32,6 +32,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/unexportable_key_mac.h"
@@ -65,6 +66,13 @@ std::string GetApplicationTag(CFDictionaryRef key_attributes) {
   }
 
   return "";
+}
+
+base::Time GetCreationTimeFromAttributes(CFDictionaryRef key_attributes) {
+  const auto date = base::apple::GetValueFromDictionary<CFDateRef>(
+      key_attributes, kSecAttrCreationDate);
+  return date ? base::Time::FromCFAbsoluteTime(CFDateGetAbsoluteTime(date))
+              : base::Time::Now();
 }
 
 std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
@@ -118,7 +126,8 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
             base::apple::GetValueFromDictionary<CFDataRef>(
                 key_attributes,
                 kSecAttrApplicationLabel)))),
-        application_tag_(GetApplicationTag(key_attributes)) {
+        application_tag_(GetApplicationTag(key_attributes)),
+        creation_time_(GetCreationTimeFromAttributes(key_attributes)) {
     base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
         crypto::apple::KeychainV2::GetInstance().KeyCopyPublicKey(key_.get()));
     base::apple::ScopedCFTypeRef<CFDataRef> x962_bytes(
@@ -181,6 +190,8 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
   // StatefulUnexportableSigningKey:
   std::string GetKeyTag() const override { return application_tag_; }
 
+  base::Time GetCreationTime() const override { return creation_time_; }
+
  private:
   // The wrapped key as returned by the Keychain API.
   const base::apple::ScopedCFTypeRef<SecKeyRef> key_;
@@ -192,6 +203,9 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
 
   // The application tag of the key.
   const std::string application_tag_;
+
+  // The creation time of the key.
+  const base::Time creation_time_;
 
   // The public key in DER SPKI format.
   std::vector<uint8_t> public_key_spki_;

@@ -95,8 +95,10 @@ class UnexportableKeyServiceImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       // QUEUED - tasks don't run until `RunUntilIdle()` is called.
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+  };
   // Provides a fake key provider by default.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider,
@@ -1022,6 +1024,20 @@ TEST_F(UnexportableKeyServiceImplTest,
   // The operation should fail synchronously.
   EXPECT_TRUE(copy_future.IsReady());
   EXPECT_THAT(copy_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, GetCreationTimeWithStatefulKey) {
+  auto key_to_generate = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*key_to_generate, GetCreationTime)
+      .WillByDefault(Return(base::Time::Now()));
+  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+  EXPECT_EQ(service().GetCreationTime(key_id), base::Time::Now());
 }
 
 }  // namespace unexportable_keys

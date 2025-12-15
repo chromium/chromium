@@ -20,6 +20,7 @@
 #include "base/memory/scoped_policy.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "crypto/apple/keychain_v2.h"
 
 #if defined(LEAK_SANITIZER)
@@ -133,6 +134,13 @@ base::apple::ScopedCFTypeRef<SecKeyRef> FakeKeychainV2::KeyCreateRandomKey(
     CFDictionarySetValue(keychain_item.get(), kSecAttrApplicationLabel,
                          application_label);
   }
+
+  CFDateRef unix_epoch =
+      base::apple::NSToCFPtrCast(base::Time::UnixEpoch().ToNSDate());
+  CFDictionarySetValue(keychain_item.get(), kSecAttrCreationDate, unix_epoch);
+  CFDictionarySetValue(keychain_item.get(), kSecAttrModificationDate,
+                       unix_epoch);
+
   items_.push_back(keychain_item);
 
   return private_key;

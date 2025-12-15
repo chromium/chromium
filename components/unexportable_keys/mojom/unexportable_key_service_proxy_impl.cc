@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
@@ -57,6 +58,9 @@ ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
   ASSIGN_OR_RETURN(
       new_key_data->key_tag,
       AdaptOperationNotSupported(unexportable_key_service.GetKeyTag(key_id)));
+  ASSIGN_OR_RETURN(new_key_data->creation_time,
+                   AdaptOperationNotSupported(
+                       unexportable_key_service.GetCreationTime(key_id)));
   return new_key_data;
 }
 

@@ -78,4 +78,9 @@ ServiceErrorOr<std::string> FakeUnexportableKeyService::GetKeyTag(
   return base::unexpected(ServiceError::kKeyNotFound);
 }
 
+ServiceErrorOr<base::Time> FakeUnexportableKeyService::GetCreationTime(
+    UnexportableKeyId key_id) const {
+  return base::unexpected(ServiceError::kKeyNotFound);
+}
+
 }  // namespace unexportable_keys
