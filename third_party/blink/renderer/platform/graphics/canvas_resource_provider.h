@@ -441,8 +441,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   sk_sp<SkSurface> CreateSkSurface() const override;
 };
 
-// * Renders to a Skia RAM-backed bitmap via an external (client-supplied) draw.
-// * Mailboxing is not supported : cannot be directly composited.
+// Renders to a RAM-backed bitmap via an external (client-supplied) draw.
 class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
     : public CanvasSnapshotProvider {
  public:
