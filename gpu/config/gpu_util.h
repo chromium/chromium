@@ -101,6 +101,8 @@ GPU_CONFIG_EXPORT std::string DirectMLFeatureLevelToString(
     uint32_t directml_feature_level);
 GPU_CONFIG_EXPORT std::string D3DFeatureLevelToString(
     uint32_t d3d_feature_level);
+GPU_CONFIG_EXPORT std::string D3DFeatureLevelToNumberString(
+    uint32_t d3d_feature_level);
 GPU_CONFIG_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)
 

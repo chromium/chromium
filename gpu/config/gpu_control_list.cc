@@ -374,6 +374,15 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
       !pixel_shader_version.Contains(gpu_info.pixel_shader_version)) {
     return false;
   }
+#if BUILDFLAG(IS_WIN)
+  if (d3d11_feature_level.IsSpecified()) {
+    std::string feature_level_string =
+        D3DFeatureLevelToNumberString(gpu_info.d3d11_feature_level);
+    if (!d3d11_feature_level.Contains(feature_level_string)) {
+      return false;
+    }
+  }
+#endif
   switch (hardware_overlay) {
     case kDontCare:
       break;

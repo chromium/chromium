@@ -79,6 +79,9 @@ static const GpuControlList::More kMoreForEntry8_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -102,6 +105,9 @@ static const GpuControlList::More kMoreForEntry9_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -125,6 +131,9 @@ static const GpuControlList::More kMoreForEntry10_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -259,6 +268,9 @@ static const GpuControlList::More kMoreForEntry22_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -448,6 +460,9 @@ static const GpuControlList::More kMoreForEntry39_1440601243 = {
     {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, "4.1",
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -525,6 +540,9 @@ static const GpuControlList::More kMoreForEntry47_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     true,       // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -614,6 +632,9 @@ static const GpuControlList::More kMoreForEntry56_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kGE, GpuControlList::kVersionStyleNumerical,
@@ -641,6 +662,9 @@ static const GpuControlList::More kMoreForEntry58_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -664,6 +688,9 @@ static const GpuControlList::More kMoreForEntry59_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -798,6 +825,9 @@ static const GpuControlList::More kMoreForEntry67_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -889,6 +919,9 @@ static const GpuControlList::More kMoreForEntry73_1440601243Exception0 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -924,6 +957,9 @@ static const GpuControlList::More kMoreForEntry73_1440601243Exception2 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1059,6 +1095,9 @@ static const GpuControlList::More kMoreForEntry82_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1082,6 +1121,9 @@ static const GpuControlList::More kMoreForEntry83_1440601243Exception0 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1117,6 +1159,9 @@ static const GpuControlList::More kMoreForEntry85_1440601243Exception0 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1136,6 +1181,9 @@ static const GpuControlList::More kMoreForEntry85_1440601243Exception1 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1159,6 +1207,9 @@ static const GpuControlList::More kMoreForEntry86_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -1182,6 +1233,35 @@ static const GpuControlList::More kMoreForEntry87_1440601243 = {
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // pixel_shader_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // d3d11_feature_level
+    false,      // in_process_gpu
+    0,          // gl_reset_notification_strategy
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // direct_rendering_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gpu_count
+    GpuControlList::kDontCare,  // hardware_overlay
+    0,                          // test_group
+    GpuControlList::kDontCare,  // subpixel_font_rendering
+};
+
+static const std::array<int, 1> kFeatureListForGpuControlTestingEntry88 = {
+    TEST_FEATURE_0,
+};
+
+static const GpuControlList::More kMoreForEntry88_1440601243 = {
+    GpuControlList::kGLTypeNone,  // gl_type
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // gl_version
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // pixel_shader_version
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "12.0",
+     nullptr},  // d3d11_feature_level
     false,      // in_process_gpu
     0,          // gl_reset_notification_strategy
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,

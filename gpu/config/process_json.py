@@ -474,6 +474,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   gl_type = ''
   gl_version = None
   pixel_shader_version = None
+  d3d11_feature_level = None
   in_process_gpu = False
   gl_reset_notification_strategy = None
   direct_rendering_version = None
@@ -550,6 +551,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       gl_extensions = entry[key]
     elif key == 'pixel_shader_version':
       pixel_shader_version = entry[key]
+    elif key == 'd3d11_feature_level':
+      d3d11_feature_level = entry[key]
     elif key == 'in_process_gpu':
       assert entry[key]
       in_process_gpu = True
@@ -640,12 +643,14 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
     elif gl_type in ('angle_gles', 'angle_vulkan'):
       assert os_type in ('android', 'linux', 'chromeos')
   if (gl_type != '' or gl_version != None or pixel_shader_version != None or
+      d3d11_feature_level != None or
       in_process_gpu or gl_reset_notification_strategy != None or
       direct_rendering_version != None or gpu_count != None or
       hardware_overlay != None or test_group != 0 or
       subpixel_font_rendering != None):
     write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
-                          gl_version, pixel_shader_version, in_process_gpu,
+                          gl_version, pixel_shader_version, d3d11_feature_level,
+                          in_process_gpu,
                           gl_reset_notification_strategy,
                           direct_rendering_version, gpu_count, hardware_overlay,
                           test_group, subpixel_font_rendering,
@@ -655,7 +660,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
 
 
 def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
-                          gl_version, pixel_shader_version, in_process_gpu,
+                          gl_version, pixel_shader_version, d3d11_feature_level,
+                          in_process_gpu,
                           gl_reset_notification_strategy,
                           direct_rendering_version, gpu_count, hardware_overlay,
                           test_group, subpixel_font_rendering, data_file,
@@ -676,6 +682,7 @@ def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
   write_gl_type(gl_type, data_helper_file)
   write_version(gl_version, 'gl_version', data_helper_file)
   write_version(pixel_shader_version, 'pixel_shader_version', data_helper_file)
+  write_version(d3d11_feature_level, 'd3d11_feature_level', data_helper_file)
   write_boolean_value(in_process_gpu, 'in_process_gpu', data_helper_file)
   if not gl_reset_notification_strategy:
     gl_reset_notification_strategy = '0'

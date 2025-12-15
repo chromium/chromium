@@ -484,8 +484,11 @@ struct GPU_CONFIG_EXPORT GPUInfo {
   // The supported DirectML feature level in the gpu driver;
   uint32_t directml_feature_level = 0;
 
-  // The supported d3d feature level in the gpu driver;
+  // The supported d3d12 feature level in the gpu driver;
   uint32_t d3d12_feature_level = 0;
+
+  // The supported d3d11 feature level in the gpu driver;
+  uint32_t d3d11_feature_level = 0;
 
   // The support Vulkan API version in the gpu driver;
   uint32_t vulkan_version = 0;

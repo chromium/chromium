@@ -1092,6 +1092,14 @@ std::string D3DFeatureLevelToString(uint32_t d3d_feature_level) {
   }
 }
 
+std::string D3DFeatureLevelToNumberString(uint32_t d3d_feature_level) {
+  if (d3d_feature_level == 0) {
+    return "0.0";
+  }
+  return base::StringPrintf("%d.%d", (d3d_feature_level >> 12) & 0xF,
+                            (d3d_feature_level >> 8) & 0xF);
+}
+
 std::string VulkanVersionToString(uint32_t vulkan_version) {
   if (vulkan_version == 0) {
     return "Not supported";
