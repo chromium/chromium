@@ -20,6 +20,21 @@
 // is used in Chrome.
 class POLICY_EXPORT PolicyBlocklistService : public KeyedService {
  public:
+  // Indicates whether a URL is blocked or allowed by URL or Incognito URL
+  // blocklist policies.
+  // url_blocklist_state: The blocklist state of the URL.
+  // policy_source: The source of the policy that determined the blocklist
+  //                state. This can be either pair of URLBlocklist, URLAllowlist
+  //                or IncognitoModeURLBlocklist, IncognitoModeURLAllowlist
+  //                policies.
+  struct PolicyBlocklistState {
+    policy::URLBlocklist::URLBlocklistState url_blocklist_state;
+    enum PolicySource {
+      URL_POLICY,
+      INCOGNITO_POLICY,
+    } policy_source;
+  };
+
   // Constructor to be used by embedders that don't support Incognito mode.
   PolicyBlocklistService(
       std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
@@ -35,7 +50,13 @@ class POLICY_EXPORT PolicyBlocklistService : public KeyedService {
   PolicyBlocklistService& operator=(const PolicyBlocklistService&) = delete;
   ~PolicyBlocklistService() override;
 
+  // Returns only the blocklist state.
   policy::URLBlocklist::URLBlocklistState GetURLBlocklistState(
+      const GURL& url) const;
+
+  // Returns the full information about the blocklist state and the source of
+  // the policy that determined the blocklist state.
+  PolicyBlocklistState GetURLBlocklistStateWithPolicySource(
       const GURL& url) const;
 
 #if BUILDFLAG(IS_CHROMEOS)

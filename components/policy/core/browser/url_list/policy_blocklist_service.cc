@@ -84,14 +84,26 @@ PolicyBlocklistService::~PolicyBlocklistService() = default;
 
 policy::URLBlocklist::URLBlocklistState
 PolicyBlocklistService::GetURLBlocklistState(const GURL& url) const {
+  return GetURLBlocklistStateWithPolicySource(url).url_blocklist_state;
+}
+
+PolicyBlocklistService::PolicyBlocklistState
+PolicyBlocklistService::GetURLBlocklistStateWithPolicySource(
+    const GURL& url) const {
   if (incognito_url_blocklist_manager_) {
     const auto incognito_state =
         incognito_url_blocklist_manager_->GetURLBlocklistState(url);
     if (incognito_state != policy::URLBlocklist::URL_NEUTRAL_STATE) {
-      return incognito_state;
+      return {
+          .url_blocklist_state = incognito_state,
+          .policy_source =
+              PolicyBlocklistService::PolicyBlocklistState::INCOGNITO_POLICY};
     }
   }
-  return url_blocklist_manager_->GetURLBlocklistState(url);
+  return {
+      .url_blocklist_state = url_blocklist_manager_->GetURLBlocklistState(url),
+      .policy_source =
+          PolicyBlocklistService::PolicyBlocklistState::URL_POLICY};
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

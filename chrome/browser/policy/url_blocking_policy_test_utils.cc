@@ -28,7 +28,8 @@ UrlBlockingPolicyTest::~UrlBlockingPolicyTest() = default;
 
 void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
     content::WebContents* web_contents,
-    const GURL& url) {
+    const GURL& url,
+    bool is_blocked_by_incognito_policy) {
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
   std::u16string blocked_page_title;
@@ -42,26 +43,32 @@ void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
   }
   EXPECT_EQ(blocked_page_title, web_contents->GetTitle());
 
+  // Depending if the URL is blocked by the incognito policy or not, a different
+  // error page is displayed.
+  std::string error_page_text = l10n_util::GetStringUTF8(
+      is_blocked_by_incognito_policy
+          ? IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR
+          : IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR);
   // Verify that the expected error page is being displayed.
   EXPECT_EQ(true,
-            content::EvalJs(
-                web_contents,
-                content::JsReplace(
-                    "var textContent = document.body.textContent;"
-                    "var hasError = "
-                    "textContent.indexOf($1) >= 0;"
-                    "hasError;",
-                    l10n_util::GetStringUTF8(
-                        IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR))));
+            content::EvalJs(web_contents,
+                            content::JsReplace(
+                                "var textContent = document.body.textContent;"
+                                "var hasError = "
+                                "textContent.indexOf($1) >= 0;"
+                                "hasError;",
+                                error_page_text)));
 }
 
-void UrlBlockingPolicyTest::CheckURLIsBlocked(Browser* browser,
-                                              const std::string& spec) {
+void UrlBlockingPolicyTest::CheckURLIsBlocked(
+    Browser* browser,
+    const std::string& spec,
+    bool is_blocked_by_incognito_policy) {
   GURL url(spec);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  CheckURLIsBlockedInWebContents(contents, url);
+  CheckURLIsBlockedInWebContents(contents, url, is_blocked_by_incognito_policy);
 }
 
 void UrlBlockingPolicyTest::CheckViewSourceURLIsBlocked(

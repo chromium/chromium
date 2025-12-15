@@ -242,12 +242,18 @@ class PolicyBlocklistNavigationThrottleTest
 
   void TestNavigationThrottleCheckResult(
       const GURL& url,
-      content::NavigationThrottle::ThrottleAction expected_result) {
+      content::NavigationThrottle::ThrottleAction expected_action,
+      std::optional<net::Error> expected_error = std::nullopt) {
     auto navigation_simulator = StartNavigation(url);
     ASSERT_FALSE(navigation_simulator->IsDeferred());
 
-    EXPECT_EQ(expected_result,
-              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_EQ(expected_action,
+              navigation_simulator->GetLastThrottleCheckResult().action());
+    if (expected_error.has_value()) {
+      EXPECT_EQ(
+          expected_error,
+          navigation_simulator->GetLastThrottleCheckResult().net_error_code());
+    }
 
     // Call WebContents::Stop() to reset the main rfh's navigation state. It
     // results in destructing the navigation throttles to flush metrics.
@@ -273,7 +279,8 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, Blocklist) {
 
   // Block a blocklisted site.
   TestNavigationThrottleCheckResult(GURL("http://www.example.com/"),
-                                    content::NavigationThrottle::BLOCK_REQUEST);
+                                    content::NavigationThrottle::BLOCK_REQUEST,
+                                    net::ERR_BLOCKED_BY_ADMINISTRATOR);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, Allowlist) {
@@ -296,7 +303,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, IncognitoBlocklist) {
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
-                        : content::NavigationThrottle::PROCEED);
+                        : content::NavigationThrottle::PROCEED,
+      IsIncognitoMode()
+          ? std::make_optional(net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)
+          : std::nullopt);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest,
@@ -321,7 +331,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::PROCEED
-                        : content::NavigationThrottle::BLOCK_REQUEST);
+                        : content::NavigationThrottle::BLOCK_REQUEST,
+      IsIncognitoMode()
+          ? std::nullopt
+          : std::make_optional(net::ERR_BLOCKED_BY_ADMINISTRATOR));
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest,
@@ -336,7 +349,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
-                        : content::NavigationThrottle::PROCEED);
+                        : content::NavigationThrottle::PROCEED,
+      IsIncognitoMode()
+          ? std::make_optional(net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)
+          : std::nullopt);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {

@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 
 class Browser;
@@ -21,16 +21,22 @@ class WebContents;
 namespace policy {
 
 class UrlBlockingPolicyTest : public PolicyTest {
- protected:
+ public:
   UrlBlockingPolicyTest();
   ~UrlBlockingPolicyTest() override;
 
-  // Verifies that access to the given url |spec| is blocked.
-  void CheckURLIsBlockedInWebContents(content::WebContents* web_contents,
-                                      const GURL& url);
+  // Verifies that access to the given url |spec| is blocked and that
+  // the correct error page is displayed.
+  void CheckURLIsBlockedInWebContents(
+      content::WebContents* web_contents,
+      const GURL& url,
+      bool is_blocked_by_incognito_policy = false);
 
-  // Verifies that access to the given url |spec| is blocked.
-  void CheckURLIsBlocked(Browser* browser, const std::string& spec);
+  // Verifies that access to the given url |spec| is blocked  and that
+  // the correct error page is displayed.
+  void CheckURLIsBlocked(Browser* browser,
+                         const std::string& spec,
+                         bool is_blocked_by_incognito_policy = false);
 
   // Verifies that access to |view-source:spec| is blocked.
   void CheckViewSourceURLIsBlocked(Browser* browser, const std::string& spec);

@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class GURL;
@@ -51,9 +52,13 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest,
                            SafeSites_Porn);
 
-  // Returns TRUE if this navigation is to view-source: and view-source is on
-  // the URLBlocklist.
-  bool IsBlockedViewSourceNavigation();
+  // Returns TRUE if this navigation is to view-source.
+  bool IsViewSourceNavigation();
+
+  // Returns the PolicyBlocklistState for a view-source navigation.
+  // Should only be called if the navigation is a view-source.
+  PolicyBlocklistService::PolicyBlocklistState
+  GetViewSourceNavigationBlocklistState();
 
   // To ensure both allow and block policies override Safe Sites,
   // SafeSitesNavigationThrottle must be consulted as part of this throttle
