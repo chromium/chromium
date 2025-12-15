@@ -26,11 +26,20 @@ struct BoardingPass {
 
   bool operator==(const BoardingPass& other) const = default;
 
+  // The 2-3 character airline designator. e.g. "AC"
   std::string airline;
+  // The flight number, as a string that can have leading zeros. e.g. "0834"
   std::string flight_code;
+  // The 3-letter IATA airport code of the origin airport. e.g. "YUL"
   std::string origin;
+  // The 3-letter IATA airport code of the destination airport. e.g. "FRA"
   std::string destination;
+  // The Julian date of the flight. For example, 226 is August 14th in a
+  // non-leap year. e.g. "226"
   std::string date;
+  // The passenger's name, usually in the format LASTNAME/FIRSTNAME. e.g.
+  // "DESMARAIS/LUC"
+  std::string passenger_name;
 
   // The detected barcode.
   std::optional<WalletBarcode> barcode;

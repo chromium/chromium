@@ -177,14 +177,18 @@ std::optional<BoardingPass> BoardingPass::FromBarcode(
     return std::nullopt;
   }
 
-  // Field 3: Passenger Name (Length 20) - Skipping.
-  // Field 4: Electronic Ticket Indicator (Length 1) - Skipping.
-  value.Skip(kNameLength + kElectronicTicketIndicatorLength);
+  // Field 3: Passenger Name (Length 20)
+  std::string passenger_name = value.GetStripped(kNameLength);
 
+  // Field 4: Electronic Ticket Indicator (Length 1) - Skipping.
+  value.Skip(kElectronicTicketIndicatorLength);
   BoardingPass pass;
   // First Leg Data:
   // Field 5: PNR Code (Length 7) - Skipping.
   value.Skip(kPnrCodeLength);
+  pass.passenger_name = passenger_name;
+  // The order matters because the fields in BCBP are fixed length and each have
+  // specified position.
   pass.origin = value.GetStripped(kOriginLength);
   pass.destination = value.GetStripped(kDestinationLength);
   pass.airline = value.GetStripped(kAirlineLength);
