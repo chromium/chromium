@@ -7,7 +7,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -256,6 +259,26 @@ std::string WasmTtsEngineComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 WasmTtsEngineComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
+}
+
+const std::string WasmTtsEngineComponentInstallerPolicy::GetExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(kWasmTtsEnginePublicKeySHA256);
+}
+
+void WasmTtsEngineComponentInstallerPolicy::UpdateWasmComponentOnDemand() {
+  const std::string crx_id = component_updater::
+      WasmTtsEngineComponentInstallerPolicy::GetExtensionId();
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
+      base::BindOnce([](update_client::Error error) {
+        if (error != update_client::Error::NONE &&
+            error != update_client::Error::UPDATE_IN_PROGRESS) {
+          DLOG(ERROR)
+              << "On demand update of the Wasm TTS Engine component failed "
+                 "with error: "
+              << static_cast<int>(error);
+        }
+      }));
 }
 
 void RegisterWasmTtsEngineComponent(ComponentUpdateService* cus,

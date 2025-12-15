@@ -105,6 +105,11 @@ void ReadAnythingService::SetupDesktopEngine() {
   // component updater flag is enabled.
   if (features::IsReadAnythingReadAloudEnabled() &&
       !features::IsWasmTtsEngineAutoInstallDisabled()) {
+    // Trigger an on-demand update of the engine to ensure the TTS extension
+    // is available to provide natural voices as soon as reading mode is opened.
+    component_updater::WasmTtsEngineComponentInstallerPolicy::
+        UpdateWasmComponentOnDemand();
+
     // Signal that the reading mode panel is opened and it's now safe to
     // install the WasmTtsEngineComponent.
     component_updater::WasmTtsEngineComponentInstallerPolicy::

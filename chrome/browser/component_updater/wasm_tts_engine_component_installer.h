@@ -33,6 +33,8 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void GetWasmTTSEngineDirectory(
       base::OnceCallback<void(const base::FilePath&)> callback);
   static bool IsWasmTTSEngineDirectorySet();
+  static const std::string GetExtensionId();
+  static void UpdateWasmComponentOnDemand();
 
  private:
   // The following methods override ComponentInstallerPolicy.
