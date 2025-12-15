@@ -193,11 +193,13 @@ struct EligibleMatchesAndActions {
     //   inputs. `lens_entry_match`, `toolbelt_lens` is not restricted to zero
     //   inputs.
     // - Only shown if toolbelt lens not shown.
+    // - Only shown if "lens search chip" (Omnibox Next) is not enabled.
     const auto& contextual_search_config =
         omnibox_feature_configs::ContextualSearch::Get();
-    lens_entry_match = contextual_search_config.show_open_lens_action &&
-                       !toolbelt_lens && input.IsZeroSuggest() &&
-                       LensEntrypointEligible(input, client);
+    lens_entry_match =
+        contextual_search_config.show_open_lens_action && !toolbelt_lens &&
+        input.IsZeroSuggest() && LensEntrypointEligible(input, client) &&
+        !client->IsOmniboxNextFeatureParamEnabled("ShowLensSearchChip");
 
     // - Check feature/params.
     // - Disabled if either `toolbelt` or `contextual_search_config` are shown.

@@ -69,6 +69,10 @@ bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }
 
+bool AutocompleteProviderClient::IsOmniboxNextFeatureParamEnabled(
+    const std::string& param_name) const {
+  return false;
+}
 
 base::WeakPtr<AutocompleteProviderClient>
 AutocompleteProviderClient::GetWeakPtr() {
