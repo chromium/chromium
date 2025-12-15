@@ -20,9 +20,18 @@ def BrotliCompress(data):
   if not __brotli_executable:
     raise Exception('Add "use_brotli = true" to you GN grit(...) target ' +
                     'if you want to use brotli.')
-  compress = subprocess.Popen(__brotli_executable + ['-', '-f'],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  return compress.communicate(data)[0]
+  compress = subprocess.Popen(
+      __brotli_executable + ['-', '-f'],
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+  )
+  stdout, stderr = compress.communicate(data)
+  if compress.returncode != 0:
+    raise Exception(
+        'Brotli compression failed with return code %d: %s' %
+        (compress.returncode, stderr.decode('utf-8', errors='replace')))
+  return stdout
 
 def IsInitialized():
   global __brotli_executable
