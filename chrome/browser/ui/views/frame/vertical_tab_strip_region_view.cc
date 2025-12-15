@@ -5,25 +5,31 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -47,7 +53,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
     BrowserWindowInterface* browser)
-    : state_controller_(state_controller) {
+    : tab_strip_model_(browser->GetTabStripModel()),
+      state_controller_(state_controller) {
   SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -146,6 +153,104 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     return top_button_container_->IsPositionInWindowCaption(point_in_target);
   }
   return false;
+}
+
+bool VerticalTabStripRegionView::IsTabStripEditable() const {
+  // TODO(crbug.com/467710547): This needs to consider the drag context. Wait
+  // until that is implemented before updating this function.
+  NOTIMPLEMENTED();
+  return !tab_strip_not_editable_for_testing_;
+}
+
+void VerticalTabStripRegionView::SetTabStripNotEditableForTesting() const {
+  // TODO(crbug.com/467710617): Implement this in VerticalTabStripView.
+  NOTIMPLEMENTED();
+}
+
+bool VerticalTabStripRegionView::IsTabStripCloseable() const {
+  // TODO(crbug.com/467710547): Return TabDragContext::IsTabStripCloseable once
+  // it exists.
+  NOTIMPLEMENTED();
+  return true;
+}
+
+bool VerticalTabStripRegionView::IsAnimating() const {
+  // TODO(crbug.com/467710547): Return if the view or drag context is animating
+  // something.
+  NOTIMPLEMENTED();
+  return true;
+}
+
+void VerticalTabStripRegionView::StopAnimating() {
+  // TODO(crbug.com/467710547): Stop any ongoing animation in the
+  // VerticalTabStripView.
+  NOTIMPLEMENTED();
+}
+
+void VerticalTabStripRegionView::UpdateLoadingAnimations(
+    const base::TimeDelta& elapsed_time) {
+  // TODO(crbug.com/467710547): Update the time-step for any loading animations.
+  // This is typically done for the tab icons. TBD if this is needed for
+  // vertical tabs.
+  NOTIMPLEMENTED();
+}
+
+std::optional<int> VerticalTabStripRegionView::GetFocusedTabIndex() const {
+  const views::FocusManager* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    return std::nullopt;
+  }
+
+  const views::View* focused_view = focus_manager->GetFocusedView();
+  if (!focused_view) {
+    return std::nullopt;
+  }
+
+  for (int i = 0; i < tab_strip_model_->count(); ++i) {
+    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(i);
+    const TabCollectionNode* node =
+        root_node_->GetNodeForHandle(tab->GetHandle());
+    if (node && node->view() == focused_view) {
+      return i;
+    }
+  }
+
+  return std::nullopt;
+}
+
+views::View* VerticalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {
+  tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+  CHECK(tab) << "No tab found for tab_index: " << tab_index;
+
+  const TabCollectionNode* node =
+      root_node_->GetNodeForHandle(tab->GetHandle());
+  CHECK(node) << "No node found for tab handle";
+
+  return node->view();
+}
+
+views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
+    const tab_groups::TabGroupId& group) {
+  if (!tab_strip_model_->SupportsTabGroups()) {
+    return nullptr;
+  }
+
+  if (const TabGroup* tab_group =
+          tab_strip_model_->group_model()->GetTabGroup(group)) {
+    return root_node_->GetNodeForHandle(tab_group->GetCollectionHandle())
+        ->view();
+  }
+
+  return nullptr;
+}
+
+TabDragContext* VerticalTabStripRegionView::GetDragContext() {
+  // TODO(crbug.com/467710547): Wait for tab drag context implementation.
+  return nullptr;
+}
+void VerticalTabStripRegionView::SetTabStripObserver(
+    TabStripObserver* observer) {
+  // Do nothing.
 }
 
 void VerticalTabStripRegionView::CreateTabStripController(

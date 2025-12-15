@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,7 +167,59 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   verify_for_width(75);
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SplitTabsShareSpace) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetTabAnchorViewAtReturnsCorrectView) {
+  // Add a few tabs.
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  // Verify GetTabAnchorViewAt for a valid index.
+  const int tab_index = 1;
+  views::View* tab_anchor_view = region_view()->GetTabAnchorViewAt(tab_index);
+  EXPECT_NE(nullptr, tab_anchor_view);
+
+  // Get the tab from the model and its corresponding node view for comparison.
+  tabs::TabInterface* tab =
+      browser()->tab_strip_model()->GetTabAtIndex(tab_index);
+  const TabCollectionNode* node =
+      region_view()->root_node_for_testing()->GetNodeForHandle(
+          tab->GetHandle());
+  EXPECT_EQ(node->view(), tab_anchor_view);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetTabGroupAnchorViewReturnsCorrectView) {
+  // Add a few tabs.
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a tab group.
+  std::vector<int> tab_indices = {0, 1};
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_strip_model->AddToNewGroup(tab_indices);
+  ASSERT_TRUE(group_id.has_value());
+
+  // Verify GetTabGroupAnchorView for the created group.
+  views::View* group_anchor_view =
+      region_view()->GetTabGroupAnchorView(group_id.value());
+  EXPECT_NE(nullptr, group_anchor_view);
+
+  // Get the tab group from the model and its corresponding node view for
+  // comparison.
+  const TabGroup* tab_group =
+      tab_strip_model->group_model()->GetTabGroup(group_id.value());
+  const TabCollectionNode* node =
+      region_view()->root_node_for_testing()->GetNodeForHandle(
+          tab_group->GetCollectionHandle());
+  EXPECT_EQ(node->view(), group_anchor_view);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       SplitTabsShareSpace) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // Add split tabs.
   content::WebContents* contents1 = AppendTab();

@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -32,7 +33,7 @@ class View;
 
 // Container for the vertical tabstrip and the other views sharing space with
 // it, excluding the caption buttons.
-class VerticalTabStripRegionView final : public views::AccessiblePaneView,
+class VerticalTabStripRegionView final : public TabStripRegionView,
                                          public views::ResizeAreaDelegate {
   METADATA_HEADER(VerticalTabStripRegionView, views::AccessiblePaneView)
 
@@ -87,6 +88,20 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
+  // TabStripRegionView
+  bool IsTabStripEditable() const override;
+  void SetTabStripNotEditableForTesting() const override;
+  bool IsTabStripCloseable() const override;
+  bool IsAnimating() const override;
+  void StopAnimating() override;
+  void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
+  std::optional<int> GetFocusedTabIndex() const override;
+  views::View* GetTabAnchorViewAt(int tab_index) override;
+  views::View* GetTabGroupAnchorView(
+      const tab_groups::TabGroupId& group) override;
+  TabDragContext* GetDragContext() override;
+  void SetTabStripObserver(TabStripObserver* observer) override;
+
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   void CreateTabStripController(BrowserView* browser_view);
@@ -105,6 +120,9 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
+  // When true simulates a non-editable tabstrip. For testing only.
+  bool tab_strip_not_editable_for_testing_ = false;
+
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
   raw_ptr<VerticalTabStripView> tab_strip_view_ = nullptr;
@@ -114,7 +132,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   std::unique_ptr<VerticalTabStripController> tab_strip_controller_;
   std::unique_ptr<RootTabCollectionNode> root_node_;
 
-  raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
+  const raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
+  const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
 
   // The width of the vertical tabstrip at the beginning of the current resize
