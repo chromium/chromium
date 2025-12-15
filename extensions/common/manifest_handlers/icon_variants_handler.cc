@@ -59,7 +59,9 @@ void AddInstallWarningForId(Extension& extension, Id id) {
 ExtensionIconVariants GetIconVariants(Extension& extension) {
   ExtensionIconVariants icon_variants;
 
-  // Convert the input key into a list containing everything.
+  // Convert the input key into a list containing everything. Auto-generated
+  // `ManifestKeys` are intentionally not being used here so that arbitrary size
+  // keys can be specified that are not explicitly defined in the IDL schema.
   const base::Value::List* icon_variants_list =
       extension.manifest()->available_values().FindList(keys::kIconVariants);
   if (!icon_variants_list) {
