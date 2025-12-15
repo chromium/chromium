@@ -218,7 +218,7 @@ class SidePanelBorder : public views::Border {
 
 // ContentParentView is the parent view for views hosted in the
 // side panel.
-class ContentParentView : public views::View {
+class ContentParentView : public views::View, public views::ViewObserver {
   METADATA_HEADER(ContentParentView, views::View)
 
  public:
@@ -229,6 +229,11 @@ class ContentParentView : public views::View {
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
+    // If corners should be rounded, observe this view to round corners of
+    // children as they are added.
+    if (should_round_corners_) {
+      view_observation_.Observe(this);
+    }
   }
 
   ~ContentParentView() override = default;
@@ -239,20 +244,21 @@ class ContentParentView : public views::View {
                                                      GetRoundedCorners()));
   }
 
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override {
-    // If a child view is added and we should round corners.
-    if (should_round_corners_ && details.is_add && details.parent == this) {
-      views::View* child = details.child;
-      // If the child is a WebView or paints to a layer, round its corners.
-      if (views::IsViewClass<views::WebView>(child)) {
-        views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
-            GetRoundedCorners());
-      }
-      if (child->layer()) {
-        child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
-        child->layer()->SetIsFastRoundedCorner(true);
-      }
+  void OnChildViewAdded(views::View* observed_view,
+                        views::View* child) override {
+    // We must use ViewObserver::OnChildViewAdded instead of
+    // View::ViewHierarchyChanged here because setting rounded corners on a
+    // WebView's holder requires the NativeViewHost's native_wrapper_ to be set
+    // and this gets set in View::ViewHierarchyChanged which OnChildViewAdded
+    // will be called after View::ViewHierarchyChanged.
+    // If the child is a WebView or paints to a layer, round its corners.
+    if (views::IsViewClass<views::WebView>(child)) {
+      views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
+          GetRoundedCorners());
+    }
+    if (child->layer()) {
+      child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
+      child->layer()->SetIsFastRoundedCorner(true);
     }
   }
 
@@ -265,6 +271,8 @@ class ContentParentView : public views::View {
   }
 
   bool should_round_corners_ = false;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 };
 
 BEGIN_METADATA(ContentParentView)
