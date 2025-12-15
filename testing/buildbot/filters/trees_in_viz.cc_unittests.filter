@@ -1,9 +1,5 @@
 
 # TODO(crbug.com/448874765): Fix RunMultiThread_DelegatingRenderer unittests
--LayerTreeHostAnimationTestNoDamageAnimation.RunMultiThread_DelegatingRenderer
--LayerTreeHostContextTestDontUseLostResources.RunSingleThread_DelegatingRenderer
--LayerTreeHostContextTestDontUseLostResources.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestImageAnimationSynchronousScheduling.RunMultiThread_DelegatingRenderer
 -SoftwareTextureLayerLoseFrameSinkTest.RunMultiThread_DelegatingRenderer
 
 # TODO(crbug.com/448683984) These tests fails with TreesInViz because the
