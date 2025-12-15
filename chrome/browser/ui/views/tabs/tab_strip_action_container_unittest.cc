@@ -116,16 +116,15 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   ~TabStripActionContainerTest() override = default;
 
   void SetUp() override {
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    raw_ptr<TestingProfileManager> testing_profile_manager =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
-        testing_profile_manager_->profile_manager());
+        testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ChromeViewsTestBase::SetUp();
-    profile_ = testing_profile_manager_->CreateTestingProfile(
+    profile_ = testing_profile_manager->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
     glic_test_environment_.SetupProfile(profile_.get());
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -145,8 +144,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     profile_ = nullptr;
 
     ChromeViewsTestBase::TearDown();
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-    testing_profile_manager_.reset();
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -201,7 +200,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
  protected:
   glic::GlicUnitTestEnvironment glic_test_environment_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
@@ -294,12 +292,12 @@ TEST_F(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
       tab_strip_action_container_->glic_actor_button_container()->children(),
       SizeIs(2));
 
-    ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
-              tab_strip_action_container_->glic_actor_button_container()
-                  ->children()[0]);
-    ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
-              tab_strip_action_container_->glic_actor_button_container()
-                  ->children()[1]);
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+            tab_strip_action_container_->glic_actor_button_container()
+                ->children()[0]);
+  ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
+            tab_strip_action_container_->glic_actor_button_container()
+                ->children()[1]);
 
 #endif  // !BUILDFLAG(IS_MAC)
 }

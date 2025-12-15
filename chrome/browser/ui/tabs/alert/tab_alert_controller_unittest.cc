@@ -62,11 +62,10 @@ class MockTabAlertControllerSubscriber {
 class TabAlertControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    raw_ptr<TestingProfileManager> testing_profile_manager =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
+    profile_ = testing_profile_manager->CreateTestingProfile("profile");
     browser_window_interface_ =
         std::make_unique<FakeBrowserWindowInterface>(profile_);
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
@@ -92,8 +91,8 @@ class TabAlertControllerTest : public testing::Test {
     tab_strip_model_delegate_.reset();
     browser_window_interface_.reset();
     profile_ = nullptr;
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-    testing_profile_manager_.reset();
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   TabAlertController* tab_alert_controller() {
@@ -117,7 +116,6 @@ class TabAlertControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler test_enabler_;
   ui::UnownedUserDataHost user_data_host_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<FakeBrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
