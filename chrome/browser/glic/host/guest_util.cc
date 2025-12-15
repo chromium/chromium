@@ -16,6 +16,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/common/language_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
@@ -67,33 +68,33 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
+// Forwards the draggable regions from the webview webcontent to main
+// webcontents.
 class WebviewWebContentsDelegate : public content::WebContentsDelegate,
                                    public base::SupportsUserData::Data {
  public:
-  WebviewWebContentsDelegate(content::WebContents* contents,
-                             GlicWindowController* window_controller)
-      : contents_(contents), window_controller_(window_controller) {
-    contents_->SetDelegate(this);
+  explicit WebviewWebContentsDelegate(content::WebContents* contents) {
+    contents->SetDelegate(this);
   }
+
+  WebviewWebContentsDelegate(const WebviewWebContentsDelegate&) = delete;
+  WebviewWebContentsDelegate& operator=(const WebviewWebContentsDelegate&) =
+      delete;
+
   ~WebviewWebContentsDelegate() override = default;
 
+  // content::WebContentsDelegate:
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override {
-    SkRegion sk_region;
-    for (const auto& region : regions) {
-      sk_region.op(
-          SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                            region->bounds.right(), region->bounds.bottom()),
-          region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-    }
-
-    window_controller_->SetDraggableRegion(sk_region);
+    // Note: contents are the guest webcontents associated to <webview>.
+    auto* embedder_web_contents =
+        guest_view::GuestViewBase::FromRenderFrameHost(
+            contents->GetPrimaryMainFrame())
+            ->embedder_web_contents();
+    embedder_web_contents->GetDelegate()->DraggableRegionsChanged(regions,
+                                                                  contents);
   }
-
- private:
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<GlicWindowController> window_controller_;
 };
 
 }  // namespace
@@ -163,8 +164,7 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
     guest_contents->SetUserData(
         "glic::WebviewWebContentsDelegate",
-        std::make_unique<WebviewWebContentsDelegate>(
-            guest_contents, &service->window_controller()));
+        std::make_unique<WebviewWebContentsDelegate>(guest_contents));
     guest_contents->SetSupportsDraggableRegions(true);
   }
 
