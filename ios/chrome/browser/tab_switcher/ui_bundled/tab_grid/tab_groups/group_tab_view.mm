@@ -12,17 +12,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/grid_empty_thumbnail_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
 
-const CGFloat kFaviconViewScaleFactor = 0.5;
 const CGFloat kFaviconViewWidth = 18;
 const NSInteger kTabGridButtonFontSize = 14;
-const CGFloat kBottomFaviconViewWidthAndHeightAnchor = 24;
-const CGFloat kBottomFaviconBottomTrailingOffset = 4;
 const CGFloat kBottomFaviconViewScaleFactor = 0.75;
 const CGFloat kFaviconViewWidthAndHeightAnchor = 24;
 const CGFloat kFaviconOffset = 8;
@@ -45,7 +41,6 @@ const CGFloat kFaviconCornerRadius = 8;
 
   // Empty thumbnail view when there is no snapshot.
   GridEmptyThumbnailView* _emptyView;
-  GradientView* _gradientView;
 
   // The label to display the number of remaining tabs.
   UILabel* _bottomTrailingLabel;
@@ -69,23 +64,12 @@ const CGFloat kFaviconCornerRadius = 8;
     _snapshotView = [[TopAlignedImageView alloc] init];
     _snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      _emptyView = [[GridEmptyThumbnailView alloc]
-          initWithType:EmptyThumbnailTypeGroupCell];
-      _emptyView.translatesAutoresizingMaskIntoConstraints = NO;
-      [_snapshotView addSubview:_emptyView];
-    } else {
-      _gradientView = [[GradientView alloc]
-          initWithTopColor:[[UIColor blackColor] colorWithAlphaComponent:0]
-               bottomColor:[[UIColor blackColor] colorWithAlphaComponent:0.14]];
-      _gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-      [_snapshotView addSubview:_gradientView];
-    }
+    _emptyView = [[GridEmptyThumbnailView alloc]
+        initWithType:EmptyThumbnailTypeGroupCell];
+    _emptyView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_snapshotView addSubview:_emptyView];
 
     _snapshotFaviconView = [[UIView alloc] init];
-    if (!IsTabGridEmptyThumbnailUIEnabled()) {
-      _snapshotFaviconView.backgroundColor = [UIColor whiteColor];
-    }
     _snapshotFaviconView.layer.cornerRadius = kFaviconCornerRadius;
     _snapshotFaviconView.layer.masksToBounds = YES;
     _snapshotFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -138,37 +122,19 @@ const CGFloat kFaviconCornerRadius = 8;
     [self addSubview:bottomTrailingFaviconView];
 
     AddSameConstraints(self, _snapshotView);
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      AddSameConstraints(_snapshotView, _emptyView);
-    } else {
-      AddSameConstraints(_snapshotView, _gradientView);
-    }
+    AddSameConstraints(_snapshotView, _emptyView);
 
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [_snapshotFaviconView.topAnchor
-            constraintEqualToAnchor:_snapshotView.topAnchor
-                           constant:kFaviconOffset],
-        [_snapshotFaviconView.leadingAnchor
-            constraintEqualToAnchor:_snapshotView.leadingAnchor
-                           constant:kFaviconOffset]
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [_snapshotFaviconView.bottomAnchor
-            constraintEqualToAnchor:_snapshotView.bottomAnchor
-                           constant:-kBottomFaviconBottomTrailingOffset],
-        [_snapshotFaviconView.trailingAnchor
-            constraintEqualToAnchor:_snapshotView.trailingAnchor
-                           constant:-kBottomFaviconBottomTrailingOffset]
-      ]];
-    }
+    [NSLayoutConstraint activateConstraints:@[
+      [_snapshotFaviconView.topAnchor
+          constraintEqualToAnchor:_snapshotView.topAnchor
+                         constant:kFaviconOffset],
+      [_snapshotFaviconView.leadingAnchor
+          constraintEqualToAnchor:_snapshotView.leadingAnchor
+                         constant:kFaviconOffset]
+    ]];
     NSArray* constraints = @[
       [_snapshotFaviconView.widthAnchor
-          constraintEqualToConstant:
-              IsTabGridEmptyThumbnailUIEnabled()
-                  ? kFaviconViewWidthAndHeightAnchor
-                  : kBottomFaviconViewWidthAndHeightAnchor],
+          constraintEqualToConstant:kFaviconViewWidthAndHeightAnchor],
       [_snapshotFaviconView.heightAnchor
           constraintEqualToAnchor:_snapshotFaviconView.widthAnchor],
 
@@ -227,22 +193,18 @@ const CGFloat kFaviconCornerRadius = 8;
           constraintEqualToAnchor:topTrailingFaviconView.heightAnchor],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-      [center addObserver:self
-                 selector:@selector(updateFaviconBackground)
-                     name:UIDeviceOrientationDidChangeNotification
-                   object:nil];
-    }
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self
+               selector:@selector(updateFaviconBackground)
+                   name:UIDeviceOrientationDidChangeNotification
+                 object:nil];
   }
 
   return self;
 }
 
 - (void)didMoveToWindow {
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    [self updateFaviconBackground];
-  }
+  [self updateFaviconBackground];
   [super didMoveToWindow];
 }
 
@@ -250,12 +212,10 @@ const CGFloat kFaviconCornerRadius = 8;
   [self hideAllAttributes];
   _snapshotView.image = snapshot;
   _snapshotView.hidden = NO;
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    if (snapshot) {
-      _emptyView.hidden = YES;
-    }
-    [self updateFaviconBackground];
+  if (snapshot) {
+    _emptyView.hidden = YES;
   }
+  [self updateFaviconBackground];
   if (favicon && !CGSizeEqualToSize(favicon.size, CGSizeZero)) {
     _snapshotFaviconImageView.image = favicon;
     _snapshotFaviconView.hidden = NO;
@@ -327,15 +287,9 @@ const CGFloat kFaviconCornerRadius = 8;
     [_viewList[i] addSubview:_imageViewList[i]];
     AddSameCenterConstraints(_viewList[i], _imageViewList[i]);
 
-    NSLayoutConstraint* widthConstraint =
-        IsTabGridEmptyThumbnailUIEnabled()
-            ? [_imageViewList[i].widthAnchor
-                  constraintEqualToConstant:kFaviconViewWidth]
-            : [_imageViewList[i].widthAnchor
-                  constraintEqualToAnchor:_viewList[i].widthAnchor
-                               multiplier:kFaviconViewScaleFactor];
     [NSLayoutConstraint activateConstraints:@[
-      widthConstraint,
+      [_imageViewList[i].widthAnchor
+          constraintEqualToConstant:kFaviconViewWidth],
       [_imageViewList[i].heightAnchor
           constraintEqualToAnchor:_imageViewList[i].widthAnchor],
     ]];

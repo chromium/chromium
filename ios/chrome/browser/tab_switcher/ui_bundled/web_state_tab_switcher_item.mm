@@ -52,15 +52,6 @@ const CGFloat kSymbolSize = 14.0;
   return tab_util::GetTabTitle(_webState.get());
 }
 
-- (BOOL)hidesTitle {
-  if (!_webState) {
-    return NO;
-  }
-  return IsTabGridEmptyThumbnailUIEnabled()
-             ? NO
-             : IsUrlNtp(_webState->GetVisibleURL());
-}
-
 - (BOOL)showsActivity {
   if (!_webState) {
     return NO;
@@ -71,9 +62,7 @@ const CGFloat kSymbolSize = 14.0;
 #pragma mark - Favicons
 
 - (UIImage*)NTPFavicon {
-  return IsTabGridEmptyThumbnailUIEnabled()
-             ? CustomSymbolWithPointSize(kChromeProductSymbol, kSymbolSize)
-             : [[UIImage alloc] init];
+  return CustomSymbolWithPointSize(kChromeProductSymbol, kSymbolSize);
 }
 
 #pragma mark - NSObject

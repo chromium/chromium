@@ -167,12 +167,10 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     UIView* topBar = [self setupTopBar];
     TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
     snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      // Make nested corner radius so that inset spacing is always consistent
-      // https://cloudfour.com/thinks/the-math-behind-nesting-rounded-corners.
-      snapshotView.layer.cornerRadius = kGridCellCornerRadius - kSnapshotInset;
-      snapshotView.layer.masksToBounds = YES;
-    }
+    // Make nested corner radius so that inset spacing is always consistent
+    // https://cloudfour.com/thinks/the-math-behind-nesting-rounded-corners.
+    snapshotView.layer.cornerRadius = kGridCellCornerRadius - kSnapshotInset;
+    snapshotView.layer.masksToBounds = YES;
 
     UIButton* closeTapTargetButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
@@ -184,14 +182,12 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
         kGridCellCloseButtonIdentifier;
     [contentContainer addSubview:topBar];
     [contentContainer addSubview:snapshotView];
-    if (IsTabGridEmptyThumbnailUIEnabled()) {
-      GridEmptyThumbnailView* emptyView = [[GridEmptyThumbnailView alloc]
-          initWithType:EmptyThumbnailTypeGridCell];
-      emptyView.translatesAutoresizingMaskIntoConstraints = NO;
-      [snapshotView addSubview:emptyView];
-      AddSameConstraints(snapshotView, emptyView);
-      _emptyView = emptyView;
-    }
+    GridEmptyThumbnailView* emptyView = [[GridEmptyThumbnailView alloc]
+        initWithType:EmptyThumbnailTypeGridCell];
+    emptyView.translatesAutoresizingMaskIntoConstraints = NO;
+    [snapshotView addSubview:emptyView];
+    AddSameConstraints(snapshotView, emptyView);
+    _emptyView = emptyView;
     PriceCardView* priceCardView = [[PriceCardView alloc] init];
     [snapshotView addSubview:priceCardView];
 
@@ -220,13 +216,12 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-    CGFloat margin = IsTabGridEmptyThumbnailUIEnabled() ? kSnapshotInset : 0;
     self.containerLeadingConstraint = [snapshotView.leadingAnchor
         constraintEqualToAnchor:contentContainer.leadingAnchor
-                       constant:margin];
+                       constant:kSnapshotInset];
     self.containerTrailingConstraint = [snapshotView.trailingAnchor
         constraintEqualToAnchor:contentContainer.trailingAnchor
-                       constant:-margin];
+                       constant:-kSnapshotInset];
     NSArray* constraints = @[
       [topBar.topAnchor constraintEqualToAnchor:contentContainer.topAnchor],
       [topBar.leadingAnchor
@@ -238,7 +233,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
       self.containerTrailingConstraint,
       [snapshotView.bottomAnchor
           constraintEqualToAnchor:contentContainer.bottomAnchor
-                         constant:-margin],
+                         constant:-kSnapshotInset],
       [closeTapTargetButton.topAnchor
           constraintEqualToAnchor:contentContainer.topAnchor],
       [closeTapTargetButton.trailingAnchor
@@ -320,7 +315,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
-  self.titleHidden = NO;
   self.icon = nil;
   self.snapshot = nil;
   self.snapshotView.image = nil;
@@ -428,9 +422,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 - (void)setSnapshot:(UIImage*)snapshot {
   self.snapshotView.image = snapshot;
   _snapshot = snapshot;
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    self.emptyView.hidden = snapshot != nil;
-  }
+  self.emptyView.hidden = snapshot != nil;
 }
 
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
@@ -446,11 +438,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.titleLabel.text = title;
   _title = title;
   [self updateAccessibilityLabel];
-}
-
-- (void)setTitleHidden:(BOOL)titleHidden {
-  self.titleLabel.hidden = titleHidden;
-  _titleHidden = titleHidden;
 }
 
 - (UIDragPreviewParameters*)dragPreviewParameters {
@@ -484,7 +471,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)setLayoutType:(EmptyThumbnailLayoutType)layoutType {
-  CHECK(IsTabGridEmptyThumbnailUIEnabled());
   _layoutType = layoutType;
   _emptyView.layoutType = layoutType;
 }
@@ -569,9 +555,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font =
-      [UIFont preferredFontForTextStyle:IsTabGridEmptyThumbnailUIEnabled()
-                                            ? UIFontTextStyleSubheadline
-                                            : UIFontTextStyleFootnote];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   titleLabel.adjustsFontForContentSizeCategory = YES;
 
   UIImageView* closeIconView = [[UIImageView alloc] init];
@@ -892,7 +876,6 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   proxy.icon = cell.icon;
   proxy.snapshot = cell.snapshot;
   proxy.title = cell.title;
-  proxy.titleHidden = cell.titleHidden;
   proxy.priceCardView = cell.priceCardView;
   proxy.opacity = cell.opacity;
   return proxy;
@@ -985,10 +968,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 - (void)positionCellViews {
   if (!IsNewTabGridTransitionsEnabled()) {
     self.containerView.layer.cornerRadius = kGridCellCornerRadius;
-    self.containerLeadingConstraint.constant =
-        IsTabGridEmptyThumbnailUIEnabled() ? kSnapshotInset : 0;
-    self.containerTrailingConstraint.constant =
-        IsTabGridEmptyThumbnailUIEnabled() ? -kSnapshotInset : 0;
+    self.containerLeadingConstraint.constant = kSnapshotInset;
+    self.containerTrailingConstraint.constant = -kSnapshotInset;
     self.snapshotView.layer.cornerRadius = kGridCellCornerRadius;
   }
   [self scaleTabViews];

@@ -309,17 +309,15 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        if (IsTabGridEmptyThumbnailUIEnabled()) {
-          for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
-            if ([cell isKindOfClass:[GridCell class]]) {
-              GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
-              gridCell.layoutType = [self layoutTypeForContainerSize:size
-                                                          isGridCell:YES];
-            } else if ([cell isKindOfClass:[GroupGridCell class]]) {
-              GroupGridCell* gridCell = ObjCCastStrict<GroupGridCell>(cell);
-              gridCell.layoutType = [self layoutTypeForContainerSize:size
-                                                          isGridCell:NO];
-            }
+        for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+          if ([cell isKindOfClass:[GridCell class]]) {
+            GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
+            gridCell.layoutType = [self layoutTypeForContainerSize:size
+                                                        isGridCell:YES];
+          } else if ([cell isKindOfClass:[GroupGridCell class]]) {
+            GroupGridCell* gridCell = ObjCCastStrict<GroupGridCell>(cell);
+            gridCell.layoutType = [self layoutTypeForContainerSize:size
+                                                        isGridCell:NO];
           }
         }
         [self.collectionView.collectionViewLayout invalidateLayout];
@@ -1806,12 +1804,9 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   cell.tabsCount = item.numberOfTabsInGroup;
   cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    cell.layoutType =
-        [self layoutTypeForContainerSize:self.collectionView.bounds.size
-                              isGridCell:NO];
-  }
-
+  cell.layoutType =
+      [self layoutTypeForContainerSize:self.collectionView.bounds.size
+                            isGridCell:NO];
   cell.facePileProvider =
       [self.gridProvider facePileProviderForItem:groupItemIdentifier];
 
@@ -1878,13 +1873,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   cell.theme = self.theme;
   cell.itemIdentifier = itemIdentifier;
   cell.title = item.title;
-  cell.titleHidden = item.hidesTitle;
   [cell setAccessibilityIdentifiersWithIndex:index];
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    cell.layoutType =
-        [self layoutTypeForContainerSize:self.collectionView.bounds.size
-                              isGridCell:YES];
-  }
+  cell.layoutType =
+      [self layoutTypeForContainerSize:self.collectionView.bounds.size
+                            isGridCell:YES];
   if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;

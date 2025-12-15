@@ -36,7 +36,6 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @property(nonatomic, weak) UIImage* icon;
 @property(nonatomic, weak) UIImage* snapshot;
 @property(nonatomic, copy) NSString* title;
-@property(nonatomic, assign) BOOL titleHidden;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.

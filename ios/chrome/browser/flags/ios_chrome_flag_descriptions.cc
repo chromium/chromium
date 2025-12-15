@@ -1621,11 +1621,6 @@ const char kTabGridDragAndDropDescription[] =
     "Enables drag and drop in the tab grid to reorder tabs and create tab "
     "groups.";
 
-const char kTabGridEmptyThumbnailName[] = "Enable empty thumbnail in TabGrid";
-const char kTabGridEmptyThumbnailDescription[] =
-    "When enabled, the tab grid will show an empty thumbnail for tabs that "
-    "don't have one.";
-
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

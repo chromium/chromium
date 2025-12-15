@@ -973,9 +973,6 @@ extern const char kSyncTrustedVaultInfobarMessageImprovementsDescription[];
 extern const char kTabGridDragAndDropName[];
 extern const char kTabGridDragAndDropDescription[];
 
-extern const char kTabGridEmptyThumbnailName[];
-extern const char kTabGridEmptyThumbnailDescription[];
-
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 

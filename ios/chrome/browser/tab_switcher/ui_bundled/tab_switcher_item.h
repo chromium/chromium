@@ -41,7 +41,6 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 @property(nonatomic, assign) GURL URL;
 #endif
 @property(nonatomic, readonly) NSString* title;
-@property(nonatomic, readonly) BOOL hidesTitle;
 @property(nonatomic, readonly) BOOL showsActivity;
 
 @end
