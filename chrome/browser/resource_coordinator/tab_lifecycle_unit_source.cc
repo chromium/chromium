@@ -173,17 +173,20 @@ TabLifecycleUnitSource::TabLifecycleUnit*
 TabLifecycleUnitSource::GetTabLifecycleUnit(
     content::WebContents* web_contents) {
   auto* holder = TabLifecycleUnitHolder::FromWebContents(web_contents);
-  if (holder)
+  if (holder) {
     return holder->lifecycle_unit();
+  }
   return nullptr;
 }
 
 TabStripModel* TabLifecycleUnitSource::GetFocusedTabStripModel() const {
-  if (focused_tab_strip_model_for_testing_)
+  if (focused_tab_strip_model_for_testing_) {
     return focused_tab_strip_model_for_testing_;
+  }
   Browser* const focused_browser = chrome::FindBrowserWithActiveWindow();
-  if (!focused_browser)
+  if (!focused_browser) {
     return nullptr;
+  }
   return focused_browser->tab_strip_model();
 }
 
@@ -203,8 +206,9 @@ void TabLifecycleUnitSource::UpdateFocusedTab(Browser* browser) {
   // called but it's not. After replacing old API use in BrowserView,
   // restore this to DCHECK(!focused_web_contents || focused_lifecycle_unit);
   // else case will be handled by following OnTabInserted().
-  if (!focused_web_contents || focused_lifecycle_unit)
+  if (!focused_web_contents || focused_lifecycle_unit) {
     UpdateFocusedTabTo(focused_lifecycle_unit, focused_tab_strip_model);
+  }
 }
 
 void TabLifecycleUnitSource::UpdateFocusedTabTo(
@@ -241,8 +245,9 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
   if (lifecycle_unit) {
     // An existing tab was moved to a new window.
     lifecycle_unit->SetTabStripModel(tab_strip_model);
-    if (foreground)
+    if (foreground) {
       UpdateFocusedTab();
+    }
   } else {
     // A tab was created.
     TabLifecycleUnitHolder::CreateForWebContents(contents);
@@ -265,8 +270,9 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
 void TabLifecycleUnitSource::OnTabDetached(content::WebContents* contents) {
   TabLifecycleUnit* lifecycle_unit = GetTabLifecycleUnit(contents);
   DCHECK(lifecycle_unit);
-  if (focused_lifecycle_unit_ == lifecycle_unit)
+  if (focused_lifecycle_unit_ == lifecycle_unit) {
     UpdateFocusedTabTo(nullptr, nullptr);
+  }
   lifecycle_unit->SetTabStripModel(nullptr);
 }
 
@@ -299,8 +305,9 @@ void TabLifecycleUnitSource::OnTabStripModelChanged(
       break;
     }
     case TabStripModelChange::kRemoved: {
-      for (const auto& contents : change.GetRemove()->contents)
+      for (const auto& contents : change.GetRemove()->contents) {
         OnTabDetached(contents.contents);
+      }
       break;
     }
     case TabStripModelChange::kReplaced: {
@@ -321,18 +328,19 @@ void TabLifecycleUnitSource::OnTabStripModelChanged(
 void TabLifecycleUnitSource::TabChangedAt(content::WebContents* contents,
                                           int index,
                                           TabChangeType change_type) {
-  if (change_type != TabChangeType::kAll)
+  if (change_type != TabChangeType::kAll) {
     return;
+  }
   TabLifecycleUnit* lifecycle_unit = GetTabLifecycleUnit(contents);
   // This can be called before OnTabStripModelChanged() and |lifecycle_unit|
   // will be null in that case. http://crbug.com/877940
-  if (!lifecycle_unit)
+  if (!lifecycle_unit) {
     return;
+  }
 
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
   lifecycle_unit->SetRecentlyAudible(audible_helper->WasRecentlyAudible());
 }
-
 
 void TabLifecycleUnitSource::OnBrowserRemoved(Browser* browser) {
   // An active browser may be removed without OnBrowserNoLongerActive() being
@@ -376,8 +384,9 @@ void TabLifecycleUnitSource::OnLifecycleStateChanged(
   // Lifecycle state is updated independently from navigations. Therefore, there
   // is no need to filter out the event if it was generated before the last
   // navigation.
-  if (lifecycle_unit)
+  if (lifecycle_unit) {
     lifecycle_unit->UpdateLifecycleState(state);
+  }
 }
 
 }  // namespace resource_coordinator
