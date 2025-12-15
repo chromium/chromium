@@ -19,7 +19,8 @@
 #endif
 
 namespace {
-const int kIconSize = 16;
+const int kBubbleRowIconSize = 16;
+const int kRedirectIconSize = 20;
 
 const gfx::VectorIcon& GetRowIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
@@ -37,7 +38,7 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                       /*icon=*/
                       ui::ImageModel::FromVectorIcon(GetRowIcon(),
                                                      ui::kColorMenuIcon,
-                                                     kIconSize),
+                                                     kBubbleRowIconSize),
                       /*title_text=*/params.title,
                       /*subtitle_text=*/params.subtitle) {
   if (subtitle()) {
@@ -52,8 +53,8 @@ ActorTaskListBubbleRowButton::~ActorTaskListBubbleRowButton() = default;
 void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
   View::OnMouseEntered(event);
   SetState(Button::STATE_HOVERED);
-  SetActionIcon(ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                               ui::kColorMenuIcon, kIconSize));
+  SetActionIcon(ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchIcon, ui::kColorMenuIcon, kRedirectIconSize));
 }
 
 void ActorTaskListBubbleRowButton::OnMouseExited(const ui::MouseEvent& event) {
