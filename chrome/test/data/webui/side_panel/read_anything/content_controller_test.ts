@@ -444,6 +444,39 @@ suite('ContentController', () => {
       assertArrayEquals([rootId], readingMode.fetchedImages);
     });
 
+    test('builds a button as a <div> tag', () => {
+      const rootId = 5;
+      const childId = 7;
+      const buttonText = 'Automatic';
+
+      // Set up the AX Tree with a button that has a text child.
+      readingMode.rootId = rootId;
+      readingMode.getHtmlTag = (id: number) => {
+        if (id === rootId) {
+          return 'button';
+        }
+        if (id === childId) {
+          return '';  // Text node
+        }
+        return '';
+      };
+      readingMode.getTextContent = (id: number) => {
+        if (id === childId) {
+          return buttonText;
+        }
+        return '';
+      };
+      readingMode.getChildren = (id: number) => {
+        if (id === rootId) {
+          return [childId];
+        }
+        return [];
+      };
+      const root = contentController.updateContent();
+      assertTrue(root instanceof HTMLDivElement);
+      assertEquals(buttonText, root.textContent);
+    });
+
     test('sets text direction', () => {
       const childId = 70;
       readingMode.getHtmlTag = (id) => {

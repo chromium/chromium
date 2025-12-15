@@ -42,6 +42,9 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
   // gifs. Draw a still image on the canvas instead of a moving image.
   // TODO(crbug.com/439634112): Consider a setting to allow moving images.
   ['video', 'canvas'],
+  // Buttons are sometimes distilled but button click logic isn't handled
+  // by reading mode, so these shouldn't be distilled as clickable elements.
+  ['button', 'div'],
 ]);
 
 export interface ContentListener {
