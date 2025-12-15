@@ -44,6 +44,12 @@ CONTENT_EXPORT bool SendData(
     std::optional<net::HttpByteRange> requested_range,
     scoped_refptr<base::RefCountedMemory> bytes);
 
+// Returns a pair of (pipe, output size) that points to the data from `bytes`,
+// bounded by `requested_range` if set.
+CONTENT_EXPORT std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
+    scoped_refptr<base::RefCountedMemory> bytes,
+    std::optional<net::HttpByteRange> requested_range);
+
 }  // namespace webui
 
 }  // namespace content

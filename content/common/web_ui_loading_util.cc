@@ -59,14 +59,41 @@ bool SendData(
     return false;
   }
 
-  uint32_t output_offset = 0;
-  size_t output_size = bytes->size();
   if (requested_range) {
-    if (!requested_range->ComputeBounds(output_size)) {
+    if (!requested_range->ComputeBounds(bytes->size())) {
       CallOnError(std::move(client_remote),
                   net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
       return false;
     }
+  }
+
+  auto [pipe, output_size] = GetPipe(bytes, requested_range);
+
+  // For media content, |content_length| must be known upfront for data that is
+  // assumed to be fully buffered (as opposed to streamed from the network),
+  // otherwise the media player will get confused and refuse to play.
+  // Content delivered via chrome:// URLs is assumed fully buffered.
+  headers->content_length = output_size;
+
+  mojo::Remote<network::mojom::URLLoaderClient> client(
+      std::move(client_remote));
+  client->OnReceiveResponse(std::move(headers), std::move(pipe), std::nullopt);
+
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.encoded_data_length = output_size;
+  status.encoded_body_length = output_size;
+  status.decoded_body_length = output_size;
+  client->OnComplete(status);
+  return true;
+}
+
+std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
+    scoped_refptr<base::RefCountedMemory> bytes,
+    std::optional<net::HttpByteRange> requested_range) {
+  CHECK(base::IsValueInRangeForNumericType<uint32_t>(bytes->size()));
+  uint32_t output_offset = 0;
+  size_t output_size = bytes->size();
+  if (requested_range) {
     DCHECK(base::IsValueInRangeForNumericType<uint32_t>(
         requested_range->first_byte_position()))
         << "Expecting ComputeBounds() to enforce it";
@@ -102,25 +129,7 @@ bool SendData(
   result = pipe_producer_handle->EndWriteData(output_size);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  // For media content, |content_length| must be known upfront for data that is
-  // assumed to be fully buffered (as opposed to streamed from the network),
-  // otherwise the media player will get confused and refuse to play.
-  // Content delivered via chrome:// URLs is assumed fully buffered.
-  headers->content_length = output_size;
-
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(client_remote));
-
-  client->OnReceiveResponse(std::move(headers), std::move(pipe_consumer_handle),
-                            std::nullopt);
-
-  network::URLLoaderCompletionStatus status(net::OK);
-  status.encoded_data_length = output_size;
-  status.encoded_body_length = output_size;
-  status.decoded_body_length = output_size;
-  client->OnComplete(status);
-
-  return true;
+  return std::make_pair(std::move(pipe_consumer_handle), output_size);
 }
 
 }  // namespace webui
