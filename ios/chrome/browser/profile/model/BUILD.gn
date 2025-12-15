@@ -184,6 +184,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/image_fetcher/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/language_detection/model",

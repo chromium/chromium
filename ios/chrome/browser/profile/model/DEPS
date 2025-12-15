@@ -50,6 +50,7 @@ specific_include_rules = {
     "+ios/chrome/browser/home_customization/model",
     "+ios/chrome/browser/https_upgrades/model",
     "+ios/chrome/browser/intelligence/bwg/model",
+    "+ios/chrome/browser/intelligence/persist_tab_context/model",
     "+ios/chrome/browser/invalidation/model",
     "+ios/chrome/browser/language/model",
     "+ios/chrome/browser/mailto_handler/model",
