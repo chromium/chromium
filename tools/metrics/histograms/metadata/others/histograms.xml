@@ -8587,7 +8587,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.CrxDownloader.DownloadCompleteSuccess"
-    enum="Boolean" expires_after="2026-01-25">
+    enum="Boolean" expires_after="2026-07-25">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
