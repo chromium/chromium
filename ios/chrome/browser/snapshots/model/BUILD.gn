@@ -182,10 +182,12 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "snapshot_egtest.mm" ]
   deps = [
+    "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/gfx",
   ]
   frameworks = [ "UIKit.framework" ]
 }

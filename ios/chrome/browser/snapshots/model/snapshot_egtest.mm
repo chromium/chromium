@@ -5,6 +5,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -14,6 +15,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "ui/gfx/image/image.h"
 
 namespace {
 
@@ -51,7 +53,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     .green {
       background-color: #00ff00;
       width: 100%;
-      height: 50%;
+      height: 100%;
     }
     .blue {
       background-color: #0000ff;
@@ -92,13 +94,6 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 
 // Tests the snapshot of the page filled with one solid color.
 - (void)testOneColorSnapshot {
-  // TODO(crbug.com/453575683): Re-enable the test.
-#if TARGET_OS_SIMULATOR
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-#endif
-
   // Open a page filled with one solid color.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithRedColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"red"];
@@ -112,27 +107,15 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
       performAction:grey_snapshot(tabGridSnapshot)];
   UIImage* image = tabGridSnapshot.object;
 
-  // Use `CGImageGetWidth()` instead of `image.size.width` because the value can
-  // be different. CGImage is used in `-getColorAtPoint:`.
-  const NSUInteger width = CGImageGetWidth(image.CGImage);
-  const NSUInteger height = CGImageGetHeight(image.CGImage);
-  const CGPoint center = CGPointMake(width / 2, height / 2);
-
-  // Check a color of the center position in the image.
+  UIColor* color = DominantColorForImage(gfx::Image(image), /*opacity=*/1.0);
   CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-  [self getColorAtPoint:center
-                  image:image
-                    red:&red
-                  green:&green
-                   blue:&blue
-                  alpha:&alpha];
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
 
   // The color must be red.
-  // The values may not be exactly 0.0 or 1.0 due to the image compression. The
-  // test allows more flexible values.
+  // The values may not be exactly 0.0 or 1.0. Allow more flexible values.
   GREYAssert(red > 0.9, @"A red value should be close to 1.");
-  GREYAssert(green < 0.5, @"A green value should be close to 0.");
-  GREYAssert(blue < 0.5, @"A blue value should be close to 0.");
+  GREYAssert(green < 0.1, @"A green value should be close to 0.");
+  GREYAssert(blue < 0.1, @"A blue value should be close to 0.");
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
@@ -140,12 +123,6 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 // and the lower side is blue in the page.
 // TODO(crbug.com/454267702): test is flaky, disable it.
 - (void)DISABLED_testTwoColorsSnapshot {
-  // TODO(crbug.com/453575683): Re-enable the test.
-#if TARGET_OS_SIMULATOR
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
@@ -206,15 +183,9 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 }
 
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
-// and the lower side is blue in the page. A snapshot is taken 2 times with the
-// same position before and after scrolling down.
+// and the lower side is blue in the page. A snapshot is taken 2 times before
+// and after scrolling down.
 - (void)testSnapshotWithScrollDown {
-  // TODO(crbug.com/453575683): Re-enable the test.
-#if TARGET_OS_SIMULATOR
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
@@ -229,27 +200,15 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
-    // Use `CGImageGetWidth()` instead of `image.size.width` because the value
-    // can be different. CGImage is used in `-getColorAtPoint:`.
-    const NSUInteger width = CGImageGetWidth(image.CGImage);
-    const NSUInteger height = CGImageGetHeight(image.CGImage);
-    // Get a point just above the center to validate the green color.
-    const CGPoint justAboveCenter = CGPointMake(width / 2, height / 2 - 10);
-
-    // Check a color of the just above center position in the image.
+    UIColor* color = DominantColorForImage(gfx::Image(image), /*opacity=*/1.0);
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-    [self getColorAtPoint:justAboveCenter
-                    image:image
-                      red:&red
-                    green:&green
-                     blue:&blue
-                    alpha:&alpha];
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
 
-    // The color must be green. The values may not be exactly 0.0 or 1.0 due to
-    // the image compression. The test allows more flexible values.
-    GREYAssert(red < 0.5, @"A red value should be close to 0.");
+    // The dominant color must be green. The values may not be exactly 0.0
+    // or 1.0. Allow more flexible values.
+    GREYAssert(red < 0.1, @"A red value should be close to 0.");
     GREYAssert(green > 0.9, @"A green value should be close to 1.");
-    GREYAssert(blue < 0.5, @"A blue value should be close to 0.");
+    GREYAssert(blue < 0.1, @"A blue value should be close to 0.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
 
@@ -279,26 +238,14 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
-    // Use `CGImageGetWidth()` instead of `image.size.width` because the value
-    // can be different. CGImage is used in `-getColorAtPoint:`.
-    const NSUInteger width = CGImageGetWidth(image.CGImage);
-    const NSUInteger height = CGImageGetHeight(image.CGImage);
-    const CGPoint center = CGPointMake(width / 2, height / 2);
-
-    // Check a color of the center position in the image.
+    UIColor* color = DominantColorForImage(gfx::Image(image), /*opacity=*/1.0);
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-    [self getColorAtPoint:center
-                    image:image
-                      red:&red
-                    green:&green
-                     blue:&blue
-                    alpha:&alpha];
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
 
-    // The color must be blue now because the page was scrolled down.
-    // The values may not be exactly 0.0 or 1.0 due to the image compression.
-    // The test allows more flexible values.
-    GREYAssert(red < 0.5, @"A red value should be close to 0.");
-    GREYAssert(green < 0.5, @"A green value should be close to 0.");
+    // The dominant color must be blue now because the page was scrolled down.
+    // The values may not be exactly 0.0 or 1.0. Allow more flexible values.
+    GREYAssert(red < 0.1, @"A red value should be close to 0.");
+    GREYAssert(green < 0.1, @"A green value should be close to 0.");
     GREYAssert(blue > 0.9, @"A blue value should be close to 1.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
