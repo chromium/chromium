@@ -87,7 +87,10 @@ import java.util.Map.Entry;
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowMultiInstanceManagerApi31.class)
-@EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
+@EnableFeatures({
+    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
+    ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
+})
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)

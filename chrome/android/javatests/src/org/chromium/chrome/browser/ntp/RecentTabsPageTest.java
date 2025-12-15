@@ -483,6 +483,32 @@ public class RecentTabsPageTest {
 
     @Test
     @LargeTest
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    @Feature({"RecentTabsPage", "RenderTest"})
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    public void testRecentlyClosedWindow() throws Exception {
+        mPage = loadRecentTabsPage();
+        long time = 904881600000L;
+        String title = "Window 1";
+        String activeTabUrl = "https://www.google.com";
+        int tabCount = 3;
+        // Set a recently closed window event and confirm a view is rendered for it.
+        final RecentlyClosedWindow window =
+                new RecentlyClosedWindow(time, 0, activeTabUrl, title, tabCount);
+        setRecentlyClosedEntries(Collections.singletonList(window));
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+
+        final String eventDescriptionString = "google.com and " + (tabCount - 1) + " other tabs";
+        waitForView(title);
+        waitForView(eventDescriptionString);
+
+        mRenderTestRule.render(mPage.getView(), "recently_closed_window");
+        // TODO(crbug.com/444680856): Initiate and verify item clicks.
+    }
+
+    @Test
+    @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testListItem_PressedState() throws Exception {
