@@ -46,6 +46,9 @@ struct VideoEncoderInfo {
   // True if encoder supports frame size change without re-initialization.
   bool supports_frame_size_change = false;
 
+  // Maximum number of manual reference buffers supported by encoder.
+  uint64 number_of_manual_reference_buffers;
+
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;
   array<ResolutionRateLimit> resolution_rate_limits;
