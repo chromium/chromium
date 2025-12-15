@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -187,6 +189,11 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                             : Gravity.TOP;
         }
 
+        TabCreator tabCreator = null;
+        if (activity instanceof TabCreatorManager) {
+            tabCreator = ((TabCreatorManager) activity).getTabCreator(/* incognito= */ false);
+        }
+
         PageInfoController.show(
                 activity,
                 webContents,
@@ -206,7 +213,7 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                         /* storeInfoActionHandlerSupplier= */ null,
                         /* ephemeralTabCoordinatorSupplier= */ null,
                         ChromePageInfoHighlight.forPermission(contentSettingsType),
-                        /* tabCreator= */ null,
+                        tabCreator,
                         /* packageName= */ null),
                 ChromePageInfoHighlight.forPermission(contentSettingsType),
                 dialogPosition,
