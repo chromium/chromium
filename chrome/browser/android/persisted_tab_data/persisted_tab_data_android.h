@@ -48,6 +48,13 @@ class PersistedTabDataAndroid
                    SupplierCallback supplier_callback,
                    FromCallback from_callback);
 
+  static const void* UserDataKey() {
+    NOTREACHED()
+        << "Clients of PersistedTabDataAndroid must implement UserDataKey() "
+           "see SensitivityPersistedTabDataAndroid or "
+           "LanguagePersistedTabDataAndroid for examples.";
+  }
+
   // Serialize PersistedTabData for storage
   virtual std::unique_ptr<const std::vector<uint8_t>> Serialize() = 0;
 

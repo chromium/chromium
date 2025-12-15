@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/android/persisted_tab_data/language_persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
@@ -11,10 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
-const char kBarId[] = "bar";
-const char kFooId[] = "foo";
 const char kLanguageId[] = "language";
 const char kSensitivityId[] = "sensitivity";
+
 }  // namespace
 
 PersistedTabDataConfigAndroid::~PersistedTabDataConfigAndroid() = default;
@@ -38,16 +38,14 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
         LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
             ->GetForBrowserContext(profile),
         kLanguageId);
-  } else if (*static_cast<const char*>(user_data_key) == 1) {
+    // Test configs. This allows test clients to reside in a separate target.
+  } else if (base::Contains(*GetConfigForTesting(), user_data_key)) {
     return std::make_unique<PersistedTabDataConfigAndroid>(
         LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
             ->GetForBrowserContext(profile),
-        kBarId);
-  } else if (*static_cast<const char*>(user_data_key) == 2) {
-    return std::make_unique<PersistedTabDataConfigAndroid>(
-        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
-            ->GetForBrowserContext(profile),
-        kFooId);
+        PersistedTabDataConfigAndroid::GetConfigForTesting()
+            ->find(user_data_key)
+            ->second);
   }
   NOTREACHED() << "Unknown UserDataKey";
 }
@@ -64,4 +62,19 @@ PersistedTabDataConfigAndroid::GetAllStorage(Profile* profile) {
             ->GetForBrowserContext(profile));
   }
   return storage;
+}
+
+// static
+std::unordered_map<const void*, const char*>*
+PersistedTabDataConfigAndroid::GetConfigForTesting() {
+  static base::NoDestructor<std::unordered_map<const void*, const char*>>
+      test_config_;
+  return test_config_.get();
+}
+
+// static
+void PersistedTabDataConfigAndroid::AddConfigForTesting(
+    const void* user_data_key,
+    const char* data_id) {
+  GetConfigForTesting()->emplace(user_data_key, data_id);
 }
