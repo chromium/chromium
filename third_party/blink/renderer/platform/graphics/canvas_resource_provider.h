@@ -450,7 +450,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 // * Renders to a Skia RAM-backed bitmap via an external (client-supplied) draw.
 // * Mailboxing is not supported : cannot be directly composited.
 class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
-    : public CanvasResourceProvider {
+    : public CanvasSnapshotProvider {
  public:
   CanvasResourceProviderExternalBitmap(gfx::Size size,
                                        viz::SharedImageFormat format,
@@ -462,37 +462,38 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
   bool IsGpuContextLost() const override;
   bool IsValid() const override;
   bool IsAccelerated() const override { return false; }
-  bool SupportsDirectCompositing() const override { return false; }
-  bool IsSingleBuffered() const override { return false; }
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault) override {
-    NOTREACHED();
-  }
   bool IsExternalBitmapProvider() const override { return true; }
 
-  void RasterRecord(cc::PaintRecord last_recording) override { NOTREACHED(); }
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override {
-    NOTREACHED();
-  }
-
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    // Production of CanvasResources is used with direct compositing, which is
-    // not supported by this class.
-    return nullptr;
-  }
-  sk_sp<SkSurface> CreateSkSurface() const override;
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override;
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+  gfx::Size Size() const override { return size_; }
 
  private:
   class SoftwareImageProvider;
-
   std::unique_ptr<SoftwareImageProvider> image_provider_;
+
+  mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
+  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
+
+  gfx::Size size_;
+  viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
+  gfx::ColorSpace color_space_;
+  const cc::PaintImage::Id snapshot_paint_image_id_;
+  cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+  uint32_t snapshot_sk_image_id_ = 0u;
+  SkImageInfo info_;
+
+  // Recording accumulating draw ops. This pointer is always valid and safe to
+  // dereference.
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 };
 
 // * Renders to a SharedImage, which manages memory internally.
