@@ -7836,9 +7836,6 @@ crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composit
 # TODO(crbug.com/396359045): Re-enable this test when crash is reproduced
 crbug.com/396359045 editing/selection/update-selection-on-node-insertion.html [ Failure ]
 
-# Disable test temporarily to allow DevTools change to pass
-crbug.com/40820445 http/tests/devtools/elements/styles-3/styles-add-invalid-property.js [ Failure Pass Timeout ]
-
 crbug.com/411169291 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Failure Skip Timeout ]
 
 # Failures on Mac13 2023-05-18
