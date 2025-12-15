@@ -375,6 +375,7 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
 
     PrefService* prefs = profile->GetPrefs();
     CHECK(prefs);
+    int total_web_state_count = GetPersistedWebStateCountForProfile(profile);
 
     if (use_page_content_cache_) {
       page_content_cache_service_ =
@@ -387,6 +388,17 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
           base::BindOnce(&DeletePersistedContextsDirectory,
                          storage_directory_path_),
           kPurgeTaskDelay);
+
+      // Log the difference between web states and persisted files/entries.
+      if (page_content_cache_service_) {
+        page_content_cache_service_->GetAllTabIds(base::BindOnce(
+            [](int web_state_count, std::vector<int64_t> cached_ids) {
+              int difference = cached_ids.size() - web_state_count;
+              base::UmaHistogramSparse(
+                  kPersistTabContextStorageDifferenceHistogram, difference);
+            },
+            total_web_state_count));
+      }
     } else {
       base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
       task_runner_->PostTask(
@@ -398,6 +410,11 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
           base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_,
                          ttl),
           kPurgeTaskDelay);
+
+      // Log the difference between web states and persisted files/entries.
+      task_runner_->PostTask(FROM_HERE, base::BindOnce(&LogStorageDifference,
+                                                       storage_directory_path_,
+                                                       total_web_state_count));
     }
   } else {
     task_runner_->PostDelayedTask(
@@ -406,12 +423,6 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
                        storage_directory_path_),
         kPurgeTaskDelay);
   }
-
-  int total_web_state_count = GetPersistedWebStateCountForProfile(profile);
-  // Log the difference between web states and persisted files.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&LogStorageDifference, storage_directory_path_,
-                                total_web_state_count));
 }
 
 PersistTabContextBrowserAgent::~PersistTabContextBrowserAgent() {
@@ -626,6 +637,9 @@ void PersistTabContextBrowserAgent::WriteContextToContentCache(
 
   page_content_cache_service_->CachePageContent(
       tab_id, url, visit_timestamp, extraction_timestamp, page_context);
+
+  base::UmaHistogramCounts10M(kPersistTabContextSizeHistogram,
+                              page_context.ByteSizeLong());
 }
 
 void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(
@@ -633,16 +647,47 @@ void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(
     base::OnceCallback<void(
         std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
         callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   // TODO(crbug.com/467065000): Update the agents public methods to take in
   // WebStateID's, or at least int64's
   int64_t tab_id;
   if (!base::StringToInt64(webstate_unique_id, &tab_id) ||
       !page_content_cache_service_) {
+    base::UmaHistogramEnumeration(
+        kReadTabContextResultHistogram,
+        IOSPersistTabContextReadResult::kStoragePathEmptyFailure);
     std::move(callback).Run(std::nullopt);
     return;
   }
+
+  // Intercept callback for metrics
+  auto wrapped_callback = base::BindOnce(
+      [](base::OnceCallback<void(std::optional<std::unique_ptr<
+                                     optimization_guide::proto::PageContext>>)>
+             original_callback,
+         base::TimeTicks start_time,
+         std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+             result) {
+        if (result) {
+          base::UmaHistogramEnumeration(
+              kReadTabContextResultHistogram,
+              IOSPersistTabContextReadResult::kSuccess);
+        } else {
+          base::UmaHistogramEnumeration(
+              kReadTabContextResultHistogram,
+              IOSPersistTabContextReadResult::kFileNotFound);
+        }
+
+        base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+        base::UmaHistogramTimes(kPersistTabContextReadTimeHistogram,
+                                elapsed_time);
+
+        std::move(original_callback).Run(std::move(result));
+      },
+      std::move(callback), start_time);
+
   page_content_cache_service_->GetPageContentForTab(
-      tab_id, base::BindOnce(&OnGetPageContent, std::move(callback)));
+      tab_id, base::BindOnce(&OnGetPageContent, std::move(wrapped_callback)));
 }
 
 void PersistTabContextBrowserAgent::DeleteContextFromContentCache(

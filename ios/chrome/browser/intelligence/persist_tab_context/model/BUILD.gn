@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/metrics",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
