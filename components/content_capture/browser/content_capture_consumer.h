@@ -70,6 +70,8 @@ class ContentCaptureConsumer {
   virtual void DidUpdateLanguageDetails(const GURL& url,
                                         const std::string& detected_language,
                                         float language_confidence) = 0;
+  // Invoked when the content capture metedata needs to be cleared.
+  virtual void ClearContentCaptureMetadata() = 0;
 
   // Return if the |url| shall be captured. Even return false, the content might
   // still be streamed because of the other consumers require it. Consumer can

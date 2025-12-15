@@ -87,6 +87,8 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
                                 const std::string& detected_language,
                                 float language_confidence) override;
 
+  void ClearContentCaptureMetadata() override;
+
   bool ShouldCapture(const GURL& url) override;
 
   const ContentCaptureSession& parent_session() const {

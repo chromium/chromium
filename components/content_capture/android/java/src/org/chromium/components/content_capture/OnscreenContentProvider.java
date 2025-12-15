@@ -39,6 +39,8 @@ public class OnscreenContentProvider {
 
     private final ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
 
+    private ContentCaptureMetadata.Builder mMetadataBuilder = ContentCaptureMetadata.newBuilder();
+
     private WeakReference<WebContents> mWebContents;
 
     public OnscreenContentProvider(
@@ -202,8 +204,9 @@ public class OnscreenContentProvider {
             return;
         }
 
-        ContentCaptureMetadata metadata =
-                ContentCaptureMetadata.newBuilder().setSensitivityScore(sensitivityScore).build();
+        mMetadataBuilder.setSensitivityScore(sensitivityScore);
+
+        ContentCaptureMetadata metadata = mMetadataBuilder.build();
         assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
 
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
@@ -218,11 +221,9 @@ public class OnscreenContentProvider {
             return;
         }
 
-        ContentCaptureMetadata metadata =
-                ContentCaptureMetadata.newBuilder()
-                        .setDetectedLanguage(detectedLanguage)
-                        .setLanguageConfidence(languageConfidence)
-                        .build();
+        mMetadataBuilder.setDetectedLanguage(detectedLanguage);
+        mMetadataBuilder.setLanguageConfidence(languageConfidence);
+        ContentCaptureMetadata metadata = mMetadataBuilder.build();
 
         assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
 
@@ -233,6 +234,13 @@ public class OnscreenContentProvider {
                     detectedLanguage,
                     languageConfidence);
         }
+    }
+
+    @CalledByNative
+    private void clearContentCaptureMetadata() {
+        // Reset the builder to discard data from the previous URL
+        // when DidFinishNavigation fires in C++.
+        mMetadataBuilder = ContentCaptureMetadata.newBuilder();
     }
 
     @CalledByNative
