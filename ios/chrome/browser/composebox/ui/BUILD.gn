@@ -36,6 +36,7 @@ source_set("ui") {
   deps = [
     ":ui_constants",
     "//base",
+    "//base:i18n",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",

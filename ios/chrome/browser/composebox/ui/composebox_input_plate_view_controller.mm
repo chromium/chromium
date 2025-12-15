@@ -986,6 +986,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   plusButton.translatesAutoresizingMaskIntoConstraints = NO;
   plusButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   plusButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  plusButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
   plusButton.accessibilityIdentifier =
       kComposeboxPlusButtonAccessibilityIdentifier;
 

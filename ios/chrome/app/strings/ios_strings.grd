@@ -1413,6 +1413,9 @@
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for the button that enables the user to add other attachments to the search query. [iOS only].">
+        Add attachment
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Add current tab
       </message>
@@ -1428,6 +1431,15 @@
       <message name="IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER" desc="The placeholder to show when AIM is enabled and no user text was added.">
         Ask Google anything
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_FILE_ACCESSIBILITY_LABEL" desc="The accessibility announcement prefix read by Voice Over for a file attachment in AI Mode input plate. [iOS only].">
+        Attached file {title}
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for a image attachment in AI Mode input plate. [iOS only].">
+        Attached image
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_TAB_ACCESSIBILITY_LABEL" desc="The accessibility announcement prefix read by Voice Over for a tab attachment in AI Mode input plate. [iOS only].">
+        Attached tab {title}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_CAMERA_ACTION" desc="The contextual menu option for opening the camera. [iOS only].">
         Camera
       </message>
@@ -1436,6 +1448,9 @@
       </message>
       <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool. [iOS only].">
         Create image
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION" desc="The name of the custom accessibility action for that deletes a previously added attachment from the list of attachments in the AIM Composebox. [iOS only].">
+        Delete attachment
       </message>
       <message name="IDS_IOS_COMPOSEBOX_FILES_ACTION" desc="The contextual menu option for opening the file picker. [iOS only].">
         Files
