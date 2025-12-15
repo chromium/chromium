@@ -68,10 +68,18 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     public void onPreloadPagesStateDetailsRequested(@PreloadPagesState int preloadPagesState) {
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
             SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(getActivity(), ExtendedPreloadingSettingsFragment.class);
+                    .startSettings(
+                            getActivity(),
+                            ExtendedPreloadingSettingsFragment.class,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
         } else if (preloadPagesState == PreloadPagesState.STANDARD_PRELOADING) {
             SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(getActivity(), StandardPreloadingSettingsFragment.class);
+                    .startSettings(
+                            getActivity(),
+                            StandardPreloadingSettingsFragment.class,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
         } else {
             assert false : "Should not be reached";
         }

@@ -183,7 +183,9 @@ public class PreloadPagesSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mPreloadPagesSettingsFragment.getContext(),
-                                    ExtendedPreloadingSettingsFragment.class);
+                                    ExtendedPreloadingSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 
@@ -199,7 +201,9 @@ public class PreloadPagesSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mPreloadPagesSettingsFragment.getContext(),
-                                    StandardPreloadingSettingsFragment.class);
+                                    StandardPreloadingSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 
