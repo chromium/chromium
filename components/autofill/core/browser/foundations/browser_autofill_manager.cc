@@ -2106,6 +2106,19 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
   autofill_field->set_was_focused(true);
 
+  for (const FieldType type : autofill_field->Type().GetTypes()) {
+    static constexpr std::string_view kMetricName =
+        "Autofill.FocusedField.FieldType";
+    const bool same_origin =
+        autofill_field->origin() == form.main_frame_origin();
+    base::UmaHistogramExactLinear(base::StrCat({kMetricName}), type,
+                                  MAX_VALID_FIELD_TYPE);
+    base::UmaHistogramExactLinear(
+        base::StrCat(
+            {kMetricName, ".", same_origin ? "Same" : "Cross", "Origin"}),
+        type, MAX_VALID_FIELD_TYPE);
+  }
+
   // Notify installed screen readers if the focus is on a field for which there
   // are suggestions to present. Ignore if a screen reader is not present.
   if (!external_delegate_->HasActiveScreenReader()) {

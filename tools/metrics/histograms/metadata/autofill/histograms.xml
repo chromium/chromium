@@ -3833,6 +3833,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FocusedField.FieldType{Origin}"
+    enum="AutofillFieldType" expires_after="2026-06-01">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>Recorded when a {Origin} field receives the focus.</summary>
+  <token key="Origin">
+    <variant name="" summary=""/>
+    <variant name=".CrossOrigin" summary="cross origin"/>
+    <variant name=".SameOrigin" summary="same origin"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.Benefits"
     enum="CardBenefitFormEvent" expires_after="2026-06-01">
   <owner>ferny@google.com</owner>
