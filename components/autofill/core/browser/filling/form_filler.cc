@@ -842,10 +842,10 @@ void FormFiller::FillOrPreviewForm(
   }
 
   RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  bool could_attempt_refill = augmented_filling_payload.supports_refills() &&
-                              refill_context != nullptr &&
-                              !refill_context->attempted_refill &&
-                              !refill_trigger_reason;
+  const bool may_refill_in_future =
+      augmented_filling_payload.supports_refills() &&
+      refill_context != nullptr && !refill_context->attempted_refill &&
+      !refill_trigger_reason;
   RefillOptions refill_options =
       refill_trigger_reason.has_value() && refill_context
           ? RefillOptions::Refill(refill_context->type_groups_originally_filled)
@@ -922,7 +922,7 @@ void FormFiller::FillOrPreviewForm(
     } else if (!is_newly_autofilled_or_emptied) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
-    } else if (could_attempt_refill) {
+    } else if (may_refill_in_future) {
       refill_context->type_groups_originally_filled.insert_all(
           autofill_field.Type().GetGroups());
     }
@@ -943,7 +943,7 @@ void FormFiller::FillOrPreviewForm(
                i, has_value_before, has_value_after, is_autofilled_before,
                is_autofilled_after, failure_to_fill.c_str());
   }
-  if (could_attempt_refill) {
+  if (may_refill_in_future) {
     refill_context->filled_form = form;
     refill_context->filled_form->set_fields(result_fields);
   }
@@ -960,7 +960,7 @@ void FormFiller::FillOrPreviewForm(
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           fill_id,
-          /*supports_refill=*/could_attempt_refill,
+          /*supports_refill=*/may_refill_in_future,
           autofill_trigger_field.origin(),
           base::flat_map<FieldGlobalId, FieldType>(
               std::move(filled_field_types)),
