@@ -354,4 +354,13 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kAIM]);
 }
 
+// Tests that QR code button is shown with non Google DSE.
+TEST_F(ComposeboxInputPlateMediatorTest, ShowsQRScannerButtonWithNonGoogleDSE) {
+  SetAIMEligible(false);
+  SetDSEGoogle(false);
+  EXPECT_TRUE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kQRScanner]);
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
+}
+
 }  // namespace

@@ -170,8 +170,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIButton* _plusButton;
   /// The mic button for voice search.
   UIButton* _micButton;
-  /// The lens button.
-  UIButton* _lensButton;
+  /// The camera scanner button, either to Lens or QR scanner.
+  UIButton* _visualSearchButton;
   /// The fade view for the carousel's leading edge.
   UIView* _leadingCarouselFadeView;
   /// The fade view for the carousel's trailing edge.
@@ -249,7 +249,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
   _micButton = [self createMicrophoneButton];
-  _lensButton = [self createLensButton];
+  _visualSearchButton = [self createVisualSearchButton];
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
   _aimButton = [self createAIMButton];
@@ -417,22 +417,18 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)controls {
+  using enum ComposeboxInputPlateControls;
   _visibleControls = controls;
-  _plusButton.hidden = !(controls & ComposeboxInputPlateControls::kPlus);
-  _micButton.hidden = !(controls & ComposeboxInputPlateControls::kVoice);
-  _lensButton.hidden = !(controls & ComposeboxInputPlateControls::kLens);
+  _plusButton.hidden = !(controls & kPlus);
+  _micButton.hidden = !(controls & kVoice);
+  [self updateCameraButton];
 
   [self updateToolbarVisibility];
 
-  [self animateButton:_aimButton
-               hidden:!(controls & ComposeboxInputPlateControls::kAIM)];
-  [self animateButton:_sendButton
-               hidden:!(controls & ComposeboxInputPlateControls::kSend)];
-  [self animateButton:_imageGenerationButton
-               hidden:!(controls & ComposeboxInputPlateControls::kCreateImage)];
-  [self
-      animateLeadingImageHidden:!(controls &
-                                  ComposeboxInputPlateControls::kLeadingImage)];
+  [self animateButton:_aimButton hidden:!(controls & kAIM)];
+  [self animateButton:_sendButton hidden:!(controls & kSend)];
+  [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
+  [self animateLeadingImageHidden:!(controls & kLeadingImage)];
 }
 
 - (void)animateReveal:(void (^)(void))animations {
@@ -645,8 +641,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewController:self didTapMicButton:_micButton];
 }
 
-- (void)lensButtonTapped {
-  [self.delegate composeboxViewController:self didTapLensButton:_lensButton];
+- (void)visualSearchButtonTapped {
+  using enum ComposeboxInputPlateControls;
+  if ((_visibleControls & kLens) != kNone) {
+    [self.delegate composeboxViewController:self
+                           didTapLensButton:_visualSearchButton];
+  } else if ((_visibleControls & kQRScanner) != kNone) {
+    [self.delegate composeboxViewController:self
+                      didTapQRScannerButton:_visualSearchButton];
+  }
 }
 
 - (void)sendButtonTapped {
@@ -1054,21 +1057,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return micButton;
 }
 
-/// Returns the lens button.
-- (UIButton*)createLensButton {
-  UIButton* lensButton = [self
-      createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
-                                                      kSymbolActionPointSize)];
-  lensButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-  lensButton.accessibilityIdentifier =
-      kComposeboxLensButtonAccessibilityIdentifier;
-  lensButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+/// Returns the visual search button (Lens or QR Code).
+- (UIButton*)createVisualSearchButton {
+  UIButton* visualSearchButton = [self createButtonWithImage:nil];
+  visualSearchButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-  [lensButton addTarget:self
-                 action:@selector(lensButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
+  [visualSearchButton addTarget:self
+                         action:@selector(visualSearchButtonTapped)
+               forControlEvents:UIControlEventTouchUpInside];
 
-  return lensButton;
+  return visualSearchButton;
 }
 
 /// Updates the toolbar visiblity depending on state of the buttons that should
@@ -1082,6 +1080,33 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (!self.compact) {
     _bottomPaddingConstraint.constant =
         _toolbarView.hidden ? 0 : -kInputPlateStackViewExpandedBottomPadding;
+  }
+}
+
+- (void)updateCameraButton {
+  using enum ComposeboxInputPlateControls;
+  if ((_visibleControls & kLens) != kNone) {
+    _visualSearchButton.hidden = NO;
+    [_visualSearchButton setImage:CustomSymbolWithPointSize(
+                                      kCameraLensSymbol, kSymbolActionPointSize)
+                         forState:UIControlStateNormal];
+    _visualSearchButton.accessibilityIdentifier =
+        kComposeboxLensButtonAccessibilityIdentifier;
+    _visualSearchButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+  } else if ((_visibleControls & kQRScanner) != kNone) {
+    _visualSearchButton.hidden = NO;
+    [_visualSearchButton
+        setImage:DefaultSymbolWithPointSize(kQRCodeFinderActionSymbol,
+                                            kSymbolActionPointSize)
+        forState:UIControlStateNormal];
+
+    _visualSearchButton.accessibilityIdentifier =
+        kComposeboxQRCodeButtonAccessibilityIdentifier;
+    _visualSearchButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH);
+  } else {
+    _visualSearchButton.hidden = YES;
   }
 }
 
@@ -1102,7 +1127,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
         _plusButton, _aimButton, _imageGenerationButton, spacerView,
-        _sendButton, _micButton, _lensButton
+        _sendButton, _micButton, _visualSearchButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -1395,7 +1420,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (self.compact) {
     [_inputPlateStackView insertArrangedSubview:_plusButton atIndex:0];
     [_inputPlateStackView addArrangedSubview:_micButton];
-    [_inputPlateStackView addArrangedSubview:_lensButton];
+    [_inputPlateStackView addArrangedSubview:_visualSearchButton];
 
     _inputPlateStackView.axis = UILayoutConstraintAxisHorizontal;
     _inputPlateStackView.spacing = 0;

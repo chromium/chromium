@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -274,6 +275,17 @@ const CGFloat kSnackbarBottomMargin = 10;
                          completion:^{
                            [handler openLensInputSelection:command];
                          }];
+}
+
+- (void)composeboxViewController:
+            (ComposeboxInputPlateViewController*)composeboxViewController
+           didTapQRScannerButton:(UIButton*)button {
+  __weak id<QRScannerCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QRScannerCommands);
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:^{
+                                                [handler showQRScanner];
+                                              }];
 }
 
 - (void)composeboxViewControllerDidTapGalleryButton:

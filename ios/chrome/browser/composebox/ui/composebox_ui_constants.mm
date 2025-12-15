@@ -13,5 +13,7 @@ NSString* const kComposeboxMicButtonAccessibilityIdentifier =
     @"kComposeboxMicButtonAccessibilityIdentifier";
 NSString* const kComposeboxLensButtonAccessibilityIdentifier =
     @"kComposeboxLensButtonAccessibilityIdentifier";
+NSString* const kComposeboxQRCodeButtonAccessibilityIdentifier =
+    @"kComposeboxQRCodeButtonAccessibilityIdentifier";
 NSString* const kComposeboxSendButtonAccessibilityIdentifier =
     @"kComposeboxSendButtonAccessibilityIdentifier";
