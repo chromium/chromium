@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -78,6 +80,12 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
 - (NSArray*)accessibilityElements {
   NSMutableArray* accessibleElements = [[NSMutableArray alloc] init];
+
+  if (IsProactiveSuggestionsFrameworkEnabled() && _tapOverlayButton &&
+      !_tapOverlayButton.hidden) {
+    [accessibleElements addObject:_tapOverlayButton];
+    return accessibleElements;
+  }
 
   if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView) {
     [accessibleElements addObject:self.contextualPanelEntrypointView];
@@ -390,6 +398,12 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   [_tapOverlayButton addTarget:self
                         action:@selector(handleOverlayTap:)
               forControlEvents:UIControlEventTouchUpInside];
+
+  _tapOverlayButton.isAccessibilityElement = YES;
+  _tapOverlayButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_OPEN_PAGE_ACTION_MENU);
+  _tapOverlayButton.accessibilityTraits = UIAccessibilityTraitButton;
+
   // TODO(crbug.com/448422022): Remove overlay when migrating to
   // LocationBarBadgeViewController.
   [self addSubview:_tapOverlayButton];
