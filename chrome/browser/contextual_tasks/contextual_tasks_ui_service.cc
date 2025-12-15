@@ -273,6 +273,13 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     content::WebContents* source_contents,
     tabs::TabInterface* tab,
     bool is_to_new_tab) {
+  // Make sure the user is eligible to use the feature before attempting to
+  // intercept.
+  if (!context_controller_ ||
+      !context_controller_->GetFeatureEligibility().IsEligible()) {
+    return false;
+  }
+
   // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksHost(url_params.url)) {
     return false;
