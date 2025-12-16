@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/strings.m.js';
 import './filter_dialog/filter_dialog.js';
 import './filter_dialog/app_dialog.js';
 import './filter_dialog/event_dialog.js';
@@ -20,12 +19,12 @@ import '../icons.html.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {localizeEventType, localizeUpdateOutcome} from '../event_history.js';
 import type {CommonUpdateOutcome, EventType} from '../event_history.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';

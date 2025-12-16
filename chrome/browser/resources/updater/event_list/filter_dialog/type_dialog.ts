@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import './filter_dialog.js';
-import '/strings.m.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {FilterCategory, getFilterCategoryForTarget} from '../filter_bar.js';
 
 import {getCss} from './type_dialog.css.js';

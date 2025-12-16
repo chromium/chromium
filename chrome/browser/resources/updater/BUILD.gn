@@ -36,6 +36,7 @@ build_webui("build") {
     "event_list/filter_dialog/type_dialog.ts",
     "event_list/raw_event_details.html.ts",
     "event_list/raw_event_details.ts",
+    "i18n_setup.ts",
     "icons.html.ts",
     "known_apps.ts",
   ]

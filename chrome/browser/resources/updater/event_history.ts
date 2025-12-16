@@ -12,9 +12,7 @@
  * See //docs/updater/history_log.md for details on the serialization format.
  */
 
-import '/strings.m.js';
-
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {loadTimeData} from './i18n_setup.js';
 
 // ---------------------------------------------------------------------------
 // Common Types

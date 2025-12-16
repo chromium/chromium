@@ -8,9 +8,7 @@
  * the set to be overridden in tests.
  */
 
-import '/strings.m.js';
-
-import {loadTimeData} from '//resources/js/load_time_data.js';
+import {loadTimeData} from './i18n_setup.js';
 
 /**
  * Produces a map of app names to their app IDs.
