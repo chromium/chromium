@@ -125,6 +125,20 @@ TEST_F(OverscrollAreaTrackerTest, AddOverscrollAreaOneChild) {
   }
 }
 
+TEST_F(OverscrollAreaTrackerTest, EmptyCommandForIsNotValid) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id=""></div>
+      <button command="toggle-overscroll" commandfor="">
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(GetDocument().OverscrollCommandTargets().empty());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("container"))
+                   ->OverscrollAreaTracker());
+}
+
 TEST_F(OverscrollAreaTrackerTest, MultipleElementsPerController) {
   AtomicString tests[] = {
       {AtomicString(R"HTML(

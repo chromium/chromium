@@ -3636,9 +3636,9 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     // need to notify that an overscroll-target pseudo class may have changed.
     const auto& overscroll_command_targets =
         GetDocument().OverscrollCommandTargets();
-    if ((!params.old_value.IsNull() &&
+    if ((!params.old_value.empty() &&
          overscroll_command_targets.Contains(params.old_value)) ||
-        (!params.new_value.IsNull() &&
+        (!params.new_value.empty() &&
          overscroll_command_targets.Contains(params.new_value))) {
       OverscrollTargetStateChanged();
     }

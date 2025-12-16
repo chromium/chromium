@@ -857,9 +857,7 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
         GetCommandEventType(params.new_value, GetExecutionContext()));
     const AtomicString& command_for =
         FastGetAttribute(html_names::kCommandforAttr);
-    // TODO(crbug.com/469042533): Verify the validity of `command_for`, for
-    // instance skipping empty strings or making sure it's a valid id.
-    if (old_is_overscroll != new_is_overscroll && !command_for.IsNull()) {
+    if (old_is_overscroll != new_is_overscroll && !command_for.empty()) {
       if (new_is_overscroll) {
         GetDocument().AddOverscrollCommandTarget(command_for);
       } else {
@@ -872,10 +870,10 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
             GetCommandEventType(FastGetAttribute(html_names::kCommandAttr),
                                 GetExecutionContext())) &&
         params.old_value != params.new_value) {
-      if (!params.old_value.IsNull()) {
+      if (!params.old_value.empty()) {
         GetDocument().RemoveOverscrollCommandTarget(params.old_value);
       }
-      if (!params.new_value.IsNull()) {
+      if (!params.new_value.empty()) {
         GetDocument().AddOverscrollCommandTarget(params.new_value);
       }
     }
