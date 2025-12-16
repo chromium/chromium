@@ -878,7 +878,7 @@
 <translation id="7774365994322694683">पक्षी</translation>
 <translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> आइटम वापस लाए गए</translation>
 <translation id="7781829728241885113">बीता कल</translation>
-<translation id="7788080748068240085">"<ph name="FILE_NAME" />" को ऑफ़लाइन सेव करने के लिए आपको <ph name="TOTAL_FILE_SIZE" /> जगह और खाली करनी होगी :<ph name="MARKUP_1" /> <ph name="MARKUP_2" />उन फ़ाइलों को अनपिन करें जिन्हें अब आपको ऑफ़लाइन एक्सेस नहीं करना है<ph name="MARKUP_3" /> <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">"<ph name="FILE_NAME" />" को ऑफ़लाइन सेव करने के लिए आपको <ph name="TOTAL_FILE_SIZE" /> जगह और खाली करनी होगी :<ph name="MARKUP_1" /> <ph name="MARKUP_2" />उन फ़ाइलों को अनपिन करें जिन्हें अब आपको ऑफ़लाइन ऐक्सेस नहीं करना है<ph name="MARKUP_3" /> <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">डिवाइस स्‍वरूपित करें</translation>
 <translation id="7799329977874311193">HTML दस्‍तावेज़</translation>
 <translation id="7801354353640549019">Chromebook</translation>
