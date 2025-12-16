@@ -189,6 +189,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _isUpdatingCompactMode;
   // Whether the omnibox has text inputted.
   BOOL _hasText;
+  // Whether a successful navigation has started.
+  BOOL _inNavigation;
 }
 
 - (instancetype)
@@ -249,9 +251,12 @@ CreateInputDataFromAnnotatedPageContent(
   _aimEligibilityService = nullptr;
   _composeboxObserverBridge.reset();
   if (_contextualSearchSession) {
-    _contextualSearchSession->NotifySessionAbandoned();
+    if (!_inNavigation) {
+      _contextualSearchSession->NotifySessionAbandoned();
+    }
     _contextualSearchSession.reset();
   }
+  _inNavigation = NO;
   _webStateList = nil;
   _items = nil;
   _URLLoader = nil;
@@ -434,6 +439,8 @@ CreateInputDataFromAnnotatedPageContent(
       URL, /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED,
       /*destination_url_entered_without_scheme=*/false, _isIncognito);
+
+  _inNavigation = YES;
 
   [self.URLLoader loadURLParams:params];
 }
@@ -1155,6 +1162,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
+      _inNavigation = YES;
       [self.URLLoader loadURLParams:URLLoadParams];
       [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                                 AutocompleteRequestType::kSearch];
