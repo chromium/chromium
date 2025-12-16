@@ -24,12 +24,13 @@ bool operator==(const StackFrame& lhs, const StackFrame& rhs) {
 
 Backtrace::Backtrace() = default;
 
+Backtrace::Backtrace(const Backtrace&) = default;
+
+Backtrace::~Backtrace() = default;
+
 bool operator==(const Backtrace& lhs, const Backtrace& rhs) {
-  if (lhs.frame_count != rhs.frame_count) {
-    return false;
-  }
-  return std::equal(lhs.frames, UNSAFE_TODO(lhs.frames + lhs.frame_count),
-                    rhs.frames);
+  return std::ranges::equal(base::span(lhs.frames).first(lhs.frame_count),
+                            base::span(rhs.frames).first(rhs.frame_count));
 }
 
 AllocationContext::AllocationContext() : type_name(nullptr) {}
@@ -53,7 +54,7 @@ size_t hash<StackFrame>::operator()(const StackFrame& frame) const {
 size_t hash<Backtrace>::operator()(const Backtrace& backtrace) const {
   std::array<const void*, Backtrace::kMaxFrameCount> values;
   for (size_t i = 0; i != backtrace.frame_count; ++i) {
-    values[i] = UNSAFE_TODO(backtrace.frames[i]).value;
+    values[i] = backtrace.frames[i].value;
   }
   return base::PersistentHash(
       base::as_bytes(base::span(values).first(backtrace.frame_count)));
