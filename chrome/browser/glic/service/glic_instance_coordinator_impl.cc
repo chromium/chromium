@@ -665,6 +665,16 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kGlicHibernateAllOnMemoryPressure)) {
+    warmed_instance_.reset();
+    for (auto const& [id, instance] : instances_) {
+      if (!instance->IsShowing() && !instance->IsActuating()) {
+        instance->Hibernate();
+      }
+    }
+    return;
+  }
+
   // Safeguard: Do not hibernate if there is only one instance left.
   if (instances_.size() <= 1) {
     return;
