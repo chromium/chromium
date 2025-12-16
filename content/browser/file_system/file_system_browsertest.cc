@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -13,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/thread_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +28,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager.h"
 
 using storage::QuotaManager;
@@ -33,10 +37,14 @@ namespace content {
 
 // This browser test is aimed towards exercising the File System API bindings
 // and the actual implementation that lives in the browser side.
-class FileSystemBrowserTest : public ContentBrowserTest,
-                              public testing::WithParamInterface<bool> {
+class FileSystemBrowserTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  FileSystemBrowserTest() { is_incognito_ = GetParam(); }
+  FileSystemBrowserTest() {
+    feature_list_.InitWithFeatureState(storage::features::kStaticStorageQuota,
+                                       should_report_static_quota());
+  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -59,16 +67,28 @@ class FileSystemBrowserTest : public ContentBrowserTest,
     }
   }
 
+  int64_t GetTotalDiskSpaceOr(int64_t default_value) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::SysInfo::AmountOfTotalDiskSpace(
+               browser()->web_contents()->GetBrowserContext()->GetPath())
+        .value_or(default_value);
+  }
+
   Shell* browser() { return browser_; }
 
-  bool is_incognito() { return is_incognito_; }
+  bool is_incognito() { return testing::get<0>(GetParam()); }
+  bool should_report_static_quota() { return testing::get<1>(GetParam()); }
 
  protected:
   bool is_incognito_;
   raw_ptr<Shell> browser_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, FileSystemBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileSystemBrowserTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
  public:
@@ -104,7 +124,8 @@ class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FileSystemBrowserTestWithLowQuota,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTest, RequestTest) {
   SimpleTest(embedded_test_server()->GetURL("/fileapi/request_test.html"));
@@ -115,7 +136,25 @@ IN_PROC_BROWSER_TEST_P(FileSystemBrowserTest, CreateTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTestWithLowQuota, QuotaTest) {
-  SimpleTest(embedded_test_server()->GetURL("/fileapi/quota_test.html"));
+  const int64_t kMeg = 1000 * 1024;
+  const int64_t kGiB = 1024 * 1024 * 1024;
+
+  // Reported quota is the lower of 10 GiB or disk size rounded up to the
+  // nearest 1 GiB.
+  int64_t disk_size = GetTotalDiskSpaceOr(INT64_MAX);
+  if (disk_size <= 0) {
+    FAIL() << "Disk size[" << disk_size << "] was reported negative or zero.";
+  }
+  int64_t disk_quota_GiB = std::min(int64_t{10}, (disk_size - 1) / kGiB + 1);
+
+  // Incognito reports a static quota of 1 GiB because it calculates on ram, not
+  // on disk size. TODO(crbug.com/464484739): Set to disk_quota_GiB when fixed.
+  const int64_t quota = should_report_static_quota()
+                            ? (is_incognito() ? 1 : disk_quota_GiB) * kGiB
+                            : 5 * kMeg;
+
+  SimpleTest(embedded_test_server()->GetURL("/fileapi/quota_test.html?quota=" +
+                                            base::NumberToString(quota)));
 }
 
 }  // namespace content

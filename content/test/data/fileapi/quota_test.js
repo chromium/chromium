@@ -41,11 +41,11 @@ function requestFileSystemSuccess(fs) {
   }, function(e) { fail('Open for 1st truncate:' + fileErrorToString(e)); } );
 }
 
-function quotaSuccess(result) {
+function quotaSuccess(result, expectedQuota) {
   if (result.usage != 0)
     fail('Usage is not zero: ' + result.usage);
-  if (result.quota != 5000 * 1024)
-    fail('Quota is not 5000KiB: ' + result.quota);
+  if (result.quota != expectedQuota)
+    fail('Estimated quota is not ' + expectedQuota + ': ' + result.quota);
 
   window.webkitRequestFileSystem(
       window.TEMPORARY,
@@ -55,10 +55,19 @@ function quotaSuccess(result) {
 }
 
 function test() {
+  const params = new URLSearchParams(window.location.search);
+  const expectedQuota = Number(params.get('quota'));
+  if (isNaN(expectedQuota) || expectedQuota < 0) {
+    fail(
+        'Missing or invalid "quota" URL parameter, url was ' +
+        window.location.href);
+    return;
+  }
+
   if (navigator.storage) {
     debug('Querying usage and quota.');
     navigator.storage.estimate()
-        .then(quotaSuccess)
+        .then(result => quotaSuccess(result, expectedQuota))
         .catch(unexpectedErrorCallback);
   } else {
     debug('This test requires navigator.storage.');
