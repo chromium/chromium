@@ -59,6 +59,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaFeatures;
 import org.chromium.media.MediaSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -145,6 +146,8 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/469068794): fix test flakiness before launch on all android devices
+    @Restriction(DeviceFormFactor.DESKTOP)
     public void testCanAutopipWithConferenceCall() {
         WebContents webContents = loadUrlAndInitializeForTest(VIDEO_CONFERENCING_PAGE);
         // Verify if the loaded page registers auto pip.
