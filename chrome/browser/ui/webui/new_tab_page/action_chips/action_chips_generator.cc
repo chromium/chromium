@@ -123,17 +123,17 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
       host = host.substr(4);
     }
 
-    chip->title =
-        !suggestion.empty()
-            ? suggestion
-            : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+    chip->title = !suggestion.empty()
+                      ? suggestion
+                      : l10n_util::GetStringUTF8(
+                            IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_TAB);
     chip->suggestion = host;
   } else {
     chip->title = tab->title;
-    chip->suggestion =
-        !suggestion.empty()
-            ? suggestion
-            : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_BODY_1);
+    chip->suggestion = !suggestion.empty()
+                           ? suggestion
+                           : l10n_util::GetStringUTF8(
+                                 IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_TAB);
   }
 
   chip->tab = std::move(tab);
