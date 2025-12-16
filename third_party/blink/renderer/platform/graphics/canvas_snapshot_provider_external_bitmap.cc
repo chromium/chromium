@@ -95,19 +95,17 @@ CanvasSnapshotProviderExternalBitmap::CanvasSnapshotProviderExternalBitmap(
       alpha_type_(alpha_type),
       color_space_(color_space),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      info_(SkImageInfo::Make(size.width(),
-                              size.height(),
-                              viz::ToClosestSkColorType(format),
-                              alpha_type,
-                              color_space.ToSkColorSpace())),
       recorder_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)) {
   const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-  surface_ =
-      SkSurfaces::Raster(info_.makeAlphaType(kPremul_SkAlphaType), &props);
+  surface_ = SkSurfaces::Raster(
+      SkImageInfo::Make(size_.width(), size_.height(),
+                        viz::ToClosestSkColorType(format_), kPremul_SkAlphaType,
+                        color_space_.ToSkColorSpace()),
+      &props);
 }
 
 CanvasSnapshotProviderExternalBitmap::~CanvasSnapshotProviderExternalBitmap() =
