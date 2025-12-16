@@ -70,7 +70,7 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
       size_bounds.width().value() >=
           std::accumulate(children.begin(), children.end(), 0,
                           [](int total, const views::View* view) {
-                            return total + view->GetMinimumSize().width();
+                            return total + view->GetPreferredSize().width();
                           })) {
     int x = 0;
     for (auto* child : children) {

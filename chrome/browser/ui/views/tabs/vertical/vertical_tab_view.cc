@@ -45,8 +45,7 @@ constexpr int kAfterTitlePadding = 4;
 constexpr int kAfterAlertIndicatorPadding = 4;
 constexpr int kTitleNoCloseButtonRightPadding = 11;
 constexpr int kTitleHeight = 18;
-// TODO(crbug.com/454686636): Determine what this min width should be.
-constexpr int kVerticalTabExpandedMinWidth = 50;
+constexpr int kTabMinWidth = 38;
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -103,6 +102,9 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
                             : nullptr) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  SetPreferredSize(
+      gfx::Size(kTabMinWidth, GetLayoutConstant(VERTICAL_TAB_HEIGHT)));
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
@@ -253,8 +255,7 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
   views::ProposedLayout layouts;
 
   // TODO(crbug.com/454686636): Handle collapsed state.
-  const int width =
-      std::max(kVerticalTabExpandedMinWidth, size_bounds.width().value_or(0));
+  const int width = std::max(kTabMinWidth, size_bounds.width().value_or(0));
   const int height = GetLayoutConstant(VERTICAL_TAB_HEIGHT);
   layouts.host_size = gfx::Size(width, height);
 

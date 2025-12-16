@@ -11,6 +11,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -43,6 +44,11 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   int y = 0;
   int children_on_row = children.size();
 
+  if (children_on_row == 0) {
+    layouts.host_size = gfx::Size(0, 0);
+    return layouts;
+  }
+
   // Child width will be uniform and match the largest child's width.
   int child_width = 0;
   for (auto* child : children) {
@@ -53,28 +59,27 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   // If the width is bounded, calculate how many children can fit on a row.
   // Since all children are allocated the same width this will be the same for
   // every row.
-  if (size_bounds.width().is_bounded()) {
+  if (size_bounds.width().is_bounded() && size_bounds.width().value() > 0) {
     int available_width =
         size_bounds.width().value() -
         GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
 
-    if (available_width > 0) {
-      children_on_row = std::floor((available_width - child_width) /
-                                   (child_width + kTabVerticalPadding)) +
-                        1;
+    children_on_row = std::min(
+        children_on_row,
+        static_cast<int>(std::floor((available_width - child_width) /
+                                    (child_width + kTabVerticalPadding)) +
+                         1));
 
-      // Allocate extra space to the tabs.
-      available_width -= (children_on_row * child_width) +
-                         (kTabVerticalPadding * (children_on_row - 1));
-      child_width += std::floor(available_width / children_on_row);
-    } else {
-      children_on_row = 1;
-    }
+    // Allocate extra space to the tabs.
+    available_width -= (children_on_row * child_width) +
+                       (kTabVerticalPadding * (children_on_row - 1));
+    child_width += std::floor(available_width / children_on_row);
   }
 
   int row_index = 0;
   for (auto* child : children) {
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+    gfx::Rect bounds =
+        gfx::Rect(child->GetPreferredSize(views::SizeBounds(child_width, {})));
     bounds.set_width(child_width);
     if (row_index != 0) {
       x += kTabVerticalPadding;

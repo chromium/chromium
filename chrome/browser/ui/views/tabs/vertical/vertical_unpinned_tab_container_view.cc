@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -43,7 +44,12 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   // Layout children in order. Children will have their preferred height and
   // fill available width.
   for (auto* child : children) {
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+    views::SizeBounds child_bounds =
+        views::SizeBounds(size_bounds.width().is_bounded()
+                              ? (size_bounds.width() - horizontal_padding)
+                              : size_bounds.width(),
+                          {});
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_bounds));
     bounds.set_y(height);
     // If width is bounded, child views should respect the width constraints and
     // take up the available width excluding trailing horizontal padding.

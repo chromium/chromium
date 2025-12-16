@@ -145,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   auto child1 = children[0];
   auto child2 = children[1];
 
-  // Needs to be smaller than 2 * kVerticalTabExpandedMinWidth.
-  int available_width = 75;
+  // Needs to be smaller than 2 * kPinnedTabPreferredWidth.
+  int available_width = 70;
   auto proposed_layout = split_tab_view->CalculateProposedLayout(
       views::SizeBounds(available_width, {}));
   auto* child1_layout = proposed_layout.GetLayoutFor(child1);
