@@ -27,4 +27,7 @@ const char kNtpEnterpriseShortcutsVisible[] =
 const char kNtpPersonalShortcutsVisible[] = "ntp.personal_shortcuts_visible";
 // Tracks whether the user has chosen to show all most visited tiles on the NTP.
 const char kNtpShowAllMostVisitedTiles[] = "ntp.show_all_most_visited_tiles";
+// Tracks whether shortcuts auto-removal for inactivity is disabled.
+const char kNtpShortcutsAutoRemovalDisabled[] =
+    "ntp.shortcuts_auto_removal_disabled";
 }  // namespace ntp_prefs

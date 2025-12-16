@@ -319,3 +319,8 @@ std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile) {
   }
   return enabled_types;
 }
+
+void DisableShortcutsAutoRemoval(Profile* profile) {
+  profile->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  true);
+}

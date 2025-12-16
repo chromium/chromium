@@ -8288,6 +8288,7 @@ test("unit_tests") {
       "../browser/ui/webui/cr_components/composebox/composebox_handler_unittest.cc",
       "../browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler_unittest.cc",
       "../browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler_unittest.cc",
+      "../browser/ui/webui/cr_components/most_visited/most_visited_handler_unittest.cc",
       "../browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler_unittest.cc",
       "../browser/ui/webui/data_sharing/data_sharing_page_handler_unittest.cc",
       "../browser/ui/webui/discards/graph_dump_impl_unittest.cc",
