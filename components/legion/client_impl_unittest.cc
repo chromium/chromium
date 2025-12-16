@@ -156,12 +156,16 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), kExpectedResponseText);
+
+  const int kRequestSize = 27;
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
-  histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestSize",
+                                       kRequestSize, 1);
+  histogram_tester_.ExpectUniqueSample("Legion.Client.ResponseSize.Success",
+                                       response_data.size(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
       1);
