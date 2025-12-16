@@ -15,7 +15,9 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -132,8 +134,8 @@ public class TipsOptInCoordinator {
         private final View mContentView;
         private final BottomSheetController mController;
         private final BottomSheetObserver mBottomSheetOpenedObserver;
-        private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-                new ObservableSupplierImpl<>();
+        private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+                ObservableSuppliers.createNonNull(false);
         private final ScrollView mScrollView;
 
         TipsOptInSheetContent(View contentView, BottomSheetController controller) {
@@ -212,7 +214,7 @@ public class TipsOptInCoordinator {
         }
 
         @Override
-        public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
             return mBackPressStateChangedSupplier;
         }
 
