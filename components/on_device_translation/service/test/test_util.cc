@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/test/test_util.h"
+#include "components/on_device_translation/service/test/test_util.h"
 
 #include "base/check.h"
 #include "base/files/file_path.h"

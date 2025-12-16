@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
-#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_CLIENT_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_CLIENT_H_
 
 #include <cstddef>
 #include <map>
@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "components/services/on_device_translation/translate_kit_structs.h"
+#include "components/on_device_translation/service/translate_kit_structs.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace on_device_translation {
@@ -203,4 +203,4 @@ class TranslateKitClient {
 
 }  // namespace on_device_translation
 
-#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_CLIENT_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_CLIENT_H_

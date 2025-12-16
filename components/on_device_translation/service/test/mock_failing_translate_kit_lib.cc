@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "components/services/on_device_translation/translate_kit_structs.h"
+#include "components/on_device_translation/service/translate_kit_structs.h"
 
 #if BUILDFLAG(IS_WIN)
 #define TRANSLATE_KIT_EXPORT __declspec(dllexport)

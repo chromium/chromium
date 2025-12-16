@@ -50,8 +50,8 @@ source_set("on_device_translation") {
     "//components/language/core/browser",
     "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
+    "//components/on_device_translation/service:on_device_translation_service",
     "//components/prefs",
-    "//components/services/on_device_translation:on_device_translation_service",
     "//components/update_client",
     "//content/public/browser",
   ]
@@ -92,8 +92,8 @@ source_set("unit_tests") {
     "//components/crx_file",
     "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
+    "//components/on_device_translation/service/:test_support",
     "//components/prefs",
-    "//components/services/on_device_translation/:test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]
@@ -111,7 +111,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//components/services/on_device_translation/:test_support",
+    "//components/on_device_translation/service/:test_support",
     "//content/test:test_support",
   ]
 }

@@ -48,7 +48,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
-    "//components/services/on_device_translation:on_device_translation_service",
+    "//components/on_device_translation/service:on_device_translation_service",
     "//testing/gmock",
     "//testing/gtest",
   ]

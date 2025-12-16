@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/translate_kit_client.h"
+#include "components/on_device_translation/service/translate_kit_client.h"
 
 #include <map>
 #include <memory>
@@ -23,8 +23,8 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/on_device_translation/features.h"
-#include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
-#include "components/services/on_device_translation/translate_kit_structs.h"
+#include "components/on_device_translation/service/proto/translate_kit_api.pb.h"
+#include "components/on_device_translation/service/translate_kit_structs.h"
 
 namespace on_device_translation {
 namespace {

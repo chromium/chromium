@@ -19,7 +19,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "components/services/on_device_translation/test/test_util.h"
+#include "components/on_device_translation/service/test/test_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"

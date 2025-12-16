@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_STRUCTS_H_
-#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_STRUCTS_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_STRUCTS_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_STRUCTS_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -73,4 +73,4 @@ typedef uint64_t (*ReadOnlyMemoryRegionLengthFn)(std::uintptr_t memory_map_ptr,
 
 }  // extern "C"
 
-#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_STRUCTS_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TRANSLATE_KIT_STRUCTS_H_

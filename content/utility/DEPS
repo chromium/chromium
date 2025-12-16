@@ -1,10 +1,9 @@
 include_rules = [
   "+chromeos/ash/experiences/arc/video_accelerator",
   "+chromeos/ash/services/ime",
-  "+components/on_device_translation/buildflags",
   "+components/optimization_guide/core/optimization_guide_features.h",
   "+components/services/storage",
-  "+components/services/on_device_translation",
+  "+components/on_device_translation",
   "+content/child",
   "+content/public/utility",
   "+content/services",

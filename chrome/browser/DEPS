@@ -314,7 +314,7 @@ include_rules = [
   "+components/services/filesystem/public/mojom",
   "+components/services/heap_profiling",
   "+components/on_device_translation/buildflags",
-  "+components/services/on_device_translation/public",
+  "+components/on_device_translation/service/public",
   "+components/services/paint_preview_compositor/public/mojom",
   "+components/services/patch/content",
   "+components/services/patch/public",

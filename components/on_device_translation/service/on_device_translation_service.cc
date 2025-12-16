@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/on_device_translation_service.h"
+#include "components/on_device_translation/service/on_device_translation_service.h"
 
 #include <memory>
 
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
-#include "components/services/on_device_translation/translate_kit_client.h"
+#include "components/on_device_translation/service/translate_kit_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {

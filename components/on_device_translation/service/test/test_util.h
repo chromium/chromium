@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_
-#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TEST_TEST_UTIL_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TEST_TEST_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -89,4 +89,4 @@ class FakeFileOperationProxy : public mojom::FileOperationProxy {
 
 }  // namespace on_device_translation
 
-#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_TEST_TEST_UTIL_H_

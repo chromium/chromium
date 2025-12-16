@@ -13,8 +13,8 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/on_device_translation/service/test/test_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/on_device_translation/test/test_util.h"
 #include "content/public/test/browser_test_utils.h"
 
 using ::testing::_;

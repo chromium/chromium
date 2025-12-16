@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/sandbox_hook.h"
+#include "components/on_device_translation/service/sandbox_hook.h"
 
-#include "components/services/on_device_translation/translate_kit_client.h"
+#include "components/on_device_translation/service/translate_kit_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;

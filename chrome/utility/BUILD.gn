@@ -249,7 +249,7 @@ static_library("utility") {
   }
 
   if (enable_on_device_translation) {
-    deps += [ "//components/services/on_device_translation:on_device_translation_service" ]
+    deps += [ "//components/on_device_translation/service:on_device_translation_service" ]
   }
 }
 

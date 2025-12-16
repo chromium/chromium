@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/translate_kit_client.h"
+#include "components/on_device_translation/service/translate_kit_client.h"
 
 #include <tuple>
 
@@ -12,7 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "components/services/on_device_translation/test/test_util.h"
+#include "components/on_device_translation/service/test/test_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
