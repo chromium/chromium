@@ -177,8 +177,8 @@ std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
 ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordActorNavigationGatingListSize(
-      allowed_navigation_origins_.size(),
-      user_confirmed_blocklisted_origins_.size());
+      allowed_navigation_origins_->size(),
+      user_confirmed_blocklisted_origins_->size());
 
   RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
 }
@@ -352,7 +352,7 @@ void ExecutionEngine::CheckNavigationBlocklist(
   // Check previously confirmed origins on the sensitive blocklist. If the user
   // has previously confirmed the origin is allowed, we should proceed and not
   // double prompt.
-  for (const auto& origin : user_confirmed_blocklisted_origins_) {
+  for (const auto& origin : *user_confirmed_blocklisted_origins_) {
     if (origin.IsSameOriginWith(navigation_url)) {
       OnNavigationBlocklistDecision(initiator_origin, navigation_url,
                                     skip_prompt, std::move(callback),
@@ -394,7 +394,7 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
       return;
     }
 
-    for (const auto& origin : allowed_navigation_origins_) {
+    for (const auto& origin : *allowed_navigation_origins_) {
       if (IsSameForNewOriginNavigationGating(origin, navigation_url)) {
         LogNavigationGating(initiator_origin, navigation_url,
                             /*applied_gate=*/false);
@@ -476,7 +476,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
                           permission_granted);
     if (permission_granted) {
-      allowed_navigation_origins_.insert(std::move(navigation_origin));
+      allowed_navigation_origins_->insert(std::move(navigation_origin));
     }
     std::move(callback).Run(permission_granted);
     return;
@@ -514,13 +514,13 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
       // See the comment on `OriginOrPrecursorIfOpaque` for why we do not store
       // `navigation_origin` directly here and for the confirmed blocklist
       // origins.
-      allowed_navigation_origins_.insert(
+      allowed_navigation_origins_->insert(
           OriginOrPrecursorIfOpaque(navigation_origin));
       // We update both lists in the `for_blocklisted_origin` case so that we do
       // not have to double-confirm this origin when we invoke
       // ExecutionEngine::HandleNavigationToNewOrigin.
       if (for_blocklisted_origin) {
-        user_confirmed_blocklisted_origins_.insert(
+        user_confirmed_blocklisted_origins_->insert(
             OriginOrPrecursorIfOpaque(navigation_origin));
       }
     }
@@ -631,7 +631,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
       if (std::optional<url::Origin> maybe_origin =
               action->AssociatedOriginGrant();
           maybe_origin) {
-        allowed_navigation_origins_.insert(maybe_origin.value());
+        allowed_navigation_origins_->insert(maybe_origin.value());
       }
     }
   }
@@ -1073,14 +1073,14 @@ void ExecutionEngine::UninterruptFromTool() {
 }
 
 void ExecutionEngine::AddWritableMainframeOrigins(
-    const ExecutionEngine::AllowedOriginSet& added_writable_mainframe_origins) {
+    const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins) {
   if (!IsNavigationGatingEnabled()) {
     return;
   }
   for (const auto& origin : added_writable_mainframe_origins) {
     // Intentionally storing a copy of the origin so that ExecutionEngine owns
     // the url::Origin's stored in allowed_navigation_origins_.
-    allowed_navigation_origins_.insert(url::Origin(origin));
+    allowed_navigation_origins_->insert(url::Origin(origin));
   }
 }
 

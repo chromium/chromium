@@ -52,7 +52,7 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
                    TaskId task_id,
-                   const absl::flat_hash_set<url::Origin>& allowed_origins,
+                   const ConfirmedOriginSet& confirmed_origins,
                    DecisionCallbackWithReason callback);
   void MayActOnUrl(const GURL& url,
                    bool allow_insecure_http,

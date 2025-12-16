@@ -237,7 +237,7 @@ void ActorPolicyChecker::MayActOnTab(
     const tabs::TabInterface& tab,
     AggregatedJournal& journal,
     TaskId task_id,
-    const absl::flat_hash_set<url::Origin>& allowed_origins,
+    const ConfirmedOriginSet& confirmed_origins,
     DecisionCallbackWithReason callback) {
   if (!can_act_on_web()) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
@@ -250,7 +250,7 @@ void ActorPolicyChecker::MayActOnTab(
                                   MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
-  ::actor::MayActOnTab(tab, journal, task_id, allowed_origins,
+  ::actor::MayActOnTab(tab, journal, task_id, confirmed_origins,
                        std::move(callback));
 }
 

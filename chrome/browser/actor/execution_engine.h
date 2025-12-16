@@ -157,9 +157,8 @@ class ExecutionEngine : public ToolDelegate {
   void InterruptFromTool() override;
   void UninterruptFromTool() override;
 
-  using AllowedOriginSet = absl::flat_hash_set<url::Origin>;
   void AddWritableMainframeOrigins(
-      const AllowedOriginSet& added_writable_mainframe_origins);
+      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
   // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
   // the web client, receives its response. This callback gets a boolean
@@ -353,7 +352,7 @@ class ExecutionEngine : public ToolDelegate {
   // Separate allowlist for sensitive origins on the optimization guide
   // blocklist. We cache these origins separately to not double prompt the user
   // when they already confirmed the actor can interact with the origin.
-  AllowedOriginSet user_confirmed_blocklisted_origins_;
+  ConfirmedOriginSet user_confirmed_blocklisted_origins_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

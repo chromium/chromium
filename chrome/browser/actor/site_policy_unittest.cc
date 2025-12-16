@@ -100,7 +100,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
     auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     MayActOnTab(tab, actor_service->GetJournal(), TaskId(),
-                absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
+                ConfirmedOriginSet(), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,

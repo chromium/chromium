@@ -142,7 +142,7 @@ void MayActOnUrlInternal(
     const GURL& url,
     bool allow_insecure_http,
     Profile* profile,
-    base::optional_ref<const absl::flat_hash_set<url::Origin>> allowed_origins,
+    base::optional_ref<const ConfirmedOriginSet> confirmed_origins,
     std::unique_ptr<DecisionWrapper> decision_wrapper) {
   if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
       url.IsAboutBlank()) {
@@ -247,11 +247,11 @@ void MayActOnUrlInternal(
 
   // Blocklist is checked by `ShouldBlockNavigationUrlForOriginGating` when this
   // feature is enabled, and origins the user allowed the actor to interact with
-  // will be included in the `allowed_origins` set. If `url` has an origin not
+  // will be included in the `confirmed_origins` set. If `url` has an origin not
   // in the set, we apply the optimization guide check.
   if (IsNavigationGatingEnabled() &&
-      (!allowed_origins ||
-       base::Contains(*allowed_origins, url::Origin::Create(url)))) {
+      (!confirmed_origins ||
+       base::Contains(confirmed_origins->value(), url::Origin::Create(url)))) {
     decision_wrapper->Accept();
     return;
   }
@@ -297,7 +297,7 @@ void InitActionBlocklist(Profile* profile) {
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const absl::flat_hash_set<url::Origin>& allowed_origins,
+                 const ConfirmedOriginSet& confirmed_origins,
                  DecisionCallbackWithReason callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
@@ -329,7 +329,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
   MayActOnUrlInternal(
       url, /*allow_insecure_http=*/false,
       Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-      allowed_origins, std::move(decision_wrapper));
+      confirmed_origins, std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
