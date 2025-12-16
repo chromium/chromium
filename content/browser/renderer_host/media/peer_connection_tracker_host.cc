@@ -91,6 +91,11 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
 
 PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (int lid : peer_connection_lids_) {
+    for (auto& observer : GetObserverList()) {
+      observer.OnPeerConnectionRemoved(frame_id_, lid);
+    }
+  }
   RemoveHost(this);
   auto* power_monitor = base::PowerMonitor::GetInstance();
   power_monitor->RemovePowerSuspendObserver(this);
@@ -104,6 +109,7 @@ void PeerConnectionTrackerHost::AddPeerConnection(
   const std::string& url =
       (info->url == std::nullopt) ? std::string() : *info->url;
 
+  peer_connection_lids_.insert(info->lid);
   for (auto& observer : GetObserverList()) {
     observer.OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_, url,
                                    info->rtc_configuration);
@@ -113,6 +119,7 @@ void PeerConnectionTrackerHost::AddPeerConnection(
 void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  peer_connection_lids_.erase(lid);
   for (auto& observer : GetObserverList()) {
     observer.OnPeerConnectionRemoved(frame_id_, lid);
   }

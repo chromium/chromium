@@ -34,7 +34,7 @@ class RenderFrameHost;
 //
 // Note: This class and all of its methods are meant to only be used on the UI
 //       thread.
-class PeerConnectionTrackerHost
+class CONTENT_EXPORT PeerConnectionTrackerHost
     : public DocumentUserData<PeerConnectionTrackerHost>,
       public base::PowerSuspendObserver,
       public base::PowerThermalObserver,
@@ -121,6 +121,9 @@ class PeerConnectionTrackerHost
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;
+
+  // A set of local peer connection IDs that belong to this host.
+  std::set<int> peer_connection_lids_;
 };
 
 }  // namespace content

@@ -2870,6 +2870,7 @@ test("content_unittests") {
     "../browser/renderer_host/media/mock_preferred_audio_output_device_manager.h",
     "../browser/renderer_host/media/mock_video_capture_provider.cc",
     "../browser/renderer_host/media/mock_video_capture_provider.h",
+    "../browser/renderer_host/media/peer_connection_tracker_host_unittest.cc",
     "../browser/renderer_host/media/preferred_audio_output_device_manager_unittest.cc",
     "../browser/renderer_host/media/render_frame_audio_input_stream_factory_unittest.cc",
     "../browser/renderer_host/media/render_frame_audio_output_stream_factory_unittest.cc",
