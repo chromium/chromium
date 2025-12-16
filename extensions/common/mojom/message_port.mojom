@@ -4,9 +4,9 @@
 
 module extensions.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -15,14 +15,22 @@ import "url/mojom/url.mojom";
 // TODO(crbug.com/40321352): The 64 MiB limit also applies to structured clone
 // messages. Can we unrestrict that since it uses `mojom_base::BigBuffer` which
 // has shared memory benefits for large messages?
-const uint64 kMaxMessageBytes = 67108864; // 64 * 1024 * 1024
+const uint64 kMaxMessageBytes = 67108864;  // 64 * 1024 * 1024
 
 // The serialization format of the message.
 // NOTE: To obtain this for message sending purposes use
 // `messaging_util::GetSerializationFormat()`.
 enum SerializationFormat {
+  // Serialized using the structured clone algorithm. (If
+  // `extensions_features::kStructuredCloningForMessaging` is enabled) Used for
+  // standard extension messaging channels (`ChannelType::kSendMessage`,
+  // `ChannelType::kConnect`) to support richer data types.
   kStructuredCloned,
-  kJson
+  // Serialized using JSON. Used for all `ChannelType`s (if
+  // `extensions_features::kStructuredCloningForMessaging` is disabled).
+  // Otherwise only used for `ChannelType::kNative` messaging (which
+  // requires JSON) and legacy methods (`ChannelType::kSendRequest`).
+  kJson,
 };
 
 // The type of messaging channel.
@@ -38,7 +46,7 @@ enum ChannelType {
   // A native message channel. Note that unlike above, both one-time and
   // long-lived native message channels use the same type (because they don't
   // have associated channel names).
-  kNative
+  kNative,
 };
 
 // Type of the messaging source or destination - i.e., the type of the
@@ -53,7 +61,7 @@ enum MessagingEndpointType {
   // A user script.
   kUserScript,
   // A native application.
-  kNativeApp
+  kNativeApp,
 };
 
 // Definition of a port. This struct will eventually go away when all
@@ -99,11 +107,19 @@ union MessageData {
 
 // A message that is serialized across the channel.
 struct Message {
+  // The data payload of the message.
   MessageData data;
+  // The serialization format used for the message. This dictates which field
+  // in `data` is populated.
   // TODO(crbug.com/40321352): Remove this field once structured cloning is
   // fully implemented and we can rely on the union tag.
   SerializationFormat format;
+  // Whether the message was sent with a user gesture. This is determined by
+  // the sender's context.
   bool user_gesture;
+  // Whether the message originated from a privileged extension context
+  // (specifically, `mojom::ContextType::kPrivilegedExtension`). This typically
+  // corresponds to the extension's background context (page or service worker).
   bool from_privileged_context;
 };
 
@@ -111,6 +127,7 @@ struct Message {
 interface MessagePort {
   // Dispatch the Port.onDisconnect event for message channels.
   DispatchDisconnect(string error);
+
   // Deliver a message sent with MessagePortHost.PostMessage.
   DeliverMessage(Message message);
 };
@@ -128,8 +145,10 @@ interface MessagePortHost {
   // context, and possibly in another renderer via the browser. It is so that
   // the opener can react to the error (for retries, debugging, etc.)
   ClosePort(bool close_channel, string? error_message);
+
   // Send a message to an extension process.
   PostMessage(Message message);
+
   // Send a message to tell the browser that one of the listeners for a message
   // indicated they are intending to reply later.
   ResponsePending();
