@@ -188,7 +188,7 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     float max_contents_scale) {
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
-  last_append_quads_scales_.clear();
+  ClearLastAppendQuadsScales();
 
   // TODO(crbug.com/40902346): Use CalculateScaledCullRect() to set
   // append_quads_data->checkerboarded_needs_record as PictureLayerImpl does.
@@ -251,12 +251,7 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
       continue;
     }
 
-    if (last_append_quads_scales_.empty() ||
-        last_append_quads_scales_.back() !=
-            iter.CurrentTiling()->contents_scale_key()) {
-      last_append_quads_scales_.push_back(
-          iter.CurrentTiling()->contents_scale_key());
-    }
+    AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
   }
 }
 
@@ -335,9 +330,7 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
   for (float scale : proposed_tiling_scales_for_deletion_) {
     // Check if a tiling corresponding to the candidate scale is present in
     // |last_append_quads_scales_|.
-    auto it = std::find(last_append_quads_scales_.begin(),
-                        last_append_quads_scales_.end(), scale);
-    if (it == last_append_quads_scales_.end()) {
+    if (!LastAppendQuadsScalesContains(scale)) {
       // If a tiling corresponding to the candidate scale is not present in
       // |last_append_quads_scales_|, then its safe to delete.
       safe_to_delete_scales.push_back(scale);

@@ -66,7 +66,7 @@ class FakePictureLayerImpl : public PictureLayerImpl {
 
   void AddTilingUntilNextDraw(float scale) {
     AddTiling(gfx::AxisTransform2d(scale, gfx::Vector2dF()));
-    last_append_quads_scales_.push_back(scale);
+    GetLastAppendQuadsScalesForTesting().push_back(scale);
   }
 
   float raster_page_scale() const { return raster_page_scale_; }
@@ -116,9 +116,9 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   // Add the given tiling as a "used" tiling during AppendQuads. This ensures
   // that future calls to UpdateTiles don't delete the tiling.
   void MarkAllTilingsUsed() {
-    last_append_quads_scales_.clear();
+    GetLastAppendQuadsScalesForTesting().clear();
     for (size_t i = 0; i < tilings_->num_tilings(); ++i)
-      last_append_quads_scales_.push_back(
+      GetLastAppendQuadsScalesForTesting().push_back(
           tilings_->tiling_at(i)->contents_scale_key());
   }
 

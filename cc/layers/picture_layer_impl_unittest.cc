@@ -2311,7 +2311,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   // Now, set the bounds to be 1x1, so that minimum contents scale becomes 1.
   SetupPendingTree(FakeRasterSource::CreateFilled(gfx::Size(1, 1)));
   ActivateTree();
-  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1.0f);
+  active_layer()->GetLastAppendQuadsScalesForTesting().push_back(1.0f);
   active_layer()->UpdateTiles();
 
   EXPECT_EQ(1.f, active_layer()->MinimumContentsScale());
@@ -3741,7 +3741,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
 
   // Mark the non-ideal tilings as used. They won't be removed.
   active_layer()->ClearLastAppendsQuadsScalesForTesting();
-  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1);
+  active_layer()->GetLastAppendQuadsScalesForTesting().push_back(1);
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 
@@ -3782,7 +3782,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   // target raster scale. But it is in our used tilings set, so nothing is
   // deleted.
   active_layer()->ClearLastAppendsQuadsScalesForTesting();
-  active_layer()->GetLastAppendsQuadsScalesForTesting().push_back(1);
+  active_layer()->GetLastAppendQuadsScalesForTesting().push_back(1);
   active_layer()->CleanUpTilingsOnActiveLayer();
   ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
 

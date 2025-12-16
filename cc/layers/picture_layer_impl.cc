@@ -285,7 +285,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     float max_contents_scale) {
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
-  last_append_quads_scales_.clear();
+  ClearLastAppendQuadsScales();
 
   // Ignore missing tiles outside of viewport for tile priority. This is
   // normally the same as draw viewport but can be independently overridden by
@@ -443,12 +443,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
 
     produced_tile_last_append_quads_ = true;
 
-    if (last_append_quads_scales_.empty() ||
-        last_append_quads_scales_.back() !=
-            iter.CurrentTiling()->contents_scale_key()) {
-      last_append_quads_scales_.push_back(
-          iter.CurrentTiling()->contents_scale_key());
-    }
+    AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
   }
 
   if (missing_tile_count) {
@@ -1614,8 +1609,7 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
     }
 
     // Don't remove tilings that are required based on most recent draw.
-    if (base::Contains(last_append_quads_scales_,
-                       tiling->contents_scale_key())) {
+    if (LastAppendQuadsScalesContains(tiling->contents_scale_key())) {
       continue;
     }
 

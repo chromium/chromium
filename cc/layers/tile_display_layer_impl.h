@@ -214,9 +214,6 @@ class CC_EXPORT TileDisplayLayerImpl
   std::optional<SkColor4f> solid_color_for_testing() const {
     return solid_color();
   }
-  std::vector<float>& LastAppendQuadsScalesForTesting() {
-    return last_append_quads_scales_;
-  }
 
  private:
   // TileBasedLayerImpl:
@@ -251,17 +248,6 @@ class CC_EXPORT TileDisplayLayerImpl
   // space.
   gfx::Rect damage_rect_;
   std::vector<std::unique_ptr<TileDisplayLayerTiling>> tilings_;
-
-  // List of tiling scales that were used last time we appended quads. This is
-  // used as an optimization not to remove tilings if they are still being
-  // drawn. The renderer will propose list of candidate tilings for deletion to
-  // Viz represented by |proposed_tiling_scales_for_deletion_|, and the
-  // Viz process will confirm which of those are safe to delete
-  // (i.e. not used in the last frame) before the renderer actually removes
-  // them. This keeps the renderer’s tile management logic close to its
-  // current behavior and prevents premature deletion of tiles still needed by
-  // Viz.
-  std::vector<float> last_append_quads_scales_;
 
   // A list of tiling scale keys that the client has nominated for deletion.
   // This allows the client to suggest cleanup, but Viz makes the final

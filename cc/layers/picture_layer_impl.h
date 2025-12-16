@@ -211,13 +211,7 @@ class CC_EXPORT PictureLayerImpl
     raster_contents_scale_ = gfx::Vector2dF(scale, scale);
   }
 
-  std::vector<float>& GetLastAppendsQuadsScalesForTesting() {
-    return last_append_quads_scales_;
-  }
-
-  void ClearLastAppendsQuadsScalesForTesting() {
-    last_append_quads_scales_.clear();
-  }
+  void ClearLastAppendsQuadsScalesForTesting() { ClearLastAppendQuadsScales(); }
 
  protected:
   friend class RasterizeAndRecordBenchmarkImpl;
@@ -386,11 +380,6 @@ class CC_EXPORT PictureLayerImpl
   gfx::Rect viewport_rect_for_tile_priority_in_content_space_;
 
   gfx::Size gpu_raster_max_texture_size_;
-
-  // List of tiling scales that were used last time we appended quads. This is
-  // used as an optimization not to remove tilings if they are still being
-  // drawn.
-  std::vector<float> last_append_quads_scales_;
 
   // The set of PaintWorkletInputs that are part of this PictureLayerImpl, and
   // their painted results (if any). During commit, Blink hands us a set of
