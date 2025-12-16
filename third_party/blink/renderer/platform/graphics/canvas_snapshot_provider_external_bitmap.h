@@ -52,7 +52,7 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
   class SoftwareImageProvider;
   std::unique_ptr<SoftwareImageProvider> image_provider_;
 
-  mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
+  sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 
   gfx::Size size_;
