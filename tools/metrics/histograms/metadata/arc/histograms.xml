@@ -1114,7 +1114,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
     expires_after="2026-05-24">
-  <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1128,7 +1127,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.EngagementTime.Background" units="ms"
     expires_after="2026-05-24">
-  <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1140,7 +1138,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
     expires_after="2026-05-24">
-  <owner>mduggan@google.com</owner>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1150,8 +1147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Total" units="ms"
-    expires_after="2026-01-18">
-  <owner>mduggan@google.com</owner>
+    expires_after="2026-05-24">
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
