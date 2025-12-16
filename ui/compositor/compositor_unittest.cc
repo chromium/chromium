@@ -519,14 +519,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40467610): Flaky on windows trybots
-#define MAYBE_CreateAndReleaseOutputSurface \
-  DISABLED_CreateAndReleaseOutputSurface
-#else
-#define MAYBE_CreateAndReleaseOutputSurface CreateAndReleaseOutputSurface
-#endif
-TEST_F(CompositorTestWithMessageLoop, MAYBE_CreateAndReleaseOutputSurface) {
+TEST_F(CompositorTestWithMessageLoop, CreateAndReleaseOutputSurface) {
   std::unique_ptr<Layer> root_layer(new Layer(ui::LAYER_SOLID_COLOR));
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
