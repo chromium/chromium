@@ -62,10 +62,8 @@ const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
 const CGFloat kInputPlateStackViewVerticalCompactPadding = 0.0f;
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
-/// The leading padding for the input plate stack view.
-const CGFloat kInputPlateStackViewLeadingPadding = 10.0f;
-/// The trailing padding for the input plate stack view.
-const CGFloat kInputPlateStackViewTrailingPadding = 12.0f;
+/// The horizontal padding for the input plate stack view.
+const CGFloat kInputPlateStackViewHorizontalPadding = 10.0f;
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
@@ -248,8 +246,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       _inputPlateStackView, _inputPlateContainerView,
       (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
       NSDirectionalEdgeInsetsMake(kInputPlateStackViewVerticalCompactPadding,
-                                  kInputPlateStackViewLeadingPadding, 0,
-                                  kInputPlateStackViewTrailingPadding));
+                                  kInputPlateStackViewHorizontalPadding, 0,
+                                  kInputPlateStackViewHorizontalPadding));
 
   [self updateInputPlateStackViewAnimated:NO];
 
