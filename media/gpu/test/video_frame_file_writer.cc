@@ -172,7 +172,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // in the end of function.
   auto frame = video_frame;
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (frame->HasMappableSharedImage()) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque, which cannot be mapped via MappableSI,
     // for SCANOUT_VDA_WRITE buffers. However, we need to map the contents of
