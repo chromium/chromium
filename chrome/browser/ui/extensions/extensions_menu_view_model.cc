@@ -888,6 +888,21 @@ ExtensionsMenuViewModel::GetSiteSettingsState() {
   return site_settings;
 }
 
+std::vector<extensions::ExtensionId>
+ExtensionsMenuViewModel::GetSortedExtensions() {
+  std::vector<extensions::ExtensionId> sorted_ids(
+      toolbar_model_->action_ids().begin(), toolbar_model_->action_ids().end());
+
+  auto sort_by_name = [this](const ToolbarActionsModel::ActionId& a,
+                             const ToolbarActionsModel::ActionId& b) {
+    return base::i18n::ToLower(toolbar_model_->GetExtensionName(a)) <
+           base::i18n::ToLower(toolbar_model_->GetExtensionName(b));
+  };
+  std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
+
+  return sorted_ids;
+}
+
 void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {

@@ -1107,3 +1107,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetOptionalSection) {
   EXPECT_EQ(menu_model()->GetOptionalSection(),
             ExtensionsMenuViewModel::OptionalSection::kNone);
 }
+
+// Tests that GetSortedExtensions returns a list of extension IDs sorted by
+// extension name (case-insensitive).
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetSortedExtensions) {
+  // Add extensions in a non-alphabetical order. We mix casing to verify the
+  // sort is case-insensitive ("alpha" < "Beta").
+  auto extension_c = AddExtension("Charlie");
+  auto extension_a = AddExtension("alpha");
+  auto extension_b = AddExtension("Beta");
+
+  std::vector<extensions::ExtensionId> sorted_ids =
+      menu_model()->GetSortedExtensions();
+
+  // Verify the result is sorted alphabetically: alpha, Beta, Charlie.
+  ASSERT_EQ(sorted_ids.size(), 3u);
+  EXPECT_EQ(sorted_ids[0], extension_a->id());
+  EXPECT_EQ(sorted_ids[1], extension_b->id());
+  EXPECT_EQ(sorted_ids[2], extension_c->id());
+}

@@ -221,6 +221,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the site settings for the current web contents.
   SiteSettingsState GetSiteSettingsState();
 
+  // Returns a list of extension IDs sorted by the extension's name.
+  std::vector<extensions::ExtensionId> GetSortedExtensions();
+
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;

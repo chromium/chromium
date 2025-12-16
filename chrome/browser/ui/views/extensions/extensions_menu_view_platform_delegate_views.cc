@@ -45,36 +45,6 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-// Returns sorted extension ids based on their extensions name.
-std::vector<std::string> SortExtensionsByName(
-    ToolbarActionsModel& toolbar_model) {
-  auto sort_by_name = [&toolbar_model](const ToolbarActionsModel::ActionId a,
-                                       const ToolbarActionsModel::ActionId b) {
-    return base::i18n::ToLower(toolbar_model.GetExtensionName(a)) <
-           base::i18n::ToLower(toolbar_model.GetExtensionName(b));
-  };
-  std::vector<std::string> sorted_ids(toolbar_model.action_ids().begin(),
-                                      toolbar_model.action_ids().end());
-  std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
-  return sorted_ids;
-}
-
-// Returns the index of `action_id` in the toolbar model actions based on the
-// extensions name alphabetical order.
-size_t FindIndex(ToolbarActionsModel& toolbar_model,
-                 const ToolbarActionsModel::ActionId& action_id) {
-  std::u16string extension_name =
-      base::i18n::ToLower(toolbar_model.GetExtensionName(action_id));
-  auto sorted_action_ids = SortExtensionsByName(toolbar_model);
-  return static_cast<size_t>(
-      std::ranges::lower_bound(sorted_action_ids, extension_name, {},
-                               [&toolbar_model](std::string id) {
-                                 return base::i18n::ToLower(
-                                     toolbar_model.GetExtensionName(id));
-                               }) -
-      sorted_action_ids.begin());
-}
-
 // Returns the main page, if it is the correct type.
 ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
   return views::AsViewClass<ExtensionsMenuMainPageView>(page);
@@ -198,7 +168,12 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
     return;
   }
 
-  int index = FindIndex(*toolbar_model_, action_id);
+  std::vector<std::string> sorted_ids = menu_model_->GetSortedExtensions();
+  auto it = std::find(sorted_ids.begin(), sorted_ids.end(), action_id);
+  // The action must be in the list since it was just added to the model.
+  CHECK(it != sorted_ids.end());
+  int index = std::distance(sorted_ids.begin(), it);
+
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
@@ -407,7 +382,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
       auto* permissions_manager = PermissionsManager::Get(browser_->profile());
       int index = 0;
       std::vector<std::string> extension_ids =
-          SortExtensionsByName(*toolbar_model_);
+          menu_model_->GetSortedExtensions();
 
       for (const auto& extension_id : extension_ids) {
         if (permissions_manager->HasActiveHostAccessRequest(tab_id,
@@ -486,9 +461,7 @@ void ExtensionsMenuViewPlatformDelegateViews::SwitchToPage(
 
 void ExtensionsMenuViewPlatformDelegateViews::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
-  // TODO(crbug.com/40879945): We should update the subheader here since it
-  // depends on `toolbar_model_`.
-  std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
+  std::vector<std::string> sorted_ids = menu_model_->GetSortedExtensions();
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
     InsertMenuItemMainPage(main_page, sorted_ids[i], i);
   }
