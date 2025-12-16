@@ -84,6 +84,7 @@ button > cr-icon {
 
 cr-icon-button {
   --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-icon-size: 20px;
 }
 
 cr-icon-button[hidden] {
