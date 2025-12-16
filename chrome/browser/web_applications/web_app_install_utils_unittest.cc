@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -32,7 +33,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -638,9 +638,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   web_app_info.background_color = SK_ColorMAGENTA;
   web_app_info.dark_mode_background_color = SK_ColorBLACK;
 
-  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                                              web_app_info.start_url());
-  auto web_app = std::make_unique<WebApp>(app_id);
+  auto web_app = web_app::test::CreateWebApp(web_app_info.start_url());
   SetWebAppManifestFields(web_app_info, *web_app);
 
   EXPECT_EQ(web_app->scope(), GURL("https://www.chromium.org/"));
@@ -671,9 +669,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   web_app_info.scope = web_app_info.start_url().GetWithoutFilename();
   web_app_info.title = u"App Name";
 
-  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                                              web_app_info.start_url());
-  auto web_app = std::make_unique<WebApp>(app_id);
+  auto web_app = web_app::test::CreateWebApp(web_app_info.start_url());
 
   {
     apps::ShareTarget share_target;
@@ -744,9 +740,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_BorderlessUrlPatterns) {
   auto web_app_info = CreateWebAppInstallInfoFromStartUrl(StartUrl());
   web_app_info.title = u"App Name";
 
-  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                                              web_app_info.start_url());
-  auto web_app = std::make_unique<WebApp>(app_id);
+  auto web_app = web_app::test::CreateWebApp(web_app_info.start_url());
 
   blink::SafeUrlPattern foo_pattern;
   foo_pattern.hostname = {

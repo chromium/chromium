@@ -113,12 +113,10 @@ MATCHER_P(IsHttpStatusCode, err, net::GetHttpReasonPhrase(err)) {
 }
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-  webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/"", start_url);
-  auto web_app = std::make_unique<WebApp>(app_id);
+  webapps::ManifestId manifest_id = start_url.Resolve("/");
+  GURL scope = start_url.Resolve("/");
+  auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
   web_app->SetName("iwa name");
-  web_app->SetStartUrl(start_url);
-  web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
-  web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
   web_app->AddSource(WebAppManagement::Type::kIwaUserInstalled);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   return web_app;

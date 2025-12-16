@@ -31,7 +31,7 @@ const base::FilePath::CharType kCurrentDirectory[] =
 const base::FilePath::CharType kCurrentDirectory[] = FILE_PATH_LITERAL("/path");
 #endif  // BUILDFLAG(IS_WIN)
 
-const char kTestAppId[] = "test_app_id";
+const char kTestAppId[] = "https://example.com/";
 
 class WebAppUiManagerTest : public testing::Test {
  public:
@@ -40,7 +40,9 @@ class WebAppUiManagerTest : public testing::Test {
 
  protected:
   void InitAppWithDisplayMode(DisplayMode display_mode) {
-    auto web_app = std::make_unique<WebApp>(kTestAppId);
+    GURL test_app_url = GURL(kTestAppId);
+    auto web_app =
+        std::make_unique<WebApp>(test_app_url, test_app_url, test_app_url);
     web_app->SetDisplayMode(display_mode);
     if (display_mode == DisplayMode::kBrowser) {
       web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);

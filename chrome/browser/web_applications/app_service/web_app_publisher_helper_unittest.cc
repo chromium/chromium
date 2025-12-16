@@ -156,6 +156,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
   for (int seed = 0; seed < 100; ++seed) {
     test::CreateRandomWebAppParams params;
     params.seed = seed;
+    params.parent_manifest_id = GURL();
     std::unique_ptr<WebApp> random_app = test::CreateRandomWebApp(params);
 
     auto info = std::make_unique<WebAppInstallInfo>(random_app->manifest_id(),

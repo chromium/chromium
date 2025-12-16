@@ -234,7 +234,13 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
         base::StringPrintf("/web_apps/basic.html?index=%d", index++));
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
-    web_app_info->scope = app_url;
+    {
+      // Remove the query argument and filename for the scope.
+      GURL::Replacements replacements;
+      replacements.ClearQuery();
+      web_app_info->scope =
+          app_url.ReplaceComponents(replacements).GetWithoutFilename();
+    }
     web_app_info->display_mode = install_display_mode;
     web_app_info->user_display_mode = open_as_window
                                           ? mojom::UserDisplayMode::kStandalone

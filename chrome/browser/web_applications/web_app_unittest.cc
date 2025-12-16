@@ -317,7 +317,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
   const base::FilePath path_to_test_file =
       GetPathToTestFile("empty_web_app.json");
   const base::Value web_app_debug_value =
-      WebAppToPlatformAgnosticDebugValue(std::make_unique<WebApp>("empty_app"));
+      WebAppToPlatformAgnosticDebugValue(test::CreateWebApp());
 
   if (IsRebaseline()) {
     LOG(INFO) << "Generating expectations empty web app unit test in "
@@ -375,10 +375,9 @@ TEST(WebAppTest, RandomAppAsDebugValue_NoCrash) {
 }
 
 TEST(WebAppTest, IsolationDataStartsEmpty) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  auto app = web_app::test::CreateWebApp(GURL("https://example.com"));
 
-  EXPECT_FALSE(app.isolation_data().has_value());
+  EXPECT_FALSE(app->isolation_data().has_value());
 }
 
 TEST(WebAppTest, IsolationDataDebugValue) {

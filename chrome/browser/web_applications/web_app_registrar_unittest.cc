@@ -80,13 +80,14 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
   Registry registry;
 
   for (int i = 0; i < num_apps; ++i) {
-    const auto url = base_url + base::NumberToString(i);
-    const webapps::AppId app_id =
-        GenerateAppId(/*manifest_id=*/std::nullopt, GURL(url));
+    const auto start_url_str = base_url + base::NumberToString(i);
+    GURL start_url = GURL(start_url_str);
 
-    auto web_app = std::make_unique<WebApp>(app_id);
+    webapps::ManifestId manifest_id =
+        GenerateManifestIdFromStartUrlOnly(start_url);
+    GURL scope = start_url.GetWithoutFilename();
+    auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
     web_app->AddSource(WebAppManagement::kSync);
-    web_app->SetStartUrl(GURL(url));
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
@@ -97,6 +98,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     os_state.mutable_shortcut();
     web_app->SetCurrentOsIntegrationStates(os_state);
 
+    webapps::AppId app_id = web_app->app_id();
     registry.emplace(app_id, std::move(web_app));
   }
 
@@ -118,8 +120,6 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 
-// TODO(dmurph): Make this test run from the default FakeWebAppProvider like all
-// other unittests.
 class WebAppRegistrarTest : public WebAppTest {
  public:
   void SetUp() override {
@@ -235,7 +235,7 @@ TEST_F(WebAppRegistrarTest, EmptyRegistrar) {
 }
 
 TEST_F(WebAppRegistrarTest, InitWithApps) {
-  const GURL start_url = GURL("https://example.com/path");
+  const GURL start_url = GURL("https://example.com/scope/path");
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const std::string name = "Name";
@@ -243,26 +243,29 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
   const GURL scope = GURL("https://example.com/scope");
   const std::optional<SkColor> theme_color = 0xAABBCCDD;
 
-  const GURL start_url2 = GURL("https://example.com/path2");
+  const GURL start_url2 = GURL("https://example.com/scope2/path2");
+  const GURL scope2 = GURL("https://example.com/scope2");
   const webapps::AppId app_id2 =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url2);
 
-  auto web_app = std::make_unique<WebApp>(app_id);
-  auto web_app2 = std::make_unique<WebApp>(app_id2);
+  auto web_app =
+      std::make_unique<WebApp>(/*manifest_id=*/
+                               GenerateManifestIdFromStartUrlOnly(start_url),
+                               start_url, scope);
+  auto web_app2 = std::make_unique<WebApp>(
+      /*manifest_id=*/GenerateManifestIdFromStartUrlOnly(start_url2),
+      start_url2, scope2);
 
   web_app->AddSource(WebAppManagement::kUserInstalled);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName(name);
   web_app->SetDescription(description);
-  web_app->SetStartUrl(start_url);
-  web_app->SetScope(scope);
   web_app->SetThemeColor(theme_color);
 
   web_app2->AddSource(WebAppManagement::kDefault);
   web_app2->SetDisplayMode(DisplayMode::kBrowser);
   web_app2->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-  web_app2->SetStartUrl(start_url2);
   web_app2->SetName(name);
 
   Registry registry;
@@ -366,12 +369,11 @@ TEST_F(WebAppRegistrarTest, AppsInstalledByUserMetric) {
 TEST_F(WebAppRegistrarTest, AppsNonUserInstalledMetric) {
   base::HistogramTester histogram_tester;
 
-  auto web_app = std::make_unique<WebApp>("app_id");
-  web_app->AddSource(WebAppManagement::kPolicy);
+  auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/path"),
+                                             WebAppManagement::kPolicy);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("name");
-  web_app->SetStartUrl(GURL("https://example.com/path"));
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
 
@@ -386,12 +388,12 @@ TEST_F(WebAppRegistrarTest, AppsNonUserInstalledMetric) {
 TEST_F(WebAppRegistrarTest, AppsNotLocallyInstalledMetric) {
   base::HistogramTester histogram_tester;
 
-  auto web_app = std::make_unique<WebApp>("app_id");
+  auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/path"),
+                                             WebAppManagement::kSync);
   web_app->AddSource(WebAppManagement::kSync);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("name");
-  web_app->SetStartUrl(GURL("https://example.com/path"));
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
@@ -453,10 +455,10 @@ TEST_F(WebAppRegistrarTest, GetApps) {
 }
 
 TEST_F(WebAppRegistrarTest, GetAppDataFields) {
-
   const GURL start_url = GURL("https://example.com/path");
-  const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
+  const webapps::ManifestId manifest_id =
+      GenerateManifestIdFromStartUrlOnly(start_url);
+  const GURL scope = start_url.GetWithoutFilename();
   const std::string name = "Name";
   const std::string description = "Description";
   const std::optional<SkColor> theme_color = 0xAABBCCDD;
@@ -464,20 +466,20 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   const auto user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::vector<DisplayMode> display_mode_override;
 
-  auto web_app = std::make_unique<WebApp>(app_id);
 
   display_mode_override.push_back(DisplayMode::kMinimalUi);
   display_mode_override.push_back(DisplayMode::kStandalone);
 
+  auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
   web_app->AddSource(WebAppManagement::kSync);
   web_app->SetName(name);
   web_app->SetDescription(description);
   web_app->SetThemeColor(theme_color);
-  web_app->SetStartUrl(start_url);
   web_app->SetDisplayMode(display_mode);
   web_app->SetUserDisplayMode(user_display_mode);
   web_app->SetDisplayModeOverride(display_mode_override);
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
+  webapps::AppId app_id = web_app->app_id();
 
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
@@ -542,9 +544,9 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
 
   const GURL origin_scope("https://example.com/");
 
-  const GURL app1_scope("https://example.com/app");
-  const GURL app2_scope("https://example.com/app-two");
-  const GURL app3_scope("https://not-example.com/app");
+  const GURL app1_scope("https://example.com/app/");
+  const GURL app2_scope("https://example.com/app/two/");
+  const GURL app3_scope("https://not-example.com/app/");
 
   const webapps::AppId app1_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, app1_scope);
@@ -567,7 +569,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app1 = test::CreateWebApp(app1_scope);
-  app1->SetScope(app1_scope);
   RegisterAppUnsafe(std::move(app1));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
@@ -588,7 +589,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app2 = test::CreateWebApp(app2_scope);
-  app2->SetScope(app2_scope);
   RegisterAppUnsafe(std::move(app2));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
@@ -616,7 +616,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app3 = test::CreateWebApp(app3_scope);
-  app3->SetScope(app3_scope);
   RegisterAppUnsafe(std::move(app3));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
@@ -639,9 +638,9 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
 
   const GURL origin_scope("https://example.com/");
 
-  const GURL app1_scope("https://example.com/app");
-  const GURL app2_scope("https://example.com/app-two");
-  const GURL app3_scope("https://not-example.com/app");
+  const GURL app1_scope("https://example.com/app/");
+  const GURL app2_scope("https://example.com/app/two/");
+  const GURL app3_scope("https://not-example.com/app/");
   const GURL app4_scope("https://app-four.com/");
 
   const webapps::AppId app1_id =
@@ -654,7 +653,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
       GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
   auto app1 = test::CreateWebApp(app1_scope);
-  app1->SetScope(app1_scope);
   RegisterAppUnsafe(std::move(app1));
 
   std::optional<webapps::AppId> app2_match =
@@ -676,15 +674,12 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   EXPECT_FALSE(app4_match);
 
   auto app2 = test::CreateWebApp(app2_scope);
-  app2->SetScope(app2_scope);
   RegisterAppUnsafe(std::move(app2));
 
   auto app3 = test::CreateWebApp(app3_scope);
-  app3->SetScope(app3_scope);
   RegisterAppUnsafe(std::move(app3));
 
   auto app4 = test::CreateWebApp(app4_scope);
-  app4->SetScope(app4_scope);
   app4->SetIsUninstalling(true);
   RegisterAppUnsafe(std::move(app4));
 
@@ -733,7 +728,6 @@ TEST_F(WebAppRegistrarTest, FindPwaBasedOnStartUrlIfScopeIsEmpty) {
   RegisterAppUnsafe(std::move(app1));
 
   auto app2 = test::CreateWebApp(app2_scope);
-  app2->SetScope(app2_scope);
   RegisterAppUnsafe(std::move(app2));
 
   auto app3 = test::CreateWebApp(app3_launch);
@@ -959,8 +953,6 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
-
-  isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
@@ -989,8 +981,6 @@ TEST_F(
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
-
-  isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
@@ -1021,7 +1011,6 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   auto url_info = IsolatedWebAppUrlInfo::Create(start_url);
   ASSERT_TRUE(url_info.has_value());
 
-  isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
@@ -1294,11 +1283,9 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
   // an overlapping app since nested scopes are not considered overlapping.
   auto web_app1 =
       test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
-  web_app1->SetScope(GURL("https://example_scope.com"));
 
-  auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
+  auto web_app2 = test::CreateWebApp(GURL("https://example.com/nested/"),
                                      WebAppManagement::kDefault);
-  web_app2->SetScope(GURL("https://example_scope.com/nested"));
   web_app2->SetLinkCapturingUserPreference(
       proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
@@ -1479,7 +1466,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
   auto outer_web_app =
       test::CreateWebApp(GURL("https://abc.com"), WebAppManagement::kPolicy);
   outer_web_app->SetName("ABC_Outer");
-  outer_web_app->SetScope(GURL("https://abc.com/"));
   outer_web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   const webapps::AppId outer_app_id = outer_web_app->app_id();
@@ -1488,7 +1474,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
   auto inner_web_app = test::CreateWebApp(GURL("https://abc.com/inner"),
                                           WebAppManagement::kDefault);
   inner_web_app->SetName("ABC_Inner");
-  inner_web_app->SetScope(GURL("https://abc.com/inner"));
   inner_web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   const webapps::AppId inner_app_id = inner_web_app->app_id();
@@ -1499,7 +1484,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
   auto no_match_scope_app =
       test::CreateWebApp(GURL("https://def.com/"), WebAppManagement::kSync);
   no_match_scope_app->SetName("App_No_Match");
-  no_match_scope_app->SetScope(GURL("https://def.com/"));
   const webapps::AppId no_match_scope_app_id = no_match_scope_app->app_id();
   RegisterAppUnsafe(std::move(no_match_scope_app));
 
@@ -1558,7 +1542,6 @@ TEST_F(WebAppRegistrarTest, GetTrustedIconsIfPopulatedSingleNoSize) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 
   apps::IconInfo trusted_icon;
@@ -1581,7 +1564,6 @@ TEST_F(WebAppRegistrarTest, EmptyTrustedOrManifestIcons) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 
   // Explicitly ensure that there are no manifest or trusted icons.
@@ -1601,7 +1583,6 @@ TEST_F(WebAppRegistrarTest, NoTrustedIconsFallbackToManifest) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 
   // Explicitly ensure that there are no trusted icons, but manifest icons are
@@ -1631,7 +1612,6 @@ TEST_F(WebAppRegistrarTest, NoTrustedIconsFallbackToManifestMultipleIcons) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 
   // Explicitly ensure that there are no trusted icons, but manifest icons are
@@ -1666,7 +1646,6 @@ TEST_F(WebAppRegistrarTest, MultipleTrustedIconsUseBiggestClosestToSize) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetManifestIcons({});
 
@@ -1701,7 +1680,6 @@ TEST_F(WebAppRegistrarTest, MultipleTrustedIconsUseSmallerCloserToSize) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetManifestIcons({});
 
@@ -1736,7 +1714,6 @@ TEST_F(WebAppRegistrarTest, AllIconSizesHigherThanInputSize) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetManifestIcons({});
 
@@ -1772,7 +1749,6 @@ TEST_F(WebAppRegistrarTest, NoSizesProvidedNoMetadata) {
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
                                     WebAppManagement::kUserInstalled);
   web_app->SetName("ABC");
-  web_app->SetScope(GURL("https://abc.com/"));
   web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetManifestIcons({});
 
@@ -2140,11 +2116,9 @@ TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
   // is set by the user to handle links.
   auto web_app1 =
       test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
-  web_app1->SetScope(GURL("https://example_scope.com"));
-
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
                                      WebAppManagement::kDefault);
-  web_app2->SetScope(GURL("https://example_scope.com"));
+  web_app2->SetScope(GURL("https://example.com"));
   web_app2->SetLinkCapturingUserPreference(
       proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
@@ -2218,7 +2192,6 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
   auto isolated_web_app = test::CreateWebApp(app_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
 
-  isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},

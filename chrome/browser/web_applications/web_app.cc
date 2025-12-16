@@ -1243,8 +1243,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("start_url", base::ToString(start_url_));
 
-  root.Set("sync_proto", syncer::WebAppSpecificsToValue(sync_proto_));
-
   root.Set("theme_color", ColorToString(theme_color_));
 
   root.Set("manifest_id", manifest_id_.spec());
@@ -1323,6 +1321,8 @@ base::Value WebApp::AsDebugValue() const {
   root.Set("chromeos_data", OptionalAsDebugValue(chromeos_data_));
 
   root.Set("client_data", client_data_.AsDebugValue());
+
+  root.Set("sync_proto", syncer::WebAppSpecificsToValue(sync_proto_));
 
   // The user_display_mode getter CHECK fails if sync_proto_ isn't initialized.
   if (sync_proto_.has_start_url()) {
