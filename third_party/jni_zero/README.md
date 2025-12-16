@@ -108,16 +108,18 @@ class MyClass {
 
 class MyClass {
 public:
+  // The JNIEnv* parameter is optional.
   void NonStatic(JNIEnv* env);
 }
 
 namespace { // Can also declare each with `static`
 
+// The JNIEnv* parameter is optional.
 void JNI_MyClass_Foo(JNIEnv* env) {
   ...
 }
 
-void JNI_MyClass_Bar(JNIEnv* env, jint a, jint b) {
+void JNI_MyClass_Bar(jint a, jint b) {
   ...
 }
 
