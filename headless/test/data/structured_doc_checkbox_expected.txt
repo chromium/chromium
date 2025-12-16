@@ -1,0 +1,29 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "rb"
+         } ],
+         "type": "Form"
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "rb"
+         } ],
+         "type": "Form"
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "rb"
+         }, {
+            "O": "PrintField",
+            "checked": "on"
+         } ],
+         "type": "Form"
+      } ]
+   } ]
+}

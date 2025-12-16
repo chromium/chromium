@@ -215,6 +215,28 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
       valid = true;
       break;
+    case ax::mojom::Role::kCheckBox: {
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
+      tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                  chrome_pdf::kPDFPrintFieldRoleAttribute,
+                                  chrome_pdf::kPDFRoleRadioButtonAttribute);
+
+      // The default value of the "checked" attribute is "Off". All other
+      // CheckedStates options do not clearly apply to PDF.
+      if (ax_node->data().GetCheckedState() == ax::mojom::CheckedState::kTrue) {
+        tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                    chrome_pdf::kPDFPrintFieldCheckedAttribute,
+                                    chrome_pdf::kPDFCheckedOnAttribute);
+      }
+
+      // TODO(crbug.com/467929963): Expose the accessible name as the Desc
+      // attribute when appropriate. Blocked on Skia feature.
+
+      // In case someone is printing to PDF a web page that is 100% checkboxes
+      // (no kStaticText nodes), the PDF should still be tagged.
+      valid = true;
+      break;
+    }
     default:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
       break;

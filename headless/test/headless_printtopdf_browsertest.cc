@@ -590,6 +590,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Blockquote) {
   RunTaggedPDFTest("/structured_doc_blockquote.html");
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Checkbox) {
+  RunTaggedPDFTest("/structured_doc_checkbox.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Code) {
   RunTaggedPDFTest("/structured_doc_code.html");
 }
