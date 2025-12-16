@@ -34,8 +34,9 @@ namespace enterprise_auth {
 
 namespace {
 
-constexpr std::array<const char*, 1> kSupportedIdps{
+constexpr std::array<const char*, 2> kSupportedIdps{
     kMicrosoftIdentityProvider,
+    kOktaIdentityProvider,
 };
 
 // Empty function used to ensure SSOServiceEntraAuthControllerDelegate does not
