@@ -796,11 +796,9 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 // after switching temporarily to another tab.
 // TODO(crbug.com/40940589): Re-enable this test.
 - (void)FLAKY_testFindInPageSwitchingTabs {
-  // TODO(crbug.com/40922941): Failing on iOS17 iPhone.
-  if (@available(iOS 17.0, *)) {
-    if (![ChromeEarlGrey isIPadIdiom]) {
-      XCTSkip(@"Failing on iOS17 iPhone");
-    }
+  // TODO(crbug.com/40922941): Failing on iPhone.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    XCTSkip(@"Failing on iOS17 iPhone");
   }
 
   [self setUpTestServersForWebPageTest];
