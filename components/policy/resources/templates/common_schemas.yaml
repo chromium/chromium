@@ -179,7 +179,7 @@ ExtensionInstallSources:
   type: array
 ListOfPermissions:
   items:
-    pattern: ^[a-z][a-zA-Z0-9.]*$
+    pattern: ^[a-z][a-zA-Z0-9._]*$
     type: string
   type: array
 ListOfUrlPatterns:

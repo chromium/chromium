@@ -28,7 +28,8 @@
           },
           "abcdefghijklmnopabcdefghijklmnop": {
             "blocked_permissions": [
-              "history"
+              "history",
+              "externally_connectable.all_urls"
             ],
             "file_url_navigation_allowed": true,
             "installation_mode": "allowed",
