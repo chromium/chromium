@@ -7,6 +7,8 @@ source_set("ui_bundled") {
     "browser_coordinator+Testing.h",
     "browser_coordinator.h",
     "browser_coordinator.mm",
+    "browser_omnibox_state_provider.h",
+    "browser_omnibox_state_provider.mm",
     "browser_view_controller+private.h",
     "browser_view_controller.h",
     "browser_view_controller.mm",

@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_omnibox_state_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
@@ -670,6 +671,7 @@ const char kChromeAppStoreUrl[] =
   LensViewFinderCoordinator* _lensViewFinderCoordinator;
   LensOverlayCoordinator* _lensOverlayCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
+  BrowserOmniboxStateProvider* _browserOmniboxStateProvider;
   TabStripCoordinator* _tabStripCoordinator;
   SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
@@ -1332,8 +1334,17 @@ const char kChromeAppStoreUrl[] =
 
   _toolbarCoordinator = [[ToolbarCoordinator alloc] initWithBrowser:browser];
 
+  // The location bar is one of the OmniboxStateProvider because omnibox is
+  // used both in browser and lens overlay.
+  _browserOmniboxStateProvider = [[BrowserOmniboxStateProvider alloc] init];
+  _browserOmniboxStateProvider.locationBarStateProvider = _toolbarCoordinator;
   OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
       OmniboxPositionBrowserAgent::FromBrowser(browser);
+  if (omniboxPositionBrowserAgent) {
+    omniboxPositionBrowserAgent->SetOmniboxStateProvider(
+        _browserOmniboxStateProvider);
+  }
+
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
               initWithIsIncognito:profile->IsOffTheRecord()
       omniboxPositionBrowserAgent:omniboxPositionBrowserAgent];
@@ -1987,6 +1998,13 @@ const char kChromeAppStoreUrl[] =
   if (collaborationService) {
     collaborationService->CancelAllFlows();
   }
+}
+
+// Resets the composebox state provider and coordinator. The
+// composeboxCoordinator should have been stopped before calling this method.
+- (void)resetComposebox {
+  _browserOmniboxStateProvider.composeboxStateProvider = nil;
+  _composeboxCoordinator = nil;
 }
 
 #pragma mark - ActivityServiceCommands
@@ -2682,6 +2700,7 @@ const char kChromeAppStoreUrl[] =
                            query:query
          composeboxAnimationBase:_toolbarCoordinator];
   [_composeboxCoordinator start];
+  _browserOmniboxStateProvider.composeboxStateProvider = _composeboxCoordinator;
 }
 
 - (void)hideComposeboxImmediately:(BOOL)immediately {
@@ -2690,13 +2709,13 @@ const char kChromeAppStoreUrl[] =
   }
 
   if (immediately) {
-    [self.composeboxCoordinator stop];
-    self.composeboxCoordinator = nil;
+    [_composeboxCoordinator stop];
+    [self resetComposebox];
   } else {
     __weak __typeof(self) weakSelf = self;
     base::OnceClosure completion = base::BindOnce(^{
       [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
-        weakSelf.composeboxCoordinator = nil;
+        [weakSelf resetComposebox];
       }];
     });
     // Stop the prototoype on the next run loop as this might be called while
