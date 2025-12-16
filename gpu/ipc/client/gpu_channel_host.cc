@@ -250,6 +250,7 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
 
   // Flush is needed.
   if (ipc_needed) {
+    TRACE_EVENT0("gpu", "GpuChannelHost::VerifyFlush");
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     GetGpuChannel().Flush();
   }
