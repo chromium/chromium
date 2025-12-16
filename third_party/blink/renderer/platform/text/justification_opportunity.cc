@@ -9,6 +9,24 @@
 
 namespace blink {
 
+StringView JustificationContext::ToString(JustificationContext::Type type) {
+  switch (type) {
+    case Type::kNormal:
+      return "kNormal";
+    case Type::kAtomicInline:
+      return "kAtomicInline";
+    case Type::kCursive:
+      return "kCursive";
+  }
+  return {};
+}
+
+String JustificationContext::ToString() const {
+  return StrCat(
+      {"JustificationContext {previous_type:", ToString(previous_type),
+       ", is_after_opportunity:", String::Boolean(is_after_opportunity), "}"});
+}
+
 // Returns a pair of flags;
 // - first: true if we should expand just before `ch`
 // - second: true if we should expand just after `ch`
@@ -18,6 +36,21 @@ std::pair<bool, bool> CheckJustificationOpportunity(
     TextJustify method,
     UChar32 ch,
     JustificationContext& context) {
+  if (Character::IsDefaultIgnorable(ch)) {
+    return {false, false};
+  }
+  constexpr bool kIsLatin = sizeof(CharType) == 1u;
+  JustificationContext::Type type = JustificationContext::Type::kNormal;
+  if constexpr (!kIsLatin) {
+    if (ch == uchar::kObjectReplacementCharacter) {
+      type = JustificationContext::Type::kAtomicInline;
+    } else if (Character::IsCursiveScript(ch)) {
+      type = JustificationContext::Type::kCursive;
+    }
+  }
+  JustificationContext::Type previous_type = context.previous_type;
+  context.previous_type = type;
+
   switch (method) {
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-none
     case TextJustify::kNone:
@@ -26,15 +59,19 @@ std::pair<bool, bool> CheckJustificationOpportunity(
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-character
     case TextJustify::kInterCharacter: {
-      if (Character::IsDefaultIgnorable(ch)) {
-        return {false, false};
-      }
-      if (ch == uchar::kObjectReplacementCharacter) {
+      if (type != JustificationContext::Type::kNormal) {
+        // For atomic inlines and cursive scripts, we should expand before
+        // the glyph if the previous character type is different from the
+        // current one.
+        bool expand_before =
+            !context.is_after_opportunity && previous_type != type;
+        // We never expand after an atomic inilne or a cursive script because
+        // the next character might have the same type.
         context.is_after_opportunity = false;
-        return {false, false};
+        return {expand_before, false};
       }
       // We should expand before this glyph if the glyph is placed after an
-      // atomic inline.
+      // atomic inline or a cursive script.
       bool expand_before = !context.is_after_opportunity;
       context.is_after_opportunity = true;
       return {expand_before, true};
@@ -45,9 +82,6 @@ std::pair<bool, bool> CheckJustificationOpportunity(
       if (Character::TreatAsSpace(ch)) {
         context.is_after_opportunity = true;
         return {false, true};
-      }
-      if (Character::IsDefaultIgnorable(ch)) {
-        return {false, false};
       }
       context.is_after_opportunity = false;
       return {false, false};
@@ -67,7 +101,7 @@ std::pair<bool, bool> CheckJustificationOpportunity(
     return {false, true};
   }
 
-  if constexpr (sizeof(CharType) == 1u) {
+  if constexpr (kIsLatin) {
     context.is_after_opportunity = false;
     return {false, false};
   }
@@ -76,9 +110,7 @@ std::pair<bool, bool> CheckJustificationOpportunity(
   // each character.
   // http://www.w3.org/TR/jlreq/#line_adjustment
   if (!Character::IsCJKIdeographOrSymbol(ch)) {
-    if (!Character::IsDefaultIgnorable(ch)) {
-      context.is_after_opportunity = false;
-    }
+    context.is_after_opportunity = false;
     return {false, false};
   }
 

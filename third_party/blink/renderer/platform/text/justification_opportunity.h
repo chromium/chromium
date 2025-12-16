@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/platform/text/text_justify.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -16,8 +17,19 @@ namespace blink {
 // Information carried between characters when calculating justification
 // opportunities.
 struct JustificationContext {
+  // Type of the previously processed character.
+  enum class Type : uint8_t {
+    kNormal,
+    kAtomicInline,
+    kCursive,
+  };
+  Type previous_type = Type::kNormal;
   // Whether the previously processed character had the after-glyph opportunity.
   bool is_after_opportunity = true;
+
+  // Debug helpers.
+  static StringView ToString(JustificationContext::Type type);
+  String ToString() const;
 };
 
 // Returns a pair of flags;
