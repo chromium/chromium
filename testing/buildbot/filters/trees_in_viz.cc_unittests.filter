@@ -1,7 +1,3 @@
-
-# TODO(crbug.com/448874765): Fix RunMultiThread_DelegatingRenderer unittests
--SoftwareTextureLayerLoseFrameSinkTest.RunMultiThread_DelegatingRenderer
-
 # TODO(crbug.com/448683984) These tests fails with TreesInViz because the
 # tiling removal optimization during pinch zoom is disabled which might impact
 # the test expectations.
