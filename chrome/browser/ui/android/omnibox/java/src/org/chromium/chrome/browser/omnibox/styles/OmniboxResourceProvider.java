@@ -680,6 +680,28 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * A color scheme version of {@link IncognitoColors#getColorSurface(Context, boolean)}. Used for
+     * the contrast background of the close button on attachment chips.
+     */
+    public static @ColorInt int getColorSurface(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorSurface(context, isIncognito);
+    }
+
+    /**
+     * A color scheme version of {@link IncognitoColors#getColorOnSurface(Context, boolean)}. Used
+     * for the close src image on attachment chips.
+     */
+    public static @ColorInt int getColorOnSurface(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getColorOnSurface(context, isIncognito);
+    }
+
+    /**
      * Resolves the vivid color used for the border of the tool chip when used as a hint to enter AI
      * Mode, as well as the background of the send button.
      */

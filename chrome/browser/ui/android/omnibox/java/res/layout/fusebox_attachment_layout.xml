@@ -30,7 +30,6 @@ found in the LICENSE file.
         android:layout_height="@dimen/omnibox_suggestion_24dp_icon_size"
         android:layout_marginStart="@dimen/fusebox_attachment_item_padding"
         android:layout_marginEnd="@dimen/fusebox_attachment_item_padding"
-        android:background="@drawable/navattach_item_thumbnail_background"
         android:clipToOutline="true"
         android:importantForAccessibility="no"
         android:scaleType="centerCrop"
