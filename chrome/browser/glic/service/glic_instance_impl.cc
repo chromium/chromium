@@ -568,8 +568,7 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
         sharing_manager().GetPinnedTabUsage(tab->GetHandle());
     // If the conversation hasn't had a turn since the tab was pinned and the
     // tab was not manually pinned, then we will unpin the tab.
-    if (usage.has_value() &&
-        usage->times_conversation_turn_submitted_while_pinned == 0 &&
+    if (usage.has_value() && usage->Unused() &&
         !usage->IsExplicitlyPinnedByUser()) {
       sharing_manager().UnpinTabs({tab->GetHandle()});
     }

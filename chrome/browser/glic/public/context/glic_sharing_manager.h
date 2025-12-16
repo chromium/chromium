@@ -83,6 +83,10 @@ struct GlicPinnedTabUsage {
 
   bool IsExplicitlyPinnedByUser() const;
 
+  // A conversation is considered unused if a conversation turn has not been
+  // submitted since this tab was pinned.
+  bool Unused() const;
+
   GlicPinEvent pin_event;
 
   int times_conversation_turn_submitted_while_pinned = 0;

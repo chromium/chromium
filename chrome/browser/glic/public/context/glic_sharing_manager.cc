@@ -64,4 +64,8 @@ bool GlicPinnedTabUsage::IsExplicitlyPinnedByUser() const {
   }
 }
 
+bool GlicPinnedTabUsage::Unused() const {
+  return times_conversation_turn_submitted_while_pinned == 0;
+}
+
 }  // namespace glic
