@@ -15,7 +15,7 @@ And have it actually show output without logcat terminating.
 ## Update Instructions:
 
     ninja -C out/Release java_deobfuscate_java
-    cp out/Release/lib.java/build/android/stacktrace/java_deobfuscate_java.jar build/android/stacktrace
+    cp out/Release/obj/build/android/stacktrace/java_deobfuscate_java.javac.jar build/android/stacktrace/java_deobfuscate_java.jar
 
 # stackwalker.py
 
