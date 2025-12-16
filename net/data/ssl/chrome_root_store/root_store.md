@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 26
+Version: 27
 
 [TOC]
 
@@ -122,9 +122,6 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48 | CN=Buypass Class 2 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d | CN=Buypass Class 3 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5 | OU=ePKI Root Certification Authority,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2004-12-20 | 2034-12-20
-02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5 | CN=Entrust Root Certification Authority - EC1,OU=See www.entrust.net/legal-terms+OU=(c) 2012 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2012-12-18 | 2037-12-18
-0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7 | CN=AffirmTrust Commercial,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
-43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339 | CN=Entrust Root Certification Authority - G2,OU=See www.entrust.net/legal-terms+OU=(c) 2009 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2009-07-07 | 2030-12-07
-73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c | CN=Entrust Root Certification Authority,OU=www.entrust.net/CPS is incorporated by reference+OU=(c) 2006 Entrust\, Inc.,O=Entrust\, Inc.,C=US | 2006-11-27 | 2026-11-27
 6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98 | CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók (Certification Services),O=NetLock Kft.,L=Budapest,C=HU | 2008-12-11 | 2028-12-06
 f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31
+193144f431e0fddb740717d4de926a571133884b4360d30e272913cbe660ce41 | CN=SwissSign RSA TLS Root CA 2022 - 1,O=SwissSign AG,C=CH | 2022-06-08 | 2047-06-08
