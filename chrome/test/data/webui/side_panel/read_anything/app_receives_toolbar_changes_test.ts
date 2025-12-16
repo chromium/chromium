@@ -324,7 +324,16 @@ suite('AppReceivesToolbarChanges', () => {
 
     const speechRates =
         speech.getArgs('speak').map(utterance => utterance.rate);
+
+    // The 4x speech rate is capped on non-ChromeOS
+
+    // <if expr="not is_chromeos">
+    assertArrayEquals([1, 2, 0.5, 2], speechRates);
+    // </if>
+
+    // <if expr="is_chromeos">
     assertArrayEquals([1, 2, 0.5, 4], speechRates);
+    // </if>
   });
 
   test('on voice selected, current voice updated', () => {
