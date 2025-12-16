@@ -65,12 +65,9 @@ BASE_FEATURE(kAndroidSpellcheckFullApiBlink, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAvoidTrustedParamsCopies, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Async touchmoves after scroll.
+// TODO(https://crbug.com/468997811): Cleanup feature flag.
 BASE_FEATURE(kAsyncTouchMovesImmediatelyAfterScroll,
-#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Block all MIDI access with the MIDI_SYSEX permission

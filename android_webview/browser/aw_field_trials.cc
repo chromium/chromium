@@ -64,11 +64,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kAboutBlankPageRespectsDarkModeOnUserAction);
 
-  // TODO(crbug.com/433304196): Remove this once webview experiment has
-  // concluded.
-  aw_feature_overrides.DisableFeature(
-      blink::features::kAsyncTouchMovesImmediatelyAfterScroll);
-
   // Disable enforcing `noopener` on Blob URL navigations on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kEnforceNoopenerOnBlobURLNavigation);
