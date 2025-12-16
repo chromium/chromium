@@ -1556,6 +1556,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "ios_chrome_enable_profile_altering_tests",
+    args = {
+        "ios_chrome_enable_profile_altering_tests": True,
+    },
+)
+
+gn_args.config(
     name = "high_end_fuzzer_targets",
     args = {
         "high_end_fuzzer_targets": True,

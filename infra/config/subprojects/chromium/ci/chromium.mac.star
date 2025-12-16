@@ -1259,6 +1259,7 @@ ios_builder(
             "arm64",
             "xctest",
             "ios_enable_dangling_raw_ptr_checks",
+            "ios_chrome_enable_profile_altering_tests",
         ],
     ),
     targets = targets.bundle(
@@ -1334,6 +1335,7 @@ ios_builder(
             "arm64",
             "xctest",
             "ios_enable_dangling_raw_ptr_checks",
+            "ios_chrome_enable_profile_altering_tests",
         ],
     ),
     targets = targets.bundle(
@@ -1400,6 +1402,7 @@ ios_builder(
             "arm64",
             "xctest",
             "ios_enable_dangling_raw_ptr_checks",
+            "ios_chrome_enable_profile_altering_tests",
         ],
     ),
     targets = targets.bundle(
