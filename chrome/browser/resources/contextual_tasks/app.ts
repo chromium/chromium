@@ -70,6 +70,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   private postMessageHandler_!: PostMessageHandler;
   private forcedEmbeddedPageHost =
       loadTimeData.getString('forcedEmbeddedPageHost');
+  private signInDomains_: string[] =
+      loadTimeData.getString('contextualTasksSignInDomains').split(',');
 
   constructor() {
     super();
@@ -250,7 +252,9 @@ export class ContextualTasksAppElement extends CrLitElement {
           (details): chrome.webRequest.BlockingResponse => {
             const url = new URL(details.url);
             const newUrl = this.addCommonSearchParams(url);
-            if (this.forcedEmbeddedPageHost) {
+            const isSigninDomain =
+                !!this.signInDomains_.find((domain) => domain === url.host);
+            if (this.forcedEmbeddedPageHost && !isSigninDomain) {
               newUrl.host = this.forcedEmbeddedPageHost;
             }
             if (newUrl.href !== details.url) {
