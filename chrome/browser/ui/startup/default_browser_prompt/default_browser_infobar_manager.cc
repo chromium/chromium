@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -46,6 +51,13 @@ DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() = default;
 
 void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
   can_pin_to_taskbar_ = can_pin_to_taskbar;
+
+  default_browser_controller_ =
+      default_browser::DefaultBrowserManager::CreateControllerFor(
+          default_browser::DefaultBrowserEntrypointType::kStartupInfobar);
+  CHECK(default_browser_controller_);
+
+  default_browser_controller_->OnShown();
 
   browser_list_observation_.Observe(BrowserList::GetInstance());
   browser_tab_strip_tracker_ =
@@ -92,6 +104,9 @@ void DefaultBrowserInfoBarManager::OnBrowserRemoved(Browser* /*browser*/) {
   // Reset the observers.
   browser_tab_strip_tracker_.reset();
   browser_list_observation_.Reset();
+
+  default_browser_controller_->OnIgnored();
+  default_browser_controller_.reset();
 
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Ignore"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
@@ -178,12 +193,13 @@ void DefaultBrowserInfoBarManager::OnAccept() {
 
   user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
 
-  // The worker pointer is reference counted. While it is running, the
-  // message loops of the FILE and UI thread will hold references to
-  // it and it will be automatically freed once all its tasks have
-  // finished.
-  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-      ->StartSetAsDefault(base::DoNothing());
+  // The controller will be destroyed once the callback is executed.
+  default_browser_controller_->OnAccepted(base::BindOnce(
+      [](std::unique_ptr<
+             default_browser::DefaultBrowserController> /*controller*/,
+         default_browser::DefaultBrowserState /*state*/) {},
+      std::move(default_browser_controller_)));
+
   if (can_pin_to_taskbar_) {
 #if BUILDFLAG(IS_WIN)
     // Attempt the pin to taskbar in parallel with bringing up the Windows
@@ -201,6 +217,9 @@ void DefaultBrowserInfoBarManager::OnAccept() {
 }
 
 void DefaultBrowserInfoBarManager::OnDismiss() {
+  default_browser_controller_->OnDismissed();
+  default_browser_controller_.reset();
+
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             DISMISS_INFO_BAR,

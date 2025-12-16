@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,8 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -129,9 +132,9 @@ void ShowDefaultBrowserPrompt(Profile* profile,
     return;
   }
 
-  scoped_refptr<shell_integration::DefaultBrowserWorker>(
-      new shell_integration::DefaultBrowserWorker())
-      ->StartCheckIsDefault(base::BindOnce(&OnCheckIsDefaultBrowserFinished,
-                                           profile, std::move(done_callback)));
-}
+  default_browser::DefaultBrowserManager* default_browser_manager =
+      g_browser_process->GetFeatures()->default_browser_manager();
 
+  default_browser_manager->GetDefaultBrowserState(base::BindOnce(
+      &OnCheckIsDefaultBrowserFinished, profile, std::move(done_callback)));
+}

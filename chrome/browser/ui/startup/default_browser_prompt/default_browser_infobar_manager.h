@@ -22,6 +22,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace default_browser {
+class DefaultBrowserController;
+}  // namespace default_browser
+
 namespace infobars {
 class InfoBar;
 }  // namespace infobars
@@ -106,6 +110,15 @@ class DefaultBrowserInfoBarManager : public BrowserListObserver,
 
   std::optional<DefaultBrowserPromptManager::CloseReason>
       user_initiated_info_bar_close_pending_;
+
+  // DefaultBrowserController is created when the this class is requested to
+  // show inforbars. Destruction is handled for all 3 possible cases:
+  //   1. User accepted: Controller is destroyed once the process of setting
+  //      Chrome as default completes.
+  //   2. User declined: Controller is destroyed immediately.
+  //   3. User ignored: Controller is destroyed immediately.
+  std::unique_ptr<default_browser::DefaultBrowserController>
+      default_browser_controller_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
