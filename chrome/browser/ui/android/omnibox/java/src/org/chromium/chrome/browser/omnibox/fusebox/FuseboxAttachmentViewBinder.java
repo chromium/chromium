@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +17,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,11 +47,7 @@ class FuseboxAttachmentViewBinder {
         if (attachment.isUploadComplete()) {
             progressView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
-            imageView.setImageDrawable(
-                    attachment.thumbnail != null
-                            ? attachment.thumbnail
-                            : OmniboxResourceProvider.getDrawable(
-                                    view.getContext(), R.drawable.ic_attach_file_24dp));
+            imageView.setImageDrawable(getThumbnailDrawable(attachment, view.getContext()));
             applyTitleAndDescriptionIfPresent(attachment, view);
         } else {
             progressView.setVisibility(View.VISIBLE);
@@ -56,6 +58,27 @@ class FuseboxAttachmentViewBinder {
             }
         }
         view.setLayoutParams(layoutParams);
+    }
+
+    static Drawable getThumbnailDrawable(FuseboxAttachment attachment, Context context) {
+        switch (attachment.type) {
+            case FuseboxAttachmentType.ATTACHMENT_IMAGE:
+            case FuseboxAttachmentType.ATTACHMENT_FILE:
+                if (attachment.thumbnail != null) {
+                    return attachment.thumbnail;
+                }
+                break;
+            case FuseboxAttachmentType.ATTACHMENT_TAB:
+                Bitmap favicon =
+                        OmniboxResourceProvider.getFaviconBitmapForTab(
+                                assumeNonNull(attachment.tab));
+                return FuseboxTabUtils.getDrawableForTabFavicon(
+                        context,
+                        favicon,
+                        context.getResources()
+                                .getDimensionPixelSize(R.dimen.fusebox_attachment_visible_height));
+        }
+        return OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_file_24dp);
     }
 
     private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {
