@@ -263,7 +263,8 @@ class PasswordCheckupViewControllerTest
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
@@ -601,6 +602,33 @@ TEST_F(PasswordCheckupViewControllerTest, TestTapWeakPasswordsNotifiesHandler) {
 
   SimulateTap(/*index=*/2, /*section=*/0);
 
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+}
+
+// Verifies that interactions are ignored during the cooldown period.
+TEST_F(PasswordCheckupViewControllerTest, TestCooldown) {
+  AddSavedInsecureForm(InsecureType::kLeaked);
+  ChangePasswordCheckupHomepageState(PasswordCheckupHomepageStateDone);
+
+  // 1. First tap should succeed.
+  OCMExpect([handler_ showPasswordIssuesWithWarningType:
+                          WarningType::kCompromisedPasswordsWarning]);
+  SimulateTap(/*index=*/0, /*section=*/0);
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+
+  // 2. Second tap immediately after should be ignored (cooldown active).
+  // We strictly expect NO call to handler.
+  SimulateTap(/*index=*/0, /*section=*/0);
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+
+  // 3. Fast forward past the cooldown ( > 500 microseconds).
+  // Using 600us to be safe.
+  task_environment_.FastForwardBy(base::Microseconds(600));
+
+  // 4. Third tap should succeed again.
+  OCMExpect([handler_ showPasswordIssuesWithWarningType:
+                          WarningType::kCompromisedPasswordsWarning]);
+  SimulateTap(/*index=*/0, /*section=*/0);
   EXPECT_OCMOCK_VERIFY((id)handler_);
 }
 

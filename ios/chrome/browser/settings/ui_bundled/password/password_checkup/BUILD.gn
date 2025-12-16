@@ -28,6 +28,7 @@ source_set("password_checkup") {
     "//ios/chrome/browser/safety_check_notifications/utils",
     "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
     "//ios/chrome/browser/settings/ui_bundled/password/password_issues",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
