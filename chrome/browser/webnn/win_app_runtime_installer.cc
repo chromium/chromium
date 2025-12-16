@@ -7,11 +7,9 @@
 #include <windows.h>
 
 #include <Windows.ApplicationModel.store.preview.installcontrol.h>
-#include <appmodel.h>
 #include <wrl.h>
 
 #include <ranges>
-#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
@@ -46,9 +45,6 @@ using AppInstallStatusChangedHandler =
     __FITypedEventHandler_2_Windows__CApplicationModel__CStore__CPreview__CInstallControl__CAppInstallItem_IInspectable;
 using AppInstallItems =
     __FIVectorView_1_Windows__CApplicationModel__CStore__CPreview__CInstallControl__CAppInstallItem;
-
-// The product ID of the Windows App Runtime package in Microsoft Store.
-constexpr std::wstring_view kWinAppRuntimeProductId = L"9NKRJ3SJ9SDG";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -236,9 +232,9 @@ ActivateAppInstallManager() {
   // prematurely, causing the callbacks not to be triggered.
   Microsoft::WRL::ComPtr<abi_install::IAppInstallManager> app_install_manager;
   HRESULT hr = base::win::RoActivateInstance(
-      base::win::ScopedHString::Create(
+      base::win::HStringReference(
           RuntimeClass_Windows_ApplicationModel_Store_Preview_InstallControl_AppInstallManager)
-          .get(),
+          .Get(),
       &app_install_manager);
   if (FAILED(hr)) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kActivationFailure);
@@ -259,18 +255,12 @@ void StartInstallation(Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
   HRESULT hr = app_install_manager.As(&app_install_manager_3);
   CHECK_EQ(hr, S_OK);
 
-  auto catalog_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto flight_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto client_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto correlation_vector =
-      base::win::ScopedHString::Create(std::wstring_view());
-
   Microsoft::WRL::ComPtr<AppInstallAsyncOp> async_op;
   hr = app_install_manager_3->StartProductInstallAsync(
-      base::win::ScopedHString::Create(kWinAppRuntimeProductId).get(),
-      catalog_id.get(), flight_id.get(), client_id.get(),
+      base::win::HStringReference(kWinAppRuntimeProductId.c_str()).Get(),
+      /*catalogId=*/nullptr, /*flightId=*/nullptr, /*clientId=*/nullptr,
       /*repair=*/false, /*forceUseOfNonRemovableStorage=*/false,
-      correlation_vector.get(), /*targetVolume=*/nullptr, &async_op);
+      /*correlationVector=*/nullptr, /*targetVolume=*/nullptr, &async_op);
   if (FAILED(hr)) {
     RecordInstallState(
         WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
@@ -341,7 +331,7 @@ void SchedulePlatformRuntimeInstallationIfRequired() {
     return;
   }
 
-  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
+  if (base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kWindowsVersionTooOld);
     return;
   }

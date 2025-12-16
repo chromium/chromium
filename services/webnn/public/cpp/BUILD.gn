@@ -39,18 +39,24 @@ component("cpp") {
     ]
   }
 
-  if (is_win) {
-    sources += [
+  defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
+}
+
+if (is_win) {
+  component("win") {
+    sources = [
       "execution_providers_info.h",
       "platform_functions_win.cc",
       "platform_functions_win.h",
       "win_app_runtime_package_info.h",
     ]
 
-    deps += [ "//third_party/windows_app_sdk_headers" ]
-  }
+    public_deps = [ "//base" ]
 
-  defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
+    deps = [ "//third_party/windows_app_sdk_headers:version_info" ]
+
+    defines = [ "IS_WEBNN_PUBLIC_CPP_WIN_IMPL" ]
+  }
 }
 
 source_set("tests") {

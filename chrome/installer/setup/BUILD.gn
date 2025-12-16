@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//services/webnn/features.gni")
 import("//testing/test.gni")
 
 if (is_win) {
@@ -43,6 +44,7 @@ if (is_win) {
       "//components/crash/core/app:run_as_crashpad_handler",
       "//content/public/common:static_switches",
       "//rlz:rlz_lib_no_network",
+      "//services/webnn:buildflags",
       "//url",
     ]
 
@@ -115,6 +117,15 @@ if (is_win) {
       "//third_party/crashpad/crashpad/util",
       "//ui/base:fullscreen_win",
     ]
+
+    if (webnn_install_runtime_in_chrome_installer) {
+      sources += [
+        "install_win_app_runtime.cc",
+        "install_win_app_runtime.h",
+      ]
+
+      deps += [ "//services/webnn/public/cpp:win" ]
+    }
 
     if (is_chrome_branded) {
       sources += [

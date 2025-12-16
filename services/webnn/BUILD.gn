@@ -15,6 +15,7 @@ buildflag_header("buildflags") {
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
+    "WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER=$webnn_install_runtime_in_chrome_installer",
   ]
 }
 
@@ -201,7 +202,10 @@ component("webnn_service") {
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
     ]
-    deps += [ "//third_party/windows_app_sdk_headers" ]
+    deps += [
+      "//services/webnn/public/cpp:win",
+      "//third_party/windows_app_sdk_headers",
+    ]
 
     libs += [ "runtimeobject.lib" ]
 

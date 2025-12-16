@@ -16,4 +16,8 @@ declare_args() {
 
   # Enable logging of TFLite profiling information on MLGraph destruction.
   webnn_enable_tflite_profiler = false
+
+  # Enable installation of the Windows App Runtime package in the Chrome
+  # installer.
+  webnn_install_runtime_in_chrome_installer = false
 }

@@ -20,9 +20,9 @@ source_set("webnn") {
       "//chrome/common:constants",
       "//components/prefs",
       "//content/public/browser",
-      "//services/webnn/public/cpp",
-      "//services/webnn/public/mojom",
-      "//third_party/windows_app_sdk_headers",
+      "//services/webnn/public/cpp:win",
+      "//services/webnn/public/mojom:features",
+      "//third_party/windows_app_sdk_headers:version_info",
     ]
   }
 }

@@ -15,7 +15,7 @@ source_set("host") {
     deps += [
       "//base",
       "//services/webnn:webnn_switches",
-      "//services/webnn/public/cpp",
+      "//services/webnn/public/cpp:win",
       "//services/webnn/public/mojom",
       "//third_party/windows_app_sdk_headers",
     ]

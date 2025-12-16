@@ -109,6 +109,7 @@
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
+#include "services/webnn/buildflags.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
@@ -117,6 +118,10 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/installer/util/google_update_util.h"
+#endif
+
+#if BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
+#include "chrome/installer/setup/install_win_app_runtime.h"
 #endif
 
 using installer::InitialPreferences;
@@ -1324,6 +1329,14 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
             app_guid, base::UTF8ToWide(installer_version->GetString()));
       }
     }
+
+#if BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
+    // Triggers the installation of Windows App Runtime for WebNN support on
+    // Windows 11 version 24H2 or later.
+    MaybeTriggerWinAppRuntimeInstallation(
+        system_install, installer_state.target_path().AppendASCII(
+                            installer_version->GetString()));
+#endif
   }
 
   // temp_path's dtor will take care of deleting or scheduling itself for
