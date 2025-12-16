@@ -810,7 +810,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         CreationMode.FULL_SCREEN,
                         mUndoBarController,
                         COMPONENT_NAME,
-                        TabListEditorCoordinator.UNLIMITED_SELECTION);
+                        TabListEditorCoordinator.UNLIMITED_SELECTION,
+                        false);
     }
 
     @VisibleForTesting

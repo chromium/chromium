@@ -235,7 +235,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* tabSwitcherDragHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             null,
-                            0);
+                            0,
+                            /* isSingleContextMode= */ false);
             mTabStripCoordinator.initWithNative(
                     assumeNonNull(mTabModelSelector.getModel(false).getProfile()));
 

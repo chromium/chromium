@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -187,6 +188,9 @@ class TabListEditorMediator
                     @Override
                     public void onSelectionStateChange(
                             List<TabListEditorItemSelectionId> selectedItems) {
+                        // Synchronizes the visual properties of each tab model with the current
+                        // state of the selection delegate to update checkmarks.
+                        updateModelsFromSelection(selectedItems);
                         updateToolbar();
                     }
                 };
@@ -225,6 +229,29 @@ class TabListEditorMediator
         Set<TabListEditorItemSelectionId> currentSelection = mSelectionDelegate.getSelectedItems();
         boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, currentSelection);
         mModel.set(TabListEditorProperties.IS_DONE_BUTTON_ENABLED, hasSelectionChanged);
+    }
+
+    private void updateModelsFromSelection(List<TabListEditorItemSelectionId> selectedItems) {
+        // If the creation mode is not ITEM_PICKER, the deselection logic is not applied for
+        // performance optimization.
+        if (mCreationMode != CreationMode.ITEM_PICKER) return;
+
+        TabListModel listModel = mTabListCoordinator.getTabListModel();
+        if (listModel == null) return;
+
+        Set<TabListEditorItemSelectionId> selectedSet = new HashSet<>(selectedItems);
+        for (MVCListAdapter.ListItem item : listModel) {
+            PropertyModel model = item.model;
+            // This check ensures that we are filtering out tab groups and messages.
+            if (model.containsKey(TabProperties.TAB_ID)) {
+                int tabId = model.get(TabProperties.TAB_ID);
+                // Because the check above ensures that the model contains a TAB_ID, and
+                // TabListModel maintains a strict 1:1 mapping of TabModel to tab-type items, these
+                // IDs are guaranteed to not be INVALID_TAB_ID.
+                var itemId = TabListEditorItemSelectionId.createTabId(tabId);
+                model.set(TabProperties.IS_SELECTED, selectedSet.contains(itemId));
+            }
+        }
     }
 
     private void updateColors(boolean isIncognito) {

@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
@@ -118,6 +119,10 @@ public final class TabListEditorMediatorUnitTest {
 
         // Verify times(1) is correct because we reset the mock first.
         verify(mSelectionDelegate, times(1)).addObserver(mSelectionObserverCaptor.capture());
+    }
+
+    private void triggerUpdateModelsFromSelection(Set<TabListEditorItemSelectionId> selectedItems) {
+        mSelectionObserverCaptor.getValue().onSelectionStateChange(List.copyOf(selectedItems));
     }
 
     private void triggerUpdateToolbar(Set<TabListEditorItemSelectionId> selectedItems) {
@@ -227,5 +232,31 @@ public final class TabListEditorMediatorUnitTest {
 
         assertTrue(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
         assertTrue(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
+    }
+
+    @Test
+    public void testUpdateModelsFromSelection_SingleContext_CheckmarkSync() {
+        setupMediator(CreationMode.ITEM_PICKER);
+
+        PropertyModel model1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 1)
+                        .with(TabProperties.IS_SELECTED, true)
+                        .build();
+        PropertyModel model2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 2)
+                        .with(TabProperties.IS_SELECTED, false)
+                        .build();
+
+        TabListModel modelList = new TabListModel();
+        modelList.add(new MVCListAdapter.ListItem(TabProperties.UiType.TAB, model1));
+        modelList.add(new MVCListAdapter.ListItem(TabProperties.UiType.TAB, model2));
+        when(mTabListCoordinator.getTabListModel()).thenReturn(modelList);
+
+        triggerUpdateModelsFromSelection(Set.of(TAB_ID_2));
+
+        assertFalse(model1.get(TabProperties.IS_SELECTED));
+        assertTrue(model2.get(TabProperties.IS_SELECTED));
     }
 }

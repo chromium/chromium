@@ -345,6 +345,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final int mAllowedSelectionCount;
+    private final boolean mIsSingleContextMode;
 
     private int mCurrentSelectionCount;
     private int mNextTabId = Tab.INVALID_TAB_ID;
@@ -452,7 +453,8 @@ class TabListMediator implements TabListNotificationHandler {
                     if (model == null) return;
 
                     boolean selected = model.get(TabProperties.IS_SELECTED);
-                    if (!selected
+                    if (!mIsSingleContextMode
+                            && !selected
                             && mAllowedSelectionCount > 0
                             && mCurrentSelectionCount >= mAllowedSelectionCount) {
                         showLimitSnackbar();
@@ -468,12 +470,11 @@ class TabListMediator implements TabListNotificationHandler {
                     if (selected) {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.UNSELECTED);
-                        mCurrentSelectionCount -= 1;
                     } else {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.SELECTED);
-                        mCurrentSelectionCount += 1;
                     }
+                    mCurrentSelectionCount = selectionDelegate.getSelectedItems().size();
                     model.set(TabProperties.IS_SELECTED, !selected);
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
                     TabGroupModelFilter filter = getCurrentFilterChecked();
@@ -1044,7 +1045,8 @@ class TabListMediator implements TabListNotificationHandler {
             @Nullable Runnable onTabGroupCreation,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            boolean isSingleContextMode) {
         mActivity = activity;
         mModelList = modelList;
         mMode = mode;
@@ -1064,6 +1066,7 @@ class TabListMediator implements TabListNotificationHandler {
         mUndoBarExplicitTrigger = undoBarExplicitTrigger;
         mSnackbarManager = snackbarManager;
         mAllowedSelectionCount = allowedSelectionCount;
+        mIsSingleContextMode = isSingleContextMode;
 
         mTabModelObserver =
                 new TabModelObserver() {

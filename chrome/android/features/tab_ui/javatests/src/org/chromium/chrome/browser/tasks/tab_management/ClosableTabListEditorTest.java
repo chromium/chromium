@@ -110,7 +110,8 @@ public class ClosableTabListEditorTest {
                                     CreationMode.FULL_SCREEN,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentName= */ null,
-                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION,
+                                    false);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

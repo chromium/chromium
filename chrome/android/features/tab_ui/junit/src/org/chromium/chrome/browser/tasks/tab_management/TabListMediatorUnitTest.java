@@ -1702,7 +1702,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -3551,7 +3552,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3587,7 +3589,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3784,7 +3787,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -4108,7 +4112,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4157,7 +4162,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4206,7 +4212,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4948,7 +4955,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5302,7 +5310,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         initAndAssertAllProperties();
 
         mModelList
@@ -5367,7 +5376,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5587,7 +5597,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -5798,7 +5809,8 @@ public class TabListMediatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0);
+                        /* allowedSelectionCount= */ 0,
+                        /* isSingleContextMode= */ false);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 

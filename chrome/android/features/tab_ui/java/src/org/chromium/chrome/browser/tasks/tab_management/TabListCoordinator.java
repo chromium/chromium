@@ -231,7 +231,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            boolean isSingleContextMode) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mActivity = activity;
@@ -387,7 +388,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         onTabGroupCreation,
                         undoBarExplicitTrigger,
                         snackbarManager,
-                        allowedSelectionCount);
+                        allowedSelectionCount,
+                        isSingleContextMode);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some activitys multiple TabListCoordinators are

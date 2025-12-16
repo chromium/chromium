@@ -70,6 +70,7 @@ public class FuseboxMediator {
     public static final String EXTRA_IS_INCOGNITO_BRANDED = "EXTRA_IS_INCOGNITO_BRANDED";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
+    public static final String EXTRA_IS_SINGLE_CONTEXT_MODE = "EXTRA_IS_SINGLE_CONTEXT_MODE";
 
     private final Context mContext;
     private final Profile mProfile;
@@ -406,6 +407,9 @@ public class FuseboxMediator {
 
         int maxAllowedTabs = preselectedTabIds.size() + remainingAttachments;
         intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
+
+        boolean isSingleContextMode = !OmniboxFeatures.sMultiattachmentFusebox.getValue();
+        intent.putExtra(EXTRA_IS_SINGLE_CONTEXT_MODE, isSingleContextMode);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
