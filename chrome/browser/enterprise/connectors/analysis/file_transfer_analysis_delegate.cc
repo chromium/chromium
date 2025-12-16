@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -491,9 +492,8 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
   }
 
   request_handler_ = FilesRequestHandler::Create(
-      this,
-      safe_browsing::BinaryUploadService::GetForProfile(profile_, settings_),
-      profile_, GURL{},
+      this, GetBinaryUploadServiceForConnector(profile_, settings_), profile_,
+      GURL{},
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
           profile_, source_url_.path()),
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(

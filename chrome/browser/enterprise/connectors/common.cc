@@ -26,9 +26,12 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 
 using safe_browsing::BinaryUploadService;
+using safe_browsing::CloudBinaryUploadServiceFactory;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -442,6 +445,22 @@ EventResult CalculateEventResult(const AnalysisSettings& settings,
              ? EventResult::ALLOWED
              : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
 }
+
+BinaryUploadService* GetBinaryUploadServiceForConnector(
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings) {
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings.cloud_or_local_settings.is_cloud_analysis()) {
+    return CloudBinaryUploadServiceFactory::GetForProfile(profile);
+  } else {
+    return LocalBinaryUploadServiceFactory::GetForProfile(profile);
+  }
+#else
+  DCHECK(settings.cloud_or_local_settings.is_cloud_analysis());
+  return CloudBinaryUploadServiceFactory::GetForProfile(profile);
+#endif
+}
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

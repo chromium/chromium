@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -861,7 +862,8 @@ void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
 BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& settings) {
-  return BinaryUploadService::GetForProfile(profile, settings);
+  return enterprise_connectors::GetBinaryUploadServiceForConnector(profile,
+                                                                   settings);
 }
 #endif
 

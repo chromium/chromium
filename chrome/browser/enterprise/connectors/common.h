@@ -109,6 +109,13 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
 EventResult CalculateEventResult(const AnalysisSettings& settings,
                                  bool allowed_by_scan_result,
                                  bool should_warn);
+
+// Returns the appropriate BinaryUploadService for the given `profile` and
+// `settings`. This can be a cloud or local service.
+safe_browsing::BinaryUploadService* GetBinaryUploadServiceForConnector(
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings);
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

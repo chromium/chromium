@@ -797,8 +797,7 @@ void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
 }
 
 BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
-  return safe_browsing::BinaryUploadService::GetForProfile(profile_,
-                                                           data_.settings);
+  return GetBinaryUploadServiceForConnector(profile_, data_.settings);
 }
 
 safe_browsing::SafeBrowsingNavigationObserverManager*

@@ -313,7 +313,6 @@ static_library("safe_browsing") {
       sources += [
         "chrome_safe_browsing_hats_delegate.cc",
         "chrome_safe_browsing_hats_delegate.h",
-        "cloud_content_scanning/binary_upload_service.cc",
         "cloud_content_scanning/binary_upload_service.h",
         "cloud_content_scanning/cloud_binary_upload_service.cc",
         "cloud_content_scanning/cloud_binary_upload_service.h",

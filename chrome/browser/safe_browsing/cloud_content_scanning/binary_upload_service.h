@@ -14,8 +14,6 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace safe_browsing {
 
 // This class encapsulates the process of getting data scanned through a generic
@@ -24,10 +22,6 @@ class BinaryUploadService : public KeyedService {
  public:
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
-
-  static BinaryUploadService* GetForProfile(
-      Profile* profile,
-      const enterprise_connectors::AnalysisSettings& settings);
 
   // Upload the given file contents for deep scanning if the browser is
   // authorized to upload data, otherwise queue the request.
