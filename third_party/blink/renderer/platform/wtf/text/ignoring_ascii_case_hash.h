@@ -152,6 +152,44 @@ struct IgnoringAsciiCaseHashTraits : HashTraits<T>, IgnoringAsciiCaseHash {
   using IgnoringAsciiCaseHash::kSafeToCompareToEmptyOrDeleted;
 };
 
+// HashTranslator for a hash with String or AtomicString keys.
+// We can find an entry for a StringView without creating a new String or a new
+// AtomicString.
+//
+// HashMap<String, ...> map;
+// auto it = map.Find<IgnoringAsciiCaseHashTranslator, StringView>(string_view);
+struct IgnoringAsciiCaseHashTranslator {
+  STATIC_ONLY(IgnoringAsciiCaseHashTranslator);
+
+  static unsigned GetHash(StringView string) {
+    if (string.SharedImpl()) {
+      return IgnoringAsciiCaseHash::GetHash(string.ToString());
+    }
+    if (string.Is8Bit()) {
+      auto span = string.Span8();
+      return StringHasher::ComputeHashAndMaskTop8Bits<
+          internal::IgnoringAsciiCaseHashReader8>(base::as_chars(span).data(),
+                                                  span.size());
+    }
+    if (string.ContainsOnlyLatin1OrEmpty()) {
+      auto span = string.Span16();
+      return StringHasher::ComputeHashAndMaskTop8Bits<
+          internal::IgnoringAsciiCaseHashReader16>(base::as_chars(span).data(),
+                                                   span.size());
+    }
+    // This code path would be rarely used.
+    return HashTraits<String>::GetHash(string.ToString().LowerASCII());
+  }
+
+  static bool Equal(const String& a, StringView b) {
+    return EqualIgnoringASCIICase(a, b);
+  }
+
+  static bool Equal(const AtomicString& a, StringView b) {
+    return EqualIgnoringASCIICase(a, b);
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_IGNORING_ASCII_CASE_HASH_H_

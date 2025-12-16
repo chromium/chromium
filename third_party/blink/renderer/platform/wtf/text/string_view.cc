@@ -175,6 +175,13 @@ bool StringView::ContainsOnlyASCIIOrEmpty() const {
   return attrs.contains_only_ascii;
 }
 
+bool StringView::ContainsOnlyLatin1OrEmpty() const {
+  if (empty() || Is8Bit()) {
+    return true;
+  }
+  return std::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
+}
+
 bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
                                                         unsigned to) const {
   DCHECK_LE(from, to);

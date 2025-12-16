@@ -41,8 +41,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
@@ -63,10 +63,8 @@ struct TextCodecFactory {
   explicit TextCodecFactory(NewTextCodecFunction f = nullptr) : function(f) {}
 };
 
-// TODO(crbug.com/40476285): CaseFoldingHashTraits is expensive. Encoding names
-// consist of ASCII characters, and we can use IgnoringAsciiCaseHashTraits.
 using TextEncodingNameMap =
-    HashMap<String, AtomicString, CaseFoldingHashTraits<String>>;
+    HashMap<String, AtomicString, IgnoringAsciiCaseHashTraits<String>>;
 using TextCodecMap = HashMap<AtomicString, TextCodecFactory>;
 
 static base::Lock& EncodingRegistryLock() {
@@ -98,7 +96,9 @@ static inline void CheckExistingName(StringView, const AtomicString&) {}
 static void CheckExistingName(StringView alias,
                               const AtomicString& canonical_name) {
   EncodingRegistryLock().AssertAcquired();
-  const auto it = g_text_encoding_name_map->find(alias.ToString());
+  const auto it =
+      g_text_encoding_name_map
+          ->Find<IgnoringAsciiCaseHashTranslator, StringView>(alias);
   if (it == g_text_encoding_name_map->end())
     return;
   const AtomicString& old_canonical_name = it->value;
@@ -209,15 +209,14 @@ AtomicString AtomicCanonicalTextEncodingName(StringView name) {
     }
   }
 
-  // TODO(tkent): Producing a String only for HashMap lookups is inefficient. We
-  // should have a HashTranslator accepting StringViews.
-  String name_string = name.ToString();
   base::AutoLock lock(EncodingRegistryLock());
 
   if (!g_text_encoding_name_map)
     BuildBaseTextCodecMaps();
 
-  const auto it1 = g_text_encoding_name_map->find(name_string);
+  const auto it1 =
+      g_text_encoding_name_map
+          ->Find<IgnoringAsciiCaseHashTranslator, StringView>(name);
   if (it1 != g_text_encoding_name_map->end())
     return it1->value;
 
@@ -226,7 +225,9 @@ AtomicString AtomicCanonicalTextEncodingName(StringView name) {
 
   ExtendTextCodecMaps();
   AtomicSetDidExtendTextCodecMaps();
-  const auto it2 = g_text_encoding_name_map->find(name_string);
+  const auto it2 =
+      g_text_encoding_name_map
+          ->Find<IgnoringAsciiCaseHashTranslator, StringView>(name);
   return it2 != g_text_encoding_name_map->end() ? it2->value : g_null_atom;
 }
 

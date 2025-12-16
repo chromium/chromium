@@ -182,6 +182,8 @@ class WTF_EXPORT StringView {
 
   bool IsLowerASCII() const;
   bool ContainsOnlyASCIIOrEmpty() const;
+  // Returns true if the string is empty or contains only Latin-1 characters.
+  bool ContainsOnlyLatin1OrEmpty() const;
 
   bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
 
