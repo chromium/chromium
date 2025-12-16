@@ -210,6 +210,7 @@ class NewTabPageHandler
                                     const std::string& module_id,
                                     int delay_time_ms = 0);
   void MaybeShowWebstoreToast();
+  void RecordModuleInteraction(const std::string& module_id);
   void IncrementDictPrefKeyCount(const std::string& pref_name,
                                  const std::string& key);
 

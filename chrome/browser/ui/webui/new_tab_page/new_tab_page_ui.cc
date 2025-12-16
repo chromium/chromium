@@ -877,6 +877,8 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   registry->RegisterBooleanPref(ntp_prefs::kNtpShowAllMostVisitedTiles, false);
   registry->RegisterBooleanPref(prefs::kNtpPromoVisible, true);
+  registry->RegisterDictionaryPref(
+      ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
 }
 
 // static
@@ -888,6 +890,8 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled, false);
   prefs->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   prefs->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles, false);
+  prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
+                 base::Value::Dict());
 }
 
 // static

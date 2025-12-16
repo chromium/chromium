@@ -30,4 +30,9 @@ const char kNtpShowAllMostVisitedTiles[] = "ntp.show_all_most_visited_tiles";
 // Tracks whether shortcuts auto-removal for inactivity is disabled.
 const char kNtpShortcutsAutoRemovalDisabled[] =
     "ntp.shortcuts_auto_removal_disabled";
+// Tracks whether module auto-removal for inactivity is disabled for each
+// module. A special key of "all_modules" indicates that the auto-removal is
+// disabled for all modules.
+const char kNtpModulesAutoRemovalDisabledDict[] =
+    "ntp.modules_auto_removal_disabled";
 }  // namespace ntp_prefs

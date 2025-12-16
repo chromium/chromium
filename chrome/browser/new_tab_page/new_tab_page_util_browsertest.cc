@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -451,6 +452,32 @@ IN_PROC_BROWSER_TEST_P(
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 }
 
+class NewTabPageUtilFeatureOptimizationTest : public NewTabPageUtilBrowserTest {
+ public:
+  NewTabPageUtilFeatureOptimizationTest() {
+    features().InitWithFeatures({ntp_features::kNtpFeatureOptimization}, {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilFeatureOptimizationTest,
+                       DisableModuleAutoRemoval) {
+  // Arrange.
+  const std::string module_id = ntp_modules::kGoogleCalendarModuleId;
+
+  // Act.
+  DisableModuleAutoRemoval(browser()->profile(), module_id);
+
+  // Assert.
+  const bool actual_value =
+      browser()
+          ->profile()
+          ->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(module_id)
+          .value_or(false);
+  EXPECT_TRUE(actual_value);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, NewTabPageUtilBrowserTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -475,3 +502,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     NewTabPageUtilTileTypesEnterpriseShortcutsEnabledAllowMixingBrowserTest,
     testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageUtilFeatureOptimizationTest,
+                         testing::Bool());

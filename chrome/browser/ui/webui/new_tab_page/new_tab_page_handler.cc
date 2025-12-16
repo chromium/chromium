@@ -646,7 +646,7 @@ void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
   base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
   base::UmaHistogramExactLinear(histogram_prefix + "." + module_id, 1, 1);
 
-  IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
+  RecordModuleInteraction(module_id);
   MaybeLaunchInteractionSurvey(kDismissInteraction, module_id);
 }
 
@@ -657,6 +657,7 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 }
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
+  DisableModuleAutoRemoval(profile_, ntp_modules::kAllModulesId);
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
 }
 
@@ -673,7 +674,7 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
     list.EraseValue(module_id_value);
   }
 
-  IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
+  RecordModuleInteraction(module_id);
   MaybeLaunchInteractionSurvey(kDisableInteraction, module_id);
 }
 
@@ -753,7 +754,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 }
 
 void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
-  IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
+  RecordModuleInteraction(module_id);
   MaybeLaunchInteractionSurvey(kUseInteraction, module_id);
 }
 
@@ -1290,6 +1291,11 @@ void NewTabPageHandler::MaybeShowWebstoreToast() {
   if (profile_->GetPrefs()->GetInteger(prefs::kSeedColorChangeCount) <= 3) {
     page_->ShowWebstoreToast();
   }
+}
+
+void NewTabPageHandler::RecordModuleInteraction(const std::string& module_id) {
+  DisableModuleAutoRemoval(profile_, module_id);
+  IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
 }
 
 void NewTabPageHandler::IncrementDictPrefKeyCount(const std::string& pref_name,
