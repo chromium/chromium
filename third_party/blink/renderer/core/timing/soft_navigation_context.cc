@@ -7,10 +7,12 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -138,6 +140,7 @@ void SoftNavigationContext::OnInputOrScroll() {
     return;
   }
   first_input_or_scroll_time_ = base::TimeTicks::Now();
+  latest_unemitted_icp_entry_ = nullptr;
 }
 
 // TODO(crbug.com/419386429): This gets called after each new presentation time
@@ -154,27 +157,17 @@ void SoftNavigationContext::OnInputOrScroll() {
 // One option is to manage a largest pending/painted recortd (like LCP
 // calculator), or, just skip this next step if the candidates aren't done.
 //
-// 2. We might not be ready to Emit LCP candidates yet, and we might not get
-// another chance later.
+// 2. We might not be ready to emit LCP candidates yet.
 //
-// Right now we will skip emitting LCP candidates until after soft-navigation
-// entry and NavigationID are incremented.  But, this might happen after a few
-// frames/paints.  Potentially unlikely given the low paint area requirement
-// right now, but increasingly likely as we bump that up.
-// We might want to also call `UpdateSoftLcpCandidate()` as soon as we emit
-// Soft-nav entry if we already have candidates to report.  Similar to above,
-// there are concerns with reporting Candidates after Paint but before
-// Presentation.
-void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
-  lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      largest_text_, largest_image_);
-}
-
+// Right now we skip emitting LCP candidates until after the `navigation_id_` is
+// set and the soft navigation entry is emitted, which might happen after a few
+// frames/paints. We do buffer the most recent candidate and emit that if and
+// when the soft navigation entry is emitted, but we might want to consider
+// buffering and emitting more candidates.
 bool SoftNavigationContext::TryUpdateLcpCandidate() {
-  // After we are ready to start measuring LCP (after the soft nav entry was
-  // emitted) and before we want to stop (input or scroll), we update LCP
-  // candidate.
-  if (!was_emitted_ || !first_input_or_scroll_time_.is_null()) {
+  // TODO(crbug.com/454082773): Input should not invalidate pending presentation
+  // feedback, but this can happen due to scheduling races.
+  if (!IsRecordingLargestContentfulPaint()) {
     return false;
   }
 
@@ -194,6 +187,12 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
         lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
             *largest_image_.Get());
   }
+
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
+        largest_text_, largest_image_);
+  }
+
   return latest_lcp_details_for_ukm_changed;
 }
 
@@ -223,6 +222,7 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(largest_image_);
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
+  visitor->Trace(latest_unemitted_icp_entry_);
 }
 
 void SoftNavigationContext::Shutdown() {
@@ -231,6 +231,45 @@ void SoftNavigationContext::Shutdown() {
   largest_image_ = nullptr;
   first_image_or_text_ = nullptr;
   window_ = nullptr;
+  latest_unemitted_icp_entry_ = nullptr;
+}
+
+void SoftNavigationContext::EmitSoftNavigation() {
+  CHECK(!WasEmitted());
+  CHECK(HasFirstContentfulPaint());
+  was_emitted_ = true;
+
+  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                      "SoftNavigationStart", perfetto::Track::FromPointer(this),
+                      TimeOrigin(), "context", *this, "frame",
+                      GetFrameIdForTracing(window_->GetFrame()));
+
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    return;
+  }
+
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+  CHECK(performance);
+  performance->AddSoftNavigationEntry(
+      AtomicString(AttributionUrl()), TimeOrigin(),
+      FirstContentfulPaintTimingInfo(), NavigationId());
+
+  // TODO(crbug.com/448974465): We currently don't emit ICP entries or record
+  // metrics for soft navs that are interrupted by a new interaction when there
+  // is pending presentation feedback for FCP, but we do emit the soft nav
+  // entry. We might want to reconsider this.
+  if (!IsRecordingLargestContentfulPaint()) {
+    return;
+  }
+
+  // See method comments in the header for reasons why there might not be a
+  // pending ICP entry.
+  if (!latest_unemitted_icp_entry_) {
+    return;
+  }
+
+  performance->OnInteractionContentfulPaintUpdated(
+      std::exchange(latest_unemitted_icp_entry_, nullptr));
 }
 
 void SoftNavigationContext::Dispose() {
@@ -255,19 +294,27 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
     const AtomicString& id,
     const String& url,
     Element* element) {
-  // TODO(crbug.com/454082771): We currently only expect this to be called once
-  // the soft nav entry has been emitted, but it's possible for some of the info
-  // to be lost if the node is removed before all the conditions are met.
-  // Instead, we should buffer the most recent candidate and emit it along with
-  // the soft nav entry, which avoids hanging onto the PaintTimingRecord
-  // indefinitely.
-  CHECK(WasEmitted());
+  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_));
+
   // This should not be called after we've been shut down.
   CHECK(window_);
-  DOMWindowPerformance::performance(*window_)
-      ->OnInteractionContentfulPaintUpdated(paint_timing_info, paint_size,
-                                            load_time, id, url, element,
-                                            NavigationId());
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+  auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
+      /*start_time=*/paint_timing_info.presentation_time,
+      /*render_time=*/paint_timing_info.presentation_time, paint_size,
+      performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
+      element, window_, navigation_id_);
+  entry->SetPaintTimingInfo(paint_timing_info);
+
+  // If the soft nav entry for this context was emitted, emit the ICP entry now;
+  // otherwise, buffer it until all the soft nav criteria are met, if ever, and
+  // emit in `EmitSoftNavigation()`.
+  if (WasEmitted()) {
+    CHECK(!latest_unemitted_icp_entry_);
+    performance->OnInteractionContentfulPaintUpdated(entry);
+  } else {
+    latest_unemitted_icp_entry_ = entry;
+  }
 }
 
 }  // namespace blink
