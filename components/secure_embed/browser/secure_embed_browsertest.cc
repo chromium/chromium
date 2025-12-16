@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -264,6 +265,14 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
         {gfx::Point(60, 60), SK_ColorWHITE},
     };
     EXPECT_TRUE(VerifyPixelColors(rwhv, capture_rect, expected_colors));
+  }
+
+  // Waits for the element with `element_id` to be focused.
+  void WaitForFocus(const content::ToRenderFrameHost& rfh,
+                    const std::string& element_id) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return element_id == content::EvalJs(rfh, "document.activeElement.id");
+    }));
   }
 };
 
@@ -710,6 +719,320 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
 
   VerifyBoxRendering(SK_ColorWHITE);
   EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+}
+
+// Tests that calling focus() on an <embed> makes the guest WebContents focused.
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByJS) {
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
+  AttachGuestToEmbed(guest_contents.get());
+
+  // Focus the embedder (parent).
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "let btn = document.createElement('button');"
+                              "document.body.appendChild(btn);"
+                              "btn.focus();"));
+  EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
+
+  // Verify that the guest does not expose the parent's focused frame.
+  EXPECT_EQ(nullptr, guest_contents->GetFocusedFrame());
+
+  // Now focus the embed element, which transfers focus to the guest.
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.querySelector('embed').focus();"));
+
+  // Verify that the guest now returns a focused frame (its own).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return guest_contents.get() ==
+           content::GetFocusedWebContents(guest_contents.get());
+  }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return guest_contents->GetPrimaryMainFrame() ==
+           guest_contents->GetFocusedFrame();
+  }));
+}
+
+// Tests that the focus can traverse in and out of <embed> and <iframe> in
+// <embed> by pressing the Tab key.
+//
+// This test has the following DOM structure:
+// <html>
+//   <button id='embedder_btn_1' />
+//     <embed>
+//       <button id='guest_btn' />
+//       <iframe>
+//         <button id='iframe_btn' />
+//       </iframe>
+//     </embed>
+//   <button id='embedder_btn_2' />
+// </html>
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByTabTraversal) {
+  NavigateToAttachHarness();
+  auto guest_contents = CreateGuestWebContents();
+  NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
+
+  // Add a button to the guest.
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(),
+                              "let btn = document.createElement('button');"
+                              "btn.id = 'guest_btn';"
+                              "document.body.appendChild(btn);"));
+
+  // Add a cross-site iframe to the guest.
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", kEmptyUrl);
+  std::string create_iframe_script =
+      "const iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      iframe_url.spec() +
+      "';"
+      "document.body.appendChild(iframe);";
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(), create_iframe_script));
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents.get()));
+
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+
+  // Add a button to the iframe.
+  ASSERT_TRUE(content::ExecJs(iframe,
+                              "let btn = document.createElement('button');"
+                              "btn.id = 'iframe_btn';"
+                              "document.body.appendChild(btn);"));
+
+  AttachGuestToEmbed(guest_contents.get());
+
+  // Add a button to the embedder before the embed element.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "let btn = document.createElement('button');"
+      "btn.id = 'embedder_btn_1';"
+      "document.body.insertBefore(btn, document.querySelector('embed'));"
+      "btn.focus();"));
+
+  // Add a button to the embedder after the embed element.
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "let btn = document.createElement('button');"
+                              "btn.id = 'embedder_btn_2';"
+                              "document.body.appendChild(btn);"));
+
+  // 1. Initial state: Embedder button 1 focused.
+  EXPECT_EQ("embedder_btn_1",
+            content::EvalJs(web_contents(), "document.activeElement.id"));
+  EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  EXPECT_EQ(nullptr, content::GetFocusedWebContents(guest_contents.get()));
+  EXPECT_EQ(guest_contents->GetFocusedFrame(), nullptr);
+
+  // 2. Press Tab: Focus enters guest -> guest button.
+  // Wait untils the View is composited. The keyboard events are ignored before
+  // FCP.
+  WaitForCopyableViewInWebContents(web_contents());
+  content::SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                            ui::VKEY_TAB, false, false, false, false);
+  WaitForFocus(guest_contents.get(), "guest_btn");
+  EXPECT_EQ(guest_contents.get(),
+            content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(guest_contents->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  EXPECT_EQ(guest_contents.get(),
+            content::GetFocusedWebContents(guest_contents.get()));
+  EXPECT_EQ(guest_contents->GetPrimaryMainFrame(),
+            guest_contents->GetFocusedFrame());
+
+  // 3. Press Tab: Focus moves to iframe -> iframe button.
+  WaitForCopyableViewInFrame(iframe);
+  content::SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                            ui::VKEY_TAB, false, false, false, false);
+  WaitForFocus(iframe, "iframe_btn");
+  // EXPECT_EQ(guest_contents->GetFocusedFrame(), iframe);
+  EXPECT_EQ(guest_contents.get(),
+            content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(iframe, web_contents()->GetFocusedFrame());
+  EXPECT_EQ(guest_contents.get(),
+            content::GetFocusedWebContents(guest_contents.get()));
+  EXPECT_EQ(iframe, guest_contents->GetFocusedFrame());
+
+  // 4. Press Tab: Focus leaves guest -> back to embedder (embedder_btn_2).
+  content::SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                            ui::VKEY_TAB, false, false, false, false);
+  WaitForFocus(web_contents(), "embedder_btn_2");
+  EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  // Guest should no longer consider itself focused.
+  EXPECT_EQ(nullptr, content::GetFocusedWebContents(guest_contents.get()));
+  EXPECT_EQ(guest_contents->GetFocusedFrame(), nullptr);
+}
+
+// Tests that clicking on <input> makes it focused.
+//
+// The test has the following DOM structure:
+// <html>
+//    <input id=“outer-input” />
+//    <iframe id=“outer-iframe” >
+//       <input id="outer-iframe-input” />
+//    </iframe>
+//    <embed>
+//      <input id=“embed-input” />
+//      <iframe id="embed-iframe”>
+//         <input id=“embed-iframe-input” />
+//      </iframe>
+//    </embed>
+// </html>
+//
+// The test enumerates all combinations of (starting_input, target_input). The
+// focus is verified by checking the input's value after sending keyboard
+// events.
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByClick) {
+  NavigateToAttachHarness();
+  auto guest_contents = CreateGuestWebContents();
+  NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
+
+  // Setup Outer Input
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "let input = document.createElement('input');"
+                              "input.id = 'outer-input';"
+                              "document.body.appendChild(input);"));
+
+  // Setup Outer Iframe with Input
+  GURL outer_iframe_url = embedded_test_server()->GetURL("b.com", kEmptyUrl);
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "let iframe = document.createElement('iframe');"
+                              "iframe.id = 'outer-iframe';"
+                              "iframe.src = '" +
+                                  outer_iframe_url.spec() +
+                                  "';"
+                                  "document.body.appendChild(iframe);"));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  content::RenderFrameHost* outer_iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(content::ExecJs(outer_iframe,
+                              "let input = document.createElement('input');"
+                              "input.id = 'outer-iframe-input';"
+                              "document.body.appendChild(input);"));
+
+  // Setup Guest Input
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(),
+                              "let input = document.createElement('input');"
+                              "input.id = 'embed-input';"
+                              "document.body.appendChild(input);"));
+
+  // Setup Guest Iframe with Input
+  GURL guest_iframe_url = embedded_test_server()->GetURL("b.com", kEmptyUrl);
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(),
+                              "let iframe = document.createElement('iframe');"
+                              "iframe.id = 'embed-iframe';"
+                              "iframe.src = '" +
+                                  guest_iframe_url.spec() +
+                                  "';"
+                                  "document.body.appendChild(iframe);"));
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents.get()));
+  content::RenderFrameHost* guest_iframe =
+      ChildFrameAt(guest_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(content::ExecJs(guest_iframe,
+                              "let input = document.createElement('input');"
+                              "input.id = 'embed-iframe-input';"
+                              "document.body.appendChild(input);"));
+
+  AttachGuestToEmbed(guest_contents.get());
+
+  // Wait for layout and hit test data to propagate.
+  WaitForCopyableViewInWebContents(web_contents());
+  WaitForCopyableViewInFrame(outer_iframe);
+  WaitForCopyableViewInWebContents(guest_contents.get());
+  WaitForCopyableViewInFrame(guest_iframe);
+
+  struct InputTarget {
+    content::GlobalRenderFrameHostId rfh_id;
+    std::string element_id;
+    std::string name;
+    bool is_in_guest;
+  };
+
+  std::vector<InputTarget> targets = {
+      {web_contents()->GetPrimaryMainFrame()->GetGlobalId(), "outer-input",
+       "Outer Input", false},
+      {outer_iframe->GetGlobalId(), "outer-iframe-input", "Outer Iframe Input",
+       false},
+      {guest_contents->GetPrimaryMainFrame()->GetGlobalId(), "embed-input",
+       "Embed Input", true},
+      {guest_iframe->GetGlobalId(), "embed-iframe-input", "Embed Iframe Input",
+       true}};
+
+  auto get_absolute_click_coordinates =
+      [&](content::RenderFrameHost* target_rfh, const std::string& element_id,
+          bool is_in_guest) {
+        gfx::PointF center = content::GetCenterCoordinatesOfElementWithId(
+            target_rfh, element_id);
+        gfx::Vector2dF offset;
+
+        auto get_offset = [&](content::RenderFrameHost* rfh,
+                              const std::string& js_get_element) {
+          auto val =
+              content::EvalJs(
+                  rfh, "const el = " + js_get_element +
+                           ";"
+                           "const r = el.getBoundingClientRect();"
+                           "[r.left + el.clientLeft, r.top + el.clientTop]")
+                  .TakeValue();
+          const auto& list = val.GetList();
+          return gfx::Vector2dF(list[0].GetDouble(), list[1].GetDouble());
+        };
+
+        if (target_rfh->GetGlobalId() == outer_iframe->GetGlobalId()) {
+          offset = get_offset(web_contents()->GetPrimaryMainFrame(),
+                              "document.getElementById('outer-iframe')");
+        } else if (is_in_guest) {
+          if (target_rfh->GetGlobalId() == guest_iframe->GetGlobalId()) {
+            offset = get_offset(guest_contents->GetPrimaryMainFrame(),
+                                "document.getElementById('embed-iframe')");
+          }
+          offset += get_offset(web_contents()->GetPrimaryMainFrame(),
+                               "document.querySelector('embed')");
+        }
+
+        return gfx::ToRoundedPoint(center + offset);
+      };
+
+  auto click_and_verify_focus = [&](const InputTarget& start,
+                                    const InputTarget& end) {
+    // Focus start
+    content::RenderFrameHost* start_rfh =
+        content::RenderFrameHost::FromID(start.rfh_id);
+    ASSERT_TRUE(content::ExecJs(
+        start_rfh,
+        "document.getElementById('" + start.element_id + "').focus();"));
+    WaitForFocus(start_rfh, start.element_id);
+
+    // Calculate coordinates for click
+    content::RenderFrameHost* end_rfh =
+        content::RenderFrameHost::FromID(end.rfh_id);
+    gfx::Point click_point = get_absolute_click_coordinates(
+        end_rfh, end.element_id, end.is_in_guest);
+
+    content::SimulateMouseClickAt(
+        web_contents(), 0, blink::WebMouseEvent::Button::kLeft, click_point);
+    WaitForFocus(end_rfh, end.element_id);
+
+    if (end.is_in_guest) {
+      EXPECT_EQ(guest_contents.get(),
+                content::GetFocusedWebContents(web_contents()));
+      EXPECT_EQ(end_rfh, web_contents()->GetFocusedFrame());
+      EXPECT_EQ(guest_contents.get(),
+                content::GetFocusedWebContents(guest_contents.get()));
+      EXPECT_EQ(end_rfh, guest_contents->GetFocusedFrame());
+    } else {
+      EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+      EXPECT_EQ(end_rfh, web_contents()->GetFocusedFrame());
+      EXPECT_EQ(nullptr, content::GetFocusedWebContents(guest_contents.get()));
+      EXPECT_EQ(nullptr, guest_contents->GetFocusedFrame());
+    }
+  };
+
+  for (const auto& start : targets) {
+    for (const auto& end : targets) {
+      click_and_verify_focus(start, end);
+    }
+  }
 }
 
 }  // namespace secure_embed

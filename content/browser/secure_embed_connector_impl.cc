@@ -138,17 +138,42 @@ TextInputManager* SecureEmbedConnectorImpl::GetTextInputManager() {
 }
 
 void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
+  // Focus the embedder when traversing out of <embed>.
+  // Usually when an *unfocused* Blink frame gains focus, it calls
+  // RFHI::DidFocusFrame() which makes the WebContents focused.
+  // However in secure embed, when the guest WebContents is focused, its
+  // embedder Blink frame is also focused, as a result Blink does *not* call
+  // DidFocusFrame() when the focus traverses out. Hence focusing the embedder
+  // WebContents explicitly here.
+  if (focus_op == FocusOperation::kFocusBeforePlugin ||
+      focus_op == FocusOperation::kFocusAfterPlugin) {
+    embedder_web_contents()->SetAsFocusedWebContentsIfNecessary();
+  }
   if (delegate_) {
     delegate_->FocusInEmbedder(focus_op);
   }
 }
 
-FrameTree* SecureEmbedConnectorImpl::GetFocusedFrameTree() {
-  if (!embedder_web_contents_) {
-    return &guest_web_contents_->GetPrimaryFrameTree();
+// static
+bool SecureEmbedConnectorImpl::ContainsOrIsFocusedWebContents(
+    WebContentsImpl* web_contents) {
+  WebContentsImpl* root_web_contents = GetRootWebContents(web_contents);
+  WebContentsImpl* focused_web_contents =
+      root_web_contents->GetFocusedWebContents();
+  while (focused_web_contents) {
+    if (focused_web_contents == web_contents) {
+      return true;
+    }
+    focused_web_contents = GetParentWebContents(focused_web_contents);
   }
 
-  return embedder_web_contents()->GetFocusedFrameTree();
+  return false;
+}
+
+FrameTree* SecureEmbedConnectorImpl::GetFocusedFrameTree() {
+  return ContainsOrIsFocusedWebContents(guest_web_contents_)
+             ? embedder_web_contents()->GetFocusedFrameTree()
+             : nullptr;
 }
 
 void SecureEmbedConnectorImpl::SetFocusedFrameTree(
@@ -159,6 +184,9 @@ void SecureEmbedConnectorImpl::SetFocusedFrameTree(
 
   // Update focused frame tree stored in the embedder.
   embedder_web_contents()->SetFocusedFrameTree(frame_tree_to_focus);
+  // The `frame_tree_to_focus` must belong to this WebContents
+  // or an inner WebContents in the subtree.
+  CHECK(ContainsOrIsFocusedWebContents(guest_web_contents_));
 
   // Ensure that outer frame trees are focused.
   embedder_web_contents()->GetPrimaryFrameTree().FocusOuterFrameTrees();
@@ -172,7 +200,7 @@ void SecureEmbedConnectorImpl::SetFocusedFrameTree(
 }
 
 void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
-  if (!guest_web_contents_->ContainsOrIsFocusedWebContents()) {
+  if (!ContainsOrIsFocusedWebContents(guest_web_contents_)) {
     return;
   }
   CHECK(embedder_web_contents_)
@@ -214,7 +242,7 @@ void SecureEmbedConnectorImpl::SetFocus(bool focused,
   // happens when OS window get/lost focus or for parent pages when child page
   // is in focus, as part of FocusOuterFrameTrees().
   if ((focus_type != blink::mojom::FocusType::kPage) &&
-      !guest_web_contents_->ContainsOrIsFocusedWebContents()) {
+      !ContainsOrIsFocusedWebContents(guest_web_contents_)) {
     SetFocusedFrameTree(&guest_web_contents_->GetPrimaryFrameTree());
   }
 }
@@ -694,6 +722,26 @@ void SecureEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
   if (view_ != child_view) {
     SetView(child_view, /*allow_paint_holding=*/false);
   }
+}
+
+// static
+WebContentsImpl* SecureEmbedConnectorImpl::GetParentWebContents(
+    WebContentsImpl* web_contents) {
+  if (SecureEmbedConnector* connector =
+          web_contents->GetSecureEmbedConnector()) {
+    return static_cast<SecureEmbedConnectorImpl*>(connector)
+        ->embedder_web_contents();
+  }
+  return static_cast<WebContentsImpl*>(web_contents->GetOuterWebContents());
+}
+
+// static
+WebContentsImpl* SecureEmbedConnectorImpl::GetRootWebContents(
+    WebContentsImpl* web_contents) {
+  while (GetParentWebContents(web_contents)) {
+    web_contents = GetParentWebContents(web_contents);
+  }
+  return web_contents;
 }
 
 WebContentsImpl* SecureEmbedConnectorImpl::embedder_web_contents() {

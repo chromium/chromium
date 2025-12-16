@@ -1519,16 +1519,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Returns the focused frame's input handler.
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();
 
-  // When multiple WebContents are present within a tab or window, a single one
-  // is focused and will route keyboard events in most cases to a RenderWidget
-  // contained within it. |GetFocusedWebContents()|'s main frame widget will
-  // receive page focus and blur events when the containing window changes focus
-  // state.
-
-  // Returns true if |this| is the focused WebContents or an ancestor of the
-  // focused WebContents.
-  bool ContainsOrIsFocusedWebContents();
-
   // A render view-originated drag has ended. Informs the render view host and
   // WebContentsDelegate.
   void SystemDragEnded(RenderWidgetHost* source_rwh);
@@ -1966,14 +1956,15 @@ class CONTENT_EXPORT WebContentsImpl
   void RecursivelyRegisterRenderWidgetHostViews();
   void RecursivelyUnregisterRenderWidgetHostViews();
 
-  // With multiple WebContents in a tab, a single one is focused and will route
-  // keyboard events in most cases to a RenderWidget contained within it. All
-  // WebContents in the tab will have visibility to the focused frame for the
-  // purpose of tracking focused frame change, but the inner WebContents should
-  // not be able to access the focused frame outside of it for handling events.
-  // Returns true this is an inner WebContents and the focused frame is not
-  // contained inside it.
-  bool ShouldRestrictAccessToFocusedFrame();
+  // When multiple WebContents are present within a tab or window, a single one
+  // is focused and will route keyboard events in most cases to a RenderWidget
+  // contained within it. |GetFocusedWebContents()|'s main frame widget will
+  // receive page focus and blur events when the containing window changes focus
+  // state.
+
+  // Returns true if |this| is the focused WebContents or an ancestor of the
+  // focused WebContents.
+  bool ContainsOrIsFocusedWebContents();
 
   // Internal implementation of AttachInnerWebContents() and
   // AttachUnownedInnerWebContents().

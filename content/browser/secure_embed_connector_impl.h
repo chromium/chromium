@@ -62,6 +62,8 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   // the delegate.
   void FocusInEmbedder(FocusOperation focus_op);
 
+  static bool ContainsOrIsFocusedWebContents(WebContentsImpl* web_contents);
+
   FrameTree* GetFocusedFrameTree();
   void SetFocusedFrameTree(FrameTree* frame_tree_to_focus);
   void ClearFocusOnInnerWebContents();
@@ -157,6 +159,9 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void UpdateViewportIntersectionInternal(
       const blink::mojom::ViewportIntersectionState& intersection_state,
       bool include_visual_properties);
+
+  static WebContentsImpl* GetParentWebContents(WebContentsImpl* web_contents);
+  static WebContentsImpl* GetRootWebContents(WebContentsImpl* web_contents);
 
   WebContentsImpl* embedder_web_contents();
 

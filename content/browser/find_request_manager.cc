@@ -688,7 +688,9 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
     // The find next request will be directed at the focused frame if there is
     // one, or the first frame with matches otherwise.
     RenderFrameHost* target_rfh =
-        contents_->GetFocusedWebContents()->GetFocusedFrame();
+        contents_->GetFocusedWebContents()
+            ? contents_->GetFocusedWebContents()->GetFocusedFrame()
+            : nullptr;
     if (!target_rfh || !CheckFrame(target_rfh))
       target_rfh = GetInitialFrame(request.options->forward);
 
@@ -893,9 +895,10 @@ void FindRequestManager::FinalUpdateReceived(int request_id,
     // next frame with matches after this one.
     target_rfh = Traverse(rfh, current_request_.options->forward,
                           true /* matches_only */, true /* wrap */);
-  } else if ((target_rfh =
+  } else if (contents_->GetFocusedWebContents() &&
+             (target_rfh =
                   contents_->GetFocusedWebContents()->GetFocusedFrame()) !=
-             nullptr) {
+                 nullptr) {
     // Otherwise, if there is a focused frame, then the active match will be in
     // the next frame with matches after that one.
     target_rfh = Traverse(target_rfh, current_request_.options->forward,
