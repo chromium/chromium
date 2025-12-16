@@ -22,7 +22,9 @@ namespace autofill {
 using autofill::test::MakeFormGlobalId;
 using base::Bucket;
 using ::testing::ElementsAre;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::MockFunction;
 
 namespace {
 
@@ -236,17 +238,21 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
 // detected.
 TEST_F(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
   base::MockRepeatingCallback<void()> otp_detected_callback;
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(otp_detected_callback, Run()).Times(1);
+    EXPECT_CALL(check, Call("otp_detected_callback called once"));
+    EXPECT_CALL(otp_detected_callback, Run()).Times(0);
+  }
+
   base::CallbackListSubscription subscription =
       otp_field_detector().RegisterOtpFieldsDetectedCallback(
           otp_detected_callback.Get());
 
-  EXPECT_CALL(otp_detected_callback, Run()).Times(1);
   AddOtpToThePage(CreateSimpleOtp());
-  ASSERT_TRUE(
-      testing::Mock::VerifyAndClearExpectations(&otp_detected_callback));
-
+  check.Call("otp_detected_callback called once");
   // The second addition of OTPs should not generate more callbacks
-  EXPECT_CALL(otp_detected_callback, Run()).Times(0);
   AddOtpToThePage(CreateSimpleOtp());
 }
 
@@ -269,17 +275,20 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
   AddOtpToThePage(CreateSimpleOtp());
 
   base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+    EXPECT_CALL(check, Call("no otp_fields_submitted_callback callbacks"));
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+  }
 
   base::CallbackListSubscription subscription =
       otp_field_detector().RegisterOtpFieldsSubmittedCallback(
           otp_fields_submitted_callback.Get());
-
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      &otp_fields_submitted_callback));
+  check.Call("no otp_fields_submitted_callback callbacks");
 
   // Verify that a navigation triggers a callback.
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
   SimulateNavigation();
 }
 
@@ -290,23 +299,26 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
   AddOtpToThePage(form);
 
   base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+    EXPECT_CALL(check, Call("1: no otp_fields_submitted_callback callbacks"));
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+    EXPECT_CALL(check, Call("2: otp_fields_submitted_callback called once"));
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  }
 
   base::CallbackListSubscription subscription =
       otp_field_detector().RegisterOtpFieldsSubmittedCallback(
           otp_fields_submitted_callback.Get());
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      &otp_fields_submitted_callback));
-
+  check.Call("1: no otp_fields_submitted_callback callbacks");
   // Now, make the field disappear and simulate another navigation.
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
   RemoveOtpFromThePage(form);
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      &otp_fields_submitted_callback));
 
+  check.Call("2: otp_fields_submitted_callback called once");
   // A following navigation should not trigger another callback.
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
   SimulateNavigation();
 }
 
@@ -317,25 +329,28 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
   AddOtpToThePage(form);
 
   base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+    EXPECT_CALL(check, Call("1: no otp_fields_submitted_callback callbacks"));
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+    EXPECT_CALL(check, Call("2: otp_fields_submitted_callback called once"));
+    EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  }
 
   base::CallbackListSubscription subscription =
       otp_field_detector().RegisterOtpFieldsSubmittedCallback(
           otp_fields_submitted_callback.Get());
 
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      &otp_fields_submitted_callback));
-
+  check.Call("1: no otp_fields_submitted_callback callbacks");
   // Now, make the field disappear and simulate another navigation.
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
   SimulateSubmission(form);
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
-      &otp_fields_submitted_callback));
 
+  check.Call("2: otp_fields_submitted_callback called once");
   // A following navigation should not trigger another callback because the site
   // had a single form that was considered removed at submission time (even
   // though it stayed in the DOM).
-  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
   SimulateNavigation();
 }
 
