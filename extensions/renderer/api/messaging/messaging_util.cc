@@ -21,7 +21,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
-#include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
@@ -212,8 +212,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
   // TODO(crbug.com/40321352): The 64 MiB limit also applies to structured
   // messages. Can we unrestrict that since it uses `mojom_base::BigBuffer`
   // which has shared memory benefits for large messages?
-  static constexpr size_t kMaxMessageBytes = 1024 * 1024 * 64;
-  if (message_size > kMaxMessageBytes) {
+  if (message_size > mojom::kMaxMessageBytes) {
     *error = "Message exceeded maximum allowed size of 64MiB.";
     return nullptr;
   }

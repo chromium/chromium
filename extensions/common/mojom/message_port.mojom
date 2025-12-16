@@ -10,6 +10,13 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
+// A 64 MiB JSON serialized object is scary enough as it is.
+// TODO(crbug.com/40321352): The 64 MiB limit also applies to structured clone
+// messages. Can we unrestrict that since it uses `mojom_base::BigBuffer` which
+// has shared memory benefits for large messages?
+const uint64 kMaxMessageBytes = 67108864; // 64 * 1024 * 1024
+
 // The serialization format of the message.
 // NOTE: To obtain this for message sending purposes use
 // `messaging_util::GetSerializationFormat()`.
