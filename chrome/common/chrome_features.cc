@@ -284,6 +284,8 @@ const base::FeatureParam<base::TimeDelta> kGlicActorClickDelay{
 BASE_FEATURE(kGlicActorUi, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the new icon UI is enabled.
 BASE_FEATURE(kGlicActorUiTaskIconV2, base::FEATURE_ENABLED_BY_DEFAULT);
+// Controls whether the task nudge UI fixes are enabled.
+BASE_FEATURE(kGlicActorUiTaskNudgeUiFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether we ignore users preference of reduced motion enabled and
 // still show the tab indicator spinner. No-op if kGlicActorUiTabIndicator is
 // disabled.
