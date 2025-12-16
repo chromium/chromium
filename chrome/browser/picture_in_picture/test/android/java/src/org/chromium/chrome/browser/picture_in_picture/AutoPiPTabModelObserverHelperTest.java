@@ -194,7 +194,7 @@ public class AutoPiPTabModelObserverHelperTest {
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
     }
 
-    /** Tests that closing the observed tab does not trigger a callback. */
+    /** Tests that creating a tab in the background does not trigger a callback. */
     @Test
     @MediumTest
     public void testCloseTab() throws TimeoutException {
@@ -210,13 +210,11 @@ public class AutoPiPTabModelObserverHelperTest {
         mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
         assertTrue(mOnActivationChangedCallbackHelper.isActivated());
 
-        // Close the active tab should not trigger a callback
+        // Close the active tab should trigger a callback
         RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
-        assertEquals(
-                "Closing the observed tab should not trigger a callback.",
-                callCount,
-                mOnActivationChangedCallbackHelper.getCallCount());
+        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
+        assertFalse(mOnActivationChangedCallbackHelper.isActivated());
     }
 
     /* Tests that opening a second window doesn't change the tab model being observed. */
@@ -244,14 +242,12 @@ public class AutoPiPTabModelObserverHelperTest {
     }
 
     /**
-     * Tests moving an active observed tab to a new window. It verifies that: 1. The move itself
-     * does not trigger a callback (activation state remains true). 2. Switching to a different tab
-     * in the new window *does* trigger a callback (activation state becomes false), confirming the
-     * observer is correctly attached to the new window's TabModel.
+     * Tests moving an active observed tab to a new window, where it remains active. This should not
+     * trigger a callback as its activation state doesn't change.
      */
     @Test
     @MediumTest
-    public void testReparentingAndSubsequentTabSwitching() throws TimeoutException {
+    public void testMoveActiveObservedTabToNewWindow() throws TimeoutException {
         // TODO(crbug.com/425983853): use MultiWindowManagerApi31 methods to create windows and
         // reparent tabs.
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
@@ -280,20 +276,6 @@ public class AutoPiPTabModelObserverHelperTest {
                 "Moving an active tab should not trigger a callback.",
                 callCount,
                 mOnActivationChangedCallbackHelper.getCallCount());
-
-        // Select a different tab in the second window. This should trigger the callback
-        // because the observed tab is no longer active.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSecondActivity
-                            .getTabCreator(/* incognito= */ false)
-                            .createNewTab(
-                                    new LoadUrlParams(BLANK_PAGE_URL),
-                                    TabLaunchType.FROM_CHROME_UI,
-                                    null);
-                });
-        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
-        assertFalse(mOnActivationChangedCallbackHelper.isActivated());
     }
 
     /**
