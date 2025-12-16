@@ -4,16 +4,16 @@
 
 package org.chromium.components.search_engines;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -27,7 +27,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
     private static final int CHOICE_REQUIRED_DELAY_MS = 3000;
 
     private final boolean mEnableLogging;
-    private @Nullable ObservableSupplierImpl<Boolean> mIsChoiceRequired;
+    private @MonotonicNonNull SettableNullableObservableSupplier<Boolean> mIsChoiceRequired;
 
     /**
      * Supplier used as the main way to mock the search engine choice device backend.
@@ -81,7 +81,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
 
     @Override
     @MainThread
-    public ObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
+    public NullableObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
         ThreadUtils.assertOnUiThread();
 
         if (mEnableLogging) {
@@ -121,19 +121,19 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         }
     }
 
-    private ObservableSupplierImpl<Boolean> getSupplier() {
+    private SettableNullableObservableSupplier<Boolean> getSupplier() {
         // The supplier is lazily initialized, to more closely match the behaviour of the real
         // implementation, which does not trigger connections and queries unless the supplier is
         // needed.
         if (mIsChoiceRequired == null) {
             // Fake the backend taking some time to respond.
-            mIsChoiceRequired = new ObservableSupplierImpl<>();
+            mIsChoiceRequired = ObservableSuppliers.createNullable();
             ThreadUtils.postOnUiThreadDelayed(
                     () -> {
                         if (mEnableLogging) {
                             Log.i(TAG, "triggering the delayed supplier response.");
                         }
-                        assumeNonNull(mIsChoiceRequired).set(true);
+                        mIsChoiceRequired.set(true);
                     },
                     CHOICE_REQUIRED_DELAY_MS);
 

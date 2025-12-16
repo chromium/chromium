@@ -19,7 +19,8 @@ import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -50,10 +51,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         /**
          * @return A supplier that determines if back press will be handled by the sheet content.
          */
-        default ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-            supplier.set(false);
-            return supplier;
+        default NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+            return ObservableSuppliers.alwaysFalse();
         }
     }
 
@@ -284,7 +283,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressListener.getBackPressStateChangedSupplier();
     }
 

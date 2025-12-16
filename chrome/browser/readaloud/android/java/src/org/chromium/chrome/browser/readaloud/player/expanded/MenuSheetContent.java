@@ -10,7 +10,8 @@ import android.view.View;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -109,10 +110,8 @@ abstract class MenuSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
-        return supplier;
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return ObservableSuppliers.alwaysTrue();
     }
 
     @Override
