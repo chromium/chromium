@@ -50,8 +50,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PumaReportStoringOutcome">
   <int value="0" label="Stored"/>
-  <int value="1" label="Not stored: no report"/>
+  <int value="1"
+      label="(Obsolete) Not stored: either no report or serialization failed"/>
   <int value="2" label="Not stored: serialization failed"/>
+  <int value="3" label="Not stored: no report"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/metrics/private_metrics/puma_service.h:PumaReportStoringOutcome) -->
