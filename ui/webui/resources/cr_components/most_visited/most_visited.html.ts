@@ -31,7 +31,7 @@ export function getHtml(this: MostVisitedElement) {
             !this.isFromEnterpriseShortcut_(item.source)}"
           data-index="${index}"></cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
-          title="${this.i18n('linkRemove')}"
+          title="${this.i18n('linkRemoveA11y', item.title)}"
           @click="${this.onTileRemoveButtonClick_}" tabindex="0"
           ?hidden="${this.customLinksEnabled_ ||
             this.isFromEnterpriseShortcut_(item.source)}"

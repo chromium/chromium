@@ -287,6 +287,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"linkDone", IDS_NTP_CUSTOM_LINKS_DONE},
       {"linkEditedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_EDITED},
       {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
+      {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
       {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
       {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},
       {"enterpriseShortcutSubtitle", IDS_NTP_ENTERPRISE_SHORTCUT_SUBTITLE},
