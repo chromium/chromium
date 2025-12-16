@@ -18,15 +18,6 @@ public class ChromeInstrumentationLeaks implements LeakCanaryConfigProvider {
     // chrome_public_test_apk). The goal is to  burn this class down to nothing by fixing leaks.
     // Please include a bug for each leak.
 
-    // crbug.com/465115033
-    @IdentifierNameString
-    private static String sClass465115033 =
-            "org.chromium.chrome.browser.customtabs.CustomTabObserver$PageLoadMetricsObserver";
-
-    @IdentifierNameString
-    private static String sField465115033 =
-            "org.chromium.chrome.browser.customtabs.CustomTabObserver$PageLoadMetricsObserver#this$0";
-
     // crbug.com/467345468
     @IdentifierNameString
     private static String sClass467345468 = "org.chromium.chrome.browser.metrics.UmaSessionStats$1";
@@ -37,7 +28,7 @@ public class ChromeInstrumentationLeaks implements LeakCanaryConfigProvider {
 
     @Override
     public Map<String, String> getInstanceFieldLeaks() {
-        return Map.of(sClass465115033, sField465115033, sClass467345468, sField467345468);
+        return Map.of(sClass467345468, sField467345468);
     }
 
     // crbug.com/462704925
