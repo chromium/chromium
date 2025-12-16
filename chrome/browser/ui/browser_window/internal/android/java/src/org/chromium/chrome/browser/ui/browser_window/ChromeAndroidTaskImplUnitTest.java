@@ -1608,6 +1608,32 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void maximize_whenPendingUpdate_notAffectIsActive() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var promise = new Promise<Pair<Integer, Rect>>();
+        when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.maximize();
+        assertTrue("isMaximized is true while pending", chromeAndroidTask.isMaximized());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), any());
+        promise.fulfill(Pair.create(0, DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX));
+        shadowOf(getMainLooper()).idle();
+
+        // Assert
+        Assert.assertFalse("Maximize should not activate task", chromeAndroidTask.isActive());
+    }
+
+    @Test
     public void maximize_whenPendingCreate_returnCachedMaximizeBound() {
         // Arrange.
         // Cache a maximize bound.

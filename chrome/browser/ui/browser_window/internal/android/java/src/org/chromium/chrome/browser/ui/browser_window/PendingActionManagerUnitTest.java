@@ -474,14 +474,24 @@ public class PendingActionManagerUnitTest {
     }
 
     @Test
-    public void testIsActiveFuture_afterRequestMaximize_returnsTrue() {
+    public void testIsActiveFuture_afterRequestMaximize_notAffectIsActive() {
         // Arrange.
         mManager.requestMaximize(new Rect());
 
         // Assert.
-        assertEquals(
-                "isActive should be true in the future when MAXIMIZE is in progress",
-                true,
+        assertNull(
+                "isActiveFuture should not be affected when MAXIMIZE is in progress",
+                mManager.isActiveFuture(State.PENDING_UPDATE));
+    }
+
+    @Test
+    public void testIsActiveFuture_afterRequestRestore_notAffectIsActive() {
+        // Arrange.
+        mManager.requestRestore(new Rect());
+
+        // Assert.
+        assertNull(
+                "isActiveFuture should not be affected when RESTORE is in progress",
                 mManager.isActiveFuture(State.PENDING_UPDATE));
     }
 

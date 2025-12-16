@@ -456,8 +456,6 @@ final class PendingActionManager {
             switch (action) {
                 case PendingAction.SHOW:
                 case PendingAction.ACTIVATE:
-                case PendingAction.MAXIMIZE:
-                case PendingAction.RESTORE:
                     mIsActiveFuture = true;
                     break;
                 case PendingAction.SHOW_INACTIVE:
