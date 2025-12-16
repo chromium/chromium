@@ -992,6 +992,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   };
   sendButton.accessibilityIdentifier =
       kComposeboxSendButtonAccessibilityIdentifier;
+  sendButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_SEARCH);
 
   [sendButton addTarget:self
                  action:@selector(sendButtonTapped)
@@ -1009,6 +1011,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   micButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   micButton.accessibilityIdentifier =
       kComposeboxMicButtonAccessibilityIdentifier;
+  micButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_VOICE_SEARCH);
 
   [micButton addTarget:self
                 action:@selector(micButtonTapped)
@@ -1024,6 +1028,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   lensButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   lensButton.accessibilityIdentifier =
       kComposeboxLensButtonAccessibilityIdentifier;
+  lensButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
 
   [lensButton addTarget:self
                  action:@selector(lensButtonTapped)
