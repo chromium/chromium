@@ -72,6 +72,11 @@ interface PageHandler {
   // `lens.AimToClientMessage` protobuf containing a `lens.HandshakeResponse`.
   // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
   OnWebviewMessage(array<uint8> message);
+
+  // Returns the common search params that should be added to every request
+  // from the webview. Empty params will be removed from the URL.
+  GetCommonSearchParams(bool is_dark_mode, bool is_side_panel)
+      => (map<string, string> params);
 };
 
 // WebUI-side handler for requests from the browser.

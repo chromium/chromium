@@ -54,6 +54,9 @@ class ContextualTasksPageHandler
   void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
+  void GetCommonSearchParams(bool is_dark_mode,
+                             bool is_side_panel,
+                             GetCommonSearchParamsCallback callback) override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

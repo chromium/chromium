@@ -1962,7 +1962,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   const GURL first_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.menu&vsint=KgwKAggHEgIIAxgBIAI&q=&lns_fp=1"
-      "&lns_mode=un&gsc=2&hl=en-US&cs=0");
+      "&lns_mode=un&cs=0&gsc=2&hl=en-US");
   controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
                                                /*is_click=*/false);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -3534,7 +3534,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   const GURL first_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
-      "&gsc=2&hl=en-US&cs=0");
+      "&cs=0&gsc=2&hl=en-US");
   GetLensOverlaySidePanelCoordinator()->LoadURLInResultsFrameForTesting(
       first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -3629,7 +3629,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.menu&vsint=CAMiCSoHb3JhbmdlcyoMCgIIBxICCAMYASAC&"
       "q=oranges"
-      "&lns_fp=1&lns_mode=text&lns_surface=42&gsc=2&hl=en-US&cs=0");
+      "&lns_fp=1&lns_mode=text&lns_surface=42&cs=0&gsc=2&hl=en-US");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -3655,7 +3655,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   const GURL second_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.menu&vsint=KgwKAggHEgIIAxgBIAI&q=&lns_fp=1"
-      "&lns_mode=un&gsc=2&hl=en-US&cs=0");
+      "&lns_mode=un&cs=0&gsc=2&hl=en-US");
   // We can't use content::WaitForLoadStop here and below since the last
   // navigation was already successful.
   content::TestNavigationObserver second_search_observer(
@@ -3681,7 +3681,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.menu&vsint=CAMiBioEa2l3aSoKCgIIBxICCAMgAg&q="
       "kiwi&lns_fp=1"
-      "&lns_mode=text&lns_surface=42&gsc=2&hl=en-US&cs=0");
+      "&lns_mode=text&lns_surface=42&cs=0&gsc=2&hl=en-US");
   content::TestNavigationObserver third_search_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
@@ -3807,7 +3807,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   const GURL first_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
-      "&gsc=2&hl=en-US&cs=0");
+      "&cs=0&gsc=2&hl=en-US");
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -3831,7 +3831,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&vsint=CAMiBioEa2l3aSoKCgIIBxICCAMgAg&q="
       "kiwi&lns_fp="
-      "1&lns_mode=text&lns_surface=42&gsc=2&hl=en-US&cs=0");
+      "1&lns_mode=text&lns_surface=42&cs=0&gsc=2&hl=en-US");
   content::TestNavigationObserver second_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
@@ -3926,7 +3926,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL first_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
-      "&gsc=2&hl=en-US&cs=0");
+      "&cs=0&gsc=2&hl=en-US");
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -3949,7 +3949,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL second_search_url(
       "https://www.google.com/"
       "search?source=chrome.gsc&ie=UTF-8&oq=green&vsint=KgwKAggHEgIIEhgAIAI&"
-      "gsc=2&hl=en-US&cs=0&q=green&lns_mode=mu&lns_fp=1&udm=24");
+      "cs=0&gsc=2&hl=en-US&q=green&lns_mode=mu&lns_fp=1&udm=24");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver first_searchbox_query_observer(
@@ -3979,7 +3979,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL third_search_url(
       "https://www.google.com/"
       "search?source=chrome.gsc&ie=UTF-8&oq=red&vsint=KgwKAggHEgIIEhgAIAI&"
-      "gsc=2&hl=en-US&cs=0&q=red&lns_mode=mu&lns_fp=1&udm=24");
+      "cs=0&gsc=2&hl=en-US&q=red&lns_mode=mu&lns_fp=1&udm=24");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver second_searchbox_query_observer(

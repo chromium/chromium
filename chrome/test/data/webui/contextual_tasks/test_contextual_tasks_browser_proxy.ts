@@ -102,6 +102,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onWebviewMessage',
       'submitQuery',
       'getRecentTabs',
+      'getCommonSearchParams',
     ]);
 
     this.url_ = {url};
@@ -166,6 +167,16 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   getRecentTabs() {
     this.methodCalled('getRecentTabs');
     return Promise.resolve({tabs: []});
+  }
+
+  getCommonSearchParams(isDarkMode: boolean, isSidePanel: boolean) {
+    this.methodCalled('getCommonSearchParams', isDarkMode, isSidePanel);
+    const params: {[key: string]: string} = {
+      'hl': 'en-US',
+      'cs': isDarkMode ? '1' : '0',
+      'gsc': isSidePanel ? '2' : '',
+    };
+    return Promise.resolve({params});
   }
 
   onTabClickedFromSourcesMenu(tabId: number, url: Url) {

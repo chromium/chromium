@@ -91,6 +91,11 @@ extern bool GetIsContextualTasksSuggestionsEnabled();
 // Lens entry points will open results in the contextual tasks panels.
 extern bool GetEnableLensInContextualTasks();
 
+// Returns whether we should force the gsc=2 param to be added. This is used as
+// a temporary workaround since the server is not yet ready to adapt the side
+// panel UI unless the gsc=2 param is set.
+extern bool ShouldForceGscInTabMode();
+
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();
 

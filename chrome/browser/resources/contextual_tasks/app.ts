@@ -8,6 +8,7 @@ import './top_toolbar.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -47,7 +48,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  protected accessor isShownInTab_: boolean = true;  // Most start in a tab.
+  accessor isShownInTab_: boolean = true;  // Most start in a tab.
   protected accessor threadUrl_: string = '';
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
@@ -55,6 +56,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor showComposebox_: boolean = true;
   private listenerIds_: number[] = [];
   private oauthToken_: string = '';
+  private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
 
   constructor() {
@@ -97,10 +99,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.setOAuthToken.addListener(
             (oauthToken: string) => {
               this.oauthToken_ = oauthToken;
-              if (this.pendingUrl_) {
-                this.threadUrl_ = this.pendingUrl_;
-                this.pendingUrl_ = '';
-              }
+              this.maybeLoadPendingUrl_();
             }),
         this.browserProxy_.callbackRouter.hideInput.addListener(() => {
           this.showComposebox_ = false;
@@ -110,6 +109,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         }));
 
     this.updateToolbarVisibility();
+
+    // Fetch the initial common search params.
+    this.updateCommonSearchParams();
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -132,12 +134,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       threadUrl = url.url;
     }
 
-    // Wait until the OAuth token is ready before loading the URL.
-    if (this.oauthToken_) {
-      this.threadUrl_ = threadUrl;
-    } else {
-      this.pendingUrl_ = threadUrl;
-    }
+    // Wait until all necessary data is available before loading the URL.
+    this.pendingUrl_ = threadUrl;
+    this.maybeLoadPendingUrl_();
   }
 
   override disconnectedCallback() {
@@ -146,6 +145,18 @@ export class ContextualTasksAppElement extends CrLitElement {
         id => this.browserProxy_.callbackRouter.removeListener(id));
     this.$.threadFrame.request.onBeforeSendHeaders.removeListener(
         this.onBeforeSendHeaders.bind(this));
+    this.$.threadFrame.request.onBeforeRequest.removeListener(
+        this.onBeforeRequest.bind(this));
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    // Fetch the common search params before setting up the request overrides.
+    // TODO(crbug.com/463729504): Add checking to see if dark mode changed.
+    if (changedProperties.has('isShownInTab_')) {
+      this.updateCommonSearchParams();
+    }
   }
 
   override render() {
@@ -156,6 +167,15 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.postMessageHandler_.sendMessage(new Uint8Array(message));
   }
 
+  private maybeLoadPendingUrl_() {
+    // If all the data needed to make the initial request is available, load the
+    // pending URL.
+    if (this.pendingUrl_ && this.oauthToken_ && this.commonSearchParams_) {
+      this.threadUrl_ = this.pendingUrl_;
+      this.pendingUrl_ = '';
+    }
+  }
+
   private onHandshakeComplete() {
     this.postMessageHandler_.completeHandshake();
   }
@@ -163,6 +183,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   private async updateToolbarVisibility() {
     const {isInTab} = await this.browserProxy_.handler.isShownInTab();
     this.isShownInTab_ = isInTab;
+  }
+
+  private async updateCommonSearchParams() {
+    // TODO(crbug.com/463729504): Add support for dark mode.
+    const {params} = await this.browserProxy_.handler.getCommonSearchParams(
+        /*isDarkMode=*/ false, /*isSidePanel=*/ !this.isShownInTab_);
+    this.commonSearchParams_ = params;
+    this.maybeLoadPendingUrl_();
   }
 
   private setupWebviewRequestOverrides() {
@@ -176,12 +204,41 @@ export class ContextualTasksAppElement extends CrLitElement {
         },
         ['blocking', 'requestHeaders', 'extraHeaders']);
 
+    this.$.threadFrame.request.onBeforeRequest.addListener(
+        this.onBeforeRequest.bind(this), {
+          types: ['main_frame'] as any,
+          urls: ['<all_urls>'],
+        },
+        ['blocking']);
+
     // Sets the user agent to the default user agent + the contextual tasks
     // custom suffix.
     const userAgent = this.$.threadFrame.getUserAgent();
     const userAgentSuffix = loadTimeData.getString('userAgentSuffix');
     this.$.threadFrame.setUserAgentOverride(`${userAgent} ${userAgentSuffix}`);
   }
+
+  private addCommonSearchParams(url: URL): URL {
+    for (const [key, value] of Object.entries(this.commonSearchParams_)) {
+      if (value === '') {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, value);
+      }
+    }
+    return url;
+  }
+
+  private onBeforeRequest:
+      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeRequest> =
+          (details): chrome.webRequest.BlockingResponse => {
+            const url = new URL(details.url);
+            const newUrl = this.addCommonSearchParams(url);
+            if (newUrl.href !== details.url) {
+              return {redirectUrl: newUrl.href};
+            }
+            return {};
+          };
 
   private onBeforeSendHeaders:
       ChromeEventFunctionType<typeof chrome.webRequest.onBeforeSendHeaders> =

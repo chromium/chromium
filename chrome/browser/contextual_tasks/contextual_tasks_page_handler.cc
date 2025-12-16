@@ -8,17 +8,22 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -171,6 +176,25 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   } else if (aim_to_client_message.has_exit_basic_mode()) {
     web_ui_controller_->page()->RestoreInput();
   }
+}
+
+void ContextualTasksPageHandler::GetCommonSearchParams(
+    bool is_dark_mode,
+    bool is_side_panel,
+    GetCommonSearchParamsCallback callback) {
+  // The server is not yet ready to adapt the side panel UI unless the gsc=2
+  // param is set. So force side panel mode if the temporary feature flag is
+  // enabled.
+  if (contextual_tasks::ShouldForceGscInTabMode()) {
+    is_side_panel = true;
+  }
+  auto params = lens::GetCommonSearchParametersMap(
+      /*country_code=*/g_browser_process->GetFeatures()
+          ->application_locale_storage()
+          ->Get(),
+      is_dark_mode, is_side_panel);
+  std::move(callback).Run(
+      base::flat_map<std::string, std::string>(params.begin(), params.end()));
 }
 
 void ContextualTasksPageHandler::PostMessageToWebview(

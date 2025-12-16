@@ -157,6 +157,7 @@ if (!is_android) {
     deps = [
       ":ui",
       "//base",
+      "//chrome/browser:global_features",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
@@ -170,6 +171,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",
+      "//components/application_locale_storage",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
       "//components/lens",
