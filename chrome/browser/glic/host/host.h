@@ -182,9 +182,10 @@ class Host : public GlicSharingManagerProvider {
     PanelWillOpenOptions(PanelWillOpenOptions&&);
     PanelWillOpenOptions& operator=(PanelWillOpenOptions&&);
 
-    // The ID of the conversation to open. If unset, the web client will open a
-    // new conversation.
-    std::optional<std::string> conversation_id;
+    // The conversation to open. If conversation_id is unset/empty, the web
+    // client will open a new conversation.
+    glic::mojom::ConversationInfoPtr conversation_info =
+        glic::mojom::ConversationInfo::New();
     // If set, the textbox for user input will be populated with the given
     // string before the panel opens.
     std::optional<std::string> prompt_suggestion;

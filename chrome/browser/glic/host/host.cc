@@ -154,9 +154,9 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
         glic_instance_
             ? mojom::PanelOpeningData::New(
                   glic_instance_->GetPanelState().Clone(), invocation_source,
-                  std::move(options.conversation_id),
                   std::move(options.prompt_suggestion),
-                  std::move(options.recently_active_conversations))
+                  std::move(options.recently_active_conversations),
+                  std::move(options.conversation_info))
             : mojom::PanelOpeningData::New(),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
@@ -317,24 +317,28 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   CHECK(web_client);
   handler_info_->web_client = web_client;
   if (invocation_source_ && web_client) {
-    std::optional<std::string> conversation_id, prompt_suggestion;
+    std::optional<std::string> prompt_suggestion;
     std::optional<std::vector<mojom::ConversationInfoPtr>>
         recently_active_conversations;
+    auto conversation_info = mojom::ConversationInfo::New();
+
     if (pending_panel_open_options_) {
-      conversation_id = std::move(pending_panel_open_options_->conversation_id);
       prompt_suggestion =
           std::move(pending_panel_open_options_->prompt_suggestion);
       recently_active_conversations =
           std::move(pending_panel_open_options_->recently_active_conversations);
+      conversation_info =
+          std::move(pending_panel_open_options_->conversation_info);
       pending_panel_open_options_.reset();
     }
+
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(
             glic_instance_ ? glic_instance_->GetPanelState().Clone()
                            : mojom::PanelState::New(),
-            *invocation_source_, std::move(conversation_id),
-            std::move(prompt_suggestion),
-            std::move(recently_active_conversations)),
+            *invocation_source_, std::move(prompt_suggestion),
+            std::move(recently_active_conversations),
+            std::move(conversation_info)),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.

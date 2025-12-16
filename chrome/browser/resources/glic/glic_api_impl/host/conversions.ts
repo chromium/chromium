@@ -282,15 +282,18 @@ export function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
 
 export function panelOpeningDataToClient(
     panelOpeningData: PanelOpeningDataMojo): PanelOpeningData {
+  const conversationInfo =
+      conversationInfoToClient(panelOpeningData.conversationInfo);
   return {
     panelState: panelStateToClient(panelOpeningData.panelState),
     invocationSource: panelOpeningData.invocationSource as number,
-    conversationId: optionalToClient(panelOpeningData.conversationId),
+    conversationId: conversationInfo?.conversationId || undefined,
     promptSuggestion: optionalToClient(panelOpeningData.promptSuggestion),
     recentlyActiveConversations: panelOpeningData.recentlyActiveConversations ?
         panelOpeningData.recentlyActiveConversations.map(
             conversationInfoToClient) :
         undefined,
+    conversationInfo,
   };
 }
 
@@ -299,6 +302,22 @@ export function conversationInfoToClient(
   return {
     conversationId: conversationInfo.conversationId,
     conversationTitle: conversationInfo.conversationTitle,
+    clientData: conversationInfo.clientData ?
+        new TextDecoder().decode(
+            new Uint8Array(conversationInfo.clientData.data)) :
+        undefined,
+  };
+}
+
+export function conversationInfoFromClient(conversationInfo: ConversationInfo):
+    ConversationInfoMojo {
+  return {
+    conversationId: conversationInfo.conversationId,
+    conversationTitle: conversationInfo.conversationTitle,
+    clientData: conversationInfo.clientData ? {
+      data: Array.from(new TextEncoder().encode(conversationInfo.clientData)),
+    } :
+                                              null,
   };
 }
 

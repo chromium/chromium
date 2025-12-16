@@ -18,7 +18,7 @@ import {ResponseExtras} from '../post_message_transport.js';
 import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 
-import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, conversationInfoFromClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
@@ -204,7 +204,11 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserSwitchConversation(request: {info?: ConversationInfo}):
       Promise<{}> {
     const {errorReason} = await this.handler.switchConversation(
-        request.info ?? {conversationId: '', conversationTitle: ''});
+        conversationInfoFromClient(request.info ?? {
+          conversationId: '',
+          conversationTitle: '',
+          clientData: undefined,
+        }));
     if (errorReason !== null) {
       throw new ErrorWithReasonImpl(
           'switchConversation', errorReason.valueOf());
@@ -214,7 +218,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserRegisterConversation(request: {info: ConversationInfo}):
       Promise<{}> {
-    const {errorReason} = await this.handler.registerConversation(request.info);
+    const {errorReason} = await this.handler.registerConversation(
+        conversationInfoFromClient(request.info));
     if (errorReason !== null) {
       throw new ErrorWithReasonImpl(
           'registerConversation', errorReason.valueOf());

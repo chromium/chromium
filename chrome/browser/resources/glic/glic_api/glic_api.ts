@@ -941,6 +941,12 @@ export declare interface ConversationInfo {
    *  titles don't change.
    */
   conversationTitle: string;
+  /**
+   * Optional client-specific data. This data is not used by Chrome and Chrome
+   * will never attempt to deserialize it. It can hold a key for client-side
+   * lookup or opaque serialized data.
+   */
+  clientData?: string;
 }
 
 /** Fields of interest from the system settings page. */
@@ -1248,9 +1254,10 @@ export declare interface PanelOpeningData {
    */
   invocationSource?: InvocationSource;
   /**
-   * The ID of the conversation to open. If unset, the web client will open a
-   * new conversation. This field is used only when the `MULTI_INSTANCE`
-   * capability is present.
+   * @deprecated Use `conversationInfo` instead. The ID of the conversation to
+   *     open.
+   * If unset, the web client will open a new conversation.
+   * This field is used only when the `MULTI_INSTANCE` capability is present.
    */
   conversationId?: string;
   /**
@@ -1263,6 +1270,16 @@ export declare interface PanelOpeningData {
    * first.
    */
   recentlyActiveConversations?: ConversationInfo[];
+  /**
+   * Information about the conversation being opened.
+   *
+   * - The web client will load the requested `conversationInfo.conversationId`.
+   * - If `conversationInfo.conversationId` is empty, it indicates a new
+   * conversation is being started.
+   * - The object may contain `clientData` if it was provided in the
+   *   `registerConversation` or `switchConversation` calls.
+   */
+  conversationInfo?: ConversationInfo;
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

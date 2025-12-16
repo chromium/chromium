@@ -1339,7 +1339,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationWithEmptyId) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
 
-  ExecuteJsTest();
+  ExecuteJsTest({.params = base::Value("initiateSwitch")});
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
@@ -1357,6 +1357,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationWithEmptyId) {
       GetGlicInstanceImpl()->GetConversationInfo();
   EXPECT_EQ("", retrieved_info->conversation_id);
   EXPECT_EQ("Empty Switched Title", retrieved_info->conversation_title);
+  EXPECT_EQ("test_client_data_from_ts", retrieved_info->client_data);
+
+  // Verify that client data was received by the new client.
+  ExecuteJsTest({.params = base::Value("verifyNewInstance")});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
@@ -3146,7 +3150,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
       InstrumentTab(kFirstTab),
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   Host::PanelWillOpenOptions options;
-  options.conversation_id = "test_conversation_id";
+  options.conversation_info = mojom::ConversationInfo::New();
+  options.conversation_info->conversation_id = "test_conversation_id";
+  options.conversation_info->conversation_title = "Test Conversation Title";
+  options.conversation_info->client_data = "test_client_data_from_cc";
   ASSERT_FALSE(GetHost()->IsReady());
   GetHost()->PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
                            std::move(options));

@@ -1106,7 +1106,7 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
 void GlicInstanceImpl::NotifyPanelWillOpen(
     mojom::InvocationSource invocation_source) {
   Host::PanelWillOpenOptions options;
-  options.conversation_id = conversation_id();
+  options.conversation_info = GetConversationInfo();
   if (coordinator_delegate_) {
     options.recently_active_conversations =
         coordinator_delegate_->GetRecentlyActiveConversations();
