@@ -73,9 +73,7 @@ class TabStripNewTabButton: UIView {
     button.translatesAutoresizingMaskIntoConstraints = false
     button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     button.isPointerInteractionEnabled = true
-    if #available(iOS 17.0, *) {
-      button.hoverStyle = .init(effect: .lift, shape: .circle)
-    }
+    button.hoverStyle = .init(effect: .lift, shape: .circle)
   }
 
   /// Updates the `accessibilityLabel` according to the current state of
