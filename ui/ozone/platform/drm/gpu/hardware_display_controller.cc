@@ -414,13 +414,12 @@ HardwareDisplayController::GetFormatModifiersForTestModeset(
 }
 
 void HardwareDisplayController::UpdatePreferredModifierForFormat(
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     uint64_t modifier) {
-  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(buffer_format);
+  uint32_t fourcc_format = GetFourCCFormatFromSharedImageFormat(format);
   preferred_format_modifier_[fourcc_format] = modifier;
 
-  uint32_t opaque_fourcc_format =
-      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
+  uint32_t opaque_fourcc_format = GetFourCCFormatForOpaqueFramebuffer(format);
   preferred_format_modifier_[opaque_fourcc_format] = modifier;
 }
 
