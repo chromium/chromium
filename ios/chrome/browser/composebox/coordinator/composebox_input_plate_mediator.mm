@@ -558,7 +558,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
-  NSArray<ComposeboxInputItem*>* items = _items.containedItems;
+  NSArray<ComposeboxInputItem*>* items = [_items.containedItems copy];
   for (ComposeboxInputItem* item in items) {
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
     if (webStateID.valid() && deselectedIDs.contains(webStateID)) {
