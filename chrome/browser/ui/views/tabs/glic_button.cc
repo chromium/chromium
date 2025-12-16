@@ -261,6 +261,10 @@ void GlicButton::ShowDefaultLabel() {
   if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
     return;
   }
+  // If the label should not show, no further animation is needed.
+  if (!ShouldShowLabel()) {
+    return;
+  }
 
   is_animating_text_ = true;
   StartSlidingTextAnimation(/*show=*/true);
