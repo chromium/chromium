@@ -22920,6 +22920,25 @@
             ]
         }
     ],
+    "SeamlessSigninClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledCompactContinue",
+                    "params": {
+                        "seamless-signin-promo-type": "compact",
+                        "seamless-signin-string-type": "continueButton"
+                    },
+                    "enable_features": [
+                        "EnableSeamlessSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEngineChoiceClearInvalidPref": [
         {
             "platforms": [
