@@ -55,6 +55,7 @@ import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -794,6 +795,28 @@ public class BrowserControlsManagerUnitTest {
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean());
+    }
+
+    @Test
+    public void testConstraintChangeFromTab() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        notifyCurrentTab(mTab);
+        // Put the control container in a hidden state and bottom-positioned.
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 10, TOOLBAR_HEIGHT);
+        ShadowLooper.idleMainLooper();
+        Mockito.clearInvocations(mContainerView);
+        // Locking the controls via the TabControlsObserver should check for forced relayout.
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onOffsetTagsInfoChanged(
+                        mTab,
+                        new BrowserControlsOffsetTagsInfo(),
+                        new BrowserControlsOffsetTagsInfo(),
+                        BrowserControlsState.SHOWN);
+        ShadowLooper.idleMainLooper();
+        verify(mContainerView).requestLayout();
     }
 
     private void verifyUpdateOffsetTagDefinitions(
