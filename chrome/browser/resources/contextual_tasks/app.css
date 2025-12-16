@@ -15,17 +15,16 @@
   background-color: var(--search-background-color);
   --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
   --color-composebox-cancel-button: rgba(10,10,10, 1);
-  --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.6);
-  --color-composebox-file-carousel-remove-gradient-end: transparent;
-  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
   --color-composebox-file-carousel-divider: rgba(255, 255, 255, 1);
-  --color-composebox-file-carousel-remove-button: rgba(255, 255, 255, 1);
-  --color-composebox-file-chip-background: rgba(239, 243, 250, 1);
+  --color-composebox-file-carousel-remove-button: rgba(0, 0, 0, 0.6);
+  --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
+  --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.2);
+  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
+  --color-composebox-file-chip-background: rgb(225, 227, 232);
   --color-composebox-file-chip-background-hovered: rgba(225, 227, 232, 1);
   --color-composebox-file-chip-favicon-background: rgba(225 224 238, 1);
   --color-composebox-file-chip-text: rgba(31, 31, 31, 1);
-
   --color-composebox-font: rgba(86, 89, 94, 1);
   --color-composebox-font-dark: rgba(10, 10, 10, 1);
   /* Used in matches + textbox input (but textbox input overridden
@@ -34,14 +33,23 @@
   --color-composebox-font-light: rgba(31, 31, 31, 1);
   --color-composebox-hover: rgba(233, 235, 240, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
-
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
   /* Dropdown item color in context menu entrypoint. */
   --cr-primary-text-color: rgba(31, 31, 31, 1);
+  --gradient-protection-width: 100%;
+  --remove-button-border-radius: 10%;
+  --remove-button-height: var(--remove-button-width);
+  --remove-button-inset-inline-end: calc((var(--thumbnail-chip-width) - var(--thumbnail-chip-icon-size)) / 2);
+  --remove-button-width: calc(var(--thumbnail-chip-icon-size) + var(--thumbnail-chip-padding) * 2);
   --search-background-color: transparent;
   --search-background-color-rgb: 255, 255, 255;
+  --thumbnail-chip-icon-size: 16px;
+  --thumbnail-chip-overlay-width: 100%;
+  --thumbnail-chip-padding: 6px;
+  --thumbnail-chip-width: 154px;
 }
 
 /* Dark mode */
@@ -56,6 +64,7 @@
   --color-composebox-voice-lens-button: #bfbfbf;
   --color-searchbox-results-background-hovered: #3c4043;
   --cr-composebox-background-color: #1d1e26;
+  --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: #3e3f431a;
   --search-background-color: #101218;
   --search-background-color-rgb: 36, 36, 36;

@@ -80,7 +80,7 @@
   overflow: hidden;
   padding: 0px 12px 0px 8px;
   position: relative;
-  width: 154px;
+  width: var(--thumbnail-chip-width, 154px);
 }
 
 .thumbnail {
@@ -91,9 +91,9 @@
   flex-shrink: 0;
   height: 16px;
   justify-content: center;
-  padding: 6px;
+  padding: var(--thumbnail-chip-padding, 6px);
   position: relative;
-  width: 16px;
+  width: var(--thumbnail-chip-icon-size, 16px);
 }
 
 .pdf-icon {
@@ -126,7 +126,7 @@
   position: absolute;
   inset-inline-end: 0;
   top: 0;
-  width: 44px;
+  width: var(--thumbnail-chip-overlay-width, 44px);
 }
 
 .gradient-protection {
@@ -136,21 +136,23 @@
     var(--color-composebox-file-carousel-remove-gradient-end) 123.53%
   );
   border-radius: 0 8px 8px 0;
+  inline-size: var(--gradient-protection-width, 56px);
   inset-block: 0;
   inset-inline-end: 0;
-  inline-size: 56px;
-  position: absolute;
   pointer-events: none;
+  position: absolute;
 }
 
 .remove-button {
   --cr-icon-button-fill-color: var(--cr-composebox-file-thumbnail-remove-button-fill-color, black);
   --cr-icon-button-hover-background-color: var(--color-composebox-file-carousel-remove-button);
-  --cr-icon-button-height: 24px;
-  --cr-icon-button-width: 24px;
+  --cr-icon-button-height: var(--remove-button-height, 24px);
+  --cr-icon-button-width: var(--remove-button-width, 24px);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-start: 0;
-  border-radius: 50%;
+  background-color: var(--color-composebox-file-carousel-remove-button);
+  border-radius: var(--remove-button-border-radius, 50%);
+  inset-inline-end: var(--remove-button-inset-inline-end, 0);
   color: var(--color-composebox-pdf-chip-icon);
   position: relative;
 }
