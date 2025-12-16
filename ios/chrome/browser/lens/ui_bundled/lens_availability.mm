@@ -18,6 +18,8 @@ const char kIOSLensContextMenuSupportStatusHistogramName[] =
     "Mobile.ContextMenu.LensSupportStatus";
 const char kIOSLensKeyboardSupportStatusHistogramName[] =
     "Mobile.Keyboard.LensSupportStatus";
+const char kIOSLensComposeBoxSupportStatusHistogramName[] =
+    "Mobile.ComposeBox.LensSupportStatus";
 const char kIOSLensNewTabPageSupportStatusHistogramName[] =
     "Mobile.NewTabPage.LensSupportStatus";
 const char kIOSSpotlightSupportStatusHistogramName[] =
@@ -37,6 +39,9 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       break;
     case LensEntrypoint::Keyboard:
       availability_metric_name = kIOSLensKeyboardSupportStatusHistogramName;
+      break;
+    case LensEntrypoint::Composebox:
+      availability_metric_name = kIOSLensComposeBoxSupportStatusHistogramName;
       break;
     case LensEntrypoint::NewTabPage:
       availability_metric_name = kIOSLensNewTabPageSupportStatusHistogramName;

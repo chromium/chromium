@@ -182,6 +182,9 @@ extern const char kSettingsOnOverflowMenuUsed[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
+// The user has triggered the Lens button in the Composebox.
+extern const char kIOSLensButtonComposeboxUsed[];
+
 // The user has more than one gesture to refresh a page in iOS. This includes
 // but not limited to re-typing the URL in omnibox and refreshing from context
 // menu.

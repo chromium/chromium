@@ -114,6 +114,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mobile.ComposeBox.LensSupportStatus"
+    enum="IOSLensSupportStatus" expires_after="2026-12-05">
+  <owner>ameurhosni@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether Lens is supported in the Composebox, and if not, the reason why.
+    Recorded each time the Composebox is opened.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.ContextMenu.CopyImage" enum="ContextMenuIOSCopyImage"
     expires_after="2026-01-31">
   <owner>olivierrobin@chromium.org</owner>
