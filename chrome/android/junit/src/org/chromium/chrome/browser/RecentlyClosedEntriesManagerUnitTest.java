@@ -9,8 +9,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -23,15 +21,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
@@ -371,148 +366,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         greaterThan(entry.getDate().getTime()));
             }
         }
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
-    public void testOpenMostRecentlyClosedEntry_FeatureDisabled() {
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
-        verify(mTabModel).openMostRecentlyClosedEntry();
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_NoEntries() {
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(new ArrayList<>());
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
-        verify(mTabModel, never()).openMostRecentlyClosedEntry();
-        verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_NoWindowEntries() {
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(2L);
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(new ArrayList<>());
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
-        verify(mTabModel).openMostRecentlyClosedEntry();
-        verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_NoTabEntries() {
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ 0,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
-                NewWindowAppSource.KEYBOARD_SHORTCUT);
-        verify(mTabModel, never()).openMostRecentlyClosedEntry();
-        verify(mMultiInstanceManager).openWindow(2, NewWindowAppSource.KEYBOARD_SHORTCUT);
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_MostRecentIsTab() {
-        // Make tab closure entry more recent.
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(3L);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ 0,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 2,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
-        verify(mTabModel).openMostRecentlyClosedEntry();
-        verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_MostRecentIsWindow_CanOpenWindow() {
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        MultiWindowUtils.setMaxInstancesForTesting(3);
-
-        // Make window entry more recent.
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(2L);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ 0,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
-                NewWindowAppSource.KEYBOARD_SHORTCUT);
-        verify(mMultiInstanceManager)
-                .openWindow(2, MultiInstanceManager.NewWindowAppSource.KEYBOARD_SHORTCUT);
-        verify(mTabModel, never()).openMostRecentlyClosedEntry();
-    }
-
-    @Test
-    public void testOpenMostRecentlyClosedEntry_MostRecentIsWindow_MaxInstances() {
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        MultiWindowUtils.setMaxInstancesForTesting(3);
-
-        // Make window entry more recent.
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(2L);
-        List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(
-                new InstanceInfo(
-                        /* instanceId= */ 2,
-                        /* taskId= */ 0,
-                        InstanceInfo.Type.OTHER,
-                        /* url= */ "",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
-
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
-        verify(mTabModel).openMostRecentlyClosedEntry();
-        verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
     }
 
     /**
