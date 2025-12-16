@@ -248,6 +248,11 @@ void ContextualTasksPageHandler::OnTaskUpdated(
 
 void ContextualTasksPageHandler::UpdateContextForTask(
     const base::Uuid& task_id) {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksContextLibrary)) {
+    web_ui_controller_->page()->OnContextUpdated({});
+    return;
+  }
   context_controller_->GetContextForTask(
       task_id, {contextual_tasks::ContextualTaskContextSource::kTabStrip},
       std::make_unique<contextual_tasks::ContextDecorationParams>(),
