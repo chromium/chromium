@@ -137,6 +137,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},
       {"title", IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE},
+      /* composeDeepSearchPlaceholder and
+       * composeCreateImagePlaceholder are defined by searchbox_handler.cc.
+       */
+      {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddLocalizedString(
@@ -188,10 +192,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableThumbnailSizingTweaks",
       lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
-  source->AddString("searchboxComposePlaceholder", "[i18n] Ask Google...");
-  source->AddString("composeDeepSearchPlaceholder",
-                    "[i18n] Search within results...");
-  source->AddString("composeCreateImagePlaceholder", "[i18n] Create image...");
+  source->AddString("searchboxComposePlaceholder",
+                    ntp_composebox::FeatureConfig::Get()
+                        .config.composebox()
+                        .input_placeholder_text());
   source->AddBoolean("composeboxSmartComposeEnabled", false);
   AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowLensSearchChip", false);
