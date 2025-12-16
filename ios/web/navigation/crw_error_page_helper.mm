@@ -11,6 +11,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/net/protocol_handler_util.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
@@ -73,7 +74,7 @@ NSString* InjectedErrorPageFilePath() {
 }
 
 - (NSString*)failedNavigationURLString {
-  return self.error.userInfo[NSURLErrorFailingURLStringErrorKey];
+  return net::GetFailingURLStringFromError(self.error);
 }
 
 - (NSURL*)errorPageFileURL {

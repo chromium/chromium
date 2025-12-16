@@ -150,6 +150,7 @@ optimize_ts("navigation_listeners_js") {
 source_set("wk_navigation_util") {
   deps = [
     "//base",
+    "//ios/net",
     "//ios/web/common",
     "//ios/web/public",
     "//url",
