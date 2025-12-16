@@ -55,6 +55,10 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
 
   void OnTimerFired(TimerBase*);
 
+  // Calculates the next valid timestamp for signal generation, accounting for
+  // inert and minimum intervals.
+  base::TimeTicks CalculateNextValidGenerationTimestamp() const;
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::TimeDelta inert_interval_;
   base::TimeDelta minimum_interval_;

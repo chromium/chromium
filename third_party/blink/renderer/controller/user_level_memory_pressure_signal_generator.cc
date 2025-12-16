@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/memory/memory_pressure_listener.h"
@@ -129,13 +130,8 @@ void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal(
 
   // Calculate the next valid timestamp for signal generation, accounting for
   // inert and minimum intervals.
-  base::TimeTicks inert_interval_expiry =
-      last_loaded_.value_or(base::TimeTicks::Min()) + inert_interval_;
-  base::TimeTicks minimum_interval_expiry =
-      last_critical_generated_.value_or(base::TimeTicks::Min()) +
-      minimum_interval_;
   base::TimeTicks next_valid_timestamp =
-      std::max(inert_interval_expiry, minimum_interval_expiry);
+      CalculateNextValidGenerationTimestamp();
 
   // If that timestamp has already passed, generate immediately. Else start the
   // timer.
@@ -176,16 +172,27 @@ void UserLevelMemoryPressureSignalGenerator::OnRAILModeChanged(
 
   // We want to honor the pending request, but only if the signal would be
   // generated in a timely matter. If not, the request is cancelled.
-  base::TimeTicks inert_interval_expiry = now + inert_interval_;
+  base::TimeTicks next_valid_timestamp =
+      CalculateNextValidGenerationTimestamp();
   base::TimeTicks request_expiry = last_requested_.value() + minimum_interval_;
-
-  if (inert_interval_expiry > request_expiry) {
+  if (next_valid_timestamp > request_expiry) {
     // Cancel the request.
     last_requested_ = std::nullopt;
     return;
   }
 
-  timer_.StartOneShot(inert_interval_, FROM_HERE);
+  timer_.StartOneShot(next_valid_timestamp - now, FROM_HERE);
+}
+
+base::TimeTicks
+UserLevelMemoryPressureSignalGenerator::CalculateNextValidGenerationTimestamp()
+    const {
+  base::TimeTicks inert_interval_expiry =
+      last_loaded_.value_or(base::TimeTicks::Min()) + inert_interval_;
+  base::TimeTicks minimum_interval_expiry =
+      last_critical_generated_.value_or(base::TimeTicks::Min()) +
+      minimum_interval_;
+  return std::max(inert_interval_expiry, minimum_interval_expiry);
 }
 
 void UserLevelMemoryPressureSignalGenerator::Generate(
