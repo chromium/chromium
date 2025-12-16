@@ -131,8 +131,10 @@ message PrivateMetricEndpointPayload {
     REPORT_TYPE_INVALID = 1;
     DWA = 2;
     DKM = 3;
-    PUMA_RC = 4;
-    PUMA_SEARCH = 5;
+
+    // All PUMA reports share the same report type. PUMA types can be
+    // differentiated by the profile type.
+    PUMA = 4;
   }
   optional ReportType report_type = 3;
 }

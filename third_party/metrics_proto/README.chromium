@@ -1,8 +1,8 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: This is the canonical public repository
-Version: 843531637
-Date: 2025-12-12
+Version: 845373225
+Date: 2025-12-16
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
@@ -19,5 +19,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-* Removed generate_py_runtime = true. This was done for testing purposes before
-  removing it from the export script.
+Unchanged from the output of the export script.
