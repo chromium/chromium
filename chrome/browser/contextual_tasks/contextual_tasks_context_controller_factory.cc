@@ -55,7 +55,7 @@ ContextualTasksContextControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<ContextualTasksContextControllerImpl>(
-      contextual_tasks_service);
+      profile, contextual_tasks_service);
 }
 
 }  // namespace contextual_tasks

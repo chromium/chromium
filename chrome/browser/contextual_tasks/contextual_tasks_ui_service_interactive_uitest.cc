@@ -132,6 +132,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"),
             1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ActiveTasksCount", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

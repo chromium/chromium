@@ -33,6 +33,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.ActiveTasksCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the number of active tasks (tasks that are open in a full tab or in
+    the side panel). This is recorded every time a task is created on the local
+    device.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.AiResponse.UserAction.LinkClicked.{ContextualTasksUiSurface}"
     enum="Boolean" expires_after="2026-03-22">

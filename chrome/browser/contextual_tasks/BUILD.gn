@@ -89,6 +89,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     deps += [
+      ":ui",
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/contextual_search",
       "//chrome/browser/page_content_annotations:extraction_service",

@@ -102,6 +102,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // In both cases, the cache needs to be updated.
   void OnTaskChanged(content::WebContents* web_contents, base::Uuid task_id);
 
+  // Returns the number of active tasks tracked by `this`.
+  size_t GetNumberOfActiveTasks() const;
+
  private:
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();
@@ -145,7 +148,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Called when active tab has been updated.
   void ObserveWebContentsOnActiveTab();
 
-  // Update the statucs of active tab context on the side panel.
+  // Update the status of active tab context on the side panel.
   void UpdateContextualTaskUI();
 
   // Disassociate the tab from the task if it's associated with it.
