@@ -38,7 +38,10 @@
   await wp1.Runtime.runIfWaitingForDebugger();
   testRunner.log(`Session 2 resumed!`);
 
-  await worker_session1.evaluate('');
+  await Promise.all([
+    wp1.Inspector.onceWorkerScriptLoaded(),
+    wp2.Inspector.onceWorkerScriptLoaded(),
+  ]);
 
   testRunner.completeTest();
 })
