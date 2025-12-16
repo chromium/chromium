@@ -171,4 +171,12 @@ iwa_access_control {
     key: "kc27yfbm2ipu5iqqdvgstfrn3jvt5y26zaqtvbh24xl76hantsiqaaic"
     value: {}
   }
+
+  # crbug.com/461787022
+  user_install_allowlist: {
+    key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai",
+    value: {
+      enterprise_name: "Google LLC"
+    }
+  }
 }
