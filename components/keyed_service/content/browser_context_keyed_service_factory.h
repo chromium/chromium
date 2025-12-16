@@ -160,8 +160,8 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceFactory
   // All subclasses of BrowserContextKeyedServiceFactory must return a
   // KeyedService instead of just a BrowserContextKeyedBase.
   //
-  // This should not return nullptr; instead, return nullptr from
-  // `GetBrowserContextToUse()`.
+  // This may return nullptr if the service shouldn't be created for the given
+  // `context`.
   virtual std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const = 0;
 
