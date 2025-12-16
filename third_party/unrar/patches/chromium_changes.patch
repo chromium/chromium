@@ -1,50 +1,47 @@
 diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
-index 4fc2a893478d6..e922295a7e29d 100644
+index 4fc2a893478d6..87c639c606e24 100644
 --- a/third_party/unrar/src/archive.cpp
 +++ b/third_party/unrar/src/archive.cpp
-@@ -359,3 +359,13 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
+@@ -359,3 +359,4 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
    Flags+=(uint)Fraction*FCI_DICT_FRACT0;
    return Pow2+Fraction*(Pow2/32);
  }
 +
-+#if defined(CHROMIUM_UNRAR)
-+void Archive::SetTempFileHandle(FileHandle hF) {
-+  hTempFile = hF;
-+}
-+
-+FileHandle Archive::GetTempFileHandle() {
-+  return hTempFile;
-+}
-+#endif
 diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
-index db1cb533823bf..d2cd23173c37c 100644
+index db1cb533823bf..8dde040e02fa0 100644
 --- a/third_party/unrar/src/archive.hpp
 +++ b/third_party/unrar/src/archive.hpp
-@@ -58,6 +58,13 @@ class Archive:public File
+@@ -23,6 +23,10 @@ enum ADDSUBDATA_FLAGS
+ // RAR5 headers must not exceed 2 MB.
+ #define MAX_HEADER_SIZE_RAR5 0x200000
+ 
++#if defined(CHROMIUM_UNRAR)
++#include "third_party/unrar/google/unrar_delegates.h"
++#endif
++
+ class Archive:public File
+ {
+   private:
+@@ -58,6 +62,8 @@ class Archive:public File
      QuickOpen QOpen;
      bool ProhibitQOpen;
  #endif
 +
-+#if defined(CHROMIUM_UNRAR)
-+    // A handle for a temporary file that should be used when extracting the
-+    // archive. This is used to extract the contents while in a sandbox.
-+    FileHandle hTempFile;
-+#endif
 +
    public:
      Archive(CommandData *InitCmd=nullptr);
      ~Archive();
-@@ -94,6 +101,10 @@ class Archive:public File
-     int64 Tell() override;
-     void QOpenUnload() {QOpen.Unload();}
-     void SetProhibitQOpen(bool Mode) {ProhibitQOpen=Mode;}
-+#endif
+@@ -87,6 +93,10 @@ class Archive:public File
+     HEADER_TYPE GetHeaderType() {return CurHeaderType;}
+     CommandData* GetCommandData() {return Cmd;}
+     void SetSilentOpen(bool Mode) {SilentOpen=Mode;}
 +#if defined(CHROMIUM_UNRAR)
-+    void SetTempFileHandle(FileHandle hF);
-+    FileHandle GetTempFileHandle();
- #endif
-     static uint64 GetWinSize(uint64 Size,uint &Flags);
- 
++    void SetWriterDelegate(third_party_unrar::RarWriterDelegate *Delegate) {m_writer_delegate=Delegate;}
++    third_party_unrar::RarWriterDelegate *m_writer_delegate = nullptr;
++#endif
+ #ifdef USE_QOPEN
+     bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
+     int Read(void *Data,size_t Size) override;
 diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
 index 61c616289ae47..f9a9d74f021c8 100644
 --- a/third_party/unrar/src/crc.cpp
@@ -155,22 +152,10 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index e74c9d2e0a2e2..ba856cb5bed89 100644
+index e74c9d2e0a2e2..87d9fc4b603bb 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
-@@ -671,6 +671,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
-       ExtrFile=LinksToDirs(DestFileName,Cmd->ExtrPath,LastCheckedSymlink);
- 
-     File CurFile;
-+#if defined(CHROMIUM_UNRAR)
-+    // Since extraction is done in a sandbox, this must extract to the temp file
-+    // handle instead of the default.
-+    CurFile.SetFileHandle(Arc.GetTempFileHandle());
-+#endif
- 
-     bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
-     if (LinkEntry && (Arc.FileHead.RedirType!=FSREDIR_FILECOPY))
-@@ -901,6 +906,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -901,6 +901,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
@@ -180,7 +165,7 @@ index e74c9d2e0a2e2..ba856cb5bed89 100644
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -911,6 +919,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -911,6 +914,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }
@@ -216,7 +201,7 @@ index 18d8f8c9cb776..570475ec6560c 100644
  
  #endif
 diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index c6fab17328262..929de3fcf98bd 100644
+index c6fab17328262..94184eb75f7c5 100644
 --- a/third_party/unrar/src/file.cpp
 +++ b/third_party/unrar/src/file.cpp
 @@ -19,6 +19,10 @@ File::File()
@@ -225,7 +210,7 @@ index c6fab17328262..929de3fcf98bd 100644
    CurFilePos=0;
 +
 +#ifdef CHROMIUM_UNRAR
-+  hOpenFile=FILE_BAD_HANDLE;
++  reader_delegate_ = nullptr;
 +#endif
  }
  
@@ -236,8 +221,8 @@ index c6fab17328262..929de3fcf98bd 100644
  #ifdef _WIN_ALL
 +#if defined(CHROMIUM_UNRAR)
 +  // Do not open a file handle since the sandbox doesn't allow it. Use the
-+  // handle provided by the caller.
-+  hNewFile = hOpenFile;
++  // delegate provided by the caller.
++  return reader_delegate_;
 +#else
    uint Access=WriteMode ? GENERIC_WRITE:GENERIC_READ;
    if (UpdateMode)
@@ -247,38 +232,44 @@ index c6fab17328262..929de3fcf98bd 100644
      SetFileTime(hNewFile,NULL,&ft,NULL);
    }
 +#endif  // defined(CHROMIUM_UNRAR)
- 
-+#else
 +
++#else
+ 
 +#if defined(CHROMIUM_UNRAR)
 +  // Do not open a file handle since the sandbox doesn't allow it. Use the
-+  // handle provided by the caller.
-+  int handle = hOpenFile;
++  // delegate provided by the caller.
++  return reader_delegate_;
  #else
    int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
  
-@@ -121,6 +137,8 @@ bool File::Open(const std::wstring &Name,uint Mode)
+@@ -121,6 +137,7 @@ bool File::Open(const std::wstring &Name,uint Mode)
    WideToChar(Name,NameA);
  
    int handle=open(NameA.c_str(),flags);
-+#endif  // defined(CHROMIUM_UNRAR)
 +
  #ifdef LOCK_EX
  
  #ifdef _OSF_SOURCE
-@@ -180,6 +198,11 @@ bool File::WOpen(const std::wstring &Name)
+@@ -157,6 +174,7 @@ bool File::Open(const std::wstring &Name,uint Mode)
+     TruncatedAfterReadError=false;
+   }
+   return Success;
++#endif  // defined(CHROMIUM_UNRAR)
+ }
+ 
+ 
+@@ -180,6 +198,10 @@ bool File::WOpen(const std::wstring &Name)
  
  bool File::Create(const std::wstring &Name,uint Mode)
  {
 +#if defined(CHROMIUM_UNRAR)
-+  // Since the Chromium sandbox does not allow the creation of files, use the
-+  // provided file.
-+  hFile = hOpenFile;
++  // Since the Chromium sandbox does not allow the creation of files.
++  return true;
 +#else
    // 2025.09.03: Likely outdated info, see https://www.illumos.org/issues/2000
    // OpenIndiana based NAS and CIFS shares fail to set the file time if file
    // was created in read+write mode and some data was written and not flushed
-@@ -218,6 +241,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
+@@ -218,6 +240,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
    hFile=fopen(NameA.c_str(),WriteMode ? WRITEBINARY:CREATEBINARY);
  #endif
  #endif
@@ -286,24 +277,73 @@ index c6fab17328262..929de3fcf98bd 100644
    NewFile=true;
    HandleType=FILE_HANDLENORMAL;
    SkipClose=false;
-@@ -252,6 +276,8 @@ bool File::Close()
-   {
-     if (!SkipClose)
-     {
-+#if !defined(CHROMIUM_UNRAR)
-+// unrar should not close the file handle since it wasn't opened by unrar.
+@@ -246,6 +269,9 @@ bool File::WCreate(const std::wstring &Name,uint Mode)
+ 
+ bool File::Close()
+ {
++#if defined(CHROMIUM_UNRAR)
++  return reader_delegate_;
++#endif
+   bool Success=true;
+ 
+   if (hFile!=FILE_BAD_HANDLE)
+@@ -453,6 +479,13 @@ int File::Read(void *Data,size_t Size)
+ // Returns -1 in case of error.
+ int File::DirectRead(void *Data,size_t Size)
+ {
++#if defined(CHROMIUM_UNRAR)
++  if (reader_delegate_) {
++    int64_t ret = reader_delegate_->Read(
++        base::span<uint8_t>((uint8_t*)Data, Size));
++    return (ret < 0) ? -1 : (int)ret;
++  }
++#endif
  #ifdef _WIN_ALL
-       // We use the standard system handle for stdout in Windows
-       // and it must not be closed here.
-@@ -264,6 +290,7 @@ bool File::Close()
-       Success=fclose(hFile)!=EOF;
- #endif
- #endif
-+#endif  // defined(CHROMIUM_UNRAR)
-     }
-     hFile=FILE_BAD_HANDLE;
-   }
-@@ -796,6 +823,9 @@ int64 File::FileLength()
+   const size_t MaxDeviceRead=20000;
+   const size_t MaxLockedRead=32768;
+@@ -526,6 +559,21 @@ void File::Seek(int64 Offset,int Method)
+ 
+ bool File::RawSeek(int64 Offset,int Method)
+ {
++#if defined(CHROMIUM_UNRAR)
++  if (reader_delegate_) {
++    int64_t absolute_offset = Offset;
++    if (Method == SEEK_CUR) {
++      int64_t current = reader_delegate_->Tell();
++      if (current == -1) return false;
++      absolute_offset += current;
++    } else if (Method == SEEK_END) {
++      int64_t len = reader_delegate_->GetLength();
++      if (len == -1) return false;
++      absolute_offset += len;
++    }
++    return reader_delegate_->Seek(absolute_offset);
++  }
++#endif
+   if (hFile==FILE_BAD_HANDLE)
+     return true;
+   if (!IsSeekable()) // To extract archives from stdin with -si.
+@@ -587,6 +635,9 @@ bool File::RawSeek(int64 Offset,int Method)
+ 
+ int64 File::Tell()
+ {
++#if defined(CHROMIUM_UNRAR)
++  if (reader_delegate_) return reader_delegate_->Tell();
++#endif
+   if (hFile==FILE_BAD_HANDLE)
+     if (AllowExceptions)
+       ErrHandler.SeekError(FileName);
+@@ -786,6 +837,9 @@ void File::GetOpenFileTime(RarTime *ftm,RarTime *ftc,RarTime *fta)
+ 
+ int64 File::FileLength()
+ {
++#if defined(CHROMIUM_UNRAR)
++  if (reader_delegate_) return reader_delegate_->GetLength();
++#endif
+   int64 SavePos=Tell();
+   Seek(0,SEEK_END);
+   int64 Length=Tell();
+@@ -796,6 +850,9 @@ int64 File::FileLength()
  
  bool File::IsDevice()
  {
@@ -313,7 +353,7 @@ index c6fab17328262..929de3fcf98bd 100644
    if (hFile==FILE_BAD_HANDLE)
      return false;
  #ifdef _WIN_ALL
-@@ -804,6 +834,7 @@ bool File::IsDevice()
+@@ -804,6 +861,7 @@ bool File::IsDevice()
  #else
    return isatty(GetFD());
  #endif
@@ -321,33 +361,56 @@ index c6fab17328262..929de3fcf98bd 100644
  }
  
  
-@@ -853,3 +884,9 @@ int64 File::Copy(File &Dest,int64 Length)
+@@ -853,3 +911,9 @@ int64 File::Copy(File &Dest,int64 Length)
    return CopySize;
  }
  #endif
 +
 +#if defined(CHROMIUM_UNRAR)
-+void File::SetFileHandle(FileHandle hF) {
-+  hOpenFile = hF;
++void File::SetReaderDelegate(third_party_unrar::RarReaderDelegate* delegate) {
++  reader_delegate_ = delegate;
 +}
 +#endif  // defined(CHROMIUM_UNRAR)
 diff --git a/third_party/unrar/src/file.hpp b/third_party/unrar/src/file.hpp
-index 67c1754987f63..11600f6e3818e 100644
+index 67c1754987f63..033bbf51ac6c7 100644
 --- a/third_party/unrar/src/file.hpp
 +++ b/third_party/unrar/src/file.hpp
-@@ -85,6 +85,11 @@ class File
+@@ -51,6 +51,10 @@ enum FILE_READ_ERROR_MODE {
+ };
+ 
+ 
++#if defined(CHROMIUM_UNRAR)
++#include "third_party/unrar/google/unrar_delegates.h"
++#endif
++
+ class File
+ {
+   private:
+@@ -85,6 +89,11 @@ class File
      std::wstring FileName;
  
      FILE_ERRORTYPE ErrorType;
 +
 +#if defined(CHROMIUM_UNRAR)
-+    FileHandle hOpenFile;
++    third_party_unrar::RarReaderDelegate* reader_delegate_;
 +#endif  // defined(CHROMIUM_UNRAR)
 +
    public:
      File();
      virtual ~File();
-@@ -135,6 +140,14 @@ class File
+@@ -119,7 +128,11 @@ class File
+     static void StatToRarTime(struct stat &st,RarTime *ftm,RarTime *ftc,RarTime *fta);
+ #endif
+     void GetOpenFileTime(RarTime *ftm,RarTime *ftc=NULL,RarTime *fta=NULL);
++#if defined(CHROMIUM_UNRAR)
++    virtual bool IsOpened() {return hFile!=FILE_BAD_HANDLE || reader_delegate_;} // 'virtual' for MultiFile class.
++#else
+     virtual bool IsOpened() {return hFile!=FILE_BAD_HANDLE;} // 'virtual' for MultiFile class.
++#endif
+     virtual int64 FileLength(); // 'virtual' for MultiFile class.
+     void SetHandleType(FILE_HANDLETYPE Type) {HandleType=Type;}
+     void SetLineInputMode(bool Mode) {LineInput=Mode;}
+@@ -135,6 +148,14 @@ class File
      void SetExceptions(bool Allow) {AllowExceptions=Allow;}
      void SetPreserveAtime(bool Preserve) {PreserveAtime=Preserve;}
      bool IsTruncatedAfterReadError() {return TruncatedAfterReadError;}
@@ -355,8 +418,8 @@ index 67c1754987f63..11600f6e3818e 100644
 +#if defined(CHROMIUM_UNRAR)
 +    // Since unrar runs in a sandbox, it doesn't have the permission to open
 +    // files on the filesystem. Instead, the caller opens the file and passes
-+    // the file handle to unrar. This handle is then used to read the file.
-+    void SetFileHandle(FileHandle file);
++    // the file delegate to unrar. This delegate is then used to read the file.
++    void SetReaderDelegate(third_party_unrar::RarReaderDelegate* delegate);
 +#endif  // defined(CHROMIUM_UNRAR)
 +
  #ifdef _UNIX
@@ -559,6 +622,26 @@ index 378ccc7fbad2c..5c5e4102067e8 100644
  
  
  #ifndef SFX_MODULE
+diff --git a/third_party/unrar/src/rdwrfn.cpp b/third_party/unrar/src/rdwrfn.cpp
+index a49a8bcedfcb8..f19ccef19afe9 100644
+--- a/third_party/unrar/src/rdwrfn.cpp
++++ b/third_party/unrar/src/rdwrfn.cpp
+@@ -153,6 +153,15 @@ int ComprDataIO::UnpRead(byte *Addr,size_t Count)
+ 
+ void ComprDataIO::UnpWrite(byte *Addr,size_t Count)
+ {
++#if defined(CHROMIUM_UNRAR)
++  Archive *SrcArc=static_cast<Archive*>(SrcFile);
++  if (SrcArc->m_writer_delegate!=nullptr)
++  {
++    if (!SrcArc->m_writer_delegate->Write(
++        base::span<const uint8_t>(Addr, Count)))
++      ErrHandler.Exit(RARX_USERBREAK);
++  }
++#endif
+ 
+ #ifdef RARDLL
+   CommandData *Cmd=((Archive *)SrcFile)->GetCommandData();
 diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
 index 8d8f298609a76..a32ea40e3ac25 100644
 --- a/third_party/unrar/src/secpassword.cpp

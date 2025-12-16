@@ -10,6 +10,8 @@
 #include "base/files/platform_file.h"
 #include "base/memory/scoped_refptr.h"
 
+#include "third_party/unrar/google/unrar_delegates.h"
+
 // Forward declare the unrar symbols needed for extraction, so users of
 // RarReader don't need all the symbols from unrar.
 class Archive;
@@ -17,6 +19,36 @@ class CmdExtract;
 class CommandData;
 
 namespace third_party_unrar {
+
+// Delegate that provides file access using a base::File.
+class FileReader : public RarReaderDelegate {
+ public:
+  explicit FileReader(base::File file);
+  ~FileReader() override;
+
+  int64_t Read(base::span<uint8_t> data) override;
+  bool Seek(int64_t offset) override;
+  int64_t Tell() override;
+  int64_t GetLength() override;
+
+ private:
+  base::File file_;
+};
+
+
+// Writer delegate that writes to a file.
+class FileWriter : public RarWriterDelegate {
+ public:
+  explicit FileWriter(base::File file);
+  ~FileWriter() override;
+
+  bool Write(base::span<const uint8_t> data) override;
+
+  void Close() override;
+
+ private:
+  base::File file_;
+};
 
 // This class is used for extracting RAR files, one entry at a time.
 class RarReader {
@@ -41,9 +73,9 @@ class RarReader {
   RarReader();
   ~RarReader();
 
-  // Opens the RAR archive in |rar_file|, and uses |temp_file| for extracting
-  // each entry.
-  bool Open(base::File rar_file, base::File temp_file);
+  // Opens the RAR archive using the provided |delegate| for reading, and uses
+  // |temp_file| for extracting each entry.
+  bool Open(std::unique_ptr<RarReaderDelegate> delegate, base::File temp_file);
 
   // Extracts the next entry in the RAR archive. Returns true on success and
   // updates the information in |current_entry()|.
@@ -55,16 +87,22 @@ class RarReader {
 
   void SetPassword(const std::string& password);
 
+  // Sets a custom writer delegate. If not set, a default FileWriter using
+  // the temp_file passed to Open() will be used.
+  void SetWriterDelegate(std::unique_ptr<RarWriterDelegate> writer);
+
   bool HeadersEncrypted() const;
   bool HeaderDecryptionFailed() const;
+  // Indicates whether there was a disk error since the last ExtractNextEntry().
+  bool HasWriteError() const;
 
  private:
   // The temporary file used for extracting each entry. This allows RAR
   // extraction to safely occur within a sandbox.
   base::File temp_file_;
 
-  // The RAR archive being extracted.
-  base::File rar_file_;
+  // The high-level file delegate.
+  std::unique_ptr<RarReaderDelegate> reader_;
 
   // Information for the current entry in the RAR archive.
   EntryInfo current_entry_;
@@ -76,6 +114,12 @@ class RarReader {
 
   // Password used for encrypted entries.
   std::string password_;
+
+  // Writer delegate.
+  std::unique_ptr<RarWriterDelegate> writer_;
+
+  // Whether a write error occurred.
+  bool write_error_ = false;
 };
 
 }  // namespace third_party_unrar

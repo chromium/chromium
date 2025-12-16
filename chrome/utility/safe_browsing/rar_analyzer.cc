@@ -46,6 +46,12 @@ bool RarAnalyzer::ResumeExtraction() {
     }
   }
 
+  if (reader_.HasWriteError()) {
+    results()->analysis_result = ArchiveAnalysisResult::kDiskError;
+    results()->success = false;
+    return false;
+  }
+
   if (results()->encryption_info.password_status !=
           EncryptionInfo::kKnownIncorrect &&
       results()->encryption_info.is_encrypted) {
@@ -80,7 +86,9 @@ void RarAnalyzer::OnGetTempFile(base::File temp_file) {
 
   // `rar_file_` is consumed by the reader and cannot be used after
   // this point.
-  if (!reader_.Open(std::move(GetArchiveFile()), temp_file_.Duplicate())) {
+  if (!reader_.Open(std::make_unique<third_party_unrar::FileReader>(
+                        std::move(GetArchiveFile())),
+                    temp_file_.Duplicate())) {
     InitComplete(ArchiveAnalysisResult::kUnknown);
     return;
   }

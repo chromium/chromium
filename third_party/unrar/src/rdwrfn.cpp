@@ -153,6 +153,15 @@ int ComprDataIO::UnpRead(byte *Addr,size_t Count)
 
 void ComprDataIO::UnpWrite(byte *Addr,size_t Count)
 {
+#if defined(CHROMIUM_UNRAR)
+  Archive *SrcArc=static_cast<Archive*>(SrcFile);
+  if (SrcArc->m_writer_delegate!=nullptr)
+  {
+    if (!SrcArc->m_writer_delegate->Write(
+        base::span<const uint8_t>(Addr, Count)))
+      ErrHandler.Exit(RARX_USERBREAK);
+  }
+#endif
 
 #ifdef RARDLL
   CommandData *Cmd=((Archive *)SrcFile)->GetCommandData();
