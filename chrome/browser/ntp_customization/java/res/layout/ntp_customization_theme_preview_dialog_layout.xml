@@ -35,6 +35,16 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <View
+        android:id="@+id/bottom_gradient_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ntp_customization_preview_dialog_bottom_gradient_height"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ntp_customization_theme_preview_dialog_bottom_gradient_overlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageView
         android:id="@+id/pinch_to_resize_icon"
         android:layout_width="@dimen/ntp_customization_pinch_to_resize_icon_size"

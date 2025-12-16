@@ -20,6 +20,7 @@ found in the LICENSE file.
     <color name="black_alpha_12" tools:ignore="UnusedResources">#1F000000</color>
     <color name="black_alpha_20" tools:ignore="UnusedResources">#33000000</color>
     <color name="black_alpha_30" tools:ignore="UnusedResources">#4D000000</color>
+    <color name="black_alpha_50">#80000000</color>
 
     <color name="green_50">#E6F4EA</color>
 

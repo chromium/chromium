@@ -158,6 +158,7 @@ android_resources("java_resources") {
     "java/res/drawable/ntp_customization_theme_collections_list_item_background.xml",
     "java/res/drawable/ntp_customization_theme_collections_list_item_foreground_selector.xml",
     "java/res/drawable/ntp_customization_theme_collections_list_item_selected_foreground.xml",
+    "java/res/drawable/ntp_customization_theme_preview_dialog_bottom_gradient_overlay.xml",
     "java/res/drawable/ntp_customized_background_image_gradient_overlay.xml",
     "java/res/drawable/pinch_to_resize_hand.xml",
     "java/res/drawable/upload_an_image_icon_for_theme_bottom_sheet.xml",
