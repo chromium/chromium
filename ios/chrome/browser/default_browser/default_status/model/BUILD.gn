@@ -7,7 +7,7 @@ import("//build/config/apple/mobile_config.gni")
 # MacCatalyst does not allow querying the default browser status.
 assert(target_environment != "catalyst")
 
-source_set("default_status") {
+source_set("model") {
   sources = [
     "default_status_helper.h",
     "default_status_helper.mm",
@@ -37,7 +37,7 @@ source_set("unit_tests") {
     "default_status_helper_unittest.mm",
   ]
   deps = [
-    ":default_status",
+    ":model",
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//ios/chrome/browser/shared/model/utils:test_support",

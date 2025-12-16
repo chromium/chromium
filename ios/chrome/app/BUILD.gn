@@ -474,9 +474,9 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/cross_platform_promos/model",
+    "//ios/chrome/browser/default_browser/install_attribution/model",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_browser/model/install_attribution",
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/discover_feed/model:discover_feed_app_agent",
     "//ios/chrome/browser/download/model",
@@ -564,7 +564,7 @@ source_set("app_internal") {
   ]
 
   if (target_environment != "catalyst") {
-    deps += [ "//ios/chrome/browser/default_browser/model/default_status" ]
+    deps += [ "//ios/chrome/browser/default_browser/default_status/model" ]
   }
 
   if (ios_enable_credential_provider_extension) {

@@ -1580,7 +1580,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_constants.mm:kCohortCount) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.mm:kCohortCount) -->
 
 <!-- TODO(crbug.com/401551080) Mark this "expires-never" after validating it works as intended. -->
 

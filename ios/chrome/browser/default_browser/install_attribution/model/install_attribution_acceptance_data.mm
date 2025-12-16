@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_acceptance_data.h"
+#import "ios/chrome/browser/default_browser/install_attribution/model/install_attribution_acceptance_data.h"
 
 @implementation InstallAttributionAcceptanceData
 

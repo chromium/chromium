@@ -159,7 +159,7 @@ source_set("browser_prefs") {
   ]
 
   if (target_environment != "catalyst") {
-    deps += [ "//ios/chrome/browser/default_browser/model/default_status" ]
+    deps += [ "//ios/chrome/browser/default_browser/default_status/model" ]
   }
 }
 

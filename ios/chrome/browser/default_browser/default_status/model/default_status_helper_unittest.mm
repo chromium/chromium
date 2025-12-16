@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,9 +10,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time_override.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_constants.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_prefs.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_prefs.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

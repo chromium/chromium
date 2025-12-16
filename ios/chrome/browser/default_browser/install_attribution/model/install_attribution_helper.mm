@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h"
+#import "ios/chrome/browser/default_browser/install_attribution/model/install_attribution_helper.h"
 
 #import <string>
 
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_acceptance_data.h"
+#import "ios/chrome/browser/default_browser/install_attribution/model/install_attribution_acceptance_data.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

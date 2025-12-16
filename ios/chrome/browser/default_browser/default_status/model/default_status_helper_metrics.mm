@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_metrics.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_constants.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 
 namespace default_status {

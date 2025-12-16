@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_prefs.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_prefs.h"
 
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 
 namespace default_status {
 

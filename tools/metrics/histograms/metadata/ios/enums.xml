@@ -434,7 +434,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other error"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusAPIOutcomeType) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h:DefaultStatusAPIOutcomeType) -->
 
 <!-- LINT.IfChange(IOSDefaultStatusHeuristicAssessment) -->
 
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="False positive"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusHeuristicAssessment) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h:DefaultStatusHeuristicAssessment) -->
 
 <!-- LINT.IfChange(IOSDefaultStatusRetention) -->
 
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Remained non-default"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusRetention) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h:DefaultStatusRetention) -->
 
 <enum name="IOSDeleteAllSavedCredentialsActions">
   <int value="0" label="User confirmed delete all saved credentials"/>

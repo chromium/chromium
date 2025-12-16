@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_metrics.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_metrics.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_types.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"

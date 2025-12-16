@@ -274,8 +274,8 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/credential_provider_promo/ui_bundled:unit_tests",
     "//ios/chrome/browser/cross_platform_promos/model:unit_tests",
     "//ios/chrome/browser/data_sharing/model:unit_tests",
+    "//ios/chrome/browser/default_browser/install_attribution/model:unit_tests",
     "//ios/chrome/browser/default_browser/model:unit_tests",
-    "//ios/chrome/browser/default_browser/model/install_attribution:unit_tests",
     "//ios/chrome/browser/default_promo/ui_bundled:unit_tests",
     "//ios/chrome/browser/default_promo/ui_bundled/generic:unit_tests",
     "//ios/chrome/browser/default_promo/ui_bundled/promo_handler:unit_tests",
@@ -576,7 +576,7 @@ test("ios_chrome_unittests") {
 
   if (target_environment != "catalyst") {
     deps += [
-      "//ios/chrome/browser/default_browser/model/default_status:unit_tests",
+      "//ios/chrome/browser/default_browser/default_status/model:unit_tests",
     ]
   }
 

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("install_attribution") {
+source_set("model") {
   sources = [
     "install_attribution_acceptance_data.h",
     "install_attribution_acceptance_data.mm",
@@ -24,7 +24,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "install_attribution_helper_unittest.mm" ]
   deps = [
-    ":install_attribution",
+    ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/app_group",

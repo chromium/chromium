@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_constants.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper_constants.h"
 
 // The cohorts are monthly, aligned with the Gregorian calendar. The logic in
 // this file should work for any cohort count between 1 and 12. Anything higher

@@ -83,8 +83,8 @@
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/default_browser/install_attribution/model/install_attribution_helper.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
-#import "ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
@@ -169,7 +169,7 @@
 #endif
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper.h"
+#import "ios/chrome/browser/default_browser/default_status/model/default_status_helper.h"
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
 namespace {
