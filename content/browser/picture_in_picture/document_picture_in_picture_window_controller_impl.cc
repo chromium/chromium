@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
@@ -157,6 +158,10 @@ void DocumentPictureInPictureWindowControllerImpl::NotifyClosedAndStopObserving(
   child_contents_ = nullptr;
   child_contents_observer_.reset();
 
+  if (auto* coordinator = PipScreenCaptureCoordinator::GetInstance()) {
+    coordinator->OnPipClosed();
+  }
+
   WebContentsImpl* web_contents_impl = GetWebContentsImpl();
 
   // If the opener is being destroyed, then don't dispatch anything to it.
@@ -175,12 +180,6 @@ void DocumentPictureInPictureWindowControllerImpl::NotifyClosedAndStopObserving(
   // API and/or onleavepictureinpicture event once that's implemented.
   web_contents_impl->ExitPictureInPicture();
   Observe(/*web_contents=*/nullptr);
-
-  PipScreenCaptureCoordinator* pip_screen_capture_coordinator =
-      PipScreenCaptureCoordinator::GetOrCreateForWebContents(web_contents_impl);
-  if (pip_screen_capture_coordinator) {
-    pip_screen_capture_coordinator->OnPipClosed();
-  }
 }
 
 void DocumentPictureInPictureWindowControllerImpl::
@@ -190,10 +189,12 @@ void DocumentPictureInPictureWindowControllerImpl::
     return;
   }
 
-  PipScreenCaptureCoordinator* pip_screen_capture_coordinator =
-      PipScreenCaptureCoordinator::GetOrCreateForWebContents(web_contents_impl);
-  if (pip_screen_capture_coordinator && child_contents_) {
-    pip_screen_capture_coordinator->OnPipShown(*child_contents_);
+  if (auto* coordinator = PipScreenCaptureCoordinator::GetInstance()) {
+    if (child_contents_) {
+      coordinator->OnPipShown(
+          *child_contents_,
+          web_contents_impl->GetPrimaryMainFrame()->GetGlobalId());
+    }
   }
 }
 

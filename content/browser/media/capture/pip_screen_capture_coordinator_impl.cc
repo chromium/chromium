@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/capture_util_mac.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -62,11 +63,11 @@ PipScreenCaptureCoordinatorImpl::~PipScreenCaptureCoordinatorImpl() = default;
 
 void PipScreenCaptureCoordinatorImpl::OnPipShown(
     WebContents& pip_web_contents,
-    const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id) {
+    const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) {
   std::optional<NativeWindowId> new_pip_window_id;
   new_pip_window_id = GetNativeWindowIdMac(pip_web_contents);
   if (new_pip_window_id) {
-    OnPipShown(*new_pip_window_id, new_pip_owner_render_frame_host_id);
+    OnPipShown(*new_pip_window_id, pip_owner_render_frame_host_id);
   }
 }
 

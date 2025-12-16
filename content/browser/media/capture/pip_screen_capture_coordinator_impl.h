@@ -5,19 +5,19 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/unguessable_token.h"
 #include "content/browser/media/capture/capture_util.h"
-#include "content/browser/media/capture/capture_util_mac.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
 class WebContents;
 
-class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
+class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
+    : public PipScreenCaptureCoordinator {
  public:
   static PipScreenCaptureCoordinatorImpl* GetInstance();
 
@@ -35,26 +35,27 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
             captures) = 0;
   };
 
-  ~PipScreenCaptureCoordinatorImpl();
+  ~PipScreenCaptureCoordinatorImpl() override;
 
   PipScreenCaptureCoordinatorImpl(const PipScreenCaptureCoordinatorImpl&) =
       delete;
   PipScreenCaptureCoordinatorImpl& operator=(
       const PipScreenCaptureCoordinatorImpl&) = delete;
 
+  // PipScreenCaptureCoordinator:
   void OnPipShown(
       WebContents& pip_web_contents,
-      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
+      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) override;
+  void OnPipClosed() override;
+  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy() override;
+
   void OnPipShown(
       NativeWindowId pip_window_id,
       const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
-  void OnPipClosed();
 
   std::optional<NativeWindowId> PipWindowId() const;
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> Captures() const;
-
-  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
