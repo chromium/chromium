@@ -2274,10 +2274,11 @@ void BrowserAutofillManager::DidShowSuggestions(
     // Assert that only the expected suggestion types exist. Note that despite
     // `SuggestionType::kDatalistEntry` is optionally added by
     // `AutofillExternalDelegate`, therefore checking for it is also required.
-    CHECK(DenseSet<SuggestionType>({SuggestionType::kAddressEntryOnTyping,
-                                    SuggestionType::kDatalistEntry,
-                                    SuggestionType::kSeparator,
-                                    SuggestionType::kManageAddress})
+    CHECK(DenseSet<SuggestionType>(
+              {SuggestionType::kAddressEntryOnTyping,
+               SuggestionType::kDatalistEntry, SuggestionType::kSeparator,
+               SuggestionType::kWebauthnSignInWithAnotherDevice,
+               SuggestionType::kManageAddress})
               .contains_all(shown_suggestion_types));
     address_on_typing_manager_.OnDidShowAddressOnTyping(field_id,
                                                         autofill_field);
