@@ -508,6 +508,9 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
 
 void ManagePasswordsUIController::OnCredentialLeak(
     password_manager::LeakedPasswordDetails details) {
+  if (passwords_data_.client()->IsActorTaskActive()) {
+    return;
+  }
   // Existing dialog shouldn't be closed.
   if (dialog_controller_) {
     return;
