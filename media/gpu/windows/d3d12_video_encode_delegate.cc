@@ -273,6 +273,12 @@ D3D12VideoEncodeDelegate::Encode(
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options) {
+  if (options.reference_buffers.size() > GetMaxNumOfManualRefBuffers()) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            "Number of manual reference buffers exceeds that is supported by "
+            "encoder"};
+  }
+
   const gfx::ColorSpace& output_color_space =
       GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();
