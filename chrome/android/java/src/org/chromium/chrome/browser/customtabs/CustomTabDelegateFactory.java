@@ -127,11 +127,27 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         public boolean shouldDisableExternalIntentRequestsForUrl(
                 ExternalNavigationParams params, Intent intent) {
+            if (shouldSelfNavigationLaunchAsMultipleTask(params)) {
+                return false;
+            }
+
             // TODO(crbug.com/40549331): Migrate verifier hierarchy to GURL.
-            boolean shouldIgnore =
-                    mVerifier != null
-                            && mVerifier.shouldIgnoreExternalIntentHandlers(
-                                    params.getUrl().getSpec());
+            boolean isUrlInVerifiedScope =
+                    mVerifier != null && mVerifier.isUrlInVerifiedScope(params.getUrl().getSpec());
+
+            // http://crbug.com/647569 : Do not forward URL requests to external intents for URLs
+            // within the Webapp/TWA's scope.
+            return isUrlInVerifiedScope;
+        }
+
+        @Override
+        public boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params) {
+            boolean isUrlInVerifiedScope =
+                    mVerifier != null && mVerifier.isUrlInVerifiedScope(params.getUrl().getSpec());
+
+            if (isUrlInVerifiedScope && shouldLaunchNewWindow(params) && params.isTabInPWA()) {
+                return true;
+            }
 
             // Launch Handler Web API requires for an app to be opened in multiple instances. The
             // logic to achieve this is defined in the Android app layer and an intent must be
@@ -143,14 +159,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                     && params.isTabInPWA()
                     && params.isInitialNavigationInFrame()
                     && wasTabLaunchedFromLinkCreatingNewForegroundTab()
-                    && shouldIgnore) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                return false;
+                    && isUrlInVerifiedScope) {
+                return true;
             }
 
-            // http://crbug.com/647569 : Do not forward URL requests to external intents for URLs
-            // within the Webapp/TWA's scope.
-            return shouldIgnore;
+            return false;
         }
 
         @Override

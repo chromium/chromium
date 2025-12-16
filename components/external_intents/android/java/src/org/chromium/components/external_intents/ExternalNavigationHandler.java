@@ -497,6 +497,7 @@ public class ExternalNavigationHandler {
         OverrideUrlLoadingResultType.NO_OVERRIDE,
         OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER,
+        OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW,
         OverrideUrlLoadingResultType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -515,7 +516,10 @@ public class ExternalNavigationHandler {
         /* We should move the navigation to a browser window. */
         int OVERRIDE_WITH_REPARENT_TO_BROWSER = 5;
 
-        int NUM_ENTRIES = 6;
+        /* We should move the navigation to a new window. */
+        int OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW = 6;
+
+        int NUM_ENTRIES = 7;
     }
 
     // LINT.ThenChange(:printDebugShouldOverrideUrlLoadingResultType)
@@ -636,6 +640,12 @@ public class ExternalNavigationHandler {
         public static OverrideUrlLoadingResult forReparentToBrowser() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER);
+        }
+
+        /** Use this result when the navigation should be moved to a new window. */
+        public static OverrideUrlLoadingResult forReparentToNewWindow() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW);
         }
     }
 
@@ -790,6 +800,9 @@ public class ExternalNavigationHandler {
                 break;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
                 resultString = "OVERRIDE_WITH_REPARENT_TO_BROWSER";
+                break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW:
+                resultString = "OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW";
                 break;
             case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
@@ -1214,6 +1227,8 @@ public class ExternalNavigationHandler {
 
         if (params.getRedirectHandler().canInitialNavigationLeaveChrome()) return false;
 
+        if (mDelegate.wasTabLaunchedFromLinkCreatingNewWindow()) return false;
+
         if (debug()) Log.i(TAG, "Initial intent navigation.");
         return true;
     }
@@ -1301,6 +1316,10 @@ public class ExternalNavigationHandler {
                 && UrlUtilities.isHttpOrHttps(params.getUrl())) {
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
+        }
+        if (mDelegate.shouldLaunchNewWindow(params)) {
+            if (debug()) Log.i(TAG, "No specialized handler found, reparent to new window.");
+            return OverrideUrlLoadingResult.forReparentToNewWindow();
         }
         if (debug()) Log.i(TAG, "No specialized handler for URL");
         return OverrideUrlLoadingResult.forNoOverride();
@@ -1805,7 +1824,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
+        if (isLinkFromChromeInternalPage(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
 
         if (isDirectFormSubmit(params, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1819,6 +1840,11 @@ public class ExternalNavigationHandler {
         }
 
         if (isYoutubePairingCode(params.getUrl())) return OverrideUrlLoadingResult.forNoOverride();
+
+        if (mDelegate.shouldLaunchNewWindow(params) && !params.isTabInPWA()) {
+            if (debug()) Log.i(TAG, "Launch new window from a non-PWA.");
+            return OverrideUrlLoadingResult.forReparentToNewWindow();
+        }
 
         if (shouldStayInIncognito(params, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1911,6 +1937,10 @@ public class ExternalNavigationHandler {
         boolean intentHasExtras =
                 targetIntent.getExtras() != null && !targetIntent.getExtras().isEmpty();
         prepareExternalIntent(targetIntent, params, resolvingInfos.get());
+
+        if (mDelegate.shouldSelfNavigationLaunchAsMultipleTask(params)) {
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
 
         if (params.isIncognito()) {
             return handleIncognitoIntent(
@@ -2195,6 +2225,11 @@ public class ExternalNavigationHandler {
             ExternalNavigationParams params) {
         String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos);
         if (packageName == null) return false;
+
+        if (mDelegate.shouldLaunchNewWindow(params)) {
+            if (debug()) Log.i(TAG, "Launching WebAPK in a new window");
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
 
         Intent webApkIntent = new Intent(targetIntent);
         webApkIntent.setPackage(packageName);

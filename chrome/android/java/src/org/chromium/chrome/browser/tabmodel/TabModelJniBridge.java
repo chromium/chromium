@@ -302,7 +302,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             ResourceRequestBody postData,
             int disposition,
             boolean persistParentage,
-            boolean isRendererInitiated) {
+            boolean isRendererInitiated,
+            boolean hasUserGesture) {
         if (parent.isClosing()) return;
 
         boolean incognito = parent.isIncognito();
@@ -337,6 +338,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         loadUrlParams.setVerbatimHeaders(extraHeaders);
         loadUrlParams.setPostData(postData);
         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
+        loadUrlParams.setHasUserGesture(hasUserGesture);
         getTabCreator(incognito)
                 .createNewTab(loadUrlParams, tabLaunchType, persistParentage ? parent : null);
     }

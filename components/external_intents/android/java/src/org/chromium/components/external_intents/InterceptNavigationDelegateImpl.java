@@ -330,6 +330,14 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             // Reparenting task must be executed after runResultCallback has been called.
             mClient.startReparentingTask();
         }
+
+        if (!shouldIgnore
+                && result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW
+                && !mClient.isTabDetached()) {
+            // Reparenting task must be executed after runResultCallback has been called.
+            mClient.startReparentingTaskToNewWindow();
+        }
     }
 
     @Override

@@ -146,8 +146,7 @@ public class CustomTabActivityTabFactory {
                 incognito,
                 AsyncTabParamsManagerSingleton.getInstance(),
                 mTabModelSelectorSupplier,
-                mCompositorViewHolderSupplier,
-                /* multiInstanceManager= */ null);
+                mCompositorViewHolderSupplier);
     }
 
     /** Creates a new tab for a Custom Tab activity */

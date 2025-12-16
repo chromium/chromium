@@ -3456,8 +3456,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     isIncognito,
                     asyncTabParamsManager,
                     tabModelSelectorSupplier,
-                    compositorViewHolderSupplier,
-                    mMultiInstanceManager);
+                    compositorViewHolderSupplier);
         } else {
             return new ChromeTabCreator(
                     activity,
@@ -3467,8 +3466,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     isIncognito,
                     asyncTabParamsManager,
                     tabModelSelectorSupplier,
-                    compositorViewHolderSupplier,
-                    mMultiInstanceManager);
+                    compositorViewHolderSupplier);
         }
     }
 

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -512,6 +513,10 @@ public class ChromeTabCreatorTest {
     @Feature({"Browser"})
     @RequiresRestart // Avoid having multiple windows mess up the other tests
     public void testCreateNewTabInNewWindow() {
+        final boolean expectReparent = MultiWindowUtils.isMultiInstanceApi31Enabled();
+        if (expectReparent) {
+            InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
+        }
         Tab currentTab = mActivityTestRule.getActivityTab();
         String testPath = mTestServer.getURL(TEST_PATH);
         ThreadUtils.runOnUiThreadBlocking(
@@ -524,7 +529,7 @@ public class ChromeTabCreatorTest {
                                         TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                                         currentTab));
 
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        if (expectReparent) {
             CriteriaHelper.pollUiThread(
                     () ->
                             MultiWindowUtils.getInstanceCountWithFallback(

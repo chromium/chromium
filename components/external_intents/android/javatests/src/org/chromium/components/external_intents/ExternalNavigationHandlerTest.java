@@ -3674,6 +3674,16 @@ public class ExternalNavigationHandlerTest {
             return false;
         }
 
+        @Override
+        public boolean shouldLaunchNewWindow(ExternalNavigationParams params) {
+            return false;
+        }
+
+        @Override
+        public boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params) {
+            return false;
+        }
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }

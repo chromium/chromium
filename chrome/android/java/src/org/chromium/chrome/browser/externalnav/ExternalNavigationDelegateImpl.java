@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
@@ -307,6 +308,20 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean wasTabLaunchedFromLinkCreatingNewWindow() {
         return mTabLaunchType == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW;
+    }
+
+    @Override
+    public boolean shouldLaunchNewWindow(ExternalNavigationParams params) {
+        return wasTabLaunchedFromLinkCreatingNewWindow()
+                && params.isInitialNavigationInFrame()
+                // TODO(crbug.com/452537438): Figure out a better way to check whether we are in
+                // desktop windowing mode or if the device can enter desktop windowing mode.
+                && (DeviceInfo.isDesktop() || params.isInDesktopWindowingMode());
+    }
+
+    @Override
+    public boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params) {
+        return false;
     }
 
     /**

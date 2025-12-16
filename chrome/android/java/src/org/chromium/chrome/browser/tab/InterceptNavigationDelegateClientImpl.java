@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,6 +23,8 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
@@ -219,6 +222,28 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         intent,
                         /* startActivityOptions= */ null,
                         cleanupPendingTabClosure());
+    }
+
+    @Override
+    public void startReparentingTaskToNewWindow() {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Intent intent =
+                            MultiWindowUtils.createNewWindowIntent(
+                                    assumeNonNull(getActivity()),
+                                    INVALID_WINDOW_ID,
+                                    true,
+                                    true,
+                                    true,
+                                    NewWindowAppSource.OTHER);
+                    ReparentingTask.from(mTab)
+                            .begin(
+                                    ContextUtils.getApplicationContext(),
+                                    intent,
+                                    /* startActivityOptions= */ null,
+                                    cleanupPendingTabClosure());
+                });
     }
 
     private Runnable cleanupPendingTabClosure() {

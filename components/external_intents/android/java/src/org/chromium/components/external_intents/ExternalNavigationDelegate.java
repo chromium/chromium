@@ -193,4 +193,18 @@ public interface ExternalNavigationDelegate {
      * window.
      */
     boolean wasTabLaunchedFromLinkCreatingNewWindow();
+
+    /**
+     * Returns true if the tab associated with this client should be launched in a new window.
+     *
+     * @param params The parameters describing the navigation.
+     */
+    boolean shouldLaunchNewWindow(ExternalNavigationParams params);
+
+    /**
+     * Returns true if this is a self navigation that should be launched as a multiple task intent.
+     *
+     * @param params The parameters describing the navigation.
+     */
+    boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params);
 }
