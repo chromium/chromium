@@ -72,9 +72,7 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
       MonotonicTimeToPseudoWallTime(
           timing.resource_load_timings.discovery_time),
       MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_start),
-      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_end)
-
-  };
+      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_end)};
 
   std::optional<base::TimeTicks> merged_unclamped_paint_time =
       MergeLargestContentfulPaintValues(timing);
@@ -251,10 +249,7 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
     return {};
   }
 
-  auto timing =
-      heuristics->SoftNavigationLargestContentfulPaintDetailsForMetrics();
-
-  return PopulateLargestContentfulPaintDetailsForReporting(timing);
+  return heuristics->SoftNavigationLargestContentfulPaintDetailsForMetrics();
 }
 
 uint64_t PerformanceTimingForReporting::FirstEligibleToPaint() const {

@@ -179,6 +179,10 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   std::unique_ptr<TracedValue> GetNavigationTracingData();
 
+  LargestContentfulPaintDetailsForReporting
+  PopulateLargestContentfulPaintDetailsForReporting(
+      const LargestContentfulPaintDetails& timing) const;
+
  private:
   const DocumentTiming* GetDocumentTiming() const;
   const DocumentParserTiming* GetDocumentParserTiming() const;
@@ -190,9 +194,6 @@ class CORE_EXPORT PerformanceTimingForReporting final
   InteractiveDetector* GetInteractiveDetector() const;
   std::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
       const std::optional<base::TimeTicks>&) const;
-  LargestContentfulPaintDetailsForReporting
-  PopulateLargestContentfulPaintDetailsForReporting(
-      const LargestContentfulPaintDetails& timing) const;
 
   bool cross_origin_isolated_capability_;
 };

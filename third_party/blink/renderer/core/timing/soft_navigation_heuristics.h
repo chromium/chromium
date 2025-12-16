@@ -109,7 +109,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
-  const LargestContentfulPaintDetails&
+  const LargestContentfulPaintDetailsForReporting&
   SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
     return soft_navigation_lcp_details_for_metrics_;
   }
@@ -230,7 +230,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   scheduler::TaskAttributionTracker* task_attribution_tracker_;
 
   // The soft navigation LCP details reported to metrics (UKM).
-  LargestContentfulPaintDetails soft_navigation_lcp_details_for_metrics_;
+  LargestContentfulPaintDetailsForReporting
+      soft_navigation_lcp_details_for_metrics_;
 };
 
 }  // namespace blink

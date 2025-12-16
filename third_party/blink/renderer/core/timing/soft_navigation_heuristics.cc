@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -487,7 +488,6 @@ void SoftNavigationHeuristics::UpdateSoftLcpMetricsForContext(
     return;
   }
   CHECK(context->WasEmitted());
-  soft_navigation_lcp_details_for_metrics_ = context->LatestLcpDetailsForUkm();
 
   LocalFrame* frame = window_->GetFrame();
   // We should not be running paint timing callbacks for detached frames.
@@ -495,6 +495,13 @@ void SoftNavigationHeuristics::UpdateSoftLcpMetricsForContext(
   auto* loader = frame->Loader().GetDocumentLoader();
   // This should only be null if the frame was detached.
   CHECK(loader);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+  CHECK(performance);
+  soft_navigation_lcp_details_for_metrics_ =
+      performance->timingForReporting()
+          ->PopulateLargestContentfulPaintDetailsForReporting(
+              context->LatestLcpDetailsForUkm());
+
   loader->DidChangePerformanceTiming();
 }
 
