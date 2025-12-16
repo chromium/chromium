@@ -92,8 +92,9 @@ class WebviewWebContentsDelegate : public content::WebContentsDelegate,
         guest_view::GuestViewBase::FromRenderFrameHost(
             contents->GetPrimaryMainFrame())
             ->embedder_web_contents();
-    embedder_web_contents->GetDelegate()->DraggableRegionsChanged(regions,
-                                                                  contents);
+    if (auto* delegate = embedder_web_contents->GetDelegate(); delegate) {
+      delegate->DraggableRegionsChanged(regions, contents);
+    }
   }
 };
 
