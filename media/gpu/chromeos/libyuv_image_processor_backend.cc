@@ -274,8 +274,7 @@ void LibYUVImageProcessorBackend::ProcessFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   DVLOGF(4);
   if (input_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      input_frame->storage_type() ==
-          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+      input_frame->HasMappableSharedImage()) {
     DCHECK_NE(input_frame_mapper_.get(), nullptr);
     int mapping_permissions = PROT_READ;
     if (input_frame->storage_type() != VideoFrame::STORAGE_DMABUFS)
@@ -294,8 +293,7 @@ void LibYUVImageProcessorBackend::ProcessFrame(
   // is the output of ImageProcessor.
   scoped_refptr<FrameResource> mapped_frame = output_frame;
   if (output_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      output_frame->storage_type() ==
-          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+      output_frame->HasMappableSharedImage()) {
     DCHECK_NE(output_frame_mapper_.get(), nullptr);
     scoped_refptr<VideoFrame> mapped_output_frame =
         output_frame_mapper_->MapFrame(output_frame, PROT_READ | PROT_WRITE);
