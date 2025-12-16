@@ -195,6 +195,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // FedCM is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
+  // Email Verification Protocol is not yet supported on WebView.
+  aw_feature_overrides.DisableFeature(::features::kEmailVerificationProtocol);
+
   // Disable Digital Credentials API on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kWebIdentityDigitalCredentials);

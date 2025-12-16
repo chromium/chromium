@@ -23,6 +23,10 @@ bool IsDelegationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmDelegation);
 }
 
+bool IsEmailVerificationProtocolEnabled() {
+  return base::FeatureList::IsEnabled(features::kEmailVerificationProtocol);
+}
+
 bool IsIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }

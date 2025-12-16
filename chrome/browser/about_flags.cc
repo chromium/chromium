@@ -9531,6 +9531,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmDelegationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmDelegation)},
 
+    {"email-verification-protocol",
+     flag_descriptions::kEmailVerificationProtocolName,
+     flag_descriptions::kEmailVerificationProtocolDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kEmailVerificationProtocol)},
+
     {"fedcm-error-attribute", flag_descriptions::kFedCmErrorAttributeName,
      flag_descriptions::kFedCmErrorAttributeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmErrorAttribute)},

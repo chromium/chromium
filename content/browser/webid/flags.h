@@ -17,6 +17,9 @@ bool IsMetricsEndpointEnabled();
 // Whether the Delegation API is enabled.
 bool IsDelegationEnabled();
 
+// Whether the Email Verification Protocol is enabled.
+bool IsEmailVerificationProtocolEnabled();
+
 // Whether the IdP Registration API is enabled.
 bool IsIdPRegistrationEnabled();
 

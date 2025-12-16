@@ -4,7 +4,7 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=FedCmDelegation
+    RuntimeEnabled=EmailVerificationProtocol
 ] interface EmailVerifiedEvent : Event {
     constructor(DOMString type, optional EmailVerifiedEventInit eventInitDict = {});
     readonly attribute DOMString presentationToken;

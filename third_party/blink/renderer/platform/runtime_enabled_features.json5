@@ -2160,6 +2160,12 @@
       status: "experimental",
     },
     {
+      name: "EmailVerificationProtocol",
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       // crbug.com/447267214
       name: "EmojiJustification",
       status: "stable",

@@ -2781,6 +2781,13 @@
     "expiry_milestone": 160
   },
   {
+    "name": "email-verification-protocol",
+    "owners": [
+      "goto@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-ac-prefetch",
     "owners": [ "arthurmilchior@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 150

@@ -2137,6 +2137,11 @@ inline constexpr char kFedCmDelegationName[] = "FedCM with delegation support";
 inline constexpr char kFedCmDelegationDescription[] =
     "Enables IdPs to delegate presentation to the browser.";
 
+inline constexpr char kEmailVerificationProtocolName[] =
+    "Email Verification Protocol";
+inline constexpr char kEmailVerificationProtocolDescription[] =
+    "Enables the Email Verification Protocol in Autofill.";
+
 inline constexpr char kFedCmErrorAttributeName[] = "FedCmErrorAttribute";
 inline constexpr char kFedCmErrorAttributeDescription[] =
     "Enables the spec-compliant 'error' attribute in IdentityCredentialError "
