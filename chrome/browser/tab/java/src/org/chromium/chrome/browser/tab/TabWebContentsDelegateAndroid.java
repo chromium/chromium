@@ -163,4 +163,14 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
 
     /** Called when WebContents reports a change to the non-draggable regions in header content. */
     protected void nonDraggableRegionsChanged(List<Rect> regions) {}
+
+    /**
+     * Called when WebContents is about to handle a keyboard event.
+     *
+     * @param nativeKeyEvent The native key event.
+     * @return true if the event was handled.
+     */
+    protected boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+        return false;
+    }
 }

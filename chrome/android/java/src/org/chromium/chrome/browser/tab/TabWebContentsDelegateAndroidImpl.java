@@ -288,8 +288,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.takeFocus(reverse);
     }
 
+    @CalledByNative
     @Override
-    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+    protected boolean preHandleKeyboardEvent(long nativeKeyEvent) {
         return mDelegate.preHandleKeyboardEvent(nativeKeyEvent);
     }
 

@@ -87,9 +87,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
                               int32_t line_no,
                               const std::u16string& source_id) override;
   void UpdateTargetURL(content::WebContents* source, const GURL& url) override;
-  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      content::WebContents* source,
-      const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
@@ -106,9 +103,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
       const content::WebContents* web_contents) override;
   content::FullscreenState GetFullscreenState(
       const content::WebContents* web_contents) const override;
-  void RequestPointerLock(content::WebContents* web_contents,
-                          bool user_gesture,
-                          bool last_unlocked_by_target) override;
   void RequestKeyboardLock(content::WebContents* web_contents,
                            bool esc_key_locked) override;
   void CancelKeyboardLockRequest(content::WebContents* web_contents) override;
@@ -152,9 +146,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   // strong reference to that object as long as they want to receive callbacks
   // on it. Using a weak ref here allows it to be correctly GCed.
   JavaObjectWeakGlobalRef weak_java_delegate_;
-
-  // Timestamp when the user last successfully escaped from a lock request.
-  base::TimeTicks pointer_lock_last_user_escape_time_;
 };
 
 }  // namespace web_contents_delegate_android

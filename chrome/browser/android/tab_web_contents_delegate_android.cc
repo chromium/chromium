@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 
+#include <android/keycodes.h>
 #include <stddef.h>
 
 #include <memory>
@@ -70,11 +71,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -153,6 +156,11 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
           web_contents->GetBrowserContext()),
       base::BindOnce(intervention_outcome));
 }
+
+// The amount of time to disallow repeated pointer lock calls after the user
+// successfully escapes from one lock request.
+constexpr base::TimeDelta kEffectiveUserEscapeDuration =
+    base::Milliseconds(1250);
 
 }  // anonymous namespace
 
@@ -647,6 +655,35 @@ bool TabWebContentsDelegateAndroid::OpenInAppOrChromeFromCct(GURL url) {
       env, obj, jurl);
 }
 
+content::KeyboardEventProcessingResult
+TabWebContentsDelegateAndroid::PreHandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.native_key_code == AKEYCODE_ESCAPE) {
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+
+    if (!obj.is_null() &&
+        Java_TabWebContentsDelegateAndroidImpl_preHandleKeyboardEvent(
+            env, obj, reinterpret_cast<intptr_t>(&event))) {
+      return content::KeyboardEventProcessingResult::HANDLED;
+    }
+
+    // ExclusiveAccessManager handles the pointer lock escape.
+    if (!base::FeatureList::IsEnabled(
+            features::kEnableExclusiveAccessManager)) {
+      auto* rwhva = source->GetTopLevelRenderWidgetHostView();
+      if (rwhva && rwhva->IsPointerLocked()) {
+        rwhva->UnlockPointer();
+        pointer_lock_last_user_escape_time_ = base::TimeTicks::Now();
+        return content::KeyboardEventProcessingResult::HANDLED;
+      }
+    }
+  }
+
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
 void TabWebContentsDelegateAndroid::RequestPointerLock(
     WebContents* web_contents,
     bool user_gesture,
@@ -671,8 +708,24 @@ void TabWebContentsDelegateAndroid::RequestPointerLock(
     return;
   }
 
-  WebContentsDelegateAndroid::RequestPointerLock(web_contents, user_gesture,
-                                                 last_unlocked_by_target);
+  // TODO(https://crbug.com/415732870): remove this part once
+  // ExclusiveAccessManager is released.
+  if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
+    if (!user_gesture) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kRequiresUserGesture);
+      return;
+    }
+    if (base::TimeTicks::Now() <
+        pointer_lock_last_user_escape_time_ + kEffectiveUserEscapeDuration) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kUserRejected);
+      return;
+    }
+  }
+
+  web_contents->GotResponseToPointerLockRequest(
+      blink::mojom::PointerLockResult::kSuccess);
 }
 
 void TabWebContentsDelegateAndroid::LostPointerLock() {
