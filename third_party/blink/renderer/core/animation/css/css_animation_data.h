@@ -36,6 +36,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   bool operator==(const CSSAnimationData& other) const {
     return AnimationsMatchForStyleRecalc(other);
   }
+  bool TimelineTriggerNamesMatch(const CSSAnimationData& other) const;
+  bool TriggersMatchForStyleRecalc(const CSSAnimationData& other) const;
 
   Timing ConvertToTiming(size_t index) const;
   const StyleTimeline& GetTimeline(size_t index) const;

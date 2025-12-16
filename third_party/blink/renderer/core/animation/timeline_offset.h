@@ -72,6 +72,11 @@ struct TimelineOffsetOrAuto {
     return timeline_offset;
   }
 
+  bool operator==(const TimelineOffsetOrAuto& other) const {
+    return (IsAuto() && other.IsAuto()) ||
+           GetTimelineOffset() == other.GetTimelineOffset();
+  }
+
   static TimelineOffsetOrAuto Create(
       Element* element,
       const V8UnionStringOrTimelineRangeOffset* range_offset,

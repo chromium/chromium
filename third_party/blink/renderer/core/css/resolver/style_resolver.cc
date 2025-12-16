@@ -3669,6 +3669,10 @@ void StyleResolver::ApplyTriggerData(StyleResolverState& state) {
     // cleaner solution to this than making an exception here.
     return;
   }
+
+  // TODO(crbug.com/467727342): Move this to a safer location. This function
+  // is called during ResolveStyle which might not correspond to an actual
+  // change in the affected element's style.
   CSSAnimations::UpdateNamedTriggers(
       state.StyleBuilder(), state.AnimationUpdate(), state.GetElement());
 }

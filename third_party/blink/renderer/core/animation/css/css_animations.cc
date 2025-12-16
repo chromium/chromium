@@ -1251,9 +1251,6 @@ void CSSAnimations::UpdateNamedTriggers(
 
   if (is_update_needed) {
     element.SetNamedTriggers(std::move(new_trigger_map));
-    if (LayoutBox* box = element.GetLayoutBox()) {
-      box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
-    }
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 
 namespace blink {
@@ -62,7 +63,7 @@ bool CSSAnimationData::AnimationsMatchForStyleRecalc(
          fill_mode_list_ == other.fill_mode_list_ &&
          range_start_list_ == other.range_start_list_ &&
          range_end_list_ == other.range_end_list_ &&
-         TimingMatchForStyleRecalc(other);
+         TimingMatchForStyleRecalc(other) && TriggersMatchForStyleRecalc(other);
 }
 
 Timing CSSAnimationData::ConvertToTiming(size_t index) const {
@@ -92,6 +93,37 @@ CSSAnimationData::GetTriggerAttachments(size_t index) const {
   return (index < trigger_attachments_list_.size())
              ? trigger_attachments_list_.at(index)
              : nullptr;
+}
+
+bool CSSAnimationData::TimelineTriggerNamesMatch(
+    const CSSAnimationData& other) const {
+  if (TimelineTriggerNameList().size() !=
+      other.TimelineTriggerNameList().size()) {
+    return false;
+  }
+
+  for (wtf_size_t i = 0; i < TimelineTriggerNameList().size(); i++) {
+    if (!base::ValuesEquivalent(TimelineTriggerNameList().at(i),
+                                other.TimelineTriggerNameList().at(i))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool CSSAnimationData::TriggersMatchForStyleRecalc(
+    const CSSAnimationData& other) const {
+  return TimelineTriggerNamesMatch(other) &&
+         (other.TimelineTriggerSourceList() == TimelineTriggerSourceList()) &&
+         (other.TimelineTriggerRangeStartList() ==
+          TimelineTriggerRangeStartList()) &&
+         (other.TimelineTriggerRangeEndList() ==
+          TimelineTriggerRangeEndList()) &&
+         (other.TimelineTriggerExitRangeStartList() ==
+          TimelineTriggerExitRangeStartList()) &&
+         (other.TimelineTriggerExitRangeEndList() ==
+          TimelineTriggerExitRangeEndList());
 }
 
 }  // namespace blink
