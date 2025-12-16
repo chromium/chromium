@@ -22,7 +22,9 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -59,12 +61,15 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/base_switches.h"
 #include "base/check.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
+#include "components/feed/feed_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -185,6 +190,19 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 #endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {// Disable ChromeTabbedActivity instance limit so that the total number
+       // of windows created by the entire test suite won't be limited. See Java
+       // MultiWindowUtils#getMaxInstances() for details.
+       chrome::android::kDisableInstanceLimit,
+
+       // Enable incognito windows on Android.
+       feed::kAndroidOpenIncognitoAsWindow},
+      /*disabled_features=*/{});
+#endif
 }
 
 ExtensionBrowserTest::~ExtensionBrowserTest() = default;
@@ -256,6 +274,19 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the first-run experience (FRE) so that when a function under
+  // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
+  // will be shown instead of FirstRunActivity.
+  command_line->AppendSwitch("disable-fre");
+
+  // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
+  // flag in the constructor can be effective when running tests on an emulator
+  // without "--force-desktop-android". See Java
+  // MultiWindowUtils#getMaxInstances() for details.
+  command_line->AppendSwitch(switches::kForceDesktopAndroid);
+#endif
 }
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
@@ -844,6 +875,17 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
   Browser* otr_browser = OpenURLOffTheRecord(profile, url);
   return otr_browser->tab_strip_model()->GetActiveWebContents();
 #endif
+}
+
+BrowserWindowInterface* ExtensionBrowserTest::CreateIncognitoBrowserWindow() {
+  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      type, *incognito_profile, /*from_user_gesture=*/false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  return future.Get();
 }
 
 content::RenderFrameHost* ExtensionBrowserTest::NavigateToURLInNewTab(

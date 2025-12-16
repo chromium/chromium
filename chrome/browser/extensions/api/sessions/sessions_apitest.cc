@@ -31,7 +31,6 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -58,12 +57,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/base_switches.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "components/feed/feed_feature_list.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -181,7 +174,7 @@ syncer::ClientTagHash TagHashFromSpecifics(
 
 class ExtensionSessionsTest : public ExtensionBrowserTest {
  public:
-  ExtensionSessionsTest();
+  ExtensionSessionsTest() = default;
   ~ExtensionSessionsTest() override = default;
 
   // ExtensionBrowserTest:
@@ -192,9 +185,6 @@ class ExtensionSessionsTest : public ExtensionBrowserTest {
   void CreateTestExtension();
   void CreateSessionModels();
 
-  // TODO(crbug.com/469086075): Move this to ExtensionBrowserTest.
-  BrowserWindowInterface* CreateIncognitoBrowserWindow();
-
   template <class T>
   scoped_refptr<T> CreateFunction(bool has_callback) {
     scoped_refptr<T> fn(new T());
@@ -204,32 +194,12 @@ class ExtensionSessionsTest : public ExtensionBrowserTest {
   }
 
   scoped_refptr<const Extension> extension_;
-  base::test::ScopedFeatureList feature_list_;
 };
-
-ExtensionSessionsTest::ExtensionSessionsTest() {
-#if BUILDFLAG(IS_ANDROID)
-  // These features are required to open incognito windows in tests.
-  // TODO(crbug.com/469086075): Move these to ExtensionBrowserTest.
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {chrome::android::kDisableInstanceLimit,
-       feed::kAndroidOpenIncognitoAsWindow},
-      /*disabled_features=*/{});
-
-#endif
-}
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionBrowserTest::SetUpCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS)
   command_line->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  // These switches are required to open incognito windows in tests.
-  // TODO(crbug.com/469086075): Move these to ExtensionBrowserTest.
-  command_line->AppendSwitch("disable-fre");
-  command_line->AppendSwitch(switches::kForceDesktopAndroid);
 #endif
 }
 
@@ -308,17 +278,6 @@ void ExtensionSessionsTest::CreateSessionModels() {
   // the runloop because there is a DataTypeProcessorProxy in between, posting
   // tasks.
   base::RunLoop().RunUntilIdle();
-}
-
-BrowserWindowInterface* ExtensionSessionsTest::CreateIncognitoBrowserWindow() {
-  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
-  Profile* incognito_profile =
-      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-      type, *incognito_profile, /*from_user_gesture=*/false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
-  return future.Get();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevices) {

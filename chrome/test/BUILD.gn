@@ -360,7 +360,9 @@ static_library("test_support") {
       "//chrome/browser/extensions",
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
+      "//components/feed:feature_list",
     ]
   }
 
@@ -1690,7 +1692,6 @@ source_set("platform_browser_tests") {
       "//components/bookmarks/managed",
       "//components/embedder_support",
       "//components/enterprise/browser/promotion",
-      "//components/feed:feature_list",
       "//components/media_device_salt",
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
       "//components/proxy_config",
@@ -11703,9 +11704,11 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/omnibox",
+        "//chrome/browser/ui/browser_window:create_browser_window",
         "//chrome/browser/ui/exclusive_access:test_support",
         "//chrome/browser/ui/omnibox",
         "//chrome/browser/ui/tabs:tab_list_interface",
+        "//components/feed:feature_list",
         "//extensions/browser/api:extensions_api_client",
       ]
 
