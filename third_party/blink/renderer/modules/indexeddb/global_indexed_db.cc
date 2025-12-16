@@ -4,69 +4,40 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/global_indexed_db.h"
 
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-namespace {
+const char GlobalIndexedDB::kSupplementName[] = "GlobalIndexedDB";
 
-template <typename T>
-class GlobalIndexedDBImpl final
-    : public GarbageCollected<GlobalIndexedDBImpl<T>>,
-      public Supplement<T> {
- public:
-  static const char kSupplementName[];
+GlobalIndexedDB::GlobalIndexedDB(ExecutionContext& context)
+    : Supplement<ExecutionContext>(context) {}
 
-  static GlobalIndexedDBImpl& From(T& supplementable) {
-    GlobalIndexedDBImpl* supplement =
-        Supplement<T>::template From<GlobalIndexedDBImpl>(supplementable);
-    if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>(supplementable);
-      Supplement<T>::ProvideTo(supplementable, supplement);
-    }
-    return *supplement;
+GlobalIndexedDB& GlobalIndexedDB::From(ExecutionContext& context) {
+  GlobalIndexedDB* supplement =
+      Supplement<ExecutionContext>::From<GlobalIndexedDB>(context);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<GlobalIndexedDB>(context);
+    Supplement<ExecutionContext>::ProvideTo(context, supplement);
   }
-
-  explicit GlobalIndexedDBImpl(T& supplementable)
-      : Supplement<T>(supplementable) {}
-
-  IDBFactory* IdbFactory(ExecutionContext* context) {
-    if (!idb_factory_)
-      idb_factory_ = MakeGarbageCollected<IDBFactory>(context);
-    return idb_factory_.Get();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(idb_factory_);
-    Supplement<T>::Trace(visitor);
-  }
-
- private:
-  Member<IDBFactory> idb_factory_;
-};
-
-// static
-template <typename T>
-const char GlobalIndexedDBImpl<T>::kSupplementName[] = "GlobalIndexedDBImpl";
-
-}  // namespace
+  return *supplement;
+}
 
 IDBFactory* GlobalIndexedDB::indexedDB(ExecutionContext& context) {
-  return GlobalIndexedDBImpl<ExecutionContext>::From(context).IdbFactory(
-      &context);
+  return GlobalIndexedDB::From(context).IdbFactory(context);
 }
 
-IDBFactory* GlobalIndexedDB::indexedDB(LocalDOMWindow& window) {
-  return GlobalIndexedDBImpl<LocalDOMWindow>::From(window).IdbFactory(&window);
+IDBFactory* GlobalIndexedDB::IdbFactory(ExecutionContext& context) {
+  if (!idb_factory_) {
+    idb_factory_ = MakeGarbageCollected<IDBFactory>(&context);
+  }
+  return idb_factory_.Get();
 }
 
-IDBFactory* GlobalIndexedDB::indexedDB(WorkerGlobalScope& worker) {
-  return GlobalIndexedDBImpl<WorkerGlobalScope>::From(worker).IdbFactory(
-      &worker);
+void GlobalIndexedDB::Trace(Visitor* visitor) const {
+  visitor->Trace(idb_factory_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink
