@@ -8,8 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -70,7 +70,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   return self;
 }
 
-#pragma mark - BWGSessionDelegate
+#pragma mark - GeminiSessionDelegate
 
 - (void)newSessionCreatedWithClientID:(NSString*)clientID
                              serverID:(NSString*)serverID {
@@ -165,8 +165,14 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   RecordGeminiResponseReceived();
 }
 
-- (void)didTapBWGSettingsButton {
+- (void)didTapGeminiSettingsButton {
   [self.settingsHandler showBWGSettings];
+}
+
+// This method only exists for backward compatibility while it is being renamed.
+// TODO(crbug.com/467341096): Remove didTapBWGSettingsButton.
+- (void)didTapBWGSettingsButton {
+  [self didTapGeminiSettingsButton];
 }
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType

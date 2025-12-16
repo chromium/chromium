@@ -9,7 +9,7 @@
 
 @protocol BWGLinkOpeningDelegate;
 @protocol BWGPageStateChangeDelegate;
-@protocol BWGSessionDelegate;
+@protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
@@ -19,7 +19,7 @@
 @property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 @property(nonatomic, weak) id<BWGPageStateChangeDelegate>
     pageStateChangeHandler;
-@property(nonatomic, weak) id<BWGSessionDelegate> sessionHandler;
+@property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 
 @end

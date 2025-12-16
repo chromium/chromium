@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 
 class WebStateList;
 
@@ -15,7 +15,7 @@ class WebStateList;
 @protocol SettingsCommands;
 
 // Handler for the BWG sessions.
-@interface BWGSessionHandler : NSObject <BWGSessionDelegate>
+@interface BWGSessionHandler : NSObject <GeminiSessionDelegate>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
