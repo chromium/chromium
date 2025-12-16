@@ -135,9 +135,8 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
     return OnError(FROM_HERE, "Initialized without SharedImageInterface");
   }
 
-  if (!frame ||
-      (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
-       frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE)) {
+  if (!frame || (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
+                 !frame->HasMappableSharedImage())) {
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
