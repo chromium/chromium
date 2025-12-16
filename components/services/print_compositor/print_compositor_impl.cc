@@ -33,7 +33,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "content/public/child/dwrite_font_proxy_init_win.h"
+#include "content/public/child/font_integration_init.h"
 #include "printing/backend/win_helper.h"  // nogncheck
 #elif BUILDFLAG(IS_APPLE)
 #include "third_party/blink/public/platform/platform.h"
@@ -125,8 +125,8 @@ PrintCompositorImpl::PrintCompositorImpl(
     return;
 
 #if BUILDFLAG(IS_WIN)
-  // Initialize direct write font proxy so skia can use it.
-  content::InitializeDWriteFontProxy();
+  // Initialize child process font integration so skia can use it.
+  content::InitializeFontIntegration();
 #endif
 
   // Hook up blink's codecs so skia can call them.
@@ -152,7 +152,7 @@ PrintCompositorImpl::PrintCompositorImpl(
 
 PrintCompositorImpl::~PrintCompositorImpl() {
 #if BUILDFLAG(IS_WIN)
-  content::UninitializeDWriteFontProxy();
+  content::UninitializeFontIntegration();
 #endif
 }
 
