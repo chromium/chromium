@@ -6223,6 +6223,7 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
     }
   }
   EnsureElementRareData().SetShadowRoot(*shadow_root);
+  SetHasShadowRoot();
   shadow_root->SetShadowHostNode(this);
   shadow_root->SetParentTreeScope(GetTreeScope());
   shadow_root->InsertedInto(*this);
@@ -6232,11 +6233,11 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
   return *shadow_root;
 }
 
-ShadowRoot* Element::GetShadowRoot() const {
-  if (const ElementRareDataVector* data = GetElementRareData()) {
-    return data->GetShadowRoot();
-  }
-  return nullptr;
+// TODO(crbug.com/465839474): LTO-inline this function to unify the
+// fast and slow paths. (It cannot be easily inlined by putting it
+// into element.h, due to the dependency on ElementRareDataVector.)
+ShadowRoot* Element::GetShadowRootInternal() const {
+  return GetElementRareData()->GetShadowRoot();
 }
 
 EditContext* Element::editContext() const {

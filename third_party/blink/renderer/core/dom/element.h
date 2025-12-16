@@ -1015,7 +1015,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot& AttachShadowRootForTesting(ShadowRootMode type);
 
   // Returns the shadow root attached to this element if it is a shadow host.
-  ShadowRoot* GetShadowRoot() const;
+  ALWAYS_INLINE ShadowRoot* GetShadowRoot() const {
+    return HasShadowRoot() ? GetShadowRootInternal() : nullptr;
+  }
   ShadowRoot* OpenShadowRoot() const;
   ShadowRoot* ClosedShadowRoot() const;
   ShadowRoot* AuthorShadowRoot() const;
@@ -2096,6 +2098,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   friend class AXObject;
   friend class KeyboardEventManager;
   struct AffectedByPseudoStateChange;
+
+  ShadowRoot* GetShadowRootInternal() const;
 
   template <typename Functor>
   bool PseudoElementStylesDependOnFunc(Functor& func) const;

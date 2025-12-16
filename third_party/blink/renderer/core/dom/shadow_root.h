@@ -224,10 +224,7 @@ inline bool Node::IsInUserAgentShadowRoot() const {
 }
 
 inline ShadowRoot* Node::GetShadowRoot() const {
-  auto* this_element = DynamicTo<Element>(this);
-  if (!this_element)
-    return nullptr;
-  return this_element->GetShadowRoot();
+  return HasShadowRoot() ? To<Element>(this)->GetShadowRoot() : nullptr;
 }
 
 inline bool IsShadowHost(const Node* node) {
