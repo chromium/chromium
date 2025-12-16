@@ -37,7 +37,7 @@ class RequestHandlerForPolicy
 
  private:
   // Add to |fetch_response| the policies associated with |client| according to
-  // |policy_type|. Returns true is request is well-formed, or false otherwise
+  // |policy_type|. Returns true if request is well-formed, or false otherwise
   // (in which case, |error_msg| is set with the corresponding error message).
   bool ProcessCloudPolicy(
       const enterprise_management::PolicyFetchRequest& fetch_request,
@@ -46,10 +46,20 @@ class RequestHandlerForPolicy
       std::string* error_msg);
 
   // Add to |response| the policies associated with |client_info| for extension
-  // policy type in |fetch_request|. Returns true is request is well-formed, or
+  // policy type in |fetch_request|. Returns true if request is well-formed, or
   // false otherwise (in which case, |error_msg| is set with the corresponding
   // error message).
   bool ProcessCloudPolicyForExtensions(
+      const enterprise_management::PolicyFetchRequest& fetch_request,
+      const ClientStorage::ClientInfo& client_info,
+      enterprise_management::DevicePolicyResponse* response,
+      std::string* error_msg);
+
+  // Add to |response| the policies associated with |client_info| for extension
+  // install policy type in |fetch_request|. Returns true if request is
+  // well-formed, or false otherwise (in which case, |error_msg| is set with
+  // the corresponding error message).
+  bool ProcessCloudPolicyForExtensionInstall(
       const enterprise_management::PolicyFetchRequest& fetch_request,
       const ClientStorage::ClientInfo& client_info,
       enterprise_management::DevicePolicyResponse* response,

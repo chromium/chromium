@@ -641,7 +641,7 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
       initial_enrollment_state->initial_enrollment_mode,
       static_cast<enterprise_management::DeviceInitialEnrollmentStateResponse::
                       InitialEnrollmentMode>(2));
-  }
+}
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
@@ -1030,6 +1030,169 @@ TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithNonBase64ValueFails) {
                         "oauth_token=fake_policy_token&request=policy")
                 .status,
             net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "policy_user": "foo@example.com",
+      "managed_users": [
+        "*"
+      ],
+      "policies": [
+        {
+          "policy_type": "google/chrome/machine-level-extension-install",
+          "entity_id": "abcdefghijklmnopqrstuvwxyzabcdef@67.67.67",
+          "value": "CjAKIGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6YWJjZGVmEgg2Ny42Ny42NxgCIAE="
+        }
+      ]
+    }
+  )"));
+  ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "state_keys": [],
+        "allowed_policy_types" : [
+          "google/chrome/machine-level-extension-install" ]
+      }
+    }
+  )"));
+
+  {
+    // Fetch an existing extension via settings_entity_id.
+    em::DeviceManagementRequest request_proto;
+    auto* policy_request =
+        request_proto.mutable_policy_request()->add_requests();
+    policy_request->set_policy_type(
+        "google/chrome/machine-level-extension-install");
+    policy_request->set_settings_entity_id(
+        "abcdefghijklmnopqrstuvwxyzabcdef@67.67.67");
+
+    Response response =
+        SendRequest(fake_dmserver.GetServiceURL(),
+                    "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                    "oauth_token=fake_policy_token&request=policy",
+                    std::move(request_proto));
+    EXPECT_EQ(response.status, net::HTTP_OK);
+    ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+    EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        response.proto().policy_response().responses(0).policy_data()));
+    EXPECT_EQ(policy_data.policy_type(),
+              "google/chrome/machine-level-extension-install");
+
+    em::ExtensionInstallPolicies extension_install_policies;
+    ASSERT_TRUE(
+        extension_install_policies.ParseFromString(policy_data.policy_value()));
+    EXPECT_EQ(extension_install_policies.policies_size(), 1);
+
+    em::ExtensionInstallPolicy extension_install_policy =
+        extension_install_policies.policies(0);
+    EXPECT_EQ(extension_install_policy.extension_id(),
+              "abcdefghijklmnopqrstuvwxyzabcdef");
+    EXPECT_EQ(extension_install_policy.extension_version(), "67.67.67");
+    EXPECT_EQ(extension_install_policy.action(),
+              em::ExtensionInstallPolicy::ACTION_BLOCK);
+    EXPECT_EQ(extension_install_policy.reasons_size(), 1);
+    EXPECT_EQ(extension_install_policy.reasons(0),
+              em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
+  }
+
+  {
+    // Fetch an existing extension via extension_ids_and_version.
+    em::DeviceManagementRequest request_proto;
+    auto* policy_request =
+        request_proto.mutable_policy_request()->add_requests();
+    policy_request->set_policy_type(
+        "google/chrome/machine-level-extension-install");
+    auto* extension_ids_and_version =
+        policy_request->add_extension_ids_and_version();
+    extension_ids_and_version->set_extension_id(
+        "abcdefghijklmnopqrstuvwxyzabcdef");
+    extension_ids_and_version->set_extension_version("67.67.67");
+
+    Response response =
+        SendRequest(fake_dmserver.GetServiceURL(),
+                    "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                    "oauth_token=fake_policy_token&request=policy",
+                    std::move(request_proto));
+    EXPECT_EQ(response.status, net::HTTP_OK);
+    ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+    EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        response.proto().policy_response().responses(0).policy_data()));
+    EXPECT_EQ(policy_data.policy_type(),
+              "google/chrome/machine-level-extension-install");
+
+    em::ExtensionInstallPolicies extension_install_policies;
+    ASSERT_TRUE(
+        extension_install_policies.ParseFromString(policy_data.policy_value()));
+    EXPECT_EQ(extension_install_policies.policies_size(), 1);
+
+    em::ExtensionInstallPolicy extension_install_policy =
+        extension_install_policies.policies(0);
+    EXPECT_EQ(extension_install_policy.extension_id(),
+              "abcdefghijklmnopqrstuvwxyzabcdef");
+    EXPECT_EQ(extension_install_policy.extension_version(), "67.67.67");
+    EXPECT_EQ(extension_install_policy.action(),
+              em::ExtensionInstallPolicy::ACTION_BLOCK);
+    EXPECT_EQ(extension_install_policy.reasons_size(), 1);
+    EXPECT_EQ(extension_install_policy.reasons(0),
+              em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
+  }
+
+  {
+    // Try to fetch a non-existing extension, and one with a different version.
+    // Request still succeeds, but with an empty ExtensionInstallPolicies
+    // payload.
+    em::DeviceManagementRequest request_proto;
+    auto* policy_request =
+        request_proto.mutable_policy_request()->add_requests();
+    policy_request->set_policy_type(
+        "google/chrome/machine-level-extension-install");
+    auto* extension_ids_and_version =
+        policy_request->add_extension_ids_and_version();
+    extension_ids_and_version->set_extension_id(
+        "bcdefghijklmnopqrstuvwxyzabcdefg");
+    extension_ids_and_version->set_extension_version("67.67.67");
+
+    extension_ids_and_version = policy_request->add_extension_ids_and_version();
+    extension_ids_and_version->set_extension_id(
+        "abcdefghijklmnopqrstuvwxyzabcdef");
+    extension_ids_and_version->set_extension_version("67.67.68");
+
+    Response response =
+        SendRequest(fake_dmserver.GetServiceURL(),
+                    "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                    "oauth_token=fake_policy_token&request=policy",
+                    std::move(request_proto));
+    EXPECT_EQ(response.status, net::HTTP_OK);
+    ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+    EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
+
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        response.proto().policy_response().responses(0).policy_data()));
+    EXPECT_EQ(policy_data.policy_type(),
+              "google/chrome/machine-level-extension-install");
+
+    em::ExtensionInstallPolicies extension_install_policies;
+    ASSERT_TRUE(
+        extension_install_policies.ParseFromString(policy_data.policy_value()));
+    EXPECT_EQ(extension_install_policies.policies_size(), 0);
+  }
 }
 
 }  // namespace fakedms
