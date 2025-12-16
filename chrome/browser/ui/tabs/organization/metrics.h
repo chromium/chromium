@@ -22,18 +22,6 @@ enum class SuggestedTabStripOrganizationReason {
   kMaxValue = kResumingFromStandby,
 };
 
-// This enum must match the numbering for TabOrganizationEntryPoint in
-// tools/metrics/histograms/histograms.xml. Do not reorder or remove items. Add
-// new items to the end and reflect them in the histogram enum.
-enum class TabOrganizationEntryPoint {
-  kNone = 0,
-  kProactive = 1,
-  kTabContextMenu = 2,
-  kThreeDotMenu = 3,
-  kTabSearch = 4,
-  kMaxValue = kTabSearch,
-};
-
 void LogTabStripOrganizationUKM(const TabStripModel* model,
                                 SuggestedTabStripOrganizationReason reason);
 

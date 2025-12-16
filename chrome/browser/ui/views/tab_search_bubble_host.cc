@@ -135,14 +135,7 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
       return;
     }
     if (organization_feature ==
-            tab_search::mojom::TabOrganizationFeature::kSelector ||
-        organization_feature ==
-            tab_search::mojom::TabOrganizationFeature::kNone) {
-      base::UmaHistogramEnumeration(
-          "Tab.Organization.SelectorCTR",
-          tab_search::mojom::SelectorCTREvent::kSelectorShown);
-    } else if (organization_feature ==
-               tab_search::mojom::TabOrganizationFeature::kDeclutter) {
+        tab_search::mojom::TabOrganizationFeature::kDeclutter) {
       base::UmaHistogramEnumeration(
           "Tab.Organization.DeclutterCTR",
           tab_search::mojom::DeclutterCTREvent::kDeclutterShown);

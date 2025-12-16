@@ -130,8 +130,7 @@ class TabOrganizationTest : public testing::Test {
     return organization;
   }
 
-  std::unique_ptr<TabOrganizationSession> CreateSessionWithValidOrganization(
-      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone) {
+  std::unique_ptr<TabOrganizationSession> CreateSessionWithValidOrganization() {
     std::unique_ptr<TabOrganizationRequest> request =
         std::make_unique<TabOrganizationRequest>();
     TabOrganizationRequest* request_ptr = request.get();
@@ -152,8 +151,7 @@ class TabOrganizationTest : public testing::Test {
         std::make_unique<TabOrganizationResponse>(response_organizations);
 
     std::unique_ptr<TabOrganizationSession> session =
-        std::make_unique<TabOrganizationSession>(std::move(request),
-                                                 entrypoint);
+        std::make_unique<TabOrganizationSession>(std::move(request));
 
     session->StartRequest();
     request_ptr->CompleteRequestForTesting(std::move(response));
@@ -1388,128 +1386,5 @@ TEST_F(TabOrganizationTest, HistogramLogNoOrganization) {
   request_ptr->CompleteRequestForTesting(std::move(response));
 
   session.reset();
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Response.Succeeded",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Response.TabCount", 0,
-                                      1);
 }
 
-TEST_F(TabOrganizationTest, HistogramLogNoChoiceOrganization) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization();
-
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-  session.reset();
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.TabRemovedCount", 0, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.LabelEdited", false, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kNoChoice, 1);
-}
-
-TEST_F(TabOrganizationTest, HistogramLogRejectOrganization) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization();
-
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-  session->GetNextTabOrganization()->Reject();
-
-  session.reset();
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.TabRemovedCount", 0, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.LabelEdited", false, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kRejected, 1);
-}
-
-TEST_F(TabOrganizationTest, HistogramLogAcceptOrganizationNoEntrypoint) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization();
-
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-  session->GetNextTabOrganization()->Accept();
-
-  session.reset();
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.TabRemovedCount", 0, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.Organization.LabelEdited", false, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kAccepted, 1);
-}
-
-TEST_F(TabOrganizationTest,
-       HistogramLogAcceptOrganizationTabContextMenuEntryPoint) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::kTabContextMenu);
-
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-  session->GetNextTabOrganization()->Accept();
-
-  session.reset();
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.TabContextMenu.UserChoice",
-      TabOrganization::UserChoice::kAccepted, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kAccepted, 1);
-}
-
-TEST_F(TabOrganizationTest,
-       HistogramLogRejectOrganizationThreeDotMenuEntryPoint) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::kThreeDotMenu);
-
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-  session->GetNextTabOrganization()->Reject();
-
-  session.reset();
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.ThreeDotMenu.UserChoice",
-      TabOrganization::UserChoice::kRejected, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kRejected, 1);
-}
-
-TEST_F(TabOrganizationTest,
-       HistogramLogNoChoiceOrganizationProactiveEntryPoint) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization(TabOrganizationEntryPoint::kProactive);
-  ASSERT_NE(session->GetNextTabOrganization(), nullptr);
-
-  session.reset();
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.UserChoice",
-                                      TabOrganization::UserChoice::kNoChoice,
-                                      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Tab.Organization.AllEntrypoints.UserChoice",
-      TabOrganization::UserChoice::kNoChoice, 1);
-}

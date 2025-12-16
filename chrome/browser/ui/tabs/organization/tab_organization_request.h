@@ -129,10 +129,6 @@ class TabOrganizationRequest {
   std::optional<TabData::TabID> base_tab_id_ = std::nullopt;
   std::optional<std::string> user_instruction_ = std::nullopt;
 
-  // Time measurements for the request, used to log latency metrics.
-  std::optional<base::Time> request_start_time_ = std::nullopt;
-  std::optional<base::Time> request_end_time_ = std::nullopt;
-
   std::unique_ptr<TabOrganizationResponse> response_;
   OnResponseCallback response_callback_;
 

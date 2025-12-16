@@ -27,83 +27,16 @@ TabOrganizationSession::TabOrganizationSession()
 
 TabOrganizationSession::TabOrganizationSession(
     std::unique_ptr<TabOrganizationRequest> request,
-    TabOrganizationEntryPoint entrypoint,
     const tabs::TabInterface* base_session_tab)
     : request_(std::move(request)),
       session_id_(kNextSessionID),
-      entrypoint_(entrypoint),
       base_session_tab_(base_session_tab) {
   kNextSessionID++;
 }
 
 TabOrganizationSession::~TabOrganizationSession() {
-  const int group_count = tab_organizations_.size();
-  switch (entrypoint_) {
-    case TabOrganizationEntryPoint::kProactive: {
-      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.Proactive.GroupCount",
-                               group_count);
-      break;
-    }
-    case TabOrganizationEntryPoint::kTabContextMenu: {
-      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.TabContextMenu.GroupCount",
-                               group_count);
-      break;
-    }
-    case TabOrganizationEntryPoint::kThreeDotMenu: {
-      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.ThreeDotMenu.GroupCount",
-                               group_count);
-      break;
-    }
-    case TabOrganizationEntryPoint::kTabSearch: {
-      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.TabSearch.GroupCount",
-                               group_count);
-      break;
-    }
-    case TabOrganizationEntryPoint::kNone: {
-    }
-  }
-  UMA_HISTOGRAM_COUNTS_100("Tab.Organization.AllEntrypoints.GroupCount",
-                           group_count);
-
   for (auto& organization : tab_organizations_) {
     organization->RemoveObserver(this);
-
-    switch (entrypoint_) {
-      case TabOrganizationEntryPoint::kProactive: {
-        UMA_HISTOGRAM_ENUMERATION("Tab.Organization.Proactive.UserChoice",
-                                  organization->choice());
-        break;
-      }
-      case TabOrganizationEntryPoint::kTabContextMenu: {
-        UMA_HISTOGRAM_ENUMERATION("Tab.Organization.TabContextMenu.UserChoice",
-                                  organization->choice());
-        break;
-      }
-      case TabOrganizationEntryPoint::kThreeDotMenu: {
-        UMA_HISTOGRAM_ENUMERATION("Tab.Organization.ThreeDotMenu.UserChoice",
-                                  organization->choice());
-        break;
-      }
-      case TabOrganizationEntryPoint::kTabSearch: {
-        UMA_HISTOGRAM_ENUMERATION("Tab.Organization.TabSearch.UserChoice",
-                                  organization->choice());
-        break;
-      }
-      case TabOrganizationEntryPoint::kNone: {
-      }
-    }
-
-    UMA_HISTOGRAM_ENUMERATION("Tab.Organization.AllEntrypoints.UserChoice",
-                              organization->choice());
-
-    if (organization->choice() == TabOrganization::UserChoice::kAccepted) {
-      UMA_HISTOGRAM_COUNTS_100("Tab.Organization.Organization.TabRemovedCount",
-                               organization->user_removed_tab_ids().size());
-
-      UMA_HISTOGRAM_BOOLEAN(
-          "Tab.Organization.Organization.LabelEdited",
-          organization->names()[0] != organization->GetDisplayName());
-    }
   }
 
   for (auto& observer : observers_) {
@@ -122,7 +55,6 @@ TabOrganizationSession::~TabOrganizationSession() {
 std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(
     const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint,
     const tabs::TabInterface* base_session_tab) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
@@ -157,7 +89,7 @@ TabOrganizationSession::CreateSessionForBrowser(
   }
 
   return std::make_unique<TabOrganizationSession>(std::move(request),
-                                                  entrypoint, base_session_tab);
+                                                  base_session_tab);
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {

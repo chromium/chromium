@@ -17,7 +17,7 @@ import type {DeclutterPageElement} from './declutter/declutter_page.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
 import type {UnusedTabInfo} from './tab_search.mojom-webui.js';
-import {DeclutterCTREvent, SelectorCTREvent, TabDeclutterEntryPoint, TabOrganizationFeature} from './tab_search.mojom-webui.js';
+import {DeclutterCTREvent, TabDeclutterEntryPoint, TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
@@ -140,9 +140,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   maybeLogFeatureShow(): void {
-    if (this.selectedState_ === TabOrganizationFeature.kSelector) {
-      this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
-    } else if (this.selectedState_ === TabOrganizationFeature.kDeclutter) {
+    if (this.selectedState_ === TabOrganizationFeature.kDeclutter) {
       this.$.declutterPage.logCtrValue(DeclutterCTREvent.kDeclutterShown);
     }
   }
@@ -156,7 +154,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onAutoTabGroupsClick_(): void {
-    this.logSelectorCtrValue_(SelectorCTREvent.kAutoTabGroupsClicked);
     this.apiProxy_.requestTabOrganization();
     this.selectedState_ = TabOrganizationFeature.kAutoTabGroups;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
@@ -164,8 +161,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onDeclutterClick_(): void {
-    this.logSelectorCtrValue_(SelectorCTREvent.kDeclutterClicked);
-
     chrome.metricsPrivate.recordEnumerationValue(
         'Tab.Organization.Declutter.EntryPoint',
         TabDeclutterEntryPoint.kSelector, TabDeclutterEntryPoint.MAX_VALUE + 1);
@@ -176,7 +171,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onBackClick_(): void {
-    this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
     this.prevSelectedState_ = this.selectedState_;
     this.selectedState_ = TabOrganizationFeature.kSelector;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
@@ -200,11 +194,6 @@ export class TabOrganizationSelectorElement extends CrLitElement {
       return;
     }
     this.selectedState_ = feature;
-  }
-
-  private logSelectorCtrValue_(event: SelectorCTREvent) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'Tab.Organization.SelectorCTR', event, SelectorCTREvent.MAX_VALUE + 1);
   }
 }
 

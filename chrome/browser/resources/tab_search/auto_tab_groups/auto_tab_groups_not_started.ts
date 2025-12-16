@@ -112,10 +112,6 @@ export class AutoTabGroupsNotStartedElement extends
     } else {
       // Start a tab organization
       this.fire('organize-tabs-click');
-      chrome.metricsPrivate.recordBoolean(
-          'Tab.Organization.AllEntrypoints.Clicked', true);
-      chrome.metricsPrivate.recordBoolean(
-          'Tab.Organization.TabSearch.Clicked', true);
     }
   }
 

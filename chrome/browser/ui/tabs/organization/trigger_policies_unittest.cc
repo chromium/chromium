@@ -173,31 +173,3 @@ TEST_F(TargetFrequencyTriggerTest, PeriodClampedToBasePeriod) {
   advance_to_next_phase();
   EXPECT_TRUE(policy()->ShouldTrigger(2.0f));
 }
-
-TEST_F(TargetFrequencyTriggerTest,
-       HistogramLoggedOnShouldTriggerAfterPeriodExpiration) {
-  base::HistogramTester histogram_tester;
-
-  // Observation phase 1
-  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
-  advance_to_next_phase();
-
-  // trigger phase 1
-  EXPECT_TRUE(policy()->ShouldTrigger(2.0f));
-  advance_to_next_phase();
-
-  // observation phase 2. should log the results of triggering from phase 1.
-  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
-  histogram_tester.ExpectBucketCount(
-      "Tab.Organization.Trigger.TriggeredInPeriod", true, 1);
-  advance_to_next_phase();
-
-  // trigger phase 2
-  EXPECT_FALSE(policy()->ShouldTrigger(0.0f));
-  advance_to_next_phase();
-
-  // observation phase 3. should log the results of triggering from phase 2.
-  EXPECT_FALSE(policy()->ShouldTrigger(1.0f));
-  histogram_tester.ExpectBucketCount(
-      "Tab.Organization.Trigger.TriggeredInPeriod", false, 1);
-}

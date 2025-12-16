@@ -378,12 +378,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   service->OnTriggerOccured(browser());
 
   tab_search_container()->OnAutoTabGroupButtonClicked();
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -401,10 +395,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   service->OnTriggerOccured(browser());
 
   tab_search_container()->OnAutoTabGroupButtonDismissed();
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
 // TODO(crbug.com/413441658): Flaky on Windows 10 builds.
@@ -431,11 +421,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->OnOrganizeButtonTimeout(
       tab_search_container()->auto_tab_group_button());
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
-                                      false, 1);
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
 }
 
 // TODO(crbug.com/409311762): This test is flaky, fix and re-enable if work on

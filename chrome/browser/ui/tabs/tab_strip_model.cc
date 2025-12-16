@@ -2882,12 +2882,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       TabOrganizationService* const service =
           TabOrganizationServiceFactory::GetForProfile(profile_);
       CHECK(service);
-      UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
-      UMA_HISTOGRAM_BOOLEAN("Tab.Organization.TabContextMenu.Clicked", true);
 
-      service->RestartSessionAndShowUI(
-          browser, TabOrganizationEntryPoint::kTabContextMenu,
-          GetTabAtIndex(context_index));
+      service->RestartSessionAndShowUI(browser, GetTabAtIndex(context_index));
       break;
     }
 

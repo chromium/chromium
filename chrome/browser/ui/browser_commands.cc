@@ -1919,11 +1919,8 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
 void StartTabOrganizationRequest(Browser* browser) {
   TabOrganizationService* service =
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
-  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
-  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.ThreeDotMenu.Clicked", true);
 
-  service->RestartSessionAndShowUI(browser,
-                                   TabOrganizationEntryPoint::kThreeDotMenu);
+  service->RestartSessionAndShowUI(browser);
 }
 
 void ShowTranslateBubble(BrowserWindowInterface* bwi) {

@@ -271,11 +271,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   EXPECT_NE(session, nullptr);
   EXPECT_EQ(session->request()->state(),
             TabOrganizationRequest::State::NOT_STARTED);
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.TabContextMenu.Clicked",
-                                      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,

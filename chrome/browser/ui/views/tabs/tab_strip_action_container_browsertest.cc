@@ -367,12 +367,6 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   service->OnTriggerOccured(browser());
 
   OnButtonClicked(AutoTabGroupButton());
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -391,10 +385,6 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   service->OnTriggerOccured(browser());
 
   OnButtonDismissed(AutoTabGroupButton());
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, DelaysShow) {
