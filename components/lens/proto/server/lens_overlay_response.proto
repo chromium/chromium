@@ -4,9 +4,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package lens.proto;
+
+option optimize_for = LITE_RUNTIME;
 
 message LensOverlaySuggestInputs {
   // The encoded image suggest signals.
@@ -43,6 +43,15 @@ message LensOverlaySuggestInputs {
   // The visual input type value to be included in the "vit" param for
   // contextual suggest requests.
   optional string contextual_visual_input_type = 8;
+
+  // Whether or not to send the page title and url in the request.
+  optional bool send_page_title_and_url = 9;
+
+  // The page title of the specific page for which this request is contextual.
+  optional string page_title = 10;
+
+  // The page url of the specific page for which this request is contextual.
+  optional string page_url = 11;
 }
 
 message LensOverlayUrlResponse {

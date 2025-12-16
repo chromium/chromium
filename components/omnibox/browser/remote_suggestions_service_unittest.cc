@@ -690,8 +690,7 @@ TEST_F(RemoteSuggestionsServiceTest,
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
-       LensOverlaySuggestInputsAppendedQueryParamsForLensComposeboxMultimodal)
-       {
+       LensOverlaySuggestInputsAppendedQueryParamsForLensComposeboxMultimodal) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       lens::features::kLensAimSuggestions,
@@ -755,10 +754,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       google_template_url, search_terms_args, SearchTermsData());
 
   // Appended gsessionid and vsrids.
-  ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&iil=iil&gs_ps=1&vsrid=vsrid&"
-            "gsessionid=gsessionid");
+  ASSERT_EQ(
+      endpoint_url.spec(),
+      "https://www.google.com/"
+      "suggest?q=query&client=chrome-multimodal&iil=iil&gs_ps=1&vsrid=vsrid&"
+      "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_contextual_visual_input_type("vit");
@@ -766,11 +766,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vit.
-  ASSERT_EQ(
-      endpoint_url.spec(),
-      "https://www.google.com/"
-      "suggest?q=query&client=chrome-multimodal&iil=iil&gs_ps=1&vit=vit&vsrid=vsrid&"
-      "gsessionid=gsessionid");
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal&iil=iil&gs_ps=1&vit=vit&"
+            "vsrid=vsrid&"
+            "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
@@ -778,11 +778,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vsint.
-  ASSERT_EQ(
-      endpoint_url.spec(),
-      "https://www.google.com/"
-      "suggest?q=query&client=chrome-multimodal&iil=iil&vsint=vsint&gs_ps=1&vit=vit&"
-      "vsrid=vsrid&gsessionid=gsessionid");
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal&iil=iil&vsint=vsint&gs_"
+            "ps=1&vit=vit&"
+            "vsrid=vsrid&gsessionid=gsessionid");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
@@ -1082,4 +1082,37 @@ TEST_F(RemoteSuggestionsServiceTest,
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+}
+
+TEST_F(
+    RemoteSuggestionsServiceTest,
+    LensOverlaySuggestInputsAppendedQueryParamsForContextualSearchboxWithPageTitleAndUrl) {
+  // Set up a Google search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  search_terms_args.lens_overlay_suggest_inputs =
+      std::make_optional<lens::proto::LensOverlaySuggestInputs>();
+
+  search_terms_args.lens_overlay_suggest_inputs->set_send_page_title_and_url(
+      true);
+  search_terms_args.lens_overlay_suggest_inputs->set_page_title("Page Title");
+  search_terms_args.lens_overlay_suggest_inputs->set_page_url(
+      "https://page.url");
+
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      google_template_url, search_terms_args, SearchTermsData());
+
+  // Verify pageTitle and url are appended.
+  std::string url_spec = endpoint_url.spec();
+  EXPECT_THAT(url_spec, testing::HasSubstr("pageTitle=Page+Title"));
+  EXPECT_THAT(url_spec, testing::HasSubstr("url=https%3A%2F%2Fpage.url"));
 }

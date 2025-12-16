@@ -280,6 +280,8 @@ ComposeboxQueryController::ComposeboxQueryController(
   // enabled.
   DCHECK(!enable_context_id_migration_ ||
          use_separate_request_ids_for_multi_context_viewport_images_);
+  attach_page_title_and_url_to_suggest_requests_ =
+      feature_params->attach_page_title_and_url_to_suggest_requests;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -726,6 +728,14 @@ ComposeboxQueryController::CreateSuggestInputs(
   // suggest.
   suggest_inputs->set_contextual_visual_input_type(
       lens::VitQueryParamValueForMediaType(file_info->request_id.media_type()));
+
+  if (attach_page_title_and_url_to_suggest_requests_) {
+    suggest_inputs->set_send_page_title_and_url(true);
+    suggest_inputs->set_page_title(file_info->tab_title.value_or(""));
+    if (file_info->tab_url.has_value()) {
+      suggest_inputs->set_page_url(file_info->tab_url.value().spec());
+    }
+  }
 
   // If the cluster info is already available, update the suggest inputs.
   suggest_inputs->set_send_gsession_vsrid_for_contextual_suggest(true);
