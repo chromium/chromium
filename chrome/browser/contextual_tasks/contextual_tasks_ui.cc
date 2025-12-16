@@ -25,11 +25,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -215,9 +215,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::GetIsSteadyComposeboxVoiceSearchEnabled());
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
-  source->AddBoolean("darkMode",
-                     ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
-                                ->BrowserUsesDarkColors());
+  source->AddBoolean(
+      "darkMode", ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
+                      ->BrowserUsesDarkColors());
   source->AddString(
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::
@@ -272,6 +272,11 @@ ContextualTasksUI::~ContextualTasksUI() = default;
 void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
+  // Reset the page and page handler before binding in case they already exists
+  // (like on a reload). Not resetting them can cause unintended behavior.
+  page_.reset();
+  page_handler_.reset();
+
   page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       std::move(page_handler), this, ui_service_, context_controller_);
