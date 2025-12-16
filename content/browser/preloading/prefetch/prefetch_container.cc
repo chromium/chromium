@@ -776,7 +776,8 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 }
 
-void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
+void PrefetchContainer::UpdateResourceRequest(
+    const net::RedirectInfo& redirect_info) {
   CHECK(resource_request_);
 
   // There are sometimes other headers that are modified during navigation
@@ -847,7 +848,9 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   resource_request_->referrer_policy = redirect_info.new_referrer_policy;
 
   AddXClientDataHeader(*resource_request_.get());
+}
 
+void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
       *this, redirect_info.new_url,
       IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url))));
@@ -1454,8 +1457,8 @@ bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
 }
 
 void PrefetchContainer::MakeResourceRequest() {
-  // |AddRedirectHop| updates this request later on. Anything here that should
-  // be changed on redirect should happen there.
+  // `UpdateResourceRequest()` updates this request later on. Anything here that
+  // should be changed on redirect should happen there.
 
   const GURL& url = GetURL();
   url::Origin origin = url::Origin::Create(url);

@@ -1329,6 +1329,8 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
+  prefetch_container->UpdateResourceRequest(redirect_info);
+
   prefetch_container->NotifyPrefetchRequestWillBeSent(&redirect_head);
 
   // If the redirect requires a change in network contexts, then stop the

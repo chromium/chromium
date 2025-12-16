@@ -298,6 +298,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Adds a the new URL to |redirect_chain_|.
   void AddRedirectHop(const net::RedirectInfo& redirect_info);
 
+  void UpdateResourceRequest(const net::RedirectInfo& redirect_info);
+
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
 
