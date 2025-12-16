@@ -104,6 +104,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
     case AutofillErrorDialogType::kBnplTemporaryError:
     case AutofillErrorDialogType::kBnplPermanentError:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+    case AutofillErrorDialogType::kBnplUnsupportedCurrencyError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE);
 
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
@@ -168,6 +171,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kBnplPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kBnplUnsupportedCurrencyError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }

@@ -169,6 +169,25 @@ TEST_F(AutofillErrorDialogControllerImplTest, BnplPermanentError) {
                 IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
 }
 
+// Test to verify the title, description and button label for autofill error
+// dialog for unsupported currency error in a BNPL flow.
+TEST_F(AutofillErrorDialogControllerImplTest, BnplUnsupportedCurrencyError) {
+  AutofillErrorDialogContext context =
+      AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError();
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE));
+  EXPECT_EQ(controller()->GetDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
 // Param of the AutofillErrorDialogControllerImplTest:
 // -- bool server_did_return_decline_details;
 class AutofillErrorDialogControllerImplParameterizedTest

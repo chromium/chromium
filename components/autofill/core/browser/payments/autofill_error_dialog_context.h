@@ -49,8 +49,10 @@ enum class AutofillErrorDialogType {
   kBnplTemporaryError = 11,
   // Error shown when the server returns a permanent error for a BNPL flow.
   kBnplPermanentError = 12,
+  // Error shown when BNPL does not support the current currency.
+  kBnplUnsupportedCurrencyError = 13,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kBnplPermanentError,
+  kMaxValue = kBnplUnsupportedCurrencyError,
 };
 
 // The context for the autofill error dialog.
@@ -72,6 +74,10 @@ struct AutofillErrorDialogContext {
   // kBnplTemporaryError if `is_permanent_error` is false.
   static AutofillErrorDialogContext WithBnplPermanentOrTemporaryError(
       bool is_permanent_error);
+
+  // Returns an AutofillErrorDialogContext for a BNPL unsupported currency
+  // error.
+  static AutofillErrorDialogContext WithBnplUnsupportedCurrencyError();
 
   AutofillErrorDialogContext();
   AutofillErrorDialogContext(const AutofillErrorDialogContext& other);

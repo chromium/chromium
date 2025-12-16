@@ -1338,6 +1338,7 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="CARD_INFO_RETRIEVAL_PERMANENT_ERROR"/>
   <int value="11" label="BNPL_TEMPORARY_ERROR"/>
   <int value="12" label="BNPL_PERMANENT_ERROR"/>
+  <int value="13" label="BNPL_UNSUPPORTED_CURRENCY_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">

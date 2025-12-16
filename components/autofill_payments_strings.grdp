@@ -1206,6 +1206,12 @@
       Show pay later options at checkout
     </message>
   </if>
+  <message name="IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE" desc="The title text of an error dialog informing the user that Pay Later is not available for the selected currency.">
+    Pay later not available in this currency
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user to choose another payment method due to the selected currency is not supported yet.">
+    Choose another payment method to complete this purchase.
+  </message>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
