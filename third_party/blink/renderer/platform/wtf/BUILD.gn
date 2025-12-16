@@ -347,6 +347,7 @@ source_set("wtf_unittests_sources") {
     "text/string_view_test.cc",
     "text/text_codec_cjk_test.cc",
     "text/text_codec_icu_test.cc",
+    "text/text_codec_latin1_test.cc",
     "text/text_codec_replacement_test.cc",
     "text/text_codec_test.cc",
     "text/text_codec_utf8_test.cc",

@@ -144,6 +144,9 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
         if (source.empty()) {
           break;
         }
+        if (!IsASCII(source[0])) {
+          goto useLookupTable;
+        }
       }
       destination.take_first<1u>()[0] = source.take_first_elem();
     } else {
