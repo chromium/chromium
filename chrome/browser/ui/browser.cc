@@ -745,7 +745,7 @@ Browser::~Browser() {
   // TODO(crbug.com/40159237): Use ScopedProfileKeepAlive for Incognito too,
   // instead of separate logic for Incognito and regular profiles.
   if (profile_->IsIncognitoProfile() &&
-      !BrowserList::IsOffTheRecordBrowserInUse(profile_) &&
+      !chrome::IsOffTheRecordBrowserInUse(profile_) &&
       !profile_->IsSystemProfile()) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     // The Printing Background Manager holds onto preview dialog WebContents

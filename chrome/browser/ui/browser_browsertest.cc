@@ -2787,13 +2787,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, IsOffTheRecordBrowserInUse) {
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_TRUE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 
   CloseBrowserSynchronously(incognito_browser);
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveTabChangedUserAction) {

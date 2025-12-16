@@ -2221,7 +2221,7 @@ void WebAppIntegrationTestDriver::NavigateAppHome() {
   GURL app_home_url = GURL(chrome::kChromeUIAppsURL);
   WindowOpenDisposition win_disposition;
   content::TestNavigationObserver url_observer(app_home_url);
-  if (BrowserList::IsOffTheRecordBrowserInUse(browser()->profile())) {
+  if (chrome::IsOffTheRecordBrowserInUse(browser()->profile())) {
     win_disposition = WindowOpenDisposition::OFF_THE_RECORD;
     url_observer.StartWatchingNewWebContents();
   } else {

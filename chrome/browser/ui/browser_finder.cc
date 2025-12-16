@@ -416,6 +416,25 @@ size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
   return incognito_window_count;
 }
 
+bool IsOffTheRecordBrowserInUse(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  bool off_the_record_in_use = false;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        Profile* window_profile = browser->GetProfile();
+        if (window_profile && window_profile->IsSameOrParent(profile) &&
+            window_profile->IsOffTheRecord()) {
+          off_the_record_in_use = true;
+        }
+        return !off_the_record_in_use;
+      });
+
+  return off_the_record_in_use;
+}
+
 size_t GetGuestBrowserCount() {
   size_t guest_browser_count = 0;
   GlobalBrowserCollection::GetInstance()->ForEach(

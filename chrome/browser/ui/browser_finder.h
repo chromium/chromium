@@ -208,6 +208,10 @@ size_t GetTabbedBrowserCount(Profile* profile);
 // `profile`, excluding DevTools windows.
 size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile);
 
+// Returns true if any off-the-record browser is using `profile` or one of its
+// related profiles.
+bool IsOffTheRecordBrowserInUse(Profile* profile);
+
 // Returns the number of Guest browsers excluding DevTools windows.
 size_t GetGuestBrowserCount();
 
