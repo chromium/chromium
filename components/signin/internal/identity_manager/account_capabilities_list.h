@@ -127,4 +127,11 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kCanUseGeminiInChromeCapabilityName,
+                     CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
+                     "accountcapabilities/giytmnrnmnqxa",
+                     switches::kGlicEligibilitySeparateAccountCapability)
+#endif
+
 // keep-sorted end

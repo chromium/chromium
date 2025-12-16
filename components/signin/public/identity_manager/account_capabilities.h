@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
@@ -168,6 +169,11 @@ class AccountCapabilities {
   static base::span<const std::string_view>
   GetSupportedAccountCapabilityNames();
 
+  // Internal version of GetSupportedAccountCapabilityNames that calculates the
+  // list on each call, rather than returning a cached value.
+  static std::vector<std::string_view>
+  GetSupportedAccountCapabilityNamesInternal();
+
   // Returns the capability state using the service name.
   signin::Tribool GetCapabilityByName(std::string_view name) const;
 
@@ -184,6 +190,12 @@ class AccountCapabilities {
   GetAccountCapabilityNamesForPrefetch();
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           GetSupportedAccountCapabilityNames);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           GetSupportedAccountCapabilityNames_FlagDisabled);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           GetSupportedAccountCapabilityNames_FlagEnabled);
   friend class AccountCapabilitiesTestMutator;
   friend class supervised_user::FamilyLinkUserCapabilitiesObserver;
 

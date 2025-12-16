@@ -5,8 +5,10 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,17 +19,49 @@
 
 namespace {
 using testing::Contains;
+using testing::Not;
 }  // namespace
 
 class AccountCapabilitiesTest : public testing::Test {};
 
 TEST_F(AccountCapabilitiesTest, GetSupportedAccountCapabilityNames) {
-  base::span<const std::string_view> names =
-      AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames();
+  auto names = AccountCapabilities::GetSupportedAccountCapabilityNames();
 
   // Check one of the existing expected account capabilities.
   EXPECT_THAT(names, Contains(kCanUseModelExecutionFeaturesName));
 }
+
+// The tests below validate that the ACCOUNT_CAPABILITY_F macro works correctly.
+//
+// Due to the way capabilities are defined, it is not possible to use fake
+// test capabilities; instead a real flag-guarded capability is used. Once this
+// capability is fully launched, these tests should be removed.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AccountCapabilitiesTest,
+       GetSupportedAccountCapabilityNames_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kGlicEligibilitySeparateAccountCapability);
+
+  auto names =
+      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
+
+  // Check one of the existing expected account capabilities.
+  EXPECT_THAT(names, Not(Contains(kCanUseGeminiInChromeCapabilityName)));
+}
+
+TEST_F(AccountCapabilitiesTest,
+       GetSupportedAccountCapabilityNames_FlagEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kGlicEligibilitySeparateAccountCapability};
+
+  auto names =
+      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
+
+  // Check one of the existing expected account capabilities.
+  EXPECT_THAT(names, Contains(kCanUseGeminiInChromeCapabilityName));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
   AccountCapabilities capabilities;

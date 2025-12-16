@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -39,9 +40,15 @@ AccountCapabilities& AccountCapabilities::operator=(
 base::span<const std::string_view>
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
   static const base::NoDestructor<std::vector<std::string_view>>
-      supported_capabilities([] {
-        std::vector<std::string_view> capabilities;
-    // Add the capabilities which are unconditionally supported.
+      supported_capabilities(GetSupportedAccountCapabilityNamesInternal());
+
+  return *supported_capabilities;
+}
+
+// static
+std::vector<std::string_view>
+AccountCapabilities::GetSupportedAccountCapabilityNamesInternal() {
+  std::vector<std::string_view> capabilities;
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, value) \
   capabilities.push_back(cpp_label);
 #define ACCOUNT_CAPABILITY_F(cpp_label, java_label, value, feature) \
@@ -51,11 +58,7 @@ AccountCapabilities::GetSupportedAccountCapabilityNames() {
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
 #undef ACCOUNT_CAPABILITY_F
-
-        return capabilities;
-      }());
-
-  return *supported_capabilities;
+  return capabilities;
 }
 
 bool AccountCapabilities::AreAnyCapabilitiesKnown() const {
@@ -146,17 +149,7 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
-  // TODO(crbug.com/462697239): The current implementation is a placeholder to
-  // unblock development. Update this with the account capability once it is
-  // available from the server.
-  switch (is_subject_to_parental_controls()) {
-    case signin::Tribool::kTrue:
-      return signin::Tribool::kFalse;
-    case signin::Tribool::kFalse:
-      return signin::Tribool::kTrue;
-    case signin::Tribool::kUnknown:
-      return signin::Tribool::kUnknown;
-  }
+  return GetCapabilityByName(kCanUseGeminiInChromeCapabilityName);
 }
 #endif
 
