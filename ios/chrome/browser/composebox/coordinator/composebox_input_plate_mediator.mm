@@ -31,6 +31,7 @@
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
+#import "components/lens/lens_url_utils.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -409,14 +410,22 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)sendText:(NSString*)text {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self sendText:text additionalParams:{}];
+}
+
+- (void)sendText:(NSString*)text
+    additionalParams:(std::map<std::string, std::string>)additionalParams {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->additional_params = additionalParams;
   if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
     search_url_request_info->additional_params["imgn"] = "1";
   }
+
   GURL URL = _contextualSearchSession->CreateSearchUrl(
       std::move(search_url_request_info));
   // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
@@ -1148,10 +1157,6 @@ CreateInputDataFromAnnotatedPageContent(
                URLLoadParams:(const UrlLoadParams&)URLLoadParams
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // If omnibox proposes an AIM suggestion, switch to AI mode.
-  if (IsAimURL(destinationURL) && [_modeHolder isRegularSearch]) {
-    _modeHolder.mode = ComposeboxMode::kAIM;
-  }
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
       _inNavigation = YES;
@@ -1162,7 +1167,13 @@ CreateInputDataFromAnnotatedPageContent(
     case ComposeboxMode::kAIM:
       [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                                 AutocompleteRequestType::kAIMode];
-      [self sendText:[NSString cr_fromString16:text]];
+      if (IsAimURL(destinationURL)) {
+        [self sendText:[NSString cr_fromString16:text]
+            additionalParams:lens::GetParametersMapWithoutQuery(
+                                 destinationURL)];
+      } else {
+        [self sendText:[NSString cr_fromString16:text]];
+      }
       break;
     case ComposeboxMode::kImageGeneration:
       [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
