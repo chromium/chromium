@@ -46,7 +46,6 @@ BASE_DECLARE_FEATURE(kDbusSecretPortal);
 #endif
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
-BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);

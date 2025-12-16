@@ -1367,9 +1367,7 @@ bool ProfileManager::AddKeepAlive(Profile* profile,
   if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
       origin == ProfileKeepAliveOrigin::kProfileCreationFlow ||
       origin == ProfileKeepAliveOrigin::kProfileStatistics ||
-      origin == ProfileKeepAliveOrigin::kWaitingForGlicView ||
-      (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
-       base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
+      origin == ProfileKeepAliveOrigin::kWaitingForGlicView) {
     ClearFirstBrowserWindowKeepAlive(profile);
   }
 

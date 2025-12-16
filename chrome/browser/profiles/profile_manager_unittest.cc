@@ -2362,13 +2362,13 @@ constexpr ProfileKeepAliveParam params[] = {
      .should_clear_waiting_for_first_browser_window = true},
     {.origin = ProfileKeepAliveOrigin::kProfileStatistics,
      .should_clear_waiting_for_first_browser_window = true},
-    {.origin = ProfileKeepAliveOrigin::kProfilePickerView,
-     .should_clear_waiting_for_first_browser_window = true},
     {.origin = ProfileKeepAliveOrigin::kWaitingForGlicView,
      .should_clear_waiting_for_first_browser_window = true},
 
     // Origins that do NOT clear
     // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`.
+    {.origin = ProfileKeepAliveOrigin::kProfilePickerView,
+     .should_clear_waiting_for_first_browser_window = false},
     {.origin = ProfileKeepAliveOrigin::kBackgroundMode,
      .should_clear_waiting_for_first_browser_window = false},
     {.origin = ProfileKeepAliveOrigin::kOffTheRecordProfile,
@@ -2439,10 +2439,8 @@ class ProfileManagerTestWithParam
       public testing::WithParamInterface<ProfileKeepAliveParam> {
  public:
   ProfileManagerTestWithParam() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDestroySystemProfiles,
-         features::kDestroyProfileOnBrowserClose},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDestroyProfileOnBrowserClose);
   }
 
  private:

@@ -86,10 +86,6 @@ BASE_FEATURE(kDestroyProfileOnBrowserClose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// DestroyProfileOnBrowserClose only covers deleting regular (non-System)
-// Profiles. This flags lets us destroy the System Profile, as well.
-BASE_FEATURE(kDestroySystemProfiles, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 BASE_FEATURE(kFlexOrgManagementDisclosure,

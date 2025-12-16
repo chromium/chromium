@@ -8637,24 +8637,6 @@
             ]
         }
     ],
-    "DestroySystemProfiles": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DestroySystemProfiles",
-                    "enable_features": [
-                        "DestroySystemProfiles"
-                    ]
-                }
-            ]
-        }
-    ],
     "DevToolsConsoleInsightsTeasers": [
         {
             "platforms": [
