@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -34,6 +35,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -97,6 +99,14 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      composebox_config.max_num_files());
   source->AddInteger("composeboxFileMaxSize",
                      composebox_config.attachment_upload().max_size_bytes());
+  source->AddString(
+      "composeboxDragAndDropHint",
+      l10n_util::GetPluralStringFUTF16(IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
+                                       composebox_config.max_num_files()));
+  source->AddString(
+      "maxFilesReachedError",
+      l10n_util::GetPluralStringFUTF16(IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+                                       composebox_config.max_num_files()));
   const std::string image_mime_types =
       composebox_config.image_upload().mime_types_allowed();
   source->AddString("composeboxImageFileTypes", image_mime_types);
