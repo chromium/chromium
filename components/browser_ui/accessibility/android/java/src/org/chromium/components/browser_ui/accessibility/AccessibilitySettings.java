@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -24,6 +25,7 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -106,7 +108,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
 
         // When Smart Zoom feature is enabled, set the required delegate.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+        if (PageZoomPreference.shouldShowTextSizeContrastSetting()) {
             mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
                     mDelegate.getTextSizeContrastAccessibilityDelegate());
         }
@@ -119,7 +121,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mJumpStartOmnibox = findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
         mJumpStartOmnibox.setOnPreferenceChangeListener(this);
         mJumpStartOmnibox.setChecked(OmniboxFeatures.isJumpStartOmniboxEnabled());
-        mJumpStartOmnibox.setVisible(OmniboxFeatures.sJumpStartOmnibox.isEnabled());
+        mJumpStartOmnibox.setVisible(shouldShowJumpStartOmniboxPref());
 
         ChromeSwitchPreference readerForAccessibilityPref =
                 findPreference(PREF_READER_FOR_ACCESSIBILITY);
@@ -162,7 +164,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 });
 
         // When Accessibility Page Zoom v2 is enabled, show additional controls.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2)) {
+        if (shouldShowPageZoomV2()) {
             mPageZoomIncludeOSAdjustment.setVisible(true);
             mPageZoomIncludeOSAdjustment.setOnPreferenceChangeListener(this);
         } else {
@@ -170,12 +172,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
 
         Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
-        imageDescriptionsPreference.setVisible(mDelegate.shouldShowImageDescriptionsSetting());
+        imageDescriptionsPreference.setVisible(shouldShowImageDescriptionsPref(mDelegate));
 
         // Caret Browsing Settings
         mCaretBrowsingPref = findPreference(PREF_CARET_BROWSING);
 
-        if (ContentFeatureList.sAndroidCaretBrowsing.isEnabled()) {
+        if (shouldShowCaretBrowsingPref()) {
             mCaretBrowsingPref.setChecked(mDelegate.isCaretBrowsingEnabled());
             mCaretBrowsingPref.setOnPreferenceChangeListener(this);
         } else {
@@ -185,7 +187,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         // Touchpad swipe-to-navigate settings.
         mTouchpadOverscrollHistoryNavigationPref =
                 findPreference(PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
-        if (UiAndroidFeatureList.sAndroidTouchpadOverscrollHistoryNavigation.isEnabled()) {
+        if (shouldShowTouchpadOverscrollHistoryNavigationPref()) {
             mTouchpadOverscrollHistoryNavigationPref.setVisible(true);
             mTouchpadOverscrollHistoryNavigationPref.setOnPreferenceChangeListener(this);
             mTouchpadOverscrollHistoryNavigationPref.setChecked(
@@ -255,8 +257,75 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         return false;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    private static boolean shouldShowJumpStartOmniboxPref() {
+        return OmniboxFeatures.sJumpStartOmnibox.isEnabled();
+    }
+
+    private static boolean shouldShowPageZoomV2() {
+        return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2);
+    }
+
+    private static boolean shouldShowCaretBrowsingPref() {
+        return ContentFeatureList.sAndroidCaretBrowsing.isEnabled();
+    }
+
+    private static boolean shouldShowTouchpadOverscrollHistoryNavigationPref() {
+        return UiAndroidFeatureList.sAndroidTouchpadOverscrollHistoryNavigation.isEnabled();
+    }
+
+    private static boolean shouldShowImageDescriptionsPref(AccessibilitySettingsDelegate delegate) {
+        return delegate.shouldShowImageDescriptionsSetting();
+    }
+
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
                     AccessibilitySettings.class.getName(), R.xml.accessibility_preferences);
+
+    /**
+     * Update dynamic preferences with an object of the interface {@link
+     * AccessibilitySettingsDelegate}.
+     *
+     * <p>The implementation of the interface has dependencies outside //components, therefore
+     * cannot be instantiated in BaseSearchIndexProvider#updateDynamicPreferences. This is handled
+     * as an exception.
+     */
+    public static void updateDynamicPreferences(
+            Context context, AccessibilitySettingsDelegate delegate, SettingsIndexData indexData) {
+        String prefFragment = AccessibilitySettings.class.getName();
+        indexData.addEntryForKey(
+                prefFragment,
+                PREF_PAGE_ZOOM_DEFAULT_ZOOM,
+                R.string.page_zoom_title,
+                R.string.page_zoom_summary);
+        // Default zoom/Text size contrast/Preview are under a single preference. Add 2 virtual
+        // entries to index and make the latter 2 searchable.
+        // TODO(crbug.com/444470792): Figure out how to highlight them when selected.
+        if (PageZoomPreference.shouldShowTextSizeContrastSetting()) {
+            indexData.addEntryForKey(
+                    prefFragment,
+                    "page_zoom_text_size_contrast",
+                    R.string.text_size_contrast_title,
+                    R.string.text_size_contrast_summary);
+        }
+        indexData.addEntryForKey(
+                prefFragment,
+                "page_zoom_preview",
+                R.string.page_zoom_preview_title,
+                R.string.page_zoom_preview_text_summary);
+        if (!shouldShowJumpStartOmniboxPref()) {
+            indexData.removeEntryForKey(prefFragment, OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
+        }
+        if (!shouldShowPageZoomV2()) {
+            indexData.removeEntryForKey(prefFragment, PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
+        }
+        if (!shouldShowImageDescriptionsPref(delegate)) {
+            indexData.removeEntryForKey(prefFragment, PREF_IMAGE_DESCRIPTIONS);
+        }
+        if (!shouldShowCaretBrowsingPref()) {
+            indexData.removeEntryForKey(prefFragment, PREF_CARET_BROWSING);
+        }
+        if (!shouldShowTouchpadOverscrollHistoryNavigationPref()) {
+            indexData.removeEntryForKey(prefFragment, PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
+        }
+    }
 }
