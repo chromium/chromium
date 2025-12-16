@@ -209,11 +209,6 @@ BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
 
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
-BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
-
-inline constexpr char kTabScrollingButtonPositionParameterName[] =
-    "buttonPosition";
-
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 BASE_DECLARE_FEATURE(kTabGroupHoverCards);
 
