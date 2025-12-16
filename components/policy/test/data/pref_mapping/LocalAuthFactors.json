@@ -8,7 +8,7 @@
         "note": "Default value (no policies set).",
         "prefs": {
           "ash.local_auth_factors.enabled_factors": {
-            "default_value": []
+            "value": []
           }
         }
       },

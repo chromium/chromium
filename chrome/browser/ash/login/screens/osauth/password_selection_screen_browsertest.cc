@@ -8,14 +8,18 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -60,9 +64,18 @@ AuthFactorsConfiguration GetFakeAuthFactorConfiguration(
 
 }  // namespace
 
-class PasswordSelectionScreenTest : public OobeBaseTest {
+class PasswordSelectionScreenTest : public OobeBaseTest,
+                                    public ::testing::WithParamInterface<bool> {
  public:
-  PasswordSelectionScreenTest() = default;
+  PasswordSelectionScreenTest() {
+    if (GetParam()) {
+      scoped_features_.InitAndEnableFeature(
+          ash::features::kManagedLocalPinAndPassword);
+    } else {
+      scoped_features_.InitAndDisableFeature(
+          ash::features::kManagedLocalPinAndPassword);
+    }
+  }
   ~PasswordSelectionScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -98,16 +111,34 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
             PasswordSelectionScreenView::kScreenId));
   }
 
-  void StartLogin() {
+  void SetAllowLocalPasswordPolicyForEnterpriseUsers() {
+    enterprise_management::CloudPolicySettings* policy =
+        user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
+    policy->mutable_subproto1()
+        ->mutable_localauthfactors()
+        ->mutable_value()
+        ->add_entries("LOCAL_PASSWORD");
+    policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
+  }
+
+  void StartLogin() { StartLogin(/*asEnterpriseuser=*/false); }
+
+  void StartLogin(bool asEnterpriseUser) {
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()
         ->skip_post_login_screens_for_tests = true;
-    LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->GetView<GaiaScreenHandler>()
-        ->ShowSigninScreenForTest(FakeGaiaMixin::kFakeUserEmail,
-                                  FakeGaiaMixin::kFakeUserPassword,
-                                  FakeGaiaMixin::kEmptyUserServices);
+    if (asEnterpriseUser) {
+      ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
+
+      login_manager_mixin_.LoginAsNewEnterpriseUser();
+    } else {
+      LoginDisplayHost::default_host()
+          ->GetOobeUI()
+          ->GetView<GaiaScreenHandler>()
+          ->ShowSigninScreenForTest(FakeGaiaMixin::kFakeUserEmail,
+                                    FakeGaiaMixin::kFakeUserPassword,
+                                    FakeGaiaMixin::kEmptyUserServices);
+    }
     // Wait until the previous screen (`CryptohomeRecoverySetupScreen`) and set
     // `skip_post_login_screens_for_tests` to `false` before proceeding.
     // This allows to skip all the screens before the `PasswordSelectionScreen`.
@@ -179,9 +210,20 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
   base::RepeatingClosure recovery_screen_exit_callback_;
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
+  UserPolicyMixin user_policy_mixin_{
+      &mixin_host_,
+      AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)),
+      &policy_server_};
+
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, GaiaPasswordChoice) {
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, GaiaPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
@@ -192,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, GaiaPasswordChoice) {
             PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, LocalPasswordChoice) {
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, LocalPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
@@ -206,18 +248,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, LocalPasswordChoice) {
                    ->knowledge_factor_setup.local_password_forced);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, Managed) {
-  StartLogin();
-  ProfileManager::GetPrimaryUserProfile()
-      ->GetProfilePolicyConnector()
-      ->OverrideIsManagedForTesting(/*is_managed=*/true);
-  WaitForScreen();
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(),
-            PasswordSelectionScreen::Result::GAIA_PASSWORD_ENTERPRISE);
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, SmartCard) {
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, SmartCard) {
   StartLogin();
   auto user_context = BorrowUserContext();
   user_context->SetAuthFactorsConfiguration(GetFakeAuthFactorConfiguration(
@@ -229,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, SmartCard) {
   EXPECT_EQ(result_.value(), PasswordSelectionScreen::Result::NOT_APPLICABLE);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryLocalPassword) {
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, RecoveryLocalPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
@@ -246,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryLocalPassword) {
             PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
@@ -263,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
             PasswordSelectionScreen::Result::GAIA_PASSWORD_FALLBACK);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest,
                        RecoveryWithNoPasswordGAIAChoice) {
   StartLogin();
   auto user_context = BorrowUserContext();
@@ -281,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
             PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest,
                        RecoveryWithNoPasswordLocalChoice) {
   StartLogin();
   auto user_context = BorrowUserContext();
@@ -298,5 +329,91 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
   EXPECT_EQ(result_.value(),
             PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE);
 }
+
+// Tests for the password selection screen with the feature flag Enabled.
+// These tests verify the new behavior.
+class PasswordSelectionScreenTestManagedLocalPasswordEnabled
+    : public PasswordSelectionScreenTest {
+ public:
+  PasswordSelectionScreenTestManagedLocalPasswordEnabled() = default;
+};
+
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTestManagedLocalPasswordEnabled,
+                       ManagedInSessionPolicyEnabledUserSelectsLocalPassword) {
+  StartLogin(/*asEnterpriseUser=*/true);
+
+  SetAllowLocalPasswordPolicyForEnterpriseUsers();
+  WaitForScreen();
+
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE);
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetWizardContextForTesting()
+                   ->knowledge_factor_setup.local_password_forced);
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTestManagedLocalPasswordEnabled,
+                       ManagedInSessionPolicyEnabledUserSelectsGaiaPassword) {
+  StartLogin(/*asEnterpriseUser=*/true);
+
+  SetAllowLocalPasswordPolicyForEnterpriseUsers();
+  WaitForScreen();
+
+  test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetWizardContextForTesting()
+                   ->knowledge_factor_setup.local_password_forced);
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTestManagedLocalPasswordEnabled,
+                       ManagedInSessionPolicyUnset) {
+  StartLogin(/*asEnterpriseUser=*/true);
+  WaitForScreen();
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::GAIA_PASSWORD_ENTERPRISE);
+}
+
+// Tests for the password selection screen with the feature flag DISABLED.
+// These tests verify the original behavior to prevent regressions in the
+// legacy code path, focusing on scenarios that differ when the flag is enabled.
+class PasswordSelectionScreenTestManagedLocalPasswordDisabled
+    : public PasswordSelectionScreenTest {
+ public:
+  PasswordSelectionScreenTestManagedLocalPasswordDisabled() = default;
+};
+
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTestManagedLocalPasswordDisabled,
+                       Managed) {
+  StartLogin();
+  ProfileManager::GetPrimaryUserProfile()
+      ->GetProfilePolicyConnector()
+      ->OverrideIsManagedForTesting(/*is_managed=*/true);
+  WaitForScreen();
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::GAIA_PASSWORD_ENTERPRISE);
+}
+
+INSTANTIATE_TEST_SUITE_P(PasswordSelectionScreenTests,
+                         PasswordSelectionScreenTest,
+                         ::testing::ValuesIn({true, false}));
+INSTANTIATE_TEST_SUITE_P(
+    PasswordSelectionScreenTestManagedLocalPasswordEnabledTests,
+    PasswordSelectionScreenTestManagedLocalPasswordEnabled,
+    ::testing::ValuesIn({true}));
+INSTANTIATE_TEST_SUITE_P(
+    PasswordSelectionScreenTestManagedLocalPasswordDisabledTests,
+    PasswordSelectionScreenTestManagedLocalPasswordDisabled,
+    ::testing::ValuesIn({false}));
 
 }  // namespace ash

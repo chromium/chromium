@@ -40,7 +40,7 @@ schema:
     type: string
   type: array
 # LINT.ThenChange(//chromeos/ash/components/osauth/public/auth_policy_utils.cc:LocalAuthFactorsPolicyMap)
-
+default_for_enterprise_users: []
 future_on:
 - chrome_os
 

@@ -21,13 +21,20 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -42,6 +49,24 @@ bool IsUserEnterpriseManaged() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   return profile->GetProfilePolicyConnector()->IsManaged() &&
          !profile->IsChild();
+}
+
+bool IsLocalPasswordAllowed(AccountId& account_id) {
+  AuthPolicyConnector* connector = AuthPolicyConnector::Get();
+  std::optional<AuthFactorsSet> allowedLocalFactors =
+      connector->AllowedLocalAuthFactors(account_id);
+  if (!allowedLocalFactors.has_value()) {
+    return true;
+  }
+  return allowedLocalFactors->Has(AshAuthFactor::kLocalPassword);
+}
+
+void MaybeExitWhenNoOnlinePassword(bool has_online_password) {
+  if (has_online_password) {
+    return;
+  }
+  LOG(ERROR) << "Managed users should have online password by this point";
+  chrome::AttemptUserExit();
 }
 
 }  // namespace
@@ -144,6 +169,7 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
   CHECK(user_context->HasAuthFactorsConfiguration());
   auth_factors_config_ = user_context->GetAuthFactorsConfiguration();
   has_online_password_ = user_context->GetOnlinePassword().has_value();
+  account_id_ = user_context->GetAccountId();
 }
 
 void PasswordSelectionScreen::ProcessOptions() {
@@ -223,12 +249,22 @@ void PasswordSelectionScreen::ProcessOptions() {
     return;
   }
 
-  if (IsUserEnterpriseManaged()) {
-    LOG(WARNING) << "Managed user must use online password.";
-    CHECK(has_online_password_)
-        << "Managed users should have online password by this point";
-    exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
-    return;
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    if (!IsLocalPasswordAllowed(account_id_)) {
+      LOG(WARNING)
+          << "Managed user must use online password unless allowed by policy.";
+      MaybeExitWhenNoOnlinePassword(has_online_password_);
+      exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
+      return;
+    }
+  } else {
+    if (IsUserEnterpriseManaged()) {
+      LOG(WARNING) << "Managed user must use online password.";
+      CHECK(has_online_password_)
+          << "Managed users should have online password by this point";
+      exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
+      return;
+    }
   }
   if (!has_online_password_) {
     LOG(WARNING)

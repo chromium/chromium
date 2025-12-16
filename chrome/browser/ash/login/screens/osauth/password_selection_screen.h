@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -70,6 +71,7 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
   // Values obtained from UserContext in `InspectContext`
   bool has_online_password_ = false;
   bool is_shown_ = false;
+  AccountId account_id_ = EmptyAccountId();
   AuthFactorsConfiguration auth_factors_config_;
 
   base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;
