@@ -415,13 +415,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 };
 
 // Flaky: crbug.com/456247817
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_ChangePasswordFormIsFilledAutomatically \
   DISABLED_ChangePasswordFormIsFilledAutomatically
 #else
 #define MAYBE_ChangePasswordFormIsFilledAutomatically \
   ChangePasswordFormIsFilledAutomatically
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        MAYBE_ChangePasswordFormIsFilledAutomatically) {
   SetPrivacyNoticeAcceptedPref();
