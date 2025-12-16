@@ -395,7 +395,7 @@ bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
   background_mode_data_.erase(it);
   // If there are no background mode profiles any longer, then turn off
   // background mode.
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (!ShouldBeInBackgroundMode()) {
     EndBackgroundMode();
   }
@@ -472,7 +472,7 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
 }
 
 void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (IsBackgroundModePrefEnabled()) {
     EnableBackgroundMode();
   } else {
@@ -701,7 +701,7 @@ void BackgroundModeManager::EnableBackgroundMode() {
   if (!in_background_mode_ && ShouldBeInBackgroundMode()) {
     StartBackgroundMode();
 
-    UpdateEnableLaunchOnStartup();
+    startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   }
 }
 
@@ -760,7 +760,7 @@ void BackgroundModeManager::OnClientsChanged(
         HasPersistentBackgroundClientForProfile(profile));
   }
 
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (!ShouldBeInBackgroundMode()) {
     // We've uninstalled our last background client, make sure we exit
     // background mode and no longer launch on startup.
@@ -833,22 +833,8 @@ void BackgroundModeManager::OnBackgroundClientInstalled(
   DisplayClientInstalledNotification(name);
 }
 
-void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
-  const bool new_launch_on_startup =
-      ShouldBeInBackgroundMode() && HasPersistentBackgroundClient();
-  if (launch_on_startup_enabled_ &&
-      new_launch_on_startup == *launch_on_startup_enabled_) {
-    return;
-  }
-  launch_on_startup_enabled_.emplace(new_launch_on_startup);
-
-  StartupLaunchManager* const launch_manager =
-      StartupLaunchManager::From(g_browser_process);
-  if (launch_on_startup_enabled_.value()) {
-    launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
-  } else {
-    launch_manager->UnregisterLaunchOnStartup(StartupLaunchReason::kExtensions);
-  }
+bool BackgroundModeManager::ShouldLaunchOnStartup() const {
+  return ShouldBeInBackgroundMode() && HasPersistentBackgroundClient();
 }
 
 namespace {

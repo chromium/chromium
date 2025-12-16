@@ -13,6 +13,7 @@ source_set("glic") {
     "//base",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/startup",
     "//components/prefs",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",

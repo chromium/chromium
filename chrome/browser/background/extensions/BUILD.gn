@@ -18,6 +18,7 @@ source_set("extensions") {
     "//chrome/browser/background",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/startup",
     "//chrome/browser/status_icons",
     "//chrome/browser/ui:browser_list",
     "//components/prefs",

@@ -23,6 +23,25 @@ enum class StartupLaunchReason { kExtensions, kGlic };
 // launch on startup.
 class StartupLaunchManager {
  public:
+  // Clients should instantiate and own this class, and use
+  // `UpdateLaunchOnStartup` to interact with StartupLaunchManager.
+  class Client {
+   public:
+    explicit Client(StartupLaunchReason reason) : launch_reason_(reason) {}
+
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
+
+    // Registers/unregisters with the StartupLaunchManager.
+    void SetLaunchOnStartup(bool enable_launch);
+
+   private:
+    const StartupLaunchReason launch_reason_;
+
+    // Stores whether launch on startup is enabled for the client.
+    // Null value implies client is not initialized yet.
+    std::optional<bool> launch_enabled_ = std::nullopt;
+  };
   explicit StartupLaunchManager(BrowserProcess* browser_process);
   virtual ~StartupLaunchManager();
 
@@ -30,10 +49,11 @@ class StartupLaunchManager {
 
   static StartupLaunchManager* From(BrowserProcess* browser_process);
 
+ private:
+  // Methods to unregister/register individual reasons with the launch manager.
   void RegisterLaunchOnStartup(StartupLaunchReason reason);
   void UnregisterLaunchOnStartup(StartupLaunchReason reason);
 
- private:
   virtual void UpdateLaunchOnStartup(
       std::optional<auto_launch_util::StartupLaunchMode> startup_launch_mode);
 

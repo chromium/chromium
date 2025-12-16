@@ -4,6 +4,8 @@
 
 #include "chrome/browser/startup/startup_launch_manager.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -13,6 +15,21 @@
 #include "chrome/common/chrome_switches.h"
 
 using auto_launch_util::StartupLaunchMode;
+
+void StartupLaunchManager::Client::SetLaunchOnStartup(bool enable_launch) {
+  // Do nothing if the state hasn't changed.
+  if (launch_enabled_ == enable_launch) {
+    return;
+  }
+  launch_enabled_.emplace(enable_launch);
+
+  auto* launch_manager = StartupLaunchManager::From(g_browser_process);
+  if (enable_launch) {
+    launch_manager->RegisterLaunchOnStartup(launch_reason_);
+  } else {
+    launch_manager->UnregisterLaunchOnStartup(launch_reason_);
+  }
+}
 
 std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
     const {
