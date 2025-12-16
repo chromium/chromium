@@ -184,7 +184,7 @@ TEST(AudioVideoMetadataExtractorTest, AndroidRotatedMP4Video) {
             GetTagValue(extractor->stream_infos()[0].tags, "minor_version"));
 
   EXPECT_EQ("h264", extractor->stream_infos()[1].type);
-  EXPECT_EQ(5u, extractor->stream_infos()[1].tags.size())
+  EXPECT_EQ(6u, extractor->stream_infos()[1].tags.size())
       << "Tags: " << TagsToString(extractor->stream_infos()[1].tags);
   EXPECT_EQ("2014-02-11T00:39:25.000000Z",
             GetTagValue(extractor->stream_infos()[1].tags, "creation_time"));
@@ -195,7 +195,7 @@ TEST(AudioVideoMetadataExtractorTest, AndroidRotatedMP4Video) {
   EXPECT_EQ("90", GetTagValue(extractor->stream_infos()[1].tags, "rotate"));
 
   EXPECT_EQ("aac", extractor->stream_infos()[2].type);
-  EXPECT_EQ(3u, extractor->stream_infos()[2].tags.size())
+  EXPECT_EQ(4u, extractor->stream_infos()[2].tags.size())
       << "Tags: " << TagsToString(extractor->stream_infos()[2].tags);
   EXPECT_EQ("2014-02-11T00:39:25.000000Z",
             GetTagValue(extractor->stream_infos()[2].tags, "creation_time"));
@@ -273,7 +273,7 @@ TEST(AudioVideoMetadataExtractorTest, AudioFLACInMp4) {
             GetTagValue(extractor->stream_infos()[0].tags, "encoder"));
 
   EXPECT_EQ("flac", extractor->stream_infos()[1].type);
-  EXPECT_EQ(2u, extractor->stream_infos()[1].tags.size())
+  EXPECT_EQ(3u, extractor->stream_infos()[1].tags.size())
       << "Tags: " << TagsToString(extractor->stream_infos()[1].tags);
   EXPECT_EQ("SoundHandler",
             GetTagValue(extractor->stream_infos()[1].tags, "handler_name"));
