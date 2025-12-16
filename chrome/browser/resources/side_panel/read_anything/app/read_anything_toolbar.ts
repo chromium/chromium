@@ -460,6 +460,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   restoreSettingsFromPrefs() {
     this.updateLinkToggleButton();
     this.updateImagesToggleButton();
+    this.setFont_(chrome.readingMode.fontName);
 
     if (this.isReadAloudEnabled_) {
       this.speechRate_ = getCurrentSpeechRate();
@@ -550,9 +551,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
+  private setFont_(font: string) {
+    this.style.fontFamily = chrome.readingMode.getValidatedFontName(font);
+  }
+
   protected onFontChange_(event: CustomEvent<{data: string}>) {
-    this.style.fontFamily =
-        chrome.readingMode.getValidatedFontName(event.detail.data);
+    this.setFont_(event.detail.data);
   }
 
   protected onRateChange_(event: CustomEvent<{data: number}>) {
