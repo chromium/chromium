@@ -72,6 +72,10 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #endif
 
   std::string preferred_locale;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("reset-locale")){
+    local_state->SetString(language::prefs::kApplicationLocale, std::string());
+  }
 #if BUILDFLAG(IS_MAC)
   // TODO(markusheintz): Read preference pref::kApplicationLocale in order
   // to enforce the application locale.
