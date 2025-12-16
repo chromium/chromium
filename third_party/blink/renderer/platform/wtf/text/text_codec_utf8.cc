@@ -40,11 +40,13 @@
 
 namespace blink {
 
-// We'll use nonCharacter* constants to signal invalid utf-8.
+namespace {
+
+// We'll use kNonCharacter* constants to signal invalid utf-8.
 // The number in the name signals how many input bytes were invalid.
-const int kNonCharacter1 = -1;
-const int kNonCharacter2 = -2;
-const int kNonCharacter3 = -3;
+constexpr int kNonCharacter1 = -1;
+constexpr int kNonCharacter2 = -2;
+constexpr int kNonCharacter3 = -3;
 
 bool IsNonCharacter(int character) {
   return character >= kNonCharacter3 && character <= kNonCharacter1;
@@ -55,37 +57,7 @@ ALWAYS_INLINE size_t LengthOfNonCharacter(int character) {
   return -character;
 }
 
-std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
-  return base::WrapUnique(new TextCodecUtf8());
-}
-
-bool TextCodecUtf8::IsSupported(StringView canonical_name) {
-  return EqualIgnoringASCIICase(canonical_name, "UTF-8");
-}
-
-void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
-  registrar("UTF-8", "UTF-8");
-
-  // Additional aliases that originally were present in the encoding
-  // table in WebKit on Macintosh, and subsequently added by
-  // TextCodecICU. Perhaps we can prove some are not used on the web
-  // and remove them.
-  registrar("unicode11utf8", "UTF-8");
-  registrar("unicode20utf8", "UTF-8");
-  registrar("utf8", "UTF-8");
-  registrar("x-unicode20utf8", "UTF-8");
-
-  // Additional aliases present in the WHATWG Encoding Standard
-  // (http://encoding.spec.whatwg.org/)
-  // and Firefox (24), but not in ICU 4.6.
-  registrar("unicode-1-1-utf-8", "UTF-8");
-}
-
-void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-8", Create);
-}
-
-static constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
+constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -98,7 +70,7 @@ static constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
     2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
     4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-static inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
+inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
   DCHECK(!IsASCII(sequence[0]));
 
   const size_t length = sequence.size();
@@ -155,8 +127,8 @@ static inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
          0x03C82080;
 }
 
-static inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
-                                                int character) {
+inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
+                                         int character) {
   DCHECK(!IsNonCharacter(character));
   DCHECK(!U_IS_SURROGATE(character));
   if (U_IS_BMP(character)) {
@@ -167,6 +139,72 @@ static inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
     surrogates[1] = U16_TRAIL(character);
   }
   return destination;
+}
+
+template <typename CharType>
+class InlinedStringBuffer {
+ public:
+  explicit InlinedStringBuffer(size_t size) {
+    if (size >= kInlinedSize) {
+      buffer_.template emplace<StringBuffer<CharType>>(size);
+      span_ = std::get<OutlinedArray>(buffer_).Span();
+    }
+  }
+
+  InlinedStringBuffer(const InlinedStringBuffer&) = delete;
+  InlinedStringBuffer& operator=(const InlinedStringBuffer&) = delete;
+
+  base::span<CharType> Span() const { return span_; }
+
+  String ToString(size_t end) && {
+    if (std::holds_alternative<InlinedArray>(buffer_)) {
+      return String(span_.first(end));
+    }
+    auto& outlined = std::get<OutlinedArray>(buffer_);
+    DCHECK_EQ(Span().data(), outlined.Span().data());
+    outlined.Shrink(static_cast<wtf_size_t>(end));
+    return String::Adopt(outlined);
+  }
+
+ private:
+  static constexpr size_t kInlinedSize = 128;
+  using InlinedArray = std::array<CharType, kInlinedSize>;
+  using OutlinedArray = StringBuffer<CharType>;
+
+  std::variant<InlinedArray, OutlinedArray> buffer_;
+  base::span<CharType> span_ = base::span(std::get<InlinedArray>(buffer_));
+};
+
+}  // namespace
+
+std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
+  return base::WrapUnique(new TextCodecUtf8());
+}
+
+bool TextCodecUtf8::IsSupported(StringView canonical_name) {
+  return EqualIgnoringASCIICase(canonical_name, "UTF-8");
+}
+
+void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+  registrar("UTF-8", "UTF-8");
+
+  // Additional aliases that originally were present in the encoding
+  // table in WebKit on Macintosh, and subsequently added by
+  // TextCodecICU. Perhaps we can prove some are not used on the web
+  // and remove them.
+  registrar("unicode11utf8", "UTF-8");
+  registrar("unicode20utf8", "UTF-8");
+  registrar("utf8", "UTF-8");
+  registrar("x-unicode20utf8", "UTF-8");
+
+  // Additional aliases present in the WHATWG Encoding Standard
+  // (http://encoding.spec.whatwg.org/)
+  // and Firefox (24), but not in ICU 4.6.
+  registrar("unicode-1-1-utf-8", "UTF-8");
+}
+
+void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
+  registrar("UTF-8", Create);
 }
 
 void TextCodecUtf8::ConsumePartialSequenceBytes(size_t num_bytes) {
@@ -329,42 +367,6 @@ bool TextCodecUtf8::HandlePartialSequence<UChar>(
 
   return false;
 }
-
-namespace {
-template <typename CharType>
-class InlinedStringBuffer {
- public:
-  explicit InlinedStringBuffer(size_t size) {
-    if (size >= kInlinedSize) {
-      buffer_.template emplace<StringBuffer<CharType>>(size);
-      span_ = std::get<OutlinedArray>(buffer_).Span();
-    }
-  }
-
-  InlinedStringBuffer(const InlinedStringBuffer&) = delete;
-  InlinedStringBuffer& operator=(const InlinedStringBuffer&) = delete;
-
-  base::span<CharType> Span() const { return span_; }
-
-  String ToString(size_t end) && {
-    if (std::holds_alternative<InlinedArray>(buffer_)) {
-      return String(span_.first(end));
-    }
-    auto& outlined = std::get<OutlinedArray>(buffer_);
-    DCHECK_EQ(Span().data(), outlined.Span().data());
-    outlined.Shrink(static_cast<wtf_size_t>(end));
-    return String::Adopt(outlined);
-  }
-
- private:
-  static constexpr size_t kInlinedSize = 128;
-  using InlinedArray = std::array<CharType, kInlinedSize>;
-  using OutlinedArray = StringBuffer<CharType>;
-
-  std::variant<InlinedArray, OutlinedArray> buffer_;
-  base::span<CharType> span_ = base::span(std::get<InlinedArray>(buffer_));
-};
-}  // namespace
 
 String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              FlushBehavior flush,
@@ -536,9 +538,9 @@ upConvertTo16Bit:
           break;
         // Each error generates one replacement character and consumes the
         // 'largest subpart' of the incomplete character.
-        // Note that the nonCharacterX constants go from -1..-3 and contain
+        // Note that the kNonCharacterX constants go from -1..-3 and contain
         // the negative of number of bytes comprising the broken encoding
-        // detected. So subtracting c (when isNonCharacter(c)) adds the number
+        // detected. So subtracting c (when IsNonCharacter(c)) adds the number
         // of broken bytes.
         destination16.take_first<1u>()[0] = uchar::kReplacementCharacter;
 
