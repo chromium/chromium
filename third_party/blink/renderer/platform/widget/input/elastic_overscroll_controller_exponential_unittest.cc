@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -55,6 +56,9 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
     }
     return constrained_delta;
   }
+  bool IsUserOverscrollable(cc::ElementId element_id) const override {
+    return !non_user_overscrollable.Contains(element_id);
+  }
   Vector2dF StretchAmount(cc::ElementId element_id) const override {
     return stretch_amount_;
   }
@@ -98,8 +102,12 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
     is_user_scrollable_horizontal_ = horizontal;
     is_user_scrollable_vertical_ = vertical;
   }
+  void SetNonUserOverscrollableForTesting(cc::ElementId element_id) {
+    non_user_overscrollable.push_back(element_id);
+  }
 
  private:
+  Vector<cc::ElementId> non_user_overscrollable;
   bool is_user_scrollable_horizontal_ = true;
   bool is_user_scrollable_vertical_ = true;
   Vector2dF stretch_amount_;
@@ -119,7 +127,8 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
                       base::Microseconds(INT64_C(100000000))) {}
   ~ElasticOverscrollControllerExponentialTest() override {}
 
-  void SendGestureScrollBegin(InertialPhaseState inertialPhase) {
+  void SendGestureScrollBegin(InertialPhaseState inertialPhase,
+                              cc::ElementId element_id = cc::ElementId()) {
     TickCurrentTime();
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollBegin,
                           WebInputEvent::kNoModifiers, current_time_,
@@ -127,7 +136,7 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
     event.data.scroll_begin.inertial_phase =
         static_cast<WebGestureEvent::InertialPhaseState>(inertialPhase);
 
-    controller_.ObserveGestureEventAndResult(cc::ElementId(), event,
+    controller_.ObserveGestureEventAndResult(element_id, event,
                                              cc::InputHandlerScrollResult());
   }
 
@@ -136,7 +145,8 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
       const Vector2dF& event_delta = Vector2dF(),
       const Vector2dF& overscroll_delta = Vector2dF(),
       const cc::OverscrollBehavior& overscroll_behavior =
-          cc::OverscrollBehavior()) {
+          cc::OverscrollBehavior(),
+      cc::ElementId element_id = cc::ElementId()) {
     TickCurrentTime();
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                           WebInputEvent::kNoModifiers, current_time_,
@@ -151,8 +161,7 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
     scroll_result.unused_scroll_delta = overscroll_delta;
     scroll_result.overscroll_behavior = overscroll_behavior;
 
-    controller_.ObserveGestureEventAndResult(cc::ElementId(), event,
-                                             scroll_result);
+    controller_.ObserveGestureEventAndResult(element_id, event, scroll_result);
   }
 
   void SendGestureScrollEnd() {
@@ -620,6 +629,29 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
   EXPECT_NE(0.f, entry->scroll_velocity.x());
 
   SendGestureScrollEnd();
+}
+
+TEST_F(ElasticOverscrollControllerExponentialTest,
+       NonRootEnabled_RootIgnored_SubScrollerActive) {
+  cc::ElementId root_id(42);
+  cc::ElementId child_id(123);
+  helper_.SetNonUserOverscrollableForTesting(root_id);
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 100),
+                                            gfx::PointF(0, 100));
+
+  // Root should not stretch; stretch map remains empty.
+  SendGestureScrollBegin(NonMomentumPhase, root_id);
+  // Scroll down with delta_y = -100 (event_delta.y() = 100).
+  SendGestureScrollUpdate(NonMomentumPhase, Vector2dF(0, 100),
+                          Vector2dF(0, 100), cc::OverscrollBehavior(), root_id);
+  EXPECT_TRUE(helper_.StretchAmount(root_id).IsZero());
+
+  // Child scroller should stretch.
+  SendGestureScrollBegin(NonMomentumPhase, child_id);
+  SendGestureScrollUpdate(NonMomentumPhase, Vector2dF(0, 100),
+                          Vector2dF(0, 100), cc::OverscrollBehavior(),
+                          child_id);
+  EXPECT_FALSE(helper_.StretchAmount(child_id).IsZero());
 }
 
 }  // namespace

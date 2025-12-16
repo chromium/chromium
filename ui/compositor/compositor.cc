@@ -192,7 +192,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   // Using CoreAnimation to composite requires using GpuMemoryBuffers, which
   // require zero copy.
   settings.use_gpu_memory_buffer_resources = settings.use_zero_copy;
-  settings.enable_elastic_overscroll = true;
+  settings.enable_elastic_overscroll_on_root = true;
+  settings.enable_elastic_overscroll_for_subscroll =
+      base::FeatureList::IsEnabled(
+          features::kOverscrollEffectOnNonRootScrollers);
 #endif
 
 #if BUILDFLAG(IS_WIN)

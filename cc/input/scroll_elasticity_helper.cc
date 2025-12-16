@@ -71,6 +71,7 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   gfx::Vector2dF ConstrainOverscrollDelta(
       ElementId element_id,
       const gfx::Vector2dF& delta) const override;
+  bool IsUserOverscrollable(ElementId) const override;
   void ResetStretchAmounts() override;
   void ApplyStretchAmountsToPending() override;
   void ApplyStretchAmountsToActive() override;
@@ -132,6 +133,15 @@ gfx::Vector2dF ScrollElasticityHelperImpl::ConstrainOverscrollDelta(
     constrained_delta.set_y(0);
   }
   return constrained_delta;
+}
+
+bool ScrollElasticityHelperImpl::IsUserOverscrollable(
+    ElementId element_id) const {
+  const LayerTreeSettings& settings = host_impl_->GetSettings();
+  if (IsRoot(element_id)) {
+    return settings.enable_elastic_overscroll_on_root;
+  }
+  return settings.enable_elastic_overscroll_for_subscroll;
 }
 
 gfx::Vector2dF ScrollElasticityHelperImpl::StretchAmount(

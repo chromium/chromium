@@ -9,7 +9,8 @@
 
 namespace switches {
 
-COMPONENT_EXPORT(UI_BASE) bool IsElasticOverscrollEnabled();
+COMPONENT_EXPORT(UI_BASE) bool IsElasticOverscrollEnabledOnRoot();
+COMPONENT_EXPORT(UI_BASE) bool IsElasticOverscrollSupported();
 
 }  // namespace switches
 

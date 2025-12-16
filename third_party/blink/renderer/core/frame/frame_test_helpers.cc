@@ -184,7 +184,7 @@ cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings() {
   settings.enable_smooth_scroll = true;
 #endif
 #if BUILDFLAG(IS_MAC)
-  settings.enable_elastic_overscroll = true;
+  settings.enable_elastic_overscroll_on_root = true;
 #endif
   return settings;
 }

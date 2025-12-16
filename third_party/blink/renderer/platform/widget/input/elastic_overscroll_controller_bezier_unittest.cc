@@ -33,6 +33,9 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
                                      const Vector2dF& delta) const override {
     return delta;
   }
+  bool IsUserOverscrollable(cc::ElementId element_id) const override {
+    return true;
+  }
   Vector2dF StretchAmount(cc::ElementId element_id) const override {
     return stretch_amount_;
   }

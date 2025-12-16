@@ -1272,6 +1272,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
       input_handler_->LatchedScrollerElementId();
   bool is_overscroll =
       (elastic_overscroll_controller_ &&
+       elastic_overscroll_controller_->CanOverscroll(latched_element_id) &&
        !elastic_overscroll_controller_->StretchAmount(latched_element_id)
             .IsZero());
   if (snap_fling_controller_->HandleGestureScrollUpdate(
@@ -1967,6 +1968,9 @@ void InputHandlerProxy::HandleScrollElasticityOverscroll(
     const cc::InputHandlerScrollResult& scroll_result,
     cc::ElementId latched_element_id) {
   DCHECK(elastic_overscroll_controller_);
+  if (!elastic_overscroll_controller_->CanOverscroll(latched_element_id)) {
+    return;
+  }
 
   elastic_overscroll_controller_->ObserveGestureEventAndResult(
       latched_element_id, gesture_event, scroll_result);

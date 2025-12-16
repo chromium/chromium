@@ -127,7 +127,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   SkCanvas* SynchronousCompositorGetSkCanvasForAndroidWebView() override;
 #endif
   bool IsLcdTextEnabled() override;
-  bool IsElasticOverscrollEnabled() override;
+  bool IsElasticOverscrollEnabledOnRoot() override;
+  bool IsElasticOverscrollSupported() override;
   bool IsScrollAnimatorEnabled() override;
   double AudioHardwareSampleRate() override;
   size_t AudioHardwareBufferSize() override;

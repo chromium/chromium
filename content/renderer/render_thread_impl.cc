@@ -566,7 +566,9 @@ void RenderThreadImpl::Init() {
   is_threaded_animation_enabled_ =
       !command_line.HasSwitch(switches::kDisableThreadedAnimation);
 
-  is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
+  is_elastic_overscroll_enabled_on_root_ =
+      switches::IsElasticOverscrollEnabledOnRoot();
+  is_elastic_overscroll_supported_ = switches::IsElasticOverscrollSupported();
 
   if (command_line.HasSwitch(switches::kDisableLCDText)) {
     is_lcd_text_enabled_ = false;
@@ -1207,8 +1209,12 @@ bool RenderThreadImpl::IsLcdTextEnabled() {
   return is_lcd_text_enabled_;
 }
 
-bool RenderThreadImpl::IsElasticOverscrollEnabled() {
-  return is_elastic_overscroll_enabled_;
+bool RenderThreadImpl::IsElasticOverscrollEnabledOnRoot() {
+  return is_elastic_overscroll_enabled_on_root_;
+}
+
+bool RenderThreadImpl::IsElasticOverscrollSupported() {
+  return is_elastic_overscroll_supported_;
 }
 
 blink::scheduler::WebThreadScheduler*
@@ -1486,7 +1492,8 @@ void RenderThreadImpl::UpdateScrollbarTheme(
       params->jump_on_track_click);
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_APPLE)
-  is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
+  is_elastic_overscroll_enabled_on_root_ = params->scroll_view_rubber_banding;
+  is_elastic_overscroll_supported_ = params->scroll_view_rubber_banding;
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_APPLE)

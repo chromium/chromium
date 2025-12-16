@@ -83,8 +83,9 @@ namespace blink {
 namespace {
 
 OverscrollType ComputeOverscrollType() {
-  if (!Platform::Current()->IsElasticOverscrollEnabled())
+  if (!Platform::Current()->IsElasticOverscrollEnabledOnRoot()) {
     return OverscrollType::kNone;
+  }
   return OverscrollType::kTransform;
 }
 

@@ -218,6 +218,9 @@ void ElasticOverscrollController::Overscroll(
   // allow any current overscroll to animate back.
   gfx::Vector2dF adjusted_overscroll_delta = helper_->ConstrainOverscrollDelta(
       entry.target_scroller_id, overscroll_delta);
+  if (!helper_->IsUserOverscrollable(entry.target_scroller_id)) {
+    adjusted_overscroll_delta = gfx::Vector2dF();
+  }
 
   if (adjusted_overscroll_delta.IsZero())
     return;
@@ -479,6 +482,11 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
 gfx::Vector2dF ElasticOverscrollController::StretchAmount(
     cc::ElementId element_id) const {
   return helper_->StretchAmount(element_id);
+}
+
+bool ElasticOverscrollController::CanOverscroll(
+    cc::ElementId element_id) const {
+  return helper_->IsUserOverscrollable(element_id);
 }
 
 gfx::Size ElasticOverscrollController::ScrollBounds(

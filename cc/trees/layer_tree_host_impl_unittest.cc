@@ -18913,7 +18913,7 @@ class ElasticOverscrollTest : public LayerTreeHostImplTest {
  public:
   LayerTreeSettings DefaultSettings() override {
     auto settings = LayerTreeHostImplTest::DefaultSettings();
-    settings.enable_elastic_overscroll = true;
+    settings.enable_elastic_overscroll_on_root = true;
     return settings;
   }
 };

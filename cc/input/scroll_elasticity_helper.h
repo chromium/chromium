@@ -57,6 +57,7 @@ class CC_EXPORT ScrollElasticityHelper {
   virtual gfx::Vector2dF ConstrainOverscrollDelta(
       ElementId element_id,
       const gfx::Vector2dF& delta) const = 0;
+  virtual bool IsUserOverscrollable(ElementId) const = 0;
 
   // The bounds of the scroller.
   virtual gfx::Size ScrollBounds(ElementId) const = 0;

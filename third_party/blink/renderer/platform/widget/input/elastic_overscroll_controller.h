@@ -155,6 +155,10 @@ class PLATFORM_EXPORT ElasticOverscrollController {
 
   gfx::Vector2dF StretchAmount(cc::ElementId) const;
 
+  // Whether or not the given scroller can have an elastic overscroll effect
+  // applied to it.
+  bool CanOverscroll(cc::ElementId) const;
+
   // Gets an `OverscrollEntry`. Returns nullptr if it does not exist.
   const OverscrollEntry* GetEntry(cc::ElementId) const;
   OverscrollEntry* GetEntry(cc::ElementId);

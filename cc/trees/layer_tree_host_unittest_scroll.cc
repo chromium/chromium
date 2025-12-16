@@ -2359,7 +2359,7 @@ class LayerTreeHostScrollTestElasticOverscroll
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreeHostScrollTest::InitializeSettings(settings);
-    settings->enable_elastic_overscroll = true;
+    settings->enable_elastic_overscroll_on_root = true;
   }
 
   void BeginTest() override {
@@ -2542,7 +2542,7 @@ class LayerTreeHostScrollTestSnapAfterElasticOverscroll
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreeHostScrollTest::InitializeSettings(settings);
-    settings->enable_elastic_overscroll = true;
+    settings->enable_elastic_overscroll_on_root = true;
   }
 
   void SetupTree() override {
@@ -2682,7 +2682,8 @@ class LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls
 
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreeHostScrollTest::InitializeSettings(settings);
-    settings->enable_elastic_overscroll = true;
+    settings->enable_elastic_overscroll_on_root = true;
+    settings->enable_elastic_overscroll_for_subscroll = true;
   }
 
   void SetupTree() override {

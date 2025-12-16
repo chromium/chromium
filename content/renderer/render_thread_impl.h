@@ -181,7 +181,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler();
   bool IsLcdTextEnabled();
-  bool IsElasticOverscrollEnabled();
+  bool IsElasticOverscrollEnabledOnRoot();
+  bool IsElasticOverscrollSupported();
   bool IsScrollAnimatorEnabled();
 
   // TODO(crbug.com/40142495): The `enable_scroll_animator` flag is currently
@@ -545,7 +546,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // Compositor settings.
   bool is_lcd_text_enabled_;
   bool is_partial_raster_enabled_;
-  bool is_elastic_overscroll_enabled_;
+  bool is_elastic_overscroll_enabled_on_root_;
+  bool is_elastic_overscroll_supported_;
   bool is_threaded_animation_enabled_;
   bool is_scroll_animator_enabled_;
 

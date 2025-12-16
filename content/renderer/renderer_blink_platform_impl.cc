@@ -487,9 +487,14 @@ bool RendererBlinkPlatformImpl::IsLcdTextEnabled() {
   return thread ? thread->IsLcdTextEnabled() : false;
 }
 
-bool RendererBlinkPlatformImpl::IsElasticOverscrollEnabled() {
+bool RendererBlinkPlatformImpl::IsElasticOverscrollEnabledOnRoot() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->IsElasticOverscrollEnabled() : false;
+  return thread ? thread->IsElasticOverscrollEnabledOnRoot() : false;
+}
+
+bool RendererBlinkPlatformImpl::IsElasticOverscrollSupported() {
+  RenderThreadImpl* thread = RenderThreadImpl::current();
+  return thread ? thread->IsElasticOverscrollSupported() : false;
 }
 
 bool RendererBlinkPlatformImpl::IsScrollAnimatorEnabled() {

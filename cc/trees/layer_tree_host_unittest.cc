@@ -5930,7 +5930,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
  public:
   void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->enable_elastic_overscroll = true;
+    settings->enable_elastic_overscroll_on_root = true;
   }
 
   void SetupTree() override {

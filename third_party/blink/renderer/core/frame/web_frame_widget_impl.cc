@@ -2901,8 +2901,12 @@ void WebFrameWidgetImpl::ObserveGestureEventAndResult(
     const gfx::Vector2dF& unused_delta,
     const cc::OverscrollBehavior& overscroll_behavior,
     bool event_processed) {
-  if (!widget_base_->LayerTreeHost()->GetSettings().enable_elastic_overscroll)
+  const cc::LayerTreeSettings& settings =
+      widget_base_->LayerTreeHost()->GetSettings();
+  if (!settings.enable_elastic_overscroll_on_root &&
+      !settings.enable_elastic_overscroll_for_subscroll) {
     return;
+  }
 
   cc::InputHandlerScrollResult scroll_result;
   scroll_result.did_scroll = event_processed;

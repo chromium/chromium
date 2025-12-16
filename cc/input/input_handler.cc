@@ -1005,7 +1005,9 @@ InputHandler::GetScopedEventMetricsMonitor(
 
 ScrollElasticityHelper* InputHandler::CreateScrollElasticityHelper() {
   DCHECK(!scroll_elasticity_helper_);
-  if (compositor_delegate_->GetSettings().enable_elastic_overscroll) {
+  const LayerTreeSettings& settings = compositor_delegate_->GetSettings();
+  if (settings.enable_elastic_overscroll_for_subscroll ||
+      settings.enable_elastic_overscroll_on_root) {
     scroll_elasticity_helper_.reset(
         ScrollElasticityHelper::CreateForLayerTreeHostImpl(
             &compositor_delegate_->GetImplDeprecated()));

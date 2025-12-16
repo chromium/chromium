@@ -573,9 +573,13 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Whether LCD text is enabled.
   virtual bool IsLcdTextEnabled() { return false; }
 
-  // Whether rubberbanding/elatic on overscrolling is enabled. This usually
-  // varies between each OS and can be configured via user settings in the OS.
-  virtual bool IsElasticOverscrollEnabled() { return false; }
+  // Whether rubberbanding/elastic overscrolling for the root scroller is
+  // enabled. Usually varies between each OS and can be configured via user
+  // settings in the OS.
+  virtual bool IsElasticOverscrollEnabledOnRoot() { return false; }
+
+  // Whether the platform supports elastic overscroll.
+  virtual bool IsElasticOverscrollSupported() { return false; }
 
   // Whether the scroll animator that produces smooth scrolling is enabled.
   virtual bool IsScrollAnimatorEnabled() { return true; }
