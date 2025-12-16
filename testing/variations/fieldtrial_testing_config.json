@@ -13699,6 +13699,25 @@
             ]
         }
     ],
+    "IOSOneTapMiniMapRestrictions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSectionImprovement",
+                    "params": {
+                        "ios-one-tap-minimap-longest-word-min-chars": "5",
+                        "ios-one-tap-minimap-max-section": "5"
+                    },
+                    "enable_features": [
+                        "IOSOneTapMiniMapRestrictions"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOneTimeDefaultBrowserNotification": [
         {
             "platforms": [
