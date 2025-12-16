@@ -39,7 +39,6 @@ KioskMixin::Config GetKioskIwaManualLaunchConfig(
       /*account_id=*/"simple-iwa@localhost",
       /*web_bundle_id=*/kTestWebBundleId,
       /*update_manifest_url=*/update_manifest_url);
-  iwa_option.skip_iwa_allowlist_checks = false;
 
   KioskMixin::Config kiosk_iwa_config = {
       /*name=*/"IsolatedWebApp",

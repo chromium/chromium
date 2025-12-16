@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -126,6 +127,10 @@ class KioskIwaDeviceAttributesApiTest
     iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(
+          web_app::test::GetDefaultEd25519WebBundleId());
+    });
   }
 
   ~KioskIwaDeviceAttributesApiTest() override = default;
@@ -254,6 +259,7 @@ class KioskIwaDeviceAttributesApiTest
 
   base::test::ScopedFeatureList feature_list_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_};
   policy::DevicePolicyCrosTestHelper policy_helper_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

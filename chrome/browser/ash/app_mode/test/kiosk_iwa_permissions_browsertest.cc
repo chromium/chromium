@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -171,6 +172,9 @@ class KioskIwaPermissionsBaseTest : public MixinBasedInProcessBrowserTest {
   explicit KioskIwaPermissionsBaseTest(
       std::unique_ptr<web_app::BundledIsolatedWebApp> test_app) {
     iwa_test_update_server_.AddBundle(std::move(test_app));
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(GetTestWebBundleId());
+    });
   }
 
   ~KioskIwaPermissionsBaseTest() override = default;
@@ -203,6 +207,7 @@ class KioskIwaPermissionsBaseTest : public MixinBasedInProcessBrowserTest {
                                              /*port=*/0);
 
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_{
       &mixin_host_,
       GetKioskIwaAutolaunchConfig(

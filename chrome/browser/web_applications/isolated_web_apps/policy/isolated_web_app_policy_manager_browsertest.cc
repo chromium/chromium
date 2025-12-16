@@ -37,8 +37,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
@@ -144,13 +143,6 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 #else
     EXPECT_TRUE(is_user_session_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-    IsolatedWebAppPolicyManagerTestHarness::CreatedBrowserMainParts(parts);
-    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
-        std::make_unique<FakeIwaRuntimeDataProviderInitializer>(
-            data_provider_));
   }
 
   void SetUpOnMainThread() override {
@@ -315,7 +307,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetIwaAllowlist(
       const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-    data_provider_.Update(
+    data_provider_->Update(
         [&](auto& update) { update.SetManagedAllowlist(managed_allowlist); });
   }
 
@@ -456,7 +448,8 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   policy::UserPolicyBuilder device_local_account_policy_;
   const bool is_user_session_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  TypedIwaRuntimeDataProviderMixin<FakeIwaRuntimeDataProvider> data_provider_{
+      &mixin_host_};
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -553,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
   AddUser();
   // Add also to allowlist to be sure that installation is blocked by blocklist
 
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.SetManagedAllowlist({kWebBundleId1, kWebBundleId2})
         .SetBlocklist({kWebBundleId1});
   });
@@ -749,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        AppsRemovedAfterBeingBlocklisted) {
   AddUser();
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.SetManagedAllowlist({kWebBundleId1, kWebBundleId2});
   });
   WaitForUserAdded();
@@ -780,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
     uninstall_observer.BeginListening({kAppId1, kAppId2});
 
     // Verify uninstallation takes place regardless of app allowlisting
-    data_provider_.Update([&](auto& update) {
+    data_provider_->Update([&](auto& update) {
       update.SetBlocklist({kWebBundleId1, kWebBundleId2})
           .SetManagedAllowlist({kWebBundleId1});
     });

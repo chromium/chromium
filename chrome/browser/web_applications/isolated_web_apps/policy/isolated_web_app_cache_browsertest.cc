@@ -46,9 +46,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -128,10 +128,7 @@ KioskMixin::Config GetKioskIwaManualLaunchConfig(
       bundle_id.id(), bundle_id, update_manifest_url,
       update_channel ? update_channel->ToString() : "",
       pinned_version.has_value() ? pinned_version->GetString() : "",
-      /*allow_downgrades=*/false,
-      // We set up the allowlist manually for all tests in this file as some of
-      // them tests an interaction with the allowlist.
-      /*skip_iwa_allowlist_checks=*/false);
+      /*allow_downgrades=*/false);
   return {bundle_id.id(),
           /*auto_launch_account_id=*/{},
           {iwa_option}};
@@ -504,13 +501,9 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   // To set the allowlist multiple times within one test,
   // `key_distribution_version` should be increased.
-  void SetIwasAllowlist(
-      const std::vector<SignedWebBundleId>& bundle_ids,
-      base::Version key_distribution_version = base::Version("1.0.1")) {
-    EXPECT_OK(test::KeyDistributionComponentBuilder(key_distribution_version)
-                  .WithManagedAllowlist(bundle_ids)
-                  .Build()
-                  .UploadFromComponentFolder());
+  void SetIwasAllowlist(const std::vector<SignedWebBundleId>& bundle_ids) {
+    data_provider_->Update(
+        [&](auto& update) { update.SetManagedAllowlist(bundle_ids); });
   }
 
   void CheckCacheManagerDebugOperationResult(const std::string& operation_name,
@@ -640,6 +633,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   const std::vector<IwaPolicyConfig> iwa_policy_configs_;
   const std::vector<IwaServerConfig> add_to_server_iwas_;
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   base::FilePath cache_root_dir_;
