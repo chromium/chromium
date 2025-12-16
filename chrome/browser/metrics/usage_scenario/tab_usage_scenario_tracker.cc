@@ -83,12 +83,7 @@ extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
 
 TabUsageScenarioTracker::TabUsageScenarioTracker(
     UsageScenarioDataStoreImpl* usage_scenario_data_store)
-    : usage_scenario_data_store_(usage_scenario_data_store) {
-  // TODO(crbug.com/40158987): Owners of this class have to set the initial
-  // state. Constructing the object like this starts off the state as empty. If
-  // tabs/windows already exist when this object is created they need to be
-  // added using the normal functions after creation.
-}
+    : usage_scenario_data_store_(usage_scenario_data_store) {}
 
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
   // Make sure that this doesn't get destroyed after destroying the global
