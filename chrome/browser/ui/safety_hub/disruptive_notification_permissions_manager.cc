@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/notifications_engagement_service.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safety_check/safety_check.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -284,11 +285,13 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
 
 DisruptiveNotificationPermissionsManager::
     DisruptiveNotificationPermissionsManager(
+        content::BrowserContext* browser_context,
         scoped_refptr<HostContentSettingsMap> hcsm,
         site_engagement::SiteEngagementService* site_engagement_service,
         RevokedPermissionsOSNotificationDisplayManager*
             revoked_permissions_notification_display_manager)
-    : hcsm_(std::move(hcsm)),
+    : browser_context_(browser_context),
+      hcsm_(std::move(hcsm)),
       site_engagement_service_(site_engagement_service),
       revoked_permissions_notification_display_manager_(
           revoked_permissions_notification_display_manager) {
@@ -560,6 +563,9 @@ bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
 void DisruptiveNotificationPermissionsManager::RevokeNotifications(
     const GURL& url,
     RevocationEntry revocation_entry) {
+  permissions::PermissionUmaUtil::ScopedRevocationReporter reporter(
+      browser_context_.get(), url, url, ContentSettingsType::NOTIFICATIONS,
+      permissions::PermissionSourceUI::DISRUPTIVE_NOTIFICATION_REVOCATION);
   const base::TimeDelta delta_since_proposed_revocation =
       clock_->Now() - revocation_entry.timestamp;
   revocation_entry.revocation_state = RevocationState::kRevoked;
@@ -944,4 +950,3 @@ void DisruptiveNotificationPermissionsManager::SetClockForTesting(
     base::Clock* clock) {
   clock_ = clock;
 }
-

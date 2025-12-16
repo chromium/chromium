@@ -12,6 +12,7 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager_factory.h"
@@ -24,7 +25,10 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safety_check/safety_check.h"
@@ -154,7 +158,7 @@ TEST_F(DisruptiveNotificationPermissionsMigrationTest,
   SetupIgnoreContentSettingEntry(correct_url, base::Days(30));
 
   auto manager = std::make_unique<DisruptiveNotificationPermissionsManager>(
-      hcsm(), site_engagement_service(), notification_manager());
+      profile(), hcsm(), site_engagement_service(), notification_manager());
   CHECK(manager);
 
   // The content setting expiration was migrated on start up.
@@ -185,9 +189,12 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
             &DisruptiveNotificationPermissionsManagerTest::
                 BuildRevokedPermissionsOSNotificationDisplayManager,
             base::Unretained(this)));
+    builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                              HistoryServiceFactory::GetDefaultFactory());
     profile_ = builder.Build();
     manager_ = std::make_unique<DisruptiveNotificationPermissionsManager>(
-        hcsm(), site_engagement_service(), mock_notification_manager());
+        profile_.get(), hcsm(), site_engagement_service(),
+        mock_notification_manager());
     manager_->SetClockForTesting(clock());
     clock()->SetNow(base::Time::Now());
   }
@@ -848,6 +855,46 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_EQ(GetRevokedPermissionsCount(), 0);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       RevocationPermissionUKMMetrics) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL url("https://chrome.test/");
+
+  // Set up UKM recording conditions.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 4);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+  manager()->RevokeDisruptiveNotifications();
+
+  clock()->Advance(base::Days(3));
+
+  // Log metrics (happens when a notification is shown).
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL(url));
+  DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
+                                                       source_id);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kRevoked)));
+
+  // Check that the correct metric is reported.
+  auto entries = ukm_recorder.GetEntriesByName("Permission");
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], "Source",
+      static_cast<int64_t>(
+          permissions::PermissionSourceUI::DISRUPTIVE_NOTIFICATION_REVOCATION));
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,

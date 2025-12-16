@@ -187,7 +187,7 @@ RevokedPermissionsService::RevokedPermissionsService(
           features::kSafetyHubDisruptiveNotificationRevocation)) {
     disruptive_notification_manager_ =
         std::make_unique<DisruptiveNotificationPermissionsManager>(
-            hcsm(),
+            browser_context, hcsm(),
             site_engagement::SiteEngagementServiceFactory::GetForProfile(
                 browser_context_),
             notification_display_manager);

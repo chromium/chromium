@@ -258,6 +258,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",
+    "//chrome/browser/history",
     "//chrome/browser/permissions",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/safety_hub:test_support",

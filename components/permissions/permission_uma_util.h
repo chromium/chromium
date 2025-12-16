@@ -152,8 +152,11 @@ enum class PermissionSourceUI {
   // Chrome only observes the permission change on next start-up.
   UNIDENTIFIED = 8,
 
+  // Permission changes due to automatic revocation of disruptive notifications.
+  DISRUPTIVE_NOTIFICATION_REVOCATION = 9,
+
   // Always keep this at the end.
-  kMaxValue = UNIDENTIFIED,
+  kMaxValue = DISRUPTIVE_NOTIFICATION_REVOCATION,
 };
 
 // Any new values should be inserted immediately prior to NUM.
