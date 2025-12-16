@@ -31,6 +31,7 @@
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_connection_info.h"
@@ -327,6 +328,17 @@ GWSPageLoadMetricsObserver::OnCommit(
     base::UmaHistogramBoolean(internal::kHistogramGWSIsFirstNavigationForGWS,
                               is_gws_url);
   }
+
+  // If the navigation has a prewarm user data, we add it to the
+  // RenderProcessHost so that we can track whether the prewarm existed
+  // in the process on subsequent navigations.
+  auto* prewarm_data =
+      page_load_metrics::PrerenderPrewarmNavigationData::Get(navigation_handle);
+  if (prewarm_data && prewarm_data->prewarm_committed()) {
+    page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame()->GetProcess(),
+        prewarm_data->prewarm_committed());
+  }
   if (!is_gws_url) {
     return STOP_OBSERVING;
   }
@@ -339,14 +351,26 @@ GWSPageLoadMetricsObserver::OnCommit(
     RecordPreCommitHistograms();
   }
 
-  // Record the prerender prewarm navigation status for the navigation here.
-  // This is because once the navigation is activated, the `NavigationHandle`
-  // will change.
-  if (auto* prerender_prewarm_navigation_data =
-          page_load_metrics::PrerenderPrewarmNavigationData::
-              GetForNavigationHandle(*navigation_handle)) {
-    prerender_prewarm_navigation_status_ =
-        prerender_prewarm_navigation_data->GetNavigationStatus();
+  // For now, we only want to record Browser Initiated cases so that we can
+  // determine the impact of the Prewarm-Prerender optimization.
+  if (!navigation_handle->IsRendererInitiated()) {
+    auto render_process_assignment = GetDelegate()
+                                         .GetWebContents()
+                                         ->GetPrimaryMainFrame()
+                                         ->GetSiteInstance()
+                                         ->GetLastProcessAssignmentOutcome();
+    if (auto* navigation_data =
+            page_load_metrics::PrerenderPrewarmNavigationData::Get(
+                GetDelegate()
+                    .GetWebContents()
+                    ->GetPrimaryMainFrame()
+                    ->GetProcess())) {
+      base::UmaHistogramEnumeration(
+          internal::kHistogramPrerenderPrewarmNavigationStatus,
+          navigation_data->GetNavigationStatus(
+              render_process_assignment ==
+              content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS));
+    }
   }
 
   return CONTINUE_OBSERVING;
@@ -391,12 +415,6 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
     base::UmaHistogramCustomTimes(histogram_name, navigation_to_activation_time,
                                   base::Milliseconds(10), base::Minutes(10),
                                   100);
-  }
-
-  if (prerender_prewarm_navigation_status_.has_value()) {
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPrewarmNavigationStatus,
-        prerender_prewarm_navigation_status_.value());
   }
 }
 

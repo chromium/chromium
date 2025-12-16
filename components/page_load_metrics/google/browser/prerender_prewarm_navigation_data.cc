@@ -6,23 +6,33 @@
 
 namespace page_load_metrics {
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(PrerenderPrewarmNavigationData);
+const void* const
+    PrerenderPrewarmNavigationData::kRenderProcessHostUserDataKey =
+        &PrerenderPrewarmNavigationData::kRenderProcessHostUserDataKey;
+
+PrerenderPrewarmNavigationData* PrerenderPrewarmNavigationData::Get(
+    base::SupportsUserData* support_user_data) {
+  CHECK(support_user_data);
+  return static_cast<PrerenderPrewarmNavigationData*>(
+      support_user_data->GetUserData(
+          PrerenderPrewarmNavigationData::kRenderProcessHostUserDataKey));
+}
 
 PrerenderPrewarmNavigationData::PrerenderPrewarmNavigationData(
-    content::NavigationHandle& navigation_handle,
-    bool prewarm_committed,
-    bool prerender_host_reused)
-    : prewarm_committed_(prewarm_committed),
-      prerender_host_reused_(prerender_host_reused) {}
+    bool prewarm_committed)
+    : prewarm_committed_(prewarm_committed) {}
+
+PrerenderPrewarmNavigationData::~PrerenderPrewarmNavigationData() = default;
 
 PrerenderPrewarmNavigationData::PrerenderPrewarmNavigationStatus
-PrerenderPrewarmNavigationData::GetNavigationStatus() const {
+PrerenderPrewarmNavigationData::GetNavigationStatus(
+    bool render_process_host_reused) const {
   if (prewarm_committed_) {
-    return prerender_host_reused_
+    return render_process_host_reused
                ? PrerenderPrewarmNavigationStatus::kPrewarmedReused
                : PrerenderPrewarmNavigationStatus::kPrewarmedNotReused;
   }
-  return prerender_host_reused_
+  return render_process_host_reused
              ? PrerenderPrewarmNavigationStatus::kNotPrewarmedReused
              : PrerenderPrewarmNavigationStatus::kNotPrewarmedNotReused;
 }

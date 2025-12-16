@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_PRERENDER_PREWARM_NAVIGATION_DATA_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_PRERENDER_PREWARM_NAVIGATION_DATA_H_
 
-#include "content/public/browser/navigation_handle_user_data.h"
+#include "base/supports_user_data.h"
 
 namespace page_load_metrics {
 
-// Communicates information about DSE prewarm navigations to
-// PageLoadMetricsObservers. The data is owned by the NavigationHandle.
-class PrerenderPrewarmNavigationData
-    : public content::NavigationHandleUserData<PrerenderPrewarmNavigationData> {
+// Holds information about DSE prewarm navigations. This is owned by
+// NavigationHandle for navigations, and is owned by RenderProcessHost for DSE
+// prewarm status.
+class PrerenderPrewarmNavigationData : public base::SupportsUserData::Data {
  public:
   // The status of the DSE prewarm navigation. These values are persisted to
   // logs. Entries should not be renumbered and numeric values should never be
@@ -27,30 +27,42 @@ class PrerenderPrewarmNavigationData
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PrerenderPrewarmNavigationStatus)
 
-  ~PrerenderPrewarmNavigationData() override = default;
+  static PrerenderPrewarmNavigationData* Get(
+      base::SupportsUserData* support_user_data);
 
-  PrerenderPrewarmNavigationStatus GetNavigationStatus() const;
-
-  void SetPrerenderHostReused(bool prerender_host_reused) {
-    prerender_host_reused_ = prerender_host_reused;
+  template <typename... Args>
+  static PrerenderPrewarmNavigationData* GetOrCreate(
+      base::SupportsUserData* support_user_data,
+      Args&&... args) {
+    if (!PrerenderPrewarmNavigationData::Get(support_user_data)) {
+      support_user_data->SetUserData(
+          PrerenderPrewarmNavigationData::kRenderProcessHostUserDataKey,
+          std::make_unique<PrerenderPrewarmNavigationData>(
+              std::forward<Args>(args)...));
+    }
+    return PrerenderPrewarmNavigationData::Get(support_user_data);
   }
 
+  PrerenderPrewarmNavigationData() = default;
+  explicit PrerenderPrewarmNavigationData(bool prewarm_committed);
+  ~PrerenderPrewarmNavigationData() override;
+
+  PrerenderPrewarmNavigationData(const PrerenderPrewarmNavigationData&) =
+      delete;
+  PrerenderPrewarmNavigationData& operator=(
+      const PrerenderPrewarmNavigationData&) = delete;
+
+  PrerenderPrewarmNavigationStatus GetNavigationStatus(
+      bool render_process_host_reused) const;
+
+  bool prewarm_committed() const { return prewarm_committed_; }
+
  private:
-  // Creates a PrerenderPrewarmNavigationData. `is_dse_prewarm` is true when
-  // the navigation is the DSE prewarm itself. `prerender_host_reused` is true
-  // when the prerender host was reused for this navigation.
-  PrerenderPrewarmNavigationData(content::NavigationHandle& navigation_handle,
-                                 bool prewarm_committed,
-                                 bool prerender_host_reused);
+  // The key to store and retrieve this data from RenderProcessHost.
+  static const void* const kRenderProcessHostUserDataKey;
 
-  // True when webcontent had dse prewarm.
-  const bool prewarm_committed_;
-
-  // True if the prerender host was reused for this navigation.
-  bool prerender_host_reused_;
-
-  friend content::NavigationHandleUserData<PrerenderPrewarmNavigationData>;
-  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+  // True when webcontent had DSE prewarm.
+  const bool prewarm_committed_ = false;
 };
 
 }  // namespace page_load_metrics

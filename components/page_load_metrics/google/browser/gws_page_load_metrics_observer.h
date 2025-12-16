@@ -56,6 +56,7 @@ extern const char kHistogramNoServiceWorkerDomContentLoadedSearch[];
 extern const char kHistogramNoServiceWorkerLoadSearch[];
 
 extern const char kHistogramPrerenderHostReused[];
+extern const char kHistogramPrerenderPrewarmNavigationStatus[];
 extern const char kHistogramGWSPrerenderNavigationToActivation[];
 extern const char kHistogramGWSActivationToFirstContentfulPaint[];
 extern const char kHistogramGWSActivationToLargestContentfulPaint[];
@@ -192,9 +193,6 @@ class GWSPageLoadMetricsObserver
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =
       net::HttpConnectionInfoCoarse::kOTHER;
-  std::optional<page_load_metrics::PrerenderPrewarmNavigationData::
-                    PrerenderPrewarmNavigationStatus>
-      prerender_prewarm_navigation_status_;
 
   std::optional<base::TimeDelta> aft_start_time_;
   std::optional<base::TimeDelta> aft_end_time_;

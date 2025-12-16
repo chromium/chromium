@@ -174,24 +174,6 @@ class PrerenderManager::SearchPrerenderTask {
 
 PrerenderManager::~PrerenderManager() = default;
 
-void PrerenderManager::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  // Set the PrerenderPrewarmNavigationData for the navigation. This is used to
-  // determine if a navigation is a DSE prewarm navigation, and if the
-  // navigation happened after a DSE prewarm. Note that `prerender_host_reused`
-  // is set to false here because this is a new navigation and we are not
-  // certain if this is a prerender navigation or not yet.
-  page_load_metrics::PrerenderPrewarmNavigationData::CreateForNavigationHandle(
-      *navigation_handle,
-      /*prewarm_committed=*/search_prewarm_handle_ != nullptr,
-      /*prerender_host_reused=*/false);
-}
-
 void PrerenderManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
@@ -246,8 +228,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
           /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
       &preloading_attempt,
       /*url_match_predicate=*/{},
-      base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
-                          GetWeakPtr()),
+      /*prerender_navigation_handle_callback=*/{},
       /*allow_reuse=*/false);
 
   if (direct_url_input_prerender_handle_) {
@@ -297,8 +278,9 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
           [](const GURL& url, const std::optional<content::UrlMatchType>&) {
             return false;
           }),
-      base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
-                          GetWeakPtr()),
+      base::BindRepeating(
+          &PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle,
+          GetWeakPtr()),
       /*allow_reuse=*/true);
 
   return search_prewarm_handle_ != nullptr;
@@ -359,8 +341,7 @@ void PrerenderManager::StartPrerenderSearchResult(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrerender),
           preloading_attempt.get(), std::move(url_match_predicate),
-          base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
-                              GetWeakPtr()),
+          /*prerender_navigation_handle_callback=*/{},
           features::kPrerender2ReuseSearchResultHost.Get());
 
   if (prerender_handle) {
@@ -517,15 +498,16 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   return PrewarmDecision::kReady;
 }
 
-void PrerenderManager::OnPrerenderNavigationHandle(
+void PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle(
     content::NavigationHandle& navigation_handle) {
-  auto* prerender_prewarm_navigation_data =
-      page_load_metrics::PrerenderPrewarmNavigationData::GetForNavigationHandle(
-          navigation_handle);
-  if (prerender_prewarm_navigation_data) {
-    prerender_prewarm_navigation_data->SetPrerenderHostReused(
-        navigation_handle.IsPrerenderHostReused());
-  }
+  // Set the PrerenderPrewarmNavigationData for the navigation. This is used to
+  // determine if a navigation is a DSE prewarm navigation, and if the
+  // navigation happened after a DSE prewarm. Note that `prerender_host_reused`
+  // is set to false here because this is a new navigation and we are not
+  // certain if this is a prerender navigation or not yet.
+  page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
+      &navigation_handle,
+      /*prewarm_committed=*/true);
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

@@ -60,8 +60,6 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -143,7 +141,7 @@ class PrerenderManager : public content::WebContentsObserver,
   // Otherwise, returns kReady and sets `prewarm_url`.
   PrewarmDecision ShouldPrewarm(GURL& prewarm_url);
 
-  void OnPrerenderNavigationHandle(
+  void OnSearchPrewarmPrerenderNavigationHandle(
       content::NavigationHandle& navigation_handle);
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
