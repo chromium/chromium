@@ -1,7 +1,7 @@
 Name: asm-commons
 Short Name: asm-commons
-URL: https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.9/asm-commons-9.9.jar
-Version: 9.9
+URL: https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.9.1/asm-commons-9.9.1.jar
+Version: 9.9.1
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
