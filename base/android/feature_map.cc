@@ -44,8 +44,7 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
              << feature_name;
 }
 
-static jboolean JNI_FeatureMap_IsEnabled(JNIEnv* env,
-                                         jlong jfeature_map,
+static jboolean JNI_FeatureMap_IsEnabled(jlong jfeature_map,
                                          std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
@@ -54,7 +53,6 @@ static jboolean JNI_FeatureMap_IsEnabled(JNIEnv* env,
 }
 
 static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
-    JNIEnv* env,
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name) {
@@ -65,7 +63,6 @@ static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
 }
 
 static jint JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
-    JNIEnv* env,
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name,
@@ -78,7 +75,6 @@ static jint JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
 }
 
 static jdouble JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
-    JNIEnv* env,
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name,
@@ -91,7 +87,6 @@ static jdouble JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
 }
 
 static jboolean JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
-    JNIEnv* env,
     jlong jfeature_map,
     std::string& feature_name,
     std::string& param_name,
@@ -104,8 +99,7 @@ static jboolean JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
 }
 
 static std::vector<std::string>
-JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(JNIEnv* env,
-                                                    jlong jfeature_map,
+JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(jlong jfeature_map,
                                                     std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   base::FieldTrialParams params;

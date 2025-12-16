@@ -109,7 +109,14 @@
       jlong nativeCPPClass,                                                                        \
       jobject caller,                                                                              \
       jobject b) {                                                                                 \
-    reinterpret_cast<CPPClass*>(nativeCPPClass)->AddStructB(                                       \
+    CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->AddStructB(std::forward<decltype(args)>(args)...)) {                            \
+      return _ptr->AddStructB(std::forward<decltype(args)>(args)...);                              \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, b));                                          \
@@ -119,7 +126,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject arg) {                                                                               \
-    JNI_SampleForTests_ClassUnderSamePackageTest(                                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_ClassUnderSamePackageTest(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForTests_ClassUnderSamePackageTest(std::forward<decltype(args)>(args)...);  \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));                                        \
   }                                                                                                \
@@ -133,7 +146,14 @@
     std::vector<uint8_t> bytes_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(           \
         env,                                                                                       \
         jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));          \
-    reinterpret_cast<CPPClass*>(nativeCPPClass)->Destroy(                                          \
+    CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->Destroy(std::forward<decltype(args)>(args)...)) {                               \
+      return _ptr->Destroy(std::forward<decltype(args)>(args)...);                                 \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
         bytes_converted);                                                                          \
@@ -143,7 +163,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject _env) {                                                                              \
-    auto _ret = JNI_SampleForTests_GetClass(                                                       \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_GetClass(std::forward<decltype(args)>(args)...)) {                 \
+      return JNI_SampleForTests_GetClass(std::forward<decltype(args)>(args)...);                   \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jclass>::CreateLeaky(env, static_cast<jclass>(_env)));                   \
     return _ret.ReleaseLocal();                                                                    \
@@ -153,7 +179,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject ret) {                                                                               \
-    auto _ret = JNI_SampleForTests_GetDoubleFunction(                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_GetDoubleFunction(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleForTests_GetDoubleFunction(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, ret));                                        \
     return _ret;                                                                                   \
@@ -162,7 +194,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getFloatFunction( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForTests_GetFloatFunction(env);                                          \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_GetFloatFunction(std::forward<decltype(args)>(args)...)) {         \
+      return JNI_SampleForTests_GetFloatFunction(std::forward<decltype(args)>(args)...);           \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
@@ -170,7 +207,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject _jcaller) {                                                                          \
-    auto _ret = JNI_SampleForTests_GetNonPODDatatype(                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_GetNonPODDatatype(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleForTests_GetNonPODDatatype(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, _jcaller));                                   \
     return _ret.ReleaseLocal();                                                                    \
@@ -180,7 +223,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject arg0) {                                                                              \
-    auto _ret = JNI_SampleForTests_GetThrowable(                                                   \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_GetThrowable(std::forward<decltype(args)>(args)...)) {             \
+      return JNI_SampleForTests_GetThrowable(std::forward<decltype(args)>(args)...);               \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jthrowable>::CreateLeaky(env, static_cast<jthrowable>(arg0)));           \
     return _ret.ReleaseLocal();                                                                    \
@@ -203,7 +252,13 @@
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>> nonConvertedArray_converted = jni_zero::FromJniArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(nonConvertedArray))); \
-    auto _ret = JNI_SampleForTests_Init(                                                           \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_Init(std::forward<decltype(args)>(args)...)) {                     \
+      return JNI_SampleForTests_Init(std::forward<decltype(args)>(args)...);                       \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
         jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(param)),                 \
@@ -218,7 +273,14 @@
       jclass jcaller,                                                                              \
       jlong nativeCPPClass,                                                                        \
       jobject caller) {                                                                            \
-    reinterpret_cast<CPPClass*>(nativeCPPClass)->IterateAndDoSomethingWithStructB(                 \
+    CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->IterateAndDoSomethingWithStructB(std::forward<decltype(args)>(args)...)) {      \
+      return _ptr->IterateAndDoSomethingWithStructB(std::forward<decltype(args)>(args)...);        \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));                                     \
   }                                                                                                \
@@ -230,7 +292,12 @@
     std::vector<std::string> items_converted = jni_zero::FromJniCollection<std::vector<std::string>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, items));                                      \
-    auto _ret = JNI_SampleForTests_ListTest2(env, items_converted);                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_ListTest2(std::forward<decltype(args)>(args)...)) {                \
+      return JNI_SampleForTests_ListTest2(std::forward<decltype(args)>(args)...);                  \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, items_converted);      \
     auto converted_ret = jni_zero::ToJniList(env, _ret).Release();                                 \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -242,7 +309,12 @@
     std::map<std::string, std::string> arg0_converted = jni_zero::FromJniType<std::map<std::string, std::string>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, arg0));                                       \
-    auto _ret = JNI_SampleForTests_MapTest2(env, arg0_converted);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_MapTest2(std::forward<decltype(args)>(args)...)) {                 \
+      return JNI_SampleForTests_MapTest2(std::forward<decltype(args)>(args)...);                   \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, arg0_converted);       \
     auto converted_ret = jni_zero::ToJniType(env, _ret).Release();                                 \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -256,7 +328,14 @@
     std::vector<std::string> strings_converted = jni_zero::FromJniArray<std::vector<std::string>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strings)));    \
-    auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->Method(                               \
+    CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->Method(std::forward<decltype(args)>(args)...)) {                                \
+      return _ptr->Method(std::forward<decltype(args)>(args)...);                                  \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
         strings_converted);                                                                        \
@@ -268,7 +347,14 @@
       jclass jcaller,                                                                              \
       jlong nativePtr,                                                                             \
       jobject caller) {                                                                            \
-    auto _ret = reinterpret_cast<CPPClass::InnerClass*>(nativePtr)->MethodOtherP0(                 \
+    CPPClass::InnerClass* _ptr = reinterpret_cast<CPPClass::InnerClass*>(nativePtr);               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->MethodOtherP0(std::forward<decltype(args)>(args)...)) {                         \
+      return _ptr->MethodOtherP0(std::forward<decltype(args)>(args)...);                           \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));                                     \
     return _ret;                                                                                   \
@@ -305,7 +391,13 @@
     std::vector<double> d_converted = jni_zero::FromJniArray<std::vector<double>>(                 \
         env,                                                                                       \
         jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env, static_cast<jdoubleArray>(d)));          \
-    auto _ret = JNI_SampleForTests_PrimitiveArrays(                                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_PrimitiveArrays(std::forward<decltype(args)>(args)...)) {          \
+      return JNI_SampleForTests_PrimitiveArrays(std::forward<decltype(args)>(args)...);            \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         b_converted,                                                                               \
         c_converted,                                                                               \
@@ -323,7 +415,14 @@
       jclass jcaller,                                                                              \
       jlong nativeCPPClass,                                                                        \
       jobject caller) {                                                                            \
-    auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->ReturnAString(                        \
+    CPPClass* _ptr = reinterpret_cast<CPPClass*>(nativeCPPClass);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->ReturnAString(std::forward<decltype(args)>(args)...)) {                         \
+      return _ptr->ReturnAString(std::forward<decltype(args)>(args)...);                           \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));                                     \
     return _ret.ReleaseLocal();                                                                    \
@@ -332,7 +431,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1returnFromEnum( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForTests_ReturnFromEnum(env);                                            \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_ReturnFromEnum(std::forward<decltype(args)>(args)...)) {           \
+      return JNI_SampleForTests_ReturnFromEnum(std::forward<decltype(args)>(args)...);             \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     auto converted_ret = jni_zero::internal::PrimitiveConvert<MyEnum, jint>::ToJniType(env, _ret); \
     return static_cast<jint>(converted_ret);                                                       \
   }                                                                                                \
@@ -342,7 +446,13 @@
       jclass jcaller,                                                                              \
       jobject obj,                                                                                 \
       jobject rect) {                                                                              \
-    JNI_SampleForTests_SetNonPODDatatype(                                                          \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForTests_SetNonPODDatatype(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleForTests_SetNonPODDatatype(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, obj),                                         \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, rect));                                       \

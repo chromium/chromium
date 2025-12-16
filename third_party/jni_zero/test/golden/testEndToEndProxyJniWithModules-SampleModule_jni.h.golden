@@ -28,12 +28,22 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jboolean a) {                                                                                \
-    auto _ret = JNI_SampleModule_Bar(env, a);                                                      \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...)) {                        \
+      return JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...);                          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, a);                    \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller) {           \
-    JNI_SampleModule_Foo(env);                                                                     \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...)) {                        \
+      return JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...);                          \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

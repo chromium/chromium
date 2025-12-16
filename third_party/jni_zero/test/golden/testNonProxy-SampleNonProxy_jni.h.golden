@@ -109,7 +109,13 @@
       jstring title,                                                                               \
       jboolean isFolder,                                                                           \
       jlong parentId) {                                                                            \
-    auto _ret = JNI_SampleNonProxy_AddBookmark(                                                    \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...)) {              \
+      return JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...);                \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         nativeChromeBrowserProvider,                                                               \
@@ -131,7 +137,13 @@
       jbyteArray favicon,                                                                          \
       jstring title,                                                                               \
       jobject visits) {                                                                            \
-    auto _ret = JNI_SampleNonProxy_AddBookmarkFromAPI(                                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...)) {       \
+      return JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...);         \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         nativeChromeBrowserProvider,                                                               \
@@ -150,7 +162,13 @@
       jclass jcaller,                                                                              \
       jbyteArray state,                                                                            \
       jint tabIndex) {                                                                             \
-    JNI_SampleNonProxy_CreateHistoricalTabFromState(                                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, state),                                    \
         tabIndex);                                                                                 \
@@ -160,7 +178,13 @@
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jint nativeChromeBrowserProvider) {                                                          \
-    JNI_SampleNonProxy_Destroy(                                                                    \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...)) {                  \
+      return JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...);                    \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         nativeChromeBrowserProvider);                                                              \
@@ -170,7 +194,13 @@
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jstring find) {                                                                              \
-    auto _ret = JNI_SampleNonProxy_FindAll(                                                        \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...)) {                  \
+      return JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...);                    \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         jni_zero::JavaRef<jstring>::CreateLeaky(env, find));                                       \
@@ -180,7 +210,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleNonProxy_GetAutofillProfileGUIDs(env);                                   \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...)) {  \
+      return JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...);    \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
@@ -188,7 +223,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jstring url) {                                                                               \
-    auto _ret = JNI_SampleNonProxy_GetDomainAndRegistry(                                           \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...)) {     \
+      return JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...);       \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jstring>::CreateLeaky(env, url));                                        \
     return _ret.ReleaseLocal();                                                                    \
@@ -197,7 +238,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(          \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleNonProxy_GetInnerClass(env);                                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...)) {            \
+      return JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...);              \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
@@ -205,7 +251,13 @@
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jobject view) {                                                                              \
-    auto _ret = JNI_SampleNonProxy_GetStateAsByteArray(                                            \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...)) {      \
+      return JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...);        \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, view));                                       \
@@ -219,7 +271,13 @@
       jdouble alpha,                                                                               \
       jdouble beta,                                                                                \
       jdouble gamma) {                                                                             \
-    JNI_SampleNonProxy_GotOrientation(                                                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...)) {           \
+      return JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...);             \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         nativeDataFetcherImplAndroid,                                                              \
@@ -231,7 +289,13 @@
   JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(                      \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
-    auto _ret = JNI_SampleNonProxy_Init(                                                           \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                     \
+      return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                       \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
     return _ret;                                                                                   \
@@ -240,7 +304,13 @@
   JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(                      \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
-    auto _ret = JNI_SampleNonProxy_Init(                                                           \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                     \
+      return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                       \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
     return _ret;                                                                                   \
@@ -250,7 +320,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jthrowable e) {                                                                              \
-    auto _ret = JNI_SampleNonProxy_MessWithJavaException(                                          \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...)) {    \
+      return JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...);      \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jthrowable>::CreateLeaky(env, e));                                       \
     return _ret.ReleaseLocal();                                                                    \
@@ -264,7 +340,13 @@
       jstring selection,                                                                           \
       jobjectArray selectionArgs,                                                                  \
       jstring sortOrder) {                                                                         \
-    auto _ret = JNI_SampleNonProxy_QueryBitmap(                                                    \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...)) {              \
+      return JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...);                \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         nativeChromeBrowserProvider,                                                               \
@@ -280,7 +362,13 @@
       jobject jcaller,                                                                             \
       jint sessionId,                                                                              \
       jobjectArray results) {                                                                      \
-    JNI_SampleNonProxy_SetRecognitionResults(                                                      \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...)) {    \
+      return JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...);      \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         sessionId,                                                                                 \

@@ -29,7 +29,16 @@
       jclass jcaller,                                                                              \
       jint a,                                                                                      \
       jobject b) {                                                                                 \
-    auto _ret = JNI_TinySample_Bar(env, a, jni_zero::JavaRef<jobject>::CreateLeaky(env, b));       \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_TinySample_Bar(std::forward<decltype(args)>(args)...)) {                          \
+      return JNI_TinySample_Bar(std::forward<decltype(args)>(args)...);                            \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
+        env,                                                                                       \
+        a,                                                                                         \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, b));                                          \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
@@ -38,7 +47,16 @@
       jclass jcaller,                                                                              \
       jobject a,                                                                                   \
       jint b) {                                                                                    \
-    JNI_TinySample_Foo(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, a), b);                   \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_TinySample_Foo(std::forward<decltype(args)>(args)...)) {                          \
+      return JNI_TinySample_Foo(std::forward<decltype(args)>(args)...);                            \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, a),                                           \
+        b);                                                                                        \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

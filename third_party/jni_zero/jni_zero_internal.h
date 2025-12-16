@@ -11,7 +11,9 @@
 #define JNI_ZERO_JNI_ZERO_INTERNAL_H
 
 #include <jni.h>
+
 #include <cstdint>
+#include <utility>  // for std::forward
 
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_export.h"
@@ -98,6 +100,21 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
   JNIEnv* env_;
   jmethodID method_id_;
 };
+
+// Check whether a JNI function with the leading JNIEnv* parameter exists.
+// If so, call that JNI function. If not, call the JNI function without the
+// leading JNIEnv* parameter.
+template <typename Func, typename... Args>
+decltype(auto) DispatchJniFunc(Func&& func, JNIEnv* env, Args&&... args) {
+  // Check if calling with env is valid
+  if constexpr (requires { func(env, std::forward<Args>(args)...); }) {
+    // Case 1: Function accepts (env, args...)
+    return func(env, std::forward<Args>(args)...);
+  } else {
+    // Case 2: Function accepts only (args...)
+    return func(std::forward<Args>(args)...);
+  }
+}
 
 }  // namespace jni_zero::internal
 

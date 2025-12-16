@@ -25,7 +25,12 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1extrapackage_1ImportsTinySample_1asdf( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_ImportsTinySample_Asdf(env);                                                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...)) {                  \
+      return JNI_ImportsTinySample_Asdf(std::forward<decltype(args)>(args)...);                    \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

@@ -26,7 +26,7 @@ PrefChangeRegistrarAndroid::PrefChangeRegistrarAndroid(
 
 PrefChangeRegistrarAndroid::~PrefChangeRegistrarAndroid() = default;
 
-void PrefChangeRegistrarAndroid::Destroy(JNIEnv* env) {
+void PrefChangeRegistrarAndroid::Destroy() {
   delete this;
 }
 

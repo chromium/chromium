@@ -363,11 +363,11 @@ void TabAndroid::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TabAndroid::Destroy(JNIEnv* env) {
+void TabAndroid::Destroy() {
   delete this;
 }
 
-bool TabAndroid::HasParentCollection(JNIEnv* env) {
+bool TabAndroid::HasParentCollection() {
   return parent_collection_ != nullptr;
 }
 
@@ -440,7 +440,7 @@ void TabAndroid::InitWebContents(
   }
 }
 
-void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
+void TabAndroid::InitializeAutofillIfNecessary() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
   if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
@@ -489,7 +489,7 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
 }
 }  // namespace
 
-void TabAndroid::DestroyWebContents(JNIEnv* env) {
+void TabAndroid::DestroyWebContents() {
   WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/false);
 
   // Terminate the renderer process if this is the last tab.
@@ -511,7 +511,7 @@ void TabAndroid::DestroyWebContents(JNIEnv* env) {
   synced_tab_delegate_->ResetWebContents();
 }
 
-void TabAndroid::ReleaseWebContents(JNIEnv* env) {
+void TabAndroid::ReleaseWebContents() {
   WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/true);
 
   // Ownership of |released_contents| is assumed by the code that initiated the
@@ -531,7 +531,6 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
 }
 
 bool TabAndroid::IsPhysicalBackingSizeEmpty(
-    JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -540,7 +539,6 @@ bool TabAndroid::IsPhysicalBackingSizeEmpty(
 }
 
 void TabAndroid::OnPhysicalBackingSizeChanged(
-    JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
     jint width,
     jint height) {
@@ -550,8 +548,7 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
 
-void TabAndroid::SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
-                                                     std::string& url,
+void TabAndroid::SetActiveNavigationEntryTitleForUrl(std::string& url,
                                                      std::u16string& title) {
   DCHECK(web_contents());
 
@@ -562,7 +559,7 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
   }
 }
 
-void TabAndroid::LoadOriginalImage(JNIEnv* env) {
+void TabAndroid::LoadOriginalImage() {
   content::RenderFrameHost* render_frame_host =
       web_contents()->GetFocusedFrame();
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> renderer;
@@ -570,7 +567,7 @@ void TabAndroid::LoadOriginalImage(JNIEnv* env) {
   renderer->RequestReloadImageForContextNode();
 }
 
-void TabAndroid::OnShow(JNIEnv* env) {
+void TabAndroid::OnShow() {
   // When changing tabs to one that is unloaded, the tab change notification
   // arrives before the request to InitWebContents. In that case do nothing and
   // allow initialization to record timing.
@@ -593,12 +590,11 @@ void TabAndroid::OnShow(JNIEnv* env) {
   web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded);
 }
 
-void TabAndroid::NotifyPinnedStateChanged(JNIEnv* env, jboolean is_pinned) {
+void TabAndroid::NotifyPinnedStateChanged(jboolean is_pinned) {
   pinned_state_changed_callback_list_.Notify(this, is_pinned);
 }
 
 void TabAndroid::NotifyTabGroupChanged(
-    JNIEnv* env,
     std::optional<base::Token> tab_group_id) {
   group_changed_callback_list_.Notify(
       this, tab_groups::TabGroupId::FromOptionalToken(tab_group_id));

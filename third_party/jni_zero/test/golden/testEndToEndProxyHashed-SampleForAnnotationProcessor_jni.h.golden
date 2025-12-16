@@ -124,7 +124,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject sample) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_Bar(                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleForAnnotationProcessor_Bar(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, sample));                                     \
     return _ret.ReleaseLocal();                                                                    \
@@ -133,27 +139,47 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1foo( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleForAnnotationProcessor_Foo(env);                                                     \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleForAnnotationProcessor_Foo(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_HasPhalange(env);                                 \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_HasPhalange(std::forward<decltype(args)>(args)...);  \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnClass(env);                                 \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnClass(std::forward<decltype(args)>(args)...);  \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnClasses(env);                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnClasses(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
@@ -161,7 +187,12 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject __arrayClazz) {                                                                      \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(env);                   \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     auto converted_ret = jni_zero::ToJniArray(env, _ret, static_cast<jclass>(__arrayClazz)).Release(); \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -169,7 +200,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedInts(env);                         \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnConvertedInts(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();                                \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -177,7 +213,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedString(env);                       \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnConvertedString(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     auto converted_ret = jni_zero::ToJniType(env, _ret).Release();                                 \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -185,7 +226,12 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(env);                      \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     auto converted_ret = jni_zero::ToJniArray(env, _ret, jni_zero::g_string_class).Release();      \
     return converted_ret;                                                                          \
   }                                                                                                \
@@ -193,56 +239,96 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnObject(env);                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnObject(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnObjects(env);                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnObjects(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnString(env);                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnString(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnStrings(env);                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnStrings(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnStruct(env);                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnStruct(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnStructs(env);                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnStructs(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnThrowable(env);                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnThrowable(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    auto _ret = JNI_SampleForAnnotationProcessor_ReturnThrowables(env);                            \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_ReturnThrowables(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
     return _ret.ReleaseLocal();                                                                    \
   }                                                                                                \
                                                                                                    \
@@ -250,7 +336,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject stringToReverse) {                                                                   \
-    auto _ret = JNI_SampleForAnnotationProcessor_RevString(                                        \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...)) {  \
+      return JNI_SampleForAnnotationProcessor_RevString(std::forward<decltype(args)>(args)...);    \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(stringToReverse)));      \
     return _ret.ReleaseLocal();                                                                    \
@@ -260,7 +352,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject strs) {                                                                              \
-    auto _ret = JNI_SampleForAnnotationProcessor_SendSamplesToNative(                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_SendSamplesToNative(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strs)));       \
     return _ret.ReleaseLocal();                                                                    \
@@ -270,7 +368,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject strs) {                                                                              \
-    auto _ret = JNI_SampleForAnnotationProcessor_SendToNative(                                     \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_SendToNative(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strs)));       \
     return _ret.ReleaseLocal();                                                                    \
@@ -302,7 +406,13 @@
     int zchar_converted = jni_zero::internal::PrimitiveConvert<int, jchar>::FromJniType(           \
         env,                                                                                       \
         zchar);                                                                                    \
-    auto _ret = JNI_SampleForAnnotationProcessor_TestAllPrimitives(                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_TestAllPrimitives(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         zint_converted,                                                                            \
         ints_converted,                                                                            \
@@ -360,7 +470,13 @@
     std::vector<jni_zero::tests::CPPClass> convertedObjects_converted = jni_zero::FromJniArray<std::vector<jni_zero::tests::CPPClass>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(convertedObjects))); \
-    JNI_SampleForAnnotationProcessor_TestSpecialTypes(                                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleForAnnotationProcessor_TestSpecialTypes(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jclass>::CreateLeaky(env, static_cast<jclass>(clazz)),                   \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(classes)),     \

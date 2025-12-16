@@ -134,15 +134,34 @@ def entry_point_method(sb,
         _prep_param(sb, native.is_proxy, param) for param in params
     ]
 
+    if cpp_class:
+      with sb.statement():
+        sb(f'{cpp_class}* _ptr = reinterpret_cast<{cpp_class}*>'
+           f'({native.params[0].cpp_name()})')
+
+    sb('/* Use a wrapper function to allow compiler to pick an overloaded ')
+    sb('version of JNI function */\n')
+    with sb.statement():
+      sb('auto _jni_func_wrapper = [&](auto&&... args) ->\n')
+      if cpp_class:
+        sb(f'decltype(_ptr->{native.capitalized_name}')
+      else:
+        sb(f'decltype(JNI_{native.java_class.name}_{native.capitalized_name}')
+      sb(f'(std::forward<decltype(args)>(args)...))')
+      with sb.block(no_trailing_newline=True):
+        with sb.statement():
+          if cpp_class:
+            sb(f'return _ptr->{native.capitalized_name}')
+          else:
+            sb(f'return JNI_{native.java_class.name}_{native.capitalized_name}')
+          sb(f'(std::forward<decltype(args)>(args)...)')
+
     with sb.statement():
       if not return_type.is_void():
         sb('auto _ret = ')
-      if cpp_class:
-        sb(f'reinterpret_cast<{cpp_class}*>({native.params[0].cpp_name()})'
-           f'->{native.capitalized_name}')
-      else:
-        sb(f'JNI_{native.java_class.name}_{native.capitalized_name}')
+      sb('jni_zero::internal::DispatchJniFunc')
       with sb.param_list() as plist:
+        plist.append('_jni_func_wrapper')
         plist.append('env')
         if not native.static:
           plist.append('jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)')

@@ -81,8 +81,7 @@ void Set(const IAndroidInfo& info) {
   holder.emplace(info);
 }
 
-static void JNI_AndroidInfo_FillFields(JNIEnv* env,
-                                       std::string& brand,
+static void JNI_AndroidInfo_FillFields(std::string& brand,
                                        std::string& device,
                                        std::string& buildId,
                                        std::string& manufacturer,

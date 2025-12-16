@@ -120,16 +120,15 @@ class StringBuilder:
       self(f'\n}}  // namespace{value}\n')
 
   @contextlib.contextmanager
-  def block(self, *, indent=2, after=None):
+  def block(self, *, indent=2, after=None, no_trailing_newline=False):
     self(' {\n')
     with self.indent(indent):
       yield
+    self('}')
     if after:
-      self('}')
       self(after)
+    if not no_trailing_newline:
       self('\n')
-    else:
-      self('}\n')
 
   @contextlib.contextmanager
   def indent(self, amount):

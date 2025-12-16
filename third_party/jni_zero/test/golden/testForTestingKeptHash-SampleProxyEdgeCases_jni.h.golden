@@ -67,7 +67,13 @@
       jclass jcaller,                                                                              \
       jobject caller,                                                                              \
       jobject b) {                                                                                 \
-    auto _ret = JNI_SampleProxyEdgeCases_AddStructB(                                               \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...)) {         \
+      return JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...);           \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, b));                                          \
@@ -79,7 +85,13 @@
       jclass jcaller,                                                                              \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes1(                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
@@ -91,7 +103,13 @@
       jclass jcaller,                                                                              \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes2(                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
@@ -101,14 +119,25 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1foo_1_1weirdly_1_1escaped_1name1( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);                                     \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject arg) {                                                                               \
-    auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(                             \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...)) { \
+      return JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...); \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg)));        \
     return _ret.ReleaseLocal();                                                                    \
@@ -119,7 +148,13 @@
       jclass jcaller,                                                                              \
       jobject b,                                                                                   \
       jobject i) {                                                                                 \
-    JNI_SampleProxyEdgeCases_SetBool(                                                              \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...)) {            \
+      return JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...);              \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, b),                                           \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, i));                                          \
@@ -129,7 +164,13 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject sb) {                                                                                \
-    auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(                                         \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) {   \
+      return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);     \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, sb));                                         \
     return _ret;                                                                                   \
@@ -139,33 +180,60 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jint sb) {                                                                                   \
-    auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);                                \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) {   \
+      return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);     \
+    };                                                                                             \
+    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, sb);                   \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleProxyEdgeCases_FooForTest(env);                                                      \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...)) {         \
+      return JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...);           \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleProxyEdgeCases_FooForTesting(env);                                                   \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...)) {      \
+      return JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...);        \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleProxyEdgeCases_FooForTests(env);                                                     \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...)) {        \
+      return JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...);          \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(      \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jlong nativeInstance) {                                                                      \
-    reinterpret_cast<Instance*>(nativeInstance)->InstanceMethod(                                   \
+    Instance* _ptr = reinterpret_cast<Instance*>(nativeInstance);                                  \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(_ptr->InstanceMethod(std::forward<decltype(args)>(args)...)) {                        \
+      return _ptr->InstanceMethod(std::forward<decltype(args)>(args)...);                          \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(                                                           \
+        _jni_func_wrapper,                                                                         \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
   }                                                                                                \
@@ -173,7 +241,12 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(        \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    JNI_SampleProxyEdgeCases_StaticMethod(env);                                                    \
+    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
+    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
+    decltype(JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...)) {       \
+      return JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...);         \
+    };                                                                                             \
+    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
                                                                                                    \
