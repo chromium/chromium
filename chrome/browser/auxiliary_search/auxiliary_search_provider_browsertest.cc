@@ -105,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
   content::WebContents* second_web_contents = contents.release();
-  tab_model->CreateTab(second_tab, second_web_contents, /*select=*/true);
+  tab_model->CreateTab(second_tab, second_web_contents, TabModel::kInvalidIndex,
+                       /*select=*/true, /*should_pin=*/false);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda2 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(second_tab);
   sptda2->set_sensitivity_score(0.7);
@@ -133,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
   content::WebContents* second_web_contents = contents.release();
-  tab_model->CreateTab(second_tab, second_web_contents, /*select=*/true);
+  tab_model->CreateTab(second_tab, second_web_contents, TabModel::kInvalidIndex,
+                       /*select=*/true, /*should_pin=*/false);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda2 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(second_tab);
   sptda2->set_sensitivity_score(0.7);
@@ -143,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
   content::WebContents* third_web_contents = contents.release();
-  tab_model->CreateTab(third_tab, third_web_contents, /*select=*/true);
+  tab_model->CreateTab(third_tab, third_web_contents, TabModel::kInvalidIndex,
+                       /*select=*/true, /*should_pin=*/false);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda3 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(third_tab);
   sptda3->set_sensitivity_score(0.7);

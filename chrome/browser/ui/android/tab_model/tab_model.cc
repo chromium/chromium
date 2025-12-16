@@ -26,10 +26,6 @@
 
 using chrome::android::ActivityType;
 
-// Keep this in sync with
-// chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java
-static int INVALID_TAB_INDEX = -1;
-
 namespace {
 sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(Profile* profile) {
   sync_sessions::SessionSyncService* service =
@@ -96,7 +92,7 @@ sessions::LiveTabContext* TabModel::GetLiveTabContext() const {
 
 content::WebContents* TabModel::GetActiveWebContents() const {
   int active_index = GetActiveIndex();
-  if (active_index == INVALID_TAB_INDEX) {
+  if (active_index == kInvalidIndex) {
     return nullptr;
   }
   return GetWebContentsAt(active_index);

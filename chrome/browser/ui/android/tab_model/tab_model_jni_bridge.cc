@@ -293,7 +293,9 @@ tabs::TabInterface* TabModelJniBridge::GetActiveTab() {
 
 void TabModelJniBridge::CreateTab(TabAndroid* parent,
                                   WebContents* web_contents,
-                                  bool select) {
+                                  int index,
+                                  bool select,
+                                  bool should_pin) {
   JNIEnv* env = AttachCurrentThread();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

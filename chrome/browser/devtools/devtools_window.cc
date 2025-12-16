@@ -1037,7 +1037,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
       nullptr,
       OwnedMainWebContents::TakeWebContents(std::move(owned_main_web_contents_))
           .release(),
-      true);
+      TabModel::kInvalidIndex, /*select=*/true, /*should_pin=*/false);
   OverrideAndSyncDevToolsRendererPrefs();
 #else
   if (is_docked_) {

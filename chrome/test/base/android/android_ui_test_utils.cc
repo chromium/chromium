@@ -29,7 +29,8 @@ void OpenUrlInNewTab(BrowserContext* context,
       WebContents::Create(WebContents::CreateParams(context));
   WebContents* second_web_contents = contents.release();
   tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
-                       /*select=*/true);
+                       TabModel::kInvalidIndex, /*select=*/true,
+                       /*should_pin=*/false);
 
   content::NavigateToURLBlockUntilNavigationsComplete(second_web_contents, url,
                                                       1);

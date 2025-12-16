@@ -78,7 +78,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   CHECK(contents);
   content::WebContents* const second_web_contents = contents.release();
   tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
-                       /*select=*/true);
+                       TabModel::kInvalidIndex, /*select=*/true,
+                       /*should_pin=*/false);
 
   // Kick off navigation. See `TabsUpdateFunction::UpdateURL` for how this is
   // done on Win/Mac/Linux.

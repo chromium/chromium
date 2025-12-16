@@ -95,7 +95,8 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
     params.has_user_gesture = true;
     new_web_contents->GetController().LoadURLWithParams(params);
-    tab_model->CreateTab(new_tab, new_web_contents, /*select=*/true);
+    tab_model->CreateTab(new_tab, new_web_contents, TabModel::kInvalidIndex,
+                         /*select=*/true, /*should_pin=*/false);
 #endif
   }
 

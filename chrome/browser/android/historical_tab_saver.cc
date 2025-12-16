@@ -113,7 +113,7 @@ void CreateHistoricalTab(
   // Index is unimportant on Android.
   service->CreateHistoricalTab(sessions::ContentLiveTab::GetForWebContents(
                                    scoped_web_contents->web_contents()),
-                               /*index=*/-1);
+                               TabModel::kInvalidIndex);
 }
 
 void CreateHistoricalGroup(

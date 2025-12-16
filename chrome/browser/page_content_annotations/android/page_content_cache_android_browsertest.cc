@@ -132,7 +132,8 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     new_web_contents->GetController().LoadURLWithParams(params);
     content::WaitForLoadStop(new_web_contents);
 
-    tab_model->CreateTab(parent_tab, new_web_contents, /*select=*/true);
+    tab_model->CreateTab(parent_tab, new_web_contents, TabModel::kInvalidIndex,
+                         /*select=*/true, /*should_pin=*/false);
     return new_web_contents;
   }
 

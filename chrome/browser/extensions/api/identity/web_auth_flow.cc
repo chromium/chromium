@@ -165,7 +165,8 @@ void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
   // std::unique_ptr<WebContents>.
   tab_model->CreateTab(
       TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
-      web_contents_.release(), /*select=*/true);
+      web_contents_.release(), TabModel::kInvalidIndex, /*select=*/true,
+      /*should_pin=*/false);
 }
 #endif
 

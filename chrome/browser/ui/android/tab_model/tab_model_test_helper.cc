@@ -77,7 +77,9 @@ base::android::ScopedJavaLocalRef<jobject> TestTabModel::GetJavaObject() const {
 
 void TestTabModel::CreateTab(TabAndroid* parent,
                              content::WebContents* web_contents,
-                             bool select) {}
+                             int index,
+                             bool select,
+                             bool should_pin) {}
 
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
                                          NavigateParams* params) {}
@@ -323,12 +325,17 @@ void OwningTestTabModel::CloseTabAt(int index) {
 
 void OwningTestTabModel::CreateTab(TabAndroid* parent,
                                    content::WebContents* web_contents,
-                                   bool select) {
+                                   int index,
+                                   bool select,
+                                   bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t insertion_index =
+      (index == TabModel::kInvalidIndex) ? owned_tabs_.size() : index;
 
   // Take ownership of the WebContents.
   AddTabFromWebContents(std::unique_ptr<content::WebContents>(web_contents),
-                        owned_tabs_.size(), select,
+                        insertion_index, select,
                         TabModel::TabLaunchType::FROM_RESTORE);
 }
 

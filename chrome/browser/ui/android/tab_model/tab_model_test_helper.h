@@ -50,7 +50,9 @@ class TestTabModel : public TabModel {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
   void CreateTab(TabAndroid* parent,
                  content::WebContents* web_contents,
-                 bool select) override;
+                 int index,
+                 bool select,
+                 bool should_pin) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
   content::WebContents* CreateNewTabForDevTools(const GURL& url,
@@ -151,7 +153,9 @@ class OwningTestTabModel : public TabModel {
   void CloseTabAt(int index) override;
   void CreateTab(TabAndroid* parent,
                  content::WebContents* web_contents,
-                 bool select) override;
+                 int index,
+                 bool select,
+                 bool should_pin) override;
   bool IsActiveModel() const override;
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;

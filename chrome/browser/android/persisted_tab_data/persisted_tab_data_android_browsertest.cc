@@ -44,7 +44,9 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
     content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(tab_android(), second_web_contents, /*select=*/true);
+    tab_model->CreateTab(tab_android(), second_web_contents,
+                         TabModel::kInvalidIndex, /*select=*/true,
+                         /*should_pin=*/false);
     ASSERT_EQ(2, tab_model->GetTabCount());
     PersistedTabDataConfigAndroid::AddConfigForTesting(
         FooPersistedTabDataAndroid::UserDataKey(), kFooId);

@@ -302,7 +302,9 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser_context_));
   content::WebContents* new_web_contents = contents.release();
-  tab_model->CreateTab(nullptr, new_web_contents, /*select=*/true);
+  tab_model->CreateTab(nullptr, new_web_contents, TabModel::kInvalidIndex,
+                       /*select=*/true,
+                       /*should_pin=*/false);
 
   content::NavigationController::LoadURLParams load_params(uninstall_url);
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;

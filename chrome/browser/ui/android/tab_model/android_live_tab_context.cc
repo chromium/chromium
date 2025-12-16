@@ -172,8 +172,9 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   // TabAndroid instance to own the WebContents. Only select the restored tab
   // when restoring a single tab from a TAB session.
   tab_model_->CreateTab(
-      nullptr, web_contents.release(),
-      original_session_type == sessions::tab_restore::TAB ? true : false);
+      nullptr, web_contents.release(), TabModel::kInvalidIndex,
+      original_session_type == sessions::tab_restore::TAB ? true : false,
+      /*should_pin=*/false);
   // Don't load the tab yet. This prevents a renderer from starting which keeps
   // the tab restore lightweight as the tab is opened in the background only.
   // The tab will be in a "renderer was lost" state. This is recovered from when
