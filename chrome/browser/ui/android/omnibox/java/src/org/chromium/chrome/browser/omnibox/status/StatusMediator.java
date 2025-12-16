@@ -409,6 +409,7 @@ public class StatusMediator
         if (newVisibility) {
             mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES, statusText);
         }
+        mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE, newVisibility);
 
         applyStatusIconAndTooltipProperties(
                 mModel.get(StatusProperties.SHOW_STATUS_ICON), newVisibility);

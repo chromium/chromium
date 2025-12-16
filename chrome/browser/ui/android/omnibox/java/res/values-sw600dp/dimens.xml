@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <resources>
     <dimen name="location_bar_status_icon_margin">12dp</dimen>
+    <dimen name="omnibox_verbose_text_negative_start_margin">-12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
 
     <!-- URL bar -->

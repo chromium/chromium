@@ -196,4 +196,5 @@ found in the LICENSE file.
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
     <dimen name="location_bar_status_icon_margin">4dp</dimen>
+    <dimen name="omnibox_verbose_text_negative_start_margin">-4dp</dimen>
 </resources>
