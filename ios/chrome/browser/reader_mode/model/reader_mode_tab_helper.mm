@@ -262,8 +262,13 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
 
   // Apply translation to the page if it was applied on the original page.
   if (IsReaderModeTranslationAvailable()) {
-    InfobarOverlayRequestInserter::FromWebState(web_state_.get())
-        ->SuppressNextInfobarOfType(InfobarType::kInfobarTypeTranslate);
+    InfobarOverlayRequestInserter* infobar_overlay_request_inserter =
+        InfobarOverlayRequestInserter::FromWebState(web_state_.get());
+    if (infobar_overlay_request_inserter) {
+      infobar_overlay_request_inserter->SuppressNextInfobarOfType(
+          InfobarType::kInfobarTypeTranslate);
+    }
+
     if (source_translation_state_.is_original_source_translated) {
       reader_mode_content_tab_helper->ActivateTranslateOnPage(
           source_translation_state_.source_code,

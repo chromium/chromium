@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TEST_H_
 
 #import "base/test/scoped_feature_list.h"
+#import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -59,6 +60,11 @@ class ReaderModeTest : public PlatformTest {
   TestProfileIOS* profile() { return profile_.get(); }
 
  private:
+  // Triggers the Reading Mode with the result from the DOM distiller heuristic.
+  void OnDomFeaturesRetrieved(base::WeakPtr<web::WebState> weak_web_state,
+                              base::WeakPtr<web::WebFrame> weak_web_frame,
+                              ReaderModeHeuristicResult result);
+
   // Adds the given heuristic result to the Readability heuristic JavasScript
   // callback for the specified frame.
   void AddReadabilityHeuristicResultToFrame(ReaderModeHeuristicResult result,
@@ -70,9 +76,12 @@ class ReaderModeTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   std::unique_ptr<TestProfileIOS> profile_;
+  translate::LanguageDetectionModel language_detection_model_;
 
   std::vector<std::unique_ptr<base::Value>> distiller_result_values_;
   std::unique_ptr<base::Value> readability_heuristic_value_;
+
+  base::WeakPtrFactory<ReaderModeTest> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TEST_H_

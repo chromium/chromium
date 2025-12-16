@@ -12,9 +12,14 @@
 #import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
+#import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
@@ -26,6 +31,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -41,7 +47,9 @@ std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
 
 }  // namespace
 
-ReaderModeTest::ReaderModeTest() = default;
+ReaderModeTest::ReaderModeTest()
+    : language_detection_model_(
+          std::make_unique<language_detection::LanguageDetectionModel>()) {}
 
 ReaderModeTest::~ReaderModeTest() = default;
 
@@ -60,6 +68,10 @@ void ReaderModeTest::SetUp() {
   builder.AddTestingFactory(SafeBrowsingClientFactory::GetInstance(),
                             base::BindOnce(&BuildSafeBrowsingClient));
   profile_ = std::move(builder).Build();
+
+  // Ensure that kOfferTranslateEnabled is enabled.
+  profile_->GetPrefs()->SetBoolean(translate::prefs::kOfferTranslateEnabled,
+                                   true);
 
   web::test::OverrideJavaScriptFeatures(
       profile_.get(),
@@ -80,10 +92,17 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
       std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
 
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web_state->SetNavigationManager(std::move(fake_navigation_manager));
+
   // Attach tab helpers
   ReaderModeTabHelper::CreateForWebState(
       web_state.get(), DistillerServiceFactory::GetForProfile(profile()));
   SnapshotSourceTabHelper::CreateForWebState(web_state.get());
+  OverlayRequestQueue::CreateForWebState(web_state.get());
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  InfobarOverlayRequestInserter::CreateForWebState(
+      web_state.get(), &FakeInfobarOverlayRequestFactory);
 
   return web_state;
 }
@@ -124,6 +143,12 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
                                  std::move(frames_manager));
   web_frames_manager->AddWebFrame(std::move(main_frame));
 
+  // Language detection tab helper requires the web frames manager for isolated
+  // world content.
+  language::IOSLanguageDetectionTabHelper::CreateForWebState(
+      web_state, /*url_language_histogram=*/nullptr, &language_detection_model_,
+      profile_->GetPrefs());
+
   if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
     AddReadabilityHeuristicResultToFrame(result, web_frame);
   }
@@ -140,20 +165,12 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
   web_frame->AddResultForExecutedJs(distiller_result_values_.back().get(),
                                     readability_script);
 
-  auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
-  if (!tab_helper) {
-    return;
-  }
-  // `url` is captured by copy to ensure it is still valid when the block is
-  // executed.
-  web_frame->set_call_java_script_function_callback(base::BindRepeating(
-      ^(GURL url_copy) {
-        // Overrides the result from DOM distiller heuristic with a custom
-        // entry.
-        tab_helper->HandleReaderModeHeuristicResult(result);
-        web_frame->set_call_java_script_function_callback(base::DoNothing());
-      },
-      url));
+  web_frame->SetJavaScriptFunctionCallback(
+      "readerMode.retrieveDOMFeatures",
+      base::BindRepeating(&ReaderModeTest::OnDomFeaturesRetrieved,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          web_state->GetWeakPtr(), web_frame->AsWeakPtr(),
+                          result));
 }
 
 void ReaderModeTest::WaitForPageLoadDelayAndRunUntilIdle() {
@@ -176,6 +193,24 @@ bool ReaderModeTest::WaitForAvailableReaderModeContentInWebState(
         return ReaderModeTabHelper::FromWebState(web_state)
                    ->GetReaderModeWebState() != nullptr;
       });
+}
+
+void ReaderModeTest::OnDomFeaturesRetrieved(
+    base::WeakPtr<web::WebState> weak_web_state,
+    base::WeakPtr<web::WebFrame> weak_web_frame,
+    ReaderModeHeuristicResult result) {
+  web::WebState* web_state = weak_web_state.get();
+  web::WebFrame* web_frame = weak_web_frame.get();
+  if (!web_state || !web_frame) {
+    return;
+  }
+
+  auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
+  if (!tab_helper) {
+    return;
+  }
+
+  tab_helper->HandleReaderModeHeuristicResult(result);
 }
 
 void ReaderModeTest::AddReadabilityHeuristicResultToFrame(

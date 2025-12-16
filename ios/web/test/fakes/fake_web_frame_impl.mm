@@ -124,16 +124,24 @@ BrowserState* FakeWebFrameImpl::GetBrowserState() {
   return browser_state_;
 }
 
-void FakeWebFrameImpl::set_call_java_script_function_callback(
+void FakeWebFrameImpl::SetJavaScriptFunctionCallback(
+    const std::string& java_script_feature_name,
     base::RepeatingClosure callback) {
-  call_java_script_function_callback_ = std::move(callback);
+  if (callback) {
+    call_java_script_function_callback_[java_script_feature_name] =
+        std::move(callback);
+  } else {
+    call_java_script_function_callback_.erase(java_script_feature_name);
+  }
 }
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const base::Value::List& parameters) {
-  if (call_java_script_function_callback_) {
-    call_java_script_function_callback_.Run();
+  auto iter = call_java_script_function_callback_.find(name);
+  if (iter != call_java_script_function_callback_.end()) {
+    CHECK(iter->second);
+    iter->second.Run();
   }
 
   std::optional<std::pair<std::string_view, std::string_view>> name_parts =

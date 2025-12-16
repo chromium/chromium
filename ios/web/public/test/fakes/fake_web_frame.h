@@ -93,8 +93,10 @@ class FakeWebFrame : public WebFrame {
 
   virtual void set_force_timeout(bool force_timeout) = 0;
 
-  // Sets a callback to be called at the start of `CallJavaScriptFunction()`.
-  virtual void set_call_java_script_function_callback(
+  // Sets a callback to be called at the start of `CallJavaScriptFunction()` for
+  // the specified JavaScriptFeature function.
+  virtual void SetJavaScriptFunctionCallback(
+      const std::string& java_script_function_name,
       base::RepeatingClosure callback) = 0;
 };
 
