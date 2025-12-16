@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ShaderModuleSingleEntryPoint"/>
   <variant name="ShaderModuleSubstituteOverrides"/>
   <variant name="Vulkan.CreateShaderModule"/>
+  <variant name="Vulkan.ValidateSpirv"/>
 </variants>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
