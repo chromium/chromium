@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
+#import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -139,12 +140,14 @@ CreateInputDataFromAnnotatedPageContent(
 
 }  // namespace
 
-@interface ComposeboxInputPlateMediator () <SearchEngineObserving>
+@interface ComposeboxInputPlateMediator () <
+    SearchEngineObserving,
+    ComposeboxInputItemCollectionDelegate>
 @end
 
 @implementation ComposeboxInputPlateMediator {
   // The ordered list of items for display.
-  NSMutableArray<ComposeboxInputItem*>* _items;
+  ComposeboxInputItemCollection* _items;
   // The C++ session handle for this feature.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       _contextualSearchSession;
@@ -208,7 +211,9 @@ CreateInputDataFromAnnotatedPageContent(
                   (AimEligibilityService*)aimEligibilityService {
   self = [super init];
   if (self) {
-    _items = [NSMutableArray array];
+    _items = [[ComposeboxInputItemCollection alloc]
+        initWithAttachmentLimit:kAttachmentLimit];
+    _items.delegate = self;
     _contextualSearchSession = std::move(contextualSearchSession);
     _contextualSearchSession->NotifySessionStarted();
     CHECK(_contextualSearchSession->GetController());
@@ -269,7 +274,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   BOOL unableToLoadUIImage =
       ![itemProvider canLoadObjectOfClass:[UIImage class]];
-  BOOL assetAlreadyLoaded = [self assetAlreadyLoaded:assetID];
+  BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
   if (unableToLoadUIImage || assetAlreadyLoaded) {
     return;
   }
@@ -278,8 +283,7 @@ CreateInputDataFromAnnotatedPageContent(
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeImage
                               assetID:assetID];
-  [_items addObject:item];
-  [self updateConsumerItems];
+  [_items addItem:item];
   __block base::UnguessableToken identifier = item.identifier;
 
   __weak __typeof(self) weakSelf = self;
@@ -332,7 +336,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)processPDFFileURL:(GURL)PDFFileURL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());
-  if ([self assetAlreadyLoaded:assetID]) {
+  if ([_items assetAlreadyLoaded:assetID]) {
     return;
   }
 
@@ -352,8 +356,7 @@ CreateInputDataFromAnnotatedPageContent(
                                           kComposeboxInputItemTypeFile
                               assetID:assetID];
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
-  [_items addObject:item];
-  [self updateConsumerItems];
+  [_items addItem:item];
   base::UnguessableToken identifier = item.identifier;
 
   // Read the data in the background then call `onDataReadForItem`.
@@ -369,14 +372,13 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (BOOL)canAddMoreAttachments {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  return _items.count < kAttachmentLimit;
+  return _items.canAddMoreAttachments;
 }
 
 - (NSUInteger)maxNumberOfGalleryItemsAllowed {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  NSUInteger availableSlots = kAttachmentLimit - _items.count;
+  NSUInteger availableSlots = _items.availableSlots;
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
     case ComposeboxMode::kAIM: {
@@ -386,15 +388,7 @@ CreateInputDataFromAnnotatedPageContent(
     case ComposeboxMode::kImageGeneration: {
       // For ImageGeneration, allow 1 image if no images are present, otherwise
       // 0.
-      BOOL hasImage = NO;
-      for (ComposeboxInputItem* item in _items) {
-        if (item.type ==
-            ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
-          hasImage = YES;
-          break;
-        }
-      }
-      return hasImage ? 0 : MIN(availableSlots, 1);
+      return _items.hasImage ? 0 : MIN(availableSlots, 1);
     }
   }
 }
@@ -403,19 +397,16 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)removeItem:(ComposeboxInputItem*)item {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [_items removeObject:item];
+  [_items removeItem:item];
 
   if (_contextualSearchSession) {
     _contextualSearchSession->DeleteFile(item.serverToken);
     [self reloadSuggestions];
   }
 
-  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
-      _items.count == 0) {
+  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) && _items.empty) {
     _modeHolder.mode = ComposeboxMode::kRegularSearch;
   }
-
-  [self updateConsumerItems];
 }
 
 - (void)sendText:(NSString*)text {
@@ -463,8 +454,7 @@ CreateInputDataFromAnnotatedPageContent(
       if (_contextualSearchSession) {
         _contextualSearchSession->ClearFiles();
       }
-      [_items removeAllObjects];
-      [self updateConsumerItems];
+      [_items clearItems];
       break;
     case ComposeboxMode::kAIM:
       break;
@@ -482,7 +472,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (std::set<web::WebStateID>)webStateIDsForAttachedTabs {
   std::set<web::WebStateID> webStateIDs;
-  for (ComposeboxInputItem* item in _items) {
+  for (ComposeboxInputItem* item in _items.containedItems) {
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
     if (webStateID.valid()) {
       webStateIDs.insert(webStateID);
@@ -493,13 +483,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (NSUInteger)nonTabAttachmentCount {
-  NSUInteger result = 0;
-  for (ComposeboxInputItem* item in _items) {
-    if (item.type != ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
-      result++;
-    }
-  }
-  return result;
+  return _items.nonTabAttachmentCount;
 }
 
 - (void)attachSelectedTabsWithWebStateIDs:
@@ -562,7 +546,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
-  NSArray<ComposeboxInputItem*>* items = [_items copy];
+  NSArray<ComposeboxInputItem*>* items = _items.containedItems;
   for (ComposeboxInputItem* item in items) {
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
     if (webStateID.valid() && deselectedIDs.contains(webStateID)) {
@@ -579,12 +563,10 @@ CreateInputDataFromAnnotatedPageContent(
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeTab];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
-  [_items addObject:item];
   base::UnguessableToken identifier = item.identifier;
   _latestTabSelectionMapping[identifier] = webState->GetUniqueIdentifier();
 
-  [self updateConsumerItems];
-  [self updateConsumerActionsState];
+  [_items addItem:item];
 
   if (_faviconLoader) {
     __weak __typeof(self) weakSelf = self;
@@ -715,7 +697,7 @@ CreateInputDataFromAnnotatedPageContent(
                 inputData:
                     (std::unique_ptr<lens::ContextualInputData>)inputData {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (item) {
     item.serverToken = serverToken;
   }
@@ -737,7 +719,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)onFileContextAdded:(base::UnguessableToken)serverToken
              forIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (item) {
     item.serverToken = serverToken;
   }
@@ -767,7 +749,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![self canAddMoreAttachments]) {
+  if (!_items.canAddMoreAttachments) {
     [self.delegate showAttachmentLimitError];
     return;
   }
@@ -794,7 +776,7 @@ CreateInputDataFromAnnotatedPageContent(
                                       contextual_search::FileUploadErrorType>&)
                                       errorType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForServerToken:fileToken];
+  ComposeboxInputItem* item = [_items itemForServerToken:fileToken];
   if (!item) {
     return;
   }
@@ -832,11 +814,11 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
 - (void)reloadSuggestions {
-  BOOL shouldRestartAutocomplete = (_items.count == 0);
+  BOOL shouldRestartAutocomplete = _items.empty;
 
   if (_items.count == 1) {
     shouldRestartAutocomplete = YES;
-    if (_items[0].type ==
+    if (_items.firstItem.type ==
         ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
       shouldRestartAutocomplete =
           IsComposeboxFetchContextualSuggestionsForImageEnabled();
@@ -857,7 +839,7 @@ CreateInputDataFromAnnotatedPageContent(
   ComposeboxInputItem* imageToKeep = nil;
 
   // Find one image to keep.
-  for (ComposeboxInputItem* item in _items) {
+  for (ComposeboxInputItem* item in _items.containedItems) {
     if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
         !imageToKeep) {
       imageToKeep = item;
@@ -872,7 +854,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   // Find items to remove from the backend.
-  for (ComposeboxInputItem* item in _items) {
+  for (ComposeboxInputItem* item in _items.containedItems) {
     if (![itemsToKeep containsObject:item]) {
       if (_contextualSearchSession) {
         _contextualSearchSession->DeleteFile(item.serverToken);
@@ -880,16 +862,14 @@ CreateInputDataFromAnnotatedPageContent(
     }
   }
 
-  _items = itemsToKeep;
-
-  [self updateConsumerItems];
+  [_items replaceWithItems:itemsToKeep];
 }
 
 // Handles the loaded preview `image` for the item with the given `identifier`.
 - (void)didLoadPreviewImage:(UIImage*)previewImage
       forItemWithIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item) {
     return;
   }
@@ -906,7 +886,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)didLoadFaviconIcon:(UIImage*)faviconImage
      forItemWithIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item) {
     return;
   }
@@ -923,7 +903,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)didLoadFullImage:(UIImage*)image
     forItemWithIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item) {
     return;
   }
@@ -949,7 +929,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)didFinishSimulatedLoadForImage:(UIImage*)image
                         itemIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item) {
     return;
   }
@@ -989,7 +969,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)uploadImage:(UIImage*)image
      itemIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item || !_contextualSearchSession) {
     return;
   }
@@ -1010,28 +990,6 @@ CreateInputDataFromAnnotatedPageContent(
   _contextualSearchSession->AddFileContext(kPortableNetworkGraphicMimeType,
                                            std::move(buffer), image_options,
                                            std::move(callback));
-}
-
-// Returns the item with the given `identifier` or nil if not found.
-- (ComposeboxInputItem*)itemForIdentifier:(base::UnguessableToken)identifier {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (ComposeboxInputItem* item in _items) {
-    if (item.identifier == identifier) {
-      return item;
-    }
-  }
-  return nil;
-}
-
-// Returns the item with the given `serverToken` or nil if not found.
-- (ComposeboxInputItem*)itemForServerToken:(base::UnguessableToken)serverToken {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (ComposeboxInputItem* item in _items) {
-    if (item.serverToken == serverToken) {
-      return item;
-    }
-  }
-  return nil;
 }
 
 // Handles uploading the context after the snapshot is generated.
@@ -1057,7 +1015,7 @@ CreateInputDataFromAnnotatedPageContent(
                                 fromURL:(GURL)url
                                withData:(NSData*)data {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [self itemForIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (!item) {
     return;
   }
@@ -1093,19 +1051,6 @@ CreateInputDataFromAnnotatedPageContent(
       base::BindOnce(^(UIImage* preview) {
         [weakSelf didLoadPreviewImage:preview forItemWithIdentifier:identifier];
       }));
-}
-
-- (BOOL)assetAlreadyLoaded:(NSString*)assetID {
-  if (!assetID) {
-    return NO;
-  }
-  for (ComposeboxInputItem* item in _items) {
-    if ([item.assetID isEqualToString:assetID]) {
-      return YES;
-    }
-  }
-
-  return NO;
 }
 
 - (BOOL)isEligibleToAIM {
@@ -1196,12 +1141,12 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
   [self.delegate showSnackbarForItemUploadDidFail];
-  [self removeItem:[self itemForIdentifier:identifier]];
+  [self removeItem:[_items itemForIdentifier:identifier]];
 }
 
 - (void)updateButtonsVisibility {
   BOOL compactMode = [self compactModeRequired];
-  BOOL hasAttachments = _items.count > 0;
+  BOOL hasAttachments = !_items.empty;
   BOOL hasContent = hasAttachments || _hasText;
   BOOL dseGoogle = [self isDSEGoogle];
   BOOL eligibleToAIM = [self isEligibleToAIM];
@@ -1268,14 +1213,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 /// Updates the consumer actions enabled/disable state.
 - (void)updateConsumerActionsState {
-  BOOL hasTabOrFile = NO;
-  for (ComposeboxInputItem* item in _items) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab ||
-        item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
-      hasTabOrFile = YES;
-      break;
-    }
-  }
+  BOOL hasTabOrFile = _items.hasTabOrFile;
   [self.consumer disableCreateImageActions:hasTabOrFile];
 
   BOOL isImageCreation = _modeHolder.mode == ComposeboxMode::kImageGeneration;
@@ -1289,12 +1227,12 @@ CreateInputDataFromAnnotatedPageContent(
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self.consumer setItems:_items];
+  [self.consumer setItems:_items.containedItems];
   [self updateOptionToAttachCurrentTab];
   [self updateConsumerActionsState];
   [self updateButtonsVisibility];
 
-  if (_items.count > 0 && [_modeHolder isRegularSearch]) {
+  if (!_items.empty && [_modeHolder isRegularSearch]) {
     // AI mode is implicitly enabled by items attachment.
     [self.metricsRecorder
         recordAiModeActivationSource:AiModeActivationSource::kImplicit];
@@ -1333,6 +1271,11 @@ CreateInputDataFromAnnotatedPageContent(
   [self updateCompactMode];
   [self updateButtonsVisibility];
   _isUpdatingCompactMode = NO;
+}
+
+- (void)composeboxInputItemCollectionDidUpdateItems:
+    (ComposeboxInputItemCollection*)composeboxInputItemCollection {
+  [self updateConsumerItems];
 }
 
 @end
