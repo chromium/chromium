@@ -4,10 +4,11 @@
 
 // Represents a single menu item in a dropown menu in the toolbar.
 export interface MenuStateItem<T> {
-  data: T;        // The value that is propagated when this item is selected.
-  title: string;  // The visible text for this item.
-  icon?: string;  // An optional icon that is displayed next to the title.
+  data: T;         // The value that is propagated when this item is selected.
+  title: string;   // The visible text for this item.
+  icon?: string;   // An optional icon that is displayed next to the title.
   style?: string;  // An optional string for styling each item.
+  header?: string; // Optional text for a header that should go above this item.
 }
 
 // TODO(crbug.com/346612365): Consider renaming this method to be more

@@ -9,7 +9,7 @@ import type {ColorMenuElement} from 'chrome-untrusted://read-anything-side-panel
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, assertHeadersForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -30,6 +30,10 @@ suite('ColorMenuElement', () => {
 
   test('has checkmarks', () => {
     assertCheckMarksForDropdown(colorMenu);
+  });
+
+  test('does not have headers', () => {
+    assertHeadersForDropdown(colorMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 
   test('theme change', async () => {

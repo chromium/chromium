@@ -85,6 +85,10 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   protected itemIcon_(item: MenuStateItem<any>): string {
     return item.icon === undefined ? '' : item.icon;
   }
+
+  protected doesItemHaveHeader_(item: MenuStateItem<any>): boolean {
+    return chrome.readingMode.isLineFocusEnabled && !!item.header;
+  }
 }
 
 declare global {

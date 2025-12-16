@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, SimpleActionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudNode, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -76,6 +76,13 @@ export function assertCheckMarksForDropdown(dropdown: HTMLElement): void {
     button.click();
     assertCheckMarkVisible(checkMarks, index);
   });
+}
+
+export function assertHeadersForDropdown(
+    dropdown: SimpleActionMenuElement, shouldHaveHeaders: boolean): void {
+  const headers =
+      dropdown.$.lazyMenu.get().querySelector<HTMLElement>('.has-header-true');
+  assertEquals(shouldHaveHeaders, !!headers);
 }
 
 export function createSpeechErrorEvent(

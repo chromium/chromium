@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {LineFocusMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, assertHeadersForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('LineFocusMenuElement', () => {
@@ -25,5 +25,16 @@ suite('LineFocusMenuElement', () => {
 
   test('has checkmarks', () => {
     assertCheckMarksForDropdown(lineFocusMenu);
+  });
+
+  test('has headers with flag', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    assertHeadersForDropdown(lineFocusMenu.$.menu, /*shouldHaveHeaders=*/ true);
+  });
+
+  test('no headers without flag', () => {
+    chrome.readingMode.isLineFocusEnabled = false;
+    assertHeadersForDropdown(
+        lineFocusMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 });

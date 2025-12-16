@@ -15,6 +15,10 @@ export function getHtml(this: SimpleActionMenuElement) {
       role-description="$i18n{menu}"
       tabindex="-1">
     ${this.menuItems.map((item, index) => html`
+      <hr class="sp-hr has-header-${this.doesItemHaveHeader_(item)}">
+      <span class="has-header-${this.doesItemHaveHeader_(item)} header-style">
+          ${item.header}
+      </span>
       <button
           class="dropdown-item"
           style="${item.style}"

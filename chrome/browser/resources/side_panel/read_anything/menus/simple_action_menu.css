@@ -4,7 +4,9 @@
 
  /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
  * #scheme=relative
+ * #include=sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
 .has-icon-false {
@@ -21,6 +23,22 @@
 
 .check-mark-showing-false {
   visibility: hidden;
+}
+
+.has-header-true {
+  display: grid;
+}
+
+.has-header-false {
+  display: none;
+}
+
+.header-style {
+  align-items: center;
+  font-size: 13px;
+  height: 32px;
+  padding-left: 20px;
+  font-weight: 700;
 }
 
 .check-mark {

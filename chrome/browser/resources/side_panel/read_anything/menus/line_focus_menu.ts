@@ -56,6 +56,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     {
       title: loadTimeData.getString('lineFocusOneLineTitle'),
       data: LineFocus.ONE_LINE_WINDOW,
+      header: loadTimeData.getString('lineFocusWindowHeading'),
     },
     {
       title: loadTimeData.getString('lineFocusThreeLineTitle'),
@@ -68,6 +69,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     {
       title: loadTimeData.getString('lineFocusStaticLineTitle'),
       data: LineFocus.STATIC_LINE,
+      header: loadTimeData.getString('lineFocusLineHeading'),
     },
     {
       title: loadTimeData.getString('lineFocusCursorLineTitle'),
