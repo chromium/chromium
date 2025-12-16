@@ -242,6 +242,9 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private float mRefactoredNtpStartingOffset;
 
+    /** Tracks if the location bar is translating due to a NTP scroll. */
+    private boolean mRefactoredLocationBarTranslating;
+
     private final Rect mNtpSearchBoxBounds = new Rect();
     protected final Point mNtpSearchBoxTranslation = new Point();
 
@@ -2588,6 +2591,7 @@ public class ToolbarPhone extends ToolbarLayout
                                 new ChangeTransform()
                                         .addTarget(mLocationBar.getContainerView())
                                         .addTarget(mActiveLocationBarBackgroundView))
+                        .addTransition(new Fade().addTarget(getToolbarShadow()))
                         .addTransition(new BackgroundDrawableTransition())
                         .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS)
                         .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
@@ -2618,7 +2622,7 @@ public class ToolbarPhone extends ToolbarLayout
                     }
                 });
 
-        TransitionManager.beginDelayedTransition(this, transition);
+        TransitionManager.beginDelayedTransition(getSceneRoot(), transition);
 
         // Update button properties.
         int toolbarBtnsVis = hasFocus ? INVISIBLE : VISIBLE;
@@ -2628,7 +2632,6 @@ public class ToolbarPhone extends ToolbarLayout
                         : mHomeButtonDisplay.getVisibility();
         mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
         mHomeButtonDisplay.getView().setVisibility(homeBtnVis);
-        getToolbarShadow().setVisibility(toolbarBtnsVis);
 
         // Update location bar properties. Intentionally done after updating the buttons (as some
         // properties, such as left margin, are dependent on the visibility of buttons.
@@ -2653,10 +2656,16 @@ public class ToolbarPhone extends ToolbarLayout
         // Update for NTP.
         float focusChangeFraction = hasFocus ? 1f : 0f;
         if (isLocationBarShownInNtp()) {
+            int oldTranslationY = mLocationBarBackgroundNtpOffset.top;
             NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
             ntpDelegate.setUrlFocusChangeAnimationPercent(focusChangeFraction);
             updateLocationBarNtpOffset(
                     /* expanded= */ hasFocus || mNtpSearchBoxScrollFraction == 1.f);
+            mRefactoredLocationBarTranslating =
+                    oldTranslationY != mLocationBarBackgroundNtpOffset.top;
+        }
+        if (!mRefactoredLocationBarTranslating) {
+            getToolbarShadow().setVisibility(hasFocus ? INVISIBLE : VISIBLE);
         }
         updateBackground(hasFocus);
         mLocationBar
@@ -2718,6 +2727,10 @@ public class ToolbarPhone extends ToolbarLayout
 
             NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
             ntpDelegate.setSearchBoxAlpha(0.f);
+
+            if (mRefactoredLocationBarTranslating) {
+                getToolbarShadow().setVisibility(INVISIBLE);
+            }
         }
         mLocationBar.getPhoneCoordinator().setAlpha(1.f);
         mActiveLocationBarBackgroundView.setAlpha(1.f);
@@ -2743,8 +2756,11 @@ public class ToolbarPhone extends ToolbarLayout
                     mLocationBar.getPhoneCoordinator().setAlpha(0.f);
                     mActiveLocationBarBackgroundView.setAlpha(0.f);
                 }
+            } else if (mRefactoredLocationBarTranslating) {
+                getToolbarShadow().setVisibility(VISIBLE);
             }
         }
+        mRefactoredLocationBarTranslating = false;
         mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
     }
 
@@ -2760,8 +2776,12 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private void endFocusTransition(boolean hasFocus) {
         onFocusTransitionStart();
-        TransitionManager.endTransitions(this);
+        TransitionManager.endTransitions(getSceneRoot());
         onFocusTransitionEnd(hasFocus);
+    }
+
+    private ViewGroup getSceneRoot() {
+        return (ViewGroup) this.getParent();
     }
 
     // ToolbarDataProvider.Observer implementation.
