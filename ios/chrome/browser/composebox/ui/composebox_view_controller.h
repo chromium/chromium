@@ -31,6 +31,10 @@
 // The delegate.
 @property(nonatomic, weak) id<ComposeboxViewControllerDelegate> delegate;
 
+// The delegate to proxy OmniboxPopupPresenterDelegate calls to.
+@property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
+    proxiedPresenterDelegate;
+
 // The close button.
 @property(nonatomic, readonly) UIButton* closeButton;
 

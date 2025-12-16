@@ -2029,7 +2029,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   if (_lensOverlayVisible) {
     // The typing shield has to be inserted right below the presented popup
-    // omnibox to avoid being ostructed by the Lens Overlay.
+    // omnibox to avoid being obstructed by the Lens Overlay.
     self.typingShield.frame = UIEdgeInsetsInsetRect(
         self.contentArea.bounds,
         UIEdgeInsetsMake([self expandedTopToolbarHeight], 0, 0, 0));

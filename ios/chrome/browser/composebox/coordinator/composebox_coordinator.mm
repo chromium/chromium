@@ -83,6 +83,12 @@
   }
   _viewController.delegate = self;
 
+  if ([self.baseViewController
+          conformsToProtocol:@protocol(OmniboxPopupPresenterDelegate)]) {
+    _viewController.proxiedPresenterDelegate =
+        static_cast<id<OmniboxPopupPresenterDelegate>>(self.baseViewController);
+  }
+
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   web::WebState::CreateParams params =
