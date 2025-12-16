@@ -36,16 +36,12 @@ std::string TurnOnCredentialProviderExtensionPromptSourceToString(
 void OpenIOSCredentialProviderSettings() {
   // If available, use the API that allows to directly open the iOS credential
   // provider settings.
-  if (@available(iOS 17.0, *)) {
-    [ASSettingsHelper openCredentialProviderAppSettingsWithCompletionHandler:^(
-                          NSError* error) {
-      if (error) {
-        ios::provider::PasswordsInOtherAppsOpensSettings();
-      }
-    }];
-  } else {
-    ios::provider::PasswordsInOtherAppsOpensSettings();
-  }
+  [ASSettingsHelper
+      openCredentialProviderAppSettingsWithCompletionHandler:^(NSError* error) {
+        if (error) {
+          ios::provider::PasswordsInOtherAppsOpensSettings();
+        }
+      }];
 }
 
 void RecordTurnOnCredentialProviderExtensionPromptOutcome(
