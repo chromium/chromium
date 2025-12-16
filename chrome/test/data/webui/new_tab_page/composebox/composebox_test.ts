@@ -332,7 +332,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('uploading image file without flag does nothing', async () => {
     loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowImageSuggestions: false});
+        {composeboxShowZps: true, composeboxShowImageSuggest: false});
     createComposeboxElement();
     await microtasksFinished();
 
