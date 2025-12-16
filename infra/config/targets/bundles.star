@@ -34,10 +34,10 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_cts_tests_suite",
+            targets = "webview_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "webview_instrumentation_test_apk_single_process_mode_gtests",
@@ -84,10 +84,10 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_cts_tests_suite",
+            targets = "webview_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "webview_ui_instrumentation_tests",
@@ -119,10 +119,10 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "webview_ui_instrumentation_tests",
@@ -160,10 +160,10 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "webview_ui_instrumentation_tests",
@@ -187,10 +187,10 @@ targets.bundle(
     targets = [
         "system_webview_shell_instrumentation_tests",
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "webview_ui_instrumentation_tests",
@@ -223,13 +223,13 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "webview_64_cts_tests_no_field_trial_suite",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -246,13 +246,13 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "webview_64_cts_tests_no_field_trial_suite",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -261,10 +261,10 @@ targets.bundle(
     name = "android_15_emulator_fyi_gtests",
     targets = [
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "android_ci_only_fieldtrial_webview_tests",
@@ -288,10 +288,10 @@ targets.bundle(
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
         "android_ci_only_fieldtrial_webview_tests",
@@ -302,13 +302,13 @@ targets.bundle(
     name = "android_16_emulator_fyi_gtests",
     targets = [
         targets.bundle(
-            targets = "webview_trichrome_64_cts_tests_suite",
+            targets = "webview_64_cts_tests_suite",
             variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+                "WEBVIEW_FULL_CTS_TESTS",
+                "WEBVIEW_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "webview_64_cts_tests_no_field_trial_suite",
     ],
 )
 
@@ -393,14 +393,14 @@ targets.bundle(
 targets.bundle(
     name = "android_ci_only_fieldtrial_webview_tests",
     targets = [
-        "webview_trichrome_64_cts_tests_no_field_trial",
+        "webview_64_cts_tests_no_field_trial",
         "webview_ui_test_app_test_apk_no_field_trial",
     ],
     mixins = [
         "ci_only",
     ],
     per_test_modifications = {
-        "webview_trichrome_64_cts_tests_no_field_trial": targets.mixin(
+        "webview_64_cts_tests_no_field_trial": targets.mixin(
             args = [
                 "--store-tombstones",
             ],
@@ -618,7 +618,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "webview_trichrome_64_cts_field_trial_tests",
+            targets = "webview_64_cts_field_trial_tests",
             variants = [
                 "DISABLE_FIELD_TRIAL_CONFIG",
                 "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
@@ -6992,6 +6992,86 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webview_10_cts_tests_gtest",
+    targets = [
+        "webview_cts_tests_suite",
+    ],
+    variants = [
+        "WEBVIEW_FULL_CTS_TESTS",
+        "WEBVIEW_INSTANT_CTS_TESTS",
+    ],
+)
+
+targets.bundle(
+    name = "webview_64_32_cts_tests_suite",
+    targets = "webview_64_32_cts_tests",
+    per_test_modifications = {
+        "webview_64_32_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_64_cts_field_trial_tests",
+    targets = [
+        "webview_64_cts_tests",
+    ],
+    per_test_modifications = {
+        "webview_64_cts_tests": targets.mixin(
+            args = [
+                "--store-data-dependencies-in-temp",
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_64_cts_gtests",
+    targets = [
+        "webview_64_cts_tests_suite",
+        "webview_64_cts_tests_no_field_trial_suite",
+    ],
+)
+
+targets.bundle(
+    name = "webview_64_cts_hostside_gtests",
+    targets = [
+        "webview_64_cts_hostside_tests",
+    ],
+    variants = [
+        "WEBVIEW_FULL_CTS_TESTS",
+        "WEBVIEW_INSTANT_CTS_TESTS",
+    ],
+)
+
+targets.bundle(
+    name = "webview_64_cts_tests_no_field_trial_suite",
+    targets = [
+        "webview_64_cts_tests_no_field_trial",
+    ],
+    per_test_modifications = {
+        "webview_64_cts_tests_no_field_trial": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_64_cts_tests_suite",
     targets = [
         "webview_64_cts_tests",
@@ -7114,6 +7194,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webview_cts_tests_suite",
+    targets = "webview_cts_tests",
+    per_test_modifications = {
+        "webview_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_fyi_bot_all_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
@@ -7149,113 +7241,6 @@ targets.bundle(
         "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
         "webview_bot_unittests_gtest",
     ],
-)
-
-targets.bundle(
-    name = "webview_trichrome_10_cts_tests_gtest",
-    targets = [
-        "webview_trichrome_cts_tests_suite",
-    ],
-    variants = [
-        "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-        "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
-    ],
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_32_cts_tests_suite",
-    targets = "webview_trichrome_64_32_cts_tests",
-    per_test_modifications = {
-        "webview_trichrome_64_32_cts_tests": targets.mixin(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_cts_field_trial_tests",
-    targets = [
-        "webview_trichrome_64_cts_tests",
-    ],
-    per_test_modifications = {
-        "webview_trichrome_64_cts_tests": targets.mixin(
-            args = [
-                "--store-data-dependencies-in-temp",
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_cts_gtests",
-    targets = [
-        "webview_trichrome_64_cts_tests_suite",
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
-    ],
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_cts_hostside_gtests",
-    targets = [
-        "webview_trichrome_64_cts_hostside_tests",
-    ],
-    variants = [
-        "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-        "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
-    ],
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_cts_tests_no_field_trial_suite",
-    targets = [
-        "webview_trichrome_64_cts_tests_no_field_trial",
-    ],
-    per_test_modifications = {
-        "webview_trichrome_64_cts_tests_no_field_trial": targets.mixin(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "webview_trichrome_64_cts_tests_suite",
-    targets = "webview_trichrome_64_cts_tests",
-    per_test_modifications = {
-        "webview_trichrome_64_cts_tests": targets.mixin(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "webview_trichrome_cts_tests_suite",
-    targets = "webview_trichrome_cts_tests",
-    per_test_modifications = {
-        "webview_trichrome_cts_tests": targets.mixin(
-            args = [
-                "--store-tombstones",
-            ],
-        ),
-    },
 )
 
 targets.bundle(

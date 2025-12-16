@@ -34,16 +34,6 @@ python_library("webview_cts_tests") {
   data = [ "//android_webview/tools/cts_config/" ]
 }
 
-python_library("webview_trichrome_cts_tests") {
-  pydeps_file = "//android_webview/tools/run_cts.pydeps"
-  deps = [ "//android_webview:trichrome_webview_apk" ]
-  data_deps = [
-    "//build/android:test_runner_py",
-    "//third_party/jdk11:java_data",
-  ]
-  data = [ "//android_webview/tools/cts_config/" ]
-}
-
 if (android_64bit_target_cpu) {
   python_library("webview_64_cts_tests") {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
@@ -56,22 +46,9 @@ if (android_64bit_target_cpu) {
     data = [ "//android_webview/tools/cts_config/" ]
   }
 
-  python_library("webview_trichrome_64_cts_hostside_tests") {
+  python_library("webview_64_cts_hostside_tests") {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
-    deps = [ "//android_webview:trichrome_webview_64_apk" ]
-    data_deps = [
-      "//build/android:test_runner_py",
-      "//third_party/jdk11:java_data",
-    ]
-    data = [
-      "//android_webview/tools/cts_config/",
-      "//components/variations/test_data/cipd",
-    ]
-  }
-
-  python_library("webview_trichrome_64_cts_tests") {
-    pydeps_file = "//android_webview/tools/run_cts.pydeps"
-    deps = [ "//android_webview:trichrome_webview_64_apk" ]
+    deps = [ "//android_webview:system_webview_64_apk" ]
     data_deps = [
       "//build/android:test_runner_py",
       "//third_party/jdk11:java_data",
@@ -83,9 +60,9 @@ if (android_64bit_target_cpu) {
   }
 
   if (defined(android_app_secondary_abi)) {
-    python_library("webview_trichrome_64_32_cts_tests") {
+    python_library("webview_64_32_cts_tests") {
       pydeps_file = "//android_webview/tools/run_cts.pydeps"
-      deps = [ "//android_webview:trichrome_webview_64_32_apk" ]
+      deps = [ "//android_webview:system_webview_64_32_apk" ]
       data_deps = [
         "//build/android:test_runner_py",
         "//third_party/jdk11:java_data",

@@ -728,7 +728,7 @@ targets.variant(
 )
 
 targets.variant(
-    name = "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+    name = "WEBVIEW_FULL_CTS_TESTS",
     identifier = "full_mode",
     swarming = targets.swarming(
         shards = 2,
@@ -736,7 +736,7 @@ targets.variant(
 )
 
 targets.variant(
-    name = "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+    name = "WEBVIEW_INSTANT_CTS_TESTS",
     identifier = "instant_mode",
     args = [
         "--exclude-annotation",

@@ -3462,42 +3462,28 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "webview_trichrome_cts_tests",
+    name = "webview_64_32_cts_tests",
     mixins = [
         "webview_cts_archive",
     ],
 )
 
 targets.tests.gtest_test(
-    name = "webview_trichrome_64_32_cts_tests",
+    name = "webview_64_cts_hostside_tests",
     mixins = [
         "webview_cts_archive",
     ],
 )
 
 targets.tests.gtest_test(
-    name = "webview_trichrome_64_cts_tests",
-    mixins = [
-        "webview_cts_archive",
-    ],
-)
-
-targets.tests.gtest_test(
-    name = "webview_trichrome_64_cts_hostside_tests",
-    mixins = [
-        "webview_cts_archive",
-    ],
-)
-
-targets.tests.gtest_test(
-    name = "webview_trichrome_64_cts_tests_no_field_trial",
+    name = "webview_64_cts_tests_no_field_trial",
     mixins = [
         "webview_cts_archive",
     ],
     args = [
         "--disable-field-trial-config",
     ],
-    binary = "webview_trichrome_64_cts_tests",
+    binary = "webview_64_cts_tests",
 )
 
 targets.tests.gtest_test(

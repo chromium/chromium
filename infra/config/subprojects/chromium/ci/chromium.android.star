@@ -444,7 +444,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "webview_trichrome_10_cts_tests_gtest",
+            "webview_10_cts_tests_gtest",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -4302,7 +4302,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = "webview_trichrome_64_cts_hostside_gtests",
+        targets = "webview_64_cts_hostside_gtests",
         mixins = [
             "13-x64-emulator",
             "emulator-8-cores",
@@ -4312,7 +4312,7 @@ ci.builder(
             "retry_only_failed_tests",
         ],
         per_test_modifications = {
-            "webview_trichrome_64_cts_hostside_tests full_mode": targets.mixin(
+            "webview_64_cts_hostside_tests full_mode": targets.mixin(
                 swarming = targets.swarming(
                     shards = 1,
                 ),

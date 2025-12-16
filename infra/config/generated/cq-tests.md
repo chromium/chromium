@@ -1909,26 +1909,26 @@
 * [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-rel%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
+### webview_64_cts_hostside_tests full_mode
+* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
+
+### webview_64_cts_hostside_tests instant_mode
+* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
+
+### webview_64_cts_tests full_mode
+* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
+
+### webview_64_cts_tests instant_mode
+* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
+
+### webview_cts_tests full_mode
+* [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))
+
+### webview_cts_tests instant_mode
+* [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))
+
 ### webview_instrumentation_test_apk_multiple_process_mode
 * [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
-* [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))
-
-### webview_trichrome_64_cts_hostside_tests full_mode
-* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
-
-### webview_trichrome_64_cts_hostside_tests instant_mode
-* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
-
-### webview_trichrome_64_cts_tests full_mode
-* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
-
-### webview_trichrome_64_cts_tests instant_mode
-* [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
-
-### webview_trichrome_cts_tests full_mode
-* [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))
-
-### webview_trichrome_cts_tests instant_mode
 * [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))
 
 ### webview_ui_test_app_test_apk

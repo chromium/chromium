@@ -13,13 +13,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_trichrome_cts_tests full_mode"
+            "webview_cts_tests full_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_cts_tests",
+        "module_name": "//android_webview/test:webview_cts_tests",
         "module_scheme": "junit",
-        "name": "webview_trichrome_cts_tests full_mode",
+        "name": "webview_cts_tests full_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54,8 +54,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "webview_trichrome_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
+        "test": "webview_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/",
         "variant_id": "full_mode"
       },
       {
@@ -73,13 +73,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_trichrome_cts_tests instant_mode"
+            "webview_cts_tests instant_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_cts_tests",
+        "module_name": "//android_webview/test:webview_cts_tests",
         "module_scheme": "junit",
-        "name": "webview_trichrome_cts_tests instant_mode",
+        "name": "webview_cts_tests instant_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -113,8 +113,8 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "webview_trichrome_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
+        "test": "webview_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/",
         "variant_id": "instant_mode"
       }
     ]
