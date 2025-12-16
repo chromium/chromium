@@ -71,6 +71,9 @@ class VerticalTabViewTest
   }
 };
 
+// TODO(crbug.com/464486134): All test flaky on Windows.
+#if !BUILDFLAG(IS_WIN)
+
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
@@ -340,3 +343,5 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsRenderBorder) {
 
   EXPECT_FALSE(tab->GetBorder());
 }
+
+#endif  // !BUILDFLAG(IS_WIN)
