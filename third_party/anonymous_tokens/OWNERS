@@ -1,3 +1,6 @@
-awillia@chromium.org
+file://components/legion/OWNERS
 
+# Since Anonymous Tokens is used by BlindSignAuth in QUICHE, have the
+# //net OWNERS as secondary owners in case they need to roll this library to
+# resolve issues when rolling QUICHE (see go/quicmerge).
 file://net/OWNERS
