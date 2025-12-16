@@ -12,7 +12,9 @@ export function getHtml(this: RecentTabChipElement) {
   <cr-button id="recentTabButton"
       @click="${this.addTabContext_}"
       title="${this.recentTab.title}"
-      aria-label="${this.i18n('askAboutThisTabAriaLabel',
+      aria-label="${this.recentTab.showInCurrentTabChip ?
+          this.i18n('askAboutThisPageAriaLabel',
+          this.recentTab.title) : this.i18n('askAboutThisTabAriaLabel',
           this.recentTab.title)}">
     <div class="button-content">
       <cr-composebox-tab-favicon
@@ -20,7 +22,8 @@ export function getHtml(this: RecentTabChipElement) {
           .url="${this.recentTab.url?.url}">
       </cr-composebox-tab-favicon>
       <span class="recent-tab-button-text">
-        ${this.i18n('askAboutThisTab')}
+        ${this.recentTab.showInCurrentTabChip ? this.i18n('askAboutThisPage') :
+            this.i18n('askAboutThisTab')}
       </span>
     </div>
   </cr-button>

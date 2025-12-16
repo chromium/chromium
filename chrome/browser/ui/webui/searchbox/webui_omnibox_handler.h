@@ -49,6 +49,9 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OnThumbnailRemoved() override {}
   void ShowContextMenu(const gfx::Point& point) override;
   void OpenLensSearch() override;
+  void AddTabContext(int32_t tab_id,
+                     bool delay_upload,
+                     AddTabContextCallback) override;
 
   void OnShow();
 

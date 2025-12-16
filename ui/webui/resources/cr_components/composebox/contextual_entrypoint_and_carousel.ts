@@ -244,7 +244,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     if (changedProperties.has('tabSuggestions')) {
       this.recentTabForChip_ =
-          this.tabSuggestions.find(tab => tab.showInRecentTabChip) || null;
+          this.tabSuggestions.find(tab => tab.showInCurrentTabChip) || null;
+      if (!this.recentTabForChip_) {
+        this.recentTabForChip_ =
+            this.tabSuggestions.find(tab => tab.showInPreviousTabChip) || null;
+      }
     }
   }
 

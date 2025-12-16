@@ -2530,7 +2530,7 @@ suite('NewTabPageComposeboxTest', () => {
         tabId: 1,
         title: 'Tab 1',
         url: {url: 'https://www.google.com/search?q=foo'},
-        showInRecentTabChip: false,
+        showInPreviousTabChip: false,
       };
       searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));

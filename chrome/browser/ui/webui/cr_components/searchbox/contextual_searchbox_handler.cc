@@ -123,7 +123,10 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->tab_id = tab->GetHandle().raw_value();
     tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
     tab_data->url = last_committed_url;
-    tab_data->show_in_recent_tab_chip =
+    tab_data->show_in_current_tab_chip =
+        tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
+        last_committed_url;
+    tab_data->show_in_previous_tab_chip =
         !google_util::IsGoogleSearchUrl(last_committed_url);
     tab_data->last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
@@ -231,19 +234,18 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        profile,
                        web_contents,
-                       std::move(controller)),
-      web_contents_(web_contents) {
+                       std::move(controller)) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
   if (contextual_session_handle) {
     if (auto* query_controller = contextual_session_handle->GetController()) {
       file_upload_status_observer_.Observe(query_controller);
     }
+  }
 
-    auto* browser_window_interface =
-        webui::GetBrowserWindowInterface(web_contents_);
-    if (browser_window_interface) {
-      browser_window_interface->GetTabStripModel()->AddObserver(this);
-    }
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (browser_window_interface) {
+    browser_window_interface->GetTabStripModel()->AddObserver(this);
   }
 
   contextual_tasks_service_ =

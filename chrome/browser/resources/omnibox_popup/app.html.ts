@@ -29,6 +29,7 @@ ${this.showContextEntrypoint_ ? html`
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
+      @add-tab-context="${this.addTabContext_}"
       .tabSuggestions="${this.tabSuggestions_}"
       ?show-dropdown="${this.hasVisibleMatches_}"
       ?show-lens-search-chip="${this.isLensSearchEligible_}"

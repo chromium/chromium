@@ -21,7 +21,8 @@ suite('RecentTabChipTest', function() {
     tabId: 1,
     title: 'Tab 1',
     url: {url: 'https://tab1.com'},
-    showInRecentTabChip: true,
+    showInCurrentTabChip: false,
+    showInPreviousTabChip: true,
     lastActive: {internalValue: 1n},
   };
 

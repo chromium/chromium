@@ -216,7 +216,7 @@ suite('AppTest', function() {
         tabId: 1,
         title: 'Tab 1',
         url: {url: 'https://www.google.com/search?q=foo'},
-        showInRecentTabChip: true,
+        showInPreviousTabChip: true,
       };
       testProxy.handler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
