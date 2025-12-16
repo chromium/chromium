@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -163,6 +164,34 @@ void VerifyUnsyncedDataCountHistograms(
   }
 }
 
+class TestSignoutConfirmationUIObserver
+    : public SignoutConfirmationUI::Observer {
+ public:
+  explicit TestSignoutConfirmationUIObserver(
+      SignoutConfirmationUI* signout_confirmation_ui)
+      : signout_confirmation_ui_(signout_confirmation_ui) {
+    CHECK(signout_confirmation_ui);
+    signout_confirmation_ui_observation_.Observe(signout_confirmation_ui);
+  }
+  ~TestSignoutConfirmationUIObserver() override = default;
+
+  // SignoutConfirmationUI::Observer override:
+  void OnSignoutConfirmationUIHandlerReady() override { run_loop_.Quit(); }
+
+  void WaitForHandler() {
+    if (signout_confirmation_ui_->IsHandlerReadyForTesting()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<SignoutConfirmationUI,
+                          SignoutConfirmationUI::Observer>
+      signout_confirmation_ui_observation_{this};
+  raw_ptr<SignoutConfirmationUI> signout_confirmation_ui_;
+};
 }  // namespace
 
 class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
@@ -195,8 +224,15 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     observer.Wait();
 
     CHECK(signin_view_controller->ShowsModalDialog());
-    return SignoutConfirmationUI::GetForTesting(
-        signin_view_controller->GetModalDialogWebContentsForTesting());
+    SignoutConfirmationUI* signout_confirmation_ui =
+        SignoutConfirmationUI::GetForTesting(
+            signin_view_controller->GetModalDialogWebContentsForTesting());
+    // TODO(crbug.com/469344442): Explore using a standard widget observer
+    // checking for the widget's visibility, instead of custom ui observer.
+    TestSignoutConfirmationUIObserver handler_observer(signout_confirmation_ui);
+    handler_observer.WaitForHandler();
+
+    return signout_confirmation_ui;
   }
 
   bool IsSigninTab(
@@ -482,16 +518,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_TRUE(IsSignoutTab(tab));
 }
 
-// TODO(crbug.com/422501416): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser \
-  DISABLED_SignoutOrReauthWithPrompt_SignOutSupervisedUser
-#else
-#define MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser \
-  SignoutOrReauthWithPrompt_SignOutSupervisedUser
-#endif
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
-                       MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
+                       SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
   // Setup a primary account for a supervised user.
   AccountInfo primary_account_info = SetPrimaryAccount();
   AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
