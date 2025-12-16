@@ -87,6 +87,43 @@ std::string GetStringForAttachmentType(
                               count);
 }
 
+- (void)recordComposeboxFocusResultedInNavigation:(BOOL)navigation
+                                  withAttachments:(BOOL)hasAttachments
+                                      requestType:
+                                          (AutocompleteRequestType)requestType {
+  FocusResultedInNavigationType type;
+  if (navigation) {
+    type = hasAttachments
+               ? FocusResultedInNavigationType::kNavigationWithAttachments
+               : FocusResultedInNavigationType::kNavigationNoAttachments;
+  } else {
+    type = hasAttachments
+               ? FocusResultedInNavigationType::kNoNavigationWithAttachments
+               : FocusResultedInNavigationType::kNoNavigationNoAttachments;
+  }
+  base::UmaHistogramEnumeration("Omnibox.FocusResultedInNavigation", type);
+
+  std::string suffix;
+  switch (requestType) {
+    case AutocompleteRequestType::kSearch:
+      suffix = ".Search";
+      break;
+    case AutocompleteRequestType::kAIMode:
+      suffix = ".AIMode";
+      break;
+    case AutocompleteRequestType::kImageGeneration:
+      suffix = ".ImageGeneration";
+      break;
+    default:
+      break;
+  }
+
+  if (!suffix.empty()) {
+    base::UmaHistogramEnumeration("Omnibox.FocusResultedInNavigation" + suffix,
+                                  type);
+  }
+}
+
 #pragma mark - private
 
 - (void)recordAttachmentButtonUsedInSession:

@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Implicit"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:AiModeActivationSource,//ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h:AiModeActivationSource) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:AiModeActivationSource,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:AiModeActivationSource) -->
 
 <!-- LINT.IfChange(AutocompleteRequestType) -->
 
@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Image Generation"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java,//ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h:AutocompleteRequestType)-->
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:AutocompleteRequestType)-->
 
 <enum name="BooleanNavigated">
   <int value="0" label="Navigation did not occur"/>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Navigation, with attachments"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:FocusResultedInNavigationType) -->
 
 <!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
 
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Clipboard"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType,//ios/chrome/browser/composebox/coordinator/composebox_metrics_recorder.h:FuseboxAttachmentButtonType) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:FuseboxAttachmentButtonType) -->
 
 <enum name="GroupId">
   <summary>

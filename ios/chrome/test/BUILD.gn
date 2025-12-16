@@ -240,6 +240,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/commerce/model/push_notification:unit_tests",
     "//ios/chrome/browser/complex_tasks/model:unit_tests",
     "//ios/chrome/browser/composebox/coordinator:unit_tests",
+    "//ios/chrome/browser/composebox/ui:unit_tests",
     "//ios/chrome/browser/content_notification/model:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator:unit_tests",
