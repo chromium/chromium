@@ -737,8 +737,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="IOSHomeCustomizationBackgroundStyle">
   <int value="0" label="Default NTP background was loaded"/>
-  <int value="1" label="Gallery image background was loaded"/>
-  <int value="2" label="Color background was loaded"/>
+  <int value="1" label="Color background was loaded"/>
+  <int value="2" label="Gallery image background was loaded"/>
   <int value="3" label="User uploaded image background was loaded"/>
 </enum>
 
