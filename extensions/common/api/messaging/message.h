@@ -17,11 +17,12 @@ namespace extensions {
 // JS `Blob`s because it doesn't have the `Blob`'s metadata. Switch to
 // `blink::mojom::CloneableMessage` to get `Blob` support.
 using StructureClonedMessageWireData = mojo_base::BigBuffer;
+// C++ type-safe representation of the `extensions::mojom::MessageData` `union`.
 using MessageData = std::variant<std::string, StructureClonedMessageWireData>;
 
 // Represents a message sent between extension components, encapsulating the
 // data payload and associated metadata. This class is represented in mojom as
-// the `Message` struct in `message_port.mojom`.
+// the `extensions::mojom::Message` struct in `message_port.mojom`.
 //
 // Data Payload: A `Message` can hold one of two types of data, distinguished by
 // the `format()` field:
