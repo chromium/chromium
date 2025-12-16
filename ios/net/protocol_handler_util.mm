@@ -37,6 +37,9 @@ namespace net {
 
 NSString* const kNSErrorDomain = @"org.chromium.net.ErrorDomain";
 
+BASE_FEATURE(kUseNSURLErrorFailingURLErrorKey,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 NSError* GetIOSError(NSInteger ns_error_code,
                      int net_error_code,
                      NSString* url,
@@ -63,6 +66,21 @@ NSError* GetIOSError(NSInteger ns_error_code,
   return [NSError errorWithDomain:NSURLErrorDomain
                              code:ns_error_code
                          userInfo:dictionary];
+}
+
+NSString* GetFailingURLStringFromError(NSError* error) {
+  NSString* failing_url_string =
+      error.userInfo[NSURLErrorFailingURLStringErrorKey];
+  if (failing_url_string) {
+    return failing_url_string;
+  }
+
+  if (!base::FeatureList::IsEnabled(kUseNSURLErrorFailingURLErrorKey)) {
+    return nil;
+  }
+
+  NSURL* failing_url = error.userInfo[NSURLErrorFailingURLErrorKey];
+  return failing_url.absoluteString;
 }
 
 NSURLResponse* GetNSURLResponseForRequest(URLRequest* request) {

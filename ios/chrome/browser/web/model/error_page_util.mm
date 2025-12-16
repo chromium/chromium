@@ -29,8 +29,9 @@ NSString* GetErrorPage(const GURL& url,
                        NSError* error,
                        bool is_post,
                        bool is_off_the_record) {
-  DCHECK_EQ(url, GURL(base::SysNSStringToUTF8(
-                     error.userInfo[NSURLErrorFailingURLStringErrorKey])));
+  DCHECK_EQ(
+      url,
+      GURL(base::SysNSStringToUTF8(net::GetFailingURLStringFromError(error))));
   NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
   if (!final_error) {
     final_error = error;
