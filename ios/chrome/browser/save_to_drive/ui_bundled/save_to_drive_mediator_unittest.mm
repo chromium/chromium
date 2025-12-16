@@ -136,6 +136,7 @@ TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnDownloadTaskDestroyed) {
 // Tests that the Save to Drive UI is hidden when the `WebState` is destroyed.
 TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnWebStateDestroyed) {
   OCMExpect([save_to_drive_commands_handler_ hideSaveToDrive]);
+  download_task_->SetWebState(/*web_state=*/nullptr);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(save_to_drive_commands_handler_);
 }
