@@ -1143,12 +1143,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                        NSKeyValueObservingOptionInitial
                context:nil];
 
-  [webView
-      addMessageHandler:^(NSDictionary* payload) {
-        NSLog(@"webview message handler payload received =\n%@", payload);
-      }
-             forCommand:@"webViewMessageHandlerCommand"];
-
   return webView;
 }
 
@@ -1157,7 +1151,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeMessageHandlerForCommand:@"webViewMessageHandlerCommand"];
 
   _webView = nil;
 }
@@ -1166,7 +1159,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeMessageHandlerForCommand:@"webViewMessageHandlerCommand"];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {
