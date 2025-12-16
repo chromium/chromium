@@ -296,36 +296,32 @@ bool Transaction::IsTransactionBlockingOtherClients(
   }
 
   base::ElapsedTimer timer;
-  std::optional<int> scheduling_priority;
+  std::optional<int> this_priority;
   if (consider_priority) {
-    scheduling_priority = connection_->scheduling_priority();
+    this_priority = connection_->scheduling_priority();
   }
+  const base::UnguessableToken& this_token = connection_->client_token();
   const bool is_blocking_others =
       bucket_context_->lock_manager().IsBlockingAnyRequest(
-          lock_ids(),
-          base::BindRepeating(
-              [](std::optional<int> this_priority,
-                 const base::UnguessableToken& this_token,
-                 PartitionedLockHolder* blocked_lock_holder) {
-                auto* lock_request_data = static_cast<LockRequestData*>(
-                    blocked_lock_holder->GetUserData(LockRequestData::kKey));
-                if (!lock_request_data) {
-                  return true;
-                }
-                // If `this`
-                //   * comes from a background client (priority > 0), and
-                //   * is equal or higher priority than the blocked
-                //   transaction's client
-                //     (aka equally or less severely throttled)
-                // then don't worry about blocking it.
-                if (this_priority && (*this_priority > 0) &&
-                    (*this_priority <=
-                     lock_request_data->scheduling_priority)) {
-                  return false;
-                }
-                return lock_request_data->client_token != this_token;
-              },
-              scheduling_priority, connection_->client_token()));
+          lock_ids(), [&this_priority, &this_token](
+                          const PartitionedLockHolder& blocked_lock_holder) {
+            auto* lock_request_data = static_cast<LockRequestData*>(
+                blocked_lock_holder.GetUserData(LockRequestData::kKey));
+            if (!lock_request_data) {
+              return true;
+            }
+            // If `this`
+            //   * comes from a background client (priority > 0), and
+            //   * is equal or higher priority than the blocked
+            //   transaction's client
+            //     (aka equally or less severely throttled)
+            // then don't worry about blocking it.
+            if (this_priority && (*this_priority > 0) &&
+                (*this_priority <= lock_request_data->scheduling_priority)) {
+              return false;
+            }
+            return lock_request_data->client_token != this_token;
+          });
   base::TimeDelta duration = timer.Elapsed();
   if (duration > base::Milliseconds(2)) {
     base::UmaHistogramTimes("IndexedDB.CalculateBlockingStatusLongTimes",
