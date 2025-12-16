@@ -680,6 +680,21 @@ void ExtensionsMenuViewModel::ReloadWebContents() {
                                                  false);
 }
 
+bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
+    const extensions::ExtensionId& extension_id) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  Profile* profile = browser_->GetProfile();
+  // TODO(crbug.com/456285449): We should retrieve the extension from the
+  // extension action view model, but here we are getting the toolbar action
+  // view model interface. For that we either need to (a) pass the action view
+  // controller instead or (b) add the extension getter method to toolbar action
+  // view controller.
+  const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  CHECK(extension);
+
+  return CanUserCustomizeExtensionSiteAccess(*extension, *profile,
+                                             *toolbar_model_, *web_contents);
+}
 
 ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
 ExtensionsMenuViewModel::GetExtensionSiteAccessOptionsState(

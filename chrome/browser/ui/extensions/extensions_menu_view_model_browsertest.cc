@@ -461,6 +461,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
       permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
 }
 
+// Tests that the extensions menu view model correctly determines whether the
+// site permissions page can be shown for an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       CanShowSitePermissionsPage) {
+  auto enterprise_extension =
+      AddEnterpriseExtension("Enterprise", {}, {"<all_urls>"});
+  auto no_permissions_extension = AddExtension("No Permissions");
+  auto extension_with_permissions =
+      AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  // Only extension with requested host permissions can show site permissions
+  // page on a non-restricted site.
+  NavigateTo("example.com");
+  EXPECT_FALSE(
+      menu_model()->CanShowSitePermissionsPage(enterprise_extension->id()));
+  EXPECT_FALSE(
+      menu_model()->CanShowSitePermissionsPage(no_permissions_extension->id()));
+  EXPECT_TRUE(menu_model()->CanShowSitePermissionsPage(
+      extension_with_permissions->id()));
+
+  // No extension can show the site permission page on a restricted-site.
+  const GURL restricted_url("chrome://extensions");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), restricted_url));
+  EXPECT_FALSE(
+      menu_model()->CanShowSitePermissionsPage(enterprise_extension->id()));
+  EXPECT_FALSE(
+      menu_model()->CanShowSitePermissionsPage(no_permissions_extension->id()));
+  EXPECT_FALSE(menu_model()->CanShowSitePermissionsPage(
+      extension_with_permissions->id()));
+}
+
 // Tests that the extensions menu view model correctly gets the site settings
 // for the current site.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,

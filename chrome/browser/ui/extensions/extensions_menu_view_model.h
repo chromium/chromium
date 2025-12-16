@@ -198,6 +198,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Reloads the current web contents.
   void ReloadWebContents();
 
+  // Returns true if the site permissions page can be shown for the given
+  // `extension_id`.
+  bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
+
   // Returns the site access options state for an extension. This will crash if
   // called when the user cannot modify the extension site permissions, as this
   // method would compute invalid values.

@@ -45,15 +45,6 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-// Returns the extension for `extension_id`.
-const extensions::Extension* GetExtension(
-    Browser* browser,
-    extensions::ExtensionId extension_id) {
-  return extensions::ExtensionRegistry::Get(browser->profile())
-      ->enabled_extensions()
-      .GetByID(extension_id);
-}
-
 // Returns sorted extension ids based on their extensions name.
 std::vector<std::string> SortExtensionsByName(
     ToolbarActionsModel& toolbar_model) {
@@ -93,49 +84,6 @@ ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
 ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
     views::View* page) {
   return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(page);
-}
-
-// Returns whether user can select the site access for `extension` on
-// `web_contents`.
-bool CanUserCustomizeExtensionSiteAccess(
-    const extensions::Extension& extension,
-    Profile& profile,
-    const ToolbarActionsModel& toolbar_model,
-    content::WebContents& web_contents) {
-  const GURL& url = web_contents.GetLastCommittedURL();
-  if (toolbar_model.IsRestrictedUrl(url)) {
-    // We don't allow customization of restricted sites (e.g.
-    // chrome://settings).
-    return false;
-  }
-
-  if (extension.permissions_data()->IsPolicyBlockedHost(url)) {
-    // Users can't customize the site access of policy-blocked sites.
-    return false;
-  }
-
-  if (extensions::ExtensionSystem::Get(&profile)
-          ->management_policy()
-          ->HasEnterpriseForcedAccess(extension)) {
-    // Users can't customize the site access of enterprise-installed extensions.
-    return false;
-  }
-
-  // The extension wants site access if it at least wants "on click" access.
-  auto* permissions_manager = PermissionsManager::Get(&profile);
-  bool extension_wants_access = permissions_manager->CanUserSelectSiteAccess(
-      extension, url, PermissionsManager::UserSiteAccess::kOnClick);
-  if (!extension_wants_access) {
-    // Users can't customize site access of extensions that don't want access to
-    // begin with.
-    return false;
-  }
-
-  // Users can only customize site access when they have allowed all extensions
-  // to be customizable on the site.
-  return permissions_manager->GetUserSiteSetting(
-             web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin()) ==
-         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
 }
 
 }  // namespace
@@ -347,9 +295,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
 
 void ExtensionsMenuViewPlatformDelegateViews::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
-  CHECK(CanUserCustomizeExtensionSiteAccess(
-      *GetExtension(browser_, extension_id), *browser_->profile(),
-      *toolbar_model_, *GetActiveWebContents()));
+  CHECK(menu_model_->CanShowSitePermissionsPage(extension_id));
 
   auto site_permissions_page =
       std::make_unique<ExtensionsMenuSitePermissionsPageView>(
@@ -423,9 +369,8 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdatePage(
   auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
   if (site_permissions_page) {
     // Update site permissions page if the extension can have one.
-    if (CanUserCustomizeExtensionSiteAccess(
-            *GetExtension(browser_, site_permissions_page->extension_id()),
-            *browser_->profile(), *toolbar_model_, *web_contents)) {
+    if (menu_model_->CanShowSitePermissionsPage(
+            site_permissions_page->extension_id())) {
       UpdateSitePermissionsPage(site_permissions_page, web_contents);
       return;
     }
@@ -487,10 +432,6 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
   // their names can change.
   std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
   for (auto* menu_item : menu_items) {
-    const extensions::Extension* extension =
-        GetExtension(browser_, menu_item->view_model()->GetId());
-    CHECK(extension);
-
     ExtensionsMenuViewModel::MenuItemState menu_item_state =
         menu_model_->GetMenuItemState(menu_item->view_model()->GetId());
     menu_item->Update(menu_item_state);
