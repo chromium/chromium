@@ -405,8 +405,7 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenRevokeURL(
 std::unique_ptr<HttpResponse> HandleChromeSigninEmbeddedURL(
     const base::RepeatingCallback<void(const std::string&)>& callback,
     const HttpRequest& request) {
-  if (!net::test_server::ShouldHandle(request,
-                                      "/embedded/setup/chrome/usermenu")) {
+  if (!net::test_server::ShouldHandle(request, "/embedded/setup/windows")) {
     return nullptr;
   }
 
@@ -1004,14 +1003,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokeSyncAccountInAuthErrorState) {
 // Checks that Dice request header is not set from request from WebUI.
 // See https://crbug.com/428396
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_NoDiceFromWebUI DISABLED_NoDiceFromWebUI
-#else
-#define MAYBE_NoDiceFromWebUI NoDiceFromWebUI
-#endif
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, NoDiceFromWebUI) {
   // Navigate to Gaia and from the native tab, which uses an extension.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome:chrome-signin?reason=5")));
+      browser(), GURL("chrome:chrome-signin?reason=6")));
 
   // Check that the request had no Dice request header.
   if (dice_request_header_.empty()) {
@@ -1021,6 +1016,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
   EXPECT_EQ(0, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(0);
 }
+#endif
 
 // Tests that turning off Dice via preferences works when singed out.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_SignedOut) {
