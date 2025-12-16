@@ -710,7 +710,6 @@ public final class ProductionSupportedFlagList {
                 "DoNotEvictOnAXLocationChange",
                 "When enabled, do not evict the bfcache entry even when AXLocationChange happens."),
         Flag.baseFeature("PassHistogramSharedMemoryOnLaunch"),
-        Flag.baseFeature("PumpFastToSleepAndroid"),
         Flag.baseFeature(
                 BlinkFeatures.NO_THROTTLING_VISIBLE_AGENT,
                 "Do not throttle Javascript timers to 1Hz on hidden cross-origin frames that are"

@@ -86,8 +86,6 @@ NO_INSTRUMENT_STACK_ALIGN int DelayedLooperCallback(int fd,
 // native work below.
 constexpr uint64_t kTryNativeWorkBeforeIdleBit = uint64_t(1) << 32;
 
-std::atomic_bool g_fast_to_sleep = false;
-
 // Implements IOWatcher to allow any MessagePumpAndroid thread to watch
 // arbitrary file descriptors for I/O events.
 // NOTE: When attempting to watch the same `fd` for the same `mode`, this
@@ -375,10 +373,6 @@ MessagePumpAndroid::~MessagePumpAndroid() {
   close(delayed_fd_);
 }
 
-void MessagePumpAndroid::InitializeFeatures() {
-  g_fast_to_sleep = base::FeatureList::IsEnabled(kPumpFastToSleepAndroid);
-}
-
 void MessagePumpAndroid::OnDelayedLooperCallback() {
   OnReturnFromLooper();
   // There may be non-Chromium callbacks on the same ALooper which may have left
@@ -503,33 +497,6 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
   // Do not resignal |non_delayed_fd_| if we're quitting (this pump doesn't
   // allow nesting so needing to resume in an outer loop is not an issue
   // either).
-  if (ShouldQuit()) {
-    return;
-  }
-
-  // Under the fast to sleep feature, `do_idle_work` is ignored, and the pump
-  // will always "sleep" after finishing all its work items.
-  if (!g_fast_to_sleep) {
-    // Before declaring this loop idle, yield to native work items and arrange
-    // to be called again (unless we're already in that second call).
-    if (!do_idle_work) {
-      ScheduleWorkInternal(/*do_idle_work=*/true);
-      return;
-    }
-
-    // We yielded to native work items already and they didn't generate a
-    // ScheduleWork() request so we can declare idleness. It's possible for a
-    // ScheduleWork() request to come in racily while this method unwinds, this
-    // is fine and will merely result in it being re-invoked shortly after it
-    // returns.
-    // TODO(scheduler-dev): this doesn't account for tasks that don't ever call
-    // SchedulerWork() but still keep the system non-idle (e.g., the Java
-    // Handler API). It would be better to add an API to query the presence of
-    // native tasks instead of relying on yielding once +
-    // kTryNativeWorkBeforeIdleBit.
-    DCHECK(do_idle_work);
-  }
-
   if (ShouldQuit()) {
     return;
   }

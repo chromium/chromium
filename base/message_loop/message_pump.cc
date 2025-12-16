@@ -213,8 +213,6 @@ void MessagePump::InitializeFeatures() {
   ResetAlignWakeUpsState();
 #if BUILDFLAG(IS_WIN)
   MessagePumpWin::InitializeFeatures();
-#elif BUILDFLAG(IS_ANDROID)
-  MessagePumpAndroid::InitializeFeatures();
 #endif
 }
 

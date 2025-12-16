@@ -48,8 +48,6 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
       const Delegate::NextWorkInfo& next_work_info) override;
   IOWatcher* GetIOWatcher() override;
 
-  static void InitializeFeatures();
-
   // Attaches |delegate| to this native MessagePump. |delegate| will from then
   // on be invoked by the native loop to process application tasks.
   virtual void Attach(Delegate* delegate);
