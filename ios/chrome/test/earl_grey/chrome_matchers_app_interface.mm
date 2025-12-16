@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -299,7 +300,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       return NO;
     }
     UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
-    if (@available(iOS 26, *)) {
+
+    // tintColor is only used on iOS 26.0.
+    if (base::ios::IsRunningOnOrLater(26, 0, 0) &&
+        !base::ios::IsRunningOnOrLater(26, 1, 0)) {
       return CGColorEqualToColor(color.CGColor, button.tintColor.CGColor);
     }
     return CGColorEqualToColor(
