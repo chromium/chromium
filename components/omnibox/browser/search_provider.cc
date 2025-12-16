@@ -705,6 +705,7 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
+#if BUILDFLAG(IS_IOS)
   // When contextual typed state suggestions are disabled for composebox, do not
   // query suggest and only show verbatim matches.
   if (omnibox::IsComposebox(input_.current_page_classification()) &&
@@ -713,6 +714,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
           omnibox::kComposeboxAttachmentsTypedState)) {
     return;
   }
+#endif
 
   // Since there is currently no contextual search suggest or typed AI mode
   // suggest, lens contextual searchboxes and the composebox, shouldn't query
