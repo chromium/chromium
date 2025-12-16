@@ -12,22 +12,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
-
-namespace {
-bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
-  // Verify the dimensions are the same.
-  if (bitmap1.width() != bitmap2.width() ||
-      bitmap1.height() != bitmap2.height()) {
-    return false;
-  }
-
-  // Compare pixel data
-  SkPixmap pixmap1 = bitmap1.pixmap();
-  SkPixmap pixmap2 = bitmap2.pixmap();
-  return UNSAFE_TODO(memcmp(pixmap1.addr(), pixmap2.addr(),
-                            pixmap1.computeByteSize())) == 0;
-}
-}  // namespace
+#include "ui/gfx/skia_util.h"
 
 namespace lens {
 
@@ -157,7 +142,7 @@ void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
   const auto& bitmap = result.bitmap;
   auto layer_size = layer()->size();
   if (bitmap.drawsNothing() || layer_size.width() * layer_size.height() <= 0 ||
-      AreBitmapsEqual(background_screenshot_, bitmap)) {
+      gfx::BitmapsAreEqual(background_screenshot_, bitmap)) {
     return;
   }
   background_screenshot_ = bitmap;
