@@ -265,16 +265,19 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
 bool ContextualTasksUiService::HandleNavigation(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
+    bool is_from_embedded_page,
     bool is_to_new_tab) {
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
-      tabs::TabInterface::MaybeGetFromContents(source_contents), is_to_new_tab);
+      tabs::TabInterface::MaybeGetFromContents(source_contents),
+      is_from_embedded_page, is_to_new_tab);
 }
 
 bool ContextualTasksUiService::HandleNavigationImpl(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
     tabs::TabInterface* tab,
+    bool is_from_embedded_page,
     bool is_to_new_tab) {
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
@@ -308,7 +311,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
-  if (IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
+  if (is_from_embedded_page &&
+      IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
+    // Ignore navigation triggered by UI.
     if (!url_params.is_renderer_initiated) {
       return false;
     }

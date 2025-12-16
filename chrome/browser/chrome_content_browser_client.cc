@@ -4329,9 +4329,10 @@ bool ChromeContentBrowserClient::CanCreateWindow(
         target_url, referrer, disposition,
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
     if (contextual_tasks_ui_service &&
-        contextual_tasks_ui_service->HandleNavigation(std::move(url_params),
-                                                      web_contents,
-                                                      /*is_to_new_tab=*/true)) {
+        contextual_tasks_ui_service->HandleNavigation(
+            std::move(url_params), web_contents,
+            /*is_from_embedded_page=*/false,
+            /*is_to_new_tab=*/true)) {
       return false;
     }
   }

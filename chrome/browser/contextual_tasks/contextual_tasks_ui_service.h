@@ -93,6 +93,7 @@ class ContextualTasksUiService : public KeyedService {
   // versus an action in Chrome's UI like back/forward.
   virtual bool HandleNavigation(content::OpenURLParams url_params,
                                 content::WebContents* source_contents,
+                                bool is_from_embedded_page,
                                 bool is_to_new_tab);
 
   // Returns the contextual_task UI for a task.
@@ -165,6 +166,7 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool HandleNavigationImpl(content::OpenURLParams url_params,
                                     content::WebContents* source_contents,
                                     tabs::TabInterface* tab,
+                                    bool is_from_embedded_page,
                                     bool is_to_new_tab);
 
   // Returns whether the provided URL is for the primary account in Chrome.
