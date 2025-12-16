@@ -4,32 +4,26 @@
 
 #include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
-#include "chrome/browser/media/router/test/provider_test_helpers.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/local_presentation_manager.h"
 #include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/browser/test/mock_screen_availability_listener.h"
+#include "components/media_router/browser/test/test_helper.h"
 #include "components/media_router/common/media_source.h"
-#include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/route_request_result.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -65,6 +59,20 @@ MATCHER_P(InfoEquals, expected, "") {
 }  // namespace
 
 namespace media_router {
+
+class ControllerPresentationServiceDelegateImplTestMediaRouterFactory
+    : public MediaRouterFactory {
+ public:
+  ControllerPresentationServiceDelegateImplTestMediaRouterFactory() = default;
+  ~ControllerPresentationServiceDelegateImplTestMediaRouterFactory() override =
+      default;
+
+ protected:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override {
+    return nullptr;
+  }
+};
 
 class MockDelegateObserver
     : public content::PresentationServiceDelegate::Observer {
@@ -141,8 +149,23 @@ std::unique_ptr<KeyedService> BuildMockLocalPresentationManager(
   return std::make_unique<NiceMock<MockLocalPresentationManager>>();
 }
 
+class TestLocalPresentationManagerFactory
+    : public LocalPresentationManagerFactory {
+ public:
+  static TestLocalPresentationManagerFactory* GetInstance() {
+    static base::NoDestructor<TestLocalPresentationManagerFactory> instance;
+    return instance.get();
+  }
+
+ private:
+  friend class base::NoDestructor<TestLocalPresentationManagerFactory>;
+
+  TestLocalPresentationManagerFactory() = default;
+  ~TestLocalPresentationManagerFactory() override = default;
+};
+
 class ControllerPresentationServiceDelegateImplTest
-    : public ChromeRenderViewHostTestHarness {
+    : public content::RenderViewHostTestHarness {
  public:
   ControllerPresentationServiceDelegateImplTest()
       : router_(nullptr),
@@ -158,10 +181,10 @@ class ControllerPresentationServiceDelegateImplTest
         listener2_(presentation_url2_) {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     content::WebContents* wc = GetWebContents();
     router_ = static_cast<MockMediaRouter*>(
-        MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
+        media_router_factory_.SetTestingFactoryAndUse(
             wc->GetBrowserContext(),
             base::BindRepeating(&MockMediaRouter::Create)));
     ASSERT_TRUE(wc);
@@ -174,6 +197,20 @@ class ControllerPresentationServiceDelegateImplTest
                                          main_frame_routing_id_),
         presentation_urls_, frame_origin_);
     SetMockLocalPresentationManager();
+  }
+
+  void TearDown() override {
+    delegate_impl_->Reset(main_frame_process_id_, main_frame_routing_id_);
+    DeleteContents();
+    delegate_impl_ = nullptr;
+    router_ = nullptr;
+    mock_local_manager_ = nullptr;
+
+    TestLocalPresentationManagerFactory::GetInstance()->SetTestingFactory(
+        browser_context(), {});
+    media_router_factory_.SetTestingFactory(browser_context(), {});
+
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   MOCK_METHOD1(OnDefaultPresentationStarted,
@@ -234,13 +271,16 @@ class ControllerPresentationServiceDelegateImplTest
   }
 
   void SetMockLocalPresentationManager() {
-    ChromeLocalPresentationManagerFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildMockLocalPresentationManager));
+    TestLocalPresentationManagerFactory::GetInstance()->SetTestingFactory(
+        browser_context(),
+        base::BindRepeating(&BuildMockLocalPresentationManager));
     mock_local_manager_ = static_cast<MockLocalPresentationManager*>(
         LocalPresentationManagerFactory::GetOrCreateForBrowserContext(
-            profile()));
+            browser_context()));
   }
 
+  ControllerPresentationServiceDelegateImplTestMediaRouterFactory
+      media_router_factory_;
   raw_ptr<MockMediaRouter, DanglingUntriaged> router_;
   raw_ptr<ControllerPresentationServiceDelegateImpl, DanglingUntriaged>
       delegate_impl_;
