@@ -469,6 +469,7 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
     case PermissionType::NOTIFICATIONS:
       return ContentSettingsType::NOTIFICATIONS;
     case PermissionType::GEOLOCATION:
+    case PermissionType::GEOLOCATION_APPROXIMATE:
       return base::FeatureList::IsEnabled(
                  content_settings::features::kApproximateGeolocationPermission)
                  ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS

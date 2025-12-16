@@ -32,7 +32,7 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using url::Origin;
 
-constexpr size_t kPermissionsCount = 39;
+constexpr size_t kPermissionsCount = 40;
 
 // Collects all permission statuses for the given input.
 base::flat_map<blink::PermissionType, PermissionStatus> GetAll(
@@ -65,7 +65,8 @@ class PermissionOverridesTest : public testing::TestWithParam<bool> {
   PermissionResult ExpectedPermissionResult(
       PermissionType permission,
       PermissionStatus permission_status) {
-    if (GetParam() && permission == PermissionType::GEOLOCATION) {
+    if (GetParam() && (permission == PermissionType::GEOLOCATION ||
+                       permission == PermissionType::GEOLOCATION_APPROXIMATE)) {
       return PermissionResult(
           permission_status, PermissionStatusSource::UNSPECIFIED,
           GeolocationSetting{.approximate = PermissionUtil::ToPermissionOption(
@@ -132,6 +133,10 @@ TEST_P(PermissionOverridesTest, GetBasic) {
   EXPECT_THAT(overrides.Get(url, url, PermissionType::GEOLOCATION),
               Optional(ExpectedPermissionResult(PermissionType::GEOLOCATION,
                                                 PermissionStatus::GRANTED)));
+  EXPECT_THAT(
+      overrides.Get(url, url, PermissionType::GEOLOCATION_APPROXIMATE),
+      Optional(ExpectedPermissionResult(PermissionType::GEOLOCATION_APPROXIMATE,
+                                        PermissionStatus::GRANTED)));
 }
 
 TEST_P(PermissionOverridesTest, GetAllStates) {
@@ -190,6 +195,8 @@ TEST_P(PermissionOverridesTest, GetAllOverrides) {
   base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
       expected_override_for_origin;
   expected_override_for_origin[PermissionType::GEOLOCATION] =
+      PermissionStatus::GRANTED;
+  expected_override_for_origin[PermissionType::GEOLOCATION_APPROXIMATE] =
       PermissionStatus::GRANTED;
   expected_override_for_origin[PermissionType::NOTIFICATIONS] =
       PermissionStatus::DENIED;
@@ -525,11 +532,13 @@ TEST_P(PermissionOverridesTest, SetPermission_AllOriginsNoShadowing) {
 
     EXPECT_THAT(GetAll(overrides, origin, origin),
                 UnorderedElementsAre(Pair(GEOLOCATION, GRANTED),
+                                     Pair(GEOLOCATION_APPROXIMATE, GRANTED),
                                      Pair(BACKGROUND_SYNC, GRANTED)));
 
     Origin no_overrides_origin = Origin::Create(GURL("https://example.com"));
     EXPECT_THAT(GetAll(overrides, no_overrides_origin, no_overrides_origin),
-                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
+                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED),
+                                     Pair(GEOLOCATION_APPROXIMATE, GRANTED)));
   }
   {
     // For a different origin, only the global overrides take effect.
@@ -540,7 +549,8 @@ TEST_P(PermissionOverridesTest, SetPermission_AllOriginsNoShadowing) {
     EXPECT_THAT(overrides.Get(origin, origin, GEOLOCATION),
                 Optional(ExpectedPermissionResult(GEOLOCATION, GRANTED)));
     EXPECT_THAT(GetAll(overrides, origin, origin),
-                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED)));
+                UnorderedElementsAre(Pair(GEOLOCATION, GRANTED),
+                                     Pair(GEOLOCATION_APPROXIMATE, GRANTED)));
   }
 }
 

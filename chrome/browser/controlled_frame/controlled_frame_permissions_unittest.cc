@@ -228,6 +228,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case blink::PermissionType::MIDI_SYSEX:
       case blink::PermissionType::NOTIFICATIONS:
       case blink::PermissionType::GEOLOCATION:
+      case blink::PermissionType::GEOLOCATION_APPROXIMATE:
       case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       case blink::PermissionType::MIDI:
       case blink::PermissionType::DURABLE_STORAGE:

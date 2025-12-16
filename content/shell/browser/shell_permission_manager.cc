@@ -27,6 +27,7 @@ namespace {
 bool IsAllowlistedPermissionType(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
+    case PermissionType::GEOLOCATION_APPROXIMATE:
     case PermissionType::SENSORS:
     case PermissionType::PAYMENT_HANDLER:
     case PermissionType::WAKE_LOCK_SCREEN:

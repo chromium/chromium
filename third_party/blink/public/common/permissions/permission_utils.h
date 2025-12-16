@@ -67,6 +67,7 @@ enum class PermissionType {
   LOCAL_NETWORK_ACCESS = 43,
   LOCAL_NETWORK = 44,
   LOOPBACK_NETWORK = 45,
+  GEOLOCATION_APPROXIMATE = 46,
 
   // Always keep this at the end.
   NUM,

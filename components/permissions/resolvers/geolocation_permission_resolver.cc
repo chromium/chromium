@@ -16,6 +16,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
 namespace permissions {
@@ -38,9 +39,17 @@ blink::mojom::PermissionStatus PermissionOptionToPermissionStatus(
 }  // namespace
 
 GeolocationPermissionResolver::GeolocationPermissionResolver(
-    bool requested_precise)
-    : PermissionResolver(ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
-      requested_precise_(requested_precise) {}
+    const blink::mojom::PermissionDescriptor& permission_descriptor)
+    : PermissionResolver(ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+  if (permission_descriptor.name == blink::mojom::PermissionName::GEOLOCATION) {
+    requested_precise_ = true;
+  } else if (permission_descriptor.name ==
+             blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE) {
+    requested_precise_ = false;
+  } else {
+    NOTREACHED();
+  }
+}
 
 blink::mojom::PermissionStatus
 GeolocationPermissionResolver::DeterminePermissionStatus(

@@ -84,6 +84,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::GEOLOCATION:
+    case PermissionType::GEOLOCATION_APPROXIMATE:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:

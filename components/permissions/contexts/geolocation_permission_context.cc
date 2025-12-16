@@ -110,11 +110,8 @@ GeolocationPermissionContext::CreatePermissionResolver(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor) const {
   if (base::FeatureList::IsEnabled(
           content_settings::features::kApproximateGeolocationPermission)) {
-    // TODO(crbug.com/430586927) The geolocation PermissionDescriptor doesn't
-    // yet support the approximate request, hence for the time being we treat
-    // each request as a precise request.
     return std::make_unique<GeolocationPermissionResolver>(
-        /*requested_precise*/ true);
+        *permission_descriptor);
   } else {
     return PermissionContextBase::CreatePermissionResolver(
         permission_descriptor);

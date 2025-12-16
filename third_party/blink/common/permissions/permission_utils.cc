@@ -30,6 +30,8 @@ std::string GetPermissionString(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
       return "Geolocation";
+    case PermissionType::GEOLOCATION_APPROXIMATE:
+      return "GeolocationApproximate";
     case PermissionType::NOTIFICATIONS:
       return "Notifications";
     case PermissionType::MIDI_SYSEX:
@@ -116,6 +118,9 @@ std::optional<network::mojom::PermissionsPolicyFeature>
 PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
+    // TODO(crbug.com/465377576): Change this when we implement the new
+    // policy-controlled feature "geolocation-approximate".
+    case PermissionType::GEOLOCATION_APPROXIMATE:
       return network::mojom::PermissionsPolicyFeature::kGeolocation;
     case PermissionType::MIDI_SYSEX:
       return network::mojom::PermissionsPolicyFeature::kMidiFeature;
@@ -260,6 +265,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
   switch (name) {
     case PermissionName::GEOLOCATION:
       return PermissionType::GEOLOCATION;
+    case PermissionName::GEOLOCATION_APPROXIMATE:
+      return PermissionType::GEOLOCATION_APPROXIMATE;
     case PermissionName::NOTIFICATIONS:
       return PermissionType::NOTIFICATIONS;
     case PermissionName::MIDI: {

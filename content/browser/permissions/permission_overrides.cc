@@ -91,6 +91,10 @@ void PermissionOverrides::Set(
     base::optional_ref<const url::Origin> embedding_origin,
     blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
+  // TODO(crbug.com/466992247): Add support for overriding
+  // GEOLOCATION_APPROXIMATE.
+  CHECK_NE(permission, blink::PermissionType::GEOLOCATION_APPROXIMATE);
+
   overrides_[PermissionKey(requesting_origin, embedding_origin, permission)] =
       status;
 
@@ -140,6 +144,12 @@ std::optional<PermissionResult> PermissionOverrides::Get(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     blink::PermissionType permission) const {
+  if (permission == blink::PermissionType::GEOLOCATION_APPROXIMATE) {
+    // TODO(crbug.com/466992247): For now, PermissionOverrides only supports
+    // overriding both GEOLOCATION and GEOLOCATION_APPROXIMATE at once.
+    permission = blink::PermissionType::GEOLOCATION;
+  }
+
   std::optional<blink::mojom::PermissionStatus> status =
       GetStatus(requesting_origin, embedding_origin, permission);
   if (!status) {
@@ -200,9 +210,13 @@ void PermissionOverrides::GrantPermissions(
     base::optional_ref<const url::Origin> embedding_origin,
     const std::vector<blink::PermissionType>& permissions) {
   for (auto type : blink::GetAllPermissionTypes()) {
-    Set(requesting_origin, embedding_origin, type,
-        base::Contains(permissions, type) ? PermissionStatus::GRANTED
-                                          : PermissionStatus::DENIED);
+    // TODO(crbug.com/466992247): Add support for overriding
+    // GEOLOCATION_APPROXIMATE.
+    if (type != blink::PermissionType::GEOLOCATION_APPROXIMATE) {
+      Set(requesting_origin, embedding_origin, type,
+          base::Contains(permissions, type) ? PermissionStatus::GRANTED
+                                            : PermissionStatus::DENIED);
+    }
   }
 }
 

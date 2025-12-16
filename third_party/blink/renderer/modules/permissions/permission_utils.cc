@@ -77,6 +77,8 @@ String PermissionNameToString(PermissionName name) {
   switch (name) {
     case PermissionName::GEOLOCATION:
       return "geolocation";
+    case PermissionName::GEOLOCATION_APPROXIMATE:
+      return "geolocation-approximate";
     case PermissionName::NOTIFICATIONS:
       return "notifications";
     case PermissionName::MIDI:

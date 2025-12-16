@@ -76,6 +76,9 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
     case blink::PermissionType::GEOLOCATION:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::GEOLOCATION);
+    case blink::PermissionType::GEOLOCATION_APPROXIMATE:
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE);
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER);

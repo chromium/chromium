@@ -316,6 +316,9 @@ void AwPermissionManager::RequestPermissions(
 
     switch (permissions[i]) {
       case PermissionType::GEOLOCATION:
+      case PermissionType::GEOLOCATION_APPROXIMATE:
+        // TODO(crbug.com/466367918): Decide whether we want to support a
+        // separate approximate only geolocation permission in webview.
         delegate->RequestGeolocationPermission(
             pending_request_raw->requesting_origin,
             base::BindOnce(&OnRequestResponse, weak_ptr_factory_.GetWeakPtr(),
@@ -516,6 +519,9 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
                                       embedding_origin);
 
     case blink::PermissionType::GEOLOCATION:
+    case blink::PermissionType::GEOLOCATION_APPROXIMATE:
+      // TODO(crbug.com/466367918): Decide whether we want to support
+      // approximate only geolocation permission in webview.
       return GetGeolocationPermission(requesting_origin, web_contents);
 
     case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
@@ -676,6 +682,9 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
 
     switch (permission) {
       case PermissionType::GEOLOCATION:
+      case PermissionType::GEOLOCATION_APPROXIMATE:
+        // TODO(crbug.com/466367918): Decide whether we want to support
+        // approximate only geolocation permission in webview.
         if (delegate)
           delegate->CancelGeolocationPermissionRequests(requesting_origin);
         break;
