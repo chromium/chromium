@@ -4787,6 +4787,13 @@ inline constexpr char kAccessibilityImproveLiveRegionAnnounceDescription[] =
     "WINDOW_CONTENT_CHANGED events corresponding to each live region element "
     "change rather than via TYPE_ANNOUNCEMENT.";
 
+inline constexpr char kAccessibilityAtomicLiveRegionsName[] =
+    "Accessibility Atomic Live Regions";
+inline constexpr char kAccessibilityAtomicLiveRegionsDescription[] =
+    "When enabled, supports atomic announcements, meaning that when "
+    "aria-atomic=true, the entire live region will be announced not just the "
+    "node that changed.";
+
 inline constexpr char kAccessibilitySetSelectableOnAllNodesWithTextName[] =
     "AccessibilitySetSelectableOnAllNodesWithTextName";
 inline constexpr char

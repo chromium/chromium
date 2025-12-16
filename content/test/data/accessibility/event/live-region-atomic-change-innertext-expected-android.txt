@@ -1,0 +1,2 @@
+TYPE_ANNOUNCEMENT - [Live]
+TYPE_ANNOUNCEMENT - [succeeded]

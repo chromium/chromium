@@ -738,6 +738,10 @@ bool AXNodeData::IsActiveLiveRegionRoot() const {
   return aria_live_status != "off";
 }
 
+bool AXNodeData::IsAtomicLiveRegionRoot() const {
+  return GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic);
+}
+
 bool AXNodeData::IsButtonPressed() const {
   // Currently there is no internal representation for |aria-pressed|, and
   // we map |aria-pressed="true"| to ax::mojom::CheckedState::kTrue for a native
@@ -770,6 +774,10 @@ bool AXNodeData::IsContainedInActiveLiveRegion() const {
 
   return aria_container_live_status != "off" &&
          HasStringAttribute(ax::mojom::StringAttribute::kName);
+}
+
+bool AXNodeData::IsContainedInAtomicLiveRegion() const {
+  return GetBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic);
 }
 
 bool AXNodeData::IsSelectable() const {
