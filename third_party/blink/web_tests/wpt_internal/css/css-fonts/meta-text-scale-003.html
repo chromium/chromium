@@ -1,0 +1,26 @@
+<!doctype html>
+<html class="reftest-wait">
+<meta name="text-scale" content="scale" id="m1">
+<meta name="text-scale" content="scale" id="m2">
+<meta name="assert" content="Second text-scale tag takes effect when first is removed">
+<link rel="match" href="meta-text-scale-scaled-ref.html">
+<script src="/common/reftest-wait.js"></script>
+
+<p style="font-size: 16px;">
+Hello and stuff (I am specified to be 16px)
+</p>
+<p>
+Hello and stuff
+</p>
+<script>
+  if (window.internals) {
+    internals.settings.setAccessibilityFontScaleFactor(2.0);
+  } else {
+    document.body.appendChild(document.createTextNode("No window.internals? This test will fail."));
+  }
+
+  // Remove the first meta tag. The second one should take over.
+  document.getElementById('m1').remove();
+  takeScreenshot();
+</script>
+</html>

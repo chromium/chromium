@@ -8329,6 +8329,34 @@ void Document::ResponsiveEmbeddedSizingChanged() {
   }
 }
 
+bool Document::TextScaleMetaTagPresent() const {
+  return RuntimeEnabledFeatures::TextScaleMetaTagEnabled() &&
+         text_scale_meta_tag_present_;
+}
+
+void Document::SetTextScaleMetaTagPresent(bool present) {
+  if (text_scale_meta_tag_present_ == present) {
+    return;
+  }
+  text_scale_meta_tag_present_ = present;
+  GetStyleEngine().InitialStyleChanged();
+}
+
+void Document::TextScaleMetaChanged() {
+  if (const auto* root_element = documentElement()) {
+    for (const HTMLMetaElement& meta_element :
+         Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
+      if (EqualIgnoringASCIICase(meta_element.GetName(), "text-scale")) {
+        SetTextScaleMetaTagPresent(
+            EqualIgnoringASCIICase(meta_element.Content(), "scale"));
+        // We only look at the first <meta name="text-scale"> tag.
+        return;
+      }
+    }
+  }
+  SetTextScaleMetaTagPresent(false);
+}
+
 void Document::SupportsReducedMotionMetaChanged() {
   auto* root_element = documentElement();
   if (!root_element)

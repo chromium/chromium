@@ -88,13 +88,19 @@ const FontSizeTableType kStrictFontSizeTable{{
 const std::array<float, kTotalKeywords> kFontSizeFactors{
     0.60f, 0.75f, 0.89f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f};
 
-int inline RowFromMediumFontSizeInRange(const Settings* settings,
+int inline RowFromMediumFontSizeInRange(const Document* document,
                                         bool quirks_mode,
                                         bool is_monospace,
                                         int& medium_size) {
+  const Settings* settings = document ? document->GetSettings() : nullptr;
   medium_size = settings ? (is_monospace ? settings->GetDefaultFixedFontSize()
                                          : settings->GetDefaultFontSize())
                          : kDefaultMediumFontSize;
+
+  if (document && document->TextScaleMetaTagPresent() && settings) {
+    medium_size = medium_size * settings->GetAccessibilityFontScaleFactor();
+  }
+
   if (medium_size >= kFontSizeTableMin && medium_size <= kFontSizeTableMax) {
     return medium_size - kFontSizeTableMin;
   }
@@ -219,7 +225,7 @@ float FontSizeFunctions::FontSizeForKeyword(const Document* document,
   bool quirks_mode = document && document->InQuirksMode();
 
   int medium_size = 0;
-  int row = RowFromMediumFontSizeInRange(settings, quirks_mode, is_monospace,
+  int row = RowFromMediumFontSizeInRange(document, quirks_mode, is_monospace,
                                          medium_size);
   if (row >= 0) {
     int col = (keyword - 1);
@@ -244,7 +250,7 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
 
   bool quirks_mode = document->InQuirksMode();
   int medium_size = 0;
-  int row = RowFromMediumFontSizeInRange(settings, quirks_mode, is_monospace,
+  int row = RowFromMediumFontSizeInRange(document, quirks_mode, is_monospace,
                                          medium_size);
   if (row >= 0) {
     return FindNearestLegacyFontSize<int>(

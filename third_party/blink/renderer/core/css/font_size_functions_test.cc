@@ -119,4 +119,55 @@ TEST_F(FontSizeFunctionsTest, TestFontSizeForKeyword) {
   }
 }
 
+TEST_F(FontSizeFunctionsTest, TestFontSizeForKeyword_TextScaleMetaTag) {
+  GetDocument().GetSettings()->SetDefaultFontSize(16);
+  GetDocument().GetSettings()->SetDefaultFixedFontSize(10);
+  GetDocument().GetSettings()->SetAccessibilityFontScaleFactor(2.0f);
+
+  // First, test WITH text-scale meta tag present
+  GetDocument().SetTextScaleMetaTagPresent(true);
+
+  struct {
+    bool monospace;
+    unsigned keyword;
+    float expected_font_size;
+  } test_cases_with_meta_tag[] = {
+      // When scaled, the medium size exceeds the table range, so we use the
+      // formula: kFontSizeFactors[keyword] * medium_size.
+      // Medium size (regular) = 16 * 2 = 32.
+      // Medium size (fixed) = 10 * 2 = 20.
+      {false, FontSizeFunctions::KeywordSize(CSSValueID::kMedium), 32.0f},
+      {true, FontSizeFunctions::KeywordSize(CSSValueID::kSmall), 20 * 0.89f},
+      {false, FontSizeFunctions::KeywordSize(CSSValueID::kLarge), 32 * 1.2f},
+  };
+
+  for (const auto& test : test_cases_with_meta_tag) {
+    EXPECT_FLOAT_EQ(test.expected_font_size,
+                    FontSizeFunctions::FontSizeForKeyword(
+                        &GetDocument(), test.keyword, test.monospace));
+  }
+
+  // Now test WITHOUT text-scale meta tag -- fonts should not scale.
+  GetDocument().SetTextScaleMetaTagPresent(false);
+
+  struct {
+    bool monospace;
+    unsigned keyword;
+    float expected_font_size;
+  } test_cases_without_meta_tag[] = {
+      // Medium (Reg) 16: Table row 7. Index 3 -> 16.
+      // Small (Fixed) 10: Table row 1. Index 2 -> 9.
+      // Large (Reg) 16: Table row 7. Index 4 -> 18.
+      {false, FontSizeFunctions::KeywordSize(CSSValueID::kMedium), 16},
+      {true, FontSizeFunctions::KeywordSize(CSSValueID::kSmall), 9},
+      {false, FontSizeFunctions::KeywordSize(CSSValueID::kLarge), 18},
+  };
+
+  for (const auto& test : test_cases_without_meta_tag) {
+    EXPECT_FLOAT_EQ(test.expected_font_size,
+                    FontSizeFunctions::FontSizeForKeyword(
+                        &GetDocument(), test.keyword, test.monospace));
+  }
+}
+
 }  // namespace blink

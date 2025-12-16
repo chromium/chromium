@@ -5270,6 +5270,10 @@
       status: "test",
     },
     {
+      name: "TextScaleMetaTag",
+      status: "experimental",
+    },
+    {
       // crbug.com/431660829
       name: "TextSpacingTrimFallback",
       status: "stable",

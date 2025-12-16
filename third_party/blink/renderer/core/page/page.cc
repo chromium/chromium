@@ -1064,6 +1064,9 @@ void Page::SettingsChanged(ChangeType change_type) {
             .EnsureEnvironmentVariables()
             .SetPreferredTextScale(
                 document->GetSettings()->GetAccessibilityFontScaleFactor());
+        if (document->TextScaleMetaTagPresent()) {
+          document->GetStyleEngine().InitialStyleChanged();
+        }
       }
       break;
     case ChangeType::kTextAutosizing:

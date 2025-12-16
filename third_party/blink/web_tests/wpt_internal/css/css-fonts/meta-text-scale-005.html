@@ -1,0 +1,26 @@
+<!doctype html>
+<html class="reftest-wait">
+<meta name="text-scale" content="scale" id="m1">
+<meta name="text-scale" content="scale" id="m2">
+<meta name="assert" content="Modifying first text-scale tag to invalid value disables scaling (ignores second tag)">
+<link rel="match" href="meta-text-scale-unscaled-ref.html">
+<script src="/common/reftest-wait.js"></script>
+
+<p style="font-size: 16px;">
+Hello and stuff (I am specified to be 16px)
+</p>
+<p>
+Hello and stuff
+</p>
+<script>
+  if (window.internals) {
+    internals.settings.setAccessibilityFontScaleFactor(2.0);
+  } else {
+    document.body.appendChild(document.createTextNode("No window.internals? This test will fail."));
+  }
+
+  // Modify first meta tag content
+  document.getElementById('m1').setAttribute('content', 'ignored');
+  takeScreenshot();
+</script>
+</html>

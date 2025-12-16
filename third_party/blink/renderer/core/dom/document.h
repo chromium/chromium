@@ -1989,6 +1989,12 @@ class CORE_EXPORT Document : public ContainerNode,
   void ResponsiveEmbeddedSizingChanged();
   void SetResponsiveEmbeddedSizing() { responsive_embedded_sizing_ = true; }
 
+  // A META element with name=text-scale was added, removed, or
+  // modified. Re-collect the META values.
+  void TextScaleMetaChanged();
+  bool TextScaleMetaTagPresent() const;
+  void SetTextScaleMetaTagPresent(bool present);
+
   // Use counter related functions.
   void CountUse(mojom::WebFeature feature) final;
   void CountDeprecation(mojom::WebFeature feature) final;
@@ -3220,6 +3226,7 @@ class CORE_EXPORT Document : public ContainerNode,
 #endif
 
   bool responsive_embedded_sizing_ = false;
+  bool text_scale_meta_tag_present_ = false;
 
   // A map of idrefs that have been identified by commandfor with an overscroll
   // related command (e.g. toggle-overscroll). This determines a
