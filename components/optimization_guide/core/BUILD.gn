@@ -405,6 +405,7 @@ static_library("prediction") {
   deps = [
     ":core_util",
     ":features",
+    "//base/version_info",
     "//components/component_updater",
     "//components/crx_file",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",

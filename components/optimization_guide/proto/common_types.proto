@@ -118,6 +118,11 @@ message Any {
 message OriginInfo {
   // The platform for the user's Chrome.
   Platform platform = 1;
+
+  reserved 2;
+
+  // The dotted version number of the user's Chrome. e.g. "145.0.7576.0"
+  string version = 3;
 }
 
 // The platform for the user's Chrome on which the request was made.
