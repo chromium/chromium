@@ -171,8 +171,8 @@ public class UmaSessionStats {
         }
     }
 
-    /** Logs the current session. */
-    public void logAndEndSession() {
+    /** Unregisters observers, and if this is the last active session, logs the current session. */
+    public void endSessionAndMaybeLog() {
         if (mTabModelSelector != null) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
             assumeNonNull(mTabModelSelectorTabObserver);

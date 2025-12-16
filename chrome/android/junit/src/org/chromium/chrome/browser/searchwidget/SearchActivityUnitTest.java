@@ -1055,12 +1055,10 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onPauseWithNative() {
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mActivity.onPauseWithNative();
 
-        verify(mUmaObserver).endUmaSession();
         verify(mSetCustomTabSearchClient).onResult(null);
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+        verifyNoMoreInteractions(mSetCustomTabSearchClient);
     }
 
     @Test

@@ -588,9 +588,19 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     public void onPauseWithNative() {
-        umaSessionEnd();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            umaSessionEnd();
+        }
         RevenueStats.setCustomTabSearchClient(null);
         super.onPauseWithNative();
+    }
+
+    @Override
+    public void onStopWithNative() {
+        super.onStopWithNative();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            umaSessionEnd();
+        }
     }
 
     @Override

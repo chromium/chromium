@@ -97,13 +97,18 @@ public class UmaActivityObserver implements DestroyObserver {
         mLatestAndroidPermissionDelegate = permissionDelegate;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            if (sActiveObserver == this) return;
             sVisibleObservers.add(this);
 
+            boolean maintainSession =
+                    sActiveObserver != null && sActiveObserver.mActivityType == mActivityType;
+            if (maintainSession) {
+                // If we're maintaining the session, we need to start the new session before ending
+                // the previous session, as the log is only closed when the last session ends.
+                mUmaSessionStats.startNewSession(
+                        mActivityType, mLatestTabModelSelector, mLatestAndroidPermissionDelegate);
+            }
             if (sActiveObserver != null) {
-                if (sActiveObserver.mActivityType == mActivityType) {
-                    sActiveObserver = this;
-                    return;
-                }
                 sActiveObserver.endUmaSessionInternal(false, false);
             }
             sActiveObserver = this;
@@ -113,8 +118,10 @@ public class UmaActivityObserver implements DestroyObserver {
             ChromeSessionState.setActivityType(mActivityType);
 
             UmaSessionStats.updateMetricsServiceState();
-            mUmaSessionStats.startNewSession(
-                    mActivityType, mLatestTabModelSelector, mLatestAndroidPermissionDelegate);
+            if (!maintainSession) {
+                mUmaSessionStats.startNewSession(
+                        mActivityType, mLatestTabModelSelector, mLatestAndroidPermissionDelegate);
+            }
         } else {
             if (sActiveObserver != null) {
                 if (mActivityType == sActiveObserver.mActivityType) {
@@ -163,7 +170,7 @@ public class UmaActivityObserver implements DestroyObserver {
             sActiveObserver = null;
 
             // Record session metrics.
-            mUmaSessionStats.logAndEndSession();
+            mUmaSessionStats.endSessionAndMaybeLog();
         }
     }
 
@@ -174,7 +181,8 @@ public class UmaActivityObserver implements DestroyObserver {
         if (sActiveObserver != this) return;
 
         // Record session metrics.
-        mUmaSessionStats.logAndEndSession();
+        mUmaSessionStats.endSessionAndMaybeLog();
+
         sActiveObserver = null;
         if (!sVisibleObservers.isEmpty() && startNextVisibleSession) {
             // Switch active session to an arbitrary visible window if this session ends.
