@@ -14,6 +14,21 @@ export interface PasswordCount {
   passkeyCount: number;
 }
 
+/**
+ * Type of HaTS survey, used to gauge user perception on a data management
+ * surface.
+ */
+// LINT.IfChange(DataManagementSurvey)
+export enum DataManagementSurvey {
+  YOUR_SAVED_INFO = 0,
+  PASSWORDS = 1,
+  PAYMENTS = 2,
+  CONTACT_INFO = 3,
+  IDENTITY_DOCS = 4,
+  TRAVEL = 5,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/settings/saved_info_handler.cc:DataManagementSurvey)
+
 export interface SavedInfoHandlerProxy {
   /**
    * Get the number of passwords and passkeys.
@@ -24,6 +39,17 @@ export interface SavedInfoHandlerProxy {
    * Get the number of loyalty cards.
    */
   getLoyaltyCardsCount(): Promise<number|undefined>;
+
+  /**
+   * Request launching Happiness Tracking Survey for Your saved info management
+   * surface. This will check the user's eligibility to see the survey
+   * before displaying it.
+   * @param survey category of data management survey for a specific page
+   * @param isFromHomePage true if the current page has been visited from main
+   * Your saved info page (Home of Transactions)
+   */
+  requestDataManagementSurvey(
+      survey: DataManagementSurvey, isFromHomePage: boolean): void;
 }
 
 export class SavedInfoHandlerImpl implements SavedInfoHandlerProxy {
@@ -33,6 +59,14 @@ export class SavedInfoHandlerImpl implements SavedInfoHandlerProxy {
 
   getLoyaltyCardsCount() {
     return sendWithPromise('getLoyaltyCardsCount');
+  }
+
+  requestDataManagementSurvey(
+      survey: DataManagementSurvey, isFromHomePage: boolean) {
+    chrome.send('requestDataManagementSurvey', [
+      survey,
+      isFromHomePage,
+    ]);
   }
 
   static getInstance(): SavedInfoHandlerProxy {

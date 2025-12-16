@@ -21,6 +21,7 @@ import type {Route} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
 
+import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page_index.html.js';
 
 
@@ -54,6 +55,7 @@ export class SettingsYourSavedInfoPageIndexElement extends
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
+    const isFromHomePage = oldRoute?.path === routes.YOUR_SAVED_INFO.path;
     // Need to wait for currentRouteChanged observers on child views to run
     // first, before switching views.
     queueMicrotask(() => {
@@ -61,6 +63,8 @@ export class SettingsYourSavedInfoPageIndexElement extends
         case routes.YOUR_SAVED_INFO:
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
+          SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+              DataManagementSurvey.YOUR_SAVED_INFO, isFromHomePage);
           break;
         case routes.BASIC:
           // Switch back to the default views in case they are part of search
@@ -71,10 +75,14 @@ export class SettingsYourSavedInfoPageIndexElement extends
         case routes.YOUR_SAVED_INFO_CONTACT_INFO:
           this.$.viewManager.switchView(
               'contactInfo', 'no-animation', 'no-animation');
+          SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+              DataManagementSurvey.CONTACT_INFO, isFromHomePage);
           break;
         case routes.YOUR_SAVED_INFO_IDENTITY_DOCS:
           this.$.viewManager.switchView(
               'identityDocs', 'no-animation', 'no-animation');
+          SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+              DataManagementSurvey.IDENTITY_DOCS, isFromHomePage);
           break;
         // <if expr="is_win or is_macosx">
         case routes.PASSKEYS:
@@ -85,10 +93,14 @@ export class SettingsYourSavedInfoPageIndexElement extends
         case routes.PAYMENTS:
           this.$.viewManager.switchView(
               'payments', 'no-animation', 'no-animation');
+          SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+              DataManagementSurvey.PAYMENTS, isFromHomePage);
           break;
         case routes.YOUR_SAVED_INFO_TRAVEL:
           this.$.viewManager.switchView(
               'travel', 'no-animation', 'no-animation');
+          SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+              DataManagementSurvey.TRAVEL, isFromHomePage);
           break;
         default:
           // Nothing to do. Other parent elements are responsible for updating

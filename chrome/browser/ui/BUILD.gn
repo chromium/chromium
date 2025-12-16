@@ -5777,6 +5777,7 @@ static_library("test_support") {
       "test/test_confirm_bubble_model.h",
       "webui/help/test_version_updater.cc",
       "webui/help/test_version_updater.h",
+      "webui/settings/saved_info_handler_test_api.h",
     ]
     deps += [
       "//chrome/browser/ui/browser_window",

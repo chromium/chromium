@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/webui/settings/saved_info_handler.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/webui/settings/saved_info_handler_test_api.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -17,6 +22,7 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -31,15 +37,7 @@ using autofill::TestPersonalDataManager;
 using autofill::TestValuablesDataManager;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
-
-class TestSavedInfoHandler : public SavedInfoHandler {
- public:
-  explicit TestSavedInfoHandler(Profile* profile) : SavedInfoHandler(profile) {}
-  ~TestSavedInfoHandler() override = default;
-
-  // Make public for testing.
-  using SavedInfoHandler::set_web_ui;
-};
+using ::testing::_;
 
 class SavedInfoHandlerTest : public testing::Test {
  public:
@@ -71,6 +69,9 @@ class SavedInfoHandlerTest : public testing::Test {
                                    -> std::unique_ptr<KeyedService> {
                   return std::make_unique<TestValuablesDataManager>();
                 })));
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_.get(), base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDown() override { profile_store_->ShutdownOnUIThread(); }
@@ -88,6 +89,7 @@ class SavedInfoHandlerTest : public testing::Test {
   TestValuablesDataManager* valuables_data_manager() {
     return valuables_data_manager_;
   }
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -103,6 +105,7 @@ class SavedInfoHandlerTest : public testing::Test {
   scoped_refptr<TestPasswordStore> profile_store_;
   affiliations::FakeAffiliationService affiliation_service_;
   raw_ptr<TestValuablesDataManager> valuables_data_manager_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
@@ -126,8 +129,8 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
   passkey.set_user_id("user_id");
   passkey_model()->AddNewPasskeyForTesting(passkey);
 
-  auto handler = std::make_unique<TestSavedInfoHandler>(profile());
-  handler->set_web_ui(web_ui());
+  auto handler = std::make_unique<SavedInfoHandler>(profile());
+  test_api(*handler).set_web_ui(web_ui());
   handler->RegisterMessages();
   handler->AllowJavascriptForTesting();
   RunUntilIdle();  // Allow presenter to initialize
@@ -136,7 +139,7 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
 
   base::Value::List args;
   args.Append("test_callback_id");
-  handler->HandleGetPasswordCount(args);
+  test_api(*handler).HandleGetPasswordCount(args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -156,8 +159,8 @@ TEST_F(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount) {
   loyalty_cards.push_back(autofill::test::CreateLoyaltyCard2());
   autofill::test_api(*valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
 
-  auto handler = std::make_unique<TestSavedInfoHandler>(profile());
-  handler->set_web_ui(web_ui());
+  auto handler = std::make_unique<SavedInfoHandler>(profile());
+  test_api(*handler).set_web_ui(web_ui());
   handler->RegisterMessages();
   handler->AllowJavascriptForTesting();
   RunUntilIdle();  // Allow presenter to initialize
@@ -166,7 +169,7 @@ TEST_F(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount) {
 
   base::Value::List args;
   args.Append("test_callback_id");
-  handler->HandleGetLoyaltyCardsCount(args);
+  test_api(*handler).HandleGetLoyaltyCardsCount(args);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -175,6 +178,30 @@ TEST_F(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount) {
   EXPECT_TRUE(data.arg2()->GetBool());
   EXPECT_TRUE(data.arg3()->is_int());
   EXPECT_EQ(2, data.arg3()->GetInt());
+}
+
+TEST_F(SavedInfoHandlerTest, RequestDataManagementSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kManageYourSavedInfoPerceptionSurvey,
+       autofill::features::kYourSavedInfoSettingsPage},
+      /*disabled_features=*/{});
+
+  auto handler = std::make_unique<SavedInfoHandler>(profile());
+  test_api(*handler).set_web_ui(web_ui());
+  handler->RegisterMessages();
+  handler->AllowJavascriptForTesting();
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurvey(kHatsSurveyTriggerManageYourSavedInfoPerception,
+                          10000, _, _));
+
+  base::Value::List args;
+  args.Append(0);     // DataManagementSurvey::kYourSavedInfo
+  args.Append(true);  // fromHomePage
+  test_api(*handler).HandleRequestDataManagementSurvey(args);
 }
 
 }  // namespace settings
