@@ -150,12 +150,10 @@ const View* GetHierarchyRoot(const View* view) {
 
 namespace internal {
 
-#if DCHECK_IS_ON()
 ScopedChildrenLock::ScopedChildrenLock(const View* view)
     : reset_(&view->iterating_, true) {}
 
 ScopedChildrenLock::~ScopedChildrenLock() = default;
-#endif
 
 }  // namespace internal
 
@@ -333,9 +331,7 @@ void View::ReorderChildView(View* view, size_t index) {
   }
 
   // Rotate |view| to be at the desired position.
-#if DCHECK_IS_ON()
-  DCHECK(!iterating_);
-#endif
+  CHECK(!iterating_);
   if (pos < i) {
     std::rotate(pos, i, std::next(i));
   } else {
@@ -3137,9 +3133,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   }
 
   view->parent_ = this;
-#if DCHECK_IS_ON()
-  DCHECK(!iterating_);
-#endif
+  CHECK(!iterating_);
   const auto pos = children_.insert(
       std::next(children_.cbegin(), static_cast<ptrdiff_t>(index)), view);
 
@@ -3285,9 +3279,7 @@ void View::DoRemoveChildView(View* view,
     view_to_be_deleted.reset(view);
   }
 
-#if DCHECK_IS_ON()
-  DCHECK(!iterating_);
-#endif
+  CHECK(!iterating_);
   children_.erase(i);
 
   if (update_tool_tip) {
