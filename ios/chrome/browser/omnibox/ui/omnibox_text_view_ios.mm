@@ -85,6 +85,9 @@ const CGFloat kMinVerticalInset = 8.0;
 
   // Constraint for the placeholder label top anchor.
   NSLayoutConstraint* _placeholderTopConstraint;
+
+  // Cached single line height.
+  CGFloat _cachedSingleLineHeight;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -1152,6 +1155,7 @@ const CGFloat kMinVerticalInset = 8.0;
 - (void)updateTextProperitesOnTraitChange {
   // Reset the fonts to the appropriate ones in this size class.
   self.font = self.currentFont;
+  _cachedSingleLineHeight = 0;
   [self updateTextContainerInset];
   self.placeholderLabel.font = self.font;
   [self setAttributedText:self.attributedText];
@@ -1179,6 +1183,9 @@ const CGFloat kMinVerticalInset = 8.0;
 
 /// Returns the height of a single line of text with the current font.
 - (CGFloat)singleLineHeight {
+  if (_cachedSingleLineHeight > 0) {
+    return _cachedSingleLineHeight;
+  }
   UIFont* font = self.font ?: self.currentFont;
   // Create a sample attributed string for one line.
   NSAttributedString* singleLineSampler =
@@ -1197,6 +1204,7 @@ const CGFloat kMinVerticalInset = 8.0;
   if (measuredSingleLineHeight <= 0) {
     measuredSingleLineHeight = font.lineHeight;
   }
+  _cachedSingleLineHeight = measuredSingleLineHeight;
   return measuredSingleLineHeight;
 }
 
