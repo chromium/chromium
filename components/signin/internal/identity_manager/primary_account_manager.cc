@@ -648,14 +648,8 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   VLOG(1) << "OnSignoutDecisionReached: "
           << (signout_decision == SigninClient::SignoutDecision::ALLOW);
 
-  // |REVOKE_SYNC_DISALLOWED| implies that removing the primary account is not
-  // allowed as the sync consent is attached to the primary account. Therefore,
-  // there is no need to check |remove_option| as regardless of its value, this
-  // function will be no-op.
   bool abort_signout =
       GetPrimaryAccount().account_info.IsEmpty() ||
-      signout_decision ==
-          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED ||
       (remove_option == RemoveAccountsOption::kRemoveAllAccounts &&
        signout_decision ==
            SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);

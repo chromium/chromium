@@ -105,16 +105,13 @@ TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
   PreSignOut(source_metric);
 }
 
-TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
+TEST_F(ChromeSigninClientSignoutTest, ClearPrimaryAccountAllowed) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   EXPECT_FALSE(profile->IsChild());
 
   CreateClient(profile.get());
 
   EXPECT_TRUE(client_->IsClearPrimaryAccountAllowed());
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
-#endif
 }
 
 TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
@@ -129,7 +126,6 @@ TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
 #else
   EXPECT_TRUE(client_->IsClearPrimaryAccountAllowed());
 #endif
-  EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
 }
 
 class ChromeSigninClientSignoutSourceTest
@@ -208,7 +204,6 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
 
   CreateClient(profile.get());
   ASSERT_TRUE(client_->IsClearPrimaryAccountAllowed());
-  ASSERT_TRUE(client_->IsRevokeSyncConsentAllowed());
 
   // Verify IdentityManager gets callback indicating sign-out is always allowed.
   EXPECT_CALL(*client_, SignOutCallback(signout_source,
@@ -247,30 +242,6 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
   PreSignOut(signout_source);
 }
 
-TEST_P(ChromeSigninClientSignoutSourceTest, RevokeSyncDisallowed) {
-  signin_metrics::ProfileSignout signout_source = GetParam();
-  TestingProfile::Builder builder;
-  builder.SetGuestSession();
-  std::unique_ptr<TestingProfile> profile = builder.Build();
-
-  CreateClient(profile.get());
-
-  client_->set_is_clear_primary_account_allowed_for_testing(
-      SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
-  ASSERT_FALSE(client_->IsClearPrimaryAccountAllowed());
-  ASSERT_FALSE(client_->IsRevokeSyncConsentAllowed());
-
-  // Verify IdentityManager gets callback indicating sign-out is disallowed iff
-  // the source of the sign-out is a user-action.
-  SigninClient::SignoutDecision signout_decision =
-      IsAlwaysAllowedSignoutSources(signout_source)
-          ? SigninClient::SignoutDecision::ALLOW
-          : SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
-  EXPECT_CALL(*client_, SignOutCallback(signout_source, signout_decision))
-      .Times(1);
-
-  PreSignOut(signout_source);
-}
 #endif
 
 const signin_metrics::ProfileSignout kSignoutSources[] = {

@@ -880,21 +880,8 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
       << "Profile deletion is not allowed!";
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
-
-  if (!signin_client->IsRevokeSyncConsentAllowed()) {
-    // If the user can't revoke sync the profile must be destroyed.
-    if (delete_profile && delete_profile_allowed) {
-      webui::DeleteProfileAtPath(profile_path,
-                                 ProfileMetrics::DELETE_PROFILE_SETTINGS);
-    } else {
-      DCHECK(delete_profile) << "User signout requires profile destruction.";
-    }
-    return;
-  }
 
   if (!is_clear_primary_account_allowed) {
-    DCHECK(signin_client->IsRevokeSyncConsentAllowed());
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
   } else {

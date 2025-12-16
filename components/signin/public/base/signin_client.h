@@ -59,9 +59,6 @@ class SigninClient : public KeyedService {
   enum class SignoutDecision {
     ALLOW,
     CLEAR_PRIMARY_ACCOUNT_DISALLOWED,
-    // Revoke sync disallowed implies that removing the primary account is also
-    // disallowed since sync is attached to the primary account.
-    REVOKE_SYNC_DISALLOWED,
   };
 
   ~SigninClient() override = default;
@@ -95,7 +92,6 @@ class SigninClient : public KeyedService {
   // Returns true if clearing the primary account is allowed regardless of the
   // consent level.
   virtual bool IsClearPrimaryAccountAllowed() const;
-  virtual bool IsRevokeSyncConsentAllowed() const;
 
   bool is_clear_primary_account_allowed_for_testing() const;
 

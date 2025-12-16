@@ -1857,18 +1857,6 @@ class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
 };
 
 #if DCHECK_IS_ON()
-TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
-  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
-      "a@gmail.com", ConsentLevel::kSync);
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  GetSigninSlient(profile())->set_is_clear_primary_account_allowed_for_testing(
-      SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
-
-  CreatePeopleHandler();
-  base::Value::List args;
-  args.Append(/*value=*/false);
-  EXPECT_DEATH(SimulateSignout(args), ".*");
-}
 
 TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
@@ -1893,8 +1881,6 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
   GetSigninSlient(profile())->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  EXPECT_TRUE(ChromeSigninClientFactory::GetForProfile(profile())
-                  ->IsRevokeSyncConsentAllowed());
 
   CreatePeopleHandler();
 

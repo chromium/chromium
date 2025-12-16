@@ -54,9 +54,6 @@ class ChromeSigninClient : public SigninClient {
   // - Supervised users on Android.IsRevokeSyncConsentAllowed
   bool IsClearPrimaryAccountAllowed() const override;
 
-  // TODO(crbug.com/40240844): Remove revoke sync restriction when allowing
-  // enterprise users to revoke sync fully launches.
-  bool IsRevokeSyncConsentAllowed() const override;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
       signin_metrics::ProfileSignout signout_source_metric) override;

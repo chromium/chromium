@@ -392,7 +392,6 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
   EXPECT_EQ(signin::ConsentLevel::kSync,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
-  EXPECT_TRUE(signin_client()->IsRevokeSyncConsentAllowed());
 }
 
 // TODO(https://crbug.com/340623286): Convert this test to use the
@@ -512,5 +511,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(signin::ConsentLevel::kSync,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
-  EXPECT_TRUE(signin_client()->IsRevokeSyncConsentAllowed());
 }
