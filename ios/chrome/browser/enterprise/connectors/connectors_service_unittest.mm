@@ -102,6 +102,12 @@ class ConnectorsServiceTest : public PlatformTest {
         ->SetMachineLevelUserCloudPolicyManagerForTesting(manager_.get());
   }
 
+  void TearDown() override {
+    GetApplicationContext()
+        ->GetBrowserPolicyConnector()
+        ->SetMachineLevelUserCloudPolicyManagerForTesting(/*manager=*/nullptr);
+  }
+
   TestProfileIOS* profile() { return profile_.get(); }
 
   signin::IdentityManager* identity_manager() {
