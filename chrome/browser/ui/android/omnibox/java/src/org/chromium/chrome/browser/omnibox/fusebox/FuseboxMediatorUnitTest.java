@@ -194,12 +194,13 @@ public class FuseboxMediatorUnitTest {
                         mTemplateUrlServiceSupplier);
     }
 
-    private void addTabAttachment(String title) {
-        addAttachment(title, "token-" + title, FuseboxAttachmentType.ATTACHMENT_TAB);
+    private void addTabAttachment(Tab tab) {
+        mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(tab, mResources));
     }
 
-    private void addAttachment(
+    private FuseboxAttachment addAttachment(
             String title, String token, @FuseboxAttachmentType int attachmentType) {
+        FuseboxAttachment attachment;
         if (attachmentType == FuseboxAttachmentType.ATTACHMENT_TAB) {
             Tab mockTab = mock(Tab.class);
             when(mockTab.getTitle()).thenReturn(title);
@@ -208,23 +209,21 @@ public class FuseboxMediatorUnitTest {
                     .thenReturn(null); // This will trigger addTabContextFromCache path
             when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
             when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
-            mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(mockTab, mResources));
+            attachment = FuseboxAttachment.forTab(mockTab, mResources);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
-            mMediator.uploadAndAddAttachment(
-                    FuseboxAttachment.forFile(null, title, "image/", new byte[0]));
+            attachment = FuseboxAttachment.forFile(null, title, "image/", new byte[0]);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
             doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
-            mMediator.uploadAndAddAttachment(
+            attachment =
                     FuseboxAttachment.forCameraImage(
-                            /* thumbnail= */ null, title, "image/", new byte[0]));
+                            /* thumbnail= */ null, title, "image/", new byte[0]);
         } else {
             throw new UnsupportedOperationException();
         }
-    }
 
-    private void addTabAttachment(Tab tab) {
-        mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(tab, mResources));
+        mMediator.uploadAndAddAttachment(attachment);
+        return attachment;
     }
 
     private Tab mockTab(int id, boolean webContentsReady) {
@@ -426,7 +425,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
-        addTabAttachment("title");
+        addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
 
         mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, true);
@@ -902,6 +901,72 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testFailedUpload() {
         mMediator.onAttachmentUploadFailed();
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_imageInImageGeneration() {
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
+        verify(mSnackbarManager, never()).showSnackbar(any());
+
+        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_nonImageInImageGeneration() {
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+
+        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
+        verify(mSnackbarManager).showSnackbar(any());
+
+        clearInvocations(mSnackbarManager);
+
+        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_tabReselection() {
+        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_listFull_noTabs() {
+        while (mAttachments.getRemainingAttachments() > 0) {
+            addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
+        }
+
+        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_listFull_withTabs() {
+        while (mAttachments.getRemainingAttachments() > 1) {
+            addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
+        }
+        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_TAB);
+
+        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_remainingAttachments() {
+        assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testIsMaxAttachmentCountReached_maxAttachmentsReached() {
+        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+            addAttachment("title" + i, "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
+        }
+        assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
         verify(mSnackbarManager).showSnackbar(any());
     }
 }
