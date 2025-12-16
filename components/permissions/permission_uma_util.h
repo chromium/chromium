@@ -109,7 +109,9 @@ enum class RequestTypeForUma {
   NUM,
 };
 
-// Any new values should be inserted immediately prior to kMaxValue.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Any new values should be inserted
+// immediately prior to kMaxValue.
 enum class PermissionSourceUI {
   // Permission prompt.
   PROMPT = 0,
