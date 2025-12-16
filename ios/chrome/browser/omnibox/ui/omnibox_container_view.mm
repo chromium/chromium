@@ -412,7 +412,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   // Computes user text height.
   CGFloat verticalPadding =
       _textView.textContainerInset.top + _textView.textContainerInset.bottom;
-  CGFloat singleLineHeight = [self singleLineHeight];
+  CGFloat singleLineHeight = [_textView singleLineHeight];
 
   // Calculate the height of the user text.
   NSAttributedString* userText = _textView.attributedUserText;
@@ -543,6 +543,12 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 
 #pragma mark - TextFieldViewContaining
 
+- (void)setMinimumHeight:(CGFloat)minimumHeight {
+  if (UseTextView(_presentationContext)) {
+    _textView.minimumHeight = minimumHeight;
+  }
+}
+
 - (UIView*)textFieldView {
   return _textInputView;
 }
@@ -591,29 +597,6 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 }
 
 #pragma mark - Private
-
-/// Returns the height of a single line of text with the current font.
-- (CGFloat)singleLineHeight {
-  UIFont* font = _textView.font ?: _textView.currentFont;
-  // Create a sample attributed string for one line.
-  NSAttributedString* singleLineSampler =
-      [[NSAttributedString alloc] initWithString:@"T"
-                                      attributes:@{NSFontAttributeName : font}];
-  CGSize singleLineConstraint = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-  NSStringDrawingOptions options =
-      NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
-  CGRect singleLineBoundingRect =
-      [singleLineSampler boundingRectWithSize:singleLineConstraint
-                                      options:options
-                                      context:nil];
-  CGFloat measuredSingleLineHeight = ceilf(singleLineBoundingRect.size.height);
-
-  // If for some reason measurement fails, fall back to font.lineHeight.
-  if (measuredSingleLineHeight <= 0) {
-    measuredSingleLineHeight = font.lineHeight;
-  }
-  return measuredSingleLineHeight;
-}
 
 /// Computes the height needed to layout `attributedText` with `drawingWidth`.
 /// The height is computed with `lineBreakModeForUserText`.

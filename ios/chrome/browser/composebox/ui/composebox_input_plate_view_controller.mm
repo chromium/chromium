@@ -59,9 +59,16 @@ const CGFloat kButtonsStackViewSpacing = 6.0f;
 const CGFloat kShortcutsSpacing = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
-/// The vertical padding for the input plate stack view.
-const CGFloat kInputPlateStackViewVerticalCompactPadding = 0.0f;
-const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
+/// The minimum height of the omnibox.
+const CGFloat kOmniboxMinHeight = 44.0;
+/// The default vertical padding for the input plate. When the text view is the
+/// top most element the padding must be 0. Otherwise, it won't extend to the
+/// top edge when scrolling (crbug.com/464259064).
+const CGFloat kInputPlateStackViewVerticalPadding = 0.0f;
+/// The top padding with the expanded input plate when there are attachments.
+const CGFloat kInputPlateStackViewExpandedWithAttachmentsTopPadding = 10.0f;
+/// The bottom padding with the expanded input plate.
+const CGFloat kInputPlateStackViewExpandedBottomPadding = 10.0f;
 /// The horizontal padding for the input plate stack view.
 const CGFloat kInputPlateStackViewHorizontalPadding = 10.0f;
 /// The font size for the AIM mode button title.
@@ -242,14 +249,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   _bottomPaddingConstraint = [_inputPlateStackView.bottomAnchor
       constraintEqualToAnchor:_inputPlateContainerView.bottomAnchor
-                     constant:-kInputPlateStackViewVerticalCompactPadding];
-  [NSLayoutConstraint activateConstraints:@[ _bottomPaddingConstraint ]];
+                     constant:-kInputPlateStackViewVerticalPadding];
+  _topPaddingConstraint = [_inputPlateStackView.topAnchor
+      constraintEqualToAnchor:_inputPlateContainerView.topAnchor
+                     constant:kInputPlateStackViewVerticalPadding];
+  [NSLayoutConstraint
+      activateConstraints:@[ _bottomPaddingConstraint, _topPaddingConstraint ]];
 
   AddSameConstraintsToSidesWithInsets(
       _inputPlateStackView, _inputPlateContainerView,
-      (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
-      NSDirectionalEdgeInsetsMake(kInputPlateStackViewVerticalCompactPadding,
-                                  kInputPlateStackViewHorizontalPadding, 0,
+      (LayoutSides::kLeading | LayoutSides::kTrailing),
+      NSDirectionalEdgeInsetsMake(0, kInputPlateStackViewHorizontalPadding, 0,
                                   kInputPlateStackViewHorizontalPadding));
 
   [self updateInputPlateStackViewAnimated:NO];
@@ -285,6 +295,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
+  _editView.minimumHeight = kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:editView];
   AddSameConstraints(_editView, _omniboxContainer);
@@ -308,6 +319,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)setItems:(NSArray<ComposeboxInputItem*>*)items {
   _carouselContainer.hidden = !items.count;
+  [self updateInputPlateStackViewTopConstraint];
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kMainSectionIdentifier ]];
@@ -688,6 +700,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       scrollToItemAtIndexPath:lastItemIndexPath
              atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
                      animated:YES];
+}
+
+/// Updates the input plate stack view top padding.
+- (void)updateInputPlateStackViewTopConstraint {
+  if (_carouselContainer.hidden) {
+    _topPaddingConstraint.constant = kInputPlateStackViewVerticalPadding;
+  } else {
+    _topPaddingConstraint.constant =
+        kInputPlateStackViewExpandedWithAttachmentsTopPadding;
+  }
 }
 
 /// Initiates the glow animation around the input plate.
@@ -1240,8 +1262,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                  afterView:_plusButton];
     [_inputPlateStackView setCustomSpacing:kShortcutsSpacing
                                  afterView:_micButton];
-    _bottomPaddingConstraint.constant =
-        -kInputPlateStackViewVerticalCompactPadding;
+    _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
   } else {
     UIView* toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
@@ -1249,9 +1270,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
 
-    _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
+    _bottomPaddingConstraint.constant =
+        -kInputPlateStackViewExpandedBottomPadding;
     _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
   }
+  [self updateInputPlateStackViewTopConstraint];
 }
 
 /// Animates the transition of the input plate stack view between compact and

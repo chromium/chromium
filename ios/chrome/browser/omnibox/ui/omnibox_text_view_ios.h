@@ -36,6 +36,9 @@
 /// UITextView. The logic to constrain the placeholder is handled by this class.
 @property(nonatomic, weak) UILabel* placeholderLabel;
 
+/// The minimum height of the text view.
+@property(nonatomic, assign) CGFloat minimumHeight;
+
 /// Initialize the omnibox with the given `frame`, `textColor`, and `tintColor`.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
@@ -44,6 +47,9 @@
 
 /// Returns the user text.
 - (NSAttributedString*)attributedUserText;
+
+/// Returns the height of a single line of text with the current font.
+- (CGFloat)singleLineHeight;
 
 @end
 
