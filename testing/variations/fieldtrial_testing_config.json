@@ -23520,29 +23520,6 @@
             ]
         }
     ],
-    "SharedDictionaryCache": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2_20250520",
-                    "params": {
-                        "cache_size": "2"
-                    },
-                    "enable_features": [
-                        "SharedDictionaryCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedHighlightingIphClank": [
         {
             "platforms": [
