@@ -4,8 +4,12 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include <ranges>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -27,12 +31,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
@@ -44,6 +50,36 @@
 #endif
 
 namespace glic {
+
+// Feature flag kGlicCountryFiltering controls whether country filtering is
+// applied client side. Two finch params are used to control this, both are a
+// comma separated string.
+// disabled_countries:
+//   - Optional, default to empty.
+//   - The country must not be in this list to be enabled.
+// enabled_countries:
+//   - Optional, default to kDefaultEnabledCountries.
+//   - If the size is 1 and the string is "*", then all countries are enabled.
+//   - Otherwise, the country must be in this list to be enabled.
+
+// Comma separated list of countries to enable GLIC, by default, if country
+// filtering is enabled.
+constexpr char kDefaultEnabledCountries[] = "us";
+
+// Feature flag kGlicLocaleFiltering controls whether locale filtering is
+// applied client side. Two finch params are used to control this, both are a
+// comma separated string.
+// disabled_locales:
+//   - Optional, default to empty.
+//   - The locale must not be in this list to be enabled.
+// enabled_locales:
+//   - Optional, default to kDefaultEnabledLocales.
+//   - If the size is 1 and the string is "*", then all locales are enabled.
+//   - Otherwise, the locale must be in this list to be enabled.
+
+// Comma separated list of locales to enable GLIC, by default, if locale
+// filtering is enabled.
+constexpr char kDefaultEnabledLocales[] = "en-us";
 
 namespace {
 
@@ -65,7 +101,92 @@ bool HasGoogleInternalProfile() {
   return false;
 }
 
+std::vector<std::string> GetFieldTrialParamAsSplitString(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value) {
+  std::string string_list = base::GetFieldTrialParamByFeatureAsString(
+      feature, param_name, default_value);
+  return base::SplitString(string_list, ", \t\n'\"", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+std::optional<bool> GetCountryEnablement(
+    GlicGlobalEnabling::Delegate& delegate) {
+  if (!base::FeatureList::IsEnabled(features::kGlicCountryFiltering)) {
+    return std::nullopt;
+  }
+  std::vector<std::string> enabled_countries = GetFieldTrialParamAsSplitString(
+      features::kGlicCountryFiltering, "enabled_countries",
+      kDefaultEnabledCountries);
+
+  std::vector<std::string> disabled_countries = GetFieldTrialParamAsSplitString(
+      features::kGlicCountryFiltering, "disabled_countries", "");
+
+  std::string country_code = delegate.GetCountryCode();
+  auto country_matches = [&](const std::string& c) {
+    return base::EqualsCaseInsensitiveASCII(c, country_code);
+  };
+
+  if (std::ranges::any_of(disabled_countries, country_matches)) {
+    return false;
+  }
+
+  if (enabled_countries.size() == 1 && enabled_countries[0] == "*") {
+    return true;
+  }
+
+  return std::ranges::any_of(enabled_countries, country_matches);
+}
+
+std::optional<bool> GetLocaleEnablement(
+    GlicGlobalEnabling::Delegate& delegate) {
+  if (!base::FeatureList::IsEnabled(features::kGlicLocaleFiltering)) {
+    return std::nullopt;
+  }
+  auto normalize_locale = [&](const std::string& locale) {
+    std::string out;
+    base::ReplaceChars(locale, "_", "-", &out);
+    return base::ToLowerASCII(out);
+  };
+
+  std::vector<std::string> disabled_locales = GetFieldTrialParamAsSplitString(
+      features::kGlicLocaleFiltering, "disabled_locales", "");
+
+  std::vector<std::string> enabled_locales = GetFieldTrialParamAsSplitString(
+      features::kGlicLocaleFiltering, "enabled_locales",
+      kDefaultEnabledLocales);
+
+  std::string locale = normalize_locale(delegate.GetLocale());
+  auto matches_locale = [&](const std::string& a) {
+    return normalize_locale(a) == locale;
+  };
+
+  if (std::ranges::any_of(disabled_locales, matches_locale)) {
+    return false;
+  }
+
+  if (enabled_locales.size() == 1 && enabled_locales[0] == "*") {
+    return true;
+  }
+
+  return std::ranges::any_of(enabled_locales, matches_locale);
+}
+
 }  // namespace
+
+std::string GlicGlobalEnabling::Delegate::GetCountryCode() {
+  std::string country_code =
+      base::ToLowerASCII(variations::GetCurrentCountryCode(
+          g_browser_process->variations_service()));
+  DLOG_IF(WARNING, country_code.empty()) << "Couldn't get country info.";
+  return country_code;
+}
+
+std::string GlicGlobalEnabling::Delegate::GetLocale() {
+  return base::ToLowerASCII(
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
+}
 
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
@@ -164,18 +285,18 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   return result;
 }
 
-// static
-bool GlicEnabling::IsInRolloutLocation() {
-  // TODO(crbug.com/454702721): Getting the location on ChromeOS is done
-  // differently.
-  auto* variations_service = g_browser_process->variations_service();
-  return variations_service->GetStoredPermanentCountry() == "us" &&
-         g_browser_process->GetApplicationLocale() == "en-US";
+GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
+  locale_enablement_ = GetLocaleEnablement(delegate);
+  country_enablement_ = GetCountryEnablement(delegate);
 }
 
-bool GlicEnabling::IsEnabledByFlags() {
+GlicGlobalEnabling::~GlicGlobalEnabling() = default;
+
+bool GlicGlobalEnabling::IsEnabledByFlags() {
   bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
-                    features::HasTabSearchToolbarButton();
+                    features::HasTabSearchToolbarButton() &&
+                    locale_enablement_.value_or(true) &&
+                    country_enablement_.value_or(true);
 #if BUILDFLAG(IS_CHROMEOS)
   constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
 
@@ -190,6 +311,21 @@ bool GlicEnabling::IsEnabledByFlags() {
                                   chromeos::features::kFeatureManagementGlic));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return is_enabled;
+}
+
+// static
+bool GlicEnabling::IsInRolloutLocation() {
+  // TODO(crbug.com/454702721): Getting the location on ChromeOS is done
+  // differently.
+  auto* variations_service = g_browser_process->variations_service();
+  return variations_service->GetStoredPermanentCountry() == "us" &&
+         g_browser_process->GetApplicationLocale() == "en-US";
+}
+
+bool GlicEnabling::IsEnabledByFlags() {
+  return g_browser_process->GetFeatures()
+      ->glic_global_enabling()
+      .IsEnabledByFlags();
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {

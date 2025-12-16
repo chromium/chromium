@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_ENABLING_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_ENABLING_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -54,6 +58,27 @@ enum class ProfileReadyState : int32_t;
 inline constexpr char
     kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName[] =
         "GlicEligibilitySeparateAccountCapabilityAffectedUsers";
+
+// Global state used by GlicEnabling.
+class GlicGlobalEnabling {
+ public:
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual std::string GetCountryCode();
+    virtual std::string GetLocale();
+  };
+  explicit GlicGlobalEnabling(Delegate& delegate);
+  ~GlicGlobalEnabling();
+  bool IsEnabledByFlags();
+
+ private:
+  std::optional<bool> locale_enablement_;
+  std::optional<bool> country_enablement_;
+};
 
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled

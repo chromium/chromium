@@ -89,8 +89,13 @@ GlicE2ETest::GlicE2ETest() {
                             features::kGlicRollout,
                             contextual_cueing::kContextualCueing,
                             mojom::features::kZeroStateSuggestionsV2},
-      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                             features::kGlicMultiInstance});
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          features::kGlicMultiInstance,
+          // Don't disable glic based on country/locale.
+          features::kGlicCountryFiltering,
+          features::kGlicLocaleFiltering,
+      });
 }
 
 GlicE2ETest::~GlicE2ETest() = default;

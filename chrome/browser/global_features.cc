@@ -93,6 +93,8 @@ void GlobalFeatures::PostBrowserProcessInit() {
           *g_browser_process, g_browser_process);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  PostBrowserProcessInitCore();
+
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
@@ -103,8 +105,6 @@ void GlobalFeatures::PostBrowserProcessInit() {
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
 #endif
-
-  PostBrowserProcessInitCore();
 }
 
 void GlobalFeatures::PreBrowserProcessInitCore() {
@@ -126,6 +126,12 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicGlobalEnabling::Delegate glic_enabling_delegate;
+  glic_global_enabling_ =
+      std::make_unique<glic::GlicGlobalEnabling>(glic_enabling_delegate);
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(

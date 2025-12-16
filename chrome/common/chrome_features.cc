@@ -455,6 +455,11 @@ const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls country and locale filtering for Glic.
+// See chrome/browser/glic/public/glic_enabling.cc for more details.
+BASE_FEATURE(kGlicCountryFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Glic FRE dialog is displayed in the same window as the
 // main app.
 BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_DISABLED_BY_DEFAULT);
