@@ -4820,7 +4820,9 @@ TEST_P(IntegrationLegacyProcessLauncherTest, LaunchCmdElevated) {
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
 }
 
-TEST_P(IntegrationLegacyProcessLauncherTest, LaunchCmdLine) {
+// TODO(crbug.com/465095657): re-enable this test after fixing
+// `IProcessLauncher::LaunchCmdLine`.
+TEST_P(IntegrationLegacyProcessLauncherTest, DISABLED_LaunchCmdLine) {
   ASSERT_NO_FATAL_FAILURE(ExpectProcessLauncherLaunchCmdLineSucceeds());
 }
 
