@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -414,7 +415,9 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   // offset from the widget by a few DIPs, which is troublesome for computing a
   // subpixel offset when using fractional scale factors.  So we're forced to
   // put this drawing in the BrowserRootView.
-  if (tabstrip()->ShouldDrawStrokes() && browser_view_->IsToolbarVisible()) {
+  if (tabstrip()->ShouldDrawStrokes() && browser_view_->IsToolbarVisible() &&
+      browser_view_->ShouldDrawTabStrip() &&
+      !browser_view_->IsFullscreen()) {
     ui::PaintRecorder recorder(paint_info.context(),
                                paint_info.paint_recording_size(),
                                paint_info.paint_recording_scale_x(),
@@ -423,11 +426,15 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
 
     const float scale = canvas->image_scale();
 
-    gfx::RectF toolbar_bounds(browser_view_->toolbar()->bounds());
-    ConvertRectToTarget(browser_view_, this, &toolbar_bounds);
-    const int bottom = std::round(toolbar_bounds.y() * scale);
-    const int x = std::round(toolbar_bounds.x() * scale);
-    const int width = std::round(toolbar_bounds.width() * scale);
+    gfx::RectF tabstrip_bounds(browser_view_->tabstrip()->GetLocalBounds());
+    ConvertRectToTarget(browser_view_->tabstrip(), this, &tabstrip_bounds);
+    gfx::RectF browser_bounds(browser_view_->GetLocalBounds());
+    ConvertRectToTarget(browser_view_, this, &browser_bounds);
+    const float unscaled_bottom =
+        tabstrip_bounds.bottom() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+    const int bottom = std::round(unscaled_bottom * scale);
+    const int x = std::round(browser_bounds.x() * scale);
+    const int width = std::round(browser_bounds.width() * scale);
 
     gfx::ScopedCanvas scoped_canvas(canvas);
     const std::optional<int> active_tab_index = tabstrip()->GetActiveIndex();
@@ -442,6 +449,9 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
           // view.
           ConvertRectToTarget(tabstrip(),
                               tabstrip()->GetWidget()->GetRootView(), &bounds);
+          // Extend the bounds to cover the curve at the end of the toolbar.
+          bounds.set_height(bounds.height() +
+                            GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
           canvas->ClipRect(bounds, SkClipOp::kDifference);
         };
 
