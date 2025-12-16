@@ -223,8 +223,7 @@ void Connection::RemoveTransaction(int64_t id) {
   // alive.
   for (const auto& [_, transaction] : transactions_) {
     if (transaction->state() == Transaction::State::STARTED &&
-        transaction->IsTransactionBlockingOtherClients(
-            /*consider_priority=*/true)) {
+        transaction->IsTransactionBlockingOtherClients()) {
       can_go_inactive = false;
       break;
     }
