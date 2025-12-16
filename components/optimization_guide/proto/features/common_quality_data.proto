@@ -423,7 +423,7 @@ message BoundingRect {
 // Note: ScrollerInfo is populated for ANNOTATED_PAGE_CONTENT_MODE_DEFAULT. The
 // rest of the fields are only populated for
 // ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
-// Next ID: 17
+// Next ID: 18
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
@@ -498,6 +498,11 @@ message InteractionInfo {
   // events. This is not set for nodes which are not hit-testable and will
   // ignore events, for example with `pointer-events: none`.
   bool is_disabled = 16 [features = { field_presence: EXPLICIT }];
+
+  // Hints on why the interaction with the node is disabled.
+  //
+  // TODO(linnan): Deprecate is_disabled in favour of the list of reasons.
+  repeated InteractionDisabledReason interaction_disabled_reasons = 17;
 
   reserved 8, 1, 2, 11;
 }
@@ -2126,6 +2131,21 @@ enum ClickabilityReason {
   // in Chrome to know what properties the rule might effect, so this reason
   // just indicates that a :hover rule is defined.
   CLICKABILITY_REASON_HOVER_PSEUDO_CLASS = 14;
+}
+
+// Provides hints that indicate that interaction with this node is disabled.
+// Next ID: 4
+enum InteractionDisabledReason {
+  INTERACTION_DISABLED_REASON_UNSPECIFIED = 0;
+
+  // The node is disabled by the `disabled` attribute.
+  INTERACTION_DISABLED_REASON_DISABLED = 1;
+
+  // The node is disabled by the `aria-disabled` attribute.
+  INTERACTION_DISABLED_REASON_ARIA_DISABLED = 2;
+
+  // The node has the style `cursor: not-allowed`.
+  INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED = 3;
 }
 
 // Next ID: 5
