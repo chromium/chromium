@@ -3458,7 +3458,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ReduceRequirementsForPasswordChange"
+                        "ReduceRequirementsForPasswordChange",
+                        "UseActionablesForImprovedPasswordChange"
                     ]
                 }
             ]
