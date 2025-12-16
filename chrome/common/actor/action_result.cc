@@ -48,10 +48,6 @@ mojom::ActionResultPtr MakeOkResult(bool requires_page_stabilization) {
       /*execution_end_time=*/base::TimeTicks::Now());
 }
 
-mojom::ActionResultPtr MakeErrorResult() {
-  return MakeResult(mojom::ActionResultCode::kError);
-}
-
 mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
                                   bool requires_page_stabilization,
                                   std::string_view msg) {

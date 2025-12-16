@@ -36,10 +36,6 @@ bool RequiresPageStabilization(const mojom::ActionResult& result);
 
 mojom::ActionResultPtr MakeOkResult(bool requires_page_stabilization = true);
 
-// TODO(crbug.com/409558980): Replace generic errors with tool-specific ones,
-// and remove this function.
-mojom::ActionResultPtr MakeErrorResult();
-
 // TODO(b/459615712): Rename this to MakeErrorResult to make it clear that this
 // shouldn't be used for successful results as the default page_stabilization
 // argument makes this error-prone. This is runtime asserted inside.

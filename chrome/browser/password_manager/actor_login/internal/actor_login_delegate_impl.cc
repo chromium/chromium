@@ -146,8 +146,9 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::unexpected(ActorLoginError::kUnknown)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       base::unexpected(ActorLoginError::kFeatureDisabled)));
     return;
   }
 
