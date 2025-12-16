@@ -775,7 +775,16 @@ void LayoutObject::RemoveChild(LayoutObject* old_child) {
   if (!children)
     return;
 
+  LayoutBoxModelObject* previous_sibling =
+      DynamicTo<LayoutBoxModelObject>(old_child->PreviousSibling());
+  LayoutBoxModelObject* next_sibling =
+      DynamicTo<LayoutBoxModelObject>(old_child->NextSibling());
+
   children->RemoveChildNode(this, old_child);
+
+  if (RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled()) {
+    LayoutBoxModelObject::AttemptToMerge(previous_sibling, next_sibling);
+  }
 }
 
 bool LayoutObject::IsInTopOrViewTransitionLayer() const {

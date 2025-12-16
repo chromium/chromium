@@ -101,10 +101,15 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow {
   // Guaranteed to be between kMinColSpan and kMaxColSpan.
   unsigned ColSpan() const;
 
- protected:
+ private:
   bool IsTableCell() const final {
     NOT_DESTROYED();
     return true;
+  }
+
+  bool CanMergeWith(const LayoutBoxModelObject& other) const override {
+    NOT_DESTROYED();
+    return other.IsTableCell();
   }
 
   // Table cell applies a special clip to its background.
@@ -113,7 +118,6 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow {
     return false;
   }
 
- private:
   void UpdateColAndRowSpanFlags();
 
   unsigned ParseRowSpanFromDOM() const;

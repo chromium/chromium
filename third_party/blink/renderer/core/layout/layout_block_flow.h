@@ -78,6 +78,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
 
+  bool CanMergeWith(const LayoutBoxModelObject&) const override;
+
   void ChildBecameFloatingOrOutOfFlow(LayoutBox* child);
   void CollapseAnonymousBlockChild(LayoutBlockFlow* child);
 

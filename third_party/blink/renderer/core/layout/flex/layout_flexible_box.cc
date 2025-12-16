@@ -68,6 +68,8 @@ bool LayoutFlexibleBox::HasLeftOverflow() const {
 namespace {
 
 void MergeAnonymousFlexItems(LayoutObject* remove_child) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled());
+
   // When we remove a flex item, and the previous and next siblings of the item
   // are text nodes wrapped in anonymous flex items, the adjacent text nodes
   // need to be merged into the same flex item.
@@ -131,7 +133,8 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
 }
 
 void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!DocumentBeingDestroyed()) {
+  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled() &&
+      !DocumentBeingDestroyed()) {
     MergeAnonymousFlexItems(child);
   }
 

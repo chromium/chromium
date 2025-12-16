@@ -990,6 +990,38 @@ LayoutBox* LayoutBoxModelObject::CreateAnonymousBoxToSplit(
   return box_to_split->CreateAnonymousBoxWithSameTypeAs(this);
 }
 
+void LayoutBoxModelObject::AttemptToMerge(LayoutBoxModelObject* prev,
+                                          LayoutBoxModelObject* next) {
+  if (!prev || !prev->IsAnonymous()) {
+    return;
+  }
+
+  if (!next || !next->IsAnonymous()) {
+    return;
+  }
+
+  DCHECK_EQ(prev->NextSibling(), next);
+
+  DCHECK_EQ(prev->CanMergeWith(*next), next->CanMergeWith(*prev));
+  if (!prev->CanMergeWith(*next)) {
+    return;
+  }
+
+  LayoutBoxModelObject* last_child =
+      DynamicTo<LayoutBoxModelObject>(prev->SlowLastChild());
+  LayoutBoxModelObject* first_child =
+      DynamicTo<LayoutBoxModelObject>(next->SlowFirstChild());
+
+  // Shift all the children of `next` into `prev`, and destroy the
+  // (now empty) sibling.
+  next->MoveAllChildrenTo(prev, true);
+  next->Destroy();
+
+  // We now need to recurse, as there may be multiple levels of anonymous
+  // objects which need to be stitched together.
+  AttemptToMerge(last_child, first_child);
+}
+
 bool LayoutBoxModelObject::BackgroundTransfersToView(
     const ComputedStyle* document_element_style) const {
   NOT_DESTROYED();

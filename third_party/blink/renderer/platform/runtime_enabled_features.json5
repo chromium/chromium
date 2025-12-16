@@ -3156,6 +3156,11 @@
       status: "stable",
     },
     {
+      name: "LayoutMergeAnonymousFix",
+      depends_on: ["DisableDocumentBeingDestroyed"],
+      status: "stable",
+    },
+    {
       name: "LayoutTableCellAlignmentSafe",
       status: "stable",
     },

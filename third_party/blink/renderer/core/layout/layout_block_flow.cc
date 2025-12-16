@@ -280,7 +280,8 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
   // inline content back together.
-  if (!old_child->IsInline()) {
+  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled() &&
+      !old_child->IsInline()) {
     auto* prev_block_flow =
         DynamicTo<LayoutBlockFlow>(old_child->PreviousSibling());
     auto* next_block_flow =
@@ -365,6 +366,16 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
   }
+}
+
+bool LayoutBlockFlow::CanMergeWith(const LayoutBoxModelObject& other) const {
+  const auto* other_block_flow = DynamicTo<LayoutBlockFlow>(other);
+  if (!other_block_flow) {
+    return false;
+  }
+
+  return IsMergeableAnonymousBlock(this) &&
+         IsMergeableAnonymousBlock(other_block_flow);
 }
 
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {

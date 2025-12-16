@@ -77,10 +77,15 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
 
   unsigned NumRows() const;
 
- protected:
+ private:
   bool IsTableSection() const final {
     NOT_DESTROYED();
     return true;
+  }
+
+  bool CanMergeWith(const LayoutBoxModelObject& other) const override {
+    NOT_DESTROYED();
+    return other.IsTableSection();
   }
 
   // Table section paints background specially.

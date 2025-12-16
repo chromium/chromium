@@ -498,6 +498,23 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const;
 
+  // Attempts to merge the two siblings if:
+  //  - They have previously have been split by a non-anonymous object.
+  //    See: `SplitAnonymousBoxesAroundChild`.
+  //  - They are both anonymous.
+  //  - They are compatible with each other (see `CanMergeWith`).
+  //
+  // Will recurse as there may be multiple layers of anonymous objects.
+  static void AttemptToMerge(LayoutBoxModelObject* prev,
+                             LayoutBoxModelObject* next);
+
+  // Derived classes should return true if `other` is allow to merge with
+  // `this`, (typically the same type, e.g. LayoutTable).
+  virtual bool CanMergeWith(const LayoutBoxModelObject& other) const {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   void CreateLayerAfterStyleChange();
 
