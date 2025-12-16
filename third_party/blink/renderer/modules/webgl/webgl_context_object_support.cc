@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
+#include "base/task/single_thread_task_runner.h"
+
 namespace blink {
 
 scoped_refptr<base::SingleThreadTaskRunner>

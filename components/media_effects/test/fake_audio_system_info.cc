@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/system/system_monitor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_parameters.h"
 
 namespace media_effects {

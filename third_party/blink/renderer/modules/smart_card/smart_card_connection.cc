@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_connection.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"

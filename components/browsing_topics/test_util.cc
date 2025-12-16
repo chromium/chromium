@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/ukm/test_ukm_recorder.h"

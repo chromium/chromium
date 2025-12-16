@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

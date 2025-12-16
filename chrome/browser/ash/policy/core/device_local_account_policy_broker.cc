@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"

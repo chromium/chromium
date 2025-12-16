@@ -6,6 +6,7 @@
 
 #include <dwmapi.h>
 #include <powersetting.h>
+
 #include <memory>
 #include <string>
 
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/aura/window_occlusion_tracker.h"

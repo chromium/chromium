@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"

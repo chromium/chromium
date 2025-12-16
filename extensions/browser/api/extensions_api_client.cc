@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/extensions_api_client.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port_dispatcher.h"

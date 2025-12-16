@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace net {
 

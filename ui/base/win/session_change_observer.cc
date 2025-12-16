@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 
