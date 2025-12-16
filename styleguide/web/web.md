@@ -367,6 +367,15 @@ let items = document.body.querySelectorAll('div')!;
 let items = document.body.querySelectorAll('div');
 ```
 
+* Use `Number.isNaN()` instead of the global `isNaN()`. The global function
+  coerces its argument to a number before checking, which can lead to unexpected
+  results.
+
+* Prefer `assertNotReachedCase()` over `assertNotReached()` in the default
+  branch of a switch statement over an enums that is intended to be exhaustive.
+  This ensures that if a new enum value is added in the future, the compiler or
+  runtime will catch unhandled cases.
+
 ### ESLint checks
 
 A big part of the styleguide is automatically enforced via ESLint checks. There
