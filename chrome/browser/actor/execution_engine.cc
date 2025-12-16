@@ -55,6 +55,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -984,7 +985,8 @@ void ExecutionEngine::SetUserSelectedCredential(
   // permission for sites that do not have the exact same origin but are
   // strongly affiliated.
   if (base::FeatureList::IsEnabled(
-          actor::kActorLoginPermissionsUseStrongAffiliations) &&
+          password_manager::features::
+              kActorLoginPermissionsUseStrongAffiliations) &&
       affiliation_service) {
     affiliation_service->GetAffiliationsAndBranding(
         affiliations::FacetURI::FromPotentiallyInvalidSpec(
@@ -1030,7 +1032,8 @@ ExecutionEngine::GetUserSelectedCredential(
   }
 
   if (base::FeatureList::IsEnabled(
-          actor::kActorLoginPermissionsUseStrongAffiliations)) {
+          password_manager::features::
+              kActorLoginPermissionsUseStrongAffiliations)) {
     // Check if the current origin is affiliated with a previously encountered
     // one within the current task.
     auto aff_it = affiliated_origin_map_.find(request_origin);

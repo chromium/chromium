@@ -108,10 +108,11 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {password_manager::features::kActorLogin,
+         password_manager::features::
+             kActorLoginPermissionsUseStrongAffiliations,
          password_manager::features::kActorLoginQualityLogs,
          actor::kGlicEnableAutoLoginDialogs,
-         actor::kGlicEnableAutoLoginPersistedPermissions,
-         actor::kActorLoginPermissionsUseStrongAffiliations},
+         actor::kGlicEnableAutoLoginPersistedPermissions},
         /*disabled_features=*/{});
   }
 
