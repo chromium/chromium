@@ -227,7 +227,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/omnibox/eg_tests:eg2_tests",
     "//ios/chrome/browser/omnibox/eg_tests/inttest:eg2_tests",
     "//ios/chrome/browser/overscroll_actions/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/page_info/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/page_info/test",
     "//ios/chrome/browser/passwords/ui_bundled:eg2_tests",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/permissions/ui_bundled:eg2_tests",

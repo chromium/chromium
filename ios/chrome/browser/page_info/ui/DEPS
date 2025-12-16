@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/page_info/core/page_info_history_data_source.h",
+  "+ios/chrome/browser/permissions",
+  "+ios/chrome/browser/net/model/crurl.h",
+]

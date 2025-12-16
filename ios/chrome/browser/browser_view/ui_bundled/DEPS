@@ -73,7 +73,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
   "+ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h",
-  "+ios/chrome/browser/page_info/ui_bundled",
+  "+ios/chrome/browser/page_info",
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/passwords",
   "+ios/chrome/browser/phone_number/ui_bundled",

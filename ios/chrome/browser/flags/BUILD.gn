@@ -92,7 +92,7 @@ source_set("flags") {
     "//ios/chrome/browser/lens/ui_bundled:features",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omnibox/public:features",
-    "//ios/chrome/browser/page_info/ui_bundled:features",
+    "//ios/chrome/browser/page_info/features",
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",

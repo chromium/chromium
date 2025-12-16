@@ -19,7 +19,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
-    "//ios/chrome/browser/page_info/ui_bundled:constants",
+    "//ios/chrome/browser/page_info/constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

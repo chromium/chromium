@@ -3,6 +3,14 @@
 # found in the LICENSE file.
 
 source_set("features") {
-  sources = [ "features.h" ]
-  public_deps = [ "//ios/chrome/browser/page_info/ui_bundled:features" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/application_locale_storage",
+    "//components/page_info/core",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
 }
