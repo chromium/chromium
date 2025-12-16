@@ -4157,7 +4157,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   CHECK(!IsDetached());
 
   // Nothing inside an inactive scroll marker's tab is included in the tree.
-  if (InsideOriginatingElementForInactiveScrollMarkerInTabsMode()) {
+  if (InsideInactiveScrollMarkerTab()) {
     return false;
   }
 

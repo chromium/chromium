@@ -208,6 +208,20 @@
 namespace blink {
 namespace {
 
+bool IsIgnoredAsInsideInactiveColumnTab(Node* node) {
+  if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() ||
+      node->IsCarouselPseudoElement()) {
+    return false;
+  }
+  // Check if we are inside a ::column with inactive ::scroll-marker.
+  // The IsInsideInactiveColumnTab bit is set by ScrollMarkerGroupData when
+  // the active column changes.
+  if (const LayoutObject* layout_object = node->GetLayoutObject()) {
+    return layout_object->EnclosingBox()->InsideInactiveColumnTab();
+  }
+  return false;
+}
+
 const ScrollMarkerPseudoElement* GetScrollMarker(const Node* node) {
   auto* element = DynamicTo<Element>(node);
   if (!element) {
@@ -1258,7 +1272,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
-bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
+bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
   Node* node = GetNode();
   if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
     return false;
@@ -1277,17 +1291,17 @@ bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
   // ::scroll-marker in tabs mode, we know this node is inside the originating
   // element for ::scroll-marker in tabs mode, so we just propagate this info
   // down to the children.
-  return ParentObject()
-      ->InsideOriginatingElementForInactiveScrollMarkerInTabsMode();
+  return ParentObject()->InsideInactiveScrollMarkerTab();
 }
 
 bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
   Node* node = GetNode();
 
   // Everything (besides carousel pseudo-elements) inside and including the
-  // originating element of the
-  // ::scroll-marker is in tabs mode should be ignored in AX tree.
-  if (InsideOriginatingElementForInactiveScrollMarkerInTabsMode()) {
+  // originating element of the ::scroll-marker is in tabs mode should be
+  // ignored in AX tree.
+  if (InsideInactiveScrollMarkerTab() ||
+      IsIgnoredAsInsideInactiveColumnTab(node)) {
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXInactiveCarouselTabContent));
     }

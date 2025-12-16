@@ -13,6 +13,36 @@
 
 namespace blink {
 
+namespace {
+
+const PhysicalBoxFragment* GetColumnFragment(const ColumnPseudoElement& column,
+                                             wtf_size_t index) {
+  const LayoutBox* multicol =
+      column.UltimateOriginatingElement().GetLayoutBox()->ContentLayoutBox();
+  if (!multicol) {
+    return nullptr;
+  }
+  // Fragmented multicol containers are not allowed to ride the carousel, so
+  // just pick the first fragment.
+  const PhysicalBoxFragment* multicol_fragment =
+      multicol->GetPhysicalFragment(0);
+
+  wtf_size_t columns_to_skip = index;
+  for (const PhysicalFragmentLink& child : multicol_fragment->Children()) {
+    if (!child->IsColumnBox()) {
+      continue;
+    }
+    if (columns_to_skip) {
+      columns_to_skip--;
+      continue;
+    }
+    return To<PhysicalBoxFragment>(child.get());
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 ColumnPseudoElement::ColumnPseudoElement(Element* originating_element,
                                          wtf_size_t index)
     : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {
@@ -76,34 +106,14 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
     Element* earliest_element_ = nullptr;
   };
 
-  const LayoutBox* multicol =
-      UltimateOriginatingElement().GetLayoutBox()->ContentLayoutBox();
-  if (!multicol) {
+  const PhysicalBoxFragment* column_fragment = GetColumnFragment(*this, index_);
+  if (!column_fragment) {
     return nullptr;
   }
-  // Fragmented multicol containers are not allowed to ride the carousel, so
-  // just pick the first fragment.
-  const PhysicalBoxFragment& multicol_fragment =
-      *multicol->GetPhysicalFragment(0);
-
-  wtf_size_t columns_to_skip = index_;
-  for (const PhysicalFragmentLink& child : multicol_fragment.Children()) {
-    if (!child->IsColumnBox()) {
-      continue;
-    }
-    if (columns_to_skip) {
-      columns_to_skip--;
-      continue;
-    }
-    const auto& column = *To<PhysicalBoxFragment>(child.get());
-    Listener listener;
-    ForAllBoxFragmentDescendants(column, kFragmentTraversalOptionCulledInlines,
-                                 listener);
-    if (Element* first_element = listener.GetEarliestElement()) {
-      return first_element;
-    }
-  }
-  return nullptr;
+  Listener listener;
+  ForAllBoxFragmentDescendants(*column_fragment,
+                               kFragmentTraversalOptionCulledInlines, listener);
+  return listener.GetEarliestElement();
 }
 
 void ColumnPseudoElement::AttachLayoutTree(AttachContext& context) {
@@ -116,6 +126,46 @@ void ColumnPseudoElement::AttachLayoutTree(AttachContext& context) {
 void ColumnPseudoElement::DetachLayoutTree(bool performing_reattach) {
   DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
   ContainerNode::DetachLayoutTree(performing_reattach);
+}
+
+void ColumnPseudoElement::SetIsInsideInactiveColumnTabForDescendants(
+    bool is_inactive) const {
+  class Listener : public PhysicalFragmentTraversalListener {
+    STACK_ALLOCATED();
+
+   public:
+    explicit Listener(bool is_inactive) : is_inactive_(is_inactive) {}
+
+   private:
+    NextStep HandleEntry(const PhysicalBoxFragment& descendant,
+                         PhysicalOffset,
+                         bool is_first_for_node) final {
+      // Process all fragments for fragmented nodes. A node should be
+      // considered active as long as any of its fragments is in the active
+      // column.
+      if (LayoutObject* layout_object = descendant.GetMutableLayoutObject()) {
+        layout_object->SetInsideInactiveColumnTab(is_inactive_);
+      }
+      return kContinue;
+    }
+
+    void HandleCulledInline(const LayoutInline& culled_inline,
+                            bool is_first_for_node) final {
+      // Culled inlines don't have fragments but still have LayoutObjects.
+      const_cast<LayoutInline&>(culled_inline)
+          .SetInsideInactiveColumnTab(is_inactive_);
+    }
+
+    bool is_inactive_;
+  };
+
+  const PhysicalBoxFragment* column_fragment = GetColumnFragment(*this, index_);
+  if (!column_fragment) {
+    return;
+  }
+  Listener listener(is_inactive);
+  ForAllBoxFragmentDescendants(*column_fragment,
+                               kFragmentTraversalOptionCulledInlines, listener);
 }
 
 }  // namespace blink

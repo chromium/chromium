@@ -1135,6 +1135,19 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIsInsideMulticol(b);
   }
 
+  // Return true if this LayoutObject is inside a ::column pseudo-element
+  // that is not the active column in a scroll-marker-group with tabs mode.
+  // This is used by accessibility code to efficiently determine which content
+  // should be hidden without having to walk the fragment tree repeatedly.
+  bool InsideInactiveColumnTab() const {
+    NOT_DESTROYED();
+    return bitfields_.InsideInactiveColumnTab();
+  }
+  void SetInsideInactiveColumnTab(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetInsideInactiveColumnTab(b);
+  }
+
   // Return true if this object might be inside a fragmentation context, or
   // false if it's definitely *not* inside one.
   bool MightBeInsideFragmentationContext() const {
@@ -3759,6 +3772,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           can_contain_fixed_position_objects_(false),
           ever_had_layout_(false),
           is_inside_multicol_(false),
+          inside_inactive_column_tab_(false),
           subtree_change_listener_registered_(false),
           notified_of_subtree_change_(false),
           consumes_subtree_change_notification_(false),
@@ -3946,6 +3960,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(ever_had_layout_, EverHadLayout);
 
     ADD_BOOLEAN_BITFIELD(is_inside_multicol_, IsInsideMulticol);
+
+    // True if this LayoutObject is inside a ::column pseudo-element that is
+    // not currently the active (selected) column in a scroll-marker-group
+    // with tabs mode. Used for accessibility to efficiently determine which
+    // content should be hidden.
+    ADD_BOOLEAN_BITFIELD(inside_inactive_column_tab_, InsideInactiveColumnTab);
 
     ADD_BOOLEAN_BITFIELD(subtree_change_listener_registered_,
                          SubtreeChangeListenerRegistered);

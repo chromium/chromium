@@ -12,7 +12,7 @@ namespace blink {
 
 // A ::column pseudo-element. When needed, each column in a multicol container
 // will create one of these, during layout.
-class ColumnPseudoElement : public PseudoElement {
+class CORE_EXPORT ColumnPseudoElement : public PseudoElement {
  public:
   ColumnPseudoElement(Element* originating_element, wtf_size_t index);
 
@@ -25,6 +25,12 @@ class ColumnPseudoElement : public PseudoElement {
 
   // Return the first element that starts in the column, in DOM order.
   Element* FirstChildInDOMOrder() const;
+
+  // Sets IsInsideInactiveColumnTab on all LayoutObjects whose fragments
+  // are inside this column. This is used to efficiently mark content that
+  // should be hidden for accessibility when this column is not the active
+  // tab in a scroll-marker-group with tabs mode.
+  void SetIsInsideInactiveColumnTabForDescendants(bool is_inactive) const;
 
   void AttachLayoutTree(AttachContext&) final;
   void DetachLayoutTree(bool performing_reattach) final;

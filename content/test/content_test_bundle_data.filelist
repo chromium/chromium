@@ -2030,6 +2030,10 @@ data/accessibility/css/carousel-no-tabs-expected-blink.txt
 data/accessibility/css/carousel-no-tabs.html
 data/accessibility/css/carousel-positioned-buttons-expected-blink.txt
 data/accessibility/css/carousel-positioned-buttons.html
+data/accessibility/css/carousel-with-column-tabs-dynamic-expected-blink.txt
+data/accessibility/css/carousel-with-column-tabs-dynamic.html
+data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic-expected-blink.txt
+data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic.html
 data/accessibility/css/carousel-with-column-tabs-expected-blink.txt
 data/accessibility/css/carousel-with-column-tabs.html
 data/accessibility/css/carousel-with-links-expected-android-external.txt

@@ -1028,10 +1028,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* AncestorMenuList() const;
 
   // Helper for scroll markers in tabs mode.
-  virtual bool ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
+  // Returns true if the node is inside an inactive ::scroll-marker tab in tabs
+  // mode. Which is either being an originating element for a ::scroll-marker
+  // that is not selected, or being inside such an element.
+  virtual bool ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
     return false;
   }
-  bool InsideOriginatingElementForInactiveScrollMarkerInTabsMode() const {
+  bool InsideInactiveScrollMarkerTab() const {
     return cached_is_ignored_as_inside_inactive_scroll_marker_tab_;
   }
 
@@ -1709,7 +1712,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_can_set_focus_attribute_ : 1 = false;
   bool cached_is_in_menu_list_subtree_ : 1 = false;
   // True if this object is inside the originating element for an inactive
-  // ::scroll-marker in tabs mode.
+  // ::scroll-marker in tabs mode (non-::column case).
   bool cached_is_ignored_as_inside_inactive_scroll_marker_tab_ : 1 = false;
   bool always_load_inline_text_boxes_ : 1 = false;  // Used for Android only.
   std::optional<bool> cached_is_on_screen_;
