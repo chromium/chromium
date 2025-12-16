@@ -177,7 +177,7 @@ public class StatusViewTest {
                 () -> {
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         onView(withId(R.id.location_bar_status_icon))
                 .check((view, e) -> assertNotNull(mStatusView.getTouchDelegateForTesting()));
@@ -193,7 +193,7 @@ public class StatusViewTest {
                 () -> {
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         onView(withId(R.id.location_bar_status_icon))
                 .check(
@@ -345,7 +345,7 @@ public class StatusViewTest {
                     mStatusView.setIconAnimationDurationForTesting(0);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
 
                     assertFalse(
                             "Initial transition drawable should have stopped animating",

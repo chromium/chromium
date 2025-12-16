@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_search"
+            android:src="@drawable/ic_search_24dp"
             android:contentDescription="@string/search"
             app:tint="@color/default_icon_color_secondary_tint_list" />
 

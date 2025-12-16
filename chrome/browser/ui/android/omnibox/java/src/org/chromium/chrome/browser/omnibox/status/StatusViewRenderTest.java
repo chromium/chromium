@@ -159,7 +159,7 @@ public class StatusViewRenderTest {
                     mStatusView.setIncognitoBadgeVisibility(true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         mRenderTestRule.render(mStatusView, "status_view_incognito_with_icon");
     }
@@ -191,7 +191,7 @@ public class StatusViewRenderTest {
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         mRenderTestRule.render(mStatusView, "status_view_with_icon");
     }

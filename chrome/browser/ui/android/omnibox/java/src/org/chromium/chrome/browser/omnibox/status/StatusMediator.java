@@ -587,7 +587,7 @@ public class StatusMediator
 
         if (mSearchEngineIcon == null) {
             return new StatusIconResource(
-                    R.drawable.ic_search,
+                    R.drawable.ic_search_24dp,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
         }
 

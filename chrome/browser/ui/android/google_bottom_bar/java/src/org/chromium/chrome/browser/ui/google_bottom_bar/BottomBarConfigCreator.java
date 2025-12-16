@@ -278,7 +278,7 @@ public class BottomBarConfigCreator {
                         id,
                         UiUtils.getTintedDrawable(
                                 mContext,
-                                R.drawable.ic_search,
+                                R.drawable.ic_search_24dp,
                                 R.color.default_icon_color_baseline),
                         mContext.getString(R.string.google_bottom_bar_search_button_description),
                         /* pendingIntent= */ null);
@@ -625,7 +625,9 @@ public class BottomBarConfigCreator {
             case ButtonId.SEARCH ->
                     // Always use search icon provided by Chrome
                     UiUtils.getTintedDrawable(
-                            context, R.drawable.ic_search, R.color.default_icon_color_baseline);
+                            context,
+                            R.drawable.ic_search_24dp,
+                            R.color.default_icon_color_baseline);
             case ButtonId.HOME ->
                     UiUtils.getTintedDrawable(
                             context, R.drawable.ic_home_24dp, R.color.default_icon_color_baseline);

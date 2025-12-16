@@ -29,11 +29,6 @@ android_resources("content_java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-hdpi/ic_search.png",
-    "java/res/drawable-mdpi/ic_search.png",
-    "java/res/drawable-xhdpi/ic_search.png",
-    "java/res/drawable-xxhdpi/ic_search.png",
-    "java/res/drawable-xxxhdpi/ic_search.png",
     "java/res/drawable/floating_popup_background.xml",
     "java/res/drawable/ic_paste_as_plain_text.xml",
     "java/res/layout-land/date_time_picker_dialog.xml",

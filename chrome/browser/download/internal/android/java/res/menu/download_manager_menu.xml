@@ -19,7 +19,7 @@ found in the LICENSE file.
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/search_menu_id"
-            android:icon="@drawable/ic_search"
+            android:icon="@drawable/ic_search_24dp"
             android:title="@string/search"
             android:visible="false"
             app:showAsAction="ifRoom"

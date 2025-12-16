@@ -408,7 +408,7 @@ public class NewTabPageLayout extends LinearLayout
     public void onSearchEngineIconChanged(StatusProperties.@Nullable StatusIconResource newIcon) {
         if (mDseIconView == null) return;
         if (newIcon == null) {
-            mDseIconView.setImageResource(R.drawable.ic_search);
+            mDseIconView.setImageResource(R.drawable.ic_search_24dp);
             return;
         }
 
