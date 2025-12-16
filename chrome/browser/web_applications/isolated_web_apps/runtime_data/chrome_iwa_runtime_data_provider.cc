@@ -48,6 +48,7 @@ ChromeIwaRuntimeDataProvider& ChromeIwaRuntimeDataProvider::GetInstance() {
 
 // static
 void ChromeIwaRuntimeDataProvider::SetInstance(
+    base::PassKey<BrowserProcessImpl, TestingBrowserProcess>,
     ChromeIwaRuntimeDataProvider* instance) {
   g_instance = instance;
 }

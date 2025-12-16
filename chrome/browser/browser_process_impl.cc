@@ -425,7 +425,7 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  web_app::InitializeIsolatedWebAppRuntime();
+  web_app::InitializeIsolatedWebAppRuntime(base::PassKey<BrowserProcessImpl>());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

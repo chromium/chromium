@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -65,10 +66,10 @@ enum InstallState : int;
 
 class IsolatedWebAppUrlInfo;
 class WebApp;
+class WebAppCommandScheduler;
 class WebAppProvider;
 class WebAppRegistrarObserver;
 class WebAppScope;
-class AppLock;
 class ManifestSilentUpdateCommand;
 class FetchManifestAndUpdateCommand;
 class ApplyPendingManifestUpdateCommand;
@@ -593,17 +594,11 @@ class WebAppRegistrar {
       bool is_preferred);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Mimic base::PassKey<T> to ensure only certain call sites have the privilege
-  // of triggering a pending update info change.
-  class PendingUpdateInfoChangePassKey {
-    friend class ManifestSilentUpdateCommand;
-    friend class FetchManifestAndUpdateCommand;
-    friend void SetWebAppPendingUpdateAsIgnored(const webapps::AppId&,
-                                                AppLock& lock,
-                                                base::Value::Dict& debug_value);
-    friend class ApplyPendingManifestUpdateCommand;
-    PendingUpdateInfoChangePassKey() = default;
-  };
+  using PendingUpdateInfoChangePassKey =
+      base::PassKey<ManifestSilentUpdateCommand,
+                    FetchManifestAndUpdateCommand,
+                    ApplyPendingManifestUpdateCommand,
+                    WebAppCommandScheduler>;
 
   void NotifyPendingUpdateInfoChanged(const webapps::AppId& app_id,
                                       bool pending_update_available,

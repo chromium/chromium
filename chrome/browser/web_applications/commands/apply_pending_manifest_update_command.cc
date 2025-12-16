@@ -296,7 +296,7 @@ void ApplyPendingManifestUpdateCommand::DeletePendingUpdateInfoThenComplete(
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   lock_->registrar().NotifyPendingUpdateInfoChanged(
       app_id_, /*pending_update_available=*/false,
-      WebAppRegistrar::PendingUpdateInfoChangePassKey());
+      base::PassKey<ApplyPendingManifestUpdateCommand>());
   CompleteCommandAndSelfDestruct(expected_result);
 }
 

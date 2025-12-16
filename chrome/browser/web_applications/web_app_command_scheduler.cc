@@ -851,7 +851,8 @@ void WebAppCommandScheduler::MarkAppPendingUpdateAsIgnored(
     const base::Location& location) {
   ScheduleCallback(
       "MarkAppPendingUpdateAsIgnored", AppLockDescription(app_id),
-      base::BindOnce(::web_app::SetWebAppPendingUpdateAsIgnored, app_id),
+      base::BindOnce(::web_app::SetWebAppPendingUpdateAsIgnored,
+                     base::PassKey<WebAppCommandScheduler>(), app_id),
       std::move(done), location);
 }
 

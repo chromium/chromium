@@ -262,7 +262,8 @@ void TestingBrowserProcess::Init() {
   ChromePermissionsClient::GetInstance();
 
 #if !BUILDFLAG(IS_ANDROID)
-  web_app::InitializeIsolatedWebAppRuntime();
+  web_app::InitializeIsolatedWebAppRuntime(
+      base::PassKey<TestingBrowserProcess>());
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
 #if BUILDFLAG(IS_CHROMEOS)
   hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();

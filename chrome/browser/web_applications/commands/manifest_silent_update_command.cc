@@ -930,7 +930,7 @@ void ManifestSilentUpdateCommand::WritePendingUpdateToWebAppUpdateObservers(
   if (trigger_pending_update_observers) {
     app_lock_->registrar().NotifyPendingUpdateInfoChanged(
         app_id_, pending_update.has_value(),
-        WebAppRegistrar::PendingUpdateInfoChangePassKey());
+        base::PassKey<ManifestSilentUpdateCommand>());
   }
 }
 

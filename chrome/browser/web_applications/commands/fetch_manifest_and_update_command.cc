@@ -243,7 +243,7 @@ void FetchManifestAndUpdateCommand::OnUpdateFinalized(
     }
     app_lock_->registrar().NotifyPendingUpdateInfoChanged(
         app_id, /*pending_update_available=*/false,
-        WebAppRegistrar::PendingUpdateInfoChangePassKey());
+        base::PassKey<FetchManifestAndUpdateCommand>());
   }
 
   CompleteAndSelfDestruct(CommandResult::kSuccess,

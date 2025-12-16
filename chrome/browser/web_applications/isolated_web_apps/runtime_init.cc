@@ -11,11 +11,12 @@
 
 namespace web_app {
 
-void InitializeIsolatedWebAppRuntime() {
+void InitializeIsolatedWebAppRuntime(
+    base::PassKey<BrowserProcessImpl, TestingBrowserProcess> pass_key) {
   web_app::IwaIdentityValidator::CreateSingleton();
   web_app::ChromeIwaClient::CreateSingleton();
   web_app::ChromeIwaRuntimeDataProvider::SetInstance(
-      &IwaKeyDistributionInfoProvider::GetInstance());
+      pass_key, &IwaKeyDistributionInfoProvider::GetInstance());
 }
 
 }  // namespace web_app

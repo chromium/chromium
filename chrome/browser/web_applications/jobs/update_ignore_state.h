@@ -10,13 +10,16 @@
 
 namespace web_app {
 class AppLock;
+class WebAppCommandScheduler;
 
 // Stores state in the web app depicting that any pending updates surfaced to
 // the user has been ignored, and notifies observers to make state changes if
 // needed.
-void SetWebAppPendingUpdateAsIgnored(const webapps::AppId& app_id,
-                                     AppLock& lock,
-                                     base::Value::Dict& debug_value);
+void SetWebAppPendingUpdateAsIgnored(
+    base::PassKey<WebAppCommandScheduler> pass_key,
+    const webapps::AppId& app_id,
+    AppLock& lock,
+    base::Value::Dict& debug_value);
 
 }  // namespace web_app
 
