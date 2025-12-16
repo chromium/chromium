@@ -254,6 +254,9 @@ enum ActionResultCode {
   // use as a generic error code.
   kNotImplemented = 40,
 
+  // The PageTool invocation was canceled.
+  kInvokeCanceled = 41,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

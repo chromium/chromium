@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/renderer/actor/click_dispatcher.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -89,15 +91,9 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
       task_id_, "ClickTool::Execute",
       JournalDetailsBuilder().Add("point", target.widget_point).Build());
 
-  CreateAndDispatchClick(
-      button, click_count, target, weak_ptr_factory_.GetWeakPtr(),
-      base::BindOnce(&ClickTool::OnActionComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ClickTool::OnActionComplete(ToolFinishedCallback callback,
-                                 mojom::ActionResultPtr result) {
-  std::move(callback).Run(std::move(result));
+  CHECK(!click_dispatcher_);
+  click_dispatcher_.emplace(button, click_count, target, *this,
+                            std::move(callback));
 }
 
 std::string ClickTool::DebugString() const {
@@ -108,6 +104,13 @@ std::string ClickTool::DebugString() const {
 
 bool ClickTool::SupportsPaintStability() const {
   return true;
+}
+
+void ClickTool::Cancel() {
+  if (click_dispatcher_) {
+    click_dispatcher_->Cancel();
+    click_dispatcher_.reset();
+  }
 }
 
 ClickTool::ValidatedResult ClickTool::Validate() const {

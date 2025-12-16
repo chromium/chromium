@@ -134,6 +134,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
       const TaskId& task_id,
       bool supports_paint_stability) override {}
+  void CancelTool(const TaskId& task_id) override {}
 
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {

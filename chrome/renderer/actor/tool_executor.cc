@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -159,6 +160,28 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       JournalDetailsBuilder().Add("tool", tool_->DebugString()).Build());
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ToolExecutor::CancelTool(const actor::TaskId& task_id) {
+  journal_->Log(
+      task_id, "ToolExecutor::CancelTool",
+      JournalDetailsBuilder().Add("tool_already_finished", !tool_).Build());
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (!tool_) {
+    // Benign race condition: the tool has already finished.
+    CHECK(!completion_callback_);
+    return;
+  }
+
+  // The browser and renderer should agree on the active tool.
+  CHECK_EQ(tool_->task_id(), task_id);
+
+  tool_->Cancel();
+
+  // The result code doesn't matter as it will be ignored by the browser
+  // process.
+  ToolFinished(MakeResult(mojom::ActionResultCode::kInvokeCanceled));
 }
 
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {

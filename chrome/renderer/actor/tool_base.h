@@ -63,6 +63,9 @@ class ToolBase {
   // Executes the tool. `callback` is invoked with the tool result.
   virtual void Execute(ToolFinishedCallback callback) = 0;
 
+  // Cancels execution of the tool.
+  virtual void Cancel();
+
   // Returns a human readable string representing this tool and its parameters.
   // Used primarily for logging and debugging.
   virtual std::string DebugString() const = 0;
@@ -84,6 +87,7 @@ class ToolBase {
   virtual bool SupportsPaintStability() const;
 
   content::RenderFrame* frame() const { return &frame_.get(); }
+  const TaskId& task_id() const { return task_id_; }
 
  protected:
   using ResolveResult = base::expected<ResolvedTarget, mojom::ActionResultPtr>;

@@ -77,7 +77,7 @@ WebNode GetNodeFromIdIncludingPopup(const content::RenderFrame& frame,
 }  // namespace
 
 WebWidget* ResolvedTarget::GetWidget(const ToolBase& tool) const {
-  WebLocalFrame* web_frame = tool.frame()->GetWebFrame();
+  const WebLocalFrame* web_frame = tool.frame()->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
     return nullptr;
   }
@@ -118,6 +118,8 @@ ToolBase::ToolBase(content::RenderFrame& frame,
       observed_target_(std::move(observed_target)) {}
 
 ToolBase::~ToolBase() = default;
+
+void ToolBase::Cancel() {}
 
 ToolBase::ResolveResult ToolBase::ResolveTarget(
     const mojom::ToolTarget& target) const {
