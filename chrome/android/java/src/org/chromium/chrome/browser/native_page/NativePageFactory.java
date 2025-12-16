@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
+import org.chromium.chrome.browser.ntp.IncognitoNtpMetrics;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
@@ -263,7 +264,11 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             if (tab.isIncognito()) {
                 return new IncognitoNewTabPage(
-                        mActivity, nativePageHost, tab.getProfile(), mEdgeToEdgeControllerSupplier);
+                        mActivity,
+                        nativePageHost,
+                        tab,
+                        mEdgeToEdgeControllerSupplier,
+                        createIncognitoNtpMetrics());
             }
 
             return new NewTabPage(
@@ -385,6 +390,13 @@ public class NativePageFactory {
         protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
             return NativePageFactory.buildPdfPage(
                     url, tab, pdfInfo, mBrowserControlsManager, mTabModelSelector, mActivity);
+        }
+
+        private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
+            if (ChromeFeatureList.sRecordIncognitoNtpTimeToFirstNavigationMetric.isEnabled()) {
+                return new IncognitoNtpMetrics();
+            }
+            return null;
         }
     }
 
