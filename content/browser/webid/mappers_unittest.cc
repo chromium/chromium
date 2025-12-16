@@ -42,26 +42,7 @@ TEST(FedCmMappersTest, GetDisclosureFieldsEmpty) {
       ElementsAre());
 }
 
-TEST(FedCmMappersTest, GetDisclosureFieldsWithoutAlternativeIdentifiers) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
-  // When no fields are passed, we use the default.
-  EXPECT_THAT(GetDisclosureFields(std::nullopt),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When the default fields are explicitly passed, we should mediate them.
-  std::vector<std::string> fields = {"name", "email", "picture"};
-  EXPECT_THAT(GetDisclosureFields(std::make_optional(fields)),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When a superset of the supported fields is passed, we should mediate the
-  // supported fields.
-  fields = {"name", "email", "picture", "locale", "tel"};
-  EXPECT_THAT(GetDisclosureFields(std::make_optional(fields)),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-}
-
-TEST(FedCmMappersTest, GetDisclosureFieldsWithAlternativeIdentifiers) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
+TEST(FedCmMappersTest, GetDisclosureFields) {
   // When a superset of the supported fields is passed, we should mediate the
   // supported fields.
   std::vector<std::string> fields = {"name", "email", "picture", "locale",
@@ -69,14 +50,6 @@ TEST(FedCmMappersTest, GetDisclosureFieldsWithAlternativeIdentifiers) {
   EXPECT_THAT(GetDisclosureFields(std::make_optional(fields)),
               ElementsAre(Field::kName, Field::kEmail, Field::kPicture,
                           Field::kPhoneNumber));
-}
-
-TEST(FedCmMappersTest, GetDisclosureFieldsWithAlternativeIdentifiersDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
-  // We should only support the new identifiers if the flag is enabled
-  std::vector<std::string> fields = {"username", "tel"};
-  EXPECT_THAT(GetDisclosureFields(std::make_optional(fields)), ElementsAre());
 }
 
 TEST(FedCmMappersTest, GetDisclosureFieldsSubsetOfDefault) {

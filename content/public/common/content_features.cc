@@ -423,10 +423,6 @@ BASE_FEATURE(kFedCm, base::FEATURE_ENABLED_BY_DEFAULT);
 // re-authn flow.
 BASE_FEATURE(kFedCmEmbedderCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Support usernames and phone numbers to identify users, instead of
-// (or in addition to) names and emails.
-BASE_FEATURE(kFedCmAlternativeIdentifiers, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables RPs to enhance autofill with federated accounts fetched by the FedCM
 // API.
 BASE_FEATURE(kFedCmAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -443,11 +439,6 @@ BASE_FEATURE(kFedCmErrorAttribute, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// For cross-site iframes, sends the top-level origin to the IDP and parses
-// an optional returned boolean indicating whether it is part of the same
-// client to allow for UI decisions based on the boolean.
-BASE_FEATURE(kFedCmIframeOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Lightweight FedCM Mode
 BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);

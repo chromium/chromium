@@ -5054,11 +5054,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "fedcm-alternative-identifiers",
-    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "fedcm-autofill",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 155
@@ -5077,11 +5072,6 @@
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 155
-  },
-  {
-    "name": "fedcm-iframe-origin",
-    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 145
   },
   {
     "name": "fedcm-lightweight-mode",

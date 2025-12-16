@@ -54,15 +54,6 @@ bool IsLightweightModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }
 
-bool IsAlternativeIdentifiersEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
-}
-
-bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-}
-
 bool IsFedCmEmbedderCheckEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmEmbedderCheck);
 }
@@ -73,10 +64,6 @@ bool IsAutofillEnabled() {
   // if the old one is enabled.
   return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
          IsDelegationEnabled();
-}
-
-bool IsIframeOriginEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
 }
 
 bool IsNonceInParamsEnabled() {

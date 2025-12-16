@@ -90,17 +90,9 @@ constexpr char kVcIssuanceEndpoint[] = "vc_issuance_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
-constexpr char kModesKey[] = "modes";
 constexpr char kTypesKey[] = "types";
 constexpr char kFormatsKey[] = "formats";
 constexpr char kAccountLabelKey[] = "account_label";
-
-// Keys in the 'accounts' dictionary
-constexpr char kIncludeKey[] = "include";
-
-// Keys in the 'modes' dictionary.
-constexpr char kActiveModeKey[] = "active";
-constexpr char kPassiveModeKey[] = "passive";
 
 // Keys in the specific mode dictionary.
 constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
@@ -218,12 +210,8 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   }
 
   std::vector<std::string> labels;
-  const base::ListValue* labels_list = nullptr;
-  if (webid::IsUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-    labels_list = account.FindList(webid::kLabelHintsKey);
-  } else {
-    labels_list = account.FindList(webid::kLabelsKey);
-  }
+  const base::ListValue* labels_list = labels_list =
+      account.FindList(webid::kLabelHintsKey);
   if (labels_list) {
     for (const base::Value& entry : *labels_list) {
       if (entry.is_string()) {
@@ -239,39 +227,31 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   std::string display_identifier;
   std::string display_name;
   std::string empty_string;
-  if (webid::IsAlternativeIdentifiersEnabled()) {
-    std::vector<std::string_view> identifiers;
-    if (!IsEmptyOrWhitespace(name)) {
-      identifiers.emplace_back(*name);
-    } else {
-      name = &empty_string;
-    }
-    if (!IsEmptyOrWhitespace(username)) {
-      identifiers.emplace_back(*username);
-    }
-    if (!IsEmptyOrWhitespace(email)) {
-      identifiers.emplace_back(*email);
-    } else {
-      email = &empty_string;
-    }
-    if (!IsEmptyOrWhitespace(phone)) {
-      identifiers.emplace_back(*phone);
-    }
-    if (identifiers.empty()) {
-      return nullptr;
-    }
-    display_name = identifiers[0];
-    if (identifiers.size() > 1) {
-      display_identifier = identifiers[1];
-    }
+
+  std::vector<std::string_view> identifiers;
+  if (!IsEmptyOrWhitespace(name)) {
+    identifiers.emplace_back(*name);
   } else {
-    // required fields
+    name = &empty_string;
+  }
+  if (!IsEmptyOrWhitespace(username)) {
+    identifiers.emplace_back(*username);
+  }
+  if (!IsEmptyOrWhitespace(email)) {
     // TODO(crbug.com/40849405): validate email address.
-    if (IsEmptyOrWhitespace(email) || IsEmptyOrWhitespace(name)) {
-      return nullptr;
-    }
-    display_identifier = *email;
-    display_name = *name;
+    identifiers.emplace_back(*email);
+  } else {
+    email = &empty_string;
+  }
+  if (!IsEmptyOrWhitespace(phone)) {
+    identifiers.emplace_back(*phone);
+  }
+  if (identifiers.empty()) {
+    return nullptr;
+  }
+  display_name = identifiers[0];
+  if (identifiers.size() > 1) {
+    display_identifier = identifiers[1];
   }
 
   webid::RecordApprovedClientsExistence(approved_clients != nullptr);
@@ -541,40 +521,13 @@ void OnConfigParsed(const GURL& provider,
     }
   }
 
-  const std::string* requested_label = nullptr;
-  if (webid::IsUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-    requested_label = response.FindString(kAccountLabelKey);
-  } else {
-    const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
-    if (accounts_dict) {
-      requested_label = accounts_dict->FindString(kIncludeKey);
-    }
-  }
+  const std::string* requested_label = response.FindString(kAccountLabelKey);
   if (requested_label) {
     idp_metadata.requested_label = *requested_label;
   }
 
-  std::optional<bool> supports_add_account;
-  if (webid::IsUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-    supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
-  } else {
-    const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
-    const base::Value::Dict* selected_mode_dict = nullptr;
-    if (modes_dict) {
-      switch (rp_mode) {
-        case blink::mojom::RpMode::kPassive:
-          selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
-          break;
-        case blink::mojom::RpMode::kActive:
-          selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
-          break;
-      }
-    }
-    if (selected_mode_dict) {
-      supports_add_account =
-          selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
-    }
-  }
+  std::optional<bool> supports_add_account =
+      response.FindBool(kSupportsUseOtherAccountKey);
   if (supports_add_account) {
     idp_metadata.supports_add_account = *supports_add_account;
   }
@@ -1229,7 +1182,7 @@ void IdpNetworkRequestManager::SendDisconnectRequest(
 }
 
 bool IdpNetworkRequestManager::IsCrossSiteIframe() const {
-  return webid::IsIframeOriginEnabled() && !rp_embedding_origin_.opaque() &&
+  return !rp_embedding_origin_.opaque() &&
          !net::SchemefulSite::IsSameSite(relying_party_origin_,
                                          rp_embedding_origin_);
 }

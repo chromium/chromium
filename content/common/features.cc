@@ -188,11 +188,6 @@ BASE_FEATURE(kEnforceSameDocumentOriginInvariants,
 BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to support the newer syntax for the "Use Other Account"
-// and account labels features.
-BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables NonString Tokens
 BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_ENABLED_BY_DEFAULT);
 

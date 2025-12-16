@@ -2124,11 +2124,6 @@ inline constexpr char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
 
-inline constexpr char kFedCmAlternativeIdentifiersName[] =
-    "FedCmAlternativeIdentifiers";
-inline constexpr char kFedCmAlternativeIdentifiersDescription[] =
-    "Supports usernames and phone numbers as account identifiers.";
-
 inline constexpr char kFedCmAutofillName[] = "FedCmAutofill";
 inline constexpr char kFedCmAutofillDescription[] =
     "Allows RPs to enhance autofill with FedCM.";
@@ -2151,10 +2146,6 @@ inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";
 inline constexpr char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
-
-inline constexpr char kFedCmIframeOriginName[] = "FedCmIframeOrigin";
-inline constexpr char kFedCmIframeOriginDescription[] =
-    "Allows showing iframe origins in the FedCM UI, if requested by the IDP.";
 
 inline constexpr char kFedCmLightweightModeName[] = "FedCmLightweightMode";
 inline constexpr char kFedCmLightweightModeDescription[] =

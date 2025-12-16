@@ -750,9 +750,6 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
 // Tests that we send a client metadata request for cross-site iframes even if
 // all accounts are returning.
 TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(

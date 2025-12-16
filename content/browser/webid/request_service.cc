@@ -2766,12 +2766,9 @@ RelyingPartyData RequestService::CreateRpData(
   if (show_iframe_origin) {
     iframe_origin = base::UTF8ToUTF16(FormatOriginForDisplay(origin()));
   }
-  bool display_strings_may_change = false;
-  if (IsIframeOriginEnabled()) {
-    display_strings_may_change =
-        !client_metadata_received &&
-        !net::SchemefulSite::IsSameSite(origin(), GetEmbeddingOrigin());
-  }
+  bool display_strings_may_change =
+      !client_metadata_received &&
+      !net::SchemefulSite::IsSameSite(origin(), GetEmbeddingOrigin());
   return RelyingPartyData(
       base::UTF8ToUTF16(GetTopFrameOriginForDisplay(GetEmbeddingOrigin())),
       iframe_origin, display_strings_may_change);

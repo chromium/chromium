@@ -385,16 +385,13 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
-  bool need_client_metadata = false;
-  if (IsIframeOriginEnabled()) {
-    // For cross-site iframes, we need to fetch client metadata in case the
-    // IDP sends `client_is_third_party_to_top_frame_origin: true`.
-    url::Origin embedding_origin =
-        render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
-    url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
-    need_client_metadata |=
-        !net::SchemefulSite::IsSameSite(embedding_origin, rp_origin);
-  }
+  // For cross-site iframes, we need to fetch client metadata in case the
+  // IDP sends `client_is_third_party_to_top_frame_origin: true`.
+  url::Origin embedding_origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
+  bool need_client_metadata =
+      !net::SchemefulSite::IsSameSite(embedding_origin, rp_origin);
   if (!need_client_metadata &&
       !idp_info->provider->config->from_idp_registration_api &&
       !GetDisclosureFields(idp_info->provider->fields).empty()) {

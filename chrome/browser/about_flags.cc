@@ -9522,11 +9522,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif
 
-    {"fedcm-alternative-identifiers",
-     flag_descriptions::kFedCmAlternativeIdentifiersName,
-     flag_descriptions::kFedCmAlternativeIdentifiersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAlternativeIdentifiers)},
-
     {"fedcm-autofill", flag_descriptions::kFedCmAutofillName,
      flag_descriptions::kFedCmAutofillDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutofill)},
@@ -9547,10 +9542,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
-
-    {"fedcm-iframe-origin", flag_descriptions::kFedCmIframeOriginName,
-     flag_descriptions::kFedCmIframeOriginDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIframeOrigin)},
 
     {"fedcm-lightweight-mode", flag_descriptions::kFedCmLightweightModeName,
      flag_descriptions::kFedCmLightweightModeDescription, kOsDesktop,
