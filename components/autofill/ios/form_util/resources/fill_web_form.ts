@@ -12,6 +12,18 @@ import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframe
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
+if (typeof document.__gCrWasEditedByUserMap === 'undefined') {
+  document.__gCrWasEditedByUserMap = new WeakMap();
+}
+
+/**
+ * A WeakMap to track if the current value of a field was entered by user or
+ * programmatically.
+ * If the map is null, the source of changed is not track.
+ */
+export const wasEditedByUser: WeakMap<any, any> =
+    document.__gCrWasEditedByUserMap;
+
 /**
  * Retrieves the registered 'autofill_form_features' CrWebApi
  * instance for use in this file.
@@ -194,7 +206,7 @@ export function webFormControlElementToFormField(
       inferenceUtil.isTextAreaElement(element) ||
       inferenceUtil.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
-    field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
+    field.is_user_edited = fieldWasEditedByUser(element);
     field.should_autocomplete = fillUtil.shouldAutocomplete(element);
     field.is_focusable = !element.disabled && !(element as any).readOnly &&
         element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
@@ -711,4 +723,17 @@ export function autofillSubmissionData(form: HTMLFormElement):
   const formData = new gCrWebLegacy['common'].JSONSafeObject();
   webFormElementToFormData(window, form, null, formData);
   return formData;
+}
+
+/**
+ * Returns whether the last `input` or `change` event on `element` was
+ * triggered by a user action (was "trusted"). Returns true by default if the
+ * feature to fix the user edited bit isn't enabled which is the status quo.
+ * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
+ * makes an edited field unedited.
+ */
+export function fieldWasEditedByUser(element: Element) {
+  return !autofillFormFeaturesApi.getFunction(
+             'isAutofillCorrectUserEditedBitInParsedField')() ||
+      (wasEditedByUser.get(element) ?? false);
 }

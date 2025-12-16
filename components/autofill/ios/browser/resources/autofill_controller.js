@@ -5,7 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {unownedFormElementsAndFieldSetsToFormData, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {fieldWasEditedByUser, unownedFormElementsAndFieldSetsToFormData, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements, getFormElementFromIdentifier, getFormElementFromRendererId, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
@@ -273,7 +273,7 @@ function fillForm(data, forceFillFieldID) {
     // c) The "value" or "placeholder" attributes match the value, if any; or
     // d) The value has not been set by the user.
     const shouldBeForceFilled = fieldId === forceFillFieldID.toString();
-    if (element.value && __gCrWeb.form.fieldWasEditedByUser(element) &&
+    if (element.value && fieldWasEditedByUser(element) &&
         !sanitizedFieldIsEmpty(element.value) && !shouldBeForceFilled &&
         !inferenceUtil.isSelectElement(element) &&
         !((element.hasAttribute('value') &&

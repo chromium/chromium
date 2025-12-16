@@ -13,13 +13,6 @@ import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrw
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
- * A WeakMap to track if the current value of a field was entered by user or
- * programmatically.
- * If the map is null, the source of changed is not track.
- */
-const wasEditedByUser: WeakMap<any, any> = new WeakMap();
-
-/**
  * Registry that tracks the forms that were submitted during the frame's
  * lifetime. Elements that are garbage collected will be removed from the
  * registry so this can't memory leak. In the worst case the registry will get
@@ -164,18 +157,6 @@ class FormSubmissionReportManager {
 
 const gFormSubmissionReportManager = new FormSubmissionReportManager();
 
-/**
- * Returns whether the last `input` or `change` event on `element` was
- * triggered by a user action (was "trusted"). Returns true by default if the
- * feature to fix the user edited bit isn't enabled which is the status quo.
- * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
- * makes an edited field unedited.
- */
-function fieldWasEditedByUser(element: Element) {
-  return !autofillFormFeaturesApi.getFunction(
-             'isAutofillCorrectUserEditedBitInParsedField')() ||
-      (wasEditedByUser.get(element) ?? false);
-}
 
 /**
  * @param originalURL A string containing a URL (absolute, relative...)
@@ -302,8 +283,6 @@ function reportDetectedFormSubmission(
 }
 
 gCrWebLegacy.form = {
-  wasEditedByUser,
-  fieldWasEditedByUser,
   formSubmitted,
   reportFormSubmissionError,
   reportDetectedFormSubmission,

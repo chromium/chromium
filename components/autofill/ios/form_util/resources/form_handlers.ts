@@ -14,6 +14,7 @@
 import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -158,9 +159,8 @@ function formActivity(evt: Event): void {
   if (evt.type !== 'blur') {
     lastFocusedElement = document.activeElement;
   }
-  if (['change', 'input'].includes(evt.type) &&
-      gCrWebLegacy.form.wasEditedByUser !== null) {
-    gCrWebLegacy.form.wasEditedByUser.set(target, evt.isTrusted);
+  if (['change', 'input'].includes(evt.type) && wasEditedByUser !== null) {
+    wasEditedByUser.set(target, evt.isTrusted);
   }
 
   if (evt.target !== lastFocusedElement) {

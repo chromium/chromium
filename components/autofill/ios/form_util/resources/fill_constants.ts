@@ -16,6 +16,7 @@ declare global {
   interface Document {
     [key: symbol]: number;
     __gCrElementMap: Map<any, any>;
+    __gCrWasEditedByUserMap: WeakMap<any, any>;
     __gCrWebURLNormalizer: HTMLAnchorElement;
   }
 }
