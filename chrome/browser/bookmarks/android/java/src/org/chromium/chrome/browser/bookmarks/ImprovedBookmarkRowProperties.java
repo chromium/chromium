@@ -76,7 +76,16 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
-
+    public static final WritableBooleanPropertyKey IS_DRAG_ENABLED =
+            new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<View.OnTouchListener> DRAG_HANDLE_TOUCH_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnTouchListener> ROW_BODY_TOUCH_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnHoverListener> DRAG_HANDLE_HOVER_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnHoverListener> ROW_BODY_HOVER_LISTENER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ROW_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     // Supplier should return true if the callback consumed the long click, false otherwise.
@@ -124,6 +133,11 @@ public class ImprovedBookmarkRowProperties {
         SELECTED,
         SELECTION_ACTIVE,
         EDITABLE,
+        IS_DRAG_ENABLED,
+        DRAG_HANDLE_TOUCH_LISTENER,
+        ROW_BODY_TOUCH_LISTENER,
+        DRAG_HANDLE_HOVER_LISTENER,
+        ROW_BODY_HOVER_LISTENER,
         ROW_CLICK_LISTENER,
         ROW_LONG_CLICK_LISTENER,
         SHOPPING_ACCESSORY_COORDINATOR,

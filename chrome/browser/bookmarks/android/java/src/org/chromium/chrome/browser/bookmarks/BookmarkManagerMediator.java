@@ -1458,9 +1458,18 @@ class BookmarkManagerMediator
         BookmarkItem bookmarkItem = assumeNonNull(bookmarkListEntry.getBookmarkItem());
         BookmarkId bookmarkId = bookmarkItem.getId();
 
+        // The property model for an individual bookmark item (row).
         PropertyModel propertyModel =
                 mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
+
+        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            // Include #isReorderable because Mobile bookmarks, Bookmarks bar, and Reading list
+            // should not be draggable.
+            boolean isDragEnabled =
+                    mDragStateDelegate.getDragEnabled() && isReorderable(bookmarkListEntry);
+            propertyModel.set(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED, isDragEnabled);
+        }
 
         // Menu
         propertyModel.set(

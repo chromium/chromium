@@ -69,6 +69,8 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     private @Nullable RecyclerView mRecyclerView;
 
     private boolean mDragEnabled;
+    // Default long-press behavior.
+    private boolean mDefaultLongPressDragEnabled = true;
     private int mStart;
     private @Nullable LongPressDragDelegate mLongPressDragDelegate;
 
@@ -149,7 +151,8 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
 
         @Override
         public boolean isLongPressDragEnabled() {
-            return mLongPressDragDelegate != null
+            return mDefaultLongPressDragEnabled
+                    && mLongPressDragDelegate != null
                     && mLongPressDragDelegate.isLongPressDragEnabled()
                     && mDragEnabled;
         }
@@ -221,7 +224,19 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
 
-    /** @param longPressDragDelegate The delegate which decides when long press dragging is enabled. */
+    /**
+     * Sets whether the default system long-press drag gesture is enabled. If false, dragging can
+     * only be initiated manually via {@link ItemTouchHelper#startDrag}.
+     *
+     * @param enabled True to enable automatic long-press detection, false to disable it.
+     */
+    public void setDefaultLongPressDragEnabled(boolean enabled) {
+        mDefaultLongPressDragEnabled = enabled;
+    }
+
+    /**
+     * @param longPressDragDelegate The delegate which decides when long press dragging is enabled.
+     */
     public void setLongPressDragDelegate(LongPressDragDelegate longPressDragDelegate) {
         mLongPressDragDelegate = longPressDragDelegate;
     }

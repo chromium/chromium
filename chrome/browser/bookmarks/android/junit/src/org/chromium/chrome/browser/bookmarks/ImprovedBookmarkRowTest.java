@@ -367,4 +367,35 @@ public class ImprovedBookmarkRowTest {
         assertFalse("Compact rows should also allow shadow drawing.", row.getClipToOutline());
         assertNotNull("Compact rows should have an outline provider.", row.getOutlineProvider());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    public void testDragHandleVisibility() {
+        // Create a new View object to re-run onFinishInflate when the flag is enabled.
+        mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
+
+        // Re-bind the binder to use the new View object.
+        PropertyModelChangeProcessor.create(
+                mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+
+        View dragHandle = mImprovedBookmarkRow.findViewById(R.id.drag_handle);
+
+        assertNotNull("Drag handle should be inflated.", dragHandle);
+
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        // There is an item that is selected in the list but this item is not selected.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+
+        assertEquals(
+                "Drag handle should be GONE when the item is unselected.",
+                View.GONE,
+                dragHandle.getVisibility());
+
+        mModel.set(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        assertEquals(
+                "Drag handle should be VISIBLE when the item is selected and drag is enabled.",
+                View.VISIBLE,
+                dragHandle.getVisibility());
+    }
 }

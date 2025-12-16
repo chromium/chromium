@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -76,6 +77,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     private ImageView mEndImageView;
     private @Nullable ViewPropertyAnimator mFadeAnimator;
 
+    private @Nullable ImageView mDragHandle;
+    private boolean mIsDragEnabled;
     private boolean mBookmarkIdEditable;
     private boolean mEndImageViewVisible;
     private boolean mMoreButtonVisible;
@@ -110,6 +113,32 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         super(context, attrs);
         // The view from buildView should have a focus highlight, so avoid duplicate focus
         setDefaultFocusHighlightEnabled(false);
+    }
+
+    public void setDragEnabled(boolean dragEnabled) {
+        mIsDragEnabled = dragEnabled;
+        updateView();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void setDragHandleTouchListener(View.OnTouchListener listener) {
+        if (mDragHandle != null) {
+            mDragHandle.setOnTouchListener(listener);
+        }
+    }
+
+    public void setRowBodyTouchListener(View.OnTouchListener listener) {
+        setOnTouchListener(listener);
+    }
+
+    public void setDragHandleHoverListener(View.OnHoverListener listener) {
+        if (mDragHandle != null) {
+            mDragHandle.setOnHoverListener(listener);
+        }
+    }
+
+    public void setRowBodyHoverListener(View.OnHoverListener listener) {
+        setOnHoverListener(listener);
     }
 
     @Override
@@ -154,6 +183,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mEndImageView = findViewById(R.id.end_image);
 
         if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            mDragHandle = findViewById(R.id.drag_handle);
+
             // Define the shadow shape explicitly. This ensures that the shadow appears even if
             // mDraggedBackgroundColor is transparent.
             setOutlineProvider(
@@ -322,6 +353,15 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         boolean checkVisible = mSelectionEnabled && mIsSelected;
         boolean moreVisible = mMoreButtonVisible && !mIsSelected && mBookmarkIdEditable;
+
+        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            // Show handle if row is selected.
+            if (mDragHandle != null) {
+                mDragHandle.setVisibility(
+                        (mIsDragEnabled && mIsSelected) ? View.VISIBLE : View.GONE);
+            }
+        }
+
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
         mEndImageView.setVisibility(
