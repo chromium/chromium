@@ -86,6 +86,10 @@ impl<Y: GregorianYears> DateFieldsResolver for AbstractGregorian<Y> {
     ) -> Result<Self::YearInfo, EcmaReferenceYearError> {
         Ok(REFERENCE_YEAR)
     }
+
+    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
+        calendrical_calculations::gregorian::fixed_from_gregorian(year, month, day)
+    }
 }
 
 impl<Y: GregorianYears> crate::cal::scaffold::UnstableSealed for AbstractGregorian<Y> {}
@@ -135,7 +139,7 @@ impl<Y: GregorianYears> Calendar for AbstractGregorian<Y> {
     }
 
     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
-        calendrical_calculations::gregorian::fixed_from_gregorian(date.year, date.month, date.day)
+        date.to_rata_die()
     }
 
     fn has_cheap_iso_conversion(&self) -> bool {

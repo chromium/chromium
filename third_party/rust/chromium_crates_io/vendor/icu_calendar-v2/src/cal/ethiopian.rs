@@ -138,6 +138,10 @@ impl DateFieldsResolver for Ethiopian {
             _ => Err(MonthCodeError::NotInCalendar),
         }
     }
+
+    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
+        Coptic::to_rata_die_inner(year, month, day)
+    }
 }
 
 impl crate::cal::scaffold::UnstableSealed for Ethiopian {}
@@ -176,7 +180,7 @@ impl Calendar for Ethiopian {
     }
 
     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
-        Coptic.to_rata_die(&date.0)
+        date.0 .0.to_rata_die()
     }
 
     fn has_cheap_iso_conversion(&self) -> bool {

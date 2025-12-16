@@ -110,6 +110,25 @@ impl DateFieldsResolver for Indian {
         };
         Ok(shaka_year)
     }
+
+    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
+        // This is implemented in terms of other manual impls, might as well reuse them
+        let date = IndianDateInner(ArithmeticDate::new_unchecked(year, month, day));
+        let day_of_year_indian = Indian.day_of_year(&date).0; // 1-indexed
+        let days_in_year = Indian.days_in_year(&date);
+
+        let mut year_iso = date.0.year + YEAR_OFFSET;
+        // days_in_year is a valid day of the year, so we check > not >=
+        let day_of_year_iso = if day_of_year_indian + DAY_OFFSET > days_in_year {
+            year_iso += 1;
+            // calculate day of year in next year
+            day_of_year_indian + DAY_OFFSET - days_in_year
+        } else {
+            day_of_year_indian + DAY_OFFSET
+        };
+
+        calendrical_calculations::gregorian::day_before_year(year_iso) + day_of_year_iso as i64
+    }
 }
 
 impl crate::cal::scaffold::UnstableSealed for Indian {}
@@ -180,20 +199,7 @@ impl Calendar for Indian {
 
     // Algorithms directly implemented in icu_calendar since they're not from the book
     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
-        let day_of_year_indian = self.day_of_year(date).0; // 1-indexed
-        let days_in_year = self.days_in_year(date);
-
-        let mut year_iso = date.0.year + YEAR_OFFSET;
-        // days_in_year is a valid day of the year, so we check > not >=
-        let day_of_year_iso = if day_of_year_indian + DAY_OFFSET > days_in_year {
-            year_iso += 1;
-            // calculate day of year in next year
-            day_of_year_indian + DAY_OFFSET - days_in_year
-        } else {
-            day_of_year_indian + DAY_OFFSET
-        };
-
-        calendrical_calculations::gregorian::day_before_year(year_iso) + day_of_year_iso as i64
+        date.0.to_rata_die()
     }
 
     fn has_cheap_iso_conversion(&self) -> bool {
