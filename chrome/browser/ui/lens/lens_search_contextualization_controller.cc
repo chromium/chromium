@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -760,7 +761,10 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
           lens::features::GetLensOverlayPdfSuggestCharacterTarget() ||
       page_index + 1 >= total_page_count) {
     std::move(pdf_partial_page_text_retrieved_callback_).Run(pdf_pages_text_);
-    GetQueryController()->SendPartialPageContentRequest(pdf_pages_text_);
+    // When contextual tasks is enabled, partial PDF text is not sent.
+    if (!contextual_tasks::GetEnableLensInContextualTasks()) {
+      GetQueryController()->SendPartialPageContentRequest(pdf_pages_text_);
+    }
     return;
   }
 
