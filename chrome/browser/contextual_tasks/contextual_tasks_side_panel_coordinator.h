@@ -167,6 +167,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   contextual_search::ContextualSearchSessionHandle*
   GetContextualSearchSessionHandleForSidePanel();
 
+  // Closes any active Lens sessions for tabs associated with the given task.
+  void CloseLensSessionsForTask(const ContextualTask& task);
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 

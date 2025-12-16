@@ -429,10 +429,6 @@ GURL ComposeboxQueryController::CreateSearchUrl(
     }
   }
 
-  // TODO(crbug.com/445996881): Determine how to support non-AIM search for
-  // text-only queries.
-  DCHECK(search_url_request_info->search_url_type == SearchUrlType::kAim);
-
   // Treat queries in which the cluster info has expired, or without valid
   // contextual inputs, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info

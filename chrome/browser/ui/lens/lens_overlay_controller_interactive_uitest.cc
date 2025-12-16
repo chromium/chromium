@@ -11,6 +11,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,11 +34,13 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -43,6 +48,7 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
@@ -216,6 +222,47 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 
     return Steps(EnsurePresent(overlayId),
                  WaitForStateChange(overlayId, screenshot_is_rendered));
+  }
+
+  template <typename T>
+  InteractiveTestApi::MultiStep OpenLensOverlayWithRegionSearch(
+      ui::ElementIdentifier tab_id,
+      ui::ElementIdentifier overlay_id,
+      T&& target_point) {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithImage);
+
+    // In kDocumentWithNamedElement.
+    const DeepQuery kPathToBody{
+        "body",
+    };
+
+    const DeepQuery kPathToRegionSelection{
+        "lens-overlay-app",
+        "lens-selection-overlay",
+        "#regionSelectionLayer",
+    };
+    return Steps(
+        InAnyContext(
+            InstrumentTab(tab_id), NavigateWebContents(tab_id, url),
+            EnsurePresent(tab_id, kPathToBody),
+            WaitForWebContentsPainted(tab_id),
+            WaitForWebContentsReady(tab_id, url),
+
+            // Open the three dot menu and select the Lens Overlay option.
+            PressButton(kToolbarAppMenuButtonElementId),
+            WaitForShow(AppMenuModel::kShowLensOverlay),
+            SelectMenuItem(AppMenuModel::kShowLensOverlay)),
+        InAnyContext(
+            InstrumentNonTabWebView(overlay_id,
+                                    LensOverlayController::kOverlayId),
+            WaitForWebContentsReady(
+                overlay_id, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+        InSameContext(WaitForShow(LensOverlayController::kOverlayId),
+                      WaitForScreenshotRendered(overlay_id),
+                      EnsurePresent(overlay_id, kPathToRegionSelection),
+                      MoveMouseTo(LensOverlayController::kOverlayId),
+                      DragMouseTo(std::forward<T>(target_point))));
   }
 
   bool TriggerLenOverlayHomeworkPageAction() {
@@ -1449,6 +1496,274 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
       // The CSB query in the side panel should be empty.
       InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
                                         kPathToSidePanelSearchboxInput, "")));
+}
+
+class ContextualTasksLensOverlayControllerInteractiveUiTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  ContextualTasksLensOverlayControllerInteractiveUiTest() = default;
+  ~ContextualTasksLensOverlayControllerInteractiveUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}}},
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
+  }
+
+  InteractiveTestApi::MultiStep WaitForContextualPanelAndLensToClose(
+      int tab_index = 0) {
+    return Steps(
+        WaitForHide(kContextualTasksSidePanelWebViewElementId),
+        Do([this, tab_index]() {
+          // Verify Lens Overlay is closed.
+          content::WebContents* web_contents =
+              browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          auto* lens_controller =
+              LensSearchController::FromTabWebContents(web_contents);
+          EXPECT_TRUE(lens_controller->IsClosing() || lens_controller->IsOff());
+        }));
+  }
+};
+
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/469373433): Flaky on Windows.
+#define MAYBE_LensSessionClosesOnSidePanelClose \
+  DISABLED_LensSessionClosesOnSidePanelClose
+#else
+#define MAYBE_LensSessionClosesOnSidePanelClose \
+  LensSessionClosesOnSidePanelClose
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       MAYBE_LensSessionClosesOnSidePanelClose) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Close the panel after it is opened.
+        coordinator->Close();
+      }),
+      WaitForContextualPanelAndLensToClose());
+}
+
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/469373433): Flaky on Windows.
+#define MAYBE_LensSessionsCloseOnSidePanelClose_MultiTab \
+  DISABLED_LensSessionsCloseOnSidePanelClose_MultiTab
+#else
+#define MAYBE_LensSessionsCloseOnSidePanelClose_MultiTab \
+  LensSessionsCloseOnSidePanelClose_MultiTab
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       MAYBE_LensSessionsCloseOnSidePanelClose_MultiTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+  contextual_tasks::ContextualTasksContextController*
+      contextual_tasks_controller =
+          contextual_tasks::ContextualTasksContextControllerFactory::
+              GetForProfile(browser()->profile());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      OpenArbitraryNewTab(),
+      EnsureNotPresent(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Associate the task from tab0 to this new tab.
+        SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetWebContentsAt(0));
+        auto task =
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id0);
+        contextual_tasks_controller->AssociateTabWithTask(
+            task->GetTaskId(),
+            sessions::SessionTabHelper::IdForTab(
+                browser()->tab_strip_model()->GetWebContentsAt(1)));
+
+        // Show contextual tasks side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Close the panel after it is opened.
+        coordinator->Close();
+      }),
+      WaitForContextualPanelAndLensToClose());
+}
+
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/469373433): Flaky on Windows.
+#define MAYBE_LensSessionsCloseOnSidePanelClose_MultipleLensSessions \
+  DISABLED_LensSessionsCloseOnSidePanelClose_MultipleLensSessions
+#else
+#define MAYBE_LensSessionsCloseOnSidePanelClose_MultipleLensSessions \
+  LensSessionsCloseOnSidePanelClose_MultipleLensSessions
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksLensOverlayControllerInteractiveUiTest,
+    MAYBE_LensSessionsCloseOnSidePanelClose_MultipleLensSessions) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      OpenArbitraryNewTab(),
+      EnsureNotPresent(kContextualTasksSidePanelWebViewElementId),
+      OpenLensOverlayWithRegionSearch(kSecondTab, kSecondOverlayId,
+                                      off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Close the panel after it is opened.
+        coordinator->Close();
+      }),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify Lens Overlay is not closing on the first tab.
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        auto* lens_controller =
+            LensSearchController::FromTabWebContents(web_contents);
+        EXPECT_FALSE(lens_controller->IsClosing() || lens_controller->IsOff());
+
+        // Verify Lens Overlay is closed on the second tab.
+        content::WebContents* web_contents1 =
+            browser()->tab_strip_model()->GetWebContentsAt(1);
+        auto* lens_controller1 =
+            LensSearchController::FromTabWebContents(web_contents1);
+        EXPECT_TRUE(lens_controller1->IsClosing() || lens_controller1->IsOff());
+      }));
+}
+
+class TabScopedContextualTasksLensOverlayControllerInteractiveUiTest
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
+ public:
+  TabScopedContextualTasksLensOverlayControllerInteractiveUiTest() = default;
+  ~TabScopedContextualTasksLensOverlayControllerInteractiveUiTest() override =
+      default;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
+                              {contextual_tasks::kContextualTasksContext,
+                               {{"TaskScopedSidePanel", "false"}}}},
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabScopedContextualTasksLensOverlayControllerInteractiveUiTest,
+    LensSessionClosesOnSidePanelClose) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Close the panel after it is opened.
+        coordinator->Close();
+      }),
+      WaitForContextualPanelAndLensToClose());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabScopedContextualTasksLensOverlayControllerInteractiveUiTest,
+    LensSessionsCloseOnSidePanelClose_MultiTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksSidePanelCoordinator* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+  contextual_tasks::ContextualTasksContextController*
+      contextual_tasks_controller =
+          contextual_tasks::ContextualTasksContextControllerFactory::
+              GetForProfile(browser()->profile());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      OpenArbitraryNewTab(),
+      EnsureNotPresent(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Associate the task from tab0 to this new tab.
+        SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
+            browser()->tab_strip_model()->GetWebContentsAt(0));
+        auto task =
+            contextual_tasks_controller->GetContextualTaskForTab(tab_id0);
+        contextual_tasks_controller->AssociateTabWithTask(
+            task->GetTaskId(),
+            sessions::SessionTabHelper::IdForTab(
+                browser()->tab_strip_model()->GetWebContentsAt(1)));
+
+        // Show contextual tasks side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Close the panel after it is opened.
+        coordinator->Close();
+      }),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify Lens Overlay did not close.
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        auto* lens_controller =
+            LensSearchController::FromTabWebContents(web_contents);
+        EXPECT_FALSE(lens_controller->IsClosing() || lens_controller->IsOff());
+      }));
 }
 
 }  // namespace
