@@ -12,8 +12,11 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host_queue.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -88,10 +91,17 @@ IN_PROC_BROWSER_TEST_P(MultiBackgroundExtensionBrowserTestBrowserTest,
   ExtensionHostQueue::GetInstance().SetCustomDelayForTesting(base::Seconds(0));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
+INSTANTIATE_TEST_SUITE_P(All,
+                         MultiBackgroundExtensionBrowserTestBrowserTest,
+                         testing::Values(BackgroundType::kWorker));
+#else
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiBackgroundExtensionBrowserTestBrowserTest,
                          testing::Values(BackgroundType::kPersistentPage,
                                          BackgroundType::kLazyPage,
                                          BackgroundType::kWorker));
+#endif
 
 }  // namespace extensions

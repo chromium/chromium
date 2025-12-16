@@ -65,13 +65,12 @@ class TabsEventRouterAndroid : public TabModelListObserver,
     GURL url_;
   };
 
-  void TabCreatedAt(content::WebContents* contents, bool active);
-
   // Internal processing of tab updated events. Intended to be called when
   // there's any changed property.
   void TabUpdated(TabEntry* entry,
                   std::set<std::string> changed_property_names);
 
+  void DispatchTabCreatedEvent(content::WebContents* contents, bool active);
   void DispatchTabUpdatedEvent(content::WebContents* contents,
                                std::set<std::string> changed_property_names);
   void DispatchEvent(events::HistogramValue histogram_value,

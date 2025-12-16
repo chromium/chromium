@@ -15,6 +15,10 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 
+// NOTE: This entire file is throwaway code. It is being used to bootstrap tests
+// on the desktop Android platform. It will eventually be replaced by a cross
+// platform implementation in tabs_event_router.h/cc.
+
 namespace extensions {
 namespace {
 
@@ -51,6 +55,31 @@ bool WillDispatchTabUpdatedEvent(
   event_args_out.emplace();
   event_args_out->Append(ExtensionTabUtil::GetTabId(contents));
   event_args_out->Append(std::move(changed_properties));
+  event_args_out->Append(std::move(tab_value));
+  return true;
+}
+
+// Callback for event dispatch system.
+bool WillDispatchTabCreatedEvent(
+    content::WebContents* contents,
+    bool active,
+    content::BrowserContext* browser_context,
+    mojom::ContextType target_context,
+    const Extension* extension,
+    const base::Value::Dict* listener_filter,
+    std::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
+                                            contents);
+  base::Value::Dict tab_value =
+      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
+          .ToValue();
+  tab_value.Set(tabs_constants::kSelectedKey, active);
+  tab_value.Set(tabs_constants::kActiveKey, active);
+
+  event_args_out.emplace();
   event_args_out->Append(std::move(tab_value));
   return true;
 }
@@ -138,6 +167,8 @@ void TabsEventRouterAndroid::DidAddTab(TabAndroid* tab,
   }
   tab_entries_.emplace(tab_id,
                        std::make_unique<TabEntry>(this, tab->web_contents()));
+
+  DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
 }
 
 void TabsEventRouterAndroid::TabRemoved(TabAndroid* tab) {
@@ -159,6 +190,20 @@ void TabsEventRouterAndroid::TabUpdated(
   CHECK(!changed_property_names.empty());
   DispatchTabUpdatedEvent(entry->web_contents(),
                           std::move(changed_property_names));
+}
+
+void TabsEventRouterAndroid::DispatchTabCreatedEvent(
+    content::WebContents* contents,
+    bool active) {
+  Profile* const profile =
+      Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
+                                       api::tabs::OnCreated::kEventName,
+                                       base::Value::List(), profile);
+  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
+  event->will_dispatch_callback =
+      base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
+  EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 
 void TabsEventRouterAndroid::DispatchTabUpdatedEvent(
