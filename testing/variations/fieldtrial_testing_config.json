@@ -10470,6 +10470,21 @@
             ]
         }
     ],
+    "FRESignInSecondaryActionLabelUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_StaySignedOut",
+                    "enable_features": [
+                        "FRESignInAlternativeSecondaryButtonText"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairAdvertisingFormat2025": [
         {
             "platforms": [
