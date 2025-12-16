@@ -43,23 +43,6 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:tint="@color/default_icon_color_tint_list"/>
 
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/location_bar_attachments_settings"
-        android:layout_width="@dimen/fusebox_button_size"
-        android:layout_height="@dimen/fusebox_button_size"
-        android:visibility="gone"
-        android:padding="@dimen/fusebox_button_padding"
-        android:src="@drawable/ic_settings_tune_24dp"
-        android:scaleType="centerInside"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackground"
-        android:clipToOutline="true"
-        app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/url_bar"
-        app:tint="@color/default_icon_color_tint_list"/>
-
     <org.chromium.ui.widget.ButtonCompat
         style="@style/OutlinedButton"
         android:id="@+id/fusebox_request_type"
@@ -73,7 +56,7 @@ found in the LICENSE file.
         android:singleLine="true"
         android:text="@string/ai_mode_entrypoint_label"
         android:textAlignment="viewStart"
-        app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
+        app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:buttonColor="@color/gm3_baseline_surface_container"
