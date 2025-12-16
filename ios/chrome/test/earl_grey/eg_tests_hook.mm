@@ -180,8 +180,10 @@ bool LoadMinimalAppUI() {
   if (!minimal_ui_loaded) {
     NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
     for (UIScene* scene in scenes) {
-      UIWindowScene* window_scene =
-          base::apple::ObjCCastStrict<UIWindowScene>(scene);
+      UIWindowScene* window_scene = base::apple::ObjCCast<UIWindowScene>(scene);
+      if (!window_scene) {
+        continue;
+      }
       for (UIWindow* window in window_scene.windows) {
         if (window.canBecomeKeyWindow) {
           LoadMinimalAppUIInWindow(window);
@@ -190,6 +192,8 @@ bool LoadMinimalAppUI() {
         };
       }
     }
+    // There should have been a window.
+    NOTREACHED();
   };
   return true;
 }

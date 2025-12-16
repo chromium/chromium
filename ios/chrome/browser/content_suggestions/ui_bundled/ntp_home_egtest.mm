@@ -155,7 +155,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 + (void)setUpForTestCase {
   [super setUpForTestCase];
 
-  [NTPHomeTestCase setUpHelper];
+  [self setUpHelper];
 }
 
 + (void)setUpHelper {
@@ -165,15 +165,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
   // Disable search suggestions so that the omnibox popup does not appear.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSearchSuggestEnabled];
-
-  if (![ChromeTestCase forceRestartAndWipe]) {
-    [self closeAllTabs];
-    [ChromeEarlGrey clearBrowsingHistory];
-  }
 }
 
 - (BOOL)shouldLoadMinimalAppUI {
   std::vector<SEL> minimalAppUITests = {
+      @selector(testAccessibility),
       @selector(testOmniboxWidthRotation),
       @selector(testMinimumHeight),
       @selector(testInitialPositionAndOrientationChange),
@@ -252,9 +248,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 - (void)setUp {
   [super setUp];
-  if ([ChromeTestCase forceRestartAndWipe]) {
-    [NTPHomeTestCase setUpHelper];
-  }
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
 
   self.defaultSearchEngine = [SearchEnginesAppInterface defaultSearchEngine];
@@ -262,11 +255,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)tearDownHelper {
-  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
-                                   error:nil];
-  [SearchEnginesAppInterface setSearchEngineTo:self.defaultSearchEngine];
-
-  [self resetCustomizationPrefs];
+  [ChromeCoordinatorAppInterface reset];
 
   [super tearDownHelper];
 }
@@ -276,6 +265,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that all items are accessible on the home page.
 // This is currently needed to prevent this test case from being ignored.
 - (void)testAccessibility {
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
@@ -459,11 +449,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
 - (void)testOmniboxWidthRotation {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [ChromeEarlGreyUI waitForAppToIdle];
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -1062,11 +1047,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)testMinimumHeight {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
@@ -1113,11 +1093,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
 - (void)testInitialPositionAndOrientationChange {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
 
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -1172,11 +1147,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the Magic Stack feature swipeable when there are multiple modules.
 - (void)testMagicStack {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   // Enable relevant preferences for the test, and intentionally forces a Safety
   // Check error to ensure module visibility in the Magic Stack.
   [ChromeEarlGrey
@@ -1391,11 +1361,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the customization menu can be used to toggle the visibility of
 // Home surface modules.
 - (void)testToggleModuleVisiblityInCustomizationMenu {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   // Tests most visited tiles visibility separately.
   [self resetCustomizationPrefs];
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
@@ -1494,11 +1459,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the toggles in the main page of the customization menu can be used
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
-  // TODO(crbug.com/468067115): Re-enable this test.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(
-        @"Disabled on iPad on pre iOS 26 for crbug.com/468067115.");
-  }
   // Tests most visited tiles visibility separately.
   [self resetCustomizationPrefs];
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
