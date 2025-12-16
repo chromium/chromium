@@ -61,7 +61,7 @@ void OmniboxPopupPresenterBase::Hide() {
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
     widget_->Hide();
     if (auto* content = GetWebUIContent()) {
-      content->OnWidgetClosed();
+      content->OnPopupHidden();
     }
   }
 }

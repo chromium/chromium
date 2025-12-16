@@ -38,11 +38,11 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
-void OmniboxAimPopupWebUIContent::OnWidgetClosed() {
-  OmniboxPopupWebUIBaseContent::OnWidgetClosed();
+void OmniboxAimPopupWebUIContent::OnPopupHidden() {
+  OmniboxPopupWebUIBaseContent::OnPopupHidden();
   auto* handler = popup_aim_handler();
   if (handler) {
-    handler->OnWidgetClosed();
+    handler->OnPopupHidden();
   }
 }
 
@@ -78,7 +78,7 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
     context->text =
         base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
   }
-  handler->OnWidgetShown(std::move(context));
+  handler->OnPopupShown(std::move(context));
 }
 
 OmniboxPopupAimHandler* OmniboxAimPopupWebUIContent::popup_aim_handler() {

@@ -187,7 +187,7 @@ bool OmniboxPopupWebUIBaseContent::PreHandleGestureEvent(
   return false;
 }
 
-void OmniboxPopupWebUIBaseContent::OnWidgetClosed() {
+void OmniboxPopupWebUIBaseContent::OnPopupHidden() {
   // This removes the content from being considered for rendering by the
   // compositor while the popup is closed. The content is re-inserted right
   // before the view is displayed. This has the effect of tossing out old,
