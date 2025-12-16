@@ -2088,10 +2088,7 @@ if (_is_default_toolchain) {
   }
 
   generate_jni("base_module_jni") {
-    sources = [
-      "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
-      "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
-    ]
+    sources = [ "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java" ]
   }
 
   # Target for classes which should be in the base module, even when //chrome code
@@ -2131,7 +2128,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",
       "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
       "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
-      "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
       "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
       "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
       "java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java",

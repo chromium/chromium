@@ -47,7 +47,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "enable-chrome-browser-cloud-management",
-    "policy=" + EnterpriseReportingIntegrationTest.REPORTING_POLICY_STRING,
 })
 // TODO(crbug.com/441339044): Re-enable the integration test for proto-based reporting.
 @DisableFeatures("UploadRealtimeReportingEventsUsingProto")
@@ -66,17 +65,14 @@ public class EnterpriseReportingIntegrationTest {
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String USERNAME_TEXT = "username@domain.com";
     private static final String PASSWORD_TEXT = "password";
+    private static final String NEW_PASSWORD_TEXT = "new password";
     private static final String SUBMIT_BUTTON_ID = "input_submit_button";
 
     private static final String FAKE_GOOGLE_API_KEY = "fake-google-api-key";
     private static final String FAKE_DM_TOKEN = "fake-dm-token";
 
     private static final String REPORTING_ENDPOINT = "/?key=" + FAKE_GOOGLE_API_KEY;
-    public static final String REPORTING_POLICY_STRING =
-            "{\"OnSecurityEventEnterpriseConnector\":[{\"enabled_event_names\":[\"loginEvent\"],"
-                + "\"enabled_opt_in_events\":[{\"name\":\"loginEvent\",\"url_patterns\":[\"*\"]}],"
-                + "\"service_provider\":\"google\"}]}";
-
+    private static final String REPORTING_POLICY_NAME = "OnSecurityEventEnterpriseConnector";
     private static final String REPORTING_SUCCESS_HISTOGRAM =
             "Enterprise.ReportingEventUploadSuccess";
     private static final String REPORTING_FAILURE_HISTOGRAM =
@@ -111,6 +107,14 @@ public class EnterpriseReportingIntegrationTest {
         return new JSONObject().put("api_keys", apiKeys);
     }
 
+    private JSONObject buildSecurityEventReportingPolicy(String eventName) throws JSONException {
+        var eventDetails = new JSONObject().put("name", eventName).append("url_patterns", "*");
+        return new JSONObject()
+                .append("enabled_event_names", eventName)
+                .append("enabled_opt_in_events", eventDetails)
+                .put("service_provider", "google");
+    }
+
     /** Build a histogram watcher that expects one successfully uploaded report and no failures. */
     private HistogramWatcher buildReportUploadWatcher(@EnterpriseReportingEventType int eventType) {
         return HistogramWatcher.newBuilder()
@@ -134,6 +138,9 @@ public class EnterpriseReportingIntegrationTest {
     public void testLoginEventReported() throws JSONException, TimeoutException {
         assumeTrue("Can set policy from command line", AndroidInfo.isDebugAndroid());
 
+        var policyMap = new JSONObject();
+        policyMap.append(REPORTING_POLICY_NAME, buildSecurityEventReportingPolicy("loginEvent"));
+        CommandLine.getInstance().appendSwitchWithValue("policy", policyMap.toString());
         HistogramWatcher watcher =
                 buildReportUploadWatcher(EnterpriseReportingEventType.LOGIN_EVENT);
 

@@ -46,8 +46,8 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -86,9 +86,11 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DoNotBatch(reason = "Interfere with the next test case - see crbug.com/463649037")
+@Batch(SingleWebsiteSettingsTest.TEST_BATCH_NAME)
 public class SingleWebsiteSettingsTest {
     private static final String EXAMPLE_ADDRESS = "https://example.com";
+
+    static final String TEST_BATCH_NAME = "SingleWebsiteSettingsTest";
 
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

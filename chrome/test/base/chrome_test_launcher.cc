@@ -231,10 +231,6 @@ void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
 #endif
 }
 
-bool ChromeTestChromeMainDelegate::IsInitFeatureListEarly() {
-  return false;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 content::ContentMainDelegate*
 ChromeTestLauncherDelegate::CreateContentMainDelegate() {

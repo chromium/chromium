@@ -694,7 +694,6 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void openUrlInOtherWindow_openInNewWindow_reachInstanceLimit() {
         MultiWindowUtils.setMaxInstancesForTesting(5);
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();

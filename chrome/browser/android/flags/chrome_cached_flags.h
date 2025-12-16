@@ -11,8 +11,6 @@ namespace chrome::android {
 
 bool IsJavaDrivenFeatureEnabled(const base::Feature& feature);
 
-bool IsInitFeatureListEarlyFeatureParamEnabled();
-
 }  // namespace chrome::android
 
 #endif  // CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_

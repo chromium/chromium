@@ -337,11 +337,6 @@ inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     "duration_in_seconds",
     /*default_value=*/base::Minutes(10).InSeconds());
 
-inline constexpr base::FeatureParam<bool> kInitFeatureListEarly(
-    &kLoadNativeEarly,
-    "init_feature_list_early",
-    /*default_value=*/true);
-
 inline constexpr base::FeatureParam<int>
     kReadAloudAudioOverviewsSpeedAdditionPercentage(
         &kReadAloudAudioOverviews,
