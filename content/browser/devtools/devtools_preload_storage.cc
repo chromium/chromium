@@ -66,7 +66,6 @@ void DevToolsPreloadStorage::UpdatePrerenderStatus(
       prerender_until_script_data_map_[key] = std::move(data);
       break;
     case blink::mojom::SpeculationAction::kPrefetch:
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
       NOTREACHED();
   }
 }
@@ -92,8 +91,6 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
             std::make_pair(candidate_ptr->url,
                            candidate_ptr->target_browsing_context_name_hint));
         break;
-      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-        NOTIMPLEMENTED_LOG_ONCE();
     };
   }
 

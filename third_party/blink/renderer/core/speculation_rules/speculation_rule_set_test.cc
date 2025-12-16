@@ -211,18 +211,13 @@ class SpeculationRuleSetTest : public ::testing::Test {
           "urls": ["https://example.com/hint.html"],
           "target_hint": "%s"
         }],
-        "prefetch_with_subresources": [{
-          "source": "list",
-          "urls": ["https://example.com/hint.html"],
-          "target_hint": "%s"
-        }],
         "prerender": [{
           "source": "list",
           "urls": ["https://example.com/hint.html"],
           "target_hint": "%s"
         }]
       })",
-                                        target_hint, target_hint, target_hint),
+                                        target_hint, target_hint),
                          KURL("https://example.com/"), execution_context_);
   }
 
@@ -334,14 +329,12 @@ TEST_F(SpeculationRuleSetTest, Empty) {
   ASSERT_TRUE(rule_set);
   EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 void AssertParseError(const SpeculationRuleSet* rule_set) {
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kSourceIsNotJsonObject);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
@@ -356,7 +349,6 @@ TEST_F(SpeculationRuleSetTest, PrerenderUntilScript) {
       KURL("https://example.com/"), execution_context());
 
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
   EXPECT_THAT(
       rule_set->prerender_until_script_rules(),
@@ -404,7 +396,6 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
   EXPECT_THAT(
       rule_set->prefetch_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
@@ -424,25 +415,6 @@ TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
       rule_set->prerender_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
-}
-
-TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
-  auto* rule_set = CreateRuleSet(
-      R"({
-        "prefetch_with_subresources": [{
-          "source": "list",
-          "urls": ["https://example.com/index2.html"]
-        }]
-      })",
-      KURL("https://example.com/"), execution_context());
-  ASSERT_TRUE(rule_set);
-  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
-  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(
-      rule_set->prefetch_with_subresources_rules(),
-      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
-  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
@@ -544,15 +516,13 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
   auto* rule_set = CreateRuleSet(
       R"({
         "unrecognized_key": true,
-        "prefetch": 42,
-        "prefetch_with_subresources": false
+        "prefetch": 42
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
@@ -647,7 +617,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
       "\"target_hint\" may not be set for prefetch"))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -664,7 +633,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
       "\"target_hint\" may not be set for prefetch"))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -684,7 +652,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
       "\"target_hint\" may not be set for prefetch"))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -704,7 +671,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
       "\"target_hint\" may not be set for prefetch"))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -720,7 +686,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
   EXPECT_TRUE(rule_set->error_message().Contains("invalid \"target_hint\""))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
@@ -736,7 +701,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
       "\"target_hint\" may not be set for prefetch"))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -753,7 +717,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_InvalidBrowsingContextName) {
   EXPECT_TRUE(rule_set->error_message().Contains("invalid \"target_hint\""))
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
@@ -765,7 +728,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/hint.html")));
   EXPECT_EQ(rule_set->prerender_rules()[0]->target_browsing_context_name_hint(),
@@ -783,11 +745,6 @@ TEST_F(SpeculationRuleSetTest,
           "urls": ["https://example.com/requires-proxy.html"],
           "requires": ["anonymous-client-ip-when-cross-origin"]
         }],
-        "prefetch_with_subresources": [{
-          "source": "list",
-          "urls": ["https://example.com/requires-proxy.html"],
-          "requires": ["anonymous-client-ip-when-cross-origin"]
-        }],
         "prerender": [{
           "source": "list",
           "urls": ["https://example.com/requires-proxy.html"],
@@ -800,13 +757,12 @@ TEST_F(SpeculationRuleSetTest,
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_EQ(rule_set->error_message(),
             "requirement \"anonymous-client-ip-when-cross-origin\" for "
-            "\"prefetch_with_subresources\" is not supported.");
+            "\"prerender\" is not supported.");
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs(
                   "https://example.com/requires-proxy.html")));
   EXPECT_TRUE(rule_set->prefetch_rules()[0]
                   ->requires_anonymous_client_ip_when_cross_origin());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
@@ -815,10 +771,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithFormSubmission) {
   auto* rule_set =
       CreateRuleSet(R"({
         "prefetch": [{
-          "urls": ["https://example.com/index2.html"],
-          "form_submission": true
-        }],
-        "prefetch_with_subresources": [{
           "urls": ["https://example.com/index2.html"],
           "form_submission": true
         }],
@@ -838,7 +790,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithFormSubmission) {
   EXPECT_EQ(rule_set->error_message(),
             "\"form_submission\" may not be set for prefetch rules.");
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(
       rule_set->prerender_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
@@ -1064,35 +1015,6 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
   }
 }
 
-// Tests that prefetch_with_subresources rules are ignored unless
-// SpeculationRulesPrefetchWithSubresources is enabled.
-TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchWithSubresourcesRules) {
-  // Overwrite the feature flag.
-  ScopedSpeculationRulesPrefetchWithSubresourcesForTest
-      enable_prefetch_with_subresources{false};
-
-  DummyPageHolder page_holder;
-  StubSpeculationHost speculation_host;
-  const String speculation_script =
-      R"({"prefetch_with_subresources": [
-           {"source": "list",
-            "urls": ["https://example.com/foo", "https://example.com/bar"],
-            "requires": ["anonymous-client-ip-when-cross-origin"]}
-         ],
-          "prerender": [
-           {"source": "list", "urls": ["https://example.com/prerender"]}
-         ]
-         })";
-  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
-                                      speculation_script);
-
-  const auto& candidates = speculation_host.candidates();
-  EXPECT_EQ(candidates.size(), 1u);
-  EXPECT_FALSE(std::ranges::any_of(candidates, [](const auto& candidate) {
-    return candidate->action ==
-           mojom::blink::SpeculationAction::kPrefetchWithSubresources;
-  }));
-}
 
 // Tests that the presence of a speculationrules script is recorded.
 TEST_F(SpeculationRuleSetTest, UseCounter) {
@@ -1440,7 +1362,6 @@ TEST_F(SpeculationRuleSetTest, DropNotArrayAtRuleSetPosition) {
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, DropNotObjectAtRulePosition) {
@@ -1457,7 +1378,6 @@ TEST_F(SpeculationRuleSetTest, DropNotObjectAtRulePosition) {
       << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
-  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 MATCHER_P(MatchesPredicate,

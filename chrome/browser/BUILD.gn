@@ -1160,8 +1160,6 @@ static_library("browser") {
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.cc",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h",
-    "preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.cc",
-    "preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.h",
     "preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.cc",
     "preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h",
     "preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.cc",

@@ -4959,9 +4959,6 @@
       name: "SpecialRulesForNestedH1Elements",
     },
     {
-      name: "SpeculationRulesPrefetchWithSubresources",
-    },
-    {
       name: "SplitTextNotCleanupDummySpans",
       status: "stable",
     },

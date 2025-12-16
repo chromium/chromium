@@ -41,7 +41,6 @@ PreloadingType ConvertSpeculationActionToPreloadingType(
     case blink::mojom::SpeculationAction::kPrerenderUntilScript:
       return PreloadingType::kPrerenderUntilScript;
     case blink::mojom::SpeculationAction::kPrefetch:
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
       NOTREACHED();
   }
 }

@@ -787,14 +787,6 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       /*allow_form_submission=*/false,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/true);
 
-  // If parsed["prefetch_with_subresources"] exists and is a list, then for
-  // each...
-  parse_for_action(
-      "prefetch_with_subresources", result->prefetch_with_subresources_rules_,
-      /*allow_target_hint=*/false,
-      /*allow_form_submission=*/false,
-      /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
-
   // If parsed["prerender"] exists and is a list, then for each...
   parse_for_action(
       "prerender", result->prerender_rules_,
@@ -852,7 +844,6 @@ SpeculationRuleSet::SpeculationTargetHintFromString(
 
 void SpeculationRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(prefetch_rules_);
-  visitor->Trace(prefetch_with_subresources_rules_);
   visitor->Trace(prerender_rules_);
   visitor->Trace(prerender_until_script_rules_);
   visitor->Trace(source_);

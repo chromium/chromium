@@ -50,7 +50,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/responsiveness_calculator_delegate.h"
 #include "content/public/browser/sms_fetcher.h"
-#include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_authentication_delegate.h"
@@ -1672,12 +1671,6 @@ bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
 
 std::unique_ptr<AnchorElementPreconnectDelegate>
 ContentBrowserClient::CreateAnchorElementPreconnectDelegate(
-    RenderFrameHost& render_frame_host) {
-  return nullptr;
-}
-
-std::unique_ptr<SpeculationHostDelegate>
-ContentBrowserClient::CreateSpeculationHostDelegate(
     RenderFrameHost& render_frame_host) {
   return nullptr;
 }

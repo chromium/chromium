@@ -1003,10 +1003,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateAnchorElementPreconnectDelegate(
       content::RenderFrameHost& render_frame_host) override;
 
-  std::unique_ptr<content::SpeculationHostDelegate>
-  CreateSpeculationHostDelegate(
-      content::RenderFrameHost& render_frame_host) override;
-
   std::unique_ptr<content::PrefetchServiceDelegate>
   CreatePrefetchServiceDelegate(
       content::BrowserContext* browser_context) override;

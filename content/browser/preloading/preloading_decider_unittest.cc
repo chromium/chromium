@@ -741,8 +741,6 @@ class PreloadingDeciderWithParameterizedSpeculationActionTest
     switch (GetSpeculationAction()) {
       case blink::mojom::SpeculationAction::kPrefetch:
         return GetPrefetchService()->prefetches_.size();
-      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-        NOTREACHED();
       case blink::mojom::SpeculationAction::kPrerender:
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:
         return GetPrerenderer()->prerenders_.size();
@@ -754,8 +752,6 @@ class PreloadingDeciderWithParameterizedSpeculationActionTest
       case blink::mojom::SpeculationAction::kPrefetch:
         GetPrefetchService()->EvictPrefetch(index);
         break;
-      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-        NOTREACHED();
       case blink::mojom::SpeculationAction::kPrerender:
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:
         GetPrerenderer()->OnCancel(index);
@@ -777,8 +773,6 @@ INSTANTIATE_TEST_SUITE_P(
       switch (info.param) {
         case blink::mojom::SpeculationAction::kPrefetch:
           return "kPrefetch";
-        case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-          NOTREACHED();
         case blink::mojom::SpeculationAction::kPrerender:
           return "kPrerender";
         case blink::mojom::SpeculationAction::kPrerenderUntilScript:
@@ -818,8 +812,6 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
             ->request()
             .prefetch_type()
             .GetEagerness();
-      case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-        NOTREACHED();
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:
       case blink::mojom::SpeculationAction::kPrerender:
         return GetPrerenderer()->prerenders_[0].eagerness;

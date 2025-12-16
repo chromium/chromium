@@ -363,9 +363,6 @@ Preload::SpeculationAction SpeculationActionToProtocol(
       return Preload::SpeculationActionEnum::PrerenderUntilScript;
     case blink::mojom::SpeculationAction::kPrefetch:
       return Preload::SpeculationActionEnum::Prefetch;
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-      // `kPrefetchWithSubresources` will be deprecated soon.
-      NOTREACHED();
   }
 }
 

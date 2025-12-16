@@ -98,8 +98,6 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
       return protocol::Preload::SpeculationActionEnum::Prefetch;
     case mojom::blink::SpeculationAction::kPrerenderUntilScript:
       return protocol::Preload::SpeculationActionEnum::PrerenderUntilScript;
-    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED();
   }
 }
 
@@ -251,12 +249,6 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
               PreloadingAttemptKeyHashTraits>
       preloading_attempts;
   for (SpeculationCandidate* candidate : candidates) {
-    // We are explicitly not reporting candidates for kPrefetchWithSubresources,
-    // because it is supposed to be replaced by kPrerenderUntilScript soon.
-    if (candidate->action() ==
-        mojom::blink::SpeculationAction::kPrefetchWithSubresources) {
-      continue;
-    }
     PreloadingAttemptKey key = {candidate->action(), candidate->url(),
                                 candidate->target_hint()};
     auto& value = preloading_attempts

@@ -428,7 +428,6 @@ source_set("browser_sources") {
     "site_isolation_policy.h",
     "sms_fetcher.h",
     "spare_render_process_host_manager.h",
-    "speculation_host_delegate.h",
     "speech_recognition_audio_forwarder_config.cc",
     "speech_recognition_audio_forwarder_config.h",
     "speech_recognition_event_listener.h",

@@ -135,7 +135,6 @@ class PreloadingDecider::BehaviorConfig {
                preloading_predictor::kPreloadingHeuristicsMLModel) {
       switch (action) {
         case blink::mojom::SpeculationAction::kPrefetch:
-        case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
           return ml_model_prefetch_moderate_threshold_;
         // TODO(https://crbug.com/428500219): Revisit the threshold for
         // prerender-until-script; it could be lower than the threshold for

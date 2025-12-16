@@ -77,7 +77,6 @@ PrerenderAttributes::PrerenderAttributes(
     case blink::mojom::SpeculationAction::kPrerenderUntilScript:
       break;
     case blink::mojom::SpeculationAction::kPrefetch:
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
       NOTREACHED();
   }
 }

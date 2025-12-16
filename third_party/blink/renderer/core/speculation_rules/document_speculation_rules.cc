@@ -75,7 +75,6 @@ bool AcceptableReferrerPolicy(const Referrer& referrer,
 String SpeculationActionAsString(mojom::blink::SpeculationAction action) {
   switch (action) {
     case mojom::blink::SpeculationAction::kPrefetch:
-    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
       return "prefetch";
     case mojom::blink::SpeculationAction::kPrerenderUntilScript:
       return "prerender-until-script";
@@ -720,13 +719,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     push_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
                     rule_set->prefetch_rules());
 
-    if (RuntimeEnabledFeatures::SpeculationRulesPrefetchWithSubresourcesEnabled(
-            execution_context)) {
-      push_candidates(
-          mojom::blink::SpeculationAction::kPrefetchWithSubresources, rule_set,
-          rule_set->prefetch_with_subresources_rules());
-    }
-
     push_candidates(mojom::blink::SpeculationAction::kPrerender, rule_set,
                     rule_set->prerender_rules());
 
@@ -904,14 +896,6 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
     for (SpeculationRuleSet* rule_set : rule_sets_) {
       push_link_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
                            rule_set->prefetch_rules());
-
-      if (RuntimeEnabledFeatures::
-              SpeculationRulesPrefetchWithSubresourcesEnabled(
-                  execution_context)) {
-        push_link_candidates(
-            mojom::blink::SpeculationAction::kPrefetchWithSubresources,
-            rule_set, rule_set->prefetch_with_subresources_rules());
-      }
 
       push_link_candidates(mojom::blink::SpeculationAction::kPrerender,
                            rule_set, rule_set->prerender_rules());
