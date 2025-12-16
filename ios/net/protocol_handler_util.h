@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/feature_list.h"
+
 namespace base {
 class Time;
 }  // namespace base
@@ -16,6 +18,11 @@ class URLRequest;
 }  // namespace net
 
 namespace net {
+
+// Feature flag to control whether to use NSURLErrorFailingURLErrorKey
+// instead of NSURLErrorFailingURLStringErrorKey (deprecated) in NSError
+// userInfo.
+BASE_DECLARE_FEATURE(kUseNSURLErrorFailingURLErrorKey);
 
 // The error domain for network NSErrors.
 extern NSString* const kNSErrorDomain;
@@ -28,6 +35,13 @@ NSError* GetIOSError(NSInteger ns_error_code,
                      int net_error_code,
                      NSString* url,
                      const base::Time& creation_time);
+
+// Returns the failing URL string from the error's userInfo, checking both
+// the string key (deprecated) and the url key.
+// See crbug.com/468893789 for details. This is a short-term workaround to
+// fix the unexpected removal of the deprecated error key
+// NSURLErrorFailingURLStringErrorKey
+NSString* GetFailingURLStringFromError(NSError* error);
 
 // Builds a NSURLResponse from the response data in |request|.
 NSURLResponse* GetNSURLResponseForRequest(URLRequest* request);
