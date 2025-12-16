@@ -37,6 +37,9 @@ class TextCodecUtf8 : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
+  // Returns true if the given `canonical_name` is supported.
+  // This function ignores ASCII cases.
+  static bool IsSupported(StringView canonical_name);
 
  protected:
   TextCodecUtf8() : partial_sequence_size_(0) {}

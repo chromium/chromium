@@ -34,6 +34,9 @@ class TextCodecUtf16 final : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
+  // Returns true if the given `canonical_name` is supported.
+  // This function ignores ASCII cases.
+  static bool IsSupported(StringView canonical_name);
 
   TextCodecUtf16(bool little_endian) : little_endian_(little_endian) {}
 

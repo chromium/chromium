@@ -42,6 +42,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -113,8 +115,11 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
       continue;
     }
 #endif
-    // Avoid codecs supported by `TextCodecCjk`.
-    if (TextCodecCjk::IsSupported(standard_name)) {
+    // Avoid codecs supported by other classes.
+    StringView canonical_name(standard_name);
+    if (TextCodecCjk::IsSupported(canonical_name) ||
+        TextCodecUtf16::IsSupported(canonical_name) ||
+        TextCodecUtf8::IsSupported(canonical_name)) {
       continue;
     }
 
@@ -288,8 +293,11 @@ void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
       continue;
     }
 #endif
-    // Avoid codecs supported by `TextCodecCjk`.
-    if (TextCodecCjk::IsSupported(standard_name)) {
+    // Avoid codecs supported by other classes.
+    StringView canonical_name(standard_name);
+    if (TextCodecCjk::IsSupported(canonical_name) ||
+        TextCodecUtf16::IsSupported(canonical_name) ||
+        TextCodecUtf8::IsSupported(canonical_name)) {
       continue;
     }
     registrar(standard_name, Create);

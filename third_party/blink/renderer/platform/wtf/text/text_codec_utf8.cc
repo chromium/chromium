@@ -59,6 +59,10 @@ std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
   return base::WrapUnique(new TextCodecUtf8());
 }
 
+bool TextCodecUtf8::IsSupported(StringView canonical_name) {
+  return EqualIgnoringASCIICase(canonical_name, "UTF-8");
+}
+
 void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   registrar("UTF-8", "UTF-8");
 
