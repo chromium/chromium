@@ -40,10 +40,21 @@ mod test_pub_super {
     }
 }
 
+mod test_trailing_separator_is_optional {
+    chromium::import! {
+        "//build/rust/chromium_prelude:import_test_lib"  // no semi-colon here
+    }
+
+    pub fn import_test() {
+        import_test_lib::import_test_lib();
+    }
+}
+
 fn main() {
     test_direct::import_test();
     test_as::import_test();
     test_pub::library::import_test_lib();
     test_pub_super::library::import_test_lib();
     test_pub_crate::library::import_test_lib();
+    test_trailing_separator_is_optional::import_test();
 }
