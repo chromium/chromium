@@ -55,9 +55,8 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
       UNSAFE_TODO(modifiers[i]) = params.modifier;
   }
 
-  const auto buffer_format = GetBufferFormatFromFourCCFormat(params.format);
-  const uint32_t opaque_format =
-      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
+  const auto si_format = GetSharedImageFormatFromFourCCFormat(params.format);
+  const uint32_t opaque_format = GetFourCCFormatForOpaqueFramebuffer(si_format);
   const auto drm_format =
       ForceUsingOpaqueFormatWorkaround(drm_device, params.format)
           ? opaque_format
