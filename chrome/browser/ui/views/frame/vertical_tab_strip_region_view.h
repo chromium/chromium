@@ -81,6 +81,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   }
 
   // views::View:
+  void AddedToWidget() override;
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -120,6 +121,10 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
+  void UpdateBackgroundColors();
+
+  bool IsFrameActive() const;
+
   // When true simulates a non-editable tabstrip. For testing only.
   bool tab_strip_not_editable_for_testing_ = false;
 
@@ -135,6 +140,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   const raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
   const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   // The width of the vertical tabstrip at the beginning of the current resize
   // operation. Is std::nullopt when not resizing.

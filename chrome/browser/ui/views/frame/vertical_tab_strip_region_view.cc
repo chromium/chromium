@@ -55,7 +55,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     BrowserWindowInterface* browser)
     : tab_strip_model_(browser->GetTabStripModel()),
       state_controller_(state_controller) {
-  SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
@@ -75,7 +74,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           state_controller_, root_action_item));
 
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
-  top_button_separator_->SetColorId(kColorTabDividerFrameActive);
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
@@ -97,9 +95,18 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       browser->GetTabStripModel(),
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
                           base::Unretained(this)));
+
+  UpdateBackgroundColors();
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() = default;
+
+void VerticalTabStripRegionView::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &VerticalTabStripRegionView::UpdateBackgroundColors,
+          base::Unretained(this)));
+}
 
 void VerticalTabStripRegionView::Layout(PassKey) {
   LayoutSuperclass<views::AccessiblePaneView>(this);
@@ -305,6 +312,18 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* state_controller) {
   tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
   bottom_button_container_->OnCollapsedStateChanged(state_controller);
+}
+
+void VerticalTabStripRegionView::UpdateBackgroundColors() {
+  SetBackground(views::CreateSolidBackground(
+      IsFrameActive() ? ui::kColorFrameActive : ui::kColorFrameInactive));
+  top_button_separator_->SetColorId(IsFrameActive()
+                                        ? kColorTabDividerFrameActive
+                                        : kColorTabDividerFrameInactive);
+}
+
+bool VerticalTabStripRegionView::IsFrameActive() const {
+  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
 BEGIN_METADATA(VerticalTabStripRegionView)
