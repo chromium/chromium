@@ -85,11 +85,8 @@ const base::FeatureParam<bool> kEnableLensInContextualTasks(
     true);
 
 // The user agent suffix to use for requests from the contextual tasks UI.
-// TODO(crbug.com/454388385): Remove "WGA/1.0" once our custom user agent
-// is allowlisted. This is a temporary workaround to unblock the
-// authentication flow.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "user-agent-suffix", "WGA/1.0 Cobrowsing/1.0"};
+    &kContextualTasks, "user-agent-suffix", "Cobrowsing/1.0"};
 
 const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
     &kContextualTasksContext,
