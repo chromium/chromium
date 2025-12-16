@@ -230,11 +230,11 @@ public class ChromeAndroidTaskIntegrationTest {
         // Assert.
         var chromeAndroidTask = getChromeAndroidTask(firstTaskId);
         assertNotNull(chromeAndroidTask);
-        assertFalse(chromeAndroidTask.isActive());
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isActive));
 
         chromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(chromeAndroidTask);
-        assertTrue(chromeAndroidTask.isActive());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isActive));
         ntpStation.getActivity().finish();
     }
 
@@ -256,8 +256,10 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(firstChromeAndroidTask);
         assertNotNull(secondChromeAndroidTask);
         assertTrue(
-                secondChromeAndroidTask.getLastActivatedTimeMillis()
-                        > firstChromeAndroidTask.getLastActivatedTimeMillis());
+                ThreadUtils.runOnUiThreadBlocking(
+                                secondChromeAndroidTask::getLastActivatedTimeMillis)
+                        > ThreadUtils.runOnUiThreadBlocking(
+                                firstChromeAndroidTask::getLastActivatedTimeMillis));
 
         // Cleanup.
         ntpStation.getActivity().finish();
@@ -276,7 +278,7 @@ public class ChromeAndroidTaskIntegrationTest {
         var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
         assertNotNull(firstChromeAndroidTask);
         var testFeature = new TestChromeAndroidTaskFeature();
-        firstChromeAndroidTask.addFeature(testFeature);
+        ThreadUtils.runOnUiThreadBlocking(() -> firstChromeAndroidTask.addFeature(testFeature));
 
         // Act:
         // Open a new window. The first window will lose focus.
@@ -288,15 +290,16 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(secondChromeAndroidTask);
         CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
 
-        firstChromeAndroidTask.activate();
+        ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::activate);
         Assert.assertTrue(
                 "Activate should make isActive true immediately",
-                firstChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
         CriteriaHelper.pollUiThread(
                 assumeNonNull(webPageStation.getActivity().getWindowAndroid())
                         ::isTopResumedActivity);
         Assert.assertTrue(
-                "Activate should make isActive true eventually", firstChromeAndroidTask.isActive());
+                "Activate should make isActive true eventually",
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
 
         // Assert.
         assertEquals(2, testFeature.mTaskFocusChangedParams.size());
@@ -323,7 +326,7 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(activityWindowAndroid);
 
         // Act
-        Rect actualBoundsInDp = chromeAndroidTask.getBoundsInDp();
+        Rect actualBoundsInDp = ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getBoundsInDp);
 
         // Assert: by default, the bounds are the maximum window bounds.
         Rect expectedBoundsInPx = activity.getWindowManager().getMaximumWindowMetrics().getBounds();
@@ -349,7 +352,7 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(secondChromeAndroidTask);
 
         // Act
-        secondChromeAndroidTask.close();
+        ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::close);
 
         // Assert
         assertTrue(ntpStation.getActivity().isFinishing());
@@ -376,21 +379,23 @@ public class ChromeAndroidTaskIntegrationTest {
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(chromeAndroidTask);
         assertNotNull(secondChromeAndroidTask);
-        assertFalse(chromeAndroidTask.isActive());
-        assertTrue(secondChromeAndroidTask.isActive());
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isActive));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Act
-        chromeAndroidTask.activate();
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::activate);
 
         // Assert
         Assert.assertTrue(
-                "Activate should make isActive true immediately", chromeAndroidTask.isActive());
+                "Activate should make isActive true immediately",
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isActive));
         CriteriaHelper.pollUiThread(
                 assumeNonNull(webPageStation.getActivity().getWindowAndroid())
                         ::isTopResumedActivity);
         Assert.assertTrue(
-                "Activate should make isActive true eventually", chromeAndroidTask.isActive());
-        assertFalse(secondChromeAndroidTask.isActive());
+                "Activate should make isActive true eventually",
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isActive));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
         // Cleanup
         ntpStation.getActivity().finish();
     }
@@ -414,21 +419,22 @@ public class ChromeAndroidTaskIntegrationTest {
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(secondChromeAndroidTask);
 
-        assertTrue(firstChromeAndroidTask.isVisible());
-        assertFalse(firstChromeAndroidTask.isActive());
-        assertTrue(secondChromeAndroidTask.isActive());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isVisible));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Act
-        firstChromeAndroidTask.show();
+        ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::show);
 
         // Assert
         Assert.assertTrue(
                 "Show() should make isActive() true immediately",
-                firstChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
         CriteriaHelper.pollUiThread(firstWindowAndroid::isTopResumedActivity);
         Assert.assertTrue(
-                "Show() should make isActive() true eventually", firstChromeAndroidTask.isActive());
-        assertFalse(secondChromeAndroidTask.isActive());
+                "Show() should make isActive() true eventually",
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Cleanup
         ntpStation.getActivity().finish();
@@ -453,22 +459,22 @@ public class ChromeAndroidTaskIntegrationTest {
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(secondChromeAndroidTask);
 
-        assertTrue(firstChromeAndroidTask.isVisible());
-        assertFalse(firstChromeAndroidTask.isActive());
-        assertTrue(secondChromeAndroidTask.isActive());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isVisible));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Act
-        secondChromeAndroidTask.showInactive();
+        ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::showInactive);
 
         // Assert
         assertTrue(
                 "2nd window's showInactive() should make 1st window's isActive() true immediately",
-                firstChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
         CriteriaHelper.pollUiThread(firstWindowAndroid::isTopResumedActivity);
         assertTrue(
                 "2nd window's showInactive() should make 1st window's isActive() true eventually",
-                firstChromeAndroidTask.isActive());
-        assertFalse(secondChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Cleanup
         ntpStation.getActivity().finish();
@@ -489,28 +495,28 @@ public class ChromeAndroidTaskIntegrationTest {
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(firstChromeAndroidTask);
         assertNotNull(secondChromeAndroidTask);
-        assertFalse(firstChromeAndroidTask.isActive());
-        assertTrue(secondChromeAndroidTask.isActive());
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Act
-        secondChromeAndroidTask.deactivate();
+        ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::deactivate);
 
         // Assert
         assertTrue(
                 "Deactivating the 2nd window should immediately make isActive() true for the 1st"
                         + " window",
-                firstChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
         CriteriaHelper.pollUiThread(
                 assumeNonNull(webPageStation.getActivity().getWindowAndroid())
                         ::isTopResumedActivity);
         assertTrue(
                 "Deactivating the 2nd window should keep isActive() true for the 1st window after"
                         + " the 1st window becomes active",
-                firstChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
         assertFalse(
                 "Deactivating the 2nd window should keep isActive() false for the 2nd window after"
                         + " the 1st window becomes active",
-                secondChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
 
         // Cleanup
         ntpStation.getActivity().finish();
@@ -525,24 +531,28 @@ public class ChromeAndroidTaskIntegrationTest {
         int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
         var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
         assertNotNull(firstChromeAndroidTask);
-        assertTrue(firstChromeAndroidTask.isActive());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
 
         RegularNewTabPageStation ntpStation =
                 webPageStation.openRegularTabAppMenu().openNewWindow();
         int secondTaskId = ntpStation.getActivity().getTaskId();
         var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
         assertNotNull(secondChromeAndroidTask);
-        assertTrue(secondChromeAndroidTask.isActive());
-        assertFalse("Task should be inactive", firstChromeAndroidTask.isActive());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
+        assertFalse(
+                "Task should be inactive",
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
 
         // Act
-        firstChromeAndroidTask.deactivate();
+        ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::deactivate);
 
         // Assert
         assertFalse(
                 "Deactivate should be a no-op for inactive tasks",
-                firstChromeAndroidTask.isActive());
-        assertTrue("Deactivate should be a no-op", secondChromeAndroidTask.isActive());
+                ThreadUtils.runOnUiThreadBlocking(firstChromeAndroidTask::isActive));
+        assertTrue(
+                "Deactivate should be a no-op",
+                ThreadUtils.runOnUiThreadBlocking(secondChromeAndroidTask::isActive));
         // Cleanup
         ntpStation.getActivity().finish();
     }
@@ -564,7 +574,7 @@ public class ChromeAndroidTaskIntegrationTest {
                 ApplicationStatus.getRunningActivities().size());
         assertTrue(
                 "App should be maximized in non desktop windowing mode",
-                chromeAndroidTask.isMaximized());
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isMaximized));
     }
 
     @Test
@@ -578,7 +588,7 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         // Assert Initial states
-        assertTrue(chromeAndroidTask.isVisible());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isVisible));
     }
 
     @Test
@@ -592,7 +602,7 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         // Assert Initial states
-        assertFalse(chromeAndroidTask.isMinimized());
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isMinimized));
     }
 
     @Test
@@ -607,11 +617,11 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         // Assert Initial states
-        assertTrue(chromeAndroidTask.isVisible());
-        assertFalse(chromeAndroidTask.isMinimized());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isVisible));
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isMinimized));
 
         // Act
-        chromeAndroidTask.minimize();
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::minimize);
 
         // Assert
         CriteriaHelper.pollUiThread(
@@ -654,7 +664,7 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         // Assert.
-        assertFalse(chromeAndroidTask.isFullscreen());
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isFullscreen));
     }
 
     @Test
@@ -673,7 +683,7 @@ public class ChromeAndroidTaskIntegrationTest {
                 /* activity= */ mFreshCtaTransitTestRule.getActivity());
 
         // Assert.
-        assertTrue(chromeAndroidTask.isFullscreen());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isFullscreen));
     }
 
     @Test
@@ -762,25 +772,41 @@ public class ChromeAndroidTaskIntegrationTest {
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
                         BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        assertNotNull(chromeAndroidTaskTracker);
-        ChromeAndroidTaskTrackerImpl.pausePendingTaskActivityCreationForTesting();
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var taskTracker =
+                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
+                            ChromeAndroidTaskTrackerImpl
+                                    .pausePendingTaskActivityCreationForTesting();
+                            return taskTracker;
+                        });
+
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Arrange : Request MAXIMIZE > DEACTIVATE on pending task.
-        var task =
-                (ChromeAndroidTaskImpl)
-                        chromeAndroidTaskTracker.createPendingTask(
-                                createParams, /* callback= */ null);
-        assertNotNull(task);
-        assertNotNull(task.getPendingTaskInfo());
-        task.maximize();
-        task.deactivate();
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var task =
+                                    chromeAndroidTaskTracker.createPendingTask(
+                                            createParams, /* callback= */ null);
+                            assertNotNull(task);
 
-        // Act and Assert: Launch pending task activity, verify that pending actions are dispatched.
-        ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                task.getPendingTaskInfo().mPendingTaskId);
+                            var pendingTaskInfo = task.getPendingTaskInfo();
+                            assertNotNull(pendingTaskInfo);
 
+                            task.maximize();
+                            task.deactivate();
+
+                            ChromeAndroidTaskTrackerImpl
+                                    .resumePendingTaskActivityCreationForTesting(
+                                            pendingTaskInfo.mPendingTaskId);
+
+                            return task;
+                        });
+
+        // Assert: Verify that pending actions are dispatched.
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -792,8 +818,11 @@ public class ChromeAndroidTaskIntegrationTest {
                             assumeNonNull(newActivity.getWindowAndroid()).isTopResumedActivity(),
                             Matchers.is(false));
                 });
-        assertTrue(task.isMaximized());
-        assertFalse(task.isActive());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(chromeAndroidTask.isMaximized());
+                    assertFalse(chromeAndroidTask.isActive());
+                });
 
         // Cleanup.
         newActivity.finishAndRemoveTask();
@@ -809,27 +838,38 @@ public class ChromeAndroidTaskIntegrationTest {
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
                         BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        assertNotNull(chromeAndroidTaskTracker);
-        ChromeAndroidTaskTrackerImpl.pausePendingTaskActivityCreationForTesting();
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var taskTracker =
+                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
+                            ChromeAndroidTaskTrackerImpl
+                                    .pausePendingTaskActivityCreationForTesting();
+                            return taskTracker;
+                        });
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Arrange : Request MAXIMIZE > DEACTIVATE > MINIMIZE on pending task.
-        var task =
-                (ChromeAndroidTaskImpl)
-                        chromeAndroidTaskTracker.createPendingTask(
-                                createParams, /* callback= */ null);
-        assertNotNull(task);
-        assertNotNull(task.getPendingTaskInfo());
-        task.maximize();
-        task.deactivate();
-        task.minimize();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var task =
+                            chromeAndroidTaskTracker.createPendingTask(
+                                    createParams, /* callback= */ null);
+                    assertNotNull(task);
 
-        // Act and Assert: Launch pending task activity, verify that pending MINIMIZE action is
-        // dispatched.
-        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
-        ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                task.getPendingTaskInfo().mPendingTaskId);
+                    var pendingTaskInfo = task.getPendingTaskInfo();
+                    assertNotNull(pendingTaskInfo);
+
+                    task.maximize();
+                    task.deactivate();
+                    task.minimize();
+
+                    ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
+                    ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
+                            pendingTaskInfo.mPendingTaskId);
+                });
+
+        // Assert: Verify that pending MINIMIZE action is dispatched.
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
         CriteriaHelper.pollUiThread(
                 ChromeTabbedActivity::wasMoveTaskToBackInterceptedForTesting,
@@ -849,25 +889,36 @@ public class ChromeAndroidTaskIntegrationTest {
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
                         BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        assertNotNull(chromeAndroidTaskTracker);
-        ChromeAndroidTaskTrackerImpl.pausePendingTaskActivityCreationForTesting();
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var taskTracker =
+                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
+                            ChromeAndroidTaskTrackerImpl
+                                    .pausePendingTaskActivityCreationForTesting();
+                            return taskTracker;
+                        });
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Arrange : Request CLOSE > SHOW on pending task.
-        var task =
-                (ChromeAndroidTaskImpl)
-                        chromeAndroidTaskTracker.createPendingTask(
-                                createParams, /* callback= */ null);
-        assertNotNull(task);
-        assertNotNull(task.getPendingTaskInfo());
-        task.close();
-        task.show();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var task =
+                            chromeAndroidTaskTracker.createPendingTask(
+                                    createParams, /* callback= */ null);
+                    assertNotNull(task);
 
-        // Act and Assert: Launch pending task activity, verify that pending CLOSE action is
-        // dispatched.
-        ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                task.getPendingTaskInfo().mPendingTaskId);
+                    var pendingTaskInfo = task.getPendingTaskInfo();
+                    assertNotNull(pendingTaskInfo);
+
+                    task.close();
+                    task.show();
+
+                    ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
+                            pendingTaskInfo.mPendingTaskId);
+                });
+
+        // Assert: Verify that pending CLOSE action is dispatched.
         CriteriaHelper.pollUiThread(
                 () -> {
                     Set<Integer> newTaskIds = getTabbedActivityTaskIds();
@@ -932,10 +983,12 @@ public class ChromeAndroidTaskIntegrationTest {
     }
 
     private @Nullable ChromeAndroidTask getChromeAndroidTask(int taskId) {
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        assertNotNull(chromeAndroidTaskTracker);
-
-        return chromeAndroidTaskTracker.get(taskId);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var chromeAndroidTaskTracker =
+                            assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
+                    return chromeAndroidTaskTracker.get(taskId);
+                });
     }
 
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {

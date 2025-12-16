@@ -493,36 +493,44 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
     }
 
     private @Nullable ChromeAndroidTask getChromeAndroidTask(int taskId) {
-        var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-        assertNotNull(chromeAndroidTaskTracker);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
+                    assertNotNull(chromeAndroidTaskTracker);
 
-        return chromeAndroidTaskTracker.get(taskId);
+                    return chromeAndroidTaskTracker.get(taskId);
+                });
     }
 
     private @Nullable ExtensionWindowControllerBridgeImpl getExtensionWindowControllerBridge(
             int taskId) {
-        var chromeAndroidTask = getChromeAndroidTask(taskId);
-        assertNotNull(chromeAndroidTask);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var chromeAndroidTask = getChromeAndroidTask(taskId);
+                    assertNotNull(chromeAndroidTask);
 
-        List<ChromeAndroidTaskFeature> features = chromeAndroidTask.getAllFeaturesForTesting();
-        if (features.isEmpty()) {
-            return null;
-        }
+                    List<ChromeAndroidTaskFeature> features =
+                            chromeAndroidTask.getAllFeaturesForTesting();
+                    if (features.isEmpty()) {
+                        return null;
+                    }
 
-        // Note:
-        //
-        // As of July 24, 2025, ExtensionWindowControllerBridge is the only
-        // ChromeAndroidTaskFeature, so if the feature list is not empty, it must contain
-        // exactly one ExtensionWindowControllerBridge instance.
-        //
-        // TODO(crbug.com/434055958): use the new feature lookup API in ChromeAndroidTask to
-        // retrieve ExtensionWindowControllerBridge.
-        assertTrue(features.size() == 1);
-        var chromeAndroidTaskFeature = features.get(0);
-        if (!(chromeAndroidTaskFeature instanceof ExtensionWindowControllerBridgeImpl)) {
-            return null;
-        }
+                    // Note:
+                    //
+                    // As of July 24, 2025, ExtensionWindowControllerBridge is the only
+                    // ChromeAndroidTaskFeature, so if the feature list is not empty, it must
+                    // contain exactly one ExtensionWindowControllerBridge instance.
+                    //
+                    // TODO(crbug.com/434055958): use the new feature lookup API in
+                    // ChromeAndroidTask to retrieve ExtensionWindowControllerBridge.
+                    assertTrue(features.size() == 1);
+                    var chromeAndroidTaskFeature = features.get(0);
+                    if (!(chromeAndroidTaskFeature
+                            instanceof ExtensionWindowControllerBridgeImpl)) {
+                        return null;
+                    }
 
-        return (ExtensionWindowControllerBridgeImpl) chromeAndroidTaskFeature;
+                    return (ExtensionWindowControllerBridgeImpl) chromeAndroidTaskFeature;
+                });
     }
 }
