@@ -231,6 +231,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _lensButton = [self createLensButton];
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
+  _aimButton = [self createAIMButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
 
@@ -287,6 +288,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:editView];
   AddSameConstraints(_editView, _omniboxContainer);
+
+  [self.mutator requestUIRefresh];
 }
 
 #pragma mark - ComposeboxInputItemCellDelegate
@@ -833,6 +836,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return button;
 }
 
+- (UIButton*)createAIMButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(aimButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+
+  return button;
+}
+
 /// Creates the plus button that contains the menu.
 - (UIButton*)createPlusButton {
   UIButton* plusButton =
@@ -928,11 +941,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 /// Creates and returns the toolbar view containing action buttons.
 - (UIView*)createToolbarView {
-  _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_aimButton addTarget:self
-                 action:@selector(aimButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
   [self updateAIMButtonAppearance];
 
   [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
