@@ -182,7 +182,7 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
 TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
   std::vector<uint8_t> prf_input1, prf_input2;
   prf_input1.emplace_back('a');
-  ExtensionInputData extension_input_data(prf_input1, prf_input2);
+  ExtensionInputData extension_input_data({prf_input1, prf_input2});
   ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
       kRpId, kTestUser, kTestKey, kTestKeyVersion, extension_input_data,

@@ -116,34 +116,37 @@ ExtensionOutputData::ExtensionOutputData() = default;
 ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
 ExtensionOutputData::~ExtensionOutputData() = default;
 
-ExtensionInputData::ExtensionInputData(base::span<const uint8_t> prf_input1,
-                                       base::span<const uint8_t> prf_input2) {
-  // prf_input must be created even if prf_input1 is empty, as it is an
-  // indication the the PRF extension is requested.
-  prf_input = device::PRFInput();
+PRFInputData::PRFInputData(base::span<const uint8_t> prf_input1,
+                           base::span<const uint8_t> prf_input2) {
   if (!prf_input1.empty()) {
-    prf_input->input1.insert(prf_input->input1.end(), prf_input1.begin(),
-                             prf_input1.end());
+    input.input1.assign(prf_input1.begin(), prf_input1.end());
     if (!prf_input2.empty()) {
-      std::vector<uint8_t> input2;
-      input2.insert(input2.end(), prf_input2.begin(), prf_input2.end());
-      prf_input->input2 = input2;
+      input.input2.emplace(prf_input2.begin(), prf_input2.end());
     }
   }
-  prf_input->HashInputsIntoSalts();
+  input.HashInputsIntoSalts();
 }
+
+PRFInputData::PRFInputData(const PRFInputData&) = default;
+PRFInputData::PRFInputData(PRFInputData&&) = default;
+PRFInputData::~PRFInputData() = default;
+
+ExtensionInputData::ExtensionInputData(PRFInputData prf_input_data)
+    :  // prf_input_data must be created even if prf_input1 is empty, as it is
+       // an indication that the PRF extension is requested.
+      prf_input_data(std::move(prf_input_data)) {}
 
 ExtensionInputData::ExtensionInputData() = default;
 ExtensionInputData::ExtensionInputData(const ExtensionInputData&) = default;
 ExtensionInputData::~ExtensionInputData() = default;
 
 bool ExtensionInputData::hasPRF() const {
-  return prf_input.has_value();
+  return prf_input_data.has_value();
 }
 
 ExtensionOutputData ExtensionInputData::ToOutputData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
-  if (!hasPRF() || prf_input->input1.empty()) {
+  if (!hasPRF() || prf_input_data->prf_input().input1.empty()) {
     return {};
   }
 
@@ -155,7 +158,7 @@ ExtensionOutputData ExtensionInputData::ToOutputData(
 std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
   const std::string& hmac_secret = encrypted.hmac_secret();
-  return prf_input->EvaluateHMAC(
+  return prf_input_data->prf_input().EvaluateHMAC(
       hmac_secret.empty() ? DeriveHmacSecretFromPrivateKey(
                                 base::as_byte_span(encrypted.private_key()))
                           : base::as_byte_span(hmac_secret));

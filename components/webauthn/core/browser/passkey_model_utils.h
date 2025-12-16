@@ -37,14 +37,28 @@ struct ExtensionOutputData {
   std::vector<uint8_t> prf_result;
 };
 
+// PRF extension input data for passkey creation and assertion.
+struct PRFInputData {
+  PRFInputData(base::span<const uint8_t> prf_input1,
+               base::span<const uint8_t> prf_input2);
+
+  PRFInputData(const PRFInputData&);
+  PRFInputData(PRFInputData&&);
+  ~PRFInputData();
+
+  inline const device::PRFInput& prf_input() const { return input; }
+
+ private:
+  device::PRFInput input;
+};
+
 // Extension input data for passkey creation and assertion.
 struct ExtensionInputData {
   // This constructor must be used if there is an extension present in the
   // passkey request. Even if there's no PRF data, this constructor will
   // initialize `prf_input` so that `hasPRF` can later return true, so that PRF
   // support can be returned as part of the creation or assertion response.
-  ExtensionInputData(base::span<const uint8_t> prf_input1,
-                     base::span<const uint8_t> prf_input2);
+  explicit ExtensionInputData(PRFInputData prf_input_data);
 
   // This constructor must be used when there are no extensions present in the
   // passkey request.
@@ -68,7 +82,7 @@ struct ExtensionInputData {
   std::vector<uint8_t> EvaluateHMAC(
       const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
 
-  std::optional<device::PRFInput> prf_input;
+  std::optional<PRFInputData> prf_input_data;
 };
 
 // Serialized versions of the attestation object and authenticator data.

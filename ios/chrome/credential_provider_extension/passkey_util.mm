@@ -38,10 +38,10 @@ webauthn::passkey_model_utils::ExtensionInputData
 ExtensionInputDataFromPRFInputs(NSArray<NSData*>* prf_inputs) {
   if (prf_inputs) {
     return webauthn::passkey_model_utils::ExtensionInputData(
-        ([prf_inputs count] > 0) ? base::apple::NSDataToSpan(prf_inputs[0])
-                                 : std::vector<uint8_t>(),
-        ([prf_inputs count] > 1) ? base::apple::NSDataToSpan(prf_inputs[1])
-                                 : std::vector<uint8_t>());
+        {([prf_inputs count] > 0) ? base::apple::NSDataToSpan(prf_inputs[0])
+                                  : std::vector<uint8_t>(),
+         ([prf_inputs count] > 1) ? base::apple::NSDataToSpan(prf_inputs[1])
+                                  : std::vector<uint8_t>()});
   }
   return webauthn::passkey_model_utils::ExtensionInputData();
 }
