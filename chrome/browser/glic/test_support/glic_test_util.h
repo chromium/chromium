@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -130,7 +131,8 @@ class GlicInstanceTracker {
   BrowserWindowInterface* GetBrowser();
   void Clear();
 
-  raw_ptr<Profile> profile_;
+  // Using a WeakPtr because some tests destroy the browser / profile.
+  base::WeakPtr<Profile> profile_;
   // These determine which glic instance is tracked by this class. This affects
   // many functions in this fixture. Only one will be present at a time.
   std::optional<InstanceId> tracked_instance_id_;

@@ -97,11 +97,12 @@ void BrowserActivator::SetActivePrivate(
   }
 }
 
-GlicInstanceTracker::GlicInstanceTracker(Profile* profile)
-    : profile_(profile) {}
+GlicInstanceTracker::GlicInstanceTracker(Profile* profile) {
+  SetProfile(profile);
+}
 GlicInstanceTracker::~GlicInstanceTracker() = default;
 void GlicInstanceTracker::SetProfile(Profile* profile) {
-  profile_ = profile;
+  profile_ = profile ? profile->GetWeakPtr() : nullptr;
 }
 
 Host* GlicInstanceTracker::GetHost() {
@@ -114,9 +115,13 @@ Host* GlicInstanceTracker::GetHost() {
 
 GlicInstance* GlicInstanceTracker::GetGlicInstance() {
   if (!profile_) {
+    if (profile_.WasInvalidated()) {
+      LOG(ERROR) << "GlicInstanceTracker: Profile invalidated,"
+                 << " returning no instance.";
+    }
     return nullptr;
   }
-  auto* service = GlicKeyedService::Get(profile_);
+  auto* service = GlicKeyedService::Get(profile_.get());
   if (!service) {
     return nullptr;
   }
@@ -168,7 +173,7 @@ BrowserWindowInterface* GlicInstanceTracker::GetBrowser() {
   BrowserWindowInterface* found = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, &found](BrowserWindowInterface* browser) {
-        if (browser->GetProfile() == profile_) {
+        if (browser->GetProfile() == profile_.get()) {
           found = browser;
         }
         return !found;
