@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 
 class VerticalTabStripRegionViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
@@ -216,6 +219,82 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       region_view()->root_node_for_testing()->GetNodeForHandle(
           tab_group->GetCollectionHandle());
   EXPECT_EQ(node->view(), group_anchor_view);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       AccessiblePaneViewDefaultFocusableChild) {
+  // Add a tab.
+  AppendTab();
+
+  // Ensure the default focusable element is the VerticalTabStripTopContainer.
+  views::View* view = region_view()->GetDefaultFocusableChild();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(views::IsViewClass<VerticalTabStripTopContainer>(view))
+      << "GetDefaultFocusableChild() should return a "
+         "VerticalTabStripTopContainer, but returned "
+      << view->GetClassName();
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       CanFocusVerticalTabView) {
+  // Add a tab.
+  AppendTab();
+
+  // Get the view for the first tab.
+  views::View* first_tab_view = region_view()->GetTabAnchorViewAt(0);
+  ASSERT_TRUE(first_tab_view);
+
+  // Directly set focus using the FocusManager.
+  views::FocusManager* focus_manager =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+  focus_manager->SetFocusedView(first_tab_view);
+
+  // Verify that the first tab is focused. Setting focus is only synchronous if
+  // the widget is active. Activating the widget is an asynchronous process so
+  // wait until the view has focus.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return first_tab_view->HasFocus(); }));
+  EXPECT_EQ(first_tab_view, focus_manager->GetFocusedView());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       GetFocusedTabIndexReturnsCorrectIndex) {
+  // 1. Verify no tab is focused to start.
+  EXPECT_EQ(std::nullopt, region_view()->GetFocusedTabIndex());
+
+  // Add a few tabs.
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // 2. Activate the first tab and explicitly set the focus on the tab's view
+  // using FocusManager.
+  const int focused_tab_index = 1;
+  tab_strip_model->ActivateTabAt(
+      focused_tab_index, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  views::View* tab_view = region_view()->GetTabAnchorViewAt(focused_tab_index);
+
+  views::FocusManager* focus_manager =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+
+  focus_manager->SetFocusedView(tab_view);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_view->HasFocus(); }));
+
+  std::optional<int> focused_index = region_view()->GetFocusedTabIndex();
+  ASSERT_TRUE(focused_index.has_value());
+  EXPECT_EQ(focused_tab_index, focused_index.value());
+
+  // 3. Verify unfocusing the tab returns the correct value.
+  focus_manager->SetFocusedView(nullptr);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !tab_view->HasFocus(); }));
+
+  EXPECT_EQ(std::nullopt, region_view()->GetFocusedTabIndex());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,

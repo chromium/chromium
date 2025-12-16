@@ -91,6 +91,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+
   root_node_ = std::make_unique<RootTabCollectionNode>(
       browser->GetTabStripModel(),
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
@@ -130,6 +132,10 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
         std::max(preferred_size.width(), kNonCollapsedSize));
   }
   return preferred_size;
+}
+
+views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
+  return top_button_container_;
 }
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
