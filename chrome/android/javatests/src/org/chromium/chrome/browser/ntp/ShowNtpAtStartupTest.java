@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -13,10 +13,10 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.START_SURFACE_RETURN_TIME_IMMEDIATE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -249,10 +249,10 @@ public class ShowNtpAtStartupTest {
 
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
-        onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
-        View singleTabModule = cta.findViewById(R.id.single_tab_view);
-        Assert.assertEquals(
-                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
+
+        waitForView(
+                cta,
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
     }
 
     @Test
@@ -271,10 +271,10 @@ public class ShowNtpAtStartupTest {
                 cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
-        View singleTabModule = cta.findViewById(R.id.single_tab_view);
-        Assert.assertEquals(
-                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
+        waitForView(cta, withId(R.id.home_modules_recycler_view));
+        waitForView(
+                cta,
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
     }
 
     @Test
