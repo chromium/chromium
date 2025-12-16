@@ -16,6 +16,7 @@
 class BrowserWindowInterface;
 class SidePanelEntryScope;
 class SidePanelRegistry;
+class SidePanelUI;
 class PrefService;
 
 namespace base {
@@ -33,6 +34,7 @@ class ContextualTask;
 class ContextualTasksContextController;
 class ContextualTasksUiService;
 class ContextualTasksWebView;
+class ActiveTaskContextProvider;
 
 class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
                                             content::WebContentsObserver {
@@ -55,6 +57,12 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   explicit ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window);
+
+  // For testing only.
+  ContextualTasksSidePanelCoordinator(
+      BrowserWindowInterface* browser_window,
+      SidePanelUI* side_panel_ui,
+      ActiveTaskContextProvider* active_task_context_provider);
   ContextualTasksSidePanelCoordinator(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ContextualTasksSidePanelCoordinator& operator=(
@@ -186,6 +194,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   // Pref service for the current profile.
   const raw_ptr<PrefService> pref_service_;
+
+  const raw_ptr<SidePanelUI> side_panel_ui_;
+
+  const raw_ptr<ActiveTaskContextProvider> active_task_context_provider_;
 
   // WebView of the current side panel. It's owned by side panel framework so
   // weak pointer is needed in case it's destroyed. The WebContents in the
