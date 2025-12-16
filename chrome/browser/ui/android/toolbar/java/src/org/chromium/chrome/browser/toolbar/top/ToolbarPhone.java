@@ -1609,6 +1609,14 @@ public class ToolbarPhone extends ToolbarLayout
             drawChild(canvas, mHomeButtonDisplay.getView(), SystemClock.uptimeMillis());
         }
 
+        // TODO(crbug.com/469492424): With the toolbar animation refactor, both the background and
+        //  the location bar itself just defer to the default draw methods. Ideally, we can skip
+        //  this custom logic altogether with the feature enabled. That said, it's unclear what
+        //  additional work is needed to migrate the buttons below.
+        if (mActiveLocationBarBackgroundView.getVisibility() != GONE) {
+            drawChild(canvas, mActiveLocationBarBackgroundView, SystemClock.uptimeMillis());
+        }
+
         // Draw the location/URL bar.
         if (mLocationBar.getPhoneCoordinator().getAlpha() != 0 && isLocationBarCurrentlyShown()) {
             drawLocationBar(canvas, SystemClock.uptimeMillis());
