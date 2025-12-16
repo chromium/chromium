@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/c++/c++.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//ios/build/chrome_build.gni")
@@ -10,6 +11,11 @@ import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS=$ios_chrome_enable_profile_altering_tests" ]
+}
 
 # All tests needs to be listed in that target to be built as part of
 # "gn_all" target (i.e. by the bots).
