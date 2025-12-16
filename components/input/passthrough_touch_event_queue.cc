@@ -320,15 +320,22 @@ void PassthroughTouchEventQueue::SendTouchEventImmediately(
       touch->event.GetType() != WebInputEvent::Type::kTouchStart)
     touch->event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
 
-  if (touch->event.GetType() == WebInputEvent::Type::kTouchStart)
+  if (touch->event.GetType() == WebInputEvent::Type::kTouchStart) {
     touch->event.touch_start_or_first_touch_move = true;
+    any_touchmove_moved_beyond_slop_region_ = false;
+  }
 
   // For touchmove events, compare touch points position from current event
   // to last sent event and update touch points state.
   if (touch->event.GetType() == WebInputEvent::Type::kTouchMove) {
     CHECK(last_sent_touchevent_);
-    if (last_sent_touchevent_->GetType() == WebInputEvent::Type::kTouchStart)
+    if (last_sent_touchevent_->GetType() == WebInputEvent::Type::kTouchStart ||
+        (last_sent_touchevent_->GetType() == WebInputEvent::Type::kTouchMove &&
+         !any_touchmove_moved_beyond_slop_region_)) {
       touch->event.touch_start_or_first_touch_move = true;
+      any_touchmove_moved_beyond_slop_region_ |=
+          touch->event.moved_beyond_slop_region;
+    }
     for (unsigned int i = 0; i < last_sent_touchevent_->touches_length; ++i) {
       const WebTouchPoint& last_touch_point = last_sent_touchevent_->touches[i];
       // Touches with same id may not have same index in Touches array.

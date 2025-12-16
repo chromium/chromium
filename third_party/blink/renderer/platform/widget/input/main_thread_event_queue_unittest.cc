@@ -1712,10 +1712,13 @@ TEST_F(MainThreadEventQueueTest,
                                       touch_moves[3].unique_touch_event_id,
                                       WebInputEvent::DispatchType::kBlocking)));
 
-  // Start another touch sequence, neither the touch start nor the first touch
-  // move are consumed, like the first touch sequence.
+  // Start another touch sequence. The touch start is not consumed. There are
+  // two "first" touch moves the first of which is consumed because it is
+  // suppressed but the second is not consumed.
   handled_tasks_.clear();
   will_handle_input_event_callback.consume_touch_start = false;
+  will_handle_input_event_callback.consume_first_touch_move = true;
+  touch_moves[1].touch_start_or_first_touch_move = true;
   EXPECT_CALL(*widget_scheduler_, DidHandleInputEventOnMainThread(
                                       testing::_, testing::_, testing::_))
       .Times(6);
@@ -1731,13 +1734,13 @@ TEST_F(MainThreadEventQueueTest,
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
                            false, 2),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
-                           false, 2),
+                           false, 3),
           ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
-                           2),
-          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
-                           false, 2),
-          ReceivedCallback(CallbackReceivedState::kCalledWhileHandlingEvent,
-                           false, 2)));
+                           3),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent,
+                           false, 3),
+          ReceivedCallback(CallbackReceivedState::kCalledAfterHandleEvent, true,
+                           3)));
   EXPECT_THAT(
       handled_tasks_,
       ::testing::ElementsAre(
@@ -1749,7 +1752,7 @@ TEST_F(MainThreadEventQueueTest,
                               WebInputEvent::DispatchType::kBlocking),
           IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
                               touch_moves[1].unique_touch_event_id,
-                              WebInputEvent::DispatchType::kEventNonBlocking),
+                              WebInputEvent::DispatchType::kBlocking),
           IsHandledTouchEvent(WebInputEvent::Type::kTouchMove,
                               touch_moves[3].unique_touch_event_id,
                               WebInputEvent::DispatchType::kEventNonBlocking)));
