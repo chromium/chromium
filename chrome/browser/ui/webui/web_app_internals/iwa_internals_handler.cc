@@ -587,8 +587,10 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
 void IwaInternalsHandler::RotateKey(
     const std::string& web_bundle_id,
     const std::optional<std::vector<uint8_t>>& public_key) {
-  IwaKeyDistributionInfoProvider::GetInstance().RotateKeyForDevMode(
-      base::PassKey<IwaInternalsHandler>(), web_bundle_id, public_key);
+  IwaKeyDistributionInfoProvider::GetInstance(
+      base::PassKey<IwaInternalsHandler>())
+      .RotateKeyForDevMode(base::PassKey<IwaInternalsHandler>(), web_bundle_id,
+                           public_key);
 }
 
 void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(

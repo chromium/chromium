@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/values.h"
 
 namespace web_app {
@@ -57,6 +58,7 @@ void ChromeIwaRuntimeDataProvider::SetInstance(
 base::AutoReset<ChromeIwaRuntimeDataProvider*>
 ChromeIwaRuntimeDataProvider::SetInstanceForTesting(
     ChromeIwaRuntimeDataProvider* instance) {
+  CHECK_IS_TEST();
   return base::AutoReset<ChromeIwaRuntimeDataProvider*>(&g_instance, instance);
 }
 

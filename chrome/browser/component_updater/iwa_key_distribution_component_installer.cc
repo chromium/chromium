@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -105,7 +106,18 @@ BASE_FEATURE(kIwaKeyDistributionComponent,
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 IwaKeyDistributionComponentInstallerPolicy::
-    IwaKeyDistributionComponentInstallerPolicy() = default;
+    IwaKeyDistributionComponentInstallerPolicy() {
+  if (IsOnDemandUpdateSupported()) {
+    // `RegisterIwaKeyDistributionComponent` is effectively called before the
+    // user profile is created. Hence we can avoid eventual initialization race
+    // conditions for user sessions.
+    web_app::IwaKeyDistributionInfoProvider::GetInstance(
+        base::PassKey<IwaKeyDistributionComponentInstallerPolicy>())
+        .SetUp(base::BindRepeating(
+            &IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate));
+  }
+}
+
 IwaKeyDistributionComponentInstallerPolicy::
     ~IwaKeyDistributionComponentInstallerPolicy() = default;
 
@@ -157,11 +169,11 @@ void IwaKeyDistributionComponentInstallerPolicy::ComponentReady(
 
   VLOG(1) << "Iwa Key Distribution Component ready, version " << version
           << " in " << install_dir;
-  web_app::IwaKeyDistributionInfoProvider& info_provider =
-      web_app::IwaKeyDistributionInfoProvider::GetInstance();
-  info_provider.LoadKeyDistributionData(
-      version, install_dir.Append(kDataFileName),
-      /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
+  web_app::IwaKeyDistributionInfoProvider::GetInstance(
+      base::PassKey<IwaKeyDistributionComponentInstallerPolicy>())
+      .LoadKeyDistributionData(
+          version, install_dir.Append(kDataFileName),
+          /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
 }
 
 base::FilePath
@@ -195,15 +207,6 @@ IwaKeyDistributionComponentInstallerPolicy::GetInstallerAttributes() const {
 void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {
   if (!IsComponentSupported()) {
     return;
-  }
-
-  if (IsOnDemandUpdateSupported()) {
-    // `RegisterIwaKeyDistributionComponent` is effectively called before the
-    // user profile is created. Hence we can avoid eventual initialization race
-    // conditions for user sessions.
-    web_app::IwaKeyDistributionInfoProvider::GetInstance().SetUp(
-        base::BindRepeating(
-            &IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate));
   }
 
   base::MakeRefCounted<ComponentInstaller>(

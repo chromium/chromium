@@ -16,7 +16,7 @@ void InitializeIsolatedWebAppRuntime(
   web_app::IwaIdentityValidator::CreateSingleton();
   web_app::ChromeIwaClient::CreateSingleton();
   web_app::ChromeIwaRuntimeDataProvider::SetInstance(
-      pass_key, &IwaKeyDistributionInfoProvider::GetInstance());
+      pass_key, &IwaKeyDistributionInfoProvider::GetInstance(pass_key));
 }
 
 }  // namespace web_app

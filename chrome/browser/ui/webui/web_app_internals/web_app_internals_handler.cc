@@ -19,6 +19,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -272,10 +273,12 @@ base::Value BuildIsolatedWebAppPolicyManagerJson(
                               provider.iwa_policy_manager().GetDebugValue()));
 }
 
-base::Value BuildIwaKeyDistributionInfoProviderJson() {
+base::Value BuildIwaKeyDistributionInfoProviderJson(
+    base::PassKey<WebAppInternalsHandler> pass_key) {
   return base::Value(base::Value::Dict().Set(
       kIwaKeyDistributionInfoProvider,
-      web_app::IwaKeyDistributionInfoProvider::GetInstance().AsDebugValue()));
+      web_app::IwaKeyDistributionInfoProvider::GetInstance(pass_key)
+          .AsDebugValue()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -364,7 +367,8 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaCacheManagerJson(*provider))
 #endif  //  BUILDFLAG(IS_CHROMEOS)
-          .Append(BuildIwaKeyDistributionInfoProviderJson());
+          .Append(BuildIwaKeyDistributionInfoProviderJson(
+              base::PassKey<WebAppInternalsHandler>()));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

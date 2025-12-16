@@ -97,7 +97,8 @@ base::TaskPriority GetLoadTaskPriority() {
 }  // namespace
 
 // static
-IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
+IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance(
+    InstanceAccessKey) {
   auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
   if (!instance) {
     instance.reset(new IwaKeyDistributionInfoProvider());
@@ -106,7 +107,13 @@ IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
 }
 
 // static
+IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
+  return GetInstance(base::PassKey<IwaKeyDistributionInfoProvider>());
+}
+
+// static
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
+  CHECK_IS_TEST();
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
