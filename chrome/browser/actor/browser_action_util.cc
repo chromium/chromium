@@ -83,6 +83,7 @@ using apc::SelectAction;
 using apc::TypeAction;
 using apc::WaitAction;
 using ::optimization_guide::DocumentIdentifierUserData;
+using ::page_content_annotations::FetchPageContextError;
 using ::page_content_annotations::FetchPageContextOptions;
 using ::page_content_annotations::FetchPageContextResult;
 using ::page_content_annotations::FetchPageContextResultCallbackArg;
@@ -785,6 +786,19 @@ void FillInTabObservation(
 
 namespace {
 
+apc::TabObservation::TabObservationResult ToTabObservationResult(
+    FetchPageContextError error) {
+  switch (error) {
+    case FetchPageContextError::kUnknown:
+      return apc::TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR;
+    case FetchPageContextError::kWebContentsChanged:
+      return apc::TabObservation::TAB_OBSERVATION_WEB_CONTENTS_CHANGED;
+    case FetchPageContextError::kPageContextNotEligible:
+      return apc::TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
+      ;
+  }
+}
+
 void FetchCallback(
     TabHandle tab_handle,
     base::WeakPtr<Profile> profile,
@@ -830,21 +844,38 @@ void FetchCallback(
     return;
   }
 
-  if (!result.has_value()) {
+  if (std::optional<std::string> error_message =
+          ActorKeyedService::ExtractErrorMessageIfFailed(result)) {
     actor_service->GetJournal().Log(
-        GURL(), task_id, result.error(),
+        GURL(), task_id, *error_message,
         JournalDetailsBuilder().Add("tabId", tab_observation->id()).Build());
-    // For now record everything as a timeout.
+  }
+
+  if (!result.has_value()) {
     tab_observation->set_result(
-        apc::TabObservation::TAB_OBSERVATION_SCREENSHOT_TIMEOUT);
+        ToTabObservationResult(result.error().error_code));
     return;
   }
 
   FetchPageContextResult& fetch_result = **result;
 
-  // RequestTabObservation should return an error if these aren't filled in.
-  CHECK(fetch_result.screenshot_result.has_value());
-  CHECK(fetch_result.annotated_page_content_result.has_value());
+  bool has_apc = fetch_result.annotated_page_content_result.has_value();
+  tab_observation->set_annotated_page_content_result(
+      has_apc ? apc::TabObservation::ANNOTATED_PAGE_CONTENT_OK
+              : apc::TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
+
+  bool has_screenshot = fetch_result.screenshot_result.has_value();
+  tab_observation->set_screenshot_result(
+      has_screenshot ? apc::TabObservation::SCREENSHOT_OK
+                     : apc::TabObservation::SCREENSHOT_ERROR);
+
+  // Context for actor observations should always have an APC and a screenshot,
+  // return failure if either is missing.
+  if (!has_apc || !has_screenshot) {
+    tab_observation->set_result(
+        apc::TabObservation::TAB_OBSERVATION_FETCH_ERROR);
+    return;
+  }
 
   tab_observation->set_result(apc::TabObservation::TAB_OBSERVATION_OK);
   {

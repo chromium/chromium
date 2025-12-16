@@ -374,10 +374,12 @@ void GlicActorTaskManager::ResumeActorTask(
          glic::mojom::TabDataPtr tab_data,
          actor::mojom::ActionResultCode resume_response_code,
          actor::ActorKeyedService::TabObservationResult result) {
-        if (!result.has_value()) {
+        std::optional<std::string> error_message =
+            actor::ActorKeyedService::ExtractErrorMessageIfFailed(result);
+        if (error_message) {
           std::move(reply_callback)
               .Run(mojom::GetContextResultWithActionResultCode::New(
-                  mojom::GetContextResult::NewErrorReason(result.error()),
+                  mojom::GetContextResult::NewErrorReason(*error_message),
                   std::nullopt));
           return;
         }
@@ -385,8 +387,8 @@ void GlicActorTaskManager::ResumeActorTask(
         page_content_annotations::FetchPageContextResult& page_context =
             *result.value();
 
-        // RequestTabObservation guarantees a successful request has both
-        // screenshot and APC.
+        // An empty result from ExtractErrorMessageIfFailed guarantees a
+        // successful request has both screenshot and APC.
         CHECK(page_context.screenshot_result.has_value());
         CHECK(page_context.annotated_page_content_result.has_value());
 

@@ -386,51 +386,62 @@ void ActorKeyedService::RequestTabObservation(
              const GURL& last_committed_url,
              page_content_annotations::FetchPageContextResultCallbackArg
                  result) {
-            if (!result.has_value()) {
-              std::move(callback).Run(base::unexpected(absl::StrFormat(
-                  "Failed Observation: code[%s] message[%s]",
-                  page_content_annotations::ToString(result.error().error_code),
-                  result.error().message)));
-              return;
-            }
+            if (result.has_value() &&
+                result.value()->annotated_page_content_result.has_value() &&
+                result.value()->screenshot_result.has_value()) {
+              auto& fetch_result = **result;
+              size_t size = fetch_result.annotated_page_content_result->proto
+                                .ByteSizeLong();
+              std::vector<uint8_t> buffer(size);
+              fetch_result.annotated_page_content_result->proto
+                  .SerializeToArray(buffer.data(), size);
+              pending_journal_entry->GetJournal().LogAnnotatedPageContent(
+                  last_committed_url, pending_journal_entry->GetTaskId(),
+                  buffer);
 
-            // Context for actor observations should always have an APC and a
-            // screenshot, return failure if either is missing.
-            auto& fetch_result = **result;
-            bool has_apc =
-                fetch_result.annotated_page_content_result.has_value();
-            bool has_screenshot = fetch_result.screenshot_result.has_value();
-            if (!has_apc || !has_screenshot) {
-              std::move(callback).Run(base::unexpected(absl::StrFormat(
-                  "Failed Observation: APC[%s] screenshot[%s]",
-                  has_apc ? std::string("OK")
-                          : fetch_result.annotated_page_content_result.error(),
-                  has_screenshot ? std::string("OK")
-                                 : fetch_result.screenshot_result.error())));
-              return;
-            }
-
-            size_t size = fetch_result.annotated_page_content_result->proto
-                              .ByteSizeLong();
-            std::vector<uint8_t> buffer(size);
-            fetch_result.annotated_page_content_result->proto.SerializeToArray(
-                buffer.data(), size);
-            pending_journal_entry->GetJournal().LogAnnotatedPageContent(
-                last_committed_url, pending_journal_entry->GetTaskId(), buffer);
-
-            auto& data = fetch_result.screenshot_result->screenshot_data;
-            pending_journal_entry->GetJournal().LogScreenshot(
-                last_committed_url, pending_journal_entry->GetTaskId(),
-                fetch_result.screenshot_result->mime_type, base::as_byte_span(data));
-            if (tab) {
-              actor::ActorTabData::From(tab.get())->DidObserveContent(
-                  fetch_result.annotated_page_content_result->proto);
+              auto& data = fetch_result.screenshot_result->screenshot_data;
+              pending_journal_entry->GetJournal().LogScreenshot(
+                  last_committed_url, pending_journal_entry->GetTaskId(),
+                  fetch_result.screenshot_result->mime_type,
+                  base::as_byte_span(data));
+              if (tab) {
+                actor::ActorTabData::From(tab.get())->DidObserveContent(
+                    fetch_result.annotated_page_content_result->proto);
+              }
             }
 
             std::move(callback).Run(std::move(result).value());
           },
           tab.GetWeakPtr(), std::move(callback), std::move(journal_entry),
           last_committed_url));
+}
+
+//  static
+std::optional<std::string> ActorKeyedService::ExtractErrorMessageIfFailed(
+    const TabObservationResult& result) {
+  if (!result.has_value()) {
+    return absl::StrFormat(
+        "Failed Observation: code[%s] message[%s]",
+        page_content_annotations::ToString(result.error().error_code),
+        result.error().message);
+  }
+
+  page_content_annotations::FetchPageContextResult& fetch_result = **result;
+
+  // Context for actor observations should always have an APC and a screenshot,
+  // return failure if either is missing.
+  bool has_apc = fetch_result.annotated_page_content_result.has_value();
+  bool has_screenshot = fetch_result.screenshot_result.has_value();
+  if (!has_apc || !has_screenshot) {
+    return absl::StrFormat(
+        "Fetch Error: APC[%s] screenshot[%s]",
+        has_apc ? std::string("OK")
+                : fetch_result.annotated_page_content_result.error(),
+        has_screenshot ? std::string("OK")
+                       : fetch_result.screenshot_result.error());
+  }
+
+  return std::nullopt;
 }
 
 void ActorKeyedService::PerformActions(
