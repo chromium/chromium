@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
   "+ios/chrome/browser/intents/model",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar",
   "+ios/chrome/browser/location_bar/model",
   "+ios/chrome/browser/omnibox",

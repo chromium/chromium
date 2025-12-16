@@ -19,7 +19,7 @@ enum class ComposeboxInputPlateControls : unsigned int {
   kLeadingImage = 1 << 6,
 };
 
-constexpr ComposeboxInputPlateControls operator|(
+inline constexpr ComposeboxInputPlateControls operator|(
     ComposeboxInputPlateControls lhs,
     ComposeboxInputPlateControls rhs) {
   using T = std::underlying_type_t<ComposeboxInputPlateControls>;
@@ -27,7 +27,7 @@ constexpr ComposeboxInputPlateControls operator|(
                                                    static_cast<T>(rhs));
 }
 
-constexpr ComposeboxInputPlateControls operator&(
+inline constexpr ComposeboxInputPlateControls operator&(
     ComposeboxInputPlateControls lhs,
     ComposeboxInputPlateControls rhs) {
   using T = std::underlying_type_t<ComposeboxInputPlateControls>;
@@ -35,8 +35,17 @@ constexpr ComposeboxInputPlateControls operator&(
                                                    static_cast<T>(rhs));
 }
 
-constexpr bool operator!(ComposeboxInputPlateControls flags) {
+inline constexpr bool operator!(ComposeboxInputPlateControls flags) {
   return flags == ComposeboxInputPlateControls::kNone;
+}
+
+inline constexpr ComposeboxInputPlateControls& operator|=(
+    ComposeboxInputPlateControls& lhs,
+    ComposeboxInputPlateControls rhs) {
+  using T = std::underlying_type_t<ComposeboxInputPlateControls>;
+  lhs = static_cast<ComposeboxInputPlateControls>(static_cast<T>(lhs) |
+                                                  static_cast<T>(rhs));
+  return lhs;
 }
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_INPUT_PLATE_CONTROLS_H_

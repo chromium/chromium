@@ -51,6 +51,8 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
@@ -1236,11 +1238,14 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)updateButtonsVisibility {
+  using enum ComposeboxInputPlateControls;
   BOOL compactMode = [self compactModeRequired];
   BOOL hasAttachments = !_items.empty;
   BOOL hasContent = hasAttachments || _hasText;
   BOOL dseGoogle = [self isDSEGoogle];
   BOOL eligibleToAIM = [self isEligibleToAIM];
+  BOOL lensAvailable = lens_availability::CheckAvailabilityForLensEntryPoint(
+      LensEntrypoint::Composebox, [self isDSEGoogle]);
   BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
   BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
   BOOL showShortcuts = !hasContent && !canSend;
@@ -1249,37 +1254,30 @@ CreateInputDataFromAnnotatedPageContent(
       IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
-      allowsMultimodalActions ? ComposeboxInputPlateControls::kPlus
-                              : ComposeboxInputPlateControls::kNone;
+      allowsMultimodalActions ? kPlus : kNone;
 
   ComposeboxInputPlateControls leadingImage =
-      showLeadingImage ? ComposeboxInputPlateControls::kLeadingImage
-                       : ComposeboxInputPlateControls::kNone;
+      showLeadingImage ? kLeadingImage : kNone;
 
   ComposeboxInputPlateControls modeSwitchButton;
   switch (_modeHolder.mode) {
     case ComposeboxMode::kAIM:
-      modeSwitchButton = ComposeboxInputPlateControls::kAIM;
+      modeSwitchButton = kAIM;
       break;
     case ComposeboxMode::kImageGeneration:
-      modeSwitchButton = ComposeboxInputPlateControls::kCreateImage;
+      modeSwitchButton = kCreateImage;
       break;
     case ComposeboxMode::kRegularSearch:
-      modeSwitchButton = shouldPersistAIMButton
-                             ? ComposeboxInputPlateControls::kAIM
-                             : ComposeboxInputPlateControls::kNone;
+      modeSwitchButton = shouldPersistAIMButton ? kAIM : kNone;
       break;
   }
 
-  ComposeboxInputPlateControls trailingAction =
-      ComposeboxInputPlateControls::kNone;
+  ComposeboxInputPlateControls trailingAction = kNone;
   if (canSend) {
-    trailingAction = ComposeboxInputPlateControls::kSend;
-  } else if (showShortcuts && dseGoogle) {
-    trailingAction = ComposeboxInputPlateControls::kVoice |
-                     ComposeboxInputPlateControls::kLens;
-  } else if (showShortcuts && !dseGoogle) {
-    trailingAction = ComposeboxInputPlateControls::kVoice;
+    trailingAction = kSend;
+  } else if (showShortcuts) {
+    trailingAction |= kVoice;
+    trailingAction |= lensAvailable ? kLens : kNone;
   }
 
   ComposeboxInputPlateControls visibleControls =
@@ -1380,6 +1378,8 @@ CreateInputDataFromAnnotatedPageContent(
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
+  lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+      LensEntrypoint::Composebox, [self isDSEGoogle]);
   [self commitUIUpdates];
 }
 

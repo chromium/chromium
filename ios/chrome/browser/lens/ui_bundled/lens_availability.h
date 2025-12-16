@@ -32,6 +32,12 @@ extern const char kIOSLensKeyboardSupportStatusHistogramName[];
 extern const char kIOSLensNewTabPageSupportStatusHistogramName[];
 
 namespace lens_availability {
+
+// Verifies the availability of the given Lens entry point and search engine
+// default provider.
+bool CheckAvailabilityForLensEntryPoint(LensEntrypoint entry_point,
+                                        bool is_google_default_search_engine);
+
 // Checks for and performs UMA logging for the availability of the given
 // Lens entry point and search engine default provider.
 bool CheckAndLogAvailabilityForLensEntryPoint(
