@@ -663,9 +663,7 @@ TabDragController::Liveness TabDragController::Drag(
     }
 
     current_state_ = DragState::kDraggingTabs;
-    if (attached_context_->GetPositioningDelegate()) {
       StartDraggingTabsSession(true, point_in_screen);
-    }
   }
 
   return ContinueDragging(point_in_screen);
@@ -2780,7 +2778,9 @@ void TabDragController::StartDraggingTabsSession(
         current_state_ == DragState::kWaitingToExitRunLoop);
   CHECK_EQ(dragging_tabs_session_, nullptr);
   CHECK(attached_context_);
-  CHECK(attached_context_->GetPositioningDelegate());
+  if (!attached_context_->GetPositioningDelegate()) {
+    return;
+  }
 
   dragging_tabs_session_ = std::make_unique<DraggingTabsSession>(
       drag_data_, *attached_context_,
