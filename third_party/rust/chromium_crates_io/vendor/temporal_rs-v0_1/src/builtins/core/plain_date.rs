@@ -706,6 +706,8 @@ impl FromStr for PlainDate {
 mod tests {
     use tinystr::tinystr;
 
+    use crate::options::{RoundingIncrement, RoundingMode};
+
     use super::*;
 
     #[test]
@@ -1040,5 +1042,47 @@ mod tests {
         for s in INVALID_STRINGS {
             assert!(PlainDate::from_str(s).is_err())
         }
+    }
+
+    #[test]
+    fn rounding_increment_observed() {
+        let earlier = PlainDate::try_new_iso(2019, 1, 8).unwrap();
+        let later = PlainDate::try_new_iso(2021, 9, 7).unwrap();
+
+        let settings = DifferenceSettings {
+            smallest_unit: Some(Unit::Year),
+            rounding_mode: Some(RoundingMode::HalfExpand),
+            increment: Some(RoundingIncrement::try_new(4).unwrap()),
+            ..Default::default()
+        };
+        let result = later.since(&earlier, settings).unwrap();
+        assert_eq!(result.years(), 4);
+
+        let settings = DifferenceSettings {
+            smallest_unit: Some(Unit::Month),
+            rounding_mode: Some(RoundingMode::HalfExpand),
+            increment: Some(RoundingIncrement::try_new(10).unwrap()),
+            ..Default::default()
+        };
+        let result = later.since(&earlier, settings).unwrap();
+        assert_eq!(result.months(), 30);
+
+        let settings = DifferenceSettings {
+            smallest_unit: Some(Unit::Week),
+            rounding_mode: Some(RoundingMode::HalfExpand),
+            increment: Some(RoundingIncrement::try_new(12).unwrap()),
+            ..Default::default()
+        };
+        let result = later.since(&earlier, settings).unwrap();
+        assert_eq!(result.weeks(), 144);
+
+        let settings = DifferenceSettings {
+            smallest_unit: Some(Unit::Day),
+            rounding_mode: Some(RoundingMode::HalfExpand),
+            increment: Some(RoundingIncrement::try_new(100).unwrap()),
+            ..Default::default()
+        };
+        let result = later.since(&earlier, settings).unwrap();
+        assert_eq!(result.days(), 1000);
     }
 }
