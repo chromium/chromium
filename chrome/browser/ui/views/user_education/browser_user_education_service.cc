@@ -1120,6 +1120,10 @@ void MaybeRegisterChromeFeaturePromos(
                       views::ElementTrackerViews::GetInstance()
                           ->GetFirstMatchingViewAs<BrowserView>(
                               kBrowserViewElementId, elements[0]->context());
+                  if (!browser_view) {
+                    // The browser_view may be null in tests.
+                    return nullptr;
+                  }
                   IconLabelBubbleView* page_action_view =
                       browser_view->toolbar_button_provider()
                           ->GetPageActionView(kActionSidePanelShowReadAnything);
