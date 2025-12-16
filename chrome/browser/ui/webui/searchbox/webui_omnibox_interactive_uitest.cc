@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesNullMatch) {
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
       EnterGeminiMode(),
       // Ensure the initial match is the default search suggestion.
-      WaitForElementToRender(kPopupWebView, kMatchText),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kMatchText)),
       InSameContext(CheckJsResultAt(kPopupWebView, kMatchText,
                                     "(el) => el.textContent.replace(/\\s+/g, ' "
                                     "').trim() === '@gemini - Google Search'")),
