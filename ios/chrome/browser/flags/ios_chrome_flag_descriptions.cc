@@ -369,6 +369,9 @@ const char kComposeboxImmersiveSRPName[] =
 const char kComposeboxImmersiveSRPDescription[] =
     "When enabled, the composebox will open SRPs in an embedded web view.";
 
+const char kComposeboxIpadName[] = "ComposeboxIpad";
+const char kComposeboxIpadDescription[] = "Enables the composeboxIpad feature.";
+
 const char kComposeboxMenuTitleName[] = "ComposeboxMenuTitle";
 const char kComposeboxMenuTitleDescription[] =
     "Enables the ComposeboxMenuTitle feature.";

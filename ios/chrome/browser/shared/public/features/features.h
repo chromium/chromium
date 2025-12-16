@@ -1137,4 +1137,10 @@ BASE_DECLARE_FEATURE(kAssistantSheet);
 // Returns true if the AssistantSheet feature is enabled.
 bool IsAssistantSheetEnabled();
 
+// Enables the ComposeboxIpad feature.
+BASE_DECLARE_FEATURE(kComposeboxIpad);
+
+// Returns true if the ComposeboxIpad feature is enabled.
+bool IsComposeboxIpadEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

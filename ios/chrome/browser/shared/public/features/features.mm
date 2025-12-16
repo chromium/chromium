@@ -1213,3 +1213,9 @@ BASE_FEATURE(kAssistantSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAssistantSheetEnabled() {
   return base::FeatureList::IsEnabled(kAssistantSheet);
 }
+
+BASE_FEATURE(kComposeboxIpad, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxIpadEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxIpad);
+}

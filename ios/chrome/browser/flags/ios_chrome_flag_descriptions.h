@@ -222,6 +222,9 @@ extern const char kComposeboxIOSDescription[];
 extern const char kComposeboxImmersiveSRPName[];
 extern const char kComposeboxImmersiveSRPDescription[];
 
+extern const char kComposeboxIpadName[];
+extern const char kComposeboxIpadDescription[];
+
 extern const char kComposeboxMenuTitleName[];
 extern const char kComposeboxMenuTitleDescription[];
 
