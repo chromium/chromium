@@ -88,7 +88,7 @@ def convert(crossbench_out_dir: pathlib.Path,
   Args: See the help strings passed to argparse.ArgumentParser.
   """
 
-  if benchmark and benchmark.startswith('loadline'):
+  if benchmark and benchmark.lower().startswith('loadline'):
     _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
@@ -103,18 +103,20 @@ def convert(crossbench_out_dir: pathlib.Path,
     metric = None
     key_parts = key.split('/')
     if len(key_parts) == 1:
-      if key.startswith('Iteration') or key == 'Geomean':
+      lower_key = key.lower()
+      if lower_key.startswith('iteration') or lower_key == 'geomean':
         continue
       metric = key
-      if key.lower() == 'score':
+      if lower_key == 'score':
         unit = 'unitless_biggerIsBetter'
       else:
         unit = 'ms_smallerIsBetter'
-    else:
-      if len(key_parts) == 2 and key_parts[1] == 'total':
+    elif len(key_parts) == 2:
+      key = key_parts[1].lower()
+      if key == 'total':
         metric = key_parts[0]
         unit = 'ms_smallerIsBetter'
-      elif len(key_parts) == 2 and key_parts[1] == 'score':
+      elif key == 'score':
         metric = key_parts[0]
         unit = 'unitless_biggerIsBetter'
 
