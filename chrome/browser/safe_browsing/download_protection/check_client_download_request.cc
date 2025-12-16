@@ -165,8 +165,6 @@ MayCheckDownloadResult CheckClientDownloadRequest::IsSupportedDownload(
     *reason = REASON_UNSUPPORTED_URL_SCHEME;
     return MayCheckDownloadResult::kMayNotCheckDownload;
   }
-  // TODO(crbug.com/41372015): Remove duplicated counting of REMOTE_FILE
-  // and LOCAL_FILE in SBClientDownload.UnsupportedScheme.*.
   if (final_url.SchemeIsFile()) {
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
     return MayCheckDownloadResult::kMayNotCheckDownload;
