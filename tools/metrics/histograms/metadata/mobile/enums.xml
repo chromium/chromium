@@ -332,6 +332,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
   <int value="17" label="Share Intent"/>
   <int value="18" label="NFC"/>
+  <int value="19" label="Auth Tab"/>
 </enum>
 
 <!-- LINT.IfChange(LoadPoint) -->
