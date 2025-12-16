@@ -66,6 +66,7 @@ export class FontSelectElement extends FontSelectElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();

@@ -52,6 +52,7 @@ export class RateMenuElement extends RateMenuElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   protected options_: Array<MenuStateItem<number>> = RATE_OPTIONS.map(rate => {

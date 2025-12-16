@@ -86,6 +86,7 @@ suite('ColorMenuElement', () => {
       speechRate: 0,
       font: '',
       highlightGranularity: 0,
+      lineFocus: 0,
     };
     await microtasksFinished();
 
@@ -102,6 +103,7 @@ suite('ColorMenuElement', () => {
       speechRate: 103,
       font: 'font',
       highlightGranularity: 103,
+      lineFocus: 104,
     };
     await microtasksFinished();
 

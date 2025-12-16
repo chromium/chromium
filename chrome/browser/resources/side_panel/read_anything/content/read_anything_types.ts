@@ -56,4 +56,5 @@ export interface SettingsPrefs {
   speechRate: number;
   font: string;
   highlightGranularity: number;
+  lineFocus: number;
 }

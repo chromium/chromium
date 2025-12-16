@@ -74,6 +74,7 @@ suite('FontSelect', () => {
       speechRate: 0,
       font: chrome.readingMode.fontName,
       highlightGranularity: 0,
+      lineFocus: 0,
     };
     await microtasksFinished();
 

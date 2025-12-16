@@ -166,6 +166,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
   accessor pageLanguage: string = '';

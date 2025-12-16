@@ -46,6 +46,7 @@ export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   protected options_: Array<MenuStateItem<number>> = [

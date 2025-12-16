@@ -75,6 +75,7 @@ suite('RateMenuElement', () => {
       speechRate: rate,
       font: '',
       highlightGranularity: 0,
+      lineFocus: 0,
     };
     await microtasksFinished();
 
@@ -91,6 +92,7 @@ suite('RateMenuElement', () => {
       speechRate: 0,
       font: 'font',
       highlightGranularity: 103,
+      lineFocus: 104,
     };
     await microtasksFinished();
 

@@ -140,6 +140,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   protected accessor isSpeechActive_: boolean = false;
@@ -205,6 +206,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
+      lineFocus: 0,
     };
 
     document.onselectionchange = () => {
@@ -514,6 +516,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
+      lineFocus: 0,
     };
     this.styleUpdater_.setAllTextStyles();
     this.onTextLocationsChange_();

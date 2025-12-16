@@ -13,6 +13,7 @@ import {LineFocus} from '../content/read_anything_types.js';
 
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';
+import {getIndexOfSetting} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface LineFocusMenuElement {
@@ -44,6 +45,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   protected options_: Array<MenuStateItem<LineFocus>> = [
@@ -78,8 +80,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
   }
 
   protected restoredLineFocusIndex_(): number {
-    // TODO(crbug.com/447427066): Retrieve this value from prefs.
-    return 0;
+    return getIndexOfSetting(this.options_, this.settingsPrefs['lineFocus']);
   }
 
   protected onLineFocusChange_(_event: CustomEvent<{data: LineFocus}>) {

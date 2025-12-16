@@ -46,6 +46,7 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
     speechRate: 0,
     font: '',
     highlightGranularity: 0,
+    lineFocus: 0,
   };
 
   protected options_: Array<MenuStateItem<number>> = [

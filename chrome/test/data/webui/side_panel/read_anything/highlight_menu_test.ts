@@ -109,6 +109,7 @@ suite('HighlightMenuElement', () => {
       speechRate: 0,
       font: '',
       highlightGranularity: granularity,
+      lineFocus: 0,
     };
     await microtasksFinished();
 
@@ -126,6 +127,7 @@ suite('HighlightMenuElement', () => {
       speechRate: 103,
       font: 'font',
       highlightGranularity: 0,
+      lineFocus: 104,
     };
     await microtasksFinished();
 
