@@ -3049,6 +3049,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-android-omnibox-autofocus-on-incognito-ntp",
+    "owners": [ "jkudzia@google.com", "polonium@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
+    "name": "enable-android-reporting-omnibox-autofocus-header",
+    "owners": [ "jkudzia@google.com", "polonium@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-android-spellcheck-full-api-blink",
     "owners": [
       "jhtin@google.com",

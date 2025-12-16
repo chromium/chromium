@@ -8320,6 +8320,7 @@ from previous Chrome versions.
   <int value="-2104240590" label="TimeOfDayDlc:disabled"/>
   <int value="-2103692632" label="EnhancedNetworkVoices:disabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
+  <int value="-2101984463" label="OmniboxAutofocusOnIncognitoNtp:enabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
   <int value="-2101674991" label="EnableExternalDisplayHDR10Mode:enabled"/>
   <int value="-2101626055" label="FeedPositionAndroid:disabled"/>
@@ -9896,6 +9897,7 @@ from previous Chrome versions.
   <int value="-1564423193" label="SystemShortcutBehavior:enabled"/>
   <int value="-1564232131"
       label="OmniboxOnDeviceHeadProviderNonIncognito:enabled"/>
+  <int value="-1563374534" label="OmniboxAutofocusOnIncognitoNtp:disabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
   <int value="-1563257536" label="VisualSearchSuggestions:enabled"/>
   <int value="-1562554131" label="CastStreamingMediaVideoEncoder:enabled"/>
@@ -12074,6 +12076,7 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
+  <int value="-801556765" label="ReportOmniboxAutofocusHeader:enabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800364245" label="DevToolsPwaHandler:enabled"/>
@@ -17033,6 +17036,7 @@ from previous Chrome versions.
   <int value="935415458" label="EducationalTipDefaultBrowserPromoCard:enabled"/>
   <int value="935653796" label="CrOSLateBootMediaDynamicCgroup:enabled"/>
   <int value="935655516" label="password-import-export:disabled"/>
+  <int value="935814122" label="ReportOmniboxAutofocusHeader:disabled"/>
   <int value="936341613" label="OfflinePagesCT:disabled"/>
   <int value="937234193" label="KeyboardLockApiOnAndroid:disabled"/>
   <int value="937305086" label="EnableBoundSessionCredentials:enabled"/>

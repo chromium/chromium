@@ -3520,6 +3520,11 @@ inline constexpr char kReportNotificationContentDetectionDataDescription[] =
     "Enables reporting a notification's contents to Google, when the user taps "
     "the `Report` button on the notification.";
 
+inline constexpr char kReportOmniboxAutofocusHeaderName[] =
+    "Option to report 'X-Omnibox-Autofocus' header";
+inline constexpr char kReportOmniboxAutofocusHeaderDescription[] =
+    "Enables reporting 'X-Omnibox-Autofocus' header to Google.";
+
 inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsName[] =
     "Show permission grants from Related Website Sets";
 inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
@@ -5647,6 +5652,12 @@ inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1Description[] =
     "Minimum SDK = 1";
 inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
+
+inline constexpr char kOmniboxAutofocusOnIncognitoNtpName[] =
+    "Omnibox Autofocus on Incognito New Tab Page";
+inline constexpr char kOmniboxAutofocusOnIncognitoNtpDescription[] =
+    "Enables the Omnibox to automatically gain focus when the New "
+    "Tab Page in Incognito mode is opened, allowing immediate typing.";
 
 inline constexpr char kOmniboxShortcutsAndroidName[] =
     "Omnibox shortcuts on Android";
