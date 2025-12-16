@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">无法下载<ph name="LANGUAGE" />拼写检查字典。请重试。</translation>
 <translation id="1078037449555275327">ChromeVox 设置</translation>
 <translation id="1079242569060319448">忘记了 PIN 码？</translation>
-<translation id="1079285777677001938">某些网站上的功能可能会无法正常运行。</translation>
 <translation id="1079766198702302550">始终禁止使用摄像头</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 个标签页}other{<ph name="GROUP_TITLE" /> - # 个标签页}}</translation>
 <translation id="1082214733466244292">您的管理员已禁用此设备的部分功能</translation>
@@ -186,7 +185,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作地点</translation>
+<translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -2205,6 +2204,7 @@
 <translation id="2476901513051581836">在知道离线存储空间大小之前，无法清理存储空间。</translation>
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
+<translation id="2477218554275525952">打开新标签页时保持 Gemini 边栏处于打开状态</translation>
 <translation id="2477607419416067650">其他 Google 数据</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
@@ -3448,7 +3448,6 @@
 <translation id="3348973040180736882">正在解压缩</translation>
 <translation id="3349610303043713601">使用 AI 浏览</translation>
 <translation id="3349933790966648062">内存占用</translation>
-<translation id="3350450887151703713">回放 10 秒</translation>
 <translation id="3351472127384196879">添加或寻找触控笔按钮</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
 <translation id="3354768182971982851">2022 年 12 月之后，旧版 Chrome 应用将无法在 Mac 设备上开启。您可查看是否有可用的新版本。</translation>
@@ -3595,7 +3594,6 @@
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
 <translation id="344630545793878684">读取您在一些网站上的数据</translation>
-<translation id="3447644283769633681">阻止所有第三方 Cookie</translation>
 <translation id="3447644827015694497">要查看闲置标签页吗？</translation>
 <translation id="3447797901512053632">正在将“<ph name="TAB_NAME" />”投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3448492834076427715">更新账号</translation>
@@ -3916,7 +3914,6 @@
 <translation id="3663417513679360795">详细了解如何开启标准预加载功能</translation>
 <translation id="3664511988987167893">扩展程序图标</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}}</translation>
-<translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665301845536101715">在侧边栏中打开</translation>
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
 <translation id="3665918214153961651">正在上传文件</translation>
@@ -6808,7 +6805,6 @@
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
 <translation id="565461030474814383">要保存到账号吗？</translation>
-<translation id="5654669866168491665">详细了解在屏蔽第三方 Cookie 后可能无法正常运行的网站</translation>
 <translation id="5654751240928365405">此扩展程序不再受支持，因此已停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{为保护您的隐私，已撤消某个网站的权限}other{为保护您的隐私，已撤消某些网站的权限}}</translation>
 <translation id="5655296450510165335">设备注册</translation>
@@ -7557,7 +7553,6 @@
 <translation id="6181431612547969857">下载已被阻止</translation>
 <translation id="6183369864942961155">自动切换浅色/深色主题</translation>
 <translation id="6184099524311454384">搜索标签页</translation>
-<translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="6185132558746749656">设备位置</translation>
 <translation id="6185151644843671709">已保存通行密钥并创建 PIN 码</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
@@ -8565,7 +8560,6 @@
 <translation id="6878862640969460273">横向</translation>
 <translation id="6880587130513028875">已拦截此网页上的图片。</translation>
 <translation id="6881845890692344060">您的管理员已退出账号。现在一切由您掌控。</translation>
-<translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
 <translation id="6883606786470492001">管理您的广告主题和其他设置，以限制网站能根据哪些个人信息向您展示个性化广告</translation>
 <translation id="6884474387073389421">确定要删除所选登录数据吗？</translation>
@@ -8939,7 +8933,6 @@
 <translation id="7145413760160421938">无法恢复上一个会话</translation>
 <translation id="7146882055510146554">Microsoft 365 会使用 OneDrive 打开和编辑 Word、Excel 和 PowerPoint 文件。您需要先登录您的 Microsoft 账号，然后即可在“文件”应用侧边导航栏的“Microsoft OneDrive”部分中找到这些文件。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">网站可能会无法按预期运行。如果您不想在设备上保留与您访问网站有关的信息，请选择此选项。</translation>
-<translation id="7148954254185728510">大多数网站无法使用第三方 Cookie 跟踪您在浏览时的活动，并且网站无法在无痕模式下使用第三方 Cookie。</translation>
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
@@ -10613,7 +10606,6 @@
 <translation id="8275038454117074363">导入</translation>
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
-<translation id="8276850948802942358">详细了解如何向网站授予对第三方 Cookie 的临时使用权限</translation>
 <translation id="8277907305629781277">您创建此通行密钥的日期为 <ph name="DATE" /></translation>
 <translation id="8278702675516957539">不允许使用 JavaScript 优化功能</translation>
 <translation id="827966378414194229">使用头部动作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -11195,7 +11187,6 @@
 <translation id="8678192320753081984">为面临定向攻击风险的用户提供 Google 最强大的账号安保服务</translation>
 <translation id="8678378565142776698">重启设备并获取自动更新</translation>
 <translation id="8678538439778360739">数据已于 <ph name="TIME" />使用您的同步密码加密。这并不包括 Google Pay 中的付款方式和地址。</translation>
-<translation id="867882552362231068">Chrome 会限制网站可利用哪些类型的信息来跟踪您浏览时的活动。您可更改设置以选择自己所需的保护级别。</translation>
 <translation id="8678933587484842200">您希望通过何种方式启动此应用？</translation>
 <translation id="8679054765393461130">渲染网络选择列表会触发 WLAN 频繁扫描，这可能会影响您的 Wi-Fi 网络的性能。</translation>
 <translation id="8680251145628383637">登录后即可在您的任何设备上获取自己的书签、历史记录、密码和其他设置。此外，您还会自动登录到 Google 服务。</translation>

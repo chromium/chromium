@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">انقر مع الاستمرار للتبديل إلى "وضع التصفّح المتخفي"</translation>
 <translation id="2860954141821109167">يُرجى التأكُّد من تفعيل تطبيق هاتف على هذا الجهاز.</translation>
 <translation id="2861923151411510142">‏لن تتوفّر بعض ميزات Chrome بعد الآن.</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{‫<ph name="URL" /> وعلامة تبويب واحدة إضافية}zero{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}two{‫<ph name="URL" /> وعلامَتا تبويب أخرى (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى}many{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}other{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}}</translation>
 <translation id="2869430948265924908">لحماية المحتوى الحسّاس في السيارة، عليك إنشاء قفل للملف الشخصي للسيارة.  ويمكنك تنفيذ هذا الإجراء باستخدام رقم تعريف شخصي أو رمز أو كلمة مرور.</translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2871733351037274014">تحميل الصفحات مُسبقًا</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">قائمة بالأجهزة التي يمكن مشاركة علامة تبويب معها، مفتوحة على طول الشاشة.</translation>
 <translation id="2908243544703713905">الأخبار غير المقروءة جاهزة.</translation>
 <translation id="2909615210195135082">‏النظام الأساسي لإشعارات Google</translation>
+<translation id="2912247081180973411">إغلاق النوافذ</translation>
 <translation id="2912345083818861431">استخدام قفل الشاشة للاطّلاع على علامات التبويب المفتوحة في وضع التصفُّح المتخفي</translation>
 <translation id="2918484639460781603">الانتقال إلى الإعدادات</translation>
 <translation id="2920713489113095380">‫"<ph name="TAB_TITLE" />"، علامة تبويب مكتومة الصوت</translation>
@@ -503,7 +505,6 @@
 <translation id="3159335509547415276">مزيد من المعلومات عن الحسابات المحظورة</translation>
 <translation id="3161699713309727585">يتم فتح الزر "<ph name="BUTTON_TEXT" />" في علامة تبويب جديدة</translation>
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
-<translation id="316694332262407393">‏Chrome قيد التشغيل حاليًا في المقدمة.</translation>
 <translation id="3167258285411721858">يمكنك طلب الإصدار المتوافق مع الأجهزة الجوّالة للموقع الإلكتروني <ph name="HOST_NAME" />.</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
 <translation id="3181145110929454111">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة ومكتومة الصوت تم اختيارها مع علامات تبويب أخرى في "وضع التصفّح المتخفي"</translation>
@@ -1039,6 +1040,7 @@
 <translation id="5469852975082458401">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على F7 لإيقافه.</translation>
 <translation id="5471273988133666918">تعذَّر نقل علامة التبويب "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
+<translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="549660026907543296">الانضمام باسم "<ph name="MEMBER_FULL_NAME" />"</translation>
 <translation id="5517326820028369152">بطاقة الأنشطة الحديثة السفلية</translation>
 <translation id="5526281268548144413">لا يمكن إغلاق علامات التبويب في نوافذ متعددة</translation>
@@ -1147,6 +1149,7 @@
 <translation id="5958275228015807058">العثور على الملفات والصفحات في مجلد "المحتوى الذي تم تنزيله"</translation>
 <translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
+<translation id="5972844218283131174">إلغاء اختيار الكل</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5977976211062815271">على هذا الجهاز</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{"قائمة القراءة" تتضمّن صفحة واحدة}zero{"قائمة القراءة" تتضمّن # صفحة}two{"قائمة القراءة" تتضمّن صفحتين}few{"قائمة القراءة" تتضمّن # صفحات}many{"قائمة القراءة" تتضمّن # صفحة}other{"قائمة القراءة" تتضمّن # صفحة}}</translation>

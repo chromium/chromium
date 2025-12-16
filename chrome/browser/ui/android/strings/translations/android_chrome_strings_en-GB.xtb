@@ -427,6 +427,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2854916915045135148">Touch and hold to switch to Incognito</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="2861923151411510142">Some Chrome features won\u2019t be available anymore</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> and one other tab}other{<ph name="URL" /> and <ph name="TAB_COUNT_MANY" /> other tabs}}</translation>
 <translation id="2869430948265924908">To protect your sensitive content in the car, you must create a car profile lock.  You can do this with a pin, code or password.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Preload pages</translation>
@@ -445,6 +446,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
 <translation id="2908243544703713905">Unread stories ready</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Close windows</translation>
 <translation id="2912345083818861431">Use screen lock to see open Incognito tabs</translation>
 <translation id="2918484639460781603">Go to settings</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, muted tab</translation>
@@ -502,7 +504,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3159335509547415276">Learn about blocked accounts</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, opens in a new tab</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
-<translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3167258285411721858">You can request the mobile site for <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, multi-selected pinned muted Incognito tab</translation>
@@ -1038,6 +1039,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5469852975082458401">You can navigate pages with a text cursor. Press F7 to turn off.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
+<translation id="5494920125229734069">Select all</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Recent activity bottom sheet</translation>
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
@@ -1146,6 +1148,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
+<translation id="5972844218283131174">Deselect all</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5977976211062815271">On this device</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page on your reading list}other{# pages on your reading list}}</translation>

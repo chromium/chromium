@@ -1461,6 +1461,7 @@
 <translation id="6445981559479772097">Đã gửi tin nhắn.</translation>
 <translation id="6449554712554071184">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn.</translation>
 <translation id="6452534462676960500">Hoạt động mới</translation>
+<translation id="6454311990702999318">Dữ liệu không hợp lệ</translation>
 <translation id="6459411599807878608">Đã ẩn thông tin chi tiết</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6472069383518492189">Bạn sẽ thấy tệp đã tải xuống ở đây</translation>
@@ -1494,6 +1495,7 @@
 <translation id="6579867704846662339">Bạn có thể chọn mở URL nhận được từ các ứng dụng khác ở chế độ Ẩn danh.</translation>
 <translation id="6583087784430677195">Để tắt, hãy mở phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> rồi chuyển đến phần Tự động điền mật khẩu.</translation>
 <translation id="6585618849026997638">Bạn có thể thêm dấu trang để truy cập lại một trang mà bạn thấy quan trọng</translation>
+<translation id="6589001036857939353">Hợp nhất thông tin trùng lặp</translation>
 <translation id="659407965921887085">Thẻ này cho thấy mức giảm giá trên web của những sản phẩm mà bạn đang theo dõi</translation>
 <translation id="6596481460663245319">Tìm ảnh bằng Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 mật khẩu}other{# mật khẩu}}</translation>

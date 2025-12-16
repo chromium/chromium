@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Докоснете и задръжте, за да превключите към режим „инкогнито“</translation>
 <translation id="2860954141821109167">Трябва да има активирано приложение за телефон на устройството</translation>
 <translation id="2861923151411510142">Някои функции на Chrome вече няма да са налице</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и още 1 раздел}other{<ph name="URL" /> и още <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="2869430948265924908">За да защитите деликатното си съдържание в автомобила, трябва да зададете опция за заключване на потребителския профил в него.  Можете да използвате ПИН, код или парола.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предварително зареждане на страници</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">Списъкът с устройства, с които да се сподели даден раздел, е отворен на пълната височина.</translation>
 <translation id="2908243544703713905">Непрочетените материали са готови</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Затваряне на прозорците</translation>
 <translation id="2912345083818861431">Използване на функцията за заключване на екрана за преглед на отворените раздели в режим „инкогнито“</translation>
 <translation id="2918484639460781603">Към настройките</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" /> – раздел, чийто звук е спрян</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">Научете за блокираните профили</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> – отваря се в нов раздел</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
-<translation id="316694332262407393">Chrome вече се изпълнява тук.</translation>
 <translation id="3167258285411721858">Можете да заявите мобилната версия на сайта <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян и който е избран заедно с други</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">Можете да навигирате в страниците с помощта на текстов курсор. Натиснете F7 за изключване на функцията.</translation>
 <translation id="5471273988133666918">Разделът „<ph name="TAB_TITLE" />“ не може да бъде преместен</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
+<translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="549660026907543296">Присъединяване като <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Долен лист със скорошна активност</translation>
 <translation id="5526281268548144413">Затварянето в няколко прозореца не е възможно</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">Намерете файловете и страниците си в „Изтегляния“</translation>
 <translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5964869237734432770">Спиране на описанията</translation>
+<translation id="5972844218283131174">Премахване на избора от всички</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5977976211062815271">На това устройство</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{В списъка ви за четене има 1 страница}other{В списъка ви за четене има # страници}}</translation>

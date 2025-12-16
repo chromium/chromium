@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Kan het woordenboek voor de spellingcontrole van <ph name="LANGUAGE" /> niet downloaden. Probeer het opnieuw.</translation>
 <translation id="1078037449555275327">ChromeVox-instellingen</translation>
 <translation id="1079242569060319448">Pincode vergeten?</translation>
-<translation id="1079285777677001938">Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="1079766198702302550">Cameratoegang altijd blokkeren</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 tabblad}other{<ph name="GROUP_TITLE" /> - # tabbladen}}</translation>
 <translation id="1082214733466244292">Je beheerder heeft bepaalde functionaliteit geblokkeerd voor dit apparaat</translation>
@@ -2212,6 +2211,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2476901513051581836">Kan de opslag pas opschonen als de offline opslaggrootte bekend is.</translation>
 <translation id="2476974672882258506">Sluit Windows af om <ph name="PARALLELS_DESKTOP" /> te verwijderen.</translation>
 <translation id="2477065602824695373">Automatische scan is uitgezet omdat je meerdere schakelaars hebt ingesteld.</translation>
+<translation id="2477218554275525952">De Gemini-zijbalk openhouden als je een nieuw tabblad opent</translation>
 <translation id="2477607419416067650">Andere Google-gegevens</translation>
 <translation id="2478176599153288112">Mediabestandsrechten voor '<ph name="EXTENSION" />'</translation>
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
@@ -3456,7 +3456,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3348973040180736882">Decomprimeren</translation>
 <translation id="3349610303043713601">Browsen met AI</translation>
 <translation id="3349933790966648062">Geheugenverbruik</translation>
-<translation id="3350450887151703713">10 seconden opnieuw afspelen</translation>
 <translation id="3351472127384196879">Knoppen toevoegen of vinden op je pen</translation>
 <translation id="3353786022389205125">Zet 'Vergrendelscherm bekijken bij activering vanuit de slaapstand' aan en probeer het opnieuw</translation>
 <translation id="3354768182971982851">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Mac-apparaten. Je kunt checken of er een nieuwe versie beschikbaar is.</translation>
@@ -3603,7 +3602,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3446274660183028131">Start Parallels Desktop om Windows te installeren.</translation>
 <translation id="344630545793878684">Je gegevens voor een aantal websites lezen</translation>
-<translation id="3447644283769633681">Alle cookies van derden blokkeren</translation>
 <translation id="3447644827015694497">Inactieve tabbladen checken?</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> casten naar <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Account updaten</translation>
@@ -3924,7 +3922,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3663417513679360795">Meer informatie over hoe je standaard vooraf laden aanzet</translation>
 <translation id="3664511988987167893">Extensiepictogram</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />}=1{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # andere persoon}other{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # anderen}}</translation>
-<translation id="3665100783276035932">De meeste sites werken zoals verwacht</translation>
 <translation id="3665301845536101715">Openen in zijvenster</translation>
 <translation id="3665589677786828986">Chrome heeft gedetecteerd dat sommige van je instellingen zijn beschadigd door een ander programma en heeft de instellingen teruggezet naar de oorspronkelijke standaardwaarden.</translation>
 <translation id="3665918214153961651">Bestand uploaden</translation>
@@ -6816,7 +6813,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5651308944918885595">Vindbaarheid voor Dichtbij delen</translation>
 <translation id="5653154844073528838">Je hebt <ph name="PRINTER_COUNT" /> opgeslagen printers.</translation>
 <translation id="565461030474814383">Opslaan in account?</translation>
-<translation id="5654669866168491665">Meer informatie over sites die misschien niet werken als cookies van derden worden geblokkeerd</translation>
 <translation id="5654751240928365405">Deze extensie is uitgezet omdat die niet meer wordt ondersteund</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Ter bescherming van je gegevens zijn de rechten voor één site verwijderd}other{Ter bescherming van je gegevens zijn de rechten voor sommige sites verwijderd}}</translation>
 <translation id="5655296450510165335">Apparaatinschrijving</translation>
@@ -7565,7 +7561,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6181431612547969857">Download geblokkeerd</translation>
 <translation id="6183369864942961155">Automatisch licht/donker thema</translation>
 <translation id="6184099524311454384">Tabbladen doorzoeken</translation>
-<translation id="6184868291074982484">Chrome beperkt automatisch cookies van derden</translation>
 <translation id="6185132558746749656">Apparaatlocatie</translation>
 <translation id="6185151644843671709">Toegangssleutel opgeslagen en pincode gemaakt</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}other{{PASSWORD_COUNT} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}}</translation>
@@ -8573,7 +8568,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6878862640969460273">Liggend</translation>
 <translation id="6880587130513028875">Er zijn afbeeldingen op deze pagina geblokkeerd.</translation>
 <translation id="6881845890692344060">Je beheerder is uitgelogd. Jij hebt nu de controle.</translation>
-<translation id="6882210908253838664">Als een site niet werkt, kun je proberen de site tijdelijk toestemming te geven om cookies van derden te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="6883606786470492001">Beheer je advertentieonderwerpen en andere instellingen om te beperken wat sites over je mogen weten om je gepersonaliseerde advertenties te tonen</translation>
 <translation id="6884474387073389421">Weet je zeker dat je de geselecteerde inloggegevens wilt verwijderen?</translation>
@@ -8947,7 +8941,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7145413760160421938">Kan de vorige sessie niet hervatten</translation>
 <translation id="7146882055510146554">Microsoft 365 gebruikt OneDrive om Word-, Excel- en PowerPoint-bestanden te openen en bewerken. Je vindt deze bestanden in de navigatie aan de zijkant van de app Bestanden met het label Microsoft OneDrive. Je moet inloggen met je Microsoft-account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Sites werken misschien niet zoals verwacht. Kies deze optie als je geen informatie op je apparaat wilt achterlaten over sites die je bezoekt.</translation>
-<translation id="7148954254185728510">De meeste sites kunnen geen cookies van derden gebruiken om je te volgen terwijl je browst. Sites kunnen geen cookies van derden gebruiken in de incognitomodus.</translation>
 <translation id="7149839598364933473">Zet dit apparaat om in een <ph name="DEVICE_OS" />-apparaat.</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
 <translation id="7152478047064750137">De extensie vereist geen speciale rechten</translation>
@@ -10620,7 +10613,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8275038454117074363">Importeren</translation>
 <translation id="8275080796245127762">Bellen vanaf je apparaat</translation>
 <translation id="8276560076771292512">Cache wissen en geforceerd opnieuw laden</translation>
-<translation id="8276850948802942358">Meer informatie over hoe je een site tijdelijk toestemming geeft om cookies van derden te gebruiken</translation>
 <translation id="8277907305629781277">Je hebt deze toegangssleutel op <ph name="DATE" /> gemaakt</translation>
 <translation id="8278702675516957539">Geen toestemming om JavaScript-optimalisatie te gebruiken</translation>
 <translation id="827966378414194229">Gebruik hoofdbewegingen en gezichtsuitdrukkingen om je Chromebook te bedienen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -11202,7 +11194,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8678192320753081984">Biedt de krachtigste accountbeveiliging van Google voor mensen die risico lopen op gerichte aanvallen</translation>
 <translation id="8678378565142776698">Opnieuw opstarten en automatische updates ontvangen</translation>
 <translation id="8678538439778360739">De gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin voor synchronisatie. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
-<translation id="867882552362231068">Chrome beperkt het type informatie dat sites kunnen gebruiken om je te volgen terwijl je browst. Je kunt de instellingen wijzigen om je eigen beveiligingsniveau te kiezen.</translation>
 <translation id="8678933587484842200">Hoe moet deze app worden gestart?</translation>
 <translation id="8679054765393461130">De lijst met netwerkselectie zorgt ervoor dat wifi regelmatig wordt gescand. Dit kan gevolgen hebben voor de prestaties van je wifi-netwerk.</translation>
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>
@@ -12011,6 +12002,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9207434080086272167">Zonnig</translation>
 <translation id="9207669213427469593">Als je een venster aan de ene kant uitlijnt om het gesplitste scherm te gebruiken, zie je aan de andere kant suggesties voor vensters</translation>
 <translation id="9209563766569767417">De installatie van de Linux-container wordt gecontroleerd</translation>
+<translation id="9212565256020141627">Kan de afbeelding niet delen met Gemini. Probeer het opnieuw of probeer een andere afbeelding.</translation>
 <translation id="9214520840402538427">De initialisatie van de kenmerken van de installatietijd is verlopen. Neem contact op met je ondersteuningsmedewerker.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />' toegevoegd</translation>

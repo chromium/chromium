@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد کاملاً باز است.</translation>
 <translation id="2908243544703713905">داستان‌های خوانده‌نشده آماده است</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
+<translation id="2912247081180973411">بستن پنجره‌ها</translation>
 <translation id="2912345083818861431">استفاده از قفل صفحه برای دیدن برگه‌های ناشناس باز</translation>
 <translation id="2918484639460781603">رفتن به تنظیمات</translation>
 <translation id="2920713489113095380">‫<ph name="TAB_TITLE" />، زبانه بی‌صدا</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">آشنایی با حساب‌های مسدودشده</translation>
 <translation id="3161699713309727585">‫<ph name="BUTTON_TEXT" />، در زبانه جدیدی باز می‌شود</translation>
 <translation id="3166827708714933426">میان‌برهای پنجره و برگه</translation>
-<translation id="316694332262407393">‏Chrome ازقبل درحال اجرا شدن است.</translation>
 <translation id="3167258285411721858">می‌توانید درخواست دهید از سایت ویژه تلفن همراه <ph name="HOST_NAME" /> استفاده کنید</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
 <translation id="3181145110929454111">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای سنجاق‌شده چندانتخابی</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، F7 را فشار دهید.</translation>
 <translation id="5471273988133666918">زبانه <ph name="TAB_TITLE" /> را نمی‌توان منتقل کرد</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
+<translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="549660026907543296">پیوستن با نام <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">برگ زیرین فعالیت اخیر</translation>
 <translation id="5526281268548144413">بستن در چند پنجره امکان‌پذیر نیست</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="5962718611393537961">برای کوچک کردن تک‌ضرب بزنید</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
+<translation id="5972844218283131174">لغوانتخاب همه</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5977976211062815271">در این دستگاه</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{‫۱ صفحه در «فهرست خواندن»}one{‫# صفحه در «فهرست خواندن»}other{‫# صفحه در «فهرست خواندن»}}</translation>

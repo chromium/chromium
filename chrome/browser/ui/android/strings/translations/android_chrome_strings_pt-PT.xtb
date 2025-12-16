@@ -446,6 +446,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2904414404539560095">Lista de dispositivos com os quais quer partilhar um separador aberta à altura total.</translation>
 <translation id="2908243544703713905">Notícias não lidas disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
+<translation id="2912247081180973411">Fechar janelas</translation>
 <translation id="2912345083818861431">Use o bloqueio de ecrã para ver os separadores anónimos abertos</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, separador com som desativado</translation>
@@ -503,7 +504,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, abre num novo separador</translation>
 <translation id="3166827708714933426">Atalhos de separadores e de janelas</translation>
-<translation id="316694332262407393">O Chrome já está a ser executado aqui.</translation>
 <translation id="3167258285411721858">Pode pedir o site para dispositivos móveis para o anfitrião <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, separador de navegação anónima com som desativado fixado multisselecionado</translation>
@@ -1039,6 +1039,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5469852975082458401">Pode navegar pelas páginas com um cursor de texto. Prima F7 para desativar esta opção.</translation>
 <translation id="5471273988133666918">Não é possível mover o separador <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
+<translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="549660026907543296">Aderir como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Secção inferior da atividade recente</translation>
 <translation id="5526281268548144413">Não é possível fechar os separadores em várias janelas</translation>
@@ -1147,6 +1148,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5958275228015807058">Encontre os seus ficheiros e páginas nas Transferências.</translation>
 <translation id="5962718611393537961">Toque para reduzir</translation>
 <translation id="5964869237734432770">Parar descrições de imagens</translation>
+<translation id="5972844218283131174">Desmarcar tudo</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de leitura}other{# páginas na sua Lista de leitura}}</translation>

@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="4118474109249235144">Mode Samaran Chromium</translation>
 <translation id="4122186850977583290">Buka halaman Tentang Chromium</translation>
+<translation id="4135244987012252068">Sesuaikan Chromium untuk memberikan tampilan baru ke browser Anda</translation>
 <translation id="4147856324248078748">S&amp;esuaikan Chromium Anda</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login Jaringan - Chromium</translation>

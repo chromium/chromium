@@ -285,6 +285,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama vieną minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}one{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}few{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutes. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}many{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutės. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}other{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minučių. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}}</translation>
 <translation id="4118474109249235144">„Chromium“ inkognito režimas</translation>
 <translation id="4122186850977583290">Eiti į puslapį „Apie „Chromium“</translation>
+<translation id="4135244987012252068">Tinkinkite „Chromium“ ir suteikite naršyklei naują išvaizdą</translation>
 <translation id="4147856324248078748">„C&amp;hromium“ tinkinimas</translation>
 <translation id="4148957013307229264">Diegiama...</translation>
 <translation id="419998258129752635">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo – „Chromium“</translation>

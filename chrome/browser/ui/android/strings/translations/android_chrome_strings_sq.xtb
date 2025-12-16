@@ -427,6 +427,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2854916915045135148">Prek dhe mbaj të shtypur për të kaluar te modaliteti "I fshehtë"</translation>
 <translation id="2860954141821109167">Sigurohu që një aplikacion i telefonit të jetë i aktivizuar në këtë pajisje</translation>
 <translation id="2861923151411510142">Disa veçori të Chrome nuk do të ofrohen më</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> dhe 1 skedë tjetër}other{<ph name="URL" /> dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera}}</translation>
 <translation id="2869430948265924908">Për të mbrojtur përmbajtjet e tua delikate në makinë, duhet të krijosh një kyçje të profilit të makinës.  Këtë mund ta bësh me një kod, fjalëkalim ose kod PIN.</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2871733351037274014">Ngarkimi paraprak i faqeve</translation>
@@ -445,6 +446,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2904414404539560095">Lista e pajisjeve për të ndarë një skedë e hapur në lartësi të plotë.</translation>
 <translation id="2908243544703713905">Historitë e palexuara janë gati</translation>
 <translation id="2909615210195135082">Platforma e njoftimeve të Google</translation>
+<translation id="2912247081180973411">Mbyll dritaret</translation>
 <translation id="2912345083818861431">Përdor kyçjen e ekranit për të parë skedat "e fshehta"</translation>
 <translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, skeda e vendosur në heshtje</translation>
@@ -502,7 +504,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />; hapet në një skedë të re</translation>
 <translation id="3166827708714933426">Shkurtoret e skedës dhe dritares</translation>
-<translation id="316694332262407393">Chrome është tashmë duke u ekzekutuar këtu.</translation>
 <translation id="3167258285411721858">Mund të kërkosh sajtin për celular për <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar e vendosur në heshtje dhe e zgjedhur me shumë të tjera</translation>
@@ -1038,6 +1039,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5469852975082458401">Mund t'i navigosh faqet me një kursor teksti. Shtyp F7 për ta çaktivizuar.</translation>
 <translation id="5471273988133666918">Skeda <ph name="TAB_TITLE" /> nuk mund të zhvendoset</translation>
 <translation id="548278423535722844">Hape në aplikacionin e hartave</translation>
+<translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="549660026907543296">Bashkohu si <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Fleta e poshtme e aktivitetit të fundit</translation>
 <translation id="5526281268548144413">Nuk mund të mbyllen në disa dritare</translation>
@@ -1146,6 +1148,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
+<translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5977976211062815271">Në këtë pajisje</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 faqe në listën e leximit}other{# faqe në listën e leximit}}</translation>

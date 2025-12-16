@@ -427,6 +427,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2854916915045135148">Podržením přejdete do anonymního režimu</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="2861923151411510142">Některé funkce Chromu už nebudou dostupné</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> a 1 další karta}few{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> další karty}many{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> další karty}other{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="2869430948265924908">K ochránění vašeho citlivého obsahu v autě je potřeba vytvořit zámek profilu auta.  Můžete to provést pomocí kódu PIN, kódu nebo hesla.</translation>
 <translation id="2870560284913253234">Weby</translation>
 <translation id="2871733351037274014">Předběžně načítat stránky</translation>
@@ -445,6 +446,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2904414404539560095">Seznam zařízení, se kterými se má karta sdílet, otevřený na plnou výšku.</translation>
 <translation id="2908243544703713905">Jsou připravené nepřečtené články</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Zavřít okna</translation>
 <translation id="2912345083818861431">K zobrazení otevřených anonymních karet vyžadovat zámek obrazovky</translation>
 <translation id="2918484639460781603">Přejít na nastavení</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, ztlumená karta</translation>
@@ -502,7 +504,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otevře se na nové kartě</translation>
 <translation id="3166827708714933426">Zkratky pro okna a karty</translation>
-<translation id="316694332262407393">Chrome už je spuštěný.</translation>
 <translation id="3167258285411721858">Můžete požádat o web <ph name="HOST_NAME" /> pro mobily</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých ztlumených anonymních karet</translation>
@@ -1038,6 +1039,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5469852975082458401">Stránky můžete procházet pomocí textového kurzoru. Tuto funkci vypnete stisknutím klávesy F7.</translation>
 <translation id="5471273988133666918">Kartu <ph name="TAB_TITLE" /> nelze přesunout</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
+<translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="549660026907543296">Přidat se jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Spodní panel s nedávnou aktivitou</translation>
 <translation id="5526281268548144413">Nelze zavřít ve více oknech</translation>
@@ -1146,6 +1148,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
+<translation id="5972844218283131174">Zrušit výběr všech</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5977976211062815271">V tomto zařízení</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stránka ve vašem seznamu četby}few{# stránky ve vašem seznamu četby}many{# stránky ve vašem seznamu četby}other{# stránek ve vašem seznamu četby}}</translation>

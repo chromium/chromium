@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">‘ရုပ်ဖျက်’ သို့ ပြောင်းရန် ထိပြီး ဖိထားပါ</translation>
 <translation id="2860954141821109167">ဤကိရိယာတွင် ဖုန်းအက်ပ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="2861923151411510142">အချို့ Chrome ဝန်ဆောင်မှုများကို ရနိုင်တော့မည်မဟုတ်ပါ</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> နှင့် အခြားတဘ် ၁ ခု}other{<ph name="URL" /> နှင့် အခြားတဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="2869430948265924908">ကားတွင် သင်၏သတိထားရမည့် အကြောင်းအရာကိုကာကွယ်ရန် ကားပရိုဖိုင်လော့ခ်ကို ပြုလုပ်ရမည်။  ပင်နံပါတ်၊ ကုဒ် (သို့) စကားဝှက်ဖြင့် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="2870560284913253234">ဆိုက်</translation>
 <translation id="2871733351037274014">စာမျက်နှာများကို ကြိုဖွင့်ခြင်း</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်း၏ အမြင့်ကို အပြည့်ဖွင့်ထားသည်။</translation>
 <translation id="2908243544703713905">မဖတ်ရသေးသော သတင်းဆောင်းပါးများ အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
+<translation id="2912247081180973411">ဝင်ဒိုးများ ပိတ်ရန်</translation>
 <translation id="2912345083818861431">ဖွင့်ထားသောရုပ်ဖျက်တဘ်များ ကြည့်ရန် ဖန်သားပြင်လော့ခ် သုံးနိုင်သည်</translation>
 <translation id="2918484639460781603">ဆက်တင်များသို့ သွားနိုင်သည်</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />၊ အသံပိတ်ထားသောတဘ်</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">ပိတ်ဆို့ထားသည့် အကောင့်များအကြောင်း လေ့လာရန်</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />၊ တဘ်အသစ်တွင် ဖွင့်သည်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
-<translation id="316694332262407393">Chrome ဖွင့်ထားပြီးသားဖြစ်သည်။</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> အတွက် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">စာရိုက်သည့်ပုံကာဆာဖြင့် စာမျက်နှာများကို ကြည့်ရှုနိုင်သည်။ ပိတ်ရန် F7 ကို နှိပ်ပါ။</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> တဘ်ကို ရွှေ့၍မရပါ</translation>
 <translation id="548278423535722844">မြေပုံအက်ပ်တွင် ဖွင့်ပါ</translation>
+<translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> အဖြစ် ပါဝင်ရန်</translation>
 <translation id="5517326820028369152">မကြာသေးမီက လုပ်ဆောင်ချက် အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="5526281268548144413">ဝင်းဒိုးအများအပြားတွင် ပိတ်၍မရပါ</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">သင့်ဖိုင်များနှင့် စာမျက်နှာများကို ဒေါင်းလုဒ်များထဲတွင် ရှာဖွေပါ</translation>
 <translation id="5962718611393537961">လျှော့ပြရန် တို့ပါ</translation>
 <translation id="5964869237734432770">ပုံရှင်းလင်းချက်များ ရပ်ရန်</translation>
+<translation id="5972844218283131174">အားလုံးမရွေးပါနှင့်</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5977976211062815271">ဤစက်ပစ္စည်းပေါ်တွင်-</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{သင်၏ ဖတ်ရန် စာရင်းတွင် စာမျက်နှာ ၁ ခုရှိသည်}other{သင်၏ ဖတ်ရန် စာရင်းတွင် စာမျက်နှာ # ခုရှိသည်}}</translation>

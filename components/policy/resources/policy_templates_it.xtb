@@ -6104,6 +6104,7 @@ Se la policy non viene configurata o se viene disattivata, i dati e i cookie pot
 Se questa norma non viene impostata viene utilizzata la riga di comando predefinita.</translation>
 <translation id="5151099177901233471">Attiva i report sulle informazioni relative al fuso orario del dispositivo</translation>
 <translation id="5151163911478747031">Disattiva l'attribuzione dell'estensione nel piè di pagina della pagina Nuova scheda</translation>
+<translation id="5151850599880109339">Attiva la modalità solo HTTPS in modalità bilanciata</translation>
 <translation id="5152393033264257734">Consenti controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di policy che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di policy. Dato che le policy possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icona degli esperimenti del browser nella barra degli strumenti</translation>
@@ -9167,6 +9168,7 @@ l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="7016587686120059767">Disattiva la modalità ospite</translation>
 <translation id="7019805045859631636">Veloce</translation>
 <translation id="7021590945154530517">Attiva il monitoraggio dello stato di integrità del dispositivo</translation>
+<translation id="7021952112057614674">Disattiva la modalità solo HTTPS</translation>
 <translation id="7025153290982655996">Ripristina il comportamento precedente per l'ambito dei cookie</translation>
 <translation id="7025332601572838001">Configurazione del comportamento dei TdS alla prima esecuzione di CCT</translation>
 <translation id="7026351325994257733">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato</translation>
@@ -11214,6 +11216,7 @@ la configurazione.</translation>
       Se la policy non è configurata, <ph name="PRODUCT_NAME" /> consente agli utenti di controllare se è impostato come browser predefinito e, in caso contrario, se devono essere visualizzate le notifiche per gli utenti.
 
       Nota per gli amministratori di <ph name="MS_WIN_NAME" />: la configurazione di questa impostazione funziona solo con le macchine che eseguono Windows 7. Per le versioni successive, è necessario eseguire il deployment di un file con associazioni di applicazioni predefinite che imposti <ph name="PRODUCT_NAME" /> come gestore dei protocolli <ph name="HTTPS_PROTOCOL" /> e <ph name="HTTP_PROTOCOL" /> (e facoltativamente del protocollo <ph name="FTP_PROTOCOL" /> e di altri formati di file). Consulta la guida di Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">Attiva la modalità solo HTTPS in modalità StrictMode</translation>
 <translation id="8437836857126992452">Consente di specificare le estensioni che gli utenti NON possono installare. Le estensioni già installate vengono disattivate, se bloccate, e l'utente non può attivarle. Un'estensione disattivata da una lista bloccata viene automaticamente riattivata nel caso venga rimossa dalla lista.
 
           Il valore "*" di una lista bloccata indica che tutte le estensioni sono bloccate per impostazione predefinita. Le estensioni elencate in modo esplicito nella lista consentita sono consentite se sono firmate (pacchettizzate). Tutte le estensioni non pacchettizzate sono bloccate.
@@ -12359,6 +12362,27 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="922160134042190462">Non attivare <ph name="DESK_API_NAME" /> per il controllo <ph name="PRODUCT_OS_NAME" /> di terze parti</translation>
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
+<translation id="924360639456783890">Questo criterio consente di stabilire se gli utenti possono attivare o meno la modalità solo HTTPS (Utilizza sempre connessioni sicure) nelle Impostazioni. La modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
+
+Se questa impostazione non viene configurata o se viene impostata su "allowed", gli utenti potranno attivare la modalità solo HTTPS.
+
+Se viene impostata su "disallowed", la modalità solo HTTPS verrà disattivata.
+
+Se viene impostata su "force_enabled", la modalità solo HTTPS verrà attivata in modalità StrictMode.
+
+Se viene impostata su "force_balanced_enabled", la modalità solo HTTPS verrà attivata in modalità bilanciata.
+
+Il valore "force_enabled" è supportato a partire dalla versione M112, mentre "force_balanced_enabled" è supportato a partire dalla versione M129.
+
+"force_enabled" e "force_balanced_enabled" possono essere consigliati anche agli utenti.
+La modalità solo HTTPS verrà inizialmente impostata su StrictMode o Bilanciata, ma gli utenti potranno
+modificarla.
+
+Se imposti questo criterio su un valore non supportato dalla versione di Chrome che lo riceve, Chrome utilizzerà l'impostazione consentita per impostazione predefinita.
+
+Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato
+può essere utilizzato per escludere determinati nomi host o pattern di nomi host
+dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
 <translation id="925379810778921867">Un URL blob di SharedWorker eredita un controller.</translation>
 <translation id="927384371566552478">Se la policy viene impostata su Attivata o se non viene configurata, l'interfaccia utente di esportazione/importazione è disponibile agli utenti. Se la policy viene impostata su Disattivata, l'interfaccia utente di esportazione/importazione non è disponibile agli utenti.</translation>

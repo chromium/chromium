@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizația ta închide automat Chromium dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chromium dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chromium dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="4118474109249235144">Modul incognito din Chromium</translation>
 <translation id="4122186850977583290">Accesează pagina Despre Chromium</translation>
+<translation id="4135244987012252068">Personalizează Chromium pentru a-i oferi browserului un aspect nou.</translation>
 <translation id="4147856324248078748">P&amp;ersonalizează Chromium</translation>
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – conectare la rețea – Chromium</translation>

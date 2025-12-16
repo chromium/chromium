@@ -427,6 +427,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2854916915045135148">Pindutin nang matagal para lumipat sa Incognito</translation>
 <translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> at 1 pang tab}one{<ph name="URL" /> at <ph name="TAB_COUNT_MANY" /> pang tab}other{<ph name="URL" /> at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
 <translation id="2869430948265924908">Para maprotektahan ang iyong sensitibong content sa kotse, dapat kang gumawa ng lock ng profile ng kotse.  Magagawa mo ito gamit ang isang pin, code, o password.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Mag-preload ng mga page</translation>
@@ -445,6 +446,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2904414404539560095">Nakabukas ang listahan ng mga device kung saan magbabahagi ng tab nang buo ang taas.</translation>
 <translation id="2908243544703713905">Handa na ang mga hindi pa nababasang kuwento</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Magsara ng mga window</translation>
 <translation id="2912345083818861431">Gamitin ang lock ng screen para makita ang mga nakabukas na tab na Incognito</translation>
 <translation id="2918484639460781603">Pumunta sa mga setting</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, Naka-mute na Tab</translation>
@@ -502,7 +504,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3159335509547415276">Matuto tungkol sa mga naka-block na account</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, bubukas sa bagong tab</translation>
 <translation id="3166827708714933426">Mga shortcut ng tab at window</translation>
-<translation id="316694332262407393">Tumatakbo na ang Chrome dito.</translation>
 <translation id="3167258285411721858">Puwede mong i-request ang pang-mobile na site para sa <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Naka-mute na Tab na Incognito</translation>
@@ -1038,6 +1039,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5469852975082458401">Puwede kang mag-navigate sa mga page gamit ang text cursor. Pindutin ang F7 para i-off.</translation>
 <translation id="5471273988133666918">Hindi maililipat ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Buksan sa app na mga mapa</translation>
+<translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="549660026907543296">Sumali bilang si <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bottom sheet ng kamakailang aktibidad</translation>
 <translation id="5526281268548144413">Hindi maisasara sa maraming window</translation>
@@ -1146,6 +1148,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5958275228015807058">Hanapin ang iyong mga file at page sa Mga Download</translation>
 <translation id="5962718611393537961">I-tap upang i-collapse</translation>
 <translation id="5964869237734432770">Ihinto ang desc ng larawan</translation>
+<translation id="5972844218283131174">I-deselect lahat</translation>
 <translation id="5975083100439434680">Mag-zoom out</translation>
 <translation id="5977976211062815271">Sa device na ito</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page sa iyong listahan ng babasahin}one{# page sa iyong listahan ng babasahin}other{# na page sa iyong listahan ng babasahin}}</translation>

@@ -427,6 +427,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2854916915045135148">시크릿 모드로 전환하려면 길게 터치하세요.</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 외 탭 1개}other{<ph name="URL" /> 외 탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="2869430948265924908">자동차에서 민감한 콘텐츠를 보호하려면 자동차 프로필 잠금을 만들어야 합니다.  PIN, 코드 또는 비밀번호를 사용하면 됩니다.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
@@ -445,6 +446,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2904414404539560095">탭을 공유할 기기 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="2908243544703713905">읽지 않은 스토리 있음</translation>
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
+<translation id="2912247081180973411">창 닫기</translation>
 <translation id="2912345083818861431">화면 잠금을 사용해 열려 있는 시크릿 탭을 봅니다.</translation>
 <translation id="2918484639460781603">설정으로 이동</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, 음소거된 탭</translation>
@@ -502,7 +504,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3159335509547415276">차단된 계정에 관해 자세히 알아보기</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, 새 탭에서 열기</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
-<translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
 <translation id="3169472444629675720">디스커버</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 음소거된 시크릿 탭</translation>
@@ -1038,6 +1039,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> 탭을 이동할 수 없습니다.</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
+<translation id="5494920125229734069">모두 선택</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
 <translation id="5517326820028369152">최근 활동 하단 시트</translation>
 <translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
@@ -1146,6 +1148,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5958275228015807058">다운로드에서 파일 및 페이지를 찾아보세요.</translation>
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
+<translation id="5972844218283131174">전체 선택 해제</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{읽기 목록 1페이지}other{읽기 목록 #페이지}}</translation>

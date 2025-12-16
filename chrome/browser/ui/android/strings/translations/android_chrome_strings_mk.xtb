@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Допрете и задржете за да префрлите на „Инкогнито“</translation>
 <translation id="2860954141821109167">Проверете дали е овозможена апликација за телефон на уредов</translation>
 <translation id="2861923151411510142">Некои функции на Chrome веќе нема да бидат достапни</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и уште 1 картичка}one{<ph name="URL" /> и уште <ph name="TAB_COUNT_MANY" /> картичка}other{<ph name="URL" /> и уште <ph name="TAB_COUNT_MANY" /> картички}}</translation>
 <translation id="2869430948265924908">За да ги заштитите чувствителните содржини во автомобилот, мора да создадете „Заклучување на профилот“ во автомобилот.  Тоа може да го направите со PIN, код или лозинка.</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2871733351037274014">Вчитување на страниците однапред</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">Списокот со уреди за споделување картичка е отворен на цел екран.</translation>
 <translation id="2908243544703713905">Непрочитаните стории се спремни</translation>
 <translation id="2909615210195135082">Платформа за известувања на Google</translation>
+<translation id="2912247081180973411">Затвори ги прозорците</translation>
 <translation id="2912345083818861431">Користете заклучување екран за да ги гледате отворените картички „Инкогнито“</translation>
 <translation id="2918484639460781603">Одете во поставките</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, картичка со исклучен звук</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">Дознајте повеќе за блокираните сметки</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, се отвора во нова картичка</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
-<translation id="316694332262407393">Chrome веќе работи тука.</translation>
 <translation id="3167258285411721858">Можете да го побарате сајтот за мобилен за <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Откриј</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка „Инкогнито“ со исклучен звук</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">Може да се движите низ страниците со курсорот за текст. Притиснете F7 за да исклучите.</translation>
 <translation id="5471273988133666918">Картичката <ph name="TAB_TITLE" /> не може да се премести</translation>
 <translation id="548278423535722844">Отвори во апликацијата „Карти“</translation>
+<translation id="5494920125229734069">Избери сè</translation>
 <translation id="549660026907543296">Придружете се како <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Долен лист на неодамнешна активност</translation>
 <translation id="5526281268548144413">Не може да се затворат во повеќе прозорци</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">Вашите датотеки и страници ќе ги најдете во „Преземања“</translation>
 <translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
+<translation id="5972844218283131174">Поништи го изборот на сите</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5977976211062815271">На уредов</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 страница во вашиот „Список за читање“}one{# страница во вашиот „Список за читање“}other{# страници во вашиот „Список за читање“}}</translation>

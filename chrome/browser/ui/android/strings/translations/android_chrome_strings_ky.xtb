@@ -427,6 +427,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2854916915045135148">Жашыруун режимге өтүү үчүн коё бербей басып туруңуз</translation>
 <translation id="2860954141821109167">Телефон колдонмосу бул түзмөктө иштетилгенин текшериңиз</translation>
 <translation id="2861923151411510142">Айрым Chrome функциялары мындан ары иштебейт</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> жана дагы 1 өтмөк}other{<ph name="URL" /> жана дагы <ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="2869430948265924908">Унааңызда купуя контентти коргоо үчүн унаа профилинин кулпусун түзүшүңүз керек.  Ал үчүн пин код, код же сырсөздү колдоно аласыз.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Барактарды алдын ала жүктөө</translation>
@@ -445,6 +446,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2904414404539560095">Жалпы түзмөктөрдүн тизмеси көрсөтүлгөн өтмөк толук экран режиминде ачылды.</translation>
 <translation id="2908243544703713905">Окула элек окуялар бар</translation>
 <translation id="2909615210195135082">Google билдирмелеринин платформасы</translation>
+<translation id="2912247081180973411">Терезелерди жабуу</translation>
 <translation id="2912345083818861431">Ачылып турган Жашыруун өтмөктөрдү көрүү үчүн экрандын кулпусун колдонуңуз</translation>
 <translation id="2918484639460781603">Параметрлерге өтүү</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" /> өтмөгүндө үн өчүрүлгөн</translation>
@@ -502,7 +504,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3159335509547415276">Бөгөттөлгөн аккаунттар жөнүндө кеңири маалымат</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, жаңы өтмөктө ачылат</translation>
 <translation id="3166827708714933426">Өтмөктүн жана терезенин кыска жолдору</translation>
-<translation id="316694332262407393">Chrome мурунтан эле иштеп жатат.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> мобилдик түзмөктөгү сайтын сурана аласыз</translation>
 <translation id="3169472444629675720">Аныктоо</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, көп жолу тандалган жана кадалган жашыруун өтмөктө үн басылган</translation>
@@ -1038,6 +1039,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5469852975082458401">Барактарды текст курсору менен көрө аласыз. Өчүрүү үчүн F7 баскычын басыңыз.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> өтмөгүн жылдырууга болбойт</translation>
 <translation id="548278423535722844">Карталар колдонмосунан ачыңыз</translation>
+<translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> катары кошулуу</translation>
 <translation id="5517326820028369152">Акыркы аракеттердин ылдыйкы экраны</translation>
 <translation id="5526281268548144413">Бир нече терезеде ачылып турган өтмөктөрдү жабуу мүмкүн эмес</translation>
@@ -1146,6 +1148,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5958275228015807058">Файлдар менен барактарды "Жүктөлүп алынгандар" папкасынан таап алыңыз</translation>
 <translation id="5962718611393537961">Жыйыштыруу үчүн таптап коюңуз</translation>
 <translation id="5964869237734432770">Сүрөттөмөлөрдү албоо</translation>
+<translation id="5972844218283131174">Баарын тандоодон чыгаруу</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5977976211062815271">Ушул түзмөктө</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Окуу тизмеңиздеги 1 бет}other{Окуу тизмеңиздеги # бет}}</translation>

@@ -427,6 +427,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2854916915045135148">Mantén premut per canviar al mode d'incògnit</translation>
 <translation id="2860954141821109167">Comprova que hi hagi una aplicació de telèfon activada en aquest dispositiu</translation>
 <translation id="2861923151411510142">Algunes funcions de Chrome ja no estaran disponibles</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i 1 pestanya més}other{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> pestanyes més}}</translation>
 <translation id="2869430948265924908">Per protegir el contingut sensible al cotxe, has de crear un bloqueig de perfil.  Pots fer-ho amb un PIN, un codi o una contrasenya.</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2871733351037274014">Precàrrega de pàgines</translation>
@@ -445,6 +446,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2904414404539560095">La llista de dispositius amb què es compartirà una pestanya s'ha obert a alçada completa.</translation>
 <translation id="2908243544703713905">Les notícies sense llegir estan preparades</translation>
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
+<translation id="2912247081180973411">Tanca les finestres</translation>
 <translation id="2912345083818861431">Fes servir el bloqueig de pantalla per veure les pestanyes d'incògnit obertes</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, pestanya silenciada</translation>
@@ -502,7 +504,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, s'obre en una pestanya nova</translation>
 <translation id="3166827708714933426">Dreceres per a pestanyes i finestres</translation>
-<translation id="316694332262407393">Chrome ja s'està executant aquí.</translation>
 <translation id="3167258285411721858">Pots sol·licitar el lloc web per a mòbils de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada i fixada multiseleccionada</translation>
@@ -1038,6 +1039,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5469852975082458401">Pots navegar per les pàgines amb un cursor de text. Prem F7 per desactivar aquesta funció.</translation>
 <translation id="5471273988133666918">La pestanya <ph name="TAB_TITLE" /> no es pot moure</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
+<translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="549660026907543296">Uneix-me com a <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Full inferior de l'activitat recent</translation>
 <translation id="5526281268548144413">No es pot tancar en diverses finestres</translation>
@@ -1146,6 +1148,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5958275228015807058">Trobaràs els teus fitxers i les teves pàgines a Baixades</translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
+<translation id="5972844218283131174">Desselecciona-ho tot</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5977976211062815271">En aquest dispositiu</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 pàgina a la teva llista de lectura}other{# pàgines a la teva llista de lectura}}</translation>

@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Націсніце і ўтрымлівайце, каб пераключыцца ў рэжым інкогніта</translation>
 <translation id="2860954141821109167">Праверце, ці ўключана на гэтай прыладзе праграма для тэлефона</translation>
 <translation id="2861923151411510142">Некаторыя функцыі Chrome перастануць быць даступнымі</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> і яшчэ 1 укладка}one{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2869430948265924908">Каб абараніць вашы канфідэнцыяльныя даныя ў аўтамабілі, неабходна наладзіць блакіроўку профілю.  Зрабіць гэта можна з дапамогай кода блакіроўкі, PIN-кода або пароля.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Перадзагрузка старонак</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на ўвесь экран.</translation>
 <translation id="2908243544703713905">Ёсць непрачытаныя навіны</translation>
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
+<translation id="2912247081180973411">Закрыць вокны</translation>
 <translation id="2912345083818861431">Выкарыстоўваць блакіроўку экрана для прагляду адкрытых укладак у рэжыме інкогніта</translation>
 <translation id="2918484639460781603">Перайсці ў налады</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, укладка з выключаным гукам</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">Даведацца больш пра заблакіраваныя ўліковыя запісы</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, адкрыецца ў новай укладцы</translation>
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
-<translation id="316694332262407393">Браўзер Chrome ужо запушчаны.</translation>
 <translation id="3167258285411721858">Вы можаце запытаць мабільную версію сайта <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">Вы можаце перамяшчацца па старонках з дапамогай тэкставага курсора. Каб выключыць гэту функцыю, націсніце клавішу F7.</translation>
 <translation id="5471273988133666918">Не ўдаецца перамясціць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
+<translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="549660026907543296">Далучыцца як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ніжні аркуш з нядаўнімі дзеяннямі</translation>
 <translation id="5526281268548144413">Нельга закрыць у некалькіх вокнах</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">Знайсці файлы і старонкі можна ў раздзеле "Спампоўкі"</translation>
 <translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
+<translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5977976211062815271">На гэтай прыладзе</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 старонка ў спісе на прагляд}one{# старонка ў спісе на прагляд}few{# старонкі ў спісе на прагляд}many{# старонак у спісе на прагляд}other{# старонкі ў спісе на прагляд}}</translation>

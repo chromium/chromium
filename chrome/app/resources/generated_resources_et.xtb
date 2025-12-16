@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Õigekirjakontrolli sõnastikku ei õnnestunud <ph name="LANGUAGE" /> keele jaoks alla laadida. Proovige uuesti.</translation>
 <translation id="1078037449555275327">ChromeVoxi seaded</translation>
 <translation id="1079242569060319448">Kas unustasite PIN-koodi?</translation>
-<translation id="1079285777677001938">Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="1079766198702302550">Blokeeri alati juurdepääs kaamerale</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 vaheleht}other{<ph name="GROUP_TITLE" /> – # vahelehte}}</translation>
 <translation id="1082214733466244292">Administraator blokeeris selle seadme teatud funktsioonid</translation>
@@ -2216,6 +2215,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2476901513051581836">Salvestusruumi ei saa vabastada enne, kui on teada võrguvälise salvestusruumi maht.</translation>
 <translation id="2476974672882258506">Tarkvara <ph name="PARALLELS_DESKTOP" /> desinstallimiseks lülitage Windows välja.</translation>
 <translation id="2477065602824695373">Kuna seadistasite mitu seadet, on automaatne skannimine välja lülitatud.</translation>
+<translation id="2477218554275525952">Gemini külgriba hoidmine avatuna, kui avate uue vahekaardi</translation>
 <translation id="2477607419416067650">Muud Google'i andmed</translation>
 <translation id="2478176599153288112">Meediafaili load laiendusele „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Lubage andmete taastamise teenus.</translation>
@@ -3462,7 +3462,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3348973040180736882">Lahtipakkimine</translation>
 <translation id="3349610303043713601">Sirvige AI-ga</translation>
 <translation id="3349933790966648062">Mälu jalajälg</translation>
-<translation id="3350450887151703713">Esita 10 sekundit uuesti</translation>
 <translation id="3351472127384196879">Pliiatsi nuppude lisamine või nende asukoha leidmine</translation>
 <translation id="3353786022389205125">Lülitage sisse valik „Kuva unerežiimist ärkamisel lukustuskuva“ ja proovige uuesti</translation>
 <translation id="3354768182971982851">Chrome'i rakenduste vanad versioonid ei avane Maci seadmetes enam pärast 2022. aasta detsembrit. Võite kontrollida, kas saadaval on uus versioon.</translation>
@@ -3609,7 +3608,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3445925074670675829">C-tüüpi USB-seade</translation>
 <translation id="3446274660183028131">Käivitage Windowsi installimiseks Parallels Desktop.</translation>
 <translation id="344630545793878684">Lugege oma andmeid mitmel veebisaidil</translation>
-<translation id="3447644283769633681">Blokeeri kõik kolmanda osapoole küpsisefailid</translation>
 <translation id="3447644827015694497">Kas soovite vaadata passiivseid vahelehti?</translation>
 <translation id="3447797901512053632">Vahelehte <ph name="TAB_NAME" /> kantakse üle seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Värskenda kontot</translation>
@@ -3930,7 +3928,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3663417513679360795">Lisateave standardse eellaadimise sisselülitamise kohta</translation>
 <translation id="3664511988987167893">Laienduse ikoon</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Liitumine vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" />}=1{Liitumine vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /> ja veel # kasutaja}other{Liitumine vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /> ja veel # kasutajat}}</translation>
-<translation id="3665100783276035932">Enamik saite peaks töötama ootuspäraselt</translation>
 <translation id="3665301845536101715">Ava külgpaneelil</translation>
 <translation id="3665589677786828986">Chrome tuvastas, et teine programm rikkus teie seadeid, ja lähtestas need algsetele vaikevalikutele.</translation>
 <translation id="3665918214153961651">Faili üleslaadimine</translation>
@@ -6827,7 +6824,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5651308944918885595">Läheduses jagamine – leitavus</translation>
 <translation id="5653154844073528838">Teil on <ph name="PRINTER_COUNT" /> salvestatud printerit.</translation>
 <translation id="565461030474814383">Kas salvestada kontole?</translation>
-<translation id="5654669866168491665">Vaadake lisateavet saitide kohta, mis ei pruugi töötada, kui kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="5654751240928365405">See laiendus lülitati välja, kuna seda ei toetata enam</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Teie privaatsuse kaitsmiseks eemaldati ühelt saidilt load}other{Teie privaatsuse kaitsmiseks eemaldati mõnelt saidilt load}}</translation>
 <translation id="5655296450510165335">Seadme registreerimine</translation>
@@ -7577,7 +7573,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6181431612547969857">Allalaadimine on blokeeritud</translation>
 <translation id="6183369864942961155">Automaatne hele/tume teema</translation>
 <translation id="6184099524311454384">Otsige vahelehtedelt</translation>
-<translation id="6184868291074982484">Chrome piirab automaatselt kolmanda osapoole küpsisefaile</translation>
 <translation id="6185132558746749656">Seadme asukoht</translation>
 <translation id="6185151644843671709">Pääsuvõti on salvestatud ja PIN-kood loodud</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 parool ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google’i kontole. Selle toimingu käigus eemaldatakse ka duplikaadid.}other{{PASSWORD_COUNT} parooli ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google’i kontole. Selle toimingu käigus eemaldatakse ka duplikaadid.}}</translation>
@@ -8585,7 +8580,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6878862640969460273">Horisontaalpaigutus</translation>
 <translation id="6880587130513028875">Pildid blokeeriti sellel lehel.</translation>
 <translation id="6881845890692344060">Teie administraator on välja loginud. Kontroll on nüüd teie käes.</translation>
-<translation id="6882210908253838664">Kui sait ei tööta, võite proovida anda sellele ajutise loa kasutada kolmanda osapoole küpsisefaile. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Vabandust! Süsteemil ei õnnestunud seadme seadistust salvestada.</translation>
 <translation id="6883606786470492001">Hallake oma reklaamiteemasid ja muid seadeid, et piirata, millist teavet saidid reklaamide isikupärastamiseks teie kohta saavad</translation>
 <translation id="6884474387073389421">Kas olete kindel, et soovite valitud sisselogimisandmed kustutada?</translation>
@@ -8959,7 +8953,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7145413760160421938">Eelmist seanssi ei saa jätkata</translation>
 <translation id="7146882055510146554">Microsoft 365 kasutab Wordi, Exceli ja PowerPointi failide avamiseks ning muutmiseks OneDrive'i. Leiate need failid rakenduse Failid külgpaneeli jaotisest „Microsoft OneDrive“. Peate sisse logima oma Microsofti kontoga. <ph name="LINK_BEGIN" />Lugege lisateavet.<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Saidid ei pruugi toimida ootuspäraselt. Tehke see valik, kui te ei soovi seadmesse jätta teavet külastatud saitide kohta.</translation>
-<translation id="7148954254185728510">Enamik saite ei saa kasutada kolmanda osapoole küpsisefaile teie sirvimise ajal jälgimiseks ja saidid ei saa inkognito režiimis kasutada kolmanda osapoole küpsisefaile.</translation>
 <translation id="7149839598364933473">Teisendage see seade operatsioonisüsteemiga <ph name="DEVICE_OS" /> seadmeks.</translation>
 <translation id="7149893636342594995">Viimased 24 tundi</translation>
 <translation id="7152478047064750137">Selle laienduse jaoks pole erilube vaja</translation>
@@ -10633,7 +10626,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8275038454117074363">Impordi</translation>
 <translation id="8275080796245127762">Kõne teie seadmest</translation>
 <translation id="8276560076771292512">Tühjenda vahemälu ja tee põhjalik uuestilaadimine</translation>
-<translation id="8276850948802942358">Vaadake lisateavet saidile ajutise loa andmise kohta kolmandate osapoolte küpsiste kasutamiseks</translation>
 <translation id="8277907305629781277">Lõite selle pääsuvõtme kuupäeval <ph name="DATE" /></translation>
 <translation id="8278702675516957539">JavaScripti optimeerimise kasutamine pole lubatud</translation>
 <translation id="827966378414194229">Kasutage oma Chromebooki juhtimiseks pealiigutusi ja näoilmeid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -11215,7 +11207,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8678192320753081984">Pakub sihitud rünnakute ohus olevatele inimestele Google'i konto tugevaimat turvafunktsiooni</translation>
 <translation id="8678378565142776698">Taaskäivita ja hangi automaatsed värskendused</translation>
 <translation id="8678538439778360739">Andmed on kuupäeval <ph name="TIME" /> krüpteeritud teie sünkroonimisparooliga. See ei hõlma Google Pay makseviise ega aadresse.</translation>
-<translation id="867882552362231068">Chrome piirab teabe tüüpi, mida saidid saavad teie sirvimise ajal jälgida. Saate muuta oma seadeid, et valida oma kaitsetase.</translation>
 <translation id="8678933587484842200">Kuidas soovite selle rakenduse käivitada?</translation>
 <translation id="8679054765393461130">Renderdusvõrgu valikuloend käivitab WiFi sagedase skannimise; see võib mõjutada teie WiFi-võrgu toimivust.</translation>
 <translation id="8680251145628383637">Logige sisse, et teie järjehoidjad, ajalugu, paroolid ja muud seaded oleksid kõikides seadmetes saadaval. Teid logitakse ka automaatselt sisse Google'i teenustesse.</translation>
@@ -12023,6 +12014,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9207434080086272167">Päikesepaisteline</translation>
 <translation id="9207669213427469593">Kui tõmbate jagatud ekraani kasutamiseks akna ühele küljele, näete teise külje akna soovitusi</translation>
 <translation id="9209563766569767417">Linuxi konteineri seadistuse kontrollimine</translation>
+<translation id="9212565256020141627">Pilti ei saanud Geminiga jagada. Proovige uuesti või katsetage teise pildiga.</translation>
 <translation id="9214520840402538427">Installimisaja atribuutide lähtestamisel ilmnes ajalõpp. Võtke ühendust tugiteenuse esindajaga.</translation>
 <translation id="9214695392875603905">Keeks</translation>
 <translation id="9215293857209265904">Lisati „<ph name="EXTENSION_NAME" />”</translation>

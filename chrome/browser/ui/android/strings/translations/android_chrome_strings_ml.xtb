@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">പൂർണ്ണ ഉയരത്തിൽ ടാബ് പങ്കിടാനാകുന്ന ഉപകരണങ്ങളുടെ ലിസ്‌റ്റ്.</translation>
 <translation id="2908243544703713905">വായിക്കാത്ത സ്റ്റോറികൾ തയ്യാറാണ്</translation>
 <translation id="2909615210195135082">Google അറിയിപ്പുകൾ പ്ലാറ്റ്‌ഫോം</translation>
+<translation id="2912247081180973411">വിൻഡോകൾ അടയ്ക്കുക</translation>
 <translation id="2912345083818861431">തുറന്നിരിക്കുന്ന അദൃശ്യ ടാബുകൾ കാണാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="2918484639460781603">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, മ്യൂട്ട് ചെയ്ത ടാബ്</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">ബ്ലോക്ക് ചെയ്ത അക്കൗണ്ടുകളെ കുറിച്ച് അറിയുക</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, പുതിയ ടാബിൽ തുറക്കുന്നു</translation>
 <translation id="3166827708714933426">ടാബ്, വിൻഡോ കുറുക്കുവഴികൾ</translation>
-<translation id="316694332262407393">Chrome മുമ്പേ ഇവിടെ റൺ ചെയ്യുന്നു.</translation>
 <translation id="3167258285411721858">നിങ്ങൾക്ക് <ph name="HOST_NAME" /> എന്നതിനുള്ള മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കാം</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, മ്യൂട്ട് ചെയ്ത അദൃശ്യ ടാബ്</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ F7 അമർത്തുക.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ടാബ് നീക്കാനാകില്ല</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
+<translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
 <translation id="5517326820028369152">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ്</translation>
 <translation id="5526281268548144413">ഒന്നിലധികം വിൻഡോകളിൽ അടയ്ക്കാൻ കഴിയില്ല</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">ഡൗൺലോഡുകളിൽ നിന്നും നിങ്ങളുടെ ഫയലുകളും ‌പേജുകളും കണ്ടെത്തുക</translation>
 <translation id="5962718611393537961">ചുരുക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5964869237734432770">ചിത്ര വിവരണങ്ങൾ നിർത്തുക</translation>
+<translation id="5972844218283131174">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
 <translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="5977976211062815271">ഈ ഉപകരണത്തിലേത്</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ 1 പേജ്}other{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ # പേജുകൾ}}</translation>

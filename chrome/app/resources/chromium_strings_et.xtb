@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="4118474109249235144">Chromiumi inkognito režiim</translation>
 <translation id="4122186850977583290">Minemine lehele Teave Chromiumi kohta</translation>
+<translation id="4135244987012252068">Oma brauserile uue ilme andmiseks saate Chromiumi kohandada.</translation>
 <translation id="4147856324248078748">K&amp;ohandage oma Chromiumit</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chromium</translation>

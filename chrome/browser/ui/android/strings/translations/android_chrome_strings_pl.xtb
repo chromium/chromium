@@ -427,6 +427,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2854916915045135148">Naciśnij i przytrzymaj, aby przełączyć się na tryb incognito</translation>
 <translation id="2860954141821109167">Sprawdź, czy na urządzeniu jest włączona aplikacja telefonu</translation>
 <translation id="2861923151411510142">Niektóre funkcje Chrome nie będą już dostępne</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i 1 inna karta}few{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> inne karty}many{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> innych kart}other{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> innej karty}}</translation>
 <translation id="2869430948265924908">Aby chronić poufne treści w samochodzie, musisz utworzyć blokadę profilu samochodu.  Możesz to zrobić za pomocą kodu, w tym kodu PIN, lub hasła.</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2871733351037274014">Wstępnie wczytuj strony</translation>
@@ -445,6 +446,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2904414404539560095">Lista urządzeń, którym udostępnisz kartę, jest otwarta na pełną wysokość.</translation>
 <translation id="2908243544703713905">Nieprzeczytane artykuły są gotowe</translation>
 <translation id="2909615210195135082">Platforma powiadomień Google</translation>
+<translation id="2912247081180973411">Zamknij okna</translation>
 <translation id="2912345083818861431">Aby zobaczyć otwarte karty incognito, użyj blokady ekranu</translation>
 <translation id="2918484639460781603">Przejdź do ustawień</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, wyciszona karta</translation>
@@ -502,7 +504,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3159335509547415276">Więcej informacji o zablokowanych kontach</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> – otwiera się w nowej karcie</translation>
 <translation id="3166827708714933426">Skróty kart i okien</translation>
-<translation id="316694332262407393">Przeglądarka Chrome jest już uruchomiona.</translation>
 <translation id="3167258285411721858">Możesz poprosić o wyświetlenie <ph name="HOST_NAME" /> w wersji mobilnej</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, jedna z kilku wybranych przypiętych wyciszonych kart incognito</translation>
@@ -1038,6 +1039,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5469852975082458401">Możesz poruszać się po stronach przy użyciu kursora tekstowego. Aby wyłączyć tę opcję, naciśnij F7.</translation>
 <translation id="5471273988133666918">Nie można przenieść karty <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Otwórz w aplikacji z mapami</translation>
+<translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="549660026907543296">Dołącz jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Plansza dolna Ostatnia aktywność</translation>
 <translation id="5526281268548144413">Nie można zamknąć w kilku oknach</translation>
@@ -1146,6 +1148,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5958275228015807058">Znajdź pliki i strony w Pobranych plikach</translation>
 <translation id="5962718611393537961">Kliknij, by zwinąć</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
+<translation id="5972844218283131174">Odznacz wszystko</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5977976211062815271">Na tym urządzeniu</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 strona na Twojej liście Do przeczytania}few{# strony na Twojej liście Do przeczytania}many{# stron na Twojej liście Do przeczytania}other{# strony na Twojej liście Do przeczytania}}</translation>

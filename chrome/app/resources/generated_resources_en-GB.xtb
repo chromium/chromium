@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Couldn’t download spell check dictionary for <ph name="LANGUAGE" />. Try again.</translation>
 <translation id="1078037449555275327">ChromeVox settings</translation>
 <translation id="1079242569060319448">Forgotten PIN?</translation>
-<translation id="1079285777677001938">Features on some sites may not work.</translation>
 <translation id="1079766198702302550">Always block camera access</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 Tab}other{<ph name="GROUP_TITLE" /> – # Tabs}}</translation>
 <translation id="1082214733466244292">Your administrator has blocked some functionality for this device</translation>
@@ -2225,6 +2224,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2476901513051581836">Can’t clean up storage until offline storage size is known.</translation>
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
+<translation id="2477218554275525952">Keep the Gemini sidebar open when you open a new tab</translation>
 <translation id="2477607419416067650">Other Google data</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Enable data recovery service.</translation>
@@ -3471,7 +3471,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3348973040180736882">Decompressing</translation>
 <translation id="3349610303043713601">Browse with AI</translation>
 <translation id="3349933790966648062">Memory footprint</translation>
-<translation id="3350450887151703713">Replay 10 seconds</translation>
 <translation id="3351472127384196879">Add or locate buttons on your pen</translation>
 <translation id="3353786022389205125">Turn on 'Show lock screen when waking from sleep' and try again</translation>
 <translation id="3354768182971982851">Old versions of Chrome apps won't open on Mac devices after December 2022. You can check if there's a new version available.</translation>
@@ -3618,7 +3617,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3446274660183028131">Please launch Parallels Desktop to install Windows.</translation>
 <translation id="344630545793878684">Read your data on a number of websites</translation>
-<translation id="3447644283769633681">Block all third-party cookies</translation>
 <translation id="3447644827015694497">Review inactive tabs?</translation>
 <translation id="3447797901512053632">Casting <ph name="TAB_NAME" /> to <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Update account</translation>
@@ -3939,7 +3937,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3663417513679360795">More info about turning on standard preloading</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Join tab group with <ph name="OWNER_FIRST_NAME" />}=1{Join tab group with <ph name="OWNER_FIRST_NAME" /> and # other}other{Join tab group with <ph name="OWNER_FIRST_NAME" /> and # others}}</translation>
-<translation id="3665100783276035932">Most sites should work as expected</translation>
 <translation id="3665301845536101715">Open in side panel</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
 <translation id="3665918214153961651">Uploading file</translation>
@@ -6836,7 +6833,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5651308944918885595">Nearby Share discoverability</translation>
 <translation id="5653154844073528838">You have <ph name="PRINTER_COUNT" /> saved printers.</translation>
 <translation id="565461030474814383">Save in Account?</translation>
-<translation id="5654669866168491665">Learn more about sites that may not work when blocking third-party cookies</translation>
 <translation id="5654751240928365405">This extension was turned off because it is no longer supported</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{To protect your privacy, permissions were removed from a site}other{To protect your privacy, permissions were removed from some sites}}</translation>
 <translation id="5655296450510165335">Device enrolment</translation>
@@ -7586,7 +7582,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6181431612547969857">Download blocked</translation>
 <translation id="6183369864942961155">Automatic Light/Dark theme</translation>
 <translation id="6184099524311454384">Search tabs</translation>
-<translation id="6184868291074982484">Chrome automatically limits third-party cookies</translation>
 <translation id="6185132558746749656">Device Location</translation>
 <translation id="6185151644843671709">Passkey saved and PIN created</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}other{{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
@@ -8594,7 +8589,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6878862640969460273">Landscape</translation>
 <translation id="6880587130513028875">Images were blocked on this page.</translation>
 <translation id="6881845890692344060">Your administrator has logged out. You're in control now.</translation>
-<translation id="6882210908253838664">If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oops!  The system failed to save device configuration.</translation>
 <translation id="6883606786470492001">Manage your ad topics and other settings to limit what sites can learn about you to show you personalised ads</translation>
 <translation id="6884474387073389421">Are you sure that you want to delete the selected sign-in data?</translation>
@@ -8968,7 +8962,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7145413760160421938">Can't resume previous session</translation>
 <translation id="7146882055510146554">Microsoft 365 uses OneDrive to open and edit Word, Excel and PowerPoint files. These files will be found in the Files app side navigation labelled 'Microsoft OneDrive'. You'll need to sign in with your Microsoft account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Sites may not work as you would expect. Choose this option if you don't want to leave information on your device about sites that you visit.</translation>
-<translation id="7148954254185728510">Most sites can’t use third-party cookies to track you as you browse and sites can’t use third-party cookies in Incognito mode.</translation>
 <translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7149893636342594995">Last 24 hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
@@ -10642,7 +10635,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8275038454117074363">Import</translation>
 <translation id="8275080796245127762">Call from Your Device</translation>
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
-<translation id="8276850948802942358">Learn more about giving a site temporary permission to use third-party cookies</translation>
 <translation id="8277907305629781277">You created this passkey on <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Not allowed to use JavaScript optimisation</translation>
 <translation id="827966378414194229">Use head movements and facial expressions to control your Chromebook. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -11224,7 +11216,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8678192320753081984">Provides Google’s strongest account security for people at risk of targeted attacks</translation>
 <translation id="8678378565142776698">Restart and get automatic updates</translation>
 <translation id="8678538439778360739">Data was encrypted with your sync passphrase on <ph name="TIME" />. This doesn't include payment methods and addresses from Google Pay.</translation>
-<translation id="867882552362231068">Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.</translation>
 <translation id="8678933587484842200">How would you like this application to launch?</translation>
 <translation id="8679054765393461130">Render network select list will trigger Wi-Fi to scan frequently; this may affect your Wi-Fi network performance.</translation>
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>
@@ -12032,6 +12023,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9207434080086272167">Sunny</translation>
 <translation id="9207669213427469593">If you snap a window to one side to use split screen, you'll see window suggestions for the other side</translation>
 <translation id="9209563766569767417">Checking the Linux container setup</translation>
+<translation id="9212565256020141627">Could not share image with Gemini. Try again or try another image.</translation>
 <translation id="9214520840402538427">Oops!  The initialisation of the installation-time attributes has timed out.  Please contact your support representative.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" added</translation>

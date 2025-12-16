@@ -6251,6 +6251,7 @@ Jika kebijakan tidak disetel atau disetel ke nonaktif, cookie dan data dapat dig
           Jika kebijakan ini tidak disetel, baris perintah default akan digunakan.</translation>
 <translation id="5151099177901233471">Aktifkan pelaporan info zona waktu perangkat</translation>
 <translation id="5151163911478747031">Nonaktifkan atribusi ekstensi di Footer NTP</translation>
+<translation id="5151850599880109339">Aktifkan Mode Khusus HTTPS dalam Mode Seimbang</translation>
 <translation id="5152393033264257734">Izinkan pemeriksaan intersepsi DNS dan infobar "Mungkin maksud Anda http://intranetsite/".</translation>
 <translation id="5152787786897382519">Chromium dan Google Chrome memiliki beberapa grup kebijakan yang saling bergantung satu sama lain untuk memberikan kontrol terhadap fitur. Kumpulan ini ditunjukkan oleh grup kebijakan berikut. Karena kebijakan dapat memiliki beberapa sumber, hanya nilai yang berasal dari sumber dengan prioritas tertinggi yang akan diterapkan. Nilai yang berasal dari sumber dengan prioritas lebih rendah di grup yang sama akan diabaikan. Urutan prioritas ditentukan di <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ikon eksperimen browser di toolbar</translation>
@@ -9409,6 +9410,7 @@ pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7016587686120059767">Nonaktifkan mode tamu</translation>
 <translation id="7019805045859631636">Cepat</translation>
 <translation id="7021590945154530517">Aktifkan pemantauan kondisi perangkat</translation>
+<translation id="7021952112057614674">Nonaktifkan Mode Khusus HTTPS</translation>
 <translation id="7025153290982655996">Kembalikan ke perilaku cakupan cookie versi lama</translation>
 <translation id="7025332601572838001">Mengonfigurasi perilaku ToS saat CCT pertama kali dijalankan</translation>
 <translation id="7026351325994257733">Mengizinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung.</translation>
@@ -11508,6 +11510,7 @@ mengonfigurasi pintasan.</translation>
       Jika kebijakan tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan mengizinkan pengguna mengontrol apakah browser merupakan default dan, jika tidak, apakah notifikasi pengguna seharusnya muncul.
 
       Catatan: Untuk administrator <ph name="MS_WIN_NAME" />, mengaktifkan setelan ini hanya akan berfungsi pada mesin yang menjalankan Windows 7. Untuk versi setelahnya, Anda harus men-deploy file "asosiasi aplikasi default" yang menjadikan <ph name="PRODUCT_NAME" /> sebagai pengendali untuk protokol <ph name="HTTPS_PROTOCOL" /> dan <ph name="HTTP_PROTOCOL" /> (dan secara opsional, protokol <ph name="FTP_PROTOCOL" /> dan format file lainnya). Lihat Bantuan Chrome ( https://support.google.com/chrome?p=make_chrome_default_win ).</translation>
+<translation id="8437147918598002525">Aktifkan Mode Khusus HTTPS dalam mode Ketat</translation>
 <translation id="8437836857126992452">Memungkinkan Anda menentukan ekstensi mana yang TIDAK dapat diinstal pengguna. Ekstensi yang sudah diinstal akan dinonaktifkan jika diblokir, tanpa memberikan opsi kepada pengguna untuk mengaktifkannya. Setelah ekstensi yang dinonaktifkan dihapus dari daftar yang tidak diizinkan, ekstensi akan kembali diaktifkan secara otomatis.
 
           Nilai '*' untuk daftar yang tidak diizinkan berarti semua ekstensi diblokir secara default. Ekstensi yang tercantum secara eksplisit dalam daftar yang diizinkan akan diizinkan jika sudah ditandatangani (dikemas). Semua ekstensi mode developer akan diblokir.
@@ -12546,6 +12549,34 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 <translation id="9088191250434406767">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan menelusuri dengan kameranya menggunakan <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran saat penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>
+<translation id="9089059535778570773">Jika kebijakan ini diberlakukan, pemilihan proxy yang digunakan browser akan ditentukan oleh URL tujuan dan kondisi lain. Kebijakan ini akan diprioritaskan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan manual oleh pengguna jika ada proxy yang dipilih.
+
+Jika kebijakan ini tidak diberlakukan, kebijakan proxy lain atau setelan pengguna tidak akan terpengaruh.
+
+Saat browser perlu memutuskan proxy yang akan digunakan, entri dalam kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri memenuhi semua poin berikut:
+  * Setidaknya satu pola URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> cocok.
+  * Tidak satu pun pola URL di <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> cocok.
+  * Jika <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ditentukan dan merupakan daftar yang tidak kosong, semua kondisi yang diwakili oleh entrinya akan terpenuhi.
+Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Pola URL yang didukung oleh <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> didokumentasikan di https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sesuai dengan nilai string file PAC seperti:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+Atau, penentu proxy yang menyerupai URL dapat digunakan langsung untuk menentukan proxy, misalnya:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+Entri pertama yang dapat dijangkau dalam daftar akan digunakan sebagai proxy. Entri yang tidak valid dalam daftar akan diabaikan.
+
+Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantiannya dapat digunakan untuk menentukan proxy yang akan digunakan. Jika kolom tersebut tidak berisi kondisi apa pun, entrinya akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
+
+Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> yang disediakan dapat menghasilkan alamat IP. DNS tersebut harus berisi host (misalnya example.com) dan, secara opsional, skema atau port (misalnya https://example.com, example.com:123, https://example.com:123). Jika <ph name="PROXY_OVERRIDE_RULES_RESULT" /> bernilai "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", maka kondisinya dianggap terpenuhi. Jika nilainya adalah <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, maka kondisinya dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="9095599826504830315">Jangan izinkan Tab Perbandingan Produk.</translation>
 <translation id="9096772739225230999">Jangan laporkan konfigurasi jaringan</translation>
 <translation id="9098409326885953506">Deteksi jendela yang tertutup dan tangguhkan proses menggambarnya</translation>
@@ -12676,6 +12707,27 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="922160134042190462">Jangan aktifkan <ph name="DESK_API_NAME" /> untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga</translation>
 <translation id="9221827710437832530">Izinkan akses geolokasi di layar login.</translation>
 <translation id="922540222991413931">Konfigurasi sumber pemasangan skrip pengguna, aplikasi, dan ekstensi</translation>
+<translation id="924360639456783890">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS (Selalu Gunakan Koneksi Aman) di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.
+
+Jika setelan ini tidak disetel atau disetel ke "allowed", pengguna akan diizinkan mengaktifkan Mode Khusus HTTPS.
+
+Jika setelan ini disetel ke "disallowed", Mode Khusus HTTPS akan dinonaktifkan.
+
+Jika setelan ini disetel ke "force_enabled", Mode Khusus HTTPS akan diaktifkan dalam mode Ketat.
+
+Jika setelan ini disetel ke "force_balanced_enabled", Mode Khusus HTTPS akan diaktifkan dalam mode Seimbang.
+
+"force_enabled" didukung mulai M112 dan seterusnya, "force_balanced_enabled" didukung mulai M129 dan seterusnya.
+
+"force_enabled" dan "force_balanced_enabled" juga dapat direkomendasikan kepada pengguna.
+Mode Khusus HTTPS akan disetel ke Ketat atau Seimbang pada awalnya, tetapi pengguna diizinkan untuk
+mengubahnya.
+
+Jika Anda menyetel kebijakan ini ke nilai yang tidak didukung oleh versi Chrome yang menerima kebijakan, Chrome akan secara default ditetapkan ke setelan yang diizinkan.
+
+Kebijakan <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> terpisah
+dapat digunakan untuk mengecualikan nama host atau pola nama host tertentu agar tidak
+diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="924557436754151212">Impor sandi yang disimpan dari browser default saat pertama kali dijalankan</translation>
 <translation id="925379810778921867">URL blob SharedWorker mewarisi pengontrol.</translation>
 <translation id="927384371566552478">Jika kebijakan disetel ke Aktif atau tidak disetel, UI ekspor-impor akan tersedia bagi pengguna. Jika kebijakan disetel ke Nonaktif, UI ekspor-impor menjadi tidak tersedia bagi pengguna.</translation>

@@ -427,6 +427,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2854916915045135148">Touchez et maintenez le doigt sur l'icône pour passer en mode Navigation privée</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus offertes</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> et 1 autre onglet}one{<ph name="URL" /> et <ph name="TAB_COUNT_MANY" /> autre onglet}other{<ph name="URL" /> et <ph name="TAB_COUNT_MANY" /> autres onglets}}</translation>
 <translation id="2869430948265924908">Pour protéger votre contenu confidentiel dans le véhicule, vous devez créer un verrouillage de profil du véhicule.  Vous pouvez le faire au moyen d'un NIP, d'un code ou d'un mot de passe.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger les pages</translation>
@@ -445,6 +446,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
 <translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
+<translation id="2912247081180973411">Fermer les fenêtres</translation>
 <translation id="2912345083818861431">Utilisez le verrouillage de l'écran pour consulter les onglets de navigation privée ouverts</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, onglet avec son désactivé</translation>
@@ -502,7 +504,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> (s'ouvre dans un nouvel onglet)</translation>
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
-<translation id="316694332262407393">Chrome fonctionne déjà ici.</translation>
 <translation id="3167258285411721858">Vous pouvez utiliser le site pour appareils mobiles de <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Découvrir</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé et multisélectionné avec son désactivé</translation>
@@ -1038,6 +1039,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur F7 pour désactiver ce mode.</translation>
 <translation id="5471273988133666918">L'onglet <ph name="TAB_TITLE" /> ne peut pas être déplacé</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
+<translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="549660026907543296">Se joindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Zone de contenu dans le bas de l'écran concernant l'activité récente</translation>
 <translation id="5526281268548144413">Ne peuvent pas être fermés sur plusieurs fenêtres</translation>
@@ -1146,6 +1148,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5958275228015807058">Trouvez vos fichiers et vos pages dans Téléchargements</translation>
 <translation id="5962718611393537961">Toucher pour réduire</translation>
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
+<translation id="5972844218283131174">Tout désélectionner</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5977976211062815271">Sur cet appareil</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page de votre liste de lecture}one{# page de votre liste de lecture}other{# pages de votre liste de lecture}}</translation>

@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Nepavyko atsisiųsti <ph name="LANGUAGE" /> rašybos tikrinimo žodyno. Bandykite dar kartą.</translation>
 <translation id="1078037449555275327">„ChromeVox“ nustatymai</translation>
 <translation id="1079242569060319448">Pamiršote PIN kodą?</translation>
-<translation id="1079285777677001938">Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="1079766198702302550">Visada blokuoti prieigą prie fotoaparato</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{„<ph name="GROUP_TITLE" />“ – vienas skirtukas}one{„<ph name="GROUP_TITLE" />“ – # skirtukas}few{„<ph name="GROUP_TITLE" />“ – # skirtukai}many{„<ph name="GROUP_TITLE" />“ – # skirtuko}other{„<ph name="GROUP_TITLE" />“ – # skirtukų}}</translation>
 <translation id="1082214733466244292">Administratorius užblokavo kai kurias šio įrenginio funkcijas</translation>
@@ -2228,6 +2227,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2476901513051581836">Negalima išvalyti saugyklos, kol nenurodytas saugyklos neprisijungus dydis.</translation>
 <translation id="2476974672882258506">Išjunkite „Windows“, kad pašalintumėte „<ph name="PARALLELS_DESKTOP" />“.</translation>
 <translation id="2477065602824695373">Kadangi nustatėte kelis jungiklius, automatinis nuskaitymas buvo išjungtas.</translation>
+<translation id="2477218554275525952">Atidarius naują skirtuką, palikti „Gemini“ šoninį skydelį atidarytą</translation>
 <translation id="2477607419416067650">Kiti „Google“ duomenys</translation>
 <translation id="2478176599153288112">Medijos failo leidimai, susiję su plėtiniu „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Įgalinkite duomenų atkūrimo paslaugą.</translation>
@@ -3474,7 +3474,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3348973040180736882">Glaudinimo mažinimas</translation>
 <translation id="3349610303043713601">Naršyti naudojant DI</translation>
 <translation id="3349933790966648062">Atminties naudojimas</translation>
-<translation id="3350450887151703713">Iš naujo paleisti dešimt sekundžių</translation>
 <translation id="3351472127384196879">Rašiklio mygtukų pridėjimas arba radimas</translation>
 <translation id="3353786022389205125">Įjunkite parinktį „Rodyti užrakto ekraną pažadinant iš miego būsenos“ ir bandykite dar kartą</translation>
 <translation id="3354768182971982851">Senų versijų „Chrome“ programos nebus atidaromos „Mac“ įrenginiuose po 2022 m. gruodžio mėn. Galite patikrinti, ar pasiekiama nauja versija.</translation>
@@ -3621,7 +3620,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3445925074670675829">USB-C įrenginys</translation>
 <translation id="3446274660183028131">Norėdami įdiegti „Windows“ paleiskite „Parallels Desktop“.</translation>
 <translation id="344630545793878684">Skaityti duomenys daugybėje svetainių</translation>
-<translation id="3447644283769633681">Blokuoti visus trečiosios šalies slapukus</translation>
 <translation id="3447644827015694497">Peržiūrėti neaktyvius skirtukus?</translation>
 <translation id="3447797901512053632">Perduodama <ph name="TAB_NAME" /> į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3448492834076427715">Atnaujinti paskyrą</translation>
@@ -3942,7 +3940,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3663417513679360795">Daugiau informacijos apie įprasto išankstinio įkėlimo įjungimą</translation>
 <translation id="3664511988987167893">Plėtinio piktograma</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" />}=1{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmeniu}one{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmeniu}few{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmenimis}many{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmens}other{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar # asmenų}}</translation>
-<translation id="3665100783276035932">Dauguma svetainių turėtų veikti, kaip numatyta</translation>
 <translation id="3665301845536101715">Atidaryti šoniniame skydelyje</translation>
 <translation id="3665589677786828986">„Chrome“ aptiko, kad kai kuriuos nustatymus sugadino kita programa, ir nustatė juos iš naujo į pirminius numatytuosius nustatymus.</translation>
 <translation id="3665918214153961651">Įkeliamas failas</translation>
@@ -6840,7 +6837,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5651308944918885595">Bendrinimo netoliese aptinkamumas</translation>
 <translation id="5653154844073528838">Esate išsaugoję <ph name="PRINTER_COUNT" /> spausdintuv.</translation>
 <translation id="565461030474814383">Išsaugoti paskyroje?</translation>
-<translation id="5654669866168491665">Sužinokite daugiau apie svetaines, kurios gali neveikti, kai blokuojami trečiųjų šalių slapukai</translation>
 <translation id="5654751240928365405">Šis plėtinys išjungtas, nes nebėra palaikomas</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš svetainės}one{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}few{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}many{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}other{Siekiant apsaugoti jūsų privatumą, leidimai buvo pašalinti iš kai kurių svetainių}}</translation>
 <translation id="5655296450510165335">Įrenginio registracija</translation>
@@ -7590,7 +7586,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6181431612547969857">Atsisiuntimas užblokuotas</translation>
 <translation id="6183369864942961155">Automatinė šviesioji / tamsioji tema</translation>
 <translation id="6184099524311454384">Ieškoti skirtukų</translation>
-<translation id="6184868291074982484">„Chrome“ automatiškai riboja trečiųjų šalių slapukus</translation>
 <translation id="6185132558746749656">Įrenginio vietovė</translation>
 <translation id="6185151644843671709">Prieigos raktas išsaugotas ir PIN kodas sukurtas</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{Vienas slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}one{{PASSWORD_COUNT} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}few{{PASSWORD_COUNT} slaptažodžiai ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}many{{PASSWORD_COUNT} slaptažodžio ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}other{{PASSWORD_COUNT} slaptažodžių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}}</translation>
@@ -8604,7 +8599,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6878862640969460273">Gulsčias</translation>
 <translation id="6880587130513028875">Šiame puslapyje vaizdai buvo užblokuoti.</translation>
 <translation id="6881845890692344060">Administratorius atsijungė. Dabar jūs viską valdote.</translation>
-<translation id="6882210908253838664">Jei svetainė neveikia, galite pabandyti suteikti jai laikiną leidimą naudoti trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oi!  Sistemai nepavyko išsaugoti įrenginio konfigūracijos.</translation>
 <translation id="6883606786470492001">Valdykite skelbimų temas ir kitus nustatymus, kad apribotumėte, ką svetainės gali sužinoti apie jus, kad galėtų rodyti suasmenintus skelbimus</translation>
 <translation id="6884474387073389421">Ar tikrai norite ištrinti pasirinktus prisijungimo duomenis?</translation>
@@ -8978,7 +8972,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7145413760160421938">Negalima tęsti ankstesnio seanso</translation>
 <translation id="7146882055510146554">„Microsoft 365“ naudoja „OneDrive“ „Excel“, „Word“ ir „PowerPoint“ failams atidaryti ir redaguoti. Šiuos failus rasite šoninėje Failų programos naršymo juostoje, pavadintoje „Microsoft OneDrive“. Turėsite prisijungti naudodami „Microsoft“ paskyrą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Svetainės gali neveikti taip, kaip tikitės. Pasirinkite šią parinktį, jei nenorite įrenginyje išsaugoti informacijos apie svetaines, kuriose lankotės.</translation>
-<translation id="7148954254185728510">Dauguma svetainių negali naudoti trečiųjų šalių slapukų, kad stebėtų jus, kai naršote, ir svetainėse negalima naudoti trečiųjų šalių slapukų inkognito režimu.</translation>
 <translation id="7149839598364933473">Konvertuokite šį įrenginį į „<ph name="DEVICE_OS" />“ įrenginį.</translation>
 <translation id="7149893636342594995">Pastarosios 24 valandos</translation>
 <translation id="7152478047064750137">Šiam plėtiniui nereikia specialių leidimų</translation>
@@ -10652,7 +10645,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8275038454117074363">Importuoti</translation>
 <translation id="8275080796245127762">Skambinti iš įrenginio</translation>
 <translation id="8276560076771292512">Tuščia talpykla ir priverstinis įkėlimas iš naujo</translation>
-<translation id="8276850948802942358">Sužinokite daugiau apie laikino leidimo naudoti trečiųjų šalių slapukus suteikimą svetainei</translation>
 <translation id="8277907305629781277">Šį prieigos raktą sukūrėte <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Neleidžiama naudoti „JavaScript“ optimizavimo</translation>
 <translation id="827966378414194229">Naudoti galvos judesius ir veido išraiškas „Chromebook“ įrenginiui valdyti. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -11234,7 +11226,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8678192320753081984">Patikimiausia „Google“ paskyros apsauga žmonėms, prieš kuriuos gali būti rengiamos tikslinės atakos</translation>
 <translation id="8678378565142776698">Paleisti iš naujo ir gauti automatinius naujinius</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Mokėjimo metodai ir adresai iš „Google Pay“ neįtraukiami.</translation>
-<translation id="867882552362231068">„Chrome“ riboja informacijos, kurią svetainės gali naudoti jums stebėti, kai naršote, tipą. Galite pakeisti nustatymus ir pasirinkti savo apsaugos lygį.</translation>
 <translation id="8678933587484842200">Kaip norite paleisti šią programą?</translation>
 <translation id="8679054765393461130">Pateikiant tinklo pasirinkimo sąrašą suaktyvinamas dažnas „Wi-Fi“ nuskaitymas; tai gali turėti įtakos „Wi-Fi“ tinklo našumui.</translation>
 <translation id="8680251145628383637">Prisijunkite, kad žymes, istoriją, slaptažodžius ir kitus nustatymus galėtumėte naudoti visuose įrenginiuose. Be to, būsite automatiškai prijungti prie „Google“ paslaugų.</translation>

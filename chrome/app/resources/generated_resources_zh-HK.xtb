@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">下載唔到<ph name="LANGUAGE" />嘅拼字檢查字典。請再試一次。</translation>
 <translation id="1078037449555275327">ChromeVox 設定</translation>
 <translation id="1079242569060319448">忘記 PIN 嗎？</translation>
-<translation id="1079285777677001938">部分網站的功能可能會無法正常運作。</translation>
 <translation id="1079766198702302550">永遠封鎖存取相機</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="1082214733466244292">管理員已封鎖此裝置的部分功能</translation>
@@ -3469,7 +3468,6 @@
 <translation id="3348973040180736882">正在解壓縮</translation>
 <translation id="3349610303043713601">使用 AI 瀏覽</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
-<translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3351472127384196879">新增或尋找觸控筆上的按鈕</translation>
 <translation id="3353786022389205125">請開啟「從休眠狀態喚醒時顯示上鎖畫面」，然後再試一次</translation>
 <translation id="3354768182971982851">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
@@ -3616,7 +3614,6 @@
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
 <translation id="344630545793878684">讀取您在部分網站上的資料</translation>
-<translation id="3447644283769633681">封鎖所有第三方 Cookie</translation>
 <translation id="3447644827015694497">要檢視閒置分頁嗎？</translation>
 <translation id="3447797901512053632">正在將 <ph name="TAB_NAME" /> 分頁投放至<ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">更新帳戶</translation>
@@ -3937,7 +3934,6 @@
 <translation id="3663417513679360795">更多關於打開標準預先載入嘅資料</translation>
 <translation id="3664511988987167893">擴充程式圖示</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}}</translation>
-<translation id="3665100783276035932">大部份網站應該都能正常運作</translation>
 <translation id="3665301845536101715">在側面板中開啟</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式破壞了部分設定，並且將這些設定重設為原始預設值。</translation>
 <translation id="3665918214153961651">正在上載檔案</translation>
@@ -6827,7 +6823,6 @@
 <translation id="5651308944918885595">「咫尺共享」可偵測度</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 部儲存咗嘅打印機。</translation>
 <translation id="565461030474814383">要儲存在帳戶中嗎？</translation>
-<translation id="5654669866168491665">進一步了解封鎖第三方 Cookie 嘅時候可能運作唔到嘅網站</translation>
 <translation id="5654751240928365405">此擴充程式不再受支援，因此已停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{為保護你的私隱，系統已將權限從一個網站中移除}other{為保護你的私隱，系統已將權限從部分網站中移除}}</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
@@ -7576,7 +7571,6 @@
 <translation id="6181431612547969857">下載被封鎖</translation>
 <translation id="6183369864942961155">自動切換淺色/深色主題背景</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
-<translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6185151644843671709">已儲存密鑰和建立 PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}other{{PASSWORD_COUNT} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}}</translation>
@@ -8584,7 +8578,6 @@
 <translation id="6878862640969460273">橫向</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>
 <translation id="6881845890692344060">管理員已登出帳戶，現在一切由你掌控。</translation>
-<translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
 <translation id="6883606786470492001">管理廣告主題和其他設定，限制網站可根據你的哪些資料放送個人化廣告</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
@@ -8958,7 +8951,6 @@
 <translation id="7145413760160421938">無法恢復上一個工作階段</translation>
 <translation id="7146882055510146554">Microsoft 365 會使用 OneDrive 開啟和編輯 Word、Excel 和 PowerPoint 檔案。你可在「檔案」應用程式的「Microsoft OneDrive」側導覽中找到這些檔案。系統會要求你登入 Microsoft 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">網站可能無法正常運作。如果您不希望在裝置留下網站瀏覽資訊，請選擇此選項。</translation>
-<translation id="7148954254185728510">大部份網站都無法使用第三方 Cookie 追蹤你的瀏覽活動，網站亦無法在無痕模式下使用第三方 Cookie。</translation>
 <translation id="7149839598364933473">在此裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
@@ -10629,7 +10621,6 @@
 <translation id="8275038454117074363">匯入</translation>
 <translation id="8275080796245127762">透過您的裝置撥打電話</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
-<translation id="8276850948802942358">進一步了解點樣暫時批准網站用第三方 Cookie</translation>
 <translation id="8277907305629781277">你已在 <ph name="DATE" />建立此密鑰</translation>
 <translation id="8278702675516957539">不允許使用 JavaScript 優化功能</translation>
 <translation id="827966378414194229">透過頭部動作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -11211,7 +11202,6 @@
 <translation id="8678192320753081984">為容易受針對性攻擊的使用者提供 Google 最強大的帳戶安全防護功能</translation>
 <translation id="8678378565142776698">重新啟動並取得自動更新</translation>
 <translation id="8678538439778360739">系統已於 <ph name="TIME" />使用您的同步密碼短語加密資料。Google Pay 的付款方法和地址不會包括在內。</translation>
-<translation id="867882552362231068">Chrome 會限制網站可利用哪些類型的資訊來追蹤你瀏覽時的活動。你可按需要在設定中調整保護等級。</translation>
 <translation id="8678933587484842200">您想如何啟動此應用程式？</translation>
 <translation id="8679054765393461130">輸出網絡選項清單會導致系統頻繁掃瞄 Wi-Fi，Wi-Fi 網絡效能可能會因此受到影響。</translation>
 <translation id="8680251145628383637">登入即可從任何裝置取得自己的書籤、記錄、密碼和其他設定。您亦會自動登入至各種 Google 服務。</translation>

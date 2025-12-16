@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">ছদ্মবেশী মোডে পরিবর্তন করতে স্পর্শ করে ধরে রাখুন</translation>
 <translation id="2860954141821109167">এই ডিভাইসে ফোন অ্যাপ চালু করা আছে কিনা দেখে নিন</translation>
 <translation id="2861923151411510142">কিছু Chrome-এর ফিচার আর ব্যবহার করা যাবে না</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> এবং অন্য ১টি ট্যাব}one{<ph name="URL" /> এবং অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব}other{<ph name="URL" /> এবং অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="2869430948265924908">গাড়িতে থাকা সংবেদনশীল কন্টেন্টের সুরক্ষা করতে, আপনাকে গাড়ির জন্য প্রোফাইল লক তৈরি করতে হবে।  এর জন্য আপনি পিন, কোড বা পাসওয়ার্ড ব্যবহার করতে পারেন।</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা প্রিলোড করা</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="2908243544703713905">পড়া হয়নি এমন কন্টেন্ট রেডি আছে</translation>
 <translation id="2909615210195135082">Google বিজ্ঞপ্তি প্ল্যাটফর্ম</translation>
+<translation id="2912247081180973411">উইন্ডো বন্ধ করুন</translation>
 <translation id="2912345083818861431">খোলা 'ছদ্মবেশী' ট্যাব দেখার জন্য স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="2918484639460781603">সেটিংসে যান</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, মিউট করা ট্যাব</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">ব্লক করা অ্যাকাউন্ট সম্পর্কে জানুন</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> নতুন ট্যাবে খোলে</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
-<translation id="316694332262407393">এখানে আগে থেকেই Chrome চলছে।</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />-এর জন্য আপনি মোবাইল সাইটের অনুরোধ করতে পারেন</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা ও মিউট করা ছদ্মবেশী ট্যাব</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। ক্যারেট ব্রাউজিং বন্ধ করার জন্য F7 শর্টকাট প্রেস করুন।</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ট্যাব সরানো যাবে না</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
+<translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> হিসেবে যোগ দিন</translation>
 <translation id="5517326820028369152">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="5526281268548144413">একাধিক উইন্ডো জুড়ে ট্যাব বন্ধ করা যাবে না</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">ডাউনলোড ফোল্ডার থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে নিন</translation>
 <translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
+<translation id="5972844218283131174">সবগুলি অনির্বাচন করুন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5977976211062815271">এই ডিভাইসে</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{আপনার পড়ার তালিকায় ১টি পৃষ্ঠা রয়েছে}one{আপনার পড়ার তালিকায় #টি পৃষ্ঠা রয়েছে}other{আপনার পড়ার তালিকায় #টি পৃষ্ঠা রয়েছে}}</translation>

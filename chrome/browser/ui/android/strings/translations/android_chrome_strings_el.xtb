@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Αγγίξτε παρατεταμένα για εναλλαγή στην ανώνυμη περιήγηση</translation>
 <translation id="2860954141821109167">Βεβαιωθείτε ότι είναι ενεργοποιημένη μια εφαρμογή τηλεφώνου σε αυτήν τη συσκευή.</translation>
 <translation id="2861923151411510142">Ορισμένες λειτουργίες του Chrome δεν θα είναι πλέον διαθέσιμες</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> και μία ακόμα καρτέλα}other{<ph name="URL" /> και <ph name="TAB_COUNT_MANY" /> ακόμα καρτέλες}}</translation>
 <translation id="2869430948265924908">Για να προστατεύσετε το ευαίσθητο περιεχόμενό σας στο αυτοκίνητο, θα πρέπει να δημιουργήσετε ένα κλείδωμα προφίλ αυτοκινήτου.  Για να το κάνετε αυτό, χρησιμοποιήστε PIN, κωδικό ή κωδικό πρόσβασης.</translation>
 <translation id="2870560284913253234">Ιστότοπος</translation>
 <translation id="2871733351037274014">Προφόρτωση σελίδων</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">Άνοιγμα σε πλήρες ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="2908243544703713905">Οι μη αναγνωσμένες ειδήσεις είναι έτοιμες</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Κλείσιμο παραθύρων</translation>
 <translation id="2912345083818861431">Χρήση του κλειδώματος οθόνης για εμφάνιση των ανοιχτών καρτελών ανώνυμης περιήγησης</translation>
 <translation id="2918484639460781603">Μετάβαση στις ρυθμίσεις</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, Καρτέλα σε σίγαση</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">Μάθετε σχετικά με τους λογαριασμούς που έχουν αποκλειστεί</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ανοίγει σε νέα καρτέλα</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
-<translation id="316694332262407393">Το Chrome εκτελείται ήδη εδώ.</translation>
 <translation id="3167258285411721858">Μπορείτε να ζητήσετε τον ιστότοπο για κινητά του <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης από πολλαπλή επιλογή που είναι σε σίγαση</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">Μπορείτε να πλοηγηθείτε σε σελίδες με δείκτη κειμένου. Πατήστε F7 για απενεργοποίηση.</translation>
 <translation id="5471273988133666918">Δεν είναι δυνατή η μετακίνηση της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
+<translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="549660026907543296">Συμμετοχή ως <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Φύλλο κάτω μέρους πρόσφατης δραστηριότητας</translation>
 <translation id="5526281268548144413">Δεν είναι δυνατό το κλείσιμο σε πολλά παράθυρα</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">Βρείτε τα αρχεία και τις σελίδες σας στις Λήψεις</translation>
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5964869237734432770">Διακοπή περιγραφών εικόνων</translation>
+<translation id="5972844218283131174">Αποεπιλογή όλων</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
 <translation id="5977976211062815271">Σε αυτήν τη συσκευή</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 σελίδα στη Λίστα ανάγνωσης}other{# σελίδες στη Λίστα ανάγνωσης}}</translation>

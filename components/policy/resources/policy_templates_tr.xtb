@@ -6113,6 +6113,7 @@ Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezle
           Bu politika ayarlanmazsa varsayılan komut satırı kullanılır.</translation>
 <translation id="5151099177901233471">Cihazın saat dilimi bilgileri raporlamasını etkinleştir</translation>
 <translation id="5151163911478747031">Yeni sekme sayfası altbilgisinde uzantı ilişkilendirmesiyle ilgili bilgiyi devre dışı bırak</translation>
+<translation id="5151850599880109339">Dengeli Mod'da Yalnızca HTTPS Modu'nu etkinleştir</translation>
 <translation id="5152393033264257734">DNS müdahale kontrollerine ve bunu mu demek istediniz "http://intranetsite/" bilgi çubuklarına izin ver.</translation>
 <translation id="5152787786897382519">Hem Chromium hem de Google Chrome, bir özellik üzerinde kontrol sağlamak için birbirine bağlı bazı politika gruplarına sahiptir. Bu kümeler, aşağıdaki politika grupları tarafından temsil edilir. Politikaların birden çok kaynağı olabileceği düşünülürse, yalnızca en yüksek öncelikli kaynaktan gelen değerler geçerlidir. Aynı gruptaki daha düşük öncelikli kaynaktan gelen değerler, yok sayılır. Öncelik sırası, <ph name="POLICY_PRIORITY_DOC_URL" /> adresinde tanımlanmıştır.</translation>
 <translation id="5153187201534281749">Araç çubuğundaki tarayıcı deneyleri simgesi</translation>
@@ -9175,6 +9176,7 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
 <translation id="7016587686120059767">Misafir modunu devre dışı bırak</translation>
 <translation id="7019805045859631636">Hızlı</translation>
 <translation id="7021590945154530517">Cihaz sağlığını izlemeyi etkinleştir</translation>
+<translation id="7021952112057614674">Yalnızca HTTPS Modu'nu devre dışı bırak</translation>
 <translation id="7025153290982655996">Eski çerez kapsamı davranışına geri dön</translation>
 <translation id="7025332601572838001">CCT için ilk çalıştırma sırasında Hizmet Şartları davranışını yapılandırma</translation>
 <translation id="7026351325994257733"><ph name="PRODUCT_OS_NAME" /> cihazlar ve bağlı Android telefon arasında kablosuz ağ yapılandırmalarının senkronize edilmesine izin ver.</translation>
@@ -11247,6 +11249,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
       Politikanının ayarlanmadan bırakılması, <ph name="PRODUCT_NAME" /> ürününün varsayılan olup olmadığını ve varsayılan değilse kullanıcı bildirimlerinin gösterilip gösterilmeyeceğini kullanıcının denetlemesine izin verdiği anlamına gelir.
 
       Not: <ph name="MS_WIN_NAME" /> yöneticileri için bu ayar yalnızca Windows 7 çalıştıran makinelerde etkinleştirilebilir. Daha yeni sürümlerde <ph name="PRODUCT_NAME" /> ürününü <ph name="HTTPS_PROTOCOL" /> ve <ph name="HTTP_PROTOCOL" /> protokollerinin (ve isteğe bağlı olarak <ph name="FTP_PROTOCOL" /> protokolünün ve diğer dosya biçimlerinin) işleyicisi haline getiren bir "varsayılan uygulama ilişkilendirmeleri" dosyası dağıtmanız gerekir. Daha fazla bilgi için Chrome Yardımı'na (https://support.google.com/chrome?p=make_chrome_default_win) bakabilirsiniz.</translation>
+<translation id="8437147918598002525">Yüksek Düzey Modu'nda Yalnızca HTTPS Modu'nu etkinleştir</translation>
 <translation id="8437836857126992452">Kullanıcıların YÜKLEYEMEYECEĞİ uzantıları belirlemenize olanak tanır. Zaten yüklü olan uzantılar engellenirse devre dışı bırakılır ve kullanıcıya bunları etkinleştirmek için bir yol sunulmaz. Engellenenler listesi nedeniyle devre dışı bırakılan bir uzantı listeden çıkarıldıktan sonra otomatik olarak yeniden etkinleştirilir.
 
           Engellenenler listesi değerinin "*" olması, tüm uzantıların varsayılan olarak engellendiği anlamına gelir. İzin verilenler listesinde açıkça listelenen uzantılara, imzalanmış (paketlenmiş) olmaları durumunda izin verilir. Paketlenmemiş tüm uzantılar engellenir.
@@ -12390,6 +12393,24 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="922160134042190462">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için <ph name="DESK_API_NAME" /> öğesini etkinleştirme</translation>
 <translation id="9221827710437832530">Giriş ekranında coğrafi konum erişimine izin verin.</translation>
 <translation id="922540222991413931">Uzantı, uygulama ve kullanıcı komut dosyası yükleme kaynaklarını yapılandır</translation>
+<translation id="924360639456783890">Bu politika, kullanıcıların Yalnızca HTTPS Modu'nu (Her Zaman Güvenli Bağlantılar Kullan) Ayarlar'da etkinleştirip etkinleştiremeyeceğini kontrol eder. Yalnızca HTTPS Modu, tüm gezinmeleri HTTPS'ye yükseltir.
+
+Bu ayar belirtilmezse veya "izin verildi" olarak seçilirse kullanıcılar Yalnızca HTTPS Modu'nu etkinleştirebilir.
+
+Bu ayar "izin verilmedi" olarak ayarlanırsa Yalnızca HTTPS Modu devre dışı bırakılır.
+
+Bu ayar, "force_enabled" değerine ayarlanırsa Yalnızca HTTPS Modu, Yüksek Düzey Modu'nda etkinleştirilir.
+
+Bu ayar, "force_balanced_enabled" değerine ayarlanırsa Yalnızca HTTPS Modu, Dengeli Mod'da etkinleştirilir.
+
+"force_enabled" M112 ve sonraki sürümlerde, "force_balanced_enabled" ise M129 ve sonraki sürümlerde desteklenir.
+
+"force_enabled" ve "force_balanced_enabled" da kullanıcılara önerilebilir.
+Yalnızca HTTPS Modu başlangıçta Yüksek Düzey veya Dengeli olarak ayarlanır ancak kullanıcılar bu ayarı değiştirebilir.
+
+Bu politikayı, politikayı alan Chrome sürümünün desteklemediği bir değere ayarlarsanız Chrome, varsayılan olarak izin verilen ayara geçer.
+
+Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik tarafından HTTPS'ye yükseltilmesini engellemek için ayrı <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> politikası kullanılabilir.</translation>
 <translation id="924557436754151212">İlk çalıştırmada kayıtlı şifreleri varsayılan tarayıcıdan içe aktar</translation>
 <translation id="925379810778921867">Blob URL'si için kullanılan SharedWorker bir denetleyiciyi devralır.</translation>
 <translation id="927384371566552478">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa dışa/içe aktarılan kullanıcı arayüzü kullanıcılar tarafından kullanılabilir. Politika Devre Dışı değerine ayarlanırsa dışa/içe aktarılan kullanıcı arayüzünü kullanıcıların kullanması engellenir.</translation>

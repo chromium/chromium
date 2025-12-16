@@ -6033,6 +6033,7 @@ Si no se establece esta política o se inhabilita, las cookies y los datos se po
           Si no se establece esta política, se utilizará la línea de comandos predeterminada.</translation>
 <translation id="5151099177901233471">Habilitar los informes sobre la zona horaria del dispositivo</translation>
 <translation id="5151163911478747031">Inhabilitar la atribución de la extensión en el pie de la página Nueva Pestaña</translation>
+<translation id="5151850599880109339">Habilitar el modo Solo HTTPS en el modo Equilibrado</translation>
 <translation id="5152393033264257734">Permitir las comprobaciones de interceptación de DNS y las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icono de experimentos del navegador en la barra de herramientas</translation>
@@ -9057,6 +9058,7 @@ Si no se establece esta política para un sitio, se le aplicará la política de
 <translation id="7016587686120059767">Inhabilitar el modo Invitado</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7021590945154530517">Habilitar la supervisión del estado de los dispositivos</translation>
+<translation id="7021952112057614674">Inhabilitar el modo Solo HTTPS</translation>
 <translation id="7025153290982655996">Volver al comportamiento anterior de alcance de las cookies</translation>
 <translation id="7025332601572838001">Configuración del comportamiento de los Términos del Servicio durante la primera ejecución de CCT</translation>
 <translation id="7026351325994257733">Permitir que las configuraciones de la red Wi‑Fi se sincronicen en los dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado.</translation>
@@ -11077,6 +11079,7 @@ Si no se establece esta política, se usará en todos los sitios el valor predet
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> permitirá a los usuarios controlar si es el navegador predeterminado y, en caso contrario, si deberían aparecer las notificaciones de usuario.
 
       Nota para los administradores de <ph name="MS_WIN_NAME" />: Si se activa este ajuste, solo funcionará en dispositivos con Windows 7. Para versiones de Windows posteriores, tendrás que implementar un archivo de "asociaciones de aplicaciones predeterminadas" que haga que <ph name="PRODUCT_NAME" /> gestione los protocolos <ph name="HTTPS_PROTOCOL" /> y <ph name="HTTP_PROTOCOL" /> (y, opcionalmente, el protocolo <ph name="FTP_PROTOCOL" /> y otros formatos de archivo). Consulta la Ayuda de Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">Habilitar el modo Solo HTTPS en el modo Estricto</translation>
 <translation id="8437836857126992452">Permite especificar las extensiones que los usuarios no pueden instalar. Si se bloquea una extensión ya instalada, se inhabilitará y el usuario no podrá habilitarla. Si una extensión que se había inhabilitado porque estaba en la lista de bloqueados se quita de esa lista, volverá a habilitarse automáticamente.
 
           Si el valor de una lista de extensiones bloqueadas es un asterisco (*), se bloquearán todas las extensiones de forma predeterminada. Las extensiones que se incluyen explícitamente en la lista de permitidas se permiten si están firmadas (comprimidas). Todas las extensiones descomprimidas están bloqueadas.
@@ -12213,6 +12216,24 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="922160134042190462">No habilitar <ph name="DESK_API_NAME" /> para el control de <ph name="PRODUCT_OS_NAME" /> de terceros</translation>
 <translation id="9221827710437832530">Permitir el acceso a la geolocalización en la pantalla de inicio de sesión.</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
+<translation id="924360639456783890">Esta política controla si los usuarios pueden habilitar el modo Solo HTTPS (Usar siempre conexiones seguras) en Configuración. El modo Solo HTTPS cambia todos los accesos a páginas al protocolo HTTPS.
+
+Si esta opción no se establece o se le asigna el valor allowed, los usuarios podrán habilitar el modo Solo HTTPS.
+
+Si se le asigna el valor disallowed, se inhabilitará el modo Solo HTTPS.
+
+Si se le asigna el valor force_enabled, se habilitará el modo Solo HTTPS en el modo Estricto.
+
+Si se le asigna el valor force_balanced_enabled, se habilitará el modo Solo HTTPS en el modo Equilibrado.
+
+El valor force_enabled se admite a partir de la versión M112. El valor force_balanced_enabled se admite a partir de la versión M129.
+
+force_enabled y force_balanced_enabled también se pueden recomendar a los usuarios.
+El modo Solo HTTPS se definirá como Estricto o Equilibrado inicialmente, pero los usuarios podrán cambiarlo.
+
+Si se asigna a esta política un valor incompatible con la versión de Chrome que reciba la política, Chrome usará de forma predeterminada el valor permitido.
+
+La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse para impedir que esta función cambie a HTTPS algunos nombres de host o patrones de nombre de host concretos.</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas desde el navegador predeterminado en la primera ejecución</translation>
 <translation id="925379810778921867">Una URL de blob de SharedWorker hereda un controlador.</translation>
 <translation id="927384371566552478">Si se habilita la política o no se establece, la interfaz de usuario de exportación e importación estará disponible para los usuarios. Si se inhabilita la política, la interfaz de usuario de exportación e importación no estará disponible para los usuarios.</translation>

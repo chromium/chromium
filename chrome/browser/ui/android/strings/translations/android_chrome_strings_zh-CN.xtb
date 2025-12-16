@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">轻触并按住即可切换到无痕模式</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="2861923151411510142">部分 Chrome 功能将不再可用</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 及另外 1 个标签页}other{<ph name="URL" /> 及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="2869430948265924908">为了保护您在车载系统上存放的敏感内容，您必须设置一种车载系统个人资料锁定方式。为此，您可以使用 PIN 码、验证码或密码。</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2871733351037274014">预加载网页</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">要与之分享标签页的设备的列表已全屏打开。</translation>
 <translation id="2908243544703713905">有未读内容</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
+<translation id="2912247081180973411">关闭所有窗口</translation>
 <translation id="2912345083818861431">需要使用解锁凭证才能查看打开的无痕式标签页</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />，已设为静音的标签页</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">了解被屏蔽的账号</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />，在新标签页中打开</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
-<translation id="316694332262407393">Chrome 已在此处运行。</translation>
 <translation id="3167258285411721858">您可以请求访问 <ph name="HOST_NAME" /> 的移动网站</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，已设为静音</translation>
@@ -1038,6 +1039,7 @@
 <translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5471273988133666918">无法移动标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
+<translation id="5494920125229734069">全选</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身份加入</translation>
 <translation id="5517326820028369152">显示近期活动的底部动作条</translation>
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
+<translation id="5972844218283131174">取消全选</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5977976211062815271">在这部设备上</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{您的阅读清单中有 1 个页面}other{您的阅读清单中有 # 个页面}}</translation>

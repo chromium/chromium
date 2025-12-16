@@ -282,6 +282,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
 <translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
+<translation id="4135244987012252068">自定义 Chromium，为您的浏览器换上全新外观</translation>
 <translation id="4147856324248078748">自定义 Chromium(&amp;U)</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>

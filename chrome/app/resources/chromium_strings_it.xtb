@@ -282,6 +282,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4118474109249235144">Modalità di navigazione in incognito di Chromium</translation>
 <translation id="4122186850977583290">Vai alla pagina Informazioni su Chromium</translation>
+<translation id="4135244987012252068">Personalizza Chromium per dare un nuovo look al tuo browser</translation>
 <translation id="4147856324248078748">Personalizza Chromium</translation>
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>

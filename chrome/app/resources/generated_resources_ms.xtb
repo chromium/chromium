@@ -134,7 +134,6 @@
 <translation id="1078037449555275327">Tetapan ChromeVox</translation>
 <translation id="1078497917067602920"><ph name="APP_NAME" /> membuka tetingkap baharu secara automatik.</translation>
 <translation id="1079242569060319448">Terlupa PIN?</translation>
-<translation id="1079285777677001938">Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
 <translation id="1079766198702302550">Sentiasa sekat akses kamera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Tab}other{<ph name="GROUP_TITLE" /> - # Tab}}</translation>
 <translation id="1082214733466244292">Pentadbir anda telah menyekat sesetengah fungsi untuk peranti ini</translation>
@@ -3474,7 +3473,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3348973040180736882">Menyahmampatkan</translation>
 <translation id="3349610303043713601">Semak imbas dengan AI</translation>
 <translation id="3349933790966648062">Jejak Memori</translation>
-<translation id="3350450887151703713">Mainkan semula 10 saat</translation>
 <translation id="3351472127384196879">Tambahkan atau cari butang pada pen anda</translation>
 <translation id="3353786022389205125">Hidupkan "Tunjukkan skrin kunci apabila bangkit daripada tidur" dan cuba lagi</translation>
 <translation id="3354768182971982851">Versi lama Apl Chrome tidak akan dibuka pada peranti Mac selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
@@ -3621,7 +3619,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3446274660183028131">Sila lancarkan Parallels Desktop untuk memasang Windows.</translation>
 <translation id="344630545793878684">Baca data anda di beberapa laman web</translation>
-<translation id="3447644283769633681">Sekat semua kuki pihak ketiga</translation>
 <translation id="3447644827015694497">Semak tab tidak aktif?</translation>
 <translation id="3447797901512053632">Menghantar <ph name="TAB_NAME" /> ke <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Kemas kini akaun</translation>
@@ -3942,7 +3939,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3663417513679360795">Maklumat lanjut tentang menghidupkan prapemuatan standard</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Sertai kumpulan tab bersama <ph name="OWNER_FIRST_NAME" />}=1{Sertai kumpulan tab bersama <ph name="OWNER_FIRST_NAME" /> dan # ahli yang lain}other{Sertai kumpulan tab bersama <ph name="OWNER_FIRST_NAME" /> dan # ahli yang lain}}</translation>
-<translation id="3665100783276035932">Kebanyakan laman harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3665301845536101715">Buka dalam panel sisi</translation>
 <translation id="3665589677786828986">Chrome mengesan bahawa sesetengah tetapan anda telah terganggu oleh program lain dan menetapkannya semula kepada tetapan lalainya yang asal.</translation>
 <translation id="3665918214153961651">Memuat naik fail</translation>
@@ -6840,7 +6836,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5651308944918885595">Kebolehtemuan Kongsi Berdekatan</translation>
 <translation id="5653154844073528838">Anda mempunyai <ph name="PRINTER_COUNT" /> pencetak yang disimpan.</translation>
 <translation id="565461030474814383">Simpan dalam Akaun?</translation>
-<translation id="5654669866168491665">Ketahui lebih lanjut tentang laman yang mungkin tidak berfungsi apabila kuki pihak ketiga disekat</translation>
 <translation id="5654751240928365405">Sambungan ini telah dimatikan kerana sambungan tersebut tidak disokong lagi</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Untuk melindungi privasi anda, kebenaran telah dialih keluar daripada laman}other{Untuk melindungi privasi anda, kebenaran telah dialih keluar daripada beberapa laman}}</translation>
 <translation id="5655296450510165335">Pendaftaran peranti</translation>
@@ -7590,7 +7585,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6181431612547969857">Muat turun disekat</translation>
 <translation id="6183369864942961155">Tema cerah/gelap automatik</translation>
 <translation id="6184099524311454384">Cari Tab</translation>
-<translation id="6184868291074982484">Chrome mengehadkan kuki pihak ketiga secara automatik</translation>
 <translation id="6185132558746749656">Lokasi Peranti</translation>
 <translation id="6185151644843671709">Kunci laluan disimpan dan PIN dibuat</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda. Tindakan ini juga akan membersihkan sebarang pendua.}other{{PASSWORD_COUNT} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda. Tindakan ini juga akan membersihkan sebarang pendua.}}</translation>
@@ -8600,7 +8594,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6878862640969460273">Landskap</translation>
 <translation id="6880587130513028875">Imej disekat pada halaman ini.</translation>
 <translation id="6881845890692344060">Pentadbir anda telah log keluar. Kini anda yang mengawal.</translation>
-<translation id="6882210908253838664">Jika laman tidak berfungsi, anda boleh cuba memberikan kebenaran sementara untuk menggunakan kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Op!  Sistem gagal menyimpan konfigurasi peranti.</translation>
 <translation id="6883606786470492001">Urus topik iklan anda dan tetapan lain untuk mengehadkan perkara yang boleh dipelajari oleh laman tentang anda untuk memaparkan iklan diperibadikan kepada anda</translation>
 <translation id="6884474387073389421">Adakah anda pasti mahu memadamkan data log masuk yang dipilih?</translation>
@@ -8974,7 +8967,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7145413760160421938">Tidak dapat menyambung semula sesi terdahulu</translation>
 <translation id="7146882055510146554">Microsoft 365 menggunakan OneDrive untuk membuka dan mengedit fail Word, Excel dan PowerPoint. Fail ini boleh ditemukan pada navigasi sisi apl Files yang dilabelkan “Microsoft OneDrive”. Anda perlu log masuk menggunakan akaun Microsoft anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Laman mungkin tidak berfungsi seperti yang anda jangkakan. Pilih pilihan ini jika anda tidak mahu meninggalkan maklumat pada peranti anda tentang laman yang anda lawati.</translation>
-<translation id="7148954254185728510">Kebanyakan laman tidak boleh menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas dan laman tidak boleh menggunakan kuki pihak ketiga dalam mod Inkognito.</translation>
 <translation id="7149839598364933473">Tukar peranti ini kepada peranti <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 jam yang lalu</translation>
 <translation id="7152478047064750137">Sambungan ini tidak memerlukan kebenaran khas</translation>
@@ -10649,7 +10641,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8275038454117074363">Import</translation>
 <translation id="8275080796245127762">Panggilan daripada Peranti Anda</translation>
 <translation id="8276560076771292512">Cache kosong dan Muat Semula Keras</translation>
-<translation id="8276850948802942358">Ketahui lebih lanjut tentang pemberian kebenaran sementara kepada laman untuk menggunakan kuki pihak ketiga</translation>
 <translation id="8277907305629781277">Anda mencipta kunci laluan ini pada <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Tidak dibenarkan untuk menggunakan pengoptimuman JavaScript</translation>
 <translation id="827966378414194229">Gunakan pergerakan kepala dan riak wajah untuk mengawal Chromebook anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -11233,7 +11224,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8678192320753081984">Memberikan keselamatan akaun paling kukuh Google untuk individu yang berisiko mendapat serangan bertumpu</translation>
 <translation id="8678378565142776698">Mulakan semula dan dapatkan kemaskinian automatik</translation>
 <translation id="8678538439778360739">Data disulitkan dengan ungkapan laluan penyegerakan anda pada <ph name="TIME" />. Penyulitan ini tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.</translation>
-<translation id="867882552362231068">Chrome mengehadkan jenis maklumat yang boleh digunakan oleh laman untuk menjejaki anda ketika anda menyemak imbas. Anda boleh menukar tetapan untuk memilih tahap perlindungan anda sendiri.</translation>
 <translation id="8678933587484842200">Bagaimanakah anda mahu apl ini dilancarkan?</translation>
 <translation id="8679054765393461130">Paparan senarai pilihan rangkaian akan mencetuskan Wi-Fi untuk mengimbas dengan kerap; tindakan ini boleh menjejaskan prestasi rangkaian Wi-Fi anda.</translation>
 <translation id="8680251145628383637">Log masuk untuk mendapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda. Anda turut akan dilog masuk secara automatik ke perkhidmatan Google anda.</translation>

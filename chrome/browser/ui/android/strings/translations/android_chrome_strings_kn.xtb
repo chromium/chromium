@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಬದಲಾಯಿಸಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ</translation>
 <translation id="2860954141821109167">ಈ ಸಾಧನದಲ್ಲಿ ಫೋನ್ ಆ್ಯಪ್‌ ಒಂದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2861923151411510142">ಕೆಲವು Chrome ವೈಶಿಷ್ಟ್ಯಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ಮತ್ತು ಇತರ 1 ಟ್ಯಾಬ್}one{<ph name="URL" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="URL" /> ಮತ್ತು ಇತರ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2869430948265924908">ನಿಮ್ಮ ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕಾರ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿಡಲು, ನೀವು ಕಾರ್ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ರಚಿಸಬೇಕು.  ನೀವು ಪಿನ್, ಕೋಡ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ ಅದನ್ನು ರಚಿಸಬಹುದು.</translation>
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2871733351037274014">ಪುಟಗಳನ್ನು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿ</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="2908243544703713905">ಓದದಿರುವ ಸ್ಟೋರಿಗಳು ಸಿದ್ಧವಾಗಿವೆ</translation>
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
+<translation id="2912247081180973411">ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="2912345083818861431">ತೆರೆದ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="2918484639460781603">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, ಮ್ಯೂಟ್ ಆಗಿರುವ ಟ್ಯಾಬ್</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">ನಿರ್ಬಂಧಿಸಲಾದ ಖಾತೆಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
-<translation id="316694332262407393">Chrome ಈಗಾಗಲೇ ರನ್ ಆಗುತ್ತಿದೆ.</translation>
 <translation id="3167258285411721858">ನೀವು <ph name="HOST_NAME" /> ಗಾಗಿ ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಬಹುದು</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಲಾದ ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
@@ -1037,6 +1038,7 @@
 <translation id="5469852975082458401">ಪಠ್ಯದ ಕರ್ಸರ್ ಮೂಲಕ ನೀವು ಪುಟಗಳನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಬಹುದು. ಆಫ್ ಮಾಡಲು F7 ಒತ್ತಿರಿ.</translation>
 <translation id="5471273988133666918">ಟ್ಯಾಬ್ <ph name="TAB_TITLE" /> ಅನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="548278423535722844">ನಕ್ಷೆಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ಎಂಬುದಾಗಿ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="5517326820028369152">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಯ ಕೆಳಭಾಗದ ಶೀಟ್‌</translation>
 <translation id="5526281268548144413">ಅನೇಕ ವಿಂಡೋಗಳಾದ್ಯಂತ ಮುಚ್ಚಲಾಗುವುದಿಲ್ಲ</translation>
@@ -1145,6 +1147,7 @@
 <translation id="5958275228015807058">ಡೌನ್‌ಲೋಡ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5964869237734432770">ಚಿತ್ರ ವಿವರಣೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="5972844218283131174">ಎಲ್ಲಾ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="5975083100439434680">ಝೂಮ್ ಔಟ್</translation>
 <translation id="5977976211062815271">ಈ ಸಾಧನದಲ್ಲಿರುವವು</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ 1 ಪುಟ}one{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ # ಪುಟಗಳು}other{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ # ಪುಟಗಳು}}</translation>

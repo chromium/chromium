@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Impossible de télécharger le dictionnaire du correcteur orthographique pour la langue suivante : <ph name="LANGUAGE" />. Réessayez.</translation>
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
 <translation id="1079242569060319448">Vous avez oublié votre NIP?</translation>
-<translation id="1079285777677001938">Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> : 1 onglet}one{<ph name="GROUP_TITLE" /> : # onglet}other{<ph name="GROUP_TITLE" /> : # onglets}}</translation>
 <translation id="1082214733466244292">Votre administrateur a bloqué certaines fonctionnalités pour cet appareil</translation>
@@ -2213,6 +2212,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2476901513051581836">Impossible de libérer de l'espace de stockage tant que la taille du stockage hors ligne n'est pas connue.</translation>
 <translation id="2476974672882258506">Éteignez Windows pour désinstaller <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Comme vous avez configuré plusieurs commutateurs, la recherche automatique a été désactivée.</translation>
+<translation id="2477218554275525952">Garder la barre latérale Gemini ouverte lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="2477607419416067650">Autres données Google</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour « <ph name="EXTENSION" /> »</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
@@ -3461,7 +3461,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3348973040180736882">Décompression en cours…</translation>
 <translation id="3349610303043713601">Naviguer avec l'IA</translation>
 <translation id="3349933790966648062">Empreinte mémoire</translation>
-<translation id="3350450887151703713">Reculer de 10 secondes</translation>
 <translation id="3351472127384196879">Ajoutez ou localisez des boutons sur votre stylet</translation>
 <translation id="3353786022389205125">Activez « Afficher l'écran de verrouillage à l'activation » et réessayez</translation>
 <translation id="3354768182971982851">Les anciennes versions des applications Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Vous pouvez vérifier si une nouvelle version est proposée.</translation>
@@ -3608,7 +3607,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3445925074670675829">Appareil USB-C</translation>
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur un nombre défini de sites Web</translation>
-<translation id="3447644283769633681">Bloquez tous les témoins tiers</translation>
 <translation id="3447644827015694497">Vérifier les onglets inactifs?</translation>
 <translation id="3447797901512053632">Diffusion de <ph name="TAB_NAME" /> sur <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Mettre à jour le compte</translation>
@@ -3929,7 +3927,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3663417513679360795">Plus de renseignements sur l'activation du préchargement standard</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" />}=1{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autre}one{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autre}other{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autres}}</translation>
-<translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
 <translation id="3665918214153961651">Importation du fichier en cours…</translation>
@@ -6824,7 +6821,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5651308944918885595">Visibilité pour le partage à proximité</translation>
 <translation id="5653154844073528838">Vous avez <ph name="PRINTER_COUNT" /> imprimantes enregistrées.</translation>
 <translation id="565461030474814383">Enregistrer dans le compte?</translation>
-<translation id="5654669866168491665">En savoir plus sur les sites qui peuvent ne pas fonctionner si les témoins tiers sont bloqués</translation>
 <translation id="5654751240928365405">Cette extension a été désactivée, car elle n'est plus prise en charge</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Pour protéger votre confidentialité, les autorisations ont été retirées d'un site}one{Pour protéger votre confidentialité, les autorisations ont été retirées d'un site}other{Pour protéger votre confidentialité, les autorisations ont été retirées de certains sites}}</translation>
 <translation id="5655296450510165335">Inscription d'appareil</translation>
@@ -7574,7 +7570,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
 <translation id="6183369864942961155">Thème clair/sombre automatique</translation>
 <translation id="6184099524311454384">Rechercher des onglets</translation>
-<translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6185151644843671709">Clé d'accès enregistrée et NIP créé</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{PASSWORD_COUNT} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{PASSWORD_COUNT} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
@@ -8584,7 +8579,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6878862640969460273">Paysage</translation>
 <translation id="6880587130513028875">Les images sont bloquées sur cette page.</translation>
 <translation id="6881845890692344060">Votre administrateur s'est déconnecté. Vous avez le contrôle maintenant.</translation>
-<translation id="6882210908253838664">Si un site ne fonctionne pas, vous pouvez essayer de lui donner l'autorisation temporaire d'utiliser des témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oups! Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
 <translation id="6883606786470492001">Gérez vos sujets d'annonces et d'autres paramètres pour limiter ce que les sites peuvent apprendre sur vous pour vous montrer des annonces personnalisées</translation>
 <translation id="6884474387073389421">Voulez-vous vraiment supprimer les données de connexion sélectionnées?</translation>
@@ -8957,7 +8951,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7145413760160421938">Impossible de reprendre la session précédente</translation>
 <translation id="7146882055510146554">Microsoft 365 utilise OneDrive pour ouvrir et modifier des fichiers Word, Excel et PowerPoint. Ces fichiers se trouvent dans la navigation latérale de l'application Fichiers intitulée « Microsoft OneDrive ». Vous devrez vous connecter avec votre compte Microsoft. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Les sites pourraient ne pas fonctionner comme prévu. Choisissez cette option si vous ne souhaitez pas que les données relatives aux sites que vous visitez soient enregistrées sur votre appareil.</translation>
-<translation id="7148954254185728510">La plupart des sites ne peuvent pas utiliser de témoins tiers pour vous suivre pendant votre navigation, et les sites ne peuvent pas utiliser de témoins tiers en mode Navigation privée.</translation>
 <translation id="7149839598364933473">Convertissez cet appareil en un appareil <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>
 <translation id="7152478047064750137">Cette extension fonctionne sans autorisation spéciale</translation>
@@ -10630,7 +10623,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8275038454117074363">Importer</translation>
 <translation id="8275080796245127762">Appeler à partir de votre appareil</translation>
 <translation id="8276560076771292512">Vider le cache et effectuer une actualisation forcée</translation>
-<translation id="8276850948802942358">En savoir plus sur l'octroi à un site d'une autorisation temporaire d'utiliser des témoins tiers</translation>
 <translation id="8277907305629781277">Vous avez créé cette clé d'accès le <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Non autorisé à utiliser l'optimisation JavaScript</translation>
 <translation id="827966378414194229">Utilisez des mouvements de la tête et des expressions faciales pour contrôler votre Chromebook. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -11212,7 +11204,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8678192320753081984">Offre la sécurité de compte la plus forte de Google pour les personnes exposées à des attaques ciblées</translation>
 <translation id="8678378565142776698">Redémarrer et recevoir des mises à jour automatiques</translation>
 <translation id="8678538439778360739">Des données ont été chiffrées à l'aide de votre phrase de passe de synchronisation le <ph name="TIME" />. Cette méthode ne couvre pas les modes de paiement ni les adresses de Google Pay.</translation>
-<translation id="867882552362231068">Chrome limite le type d'informations que les sites peuvent utiliser pour vous suivre pendant votre navigation. Vous pouvez modifier vos paramètres pour choisir votre propre niveau de protection.</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous lancer cette application?</translation>
 <translation id="8679054765393461130">L'affichage de la sélection de réseaux déclenchera une analyse fréquente du Wi-Fi; ce qui peut nuire aux performances de votre réseau Wi-Fi.</translation>
 <translation id="8680251145628383637">Connectez-vous pour accéder à vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils. Vous serez également automatiquement connecté(e) à vos services Google.</translation>
@@ -12020,6 +12011,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9207434080086272167">Ensoleillé</translation>
 <translation id="9207669213427469593">Si vous alignez une fenêtre d'un côté pour utiliser l'Écran divisé, vous verrez des suggestions de fenêtres pour l'autre côté</translation>
 <translation id="9209563766569767417">Vérification de la configuration du conteneur Linux en cours…</translation>
+<translation id="9212565256020141627">Impossible de partager l'image avec Gemini. Réessayez ou essayez avec une autre image.</translation>
 <translation id="9214520840402538427">Oups… Le délai alloué à l'initialisation des attributs de temps d'installation a expiré. Veuillez communiquer avec le service d'assistance.</translation>
 <translation id="9214695392875603905">Petit gâteau</translation>
 <translation id="9215293857209265904">« <ph name="EXTENSION_NAME" /> » a été ajouté</translation>

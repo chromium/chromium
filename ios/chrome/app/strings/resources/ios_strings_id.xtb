@@ -430,6 +430,7 @@
 <translation id="2573117291489209663">Selesai</translation>
 <translation id="2577522251608256362">Kawasan</translation>
 <translation id="2579713773888829241">Drive Bersama</translation>
+<translation id="2580306219079937316">Buka setelan Terjemahan</translation>
 <translation id="2583688836549072561">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab, aktivitas baru.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Pantau penurunan harga produk</translation>
@@ -597,6 +598,7 @@
 <translation id="3245744387817103524">Perubahan Anda tidak dapat disimpan.</translation>
 <translation id="3254806613790954367">Tab yang terakhir dibuka di semua perangkat Anda</translation>
 <translation id="325717987950204592">Ketuk "Privasi dan Keamanan"</translation>
+<translation id="3266338926702638258">Tampilkan histori harga untuk produk ini</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3273510436356991673">Sesuaikan layar utama Anda</translation>
 <translation id="3277021493514034324">Alamat situs disalin</translation>
@@ -1944,6 +1946,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8221665793629393739">Pengingat untuk kembali</translation>
 <translation id="8232956427053453090">Pertahankan data</translation>
 <translation id="8233237502828137700">Tutup banner promo</translation>
+<translation id="823339794112333264">Aktifkan mikrofon</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="8258734532103758067">Saya telah mengekspor data saya</translation>
 <translation id="8258999165172757081">Ditambahkan</translation>
@@ -2049,6 +2052,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8611922158252451755">Siapa saja yang memiliki link dapat mengedit semua tab. Harap bagikan dengan bijak. Masa berlaku link akan berakhir dalam 48 jam.</translation>
 <translation id="8614671330774943747">Buka Pengalih Tab</translation>
 <translation id="8620640915598389714">Edit</translation>
+<translation id="862367213447108001">Selalu tampilkan pop-up di situs ini</translation>
 <translation id="8625706492572042370">Edit Home Screen</translation>
 <translation id="8631370184731241854">Tab Samaran terkunci</translation>
 <translation id="8633025649649592204">Aktivitas terbaru</translation>
@@ -2145,6 +2149,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8928426232677696166"><ph name="EMAIL" />, dikelola oleh organisasi Anda, saat ini dipilih. Pilih akun.</translation>
 <translation id="894191600409472540">Buat sandi yang kuat</translation>
 <translation id="8943780400130412484">Mulai download baru?</translation>
+<translation id="8947838125864566256">Matikan mikrofon</translation>
 <translation id="8953046091948372197">Sandi Anda akan ditampilkan di sini</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opsi pelengkapan otomatis tersedia di atas keyboard Anda.}other{{count} opsi pelengkapan otomatis tersedia di atas keyboard Anda.}}</translation>
 <translation id="895541991026785598">Laporkan Masalah</translation>

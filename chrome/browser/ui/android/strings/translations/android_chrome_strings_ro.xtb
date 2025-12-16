@@ -427,6 +427,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2854916915045135148">Atinge lung pentru a intra în modul incognito</translation>
 <translation id="2860954141821109167">Verifică dacă pe dispozitiv este activată o aplicație de telefon</translation>
 <translation id="2861923151411510142">Unele funcții Chrome nu vor mai fi disponibile</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> și încă o filă}few{<ph name="URL" /> și încă <ph name="TAB_COUNT_MANY" /> file}other{<ph name="URL" /> și încă <ph name="TAB_COUNT_MANY" /> de file}}</translation>
 <translation id="2869430948265924908">Pentru a proteja conținutul sensibil din mașină, trebuie să creezi o blocare a profilului mașinii.  Poți face acest lucru cu un cod PIN, un cod sau o parolă.</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Preîncarcă paginile</translation>
@@ -445,6 +446,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2904414404539560095">Lista de dispozitive pe care să trimiți o filă este deschisă la înălțimea completă.</translation>
 <translation id="2908243544703713905">Sunt disponibile articole necitite</translation>
 <translation id="2909615210195135082">Platforma de notificări Google</translation>
+<translation id="2912247081180973411">Închide ferestrele</translation>
 <translation id="2912345083818861431">Folosește blocarea ecranului ca să vezi filele incognito deschise</translation>
 <translation id="2918484639460781603">Accesați setările</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, filă cu sunetul dezactivat</translation>
@@ -502,7 +504,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, se deschide într-o filă nouă</translation>
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
-<translation id="316694332262407393">Chrome rulează deja aici.</translation>
 <translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, filă incognito fixată cu sunetul dezactivat și selectare multiplă</translation>
@@ -1038,6 +1039,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5469852975082458401">Poți să navighezi în pagini folosind cursorul pentru text. Apasă pe F7 pentru a-l dezactiva.</translation>
 <translation id="5471273988133666918">Fila <ph name="TAB_TITLE" /> nu poate fi mutată</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
+<translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="549660026907543296">Alătură-te ca <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Foaia din partea de jos cu activitatea recentă</translation>
 <translation id="5526281268548144413">Nu pot fi închise în mai multe ferestre</translation>
@@ -1146,6 +1148,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5958275228015807058">Găsește fișierele și paginile în Descărcări</translation>
 <translation id="5962718611393537961">Atinge pentru a restrânge</translation>
 <translation id="5964869237734432770">Nu genera descrieri imagine</translation>
+<translation id="5972844218283131174">Deselectează tot</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5977976211062815271">Pe acest dispozitiv</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{O pagină din Lista de lecturi}few{# pagini din Lista de lecturi}other{# de pagini din Lista de lecturi}}</translation>

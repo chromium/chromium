@@ -427,6 +427,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2854916915045135148">Chạm và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="2860954141821109167">Hãy đảm bảo bạn đã bật ứng dụng điện thoại trên thiết bị này</translation>
 <translation id="2861923151411510142">Một số tính năng của Chrome sẽ không dùng được nữa</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> và 1 thẻ khác}other{<ph name="URL" /> và <ph name="TAB_COUNT_MANY" /> thẻ khác}}</translation>
 <translation id="2869430948265924908">Để bảo vệ nội dung nhạy cảm của bạn trong ô tô, bạn phải tạo một khoá hồ sơ cho ô tô.  Bạn có thể tạo khoá bằng mã PIN, mã hoặc mật khẩu.</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2871733351037274014">Tải trước các trang</translation>
@@ -445,6 +446,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2904414404539560095">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở trên toàn màn hình.</translation>
 <translation id="2908243544703713905">Có tin bài chưa đọc</translation>
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
+<translation id="2912247081180973411">Đóng cửa sổ</translation>
 <translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ ẩn danh đang mở</translation>
 <translation id="2918484639460781603">Chuyển đến phần cài đặt</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, Thẻ đã tắt tiếng</translation>
@@ -502,7 +504,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3159335509547415276">Tìm hiểu về tài khoản bị chặn</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> sẽ mở trong một thẻ mới</translation>
 <translation id="3166827708714933426">Lối tắt cho thẻ và cửa sổ</translation>
-<translation id="316694332262407393">Chrome hiện đang chạy trên trang này.</translation>
 <translation id="3167258285411721858">Bạn có thể yêu cầu trang web dành cho thiết bị di động cho <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Khám phá</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Thẻ ẩn danh đã tắt tiếng, được ghim và được chọn cùng với nhiều thẻ khác</translation>
@@ -1038,6 +1039,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5469852975082458401">Bạn có thể di chuyển giữa các trang bằng con trỏ văn bản. Hãy nhấn F7 để tắt.</translation>
 <translation id="5471273988133666918">Không thể di chuyển thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
+<translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="549660026907543296">Tham gia dưới tên <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Bảng hoạt động gần đây ở dưới cùng</translation>
 <translation id="5526281268548144413">Không đóng được trên nhiều cửa sổ</translation>
@@ -1146,6 +1148,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5958275228015807058">Tìm tệp và trang của bạn trong Tệp đã tải xuống</translation>
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
+<translation id="5972844218283131174">Bỏ chọn tất cả</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5977976211062815271">Trên thiết bị này</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 trang trên danh sách đọc của bạn}other{# trang trên danh sách đọc của bạn}}</translation>

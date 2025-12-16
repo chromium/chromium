@@ -134,7 +134,6 @@
 <translation id="1078037449555275327">ChromeVox sozlamalari</translation>
 <translation id="1078497917067602920"><ph name="APP_NAME" /> yangi oynalarni avtomatik ochadi.</translation>
 <translation id="1079242569060319448">PIN kodni unutdingizmi?</translation>
-<translation id="1079285777677001938">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="1079766198702302550">Kameraga ruxsat har doim ta’qiqlansin</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 ta varaq}other{<ph name="GROUP_TITLE" /> – # ta varaq}}</translation>
 <translation id="1082214733466244292">Administrator bu qurilma uchun ayrim funksiyalarni bloklagan</translation>
@@ -3461,7 +3460,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3348973040180736882">Arxivdan chiqarilmqoda</translation>
 <translation id="3349610303043713601">AI bilan kezish</translation>
 <translation id="3349933790966648062">Xotira sarfi</translation>
-<translation id="3350450887151703713">10 soniya qayta ijro</translation>
 <translation id="3351472127384196879">Pero tugmalarini kiritish yoki belgilash</translation>
 <translation id="3353786022389205125">“Qurilma uyqu rejimidan chiqarilishida ekran qulfi koʻrsatilsin” funksiyasini yoqing va qayta urining</translation>
 <translation id="3354768182971982851">Chrome brauzerining eski versiyalari 2022-yil dekabr oyidan Mac qurilmalarida ochilmaydi. Yangilanishlar borligini quyidagicha tekshirish mumkin.</translation>
@@ -3608,7 +3606,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3445925074670675829">USB-C qurilma</translation>
 <translation id="3446274660183028131">Windowsni oʻrnatish uchun Parallels Desktopni ishga tushiring.</translation>
 <translation id="344630545793878684">Bir nechta saytlardagi ma’lumotlarni ko‘rish</translation>
-<translation id="3447644283769633681">Barcha tashqi cookie fayllarni bloklash</translation>
 <translation id="3447644827015694497">Nofaol varaqlar tekshirilsinmi?</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> sahifasi hozir <ph name="DEVICE_NAME" /> ekranida</translation>
 <translation id="3448492834076427715">Hisobni yangilash</translation>
@@ -3929,7 +3926,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3663417513679360795">Odatiy oldindan yuklashni yoqish haqida batafsil</translation>
 <translation id="3664511988987167893">Kengaytma ikonkasi</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> ulashgan varaqlar guruhiga qoʻshilish}=1{<ph name="OWNER_FIRST_NAME" /> va yana # kishi ulashgan varaqlar guruhiga qoʻshilish}other{<ph name="OWNER_FIRST_NAME" /> va yana # kishi ulashgan varaqlar guruhiga qoʻshilish}}</translation>
-<translation id="3665100783276035932">Koʻplab saytlar kutilganidek ishlashi kerak</translation>
 <translation id="3665301845536101715">Yon panelda ochish</translation>
 <translation id="3665589677786828986">Chrome‘ning ba’zi sozlamalari tashqi dastur tomonidan o‘zgartirildi. Brauzer birlamchi sozlamalarini tiklab oldi.</translation>
 <translation id="3665918214153961651">Fayl yuklanmoqda</translation>
@@ -6826,7 +6822,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5651308944918885595">Nearby Share ochiqligi</translation>
 <translation id="5653154844073528838"><ph name="PRINTER_COUNT" /> ta printer saqlangan.</translation>
 <translation id="565461030474814383">Hisobda saqlansinmi?</translation>
-<translation id="5654669866168491665">Begona cookie-fayllarini bloklaganda ishlamasligi mumkin boʻlgan saytlar haqida batafsil</translation>
 <translation id="5654751240928365405">Bu kengaytma endi dastaklanmasligi uchun faolsizlantirildi</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Maxfiylikni himoyalash maqsadida muayyan saytdan ruxsatlar olib tashlandi}other{Maxfiylikni himoyalash maqsadida ayrim saytlardan ruxsatlar olib tashlandi}}</translation>
 <translation id="5655296450510165335">Qurilmani roʻyxatdan oʻtkazish</translation>
@@ -7576,7 +7571,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6181431612547969857">Yuklash olish taqiqlangan</translation>
 <translation id="6183369864942961155">Kunduzi va tungi mavzuni avtomatik yoqish</translation>
 <translation id="6184099524311454384">Varaqlar ichidan qidirish</translation>
-<translation id="6184868291074982484">Chrome avtomatik tarzda tashqi cookie fayllarni cheklaydi</translation>
 <translation id="6185132558746749656">Qurilma joylashuvi</translation>
 <translation id="6185151644843671709">Kalit saqlandi va PIN kod yaratildi</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 parol va boshqa obyektlar faqat shu qurilmaga saqlangan. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda saqlang. Bunda mavjud nusxalari ham tozalanadi.}other{{PASSWORD_COUNT} parol va boshqa elementlar faqat bu qurilmada saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda saqlang. Bunda mavjud nusxalari ham tozalanadi.}}</translation>
@@ -8586,7 +8580,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6878862640969460273">Yotiq</translation>
 <translation id="6880587130513028875">Ushbu sahifadagi rasmlar bloklandi.</translation>
 <translation id="6881845890692344060">Administrator hisobidan chiqdi. Endi oʻzingiz boshqarasiz.</translation>
-<translation id="6882210908253838664">Sayt ishlamasa, unga tashqi cookie fayllaridan foydalanishga vaqtinchalik ruxsat berishga urinib koʻrishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Tizim qurilma parametrlarini saqlay olmadi.</translation>
 <translation id="6883606786470492001">Saytlar moslangan reklama chiqarish maqsadida axborotlaringizni oʻrganishini cheklash uchun reklama mavzulari va boshqa sozlamalarni boshqaring</translation>
 <translation id="6884474387073389421">Ushbu tanlangan kirish maʼlumotlari oʻchirib tashlansinmi?</translation>
@@ -8959,7 +8952,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7145413760160421938">Avvalgi seans davom ettirilmadi</translation>
 <translation id="7146882055510146554">Microsoft 365 Word, Excel va PowerPoint fayllarini ochish va tahrirlash uchun OneDrive xizmatidan foydalanadi. Bu fayllarni "Microsoft OneDrive" deb nomlangan Fayllar ilovasi orqali topish mumkin. Microsoft hisobingiz bilan kirishingiz kerak. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Saytlar kutilganidek ishlamasligi mumkin. Ochilgan saytlar haqida qurilmangizda maʼlumot qoldirishni xohlamasangiz, ushbu parametrni tanlang.</translation>
-<translation id="7148954254185728510">Koʻplab saytlar saytlarni koʻrayotganingizda sizni kuzatish uchun tashqi cookie fayllaridan foydalana olmaydi va saytlar Inkognito rejimida tashqi cookie fayllaridan foydalana olmaydi.</translation>
 <translation id="7149839598364933473">Bu qurilmani <ph name="DEVICE_OS" /> qurilmasiga aylantiring.</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
@@ -10633,7 +10625,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8275038454117074363">Import</translation>
 <translation id="8275080796245127762">Qurilmangizdan telefon qilish</translation>
 <translation id="8276560076771292512">Keshni tozalash va qurilmani qaytadan ishga tushirish</translation>
-<translation id="8276850948802942358">Saytga tashqi cookie fayllaridan foydalanishga vaqtinchalik ruxsat berish haqida batafsil</translation>
 <translation id="8277907305629781277">Bu kalit ysatilgan sana: <ph name="DATE" /></translation>
 <translation id="8278702675516957539">JavaScript optimallashga ruxsat berilmagan</translation>
 <translation id="827966378414194229">Chromebookni bosh harakatlari va chehra belgilari yordamida boshqaring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -11216,7 +11207,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8678192320753081984">Googlening hisoblar uchun maqsadli hujumlardan kuchaytirilgan himoyasini taqdim etadi</translation>
 <translation id="8678378565142776698">Qayta ishga tushiring va avtomatik yangilanishlarni oling</translation>
 <translation id="8678538439778360739">Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Google Pay manzillari va toʻlov usullari esa shifrlanmagan.</translation>
-<translation id="867882552362231068">Saytlarni koʻrayotganingizda Chrome sizni kuzatish uchun foydalanish mumkin boʻlgan maʼlumotlar turini cheklaydi. Himoya darajasini tanlash uchun sozlamalaringizni oʻzgartiring.</translation>
 <translation id="8678933587484842200">Bu ilova qanday ishga tushirilsin?</translation>
 <translation id="8679054765393461130">Tarmoqni tanlash roʻyxati koʻrsatilsa, Wi-Fi tez-tez skanerlashni boshlaydi. Bu Wi-Fi tarmoqning ishlashiga taʼsir qilishi mumkin.</translation>
 <translation id="8680251145628383637">Xatcho‘plar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlash uchun o‘z hisobingizga kiring. Tizimga kirish birdaniga barcha Google xizmatlarida amalga oshadi.</translation>

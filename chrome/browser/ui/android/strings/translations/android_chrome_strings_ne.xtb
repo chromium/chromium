@@ -427,6 +427,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2854916915045135148">इन्कोग्निटो मोड प्रयोग गर्न टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="2860954141821109167">यस यन्त्रमा कुनै फोन एप सक्षम गरिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2861923151411510142">Chrome का केही सुविधाहरू अबदेखि उपलब्ध हुने छैनन्</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> र अन्य एउटा ट्याब}other{<ph name="URL" /> र अन्य <ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="2869430948265924908">कारमा भएको आफ्नो संवेदनशील सामग्री सुरक्षित राख्न तपाईंले अनिवार्य रूपमा कार प्रोफाइल लक बनाउनु पर्छ।  तपाईं पिन, कोड वा पासवर्ड राखेर कार प्रोफाइल लक बनाउन सक्नुहुन्छ।</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजहरू प्रिलोड गर्नुहोस्</translation>
@@ -445,6 +446,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2908243544703713905">नपढिएका स्टोरिज तयार छन्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
+<translation id="2912247081180973411">विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="2912345083818861431">तपाईं हाल खोलिएका इन्कोग्निटो ट्याब हेर्न चाहनुहुन्छ भने स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="2918484639460781603">सेटिङमा जानुहोस्</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, म्युट गरिएको ट्याब</translation>
@@ -502,7 +504,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3159335509547415276">ब्लक गरिएका खाताहरूका बारेमा जान्नुहोस्</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, नयाँ ट्याबमा खुल्छ</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
-<translation id="316694332262407393">यसमा अहिले Chrome चलिरहेको छ।</translation>
 <translation id="3167258285411721858">तपाईं <ph name="HOST_NAME" /> को मोबाइल साइटको लिंक माग्न सक्नुहुन्छ</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
@@ -1037,6 +1038,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5469852975082458401">तपाईं टेक्स्ट कर्सर प्रयोग गरी पृष्ठहरूमा नेभिगेट गर्न सक्नुहुन्छ। अफ गर्न F7 थिच्नुहोस्।</translation>
 <translation id="5471273988133666918">ट्याब <ph name="TAB_TITLE" /> सार्न मिल्दैन</translation>
 <translation id="548278423535722844">नक्सा एपमा खोल्नुहोस्</translation>
+<translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> का रूपमा सामेल हुनुहोस्</translation>
 <translation id="5517326820028369152">हालसालैको क्रियाकलापसम्बन्धी जानकारी दिने पुछारको पाना</translation>
 <translation id="5526281268548144413">एकभन्दा बढी विन्डोहरूमा बन्द गर्न सकिँदैन</translation>
@@ -1145,6 +1147,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5958275228015807058">डाउनलोडरू नामक फोल्डरमा भएका आफ्ना फाइल र पृष्ठहरू भेट्टाउनुहोस्</translation>
 <translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5964869237734432770">फोटो विवरण पाउन छाड्नुहोस्</translation>
+<translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5977976211062815271">यस यन्त्रमा</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{तपाईंको रिडिङ लिस्टमा एउटा पेज छ}other{तपाईंको रिडिङ लिस्टमा # वटा पेज छन्}}</translation>

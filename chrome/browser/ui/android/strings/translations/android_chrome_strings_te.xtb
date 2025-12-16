@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల లిస్ట్‌ పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="2908243544703713905">చదవని కథనాలు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="2909615210195135082">Google నోటిఫికేషన్‌ల ప్లాట్‌ఫామ్</translation>
+<translation id="2912247081180973411">విండోలను మూసివేయండి</translation>
 <translation id="2912345083818861431">తెరిచి ఉన్న అజ్ఞాత ట్యాబ్‌లను చూడడానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="2918484639460781603">సెట్టింగ్‌లకు వెళ్ళు</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, మ్యూట్ చేసిన ట్యాబ్</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">బ్లాక్ చేయబడిన ఖాతాల గురించి తెలుసుకోండి</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, కొత్త ట్యాబ్‌లో తెరుచుకుంటుంది</translation>
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
-<translation id="316694332262407393">Chrome ఇప్పటికే రన్ అవుతోంది.</translation>
 <translation id="3167258285411721858">మీరు <ph name="HOST_NAME" /> కోసం మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయవచ్చు</translation>
 <translation id="3169472444629675720">కనుగొనండి</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మ్యూట్ చేసే పిన్ చేసిన ట్యాబ్</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">టెక్స్ట్ కర్సర్‌తో మీరు పేజీలను నావిగేట్ చేయవచ్చు. ఆఫ్ చేయడానికి F7ను నొక్కండి.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ట్యాబ్‌ను తరలించడం సాధ్యం కాదు</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
+<translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />‌గా చేరండి</translation>
 <translation id="5517326820028369152">ఇటీవలి యాక్టివిటీ దిగువున ఉన్న షీట్</translation>
 <translation id="5526281268548144413">పలు విండోలలో మూసివేయడం సాధ్యపడదు</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">డౌన్‌లోడ్‌లలో మీ ఫైళ్లు మరియు పేజీలను కనుగొనండి</translation>
 <translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
+<translation id="5972844218283131174">అన్నింటి ఎంపికను తొలగించండి</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5977976211062815271">ఈ పరికరంలో</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{మీ చదవాల్సిన లిస్ట్‌లో 1 పేజీ ఉంది}other{మీ చదవాల్సిన లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>

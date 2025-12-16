@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="4118474109249235144">Mode d'incògnit a Chromium</translation>
 <translation id="4122186850977583290">Ves a la pàgina Quant a Chromium</translation>
+<translation id="4135244987012252068">Personalitza Chrome per renovar l'aspecte del navegador</translation>
 <translation id="4147856324248078748">&amp;Personalitza Chromium</translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa - Chromium</translation>

@@ -427,6 +427,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2854916915045135148">Pieskarieties un turiet, lai pārslēgtos uz inkognito režīmu.</translation>
 <translation id="2860954141821109167">Šajā ierīcē jābūt iespējotai tālruņa lietotnei</translation>
 <translation id="2861923151411510142">Dažas Chrome funkcijas vairs nebūs pieejamas.</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> un vēl 1 cilne}zero{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilnes}one{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="2869430948265924908">Lai automašīnā aizsargātu sensitīvu saturu, ir jāiestata automašīnas profila bloķēšana.  To var izdarīt, izmantojot PIN, kodu vai paroli.</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2871733351037274014">Lapu iepriekšēja ielāde</translation>
@@ -445,6 +446,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2904414404539560095">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="2908243544703713905">Ir pieejami nelasīti raksti</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Aizvērt logus</translation>
 <translation id="2912345083818861431">Izmantojiet ekrāna bloķēšanu, lai skatītu atvērtās inkognito cilnes</translation>
 <translation id="2918484639460781603">Pāriet uz iestatījumiem</translation>
 <translation id="2920713489113095380">Cilne <ph name="TAB_TITLE" />, kuras skaņa ir izslēgta</translation>
@@ -502,7 +504,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3159335509547415276">Uzziniet vairāk par bloķētiem kontiem.</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />; tiks atvērta jauna cilne</translation>
 <translation id="3166827708714933426">Ciļņu un logu īsinājumtaustiņi</translation>
-<translation id="316694332262407393">Šajā ierīcē jau darbojas pārlūks Chrome.</translation>
 <translation id="3167258285411721858">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju mobilajām ierīcēm.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111">Piespraustā inkognito cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tās skaņa ir izslēgta</translation>
@@ -1038,6 +1039,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5469852975082458401">Lapās varat pārvietoties, izmantojot teksta kursoru. Lai izslēgtu šo funkciju, nospiediet taustiņu F7.</translation>
 <translation id="5471273988133666918">Cilni <ph name="TAB_TITLE" /> nevar pārvietot</translation>
 <translation id="548278423535722844">Atvērt karšu lietotnē</translation>
+<translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="549660026907543296">Pievienoties ar profilu <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Ekrāna apakšdaļas lapa “Pēdējās darbības”</translation>
 <translation id="5526281268548144413">Cilnes nevar aizvērt vairākos logos.</translation>
@@ -1146,6 +1148,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5958275228015807058">Atrodiet savus failus un lapas sadaļā Lejupielādes</translation>
 <translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
+<translation id="5972844218283131174">Noņemt visu atlasi</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5977976211062815271">Šajā ierīcē</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Jūsu lasīšanas sarakstā ir 1 lapa.}zero{Jūsu lasīšanas sarakstā ir # lapas.}one{Jūsu lasīšanas sarakstā ir # lapa.}other{Jūsu lasīšanas sarakstā ir # lapas.}}</translation>

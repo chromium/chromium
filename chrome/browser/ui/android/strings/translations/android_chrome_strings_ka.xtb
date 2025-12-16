@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="2908243544703713905">წაუკითხავი ამბები მზადაა</translation>
 <translation id="2909615210195135082">Google შეტყობინებების პლატფორმა</translation>
+<translation id="2912247081180973411">ფანჯრების დახურვა</translation>
 <translation id="2912345083818861431">გახსნილი ინკოგნიტო ჩანართების სანახავად გამოიყენეთ ეკრანის დაბლოკვა</translation>
 <translation id="2918484639460781603">პარამეტრებზე გადასვლა</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, დადუმებული ჩანართი</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">ვრცლად დაბლოკილი ანგარიშების შესახებ</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, გაიხსნება ახალ ჩანართში</translation>
 <translation id="3166827708714933426">ჩანართებისა და ფანჯრების მალსახმობები</translation>
-<translation id="316694332262407393">Chrome აქ უკვე გაშვებულია.</translation>
 <translation id="3167258285411721858">შეგიძლიათ მოითხოვოთ მობილური საიტი <ph name="HOST_NAME" />-ისთვის</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">გვერდებზე ნავიგაცია ტექსტური კურსორის მეშვეობით შეგიძლიათ. გამოსართავად დააჭირეთ F7-ს.</translation>
 <translation id="5471273988133666918">ჩანართის „<ph name="TAB_TITLE" />“ გადატანა შეუძლებელია</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
+<translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="549660026907543296">შეერთება სახელით <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">ბოლო აქტივობების ქვედა ფურცელი</translation>
 <translation id="5526281268548144413">სხვადასხვა ფანჯრებში დახურვა შეუძლებელია</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">თქვენი ფაილები და გვერდები ხელმისაწვდომია „ჩამოტვირთვების“ სექციაში</translation>
 <translation id="5962718611393537961">შეეხეთ ჩასაკეცად</translation>
 <translation id="5964869237734432770">სურათების აღწერის შეწყვეტა</translation>
+<translation id="5972844218283131174">ყველა არჩევანის გაუქმება</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5977976211062815271">ამ მოწყობილობაზე</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 გვერდი თქვენს საკითხავ სიაში}other{# გვერდი თქვენს საკითხავ სიაში}}</translation>

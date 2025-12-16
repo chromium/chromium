@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Szervezete automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}other{Szervezete automatikusan bezárja a Chromiumot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}}</translation>
 <translation id="4118474109249235144">Chromium inkognitó mód</translation>
 <translation id="4122186850977583290">Ugrás A Chromium névjegye oldalra</translation>
+<translation id="4135244987012252068">A Chromium személyre szabásával új megjelenést adhat böngészőjének</translation>
 <translation id="4147856324248078748">A Chromium s&amp;zemélyre szabása</translation>
 <translation id="4148957013307229264">Telepítés...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chromium</translation>

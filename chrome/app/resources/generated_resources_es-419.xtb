@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">No se pudo descargar el diccionario del corrector ortográfico de <ph name="LANGUAGE" />. Vuelve a intentarlo.</translation>
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079242569060319448">¿Olvidaste el PIN?</translation>
-<translation id="1079285777677001938">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="1079766198702302550">Bloquear siempre el acceso a la cámara</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 pestaña}other{<ph name="GROUP_TITLE" /> - # pestañas}}</translation>
 <translation id="1082214733466244292">Tu administrador restringió algunas funcionalidades en este dispositivo</translation>
@@ -2209,6 +2208,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2476901513051581836">No se puede liberar espacio hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
 <translation id="2477065602824695373">Dado que configuraste varios interruptores, se desactivó el escaneo automático.</translation>
+<translation id="2477218554275525952">Mantener abierta la barra lateral de Gemini cuando abras una pestaña nueva</translation>
 <translation id="2477607419416067650">Otros datos de Google</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
@@ -3455,7 +3455,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3348973040180736882">Descomprimiendo</translation>
 <translation id="3349610303043713601">Navegar con IA</translation>
 <translation id="3349933790966648062">Espacio en memoria</translation>
-<translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
 <translation id="3351472127384196879">Agrega o ubica botones en el lápiz</translation>
 <translation id="3353786022389205125">Activa "Mostrar la pantalla bloqueada al salir del modo de suspensión" y vuelve a intentarlo.</translation>
 <translation id="3354768182971982851">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Mac después de diciembre de 2022. Puedes comprobar si hay una nueva versión disponible.</translation>
@@ -3602,7 +3601,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
-<translation id="3447644283769633681">Bloquear todas las cookies de terceros</translation>
 <translation id="3447644827015694497">¿Quieres revisar las pestañas inactivas?</translation>
 <translation id="3447797901512053632">Transmitiendo <ph name="TAB_NAME" /> a <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
@@ -3923,7 +3921,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3663417513679360795">Más información sobre la activación de la precarga estándar</translation>
 <translation id="3664511988987167893">Ícono de extensión</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Unirse al grupo de pestañas con <ph name="OWNER_FIRST_NAME" />}=1{Unirse al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y # persona más}other{Unirse al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y # personas más}}</translation>
-<translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3665301845536101715">Abrir en el panel lateral</translation>
 <translation id="3665589677786828986">Chrome detectó que otro programa dañó algunas opciones de configuración, por lo que la restableció a los valores predeterminados.</translation>
 <translation id="3665918214153961651">Cargando archivo</translation>
@@ -6820,7 +6817,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="565461030474814383">¿Quieres guardarla en la cuenta?</translation>
-<translation id="5654669866168491665">Más información sobre los sitios que podrían no funcionar cuando se bloquean las cookies de terceros</translation>
 <translation id="5654751240928365405">Se desactivó esta extensión porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
 <translation id="5655296450510165335">Inscripción del dispositivo</translation>
@@ -7570,7 +7566,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
 <translation id="6183369864942961155">Tema claro/oscuro automático</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
-<translation id="6184868291074982484">Chrome limita automáticamente las cookies de terceros</translation>
 <translation id="6185132558746749656">Ubicación del dispositivo</translation>
 <translation id="6185151644843671709">Se guardó la llave de acceso y se creó el PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contraseña y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}other{{PASSWORD_COUNT} contraseñas y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}}</translation>
@@ -8578,7 +8573,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Se bloquearon las imágenes en esta página.</translation>
 <translation id="6881845890692344060">Tu administrador salió de la cuenta. Ahora tienes el control.</translation>
-<translation id="6882210908253838664">Si un sitio no funciona, intenta otorgarle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">El sistema no pudo guardar la configuración del dispositivo.</translation>
 <translation id="6883606786470492001">Administra tus temas de anuncios y otros parámetros de configuración si quieres limitar la información que los sitios pueden obtener sobre ti para mostrarte anuncios personalizados</translation>
 <translation id="6884474387073389421">¿Confirmas que quieres borrar los datos de acceso seleccionados?</translation>
@@ -8952,7 +8946,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7145413760160421938">No se puede reanudar la sesión anterior</translation>
 <translation id="7146882055510146554">Microsoft 365 usa OneDrive para abrir y editar archivos de Word, Excel y PowerPoint. Estos archivos se encuentran en la navegación lateral de la app de Archivos con la etiqueta "Microsoft OneDrive". Deberás acceder con tu cuenta de Microsoft. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Es posible que los sitios no funcionen como esperas. Elige esta opción si no quieres que se guarde información sobre los sitios que visitas en tu dispositivo.</translation>
-<translation id="7148954254185728510">La mayoría de los sitios no pueden usar cookies de terceros para seguirte mientras navegas, y los sitios no pueden usar cookies de terceros en el modo Incógnito.</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
@@ -10626,7 +10619,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8275038454117074363">Importar</translation>
 <translation id="8275080796245127762">Llamar desde tu dispositivo</translation>
 <translation id="8276560076771292512">Vaciar caché y volver a cargar de manera forzada</translation>
-<translation id="8276850948802942358">Más información para permitir temporalmente que un sitio use cookies de terceros</translation>
 <translation id="8277907305629781277">Creaste esta llave de acceso el <ph name="DATE" /></translation>
 <translation id="8278702675516957539">No se permite usar la optimización de JavaScript</translation>
 <translation id="827966378414194229">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -11208,7 +11200,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8678192320753081984">Brinda la seguridad de la cuenta más eficaz de Google para las personas en riesgo de sufrir ataques dirigidos</translation>
 <translation id="8678378565142776698">Reiniciar y obtener actualizaciones automáticas</translation>
 <translation id="8678538439778360739">Se encriptaron los datos con tu frase de contraseña de sincronización el <ph name="TIME" />. No se incluyen formas de pago ni direcciones de Google Pay.</translation>
-<translation id="867882552362231068">Chrome limita el tipo de información que los sitios pueden usar para seguirte mientras navegas. Puedes cambiar la configuración para elegir tu propio nivel de protección.</translation>
 <translation id="8678933587484842200">¿Cómo deseas que se ejecute esta app?</translation>
 <translation id="8679054765393461130">La lista de renderización de la selección de red activará el Wi-Fi para realizar análisis con frecuencia. Esto puede afectar el rendimiento de tu red Wi-Fi.</translation>
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
@@ -12016,6 +12007,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9207434080086272167">Soleado</translation>
 <translation id="9207669213427469593">Si ajustas una ventana a un lado para usar la pantalla dividida, verás sugerencias de ventanas para el otro lado</translation>
 <translation id="9209563766569767417">Revisando la configuración del contenedor de Linux</translation>
+<translation id="9212565256020141627">No se pudo compartir la imagen con Gemini. Vuelve a intentarlo o prueba con otra imagen.</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Comunícate con el representante de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" agregada</translation>

@@ -6006,6 +6006,7 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies e
           Si cette règle n'est pas configurée, la ligne de commande par défaut est utilisée.</translation>
 <translation id="5151099177901233471">Activer les rapports sur le fuseau horaire de l'appareil</translation>
 <translation id="5151163911478747031">Désactiver l'attribution de l'extension dans le pied de la page "Nouvel onglet"</translation>
+<translation id="5151850599880109339">Activer le mode HTTPS uniquement en mode équilibré</translation>
 <translation id="5152393033264257734">Autoriser les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icône des fonctionnalités expérimentales du navigateur dans la barre d'outils</translation>
@@ -9013,6 +9014,7 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
 <translation id="7016587686120059767">Désactiver le mode Invité</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7021590945154530517">Activer le contrôle de l'état de l'appareil</translation>
+<translation id="7021952112057614674">Désactiver le mode HTTPS uniquement</translation>
 <translation id="7025153290982655996">Revenir à l'ancien comportement du champ d'application des cookies</translation>
 <translation id="7025332601572838001">Configurer le comportement de la boîte de dialogue des conditions d'utilisation la première fois que des onglets personnalisés Chrome sont exécutés</translation>
 <translation id="7026351325994257733">Autoriser la synchronisation des configurations du réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté.</translation>
@@ -11021,6 +11023,7 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
       Si cette règle n'est pas configurée, les utilisateurs peuvent contrôler si <ph name="PRODUCT_NAME" /> est le navigateur par défaut et, dans le cas contraire, si une notification doit être affichée pour les en informer.
 
       Remarque (pour les administrateurs <ph name="MS_WIN_NAME" />) : Ce paramètre ne peut être activé que pour les ordinateurs sous Windows 7. Pour les versions ultérieures, vous devez déployer un fichier d'associations d'applications par défaut qui définisse <ph name="PRODUCT_NAME" /> comme le gestionnaire des protocoles <ph name="HTTPS_PROTOCOL" /> et <ph name="HTTP_PROTOCOL" /> (et éventuellement du protocole <ph name="FTP_PROTOCOL" /> ainsi que d'autres formats de fichiers). Pour en savoir plus, consultez l'aide de Chrome à l'adresse https://support.google.com/chrome?p=make_chrome_default_win.</translation>
+<translation id="8437147918598002525">Activer le mode HTTPS uniquement en mode strict</translation>
 <translation id="8437836857126992452">Permet de déterminer quelles extensions les utilisateurs ne peuvent PAS installer. Les extensions déjà installées, mais qui sont bloquées, sont désactivées sans que l'utilisateur puisse les activer. Elles sont automatiquement réactivées dès que vous les retirez de la liste de blocage.
 
           Si vous saisissez la valeur "*" dans la liste de blocage, toutes les extensions sont bloquées par défaut. Les extensions explicitement listées dans la liste d'autorisation sont autorisées si elles sont signées (empaquetées). Toutes les extensions non empaquetées sont bloquées.
@@ -12148,6 +12151,24 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="922160134042190462">Ne pas activer <ph name="DESK_API_NAME" /> pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers</translation>
 <translation id="9221827710437832530">Autoriser l'accès à la géolocalisation sur l'écran de connexion.</translation>
 <translation id="922540222991413931">Configurer les sources d'installation des extensions, des applications et des scripts d'utilisateur</translation>
+<translation id="924360639456783890">Cette règle détermine si les utilisateurs peuvent activer ou non le mode HTTPS uniquement (toujours utiliser une connexion sécurisée) dans les paramètres. Ce mode fait passer toutes les navigations en HTTPS.
+
+Si ce paramètre n'est pas défini ou s'il est défini sur "allowed", les utilisateurs seront autorisés à activer le mode HTTPS uniquement.
+
+Si ce paramètre est défini sur "disallowed", le mode HTTPS uniquement sera désactivé.
+
+Si ce paramètre est défini sur "force_enabled", le mode HTTPS uniquement sera activé en mode strict.
+
+Si ce paramètre est défini sur "force_balanced_enabled", le mode HTTPS uniquement sera activé en mode équilibré.
+
+"force_enabled" est pris en charge à partir de M112 et "force_balanced_enabled" à partir de M129.
+
+"force_enabled" et "force_balanced_enabled" peuvent aussi être recommandés aux utilisateurs.
+Le mode HTTPS uniquement sera initialement défini sur "Strict" ou "Équilibré", mais les utilisateurs pourront le modifier.
+
+Si vous définissez cette règle sur une valeur non prise en charge par la version de Chrome qui la reçoit, Chrome utilisera le paramètre autorisé par défaut.
+
+La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.</translation>
 <translation id="924557436754151212">Importer les mots de passe enregistrés du navigateur par défaut à la première exécution</translation>
 <translation id="925379810778921867">Un SharedWorker d'URL blob hérite d'un contrôleur.</translation>
 <translation id="927384371566552478">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs ont accès à l'interface utilisateur d'importation/exportation. Si elle est désactivée, ils n'y ont pas accès.</translation>

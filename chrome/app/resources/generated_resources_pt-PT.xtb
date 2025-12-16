@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Não foi possível transferir o dicionário de verificação ortográfica de <ph name="LANGUAGE" />. Tente novamente.</translation>
 <translation id="1078037449555275327">Definições do ChromeVox</translation>
 <translation id="1079242569060319448">Esqueceu-se do PIN?</translation>
-<translation id="1079285777677001938">As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="1079766198702302550">Bloquear sempre o acesso à câmara</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
 <translation id="1082214733466244292">O seu administrador bloqueou algumas funcionalidades para este dispositivo</translation>
@@ -3460,7 +3459,6 @@ Quer pará-lo?</translation>
 <translation id="3348973040180736882">A descomprimir</translation>
 <translation id="3349610303043713601">Navegar com IA</translation>
 <translation id="3349933790966648062">Utilização da memória</translation>
-<translation id="3350450887151703713">Repetir 10 segundos</translation>
 <translation id="3351472127384196879">Adicione ou localize botões na caneta</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar o ecrã de bloqueio quando for ativado após a suspensão" e tente novamente</translation>
 <translation id="3354768182971982851">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Mac depois de dezembro de 2022. Pode verificar se está disponível uma nova versão.</translation>
@@ -3607,7 +3605,6 @@ Quer pará-lo?</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Ler os seus dados em vários Sites</translation>
-<translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
 <translation id="3447644827015694497">Rever separadores inativos?</translation>
 <translation id="3447797901512053632">A transmitir <ph name="TAB_NAME" /> para <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
@@ -3928,7 +3925,6 @@ Quer pará-lo?</translation>
 <translation id="3663417513679360795">Mais informações sobre a ativação do pré-carregamento padrão</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" />}=1{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais # pessoa}other{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais # pessoas}}</translation>
-<translation id="3665100783276035932">A maioria dos sites deve funcionar conforme esperado</translation>
 <translation id="3665301845536101715">Abrir no painel lateral</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
 <translation id="3665918214153961651">A carregar ficheiro</translation>
@@ -6826,7 +6822,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5651308944918885595">Deteção da funcionalidade Partilhar na proximidade</translation>
 <translation id="5653154844073528838">Tem <ph name="PRINTER_COUNT" /> impressoras guardadas.</translation>
 <translation id="565461030474814383">Guardar na conta?</translation>
-<translation id="5654669866168491665">Saiba mais sobre sites que podem não funcionar com o bloqueio de cookies de terceiros</translation>
 <translation id="5654751240928365405">Esta extensão foi desativada porque já não é suportada</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger a sua privacidade, foram removidas as autorizações de um site}other{Para proteger a sua privacidade, foram removidas as autorizações de alguns sites}}</translation>
 <translation id="5655296450510165335">Inscrição de dispositivo</translation>
@@ -7576,7 +7571,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6181431612547969857">Transferência bloqueada</translation>
 <translation id="6183369864942961155">Tema claro/escuro automático</translation>
 <translation id="6184099524311454384">Pesquisar separadores</translation>
-<translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="6185132558746749656">Localização do dispositivo</translation>
 <translation id="6185151644843671709">Chave de acesso guardada e PIN criado</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 palavra-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google. Esta ação também limpa todos os duplicados.}other{{PASSWORD_COUNT} palavras-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google. Esta ação também limpa todos os duplicados.}}</translation>
@@ -8584,7 +8578,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">As imagens foram bloqueadas nesta página.</translation>
 <translation id="6881845890692344060">O administrador terminou sessão. A escolha agora é sua.</translation>
-<translation id="6882210908253838664">Se um site não estiver a funcionar, pode experimentar dar-lhe autorização temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ups! O sistema não conseguiu guardar a configuração do dispositivo.</translation>
 <translation id="6883606786470492001">Faça a gestão dos tópicos de anúncios e de outras definições para limitar o que os sites podem saber sobre si para lhe mostrar anúncios personalizados</translation>
 <translation id="6884474387073389421">Tem a certeza de que quer eliminar os dados de início de sessão selecionados?</translation>
@@ -8958,7 +8951,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7145413760160421938">Não é possível retomar a sessão anterior</translation>
 <translation id="7146882055510146554">O Microsoft 365 usa o OneDrive para abrir e editar ficheiros do Word, Excel e PowerPoint. Estes ficheiros encontram-se na navegação lateral da app Files denominada "Microsoft OneDrive". Tem de iniciar sessão com a sua conta Microsoft. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Os sites podem não funcionar como esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites que visita.</translation>
-<translation id="7148954254185728510">A maioria dos sites não pode usar cookies de terceiros para acompanhar o seu perfil enquanto navega, e os sites não podem usar cookies de terceiros no Modo de navegação anónima.</translation>
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
@@ -10632,7 +10624,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8275038454117074363">Importar</translation>
 <translation id="8275080796245127762">Ligar a partir do seu dispositivo</translation>
 <translation id="8276560076771292512">Esvaziar cache e recarregamento forçado</translation>
-<translation id="8276850948802942358">Saiba como conceder autorização temporária a um site para usar cookies de terceiros</translation>
 <translation id="8277907305629781277">Criou esta chave de acesso a <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Sem autorização para usar a otimização do JavaScript</translation>
 <translation id="827966378414194229">Use movimentos da cabeça e expressões faciais para controlar o Chromebook. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -11214,7 +11205,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8678192320753081984">Proporciona a segurança de conta mais avançada da Google para pessoas em risco de ataques direcionados</translation>
 <translation id="8678378565142776698">Reiniciar e obter atualizações automáticas</translation>
 <translation id="8678538439778360739">Os dados foram encriptados com a sua frase de acesso de sincronização a <ph name="TIME" />. Não estão incluídos métodos de pagamento e endereços do Google Pay.</translation>
-<translation id="867882552362231068">O Chrome limita o tipo de informações que os sites podem usar para acompanhar o seu perfil enquanto navega. Pode alterar as definições para escolher o seu próprio nível de proteção.</translation>
 <translation id="8678933587484842200">Como quer que esta aplicação seja iniciada?</translation>
 <translation id="8679054765393461130">A lista de seleção de rede de renderização aciona a procura frequente de redes Wi-Fi. Isto pode afetar o desempenho da sua rede Wi-Fi.</translation>
 <translation id="8680251145628383637">Inicie sessão para obter os seus marcadores, o histórico, as palavras-passe e outras definições em todos os seus dispositivos. Além disso, também inicia sessão automaticamente nos serviços Google.</translation>

@@ -427,6 +427,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2854916915045135148">Tocca e tieni premuto per passare alla navigazione in incognito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> e 1 altra scheda}other{<ph name="URL" /> e <ph name="TAB_COUNT_MANY" /> altre schede}}</translation>
 <translation id="2869430948265924908">Per proteggere i tuoi contenuti sensibili in auto, devi creare un blocco del profilo dell'auto.  Puoi farlo con un PIN, un codice o una password.</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2871733351037274014">Precarica le pagine</translation>
@@ -445,6 +446,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2904414404539560095">Elenco di dispositivi con cui condividere una scheda aperto a schermo intero.</translation>
 <translation id="2908243544703713905">Contenuti da leggere pronti</translation>
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
+<translation id="2912247081180973411">Chiudi finestre</translation>
 <translation id="2912345083818861431">Utilizza il blocco schermo per vedere le schede di navigazione in incognito aperte</translation>
 <translation id="2918484639460781603">Passa alle impostazioni</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, scheda con audio disattivato</translation>
@@ -502,7 +504,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3159335509547415276">Scopri di più sugli account bloccati</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, si apre in una nuova scheda</translation>
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
-<translation id="316694332262407393">Chrome è già in esecuzione qui.</translation>
 <translation id="3167258285411721858">Puoi richiedere il sito mobile di <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Feed personalizzato</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, schede Incognito con audio disattivato bloccate selezionate</translation>
@@ -1038,6 +1039,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5469852975082458401">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi F7 per disattivare questa opzione.</translation>
 <translation id="5471273988133666918">Impossibile spostare la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
+<translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="549660026907543296">Partecipa come <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Riquadro inferiore Attività recente</translation>
 <translation id="5526281268548144413">Impossibile eseguire la chiusura in più finestre</translation>
@@ -1146,6 +1148,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5958275228015807058">Puoi trovare i tuoi file e le tue pagine nella cartella Download</translation>
 <translation id="5962718611393537961">Tocca per comprimere</translation>
 <translation id="5964869237734432770">Interrompi descr. immagini</translation>
+<translation id="5972844218283131174">Deseleziona tutto</translation>
 <translation id="5975083100439434680">Diminuisci lo zoom</translation>
 <translation id="5977976211062815271">Su questo dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 pagina nel tuo elenco di lettura}other{# pagine nel tuo elenco di lettura}}</translation>

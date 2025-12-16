@@ -429,7 +429,7 @@
 <translation id="257088987046510401">தீம்கள்</translation>
 <translation id="2573117291489209663">முடிந்தது</translation>
 <translation id="2577522251608256362">அருகிலுள்ள இடம்</translation>
-<translation id="2579713773888829241">பகிர்ந்த இயக்ககங்கள்</translation>
+<translation id="2579713773888829241">பகிர்ந்த டிரைவ்கள்</translation>
 <translation id="2583688836549072561">பக்கக் குழு, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> பக்கங்கள், புதிய செயல்பாடு.</translation>
 <translation id="2593272815202181319">மோனோஸ்பேஸ்</translation>
 <translation id="2601778637777010194">தயாரிப்புகளுக்கான விலைக் குறைப்புகளைக் கண்காணிக்கலாம்</translation>
@@ -1461,6 +1461,7 @@
 <translation id="6445981559479772097">செய்தி அனுப்பப்பட்டது.</translation>
 <translation id="6449554712554071184">உங்கள் சாதனத்தில் உள்ள குழுவை இது நிரந்தரமாக நீக்கிவிடும்.</translation>
 <translation id="6452534462676960500">புதிய செயல்பாடு</translation>
+<translation id="6454311990702999318">தவறான தரவு</translation>
 <translation id="6459411599807878608">விவரங்கள் மறைக்கப்பட்டன</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6472069383518492189">பதிவிறக்கங்கள் இங்கே காட்டப்படும்</translation>
@@ -1494,6 +1495,7 @@
 <translation id="6579867704846662339">வேறொரு ஆப்ஸில் இருந்து வரும் URLகளை மறைநிலைப் பயன்முறையில் திறக்கலாம்.</translation>
 <translation id="6583087784430677195">முடக்க, <ph name="BEGIN_LINK" />அமைப்புகள்<ph name="END_LINK" /> என்பதைத் திறந்து ‘தன்னிரப்பிக் கடவுச்சொற்கள்’ என்பதற்குச் செல்லவும்.</translation>
 <translation id="6585618849026997638">முக்கியமான பக்கங்களை புக்மார்க் செய்வதன் மூலம் எப்போது வேண்டுமானாலும் அவற்றை உடனடியாக அணுகலாம்</translation>
+<translation id="6589001036857939353">நகல்களை ஒன்றிணையுங்கள்</translation>
 <translation id="659407965921887085">இணையம் முழுவதிலும் நீங்கள் தற்போது கன்காணிக்கும் தயாரிப்புகளின் விலைச் சரிவை இந்தக் கார்டு காட்டும்</translation>
 <translation id="6596481460663245319">Google மூலம் படத்தைத் தேடு</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 கடவுச்சொல்}other{# கடவுச்சொற்கள்}}</translation>

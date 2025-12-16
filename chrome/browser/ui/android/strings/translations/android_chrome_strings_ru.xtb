@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">Список устройств для отправки вкладки развернут на весь экран.</translation>
 <translation id="2908243544703713905">Есть непрочитанные истории</translation>
 <translation id="2909615210195135082">Платформа уведомлений Google</translation>
+<translation id="2912247081180973411">Закрыть окна</translation>
 <translation id="2912345083818861431">Чтобы посмотреть открытые вкладки инкогнито, нужно будет разблокировать экран</translation>
 <translation id="2918484639460781603">Перейти к настройкам</translation>
 <translation id="2920713489113095380">Вкладка "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">О заблокированных аккаунтах</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> откроется в новой вкладке</translation>
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
-<translation id="316694332262407393">Браузер Chrome уже запущен.</translation>
 <translation id="3167258285411721858">Вы можете переключиться на мобильную версию сайта <ph name="HOST_NAME" />.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3181145110929454111">Выбранная вместе с несколькими другими и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
 <translation id="5471273988133666918">Нельзя переместить вкладку "<ph name="TAB_TITLE" />".</translation>
 <translation id="548278423535722844">Показать на карте</translation>
+<translation id="5494920125229734069">Выбрать все</translation>
 <translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Нижний экран недавних действий</translation>
 <translation id="5526281268548144413">Невозможно закрыть вкладки, открытые в нескольких окнах</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">Файлы и страницы, которые вы скачали, находятся в разделе "Скачанные файлы".</translation>
 <translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5964869237734432770">Не генерировать описания</translation>
+<translation id="5972844218283131174">Отменить выбор</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5977976211062815271">На этом устройстве</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 страница в списке для чтения}one{# страница в списке для чтения}few{# страницы в списке для чтения}many{# страниц в списке для чтения}other{# страницы в списке для чтения}}</translation>

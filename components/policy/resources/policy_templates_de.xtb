@@ -6003,6 +6003,7 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
           Wenn diese Richtlinie nicht festgelegt wird, wird die Standardbefehlszeile verwendet.</translation>
 <translation id="5151099177901233471">Melden der Zeitzoneninformationen auf Geräten deaktivieren</translation>
 <translation id="5151163911478747031">Namensnennung für Erweiterungen in der Fußzeile auf der Seite „Neuer Tab“ deaktivieren</translation>
+<translation id="5151850599880109339">Nur-HTTPS-Modus im ausgewogenen Modus aktivieren</translation>
 <translation id="5152393033264257734">DNS-Abfangprüfungen und „Meintest du: http://intranetsite/“-Infoleisten erlauben.</translation>
 <translation id="5152787786897382519">Sowohl in Chromium als auch in Google Chrome gibt es Richtliniengruppen, die in Abhängigkeit voneinander die Steuerung einer Funktion ermöglichen. Diese Richtliniensätze werden durch die folgenden Richtliniengruppen repräsentiert. Aufgrund der Tatsache, dass Richtlinien mehrere Quellen haben können, werden nur Werte, die aus der Quelle mit der höchsten Priorität stammen, angewendet. Werte aus einer Quelle mit niedrigerer Priorität in derselben Gruppe werden ignoriert. Die Hierarchie wird unter <ph name="POLICY_PRIORITY_DOC_URL" /> definiert.</translation>
 <translation id="5153187201534281749">Symbol für experimentelle Browserfunktionen auf der Symbolleiste</translation>
@@ -8997,6 +8998,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 <translation id="7016587686120059767">Gastmodus deaktivieren</translation>
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7021590945154530517">Überwachung des Gerätestatus aktivieren</translation>
+<translation id="7021952112057614674">Nur-HTTPS-Modus deaktivieren</translation>
 <translation id="7025153290982655996">Altes Verhalten des Cookie-Bereichs wiederherstellen</translation>
 <translation id="7025332601572838001">Konfiguriert die Nutzungsbedingungen während der ersten Ausführung für CCT</translation>
 <translation id="7026351325994257733">Erlauben, dass WLAN-Konfigurationen auf allen <ph name="PRODUCT_OS_NAME" />-Geräten und einem verbundenen Android-Smartphone synchronisiert werden.</translation>
@@ -11000,6 +11002,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird für alle Websites der global
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob <ph name="PRODUCT_NAME" /> der Standardbrowser ist und ob (falls nicht) entsprechende Benachrichtigungen angezeigt werden sollen.
 
       Hinweis für <ph name="MS_WIN_NAME" />-Administratoren: Diese Einstellung funktioniert nur auf Computern mit Windows 7. Bei neueren Versionen musst du eine Datei mit "Standardanwendungszuordnungen" angeben, die <ph name="PRODUCT_NAME" /> zum Handler für die <ph name="HTTPS_PROTOCOL" />- und <ph name="HTTP_PROTOCOL" />-Protokolle sowie optional für das <ph name="FTP_PROTOCOL" />-Protokoll und weitere Dateiformate macht. Weitere Informationen findest du in der Chrome-Hilfe (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">Nur-HTTPS-Modus im strikten Modus aktivieren</translation>
 <translation id="8437836857126992452">Mit dieser Richtlinie kannst du festlegen, welche Erweiterungen Nutzer NICHT installieren dürfen. Bereits installierte Erweiterungen, die gesperrt sind, werden deaktiviert und Nutzer haben keine Möglichkeit, sie zu aktivieren. Sollte eine aufgrund der Sperrliste deaktivierte Erweiterung aus der Liste entfernt werden, wird sie automatisch wieder aktiviert.
 
           Der Wert „*“ in der Sperrliste gibt an, dass alle Erweiterungen standardmäßig blockiert sind. Erweiterungen, die ausdrücklich in der Zulassungsliste aufgeführt sind, sind zulässig, wenn sie signiert (verpackt) sind. Alle entpackten Erweiterungen sind blockiert.
@@ -12123,6 +12126,24 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="922160134042190462"><ph name="DESK_API_NAME" /> nicht für die <ph name="PRODUCT_OS_NAME" />-Steuerung über Drittanbieter aktivieren</translation>
 <translation id="9221827710437832530">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm zulassen.</translation>
 <translation id="922540222991413931">Installationsquellen für Erweiterungen, Apps und Nutzerskripte konfigurieren</translation>
+<translation id="924360639456783890">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer verschlüsselte Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
+
+Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
+
+Ist sie auf „Nicht zugelassen“ festgelegt, wird der Nur-HTTPS-Modus deaktiviert.
+
+Wenn diese Einstellung auf „force_enabled“ festgelegt ist, wird der Nur-HTTPS-Modus im strikten Modus aktiviert.
+
+Ist sie auf „force_balanced_enabled“ festgelegt, wird der Nur-HTTPS-Modus im ausgewogenen Modus aktiviert.
+
+„force_enabled“ wird ab M112 unterstützt, „force_balanced_enabled“ ab M129.
+
+„force_enabled“ und „force_balanced_enabled“ können Nutzern ebenfalls empfohlen werden.
+Der Nur-HTTPS-Modus wird anfänglich auf „Strikt“ oder „Ausgewogen“ festgelegt, aber Nutzer dürfen ihn ändern.
+
+Wird die Richtlinie auf einen Wert festgelegt, der von der Chrome-Version, die diese Richtlinie erhält, nicht unterstützt wird, wird in Chrome standardmäßig die Einstellung auf „Zugelassen“ gesetzt.
+
+Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="924557436754151212">Gespeicherte Passwörter bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="925379810778921867">Blob-URL-SharedWorker übernehmen Controller.</translation>
 <translation id="927384371566552478">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren zur Verfügung. Ist die Richtlinie deaktiviert, steht Nutzern die Benutzeroberfläche zum Exportieren/Importieren nicht zur Verfügung.</translation>

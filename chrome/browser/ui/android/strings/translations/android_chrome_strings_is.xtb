@@ -427,6 +427,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2854916915045135148">Haltu inni til að skipta yfir í huliðsstillingu</translation>
 <translation id="2860954141821109167">Gakktu úr skugga um að símaforritið sé virkt í þessu tæki</translation>
 <translation id="2861923151411510142">Tilteknir Chrome eiginleikar verða ekki tiltækir lengur</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> og 1 annar flipi}one{<ph name="URL" /> og <ph name="TAB_COUNT_MANY" /> annar flipi}other{<ph name="URL" /> og <ph name="TAB_COUNT_MANY" /> aðrir flipar}}</translation>
 <translation id="2869430948265924908">Til að vernda viðkvæmt efni í bílnum þarftu að búa til prófíllás fyrir bílinn.  Það má gera með PIN-númeri, kóða eða aðgangsorði.</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2871733351037274014">Forhlaða síðum</translation>
@@ -445,6 +446,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2904414404539560095">Tækjalisti fyrir deilingu flipa sem er opinn á öllum skjánum.</translation>
 <translation id="2908243544703713905">Ólesnar sögur tilbúnar</translation>
 <translation id="2909615210195135082">Tilkynningakerfi Google</translation>
+<translation id="2912247081180973411">Loka gluggum</translation>
 <translation id="2912345083818861431">Nota skjálás til að sjá opna huliðsflipa</translation>
 <translation id="2918484639460781603">Opna stillingar</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, þaggaður flipi</translation>
@@ -502,7 +504,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3159335509547415276">Nánar um reikninga á bannlista</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, opnast í nýjum flipa</translation>
 <translation id="3166827708714933426">Flýtilyklar flipa og glugga</translation>
-<translation id="316694332262407393">Chrome er þegar í gangi hér.</translation>
 <translation id="3167258285411721858">Þú getur óskað eftir snjallvef fyrir <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, margvalinn festur huliðsflipi með slökkt á hljóði</translation>
@@ -1038,6 +1039,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5469852975082458401">Þú getur skoðað síður með textabendli. Ýttu á F7 til að slökkva.</translation>
 <translation id="5471273988133666918">Ekki er hægt að færa flipann „<ph name="TAB_TITLE" />“</translation>
 <translation id="548278423535722844">Opna í kortaforriti</translation>
+<translation id="5494920125229734069">Velja allt</translation>
 <translation id="549660026907543296">Taka þátt sem <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Blað neðst sem sýnir nýlega virkni</translation>
 <translation id="5526281268548144413">Ekki hægt að loka í mörgum gluggum</translation>
@@ -1146,6 +1148,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
+<translation id="5972844218283131174">Afvelja allt</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5977976211062815271">Í þessu tæki</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Ein síða á leslistanum þínum}one{# síða á leslistanum þínum}other{# síður á leslistanum þínum}}</translation>

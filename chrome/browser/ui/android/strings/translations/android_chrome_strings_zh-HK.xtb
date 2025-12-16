@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">要共用分頁嘅裝置清單宜家顯示喺成個畫面。</translation>
 <translation id="2908243544703713905">有未讀的報導</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
+<translation id="2912247081180973411">關閉視窗</translation>
 <translation id="2912345083818861431">透過螢幕鎖定查看開啟的無痕式分頁</translation>
 <translation id="2918484639460781603">前往設定</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />，已經靜音嘅分頁</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">瞭解被封鎖的帳戶</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />，喺新分頁開啟</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
-<translation id="316694332262407393">Chrome 已在此執行中。</translation>
 <translation id="3167258285411721858">您可向 <ph name="HOST_NAME" /> 要求取得流動網站</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，複選咗已經靜音嘅固定無痕式分頁</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">您可使用文字游標導覽網頁。按 F7 即可關閉。</translation>
 <translation id="5471273988133666918">無法移動「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
+<translation id="5494920125229734069">全部選取</translation>
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
 <translation id="5517326820028369152">近期活動頁底面板</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">在「下載」主畫面尋找您的檔案和網頁</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
+<translation id="5972844218283131174">全部取消選取</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5977976211062815271">在此裝置上</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{閱讀清單的 1 個頁面}other{閱讀清單的 # 個頁面}}</translation>

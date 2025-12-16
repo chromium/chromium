@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">Список пристроїв, на які можна надіслати вкладку, відкрито на всю висоту екрана.</translation>
 <translation id="2908243544703713905">Є непрочитані історії</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Закрити вікна</translation>
 <translation id="2912345083818861431">Використовувати метод розблокування екрана, щоб переглядати відкриті анонімні вкладки</translation>
 <translation id="2918484639460781603">Перейти в налаштування</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" /> (вкладка, на якій вимкнено звук)</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">Докладніше про заблоковані облікові записи</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> (відкриється в новій вкладці)</translation>
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
-<translation id="316694332262407393">Chrome уже запущено.</translation>
 <translation id="3167258285411721858">Ви можете переключитися на мобільний сайт <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" /> (одна з вибраних анонімних вкладок, яку закріплено й на якій вимкнено звук)</translation>
@@ -1039,6 +1039,7 @@
 <translation id="5469852975082458401">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть F7.</translation>
 <translation id="5471273988133666918">Не можна перемістити вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Відкрити в додатку Карти</translation>
+<translation id="5494920125229734069">Вибрати все</translation>
 <translation id="549660026907543296">Приєднатися як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Нижній екран із даними про останні дії</translation>
 <translation id="5526281268548144413">Не можна закрити в кількох вікнах</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5958275228015807058">Знаходьте свої файли та сторінки в розділі "Завантаження"</translation>
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5964869237734432770">Не показувати описи</translation>
+<translation id="5972844218283131174">Не вибирати нічого</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5977976211062815271">На цьому пристрої</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 сторінка у вашому списку читання}one{# сторінка у вашому списку читання}few{# сторінки у вашому списку читання}many{# сторінок у вашому списку читання}other{# сторінки у вашому списку читання}}</translation>

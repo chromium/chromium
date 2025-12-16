@@ -285,6 +285,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4095980151185649725">{COUNT,plural, =1{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="4118474109249235144">Huliðsstilling Chromium</translation>
 <translation id="4122186850977583290">Fara á síðuna Um Chromium</translation>
+<translation id="4135244987012252068">Sérsníddu Chromium til að gefa vafranum nýtt útlit</translation>
 <translation id="4147856324248078748">Sérsníddu Chromium-vafrann þinn</translation>
 <translation id="4148957013307229264">Setur upp...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – innskráning á net – Chromium</translation>

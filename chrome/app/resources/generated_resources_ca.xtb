@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">No s'ha pogut baixar el diccionari del corrector ortogràfic per a <ph name="LANGUAGE" />. Torna-ho a provar.</translation>
 <translation id="1078037449555275327">Configuració de ChromeVox</translation>
 <translation id="1079242569060319448">Has oblidat el PIN?</translation>
-<translation id="1079285777677001938">És possible que les funcions d'alguns llocs web no estiguin operatives.</translation>
 <translation id="1079766198702302550">Bloqueja sempre l'accés a la càmera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestanya)}other{<ph name="GROUP_TITLE" /> (# pestanyes)}}</translation>
 <translation id="1082214733466244292">El teu administrador ha bloquejat algunes funcions en aquest dispositiu</translation>
@@ -2212,6 +2211,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2476901513051581836">No es pot alliberar emmagatzematge fins que no es conegui la mida de l'emmagatzematge sense connexió.</translation>
 <translation id="2476974672882258506">Apaga Windows per desinstal·lar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Com que has configurat diversos interruptors, la cerca automàtica s'ha desactivat.</translation>
+<translation id="2477218554275525952">Mantén oberta la barra lateral de Gemini quan obris una pestanya nova</translation>
 <translation id="2477607419416067650">Altres dades de Google</translation>
 <translation id="2478176599153288112">Permisos de fitxer multimèdia per a "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activa el servei de recuperació de dades</translation>
@@ -3456,7 +3456,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3348973040180736882">S'està descomprimint</translation>
 <translation id="3349610303043713601">Navega amb IA</translation>
 <translation id="3349933790966648062">Ús de la memòria</translation>
-<translation id="3350450887151703713">Torna a reproduir 10 segons</translation>
 <translation id="3351472127384196879">Afegeix o localitza botons al llapis</translation>
 <translation id="3353786022389205125">Activa Mostra la pantalla de bloqueig en reactivar el dispositiu i torna-ho a provar</translation>
 <translation id="3354768182971982851">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran en dispositius Mac. Pots comprovar si hi ha una nova versió disponible.</translation>
@@ -3603,7 +3602,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop per instal·lar Windows.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
-<translation id="3447644283769633681">Bloqueja totes les galetes de tercers</translation>
 <translation id="3447644827015694497">Vols revisar les pestanyes inactives?</translation>
 <translation id="3447797901512053632">S'està emetent <ph name="TAB_NAME" /> a <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
@@ -3924,7 +3922,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3663417513679360795">Més informació sobre com es pot activar la precàrrega estàndard</translation>
 <translation id="3664511988987167893">Icona de l'extensió</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" />}=1{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i # persona més}other{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i # persones més}}</translation>
-<translation id="3665100783276035932">La majoria de llocs web haurien de funcionar de la manera prevista</translation>
 <translation id="3665301845536101715">Obre al tauler lateral</translation>
 <translation id="3665589677786828986">Chrome ha detectat que un altre programa ha malmès alguns dels paràmetres de configuració i els ha restablert als valors predeterminats originals.</translation>
 <translation id="3665918214153961651">S'està penjant el fitxer</translation>
@@ -6818,7 +6815,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5651308944918885595">Visibilitat de Compartició Nearby</translation>
 <translation id="5653154844073528838">Tens <ph name="PRINTER_COUNT" /> impressores desades.</translation>
 <translation id="565461030474814383">Vols desar-ho al compte?</translation>
-<translation id="5654669866168491665">Més informació sobre els llocs web que pot ser que no funcionin si es bloquegen les galetes de tercers</translation>
 <translation id="5654751240928365405">Aquesta extensió s'ha desactivat perquè ja no s'admet</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Per protegir la teva privadesa, s'han suprimit els permisos d'un lloc web}other{Per protegir la teva privadesa, s'han suprimit els permisos d'alguns llocs web}}</translation>
 <translation id="5655296450510165335">Inscripció de dispositius</translation>
@@ -7567,7 +7563,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6181431612547969857">S'ha bloquejat la baixada</translation>
 <translation id="6183369864942961155">Tema clar/fosc automàtic</translation>
 <translation id="6184099524311454384">Cerca pestanyes</translation>
-<translation id="6184868291074982484">Chrome limita automàticament les galetes de tercers</translation>
 <translation id="6185132558746749656">Ubicació del dispositiu</translation>
 <translation id="6185151644843671709">S'ha desat la clau d'accés i s'ha creat el PIN</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{PASSWORD_COUNT} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
@@ -8575,7 +8570,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6878862640969460273">Horitzontal</translation>
 <translation id="6880587130513028875">S'han bloquejat imatges en aquesta pàgina.</translation>
 <translation id="6881845890692344060">L'administrador ha tancat la sessió. Ara tens el control.</translation>
-<translation id="6882210908253838664">Si un lloc web no funciona, pots provar de donar-li permís temporal per utilitzar galetes de tercers. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">El sistema no ha pogut desar la configuració del dispositiu.</translation>
 <translation id="6883606786470492001">Gestiona els temes d'anuncis i altres opcions de configuració per limitar la informació que els llocs web poden obtenir sobre tu a fi de mostrar-te anuncis personalitzats</translation>
 <translation id="6884474387073389421">Confirmes que vols suprimir les dades d'inici de sessió?</translation>
@@ -8949,7 +8943,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7145413760160421938">No es pot reprendre la sessió anterior</translation>
 <translation id="7146882055510146554">Microsoft 365 utilitza OneDrive per obrir i editar fitxers de Word, Excel i PowerPoint. Aquests fitxers es mostraran a la navegació lateral de l'aplicació Fitxers, anomenada "Microsoft OneDrive". Hi hauràs d'iniciar la sessió amb el teu compte de Microsoft. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">És possible que els llocs web no funcionin de la manera prevista. Tria aquesta opció si no vols deixar al dispositiu informació sobre els llocs web que visites.</translation>
-<translation id="7148954254185728510">La majoria de llocs web no poden utilitzar galetes de tercers per fer un seguiment de la teva activitat mentre navegues. A més, els llocs web no poden fer servir galetes de tercers en mode d'incògnit.</translation>
 <translation id="7149839598364933473">Converteix aquest dispositiu en un dispositiu <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
 <translation id="7152478047064750137">Aquesta extensió no requereix cap permís especial</translation>
@@ -10623,7 +10616,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8275038454117074363">Importa</translation>
 <translation id="8275080796245127762">Truca des del teu dispositiu</translation>
 <translation id="8276560076771292512">Buida la memòria cau i torna a carregar de manera forçada</translation>
-<translation id="8276850948802942358">Més informació sobre com es pot concedir permís temporal a un lloc web per utilitzar galetes de tercers</translation>
 <translation id="8277907305629781277">Vas crear aquesta clau d'accés el dia <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Sense permís per utilitzar l'optimització de JavaScript</translation>
 <translation id="827966378414194229">Utilitza moviments de cap i expressions facials per controlar el Chromebook. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -11205,7 +11197,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8678192320753081984">Proporciona el sistema de seguretat per a comptes més eficaç de Google a les persones que corren més risc de patir atacs dirigits.</translation>
 <translation id="8678378565142776698">Reinicia i rep actualitzacions automàtiques</translation>
 <translation id="8678538439778360739">Les dades s'han encriptat amb la teva contrasenya de sincronització el dia <ph name="TIME" />. No s'hi inclouen les formes de pagament ni les adreces de Google Pay.</translation>
-<translation id="867882552362231068">Chrome limita el tipus d'informació que els llocs web poden utilitzar per fer un seguiment de la teva activitat mentre navegues. Pots canviar la configuració per triar el teu propi nivell de protecció.</translation>
 <translation id="8678933587484842200">Com voldries que s'iniciés aquesta aplicació?</translation>
 <translation id="8679054765393461130">La llista de renderització de la selecció de xarxa activarà la Wi-Fi per fer escanejos amb freqüència, cosa que pot afectar el rendiment de la xarxa Wi-Fi.</translation>
 <translation id="8680251145628383637">Inicieu la sessió per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions en tots els dispositius. A més, iniciareu la sessió automàticament als serveis de Google.</translation>

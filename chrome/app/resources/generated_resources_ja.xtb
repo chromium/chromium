@@ -133,7 +133,6 @@
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> のスペルチェック辞書をダウンロードできませんでした。もう一度お試しください。</translation>
 <translation id="1078037449555275327">ChromeVox の設定</translation>
 <translation id="1079242569060319448">PIN をお忘れの場合</translation>
-<translation id="1079285777677001938">一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="1079766198702302550">カメラへのアクセスを常にブロックする</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
@@ -3452,7 +3451,6 @@
 <translation id="3348973040180736882">解凍中</translation>
 <translation id="3349610303043713601">AI を活用してブラウジング</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
-<translation id="3350450887151703713">10 秒巻き戻し</translation>
 <translation id="3351472127384196879">ペンのボタンを追加または指定する</translation>
 <translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
 <translation id="3354768182971982851">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
@@ -3599,7 +3597,6 @@
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
-<translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
 <translation id="3447644827015694497">アクティブでないタブを確認しますか？</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> を <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
@@ -3919,7 +3916,6 @@
 <translation id="3663417513679360795">標準プリロードの有効化の詳細</translation>
 <translation id="3664511988987167893">拡張機能アイコン</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加}=1{<ph name="OWNER_FIRST_NAME" /> さんと他 # 人のタブグループに参加}other{<ph name="OWNER_FIRST_NAME" /> さんと他 # 人のタブグループに参加}}</translation>
-<translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665301845536101715">サイドパネルで開く</translation>
 <translation id="3665589677786828986">設定の一部が別のプログラムによって変更されていたため、元のデフォルト設定に戻しました。</translation>
 <translation id="3665918214153961651">ファイルをアップロードしています</translation>
@@ -6809,7 +6805,6 @@
 <translation id="5651308944918885595">ニアバイシェアの検出の許可</translation>
 <translation id="5653154844073528838">保存済みのプリンタは <ph name="PRINTER_COUNT" /> 件です。</translation>
 <translation id="565461030474814383">アカウントに保存しますか？</translation>
-<translation id="5654669866168491665">サードパーティ Cookie をブロックした場合に動作しない可能性のあるサイトについての詳細</translation>
 <translation id="5654751240928365405">この拡張機能はサポートが終了したため、オフになりました</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{プライバシー保護のため、サイトから権限を削除しました}other{プライバシー保護のため、いくつかのサイトから権限を削除しました}}</translation>
 <translation id="5655296450510165335">デバイスの登録</translation>
@@ -7559,7 +7554,6 @@
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
 <translation id="6183369864942961155">ライトモード / ダークモード自動設定</translation>
 <translation id="6184099524311454384">タブを検索</translation>
-<translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
 <translation id="6185151644843671709">パスキーを保存し、PIN を作成しました</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{PASSWORD_COUNT} 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
@@ -8565,7 +8559,6 @@
 <translation id="6878862640969460273">横向き</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
 <translation id="6881845890692344060">管理者がログアウトしました。ご自身で管理できるようになりました。</translation>
-<translation id="6882210908253838664">サイトが機能しない場合は、サードパーティ Cookie の使用を一時的に許可してみてください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6883606786470492001">広告トピックやその他の設定を管理して、パーソナライズド広告を表示するサイトがユーザーについて把握できる情報を制限します</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
@@ -8939,7 +8932,6 @@
 <translation id="7145413760160421938">前のセッションを再開できません</translation>
 <translation id="7146882055510146554">Microsoft 365 では、Word、Excel、PowerPoint ファイルを開いて編集する際に OneDrive を使用します。これらのファイルは、ファイルアプリのサイド ナビゲーションの「Microsoft OneDrive」で確認できます。Microsoft アカウントにログインする必要があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">サイトが想定どおりに機能しない可能性があります。アクセスしたサイトに関する情報をデバイスに残したくない場合は、このオプションを選択します。</translation>
-<translation id="7148954254185728510">ほとんどのサイトは、サードパーティ Cookie を使用してブラウジング中のユーザーをトラッキングできません。またシークレット モードでは、サイトはサードパーティ Cookie を使用できません。</translation>
 <translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
@@ -10612,7 +10604,6 @@
 <translation id="8275038454117074363">インポート</translation>
 <translation id="8275080796245127762">デバイスから発信</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
-<translation id="8276850948802942358">サイトにサードパーティ Cookie の使用を一時的に許可することについての詳細</translation>
 <translation id="8277907305629781277"><ph name="DATE" /> にこのパスキーを作成しました</translation>
 <translation id="8278702675516957539">JavaScript の最適化の使用を許可しない</translation>
 <translation id="827966378414194229">頭の動きや顔の表情を使用して Chromebook を操作します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -11194,7 +11185,6 @@
 <translation id="8678192320753081984">Google の最強のセキュリティで、標的型攻撃のリスクにさらされているユーザーのアカウントを保護します</translation>
 <translation id="8678378565142776698">再起動して自動的に更新</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
-<translation id="867882552362231068">Chrome で、サイトがブラウジング中のユーザーのトラッキングに使用できる情報タイプを制限します。設定を変更して、ご自身で保護レベルを選択することもできます。</translation>
 <translation id="8678933587484842200">このアプリケーションの起動方法を選択してください。</translation>
 <translation id="8679054765393461130">ネットワーク選択リストのレンダリングでは、Wi-Fi のスキャンが頻繁に行われるため、Wi-Fi ネットワークのパフォーマンスに影響が生じる場合があります。</translation>
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>

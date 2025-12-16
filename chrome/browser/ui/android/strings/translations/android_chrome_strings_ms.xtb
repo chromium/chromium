@@ -446,6 +446,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2904414404539560095">Senarai peranti untuk berkongsi tab dibuka pada ketinggian penuh.</translation>
 <translation id="2908243544703713905">Cerita belum dibaca sudah sedia</translation>
 <translation id="2909615210195135082">Platform Pemberitahuan Google</translation>
+<translation id="2912247081180973411">Tutup tetingkap</translation>
 <translation id="2912345083818861431">Gunakan kunci skrin untuk melihat tab Inkognito yang terbuka</translation>
 <translation id="2918484639460781603">Pergi ke tetapan</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, Tab Yang Diredamkan</translation>
@@ -503,7 +504,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3159335509547415276">Ketahui akaun yang disekat</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, dibuka dalam tab baharu</translation>
 <translation id="3166827708714933426">Pintasan tab dan tetingkap</translation>
-<translation id="316694332262407393">Chrome sudah pun dijalankan di sini.</translation>
 <translation id="3167258285411721858">Anda boleh meminta laman mudah alih untuk <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Temui</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Tab Inkognito Yang Diredamkan Dan Tersemat Dengan Berbilang Pilihan</translation>
@@ -1039,6 +1039,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5469852975082458401">Anda boleh menukar halaman dengan kursor teks. Tekan F7 untuk mematikannya.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> tidak dapat dialihkan</translation>
 <translation id="548278423535722844">Buka dalam apl peta</translation>
+<translation id="5494920125229734069">Pilih semua</translation>
 <translation id="549660026907543296">Sertai sebagai <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Helaian bawah aktiviti baru-baru ini</translation>
 <translation id="5526281268548144413">Tidak boleh ditutup merentas berbilang tetingkap</translation>
@@ -1147,6 +1148,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5958275228015807058">Cari fail dan halaman anda dalam Muat Turun</translation>
 <translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
+<translation id="5972844218283131174">Nyahpilih semua</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5977976211062815271">Pada peranti ini</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 halaman pada senarai bacaan anda}other{# halaman pada senarai bacaan anda}}</translation>

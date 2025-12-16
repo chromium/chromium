@@ -133,7 +133,6 @@
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> 맞춤법 검사 사전을 다운로드할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="1078037449555275327">ChromeVox 설정</translation>
 <translation id="1079242569060319448">PIN 찾기</translation>
-<translation id="1079285777677001938">일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="1079766198702302550">카메라 액세스 항상 차단</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 탭 1개}other{<ph name="GROUP_TITLE" /> - 탭 #개}}</translation>
 <translation id="1082214733466244292">관리자가 이 기기에서 일부 기능을 차단했습니다.</translation>
@@ -2227,6 +2226,7 @@
 <translation id="2476901513051581836">오프라인 스토리지 크기가 제공될 때까지 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
+<translation id="2477218554275525952">새 탭을 열 때 Gemini 사이드바를 열어 둠</translation>
 <translation id="2477607419416067650">기타 Google 데이터</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
@@ -3473,7 +3473,6 @@
 <translation id="3348973040180736882">압축 해제</translation>
 <translation id="3349610303043713601">AI로 둘러보기</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
-<translation id="3350450887151703713">10초 뒤로 이동</translation>
 <translation id="3351472127384196879">펜에서 버튼 추가 또는 찾기</translation>
 <translation id="3353786022389205125">'절전 모드가 해제될 때 잠금 화면 표시'를 사용 설정한 후 다시 시도해 주세요.</translation>
 <translation id="3354768182971982851">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
@@ -3620,7 +3619,6 @@
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
-<translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
 <translation id="3447644827015694497">비활성 탭을 검토하시겠습니까?</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" />에서 <ph name="DEVICE_NAME" /> 기기로 전송 중</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
@@ -3941,7 +3939,6 @@
 <translation id="3663417513679360795">표준 미리 로드 사용 설정에 관한 추가 정보</translation>
 <translation id="3664511988987167893">확장 프로그램 아이콘</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여}=1{<ph name="OWNER_FIRST_NAME" />님 외 1명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 #명이 있는 탭 그룹에 참여}}</translation>
-<translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
 <translation id="3665301845536101715">측면 패널에서 열기</translation>
 <translation id="3665589677786828986">Chrome에서 다른 프로그램이 브라우저 설정을 일부 손상시키고 원래 기본값으로 재설정했음을 감지했습니다.</translation>
 <translation id="3665918214153961651">파일 업로드 중</translation>
@@ -6837,7 +6834,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5651308944918885595">Nearby Share 검색 가능 여부</translation>
 <translation id="5653154844073528838">저장된 프린터가 <ph name="PRINTER_COUNT" />대 있습니다.</translation>
 <translation id="565461030474814383">계정에 저장하시겠습니까?</translation>
-<translation id="5654669866168491665">서드 파티 쿠키를 차단하면 작동하지 않을 수 있는 사이트에 대해 자세히 알아보기</translation>
 <translation id="5654751240928365405">이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{개인 정보 보호를 위해 사이트 1개에서 권한이 삭제되었습니다.}other{개인 정보 보호를 위해 일부 사이트에서 권한이 삭제되었습니다.}}</translation>
 <translation id="5655296450510165335">기기 등록</translation>
@@ -7587,7 +7583,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
 <translation id="6183369864942961155">밝은 테마/어두운 테마 자동 전환</translation>
 <translation id="6184099524311454384">탭 검색</translation>
-<translation id="6184868291074982484">Chrome에서 자동으로 서드 파티 쿠키를 제한합니다.</translation>
 <translation id="6185132558746749656">기기 위치</translation>
 <translation id="6185151644843671709">패스키 저장 및 PIN 생성됨</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
@@ -8595,7 +8590,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6878862640969460273">가로 모드</translation>
 <translation id="6880587130513028875">이 페이지에서 이미지가 차단되었습니다.</translation>
 <translation id="6881845890692344060">관리자가 로그아웃했습니다. 사용자가 직접 관리할 수 있습니다.</translation>
-<translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
 <translation id="6883606786470492001">사이트에서 개인 맞춤 광고를 표시할 때 나에 관해 알아볼 수 있는 정보를 제한하기 위해 광고 주제 및 기타 설정을 관리하세요.</translation>
 <translation id="6884474387073389421">선택한 로그인 데이터를 삭제하시겠습니까?</translation>
@@ -8969,7 +8963,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7145413760160421938">이전 세션을 재개할 수 없음</translation>
 <translation id="7146882055510146554">Microsoft 365에서는 OneDrive를 사용하여 Word, Excel, PowerPoint 파일을 열고 수정합니다. 이러한 파일은 Files 앱의 측면 탐색 메뉴에서 확인할 수 있으며 'Microsoft OneDrive'로 표시됩니다. Microsoft 계정으로 로그인해야 합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">사이트가 제대로 작동하지 않을 수 있습니다. 방문하는 사이트에 관한 정보를 기기에 저장하지 않으려면 이 옵션을 선택하세요.</translation>
-<translation id="7148954254185728510">대부분의 사이트는 탐색 시 서드 파티 쿠키를 사용하여 사용자를 추적할 수 없으며 시크릿 모드에서는 서드 파티 쿠키를 사용할 수 없습니다.</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
@@ -10643,7 +10636,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8275038454117074363">가져오기</translation>
 <translation id="8275080796245127762">기기에서 전화 걸기</translation>
 <translation id="8276560076771292512">캐시 비우기 및 강력 새로고침</translation>
-<translation id="8276850948802942358">사이트에 서드 파티 쿠키를 사용할 수 있는 임시 권한 부여에 대해 자세히 알아보기</translation>
 <translation id="8277907305629781277"><ph name="DATE" />에 이 패스키를 생성했습니다</translation>
 <translation id="8278702675516957539">JavaScript 최적화 사용이 허용되지 않음</translation>
 <translation id="827966378414194229">머리 움직임과 표정을 사용하여 Chromebook을 제어합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -11225,7 +11217,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8678192320753081984">표적 공격을 당할 위험이 있는 사용자에게 Google에서 가장 강력한 계정 보안을 제공합니다</translation>
 <translation id="8678378565142776698">다시 시작하고 자동 업데이트 받기</translation>
 <translation id="8678538439778360739"><ph name="TIME" />에 데이터가 동기화 암호로 암호화되었습니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
-<translation id="867882552362231068">Chrome에서는 탐색 중에 사이트에서 사용자를 추적하는 데 사용할 수 있는 정보 유형을 제한합니다. 설정을 변경하여 원하는 보호 수준을 선택할 수 있습니다.</translation>
 <translation id="8678933587484842200">이 애플리케이션을 실행할 방법을 선택하세요.</translation>
 <translation id="8679054765393461130">네트워크 선택 목록을 렌더링하면 Wi-Fi가 자주 스캔하도록 트리거됩니다. 이는 Wi-Fi 네트워크 성능에 영향을 줄 수 있습니다.</translation>
 <translation id="8680251145628383637">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정이 동기화되며 Google 서비스에 자동으로 로그인됩니다.</translation>
@@ -12033,6 +12024,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9207434080086272167">화창</translation>
 <translation id="9207669213427469593">화면 분할을 사용하기 위해 창을 한쪽으로 옮기면 다른 쪽에 창 추천이 표시됩니다</translation>
 <translation id="9209563766569767417">Linux 컨테이너 설정 확인 중</translation>
+<translation id="9212565256020141627">Gemini와 이미지를 공유할 수 없습니다. 다시 시도하거나 다른 이미지를 사용해 보세요.</translation>
 <translation id="9214520840402538427">설치 시간 속성의 시작 시간이 초과되었습니다. 지원 담당자에게 문의하시기 바랍니다.</translation>
 <translation id="9214695392875603905">컵케이크</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />'이(가) 추가됨</translation>

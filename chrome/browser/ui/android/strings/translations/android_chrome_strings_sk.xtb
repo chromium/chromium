@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Pridržaním prepnete do režimu inkognito</translation>
 <translation id="2860954141821109167">Skontrolujte, či je v tomto zariadení povolená aplikácia pre telefóny</translation>
 <translation id="2861923151411510142">Niektoré funkcie Chromu už nebudú k dispozícii</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> a 1 ďalšia karta}few{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> ďalšie karty}many{<ph name="URL" /> and <ph name="TAB_COUNT_MANY" /> other tabs}other{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> ďalších kariet}}</translation>
 <translation id="2869430948265924908">Ak chcete v aute chrániť citlivý obsah, musíte preň vytvoriť zámku profilu.  Môžete to urobiť pomocou čísla PIN, kódu alebo hesla.</translation>
 <translation id="2870560284913253234">Web</translation>
 <translation id="2871733351037274014">Prednačítavanie stránok</translation>
@@ -445,6 +446,7 @@
 <translation id="2904414404539560095">Zoznam zariadení, s ktorými sa má zdieľať karta, je otvorený na plnú výšku.</translation>
 <translation id="2908243544703713905">K dispozícii sú neprečítané správy</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
+<translation id="2912247081180973411">Zavrieť okná</translation>
 <translation id="2912345083818861431">Zobrazte si otvorené karty inkognito pomocou zámky obrazovky</translation>
 <translation id="2918484639460781603">Prejsť na nastavenia</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, karta s vypnutým zvukom</translation>
@@ -502,7 +504,6 @@
 <translation id="3159335509547415276">Ďalšie informácie o blokovaných účtoch</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otvorí sa na novej karte</translation>
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
-<translation id="316694332262407393">Chrome je tu už spustený.</translation>
 <translation id="3167258285411721858">Môžete požiadať o mobilný web pre <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Objaviť</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito s vypnutým zvukom</translation>
@@ -1038,6 +1039,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5469852975082458401">Stránkami môžete prechádzať pomocou textového kurzora. Stlačením klávesa F7 túto funkciu vypnete.</translation>
 <translation id="5471273988133666918">Karta <ph name="TAB_TITLE" /> sa nedá presunúť</translation>
 <translation id="548278423535722844">Otvorte v aplikácii pre mapy</translation>
+<translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="549660026907543296">Pripojte sa ako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Dolný hárok nedávnej aktivity</translation>
 <translation id="5526281268548144413">Nie je možné zavrieť vo viacerých oknách</translation>
@@ -1146,6 +1148,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5958275228015807058">Nájdite stiahnuté súbory a stránky</translation>
 <translation id="5962718611393537961">Klepnutím zbaliť</translation>
 <translation id="5964869237734432770">Zastaviť popisy obrázkov</translation>
+<translation id="5972844218283131174">Zrušiť výber všetkého</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5977976211062815271">V tomto zariadení</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stránka vo vašom čitateľskom zozname}few{# stránky vo vašom čitateľskom zozname}many{# pages on your reading list}other{# stránok vo vašom čitateľskom zozname}}</translation>

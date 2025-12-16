@@ -446,6 +446,7 @@
 <translation id="2904414404539560095">Таб хуваалцах төхөөрөмжийн жагсаалтыг бүрэн өндрөөр нээлээ.</translation>
 <translation id="2908243544703713905">Уншаагүй түүхүүд бэлэн байна</translation>
 <translation id="2909615210195135082">Google мэдэгдлийн платформ</translation>
+<translation id="2912247081180973411">Цонхнуудыг хаах</translation>
 <translation id="2912345083818861431">Нээлттэй Нууцлалтай табуудыг харахын тулд дэлгэцийн түгжээг ашиглана уу</translation>
 <translation id="2918484639460781603">Тохиргоо руу очих</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, Дууг нь хаасан таб</translation>
@@ -503,7 +504,6 @@
 <translation id="3159335509547415276">Блоклосон бүртгэлийн талаар мэдэж авах</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, шинэ табд нээгдэнэ</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
-<translation id="316694332262407393">Энд Chrome аль хэдийн ажиллаж байна.</translation>
 <translation id="3167258285411721858">Та <ph name="HOST_NAME" />-н мобайл сайтыг хүсэх боломжтой</translation>
 <translation id="3169472444629675720">Олох</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн, дууг нь хаасан нууцлалтай таб</translation>
@@ -1039,6 +1039,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5469852975082458401">Та текстийн курсор ашиглан хуудас хооронд шилжих боломжтой. F7-г дарж унтраана уу.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> табыг зөөх боломжгүй</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
+<translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />-р нэгдэх</translation>
 <translation id="5517326820028369152">Саяхны үйл ажиллагааны доод хүснэгт</translation>
 <translation id="5526281268548144413">Олон цонхон дээр хаалттай байж болохгүй</translation>
@@ -1147,6 +1148,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5958275228015807058">Файл, хуудсаа Таталт хэсгээс хайна уу</translation>
 <translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5964869237734432770">Зургийн тайлбарыг зогсоох</translation>
+<translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5977976211062815271">Энэ төхөөрөмж дээр</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Таны унших жагсаалт дээрх 1 хуудас}other{Таны унших жагсаалт дээрх # хуудас}}</translation>

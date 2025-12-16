@@ -427,6 +427,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2854916915045135148">Dotaknite se in pridržite, če želite preklopiti na anonimni način</translation>
 <translation id="2860954141821109167">V tej napravi mora biti omogočena aplikacija Telefon</translation>
 <translation id="2861923151411510142">Nekatere Chromove funkcije ne bodo več na voljo.</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> in še en zavihek}one{<ph name="URL" /> in še <ph name="TAB_COUNT_MANY" /> zavihek}two{<ph name="URL" /> in še <ph name="TAB_COUNT_MANY" /> zavihka}few{<ph name="URL" /> in še <ph name="TAB_COUNT_MANY" /> zavihki}other{<ph name="URL" /> in še <ph name="TAB_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="2869430948265924908">Zaradi zaščite občutljive vsebine v avtomobilu morate ustvariti zaklepanje profila za avtomobil.  To lahko storite s kodo PIN, kodo ali geslom.</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2871733351037274014">Vnaprejšnje nalaganje strani</translation>
@@ -445,6 +446,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2904414404539560095">Seznam naprav, s katerimi želite deliti zavihek, odprt pri polni višini.</translation>
 <translation id="2908243544703713905">Neprebrane novice so pripravljene.</translation>
 <translation id="2909615210195135082">Googlovo okolje za obvestila</translation>
+<translation id="2912247081180973411">Zapri okna</translation>
 <translation id="2912345083818861431">Uporabite zaklepanje zaslona za prikaz odprtih anonimnih zavihkov.</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, zavihek z izklopljenim zvokom</translation>
@@ -502,7 +504,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3159335509547415276">Preberite več o blokiranih računih</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, odpre se na novem zavihku</translation>
 <translation id="3166827708714933426">Bližnjice za zavihke in okna</translation>
-<translation id="316694332262407393">Chrome se že izvaja tu.</translation>
 <translation id="3167258285411721858">Za <ph name="HOST_NAME" /> lahko zahtevate spletno mesto za mobilne naprave.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, večkrat izbrani pripeti anonimni zavihek z izklopljenim zvokom</translation>
@@ -1038,6 +1039,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5469852975082458401">Po straneh se lahko premikate s kazalcem besedila. Pritisnite F7 za izklop.</translation>
 <translation id="5471273988133666918">Zavihka <ph name="TAB_TITLE" /> ni mogoče premakniti</translation>
 <translation id="548278423535722844">Odpiranje v aplikaciji z zemljevidi</translation>
+<translation id="5494920125229734069">Izberi vse</translation>
 <translation id="549660026907543296">Pridružite se kot <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Razdelek na dnu zaslona za nedavno dejavnost</translation>
 <translation id="5526281268548144413">Ni mogoče zapreti v več oknih</translation>
@@ -1146,6 +1148,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5958275228015807058">Poiščite datoteke in strani v Prenosih</translation>
 <translation id="5962718611393537961">Dotik za strnitev</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
+<translation id="5972844218283131174">Počisti vse</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5977976211062815271">V tej napravi</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stran na bralnem seznamu}one{# stran na bralnem seznamu}two{# strani na bralnem seznamu}few{# strani na bralnem seznamu}other{# strani na bralnem seznamu}}</translation>

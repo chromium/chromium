@@ -5976,6 +5976,7 @@ Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens wor
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5151099177901233471">Rapportage van tijdzone-informatie van apparaat aanzetten</translation>
 <translation id="5151163911478747031">Toeschrijving van extensie in de voettekst van de pagina Nieuw tabblad uitzetten</translation>
+<translation id="5151850599880109339">De modus Alleen HTTPS aanzetten in de gebalanceerde modus</translation>
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
@@ -8965,6 +8966,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 <translation id="7016587686120059767">Gastmodus uitzetten</translation>
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7021590945154530517">Controle van apparaatstatus aanzetten</translation>
+<translation id="7021952112057614674">De modus Alleen HTTPS uitzetten</translation>
 <translation id="7025153290982655996">Verouderd gedrag voor cookiebereik herstellen</translation>
 <translation id="7025332601572838001">Het gedrag voor de servicevoorwaarden configureren voor de eerste uitvoering van CCT</translation>
 <translation id="7026351325994257733">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon.</translation>
@@ -10970,6 +10972,7 @@ Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor 
       Als je het beleid niet instelt, geeft <ph name="PRODUCT_NAME" /> gebruikers de controle over of het de standaardbrowser is en als dit niet zo is, of er gebruikersmeldingen moeten worden weergegeven.
 
       Opmerking: Als <ph name="MS_WIN_NAME" />-beheerders deze instelling aanzetten, werkt dit alleen op systemen met Windows 7. Voor latere versies moet je een bestand voor standaard app-koppelingen implementeren, waarmee <ph name="PRODUCT_NAME" /> de verwerker wordt voor het <ph name="HTTPS_PROTOCOL" />- en <ph name="HTTP_PROTOCOL" />-protocol (en eventueel het <ph name="FTP_PROTOCOL" />-protocol en andere bestandsindelingen). Raadpleeg de Help-pagina van Chrome voor meer informatie (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">De modus Alleen HTTPS aanzetten in de strikte modus</translation>
 <translation id="8437836857126992452">Hiermee kun je aangeven welke extensies gebruikers NIET kunnen installeren. Extensies die al zijn geïnstalleerd, worden uitgezet als ze worden geblokkeerd. De gebruiker kan ze niet weer aanzetten. Als een extensie die is uitgezet op basis van de blokkeerlijst, van die lijst wordt verwijderd, wordt de extensie automatisch weer aangezet.
 
           De waarde '*' op de blokkeerlijst betekent dat alle extensies standaard worden geblokkeerd. Extensies die expliciet op de toelatingslijst staan, zijn toegestaan als ze zijn ondertekend (verpakt). Alle uitgepakte extensies worden geblokkeerd.
@@ -12097,6 +12100,24 @@ De standaardinstelling is RollbackDisabled.</translation>
 <translation id="922160134042190462"><ph name="DESK_API_NAME" /> niet aanzetten voor het beheer van <ph name="PRODUCT_OS_NAME" /> door derden</translation>
 <translation id="9221827710437832530">Toegang tot geolocatie op het inlogscherm toestaan.</translation>
 <translation id="922540222991413931">Installatiebronnen voor het configureren van extensies, apps en gebruikersscripts</translation>
+<translation id="924360639456783890">Met dit beleid wordt bepaald of gebruikers de modus Alleen HTTPS (Altijd beveiligde verbindingen gebruiken) kunnen aanzetten in Instellingen. Met de modus Alleen HTTPS wordt een upgrade naar HTTPS doorgevoerd voor alle navigaties.
+
+Als je deze instelling niet instelt of instelt op 'allowed', kunnen gebruikers de modus Alleen HTTPS aanzetten.
+
+Als je deze instelling instelt op 'disallowed', wordt de modus Alleen HTTPS uitgezet.
+
+Als je deze instelling instelt op 'force_enabled', wordt de modus Alleen HTTPS aangezet in de strikte modus.
+
+Als je deze instelling instelt op 'force_balanced_enabled', wordt de modus Alleen HTTPS aangezet in de gebalanceerde modus.
+
+'force_enabled' wordt ondersteund vanaf M112 en 'force_balanced_enabled' wordt ondersteund vanaf M129.
+
+'force_enabled' en 'force_balanced_enabled' kunnen ook worden aanbevolen aan gebruikers.
+De modus Alleen HTTPS wordt in eerste instantie ingesteld op Strikt of Gebalanceerd, maar gebruikers kunnen dit wijzigen.
+
+Als je dit beleid instelt op een waarde die niet wordt ondersteund door de versie van Chrome die het beleid ontvangt, gebruikt Chrome standaard de toegestane instelling.
+
+Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.</translation>
 <translation id="924557436754151212">Opgeslagen wachtwoorden importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="925379810778921867">De SharedWorker van een blob-URL neemt een controller over.</translation>
 <translation id="927384371566552478">Als je het beleid toepast of niet instelt, wordt de UI voor exporteren/importeren beschikbaar voor gebruikers. Als je het beleid niet toepast, wordt de UI voor exporteren/importeren niet beschikbaar voor gebruikers.</translation>

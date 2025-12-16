@@ -6239,6 +6239,7 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
           Si no se configura esta política, se utilizará la línea de comandos predeterminada.</translation>
 <translation id="5151099177901233471">Habilitar los informes de la zona horaria del dispositivo</translation>
 <translation id="5151163911478747031">Inhabilitar la atribución de la extensión en el pie de página de NTP</translation>
+<translation id="5151850599880109339">Habilitar el Modo solo HTTPS en el modo equilibrado</translation>
 <translation id="5152393033264257734">Permite las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
@@ -9399,6 +9400,7 @@ la optimización de JavaScript para el sitio.</translation>
 <translation id="7016587686120059767">Inhabilitar el modo de invitado</translation>
 <translation id="7019805045859631636">"Fast"</translation>
 <translation id="7021590945154530517">Habilitar la supervisión de estado del dispositivo</translation>
+<translation id="7021952112057614674">Inhabilitar el Modo solo HTTPS</translation>
 <translation id="7025153290982655996">Volver al comportamiento heredado del alcance de las cookies</translation>
 <translation id="7025332601572838001">Configura el comportamiento de las Condiciones del Servicio en la primera ejecución para CCT</translation>
 <translation id="7026351325994257733">Permite sincronizar los ajustes de la red Wi-Fi entre dispositivos con <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado</translation>
@@ -11511,6 +11513,7 @@ las configuren.</translation>
       Si no la estableces, <ph name="PRODUCT_NAME" /> permitirá que los usuarios decidan si será el navegador predeterminado y, en caso de no seleccionarlo, si se mostrarán las notificaciones para el usuario.
 
       Nota para los administradores de <ph name="MS_WIN_NAME" />: Esta opción de configuración solo podrá habilitarse en máquinas con Windows 7. Para las versiones posteriores, el usuario debe implementar un archivo con "asociaciones de apps predeterminadas" que convierta a <ph name="PRODUCT_NAME" /> en el controlador de los protocolos <ph name="HTTPS_PROTOCOL" /> y <ph name="HTTP_PROTOCOL" /> (y, opcionalmente, el protocolo <ph name="FTP_PROTOCOL" /> y otros formatos de archivo). Consulta la Ayuda de Chrome ( https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">Habilitar el Modo solo HTTPS en el modo estricto</translation>
 <translation id="8437836857126992452">Te permite especificar las extensiones que los usuarios NO pueden instalar. Si se bloquean extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de la lista de extensiones bloqueadas, se volverán a habilitar automáticamente.
 
           Un valor de asterisco (*) en la lista de extensiones bloqueadas significa que todas las extensiones están incluidas en esa lista de forma predeterminada. Las extensiones que se enumeran de forma explícita en la lista de extensiones permitidas se admiten si están firmadas (comprimidas). Todas las extensiones sin empaquetar están bloqueadas.
@@ -12691,6 +12694,24 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="922160134042190462">No habilitar <ph name="DESK_API_NAME" /> para el control de terceros de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9221827710437832530">Permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
+<translation id="924360639456783890">Esta política controla si los usuarios pueden habilitar el Modo solo HTTPS (Usar siempre conexiones seguras) en la Configuración. El modo solo HTTPS actualiza todas las navegaciones a páginas HTTPS.
+
+Si no estableces este parámetro de configuración o lo habilitas, los usuarios podrán habilitar el Modo solo HTTPS.
+
+Si inhabilitas este parámetro de configuración, se inhabilitará el Modo solo HTTPS.
+
+Si estableces este parámetro de configuración como "force_enabled", se habilitará el Modo solo HTTPS en el modo estricto.
+
+Si estableces este parámetro de configuración como "force_balanced_enabled", se habilitará el Modo solo HTTPS en el modo equilibrado.
+
+"force_enabled" es compatible a partir de la versión M112 y "force_balanced_enabled", a partir de la versión M129.
+
+También se pueden recomendar "force_enabled" y "force_balanced_enabled" a los usuarios.
+El Modo solo HTTPS se establecerá inicialmente en el modo estricto o equilibrado, pero los usuarios podrán cambiarlo.
+
+Si estableces esta política en un valor que no admite la versión de Chrome que la recibe, Chrome usará el parámetro de configuración permitido de forma predeterminada.
+
+Se puede usar la política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> independiente para que esta función no actualice a HTTPS los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas del navegador predeterminado en la primera ejecución</translation>
 <translation id="925379810778921867">Permitir que un SharedWorker de URL de BLOB herede un controlador.</translation>
 <translation id="927384371566552478">Si habilitas la política o no la estableces, los usuarios podrán usar la IU de importación y exportación. Si inhabilitas la política, los usuarios no podrán usar la IU de importación y exportación.</translation>

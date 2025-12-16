@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Kunne ikke laste ned ordliste for stavekontroll for <ph name="LANGUAGE" />. Prøv på nytt.</translation>
 <translation id="1078037449555275327">ChromeVox-innstillinger</translation>
 <translation id="1079242569060319448">Har du glemt PIN-koden?</translation>
-<translation id="1079285777677001938">Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="1079766198702302550">Blokkér alltid bruk av kameraet</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 fane}other{<ph name="GROUP_TITLE" /> – # faner}}</translation>
 <translation id="1082214733466244292">Administratoren din har blokkert noe funksjonalitet for denne enheten</translation>
@@ -2219,6 +2218,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2476901513051581836">Kan ikke frigjøre lagringsplass før vi vet størrelsen på lagringsplassen uten nett.</translation>
 <translation id="2476974672882258506">Slå av Windows for å avinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Siden du har konfigurert flere brytere, er automatisk skanning slått av.</translation>
+<translation id="2477218554275525952">Hold Gemini-sidefeltet åpent når du åpner en ny fane</translation>
 <translation id="2477607419416067650">Andre Google-data</translation>
 <translation id="2478176599153288112">Mediafilrettigheter for «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
@@ -3465,7 +3465,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3348973040180736882">Dekomprimering</translation>
 <translation id="3349610303043713601">Bla med AI</translation>
 <translation id="3349933790966648062">Minnebruk</translation>
-<translation id="3350450887151703713">Spill av de siste 10 sekundene på nytt</translation>
 <translation id="3351472127384196879">Legg til eller finn knapper på pekepennen</translation>
 <translation id="3353786022389205125">Slå på «Vis låseskjermen ved oppvåkning etter hvilemodus», og prøv på nytt</translation>
 <translation id="3354768182971982851">Gamle versjoner av Chrome-apper lar seg ikke åpne på Mac-enheter etter desember 2022. Du kan sjekke om en ny versjon er tilgjengelig.</translation>
@@ -3612,7 +3611,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for å installere Windows.</translation>
 <translation id="344630545793878684">Lesing av dataene dine på en rekke nettsteder</translation>
-<translation id="3447644283769633681">Blokkér alle informasjonskapsler fra tredjeparter</translation>
 <translation id="3447644827015694497">Vil du gjennomgå inaktive faner?</translation>
 <translation id="3447797901512053632">Caster <ph name="TAB_NAME" /> til <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Oppdater kontoen</translation>
@@ -3933,7 +3931,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3663417513679360795">Mer informasjon om å slå på standard forhåndslasting</translation>
 <translation id="3664511988987167893">Utvidelsesikon</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" />}=1{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # til}other{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # til}}</translation>
-<translation id="3665100783276035932">De fleste nettsteder skal fungere som forventet</translation>
 <translation id="3665301845536101715">Åpne i sidepanelet</translation>
 <translation id="3665589677786828986">Chrome har oppdaget at noen av innstillingene ble ødelagt av et annet program og tilbakestille dem til originalinnstillingene.</translation>
 <translation id="3665918214153961651">Laster opp fil</translation>
@@ -6825,7 +6822,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5651308944918885595">Synlighet for nærdeling</translation>
 <translation id="5653154844073528838">Du har <ph name="PRINTER_COUNT" /> lagrede skrivere.</translation>
 <translation id="565461030474814383">Vil du lagre i kontoen?</translation>
-<translation id="5654669866168491665">Finn ut mer om nettsteder som kanskje ikke fungerer når du blokkerer informasjonskapsler fra tredjeparter</translation>
 <translation id="5654751240928365405">Denne utvidelsen er slått av fordi den ikke lenger støttes</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{For å ivareta personvernet ditt har vi fjernet tillatelsene fra et nettsted}other{For å ivareta personvernet ditt har vi fjernet tillatelsene fra noen nettsteder}}</translation>
 <translation id="5655296450510165335">Registrering av enhet</translation>
@@ -7575,7 +7571,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6181431612547969857">Nedlastingen ble blokkert</translation>
 <translation id="6183369864942961155">Automatisk lyst/mørkt tema</translation>
 <translation id="6184099524311454384">Søk i faner</translation>
-<translation id="6184868291074982484">Chrome begrenser automatisk informasjonskapsler fra tredjeparter</translation>
 <translation id="6185132558746749656">Enhetsposisjon</translation>
 <translation id="6185151644843671709">Passnøkkelen er lagret, og PIN-koden er opprettet</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}other{{PASSWORD_COUNT} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}}</translation>
@@ -8583,7 +8578,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6878862640969460273">Liggende</translation>
 <translation id="6880587130513028875">Bilder er blokkert på siden.</translation>
 <translation id="6881845890692344060">Administratoren din har logget av. Nå har du kontrollen.</translation>
-<translation id="6882210908253838664">Hvis et nettsted ikke fungerer, kan du prøve å gi det midlertidig tillatelse til å bruke informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Beklager. Systemet kunne ikke lagre enhetskonfigurasjonen.</translation>
 <translation id="6883606786470492001">Administrer annonseemner og andre innstillinger for å begrense hva nettsteder kan finne ut om deg for å vise deg personlig tilpassede annonser</translation>
 <translation id="6884474387073389421">Er du sikker på at du vil slette den valgte påloggingsinformasjonen?</translation>
@@ -8957,7 +8951,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7145413760160421938">Kan ikke gjenoppta forrige økt</translation>
 <translation id="7146882055510146554">Microsoft 365 bruker OneDrive til å åpne og redigere Word-, Excel- og PowerPoint-filer. Disse filene ligger i sidenavigasjonen i Filer-appen og er merket med «Microsoft OneDrive». Du må logge på med Microsoft-kontoen din. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Noen nettsteder fungerer kanskje ikke som forventet. Velg dette alternativet hvis du ikke vil etterlate deg informasjon om nettstedene du besøker, på denne enheten.</translation>
-<translation id="7148954254185728510">De fleste nettsteder kan ikke bruke informasjonskapsler fra tredjeparter til å spore deg mens du surfer, og nettsteder kan ikke bruke informasjonskapsler fra tredjeparter i inkognitomodus.</translation>
 <translation id="7149839598364933473">Konverter denne enheten til en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
@@ -10631,7 +10624,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8275038454117074363">Importér</translation>
 <translation id="8275080796245127762">Ring fra enheten din</translation>
 <translation id="8276560076771292512">Tøm bufferen og kjør en hard nyinnlasting</translation>
-<translation id="8276850948802942358">Finn ut mer om hvordan du gir nettsteder midlertidig tillatelse til å bruke informasjonskapsler fra tredjeparter</translation>
 <translation id="8277907305629781277">Du opprettet denne passnøkkelen <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Nettsteder som ikke har lov til å bruke JavaScript-optimalisering</translation>
 <translation id="827966378414194229">Bruk hodebevegelser og ansiktsuttrykk til å kontrollere Chromebooken. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -11213,7 +11205,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8678192320753081984">Aktiverer Googles sterkeste kontosikkerhet for personer som er utsatt for målrettede angrep</translation>
 <translation id="8678378565142776698">Start på nytt og få automatiske oppdateringer</translation>
 <translation id="8678538439778360739">Data er kryptert med passordfrasen din for synkronisering <ph name="TIME" />. Dette inkluderer ikke betalingsmåter og adresser fra Google Pay.</translation>
-<translation id="867882552362231068">Chrome begrenser typen informasjon nettsteder kan bruke til å spore deg når du surfer. Du kan endre innstillingene for å velge ditt eget beskyttelsesnivå.</translation>
 <translation id="8678933587484842200">Hvordan vil du at denne appen skal starte?</translation>
 <translation id="8679054765393461130">Å gjengi listen over nettverksvalg gjør at wifi skannes ofte. Dette kan påvirke ytelsen til wifi-nettverket.</translation>
 <translation id="8680251145628383637">Logg på for å hente bokmerkene dine, loggen din, passordene dine og andre innstillinger på alle enhetene du bruker. Du blir dessuten automatisk logget på Google-tjenestene du bruker.</translation>
@@ -12021,6 +12012,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9207434080086272167">Sol</translation>
 <translation id="9207669213427469593">Hvis du fester et vindu til den ene siden for å bruke delt skjerm, får du se forslag til vinduer på den andre siden</translation>
 <translation id="9209563766569767417">Sjekker konfigurasjonen av Linux-beholderen</translation>
+<translation id="9212565256020141627">Kunne ikke dele bildet med Gemini. Prøv på nytt, eller velg et annet bilde.</translation>
 <translation id="9214520840402538427">Beklager. Oppstarten av attributtene for installasjonstid er tidsavbrutt. Ta kontakt med brukerstøtterepresentanten din.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ble lagt til</translation>

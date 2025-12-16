@@ -133,7 +133,6 @@
 <translation id="1076882167394279216">Slovník na kontrolu pravopisu v jazyku <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. Skúste to znova.</translation>
 <translation id="1078037449555275327">Nastavenia čítačky ChromeVox</translation>
 <translation id="1079242569060319448">Zabudli ste PIN?</translation>
-<translation id="1079285777677001938">Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="1079766198702302550">Vždy blokovať prístup ku kamere</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> - # Tabs}other{<ph name="GROUP_TITLE" /> – # kariet}}</translation>
 <translation id="1082214733466244292">Váš správca niektoré funkcie tohto zariadenia zablokoval</translation>
@@ -2214,6 +2213,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2476901513051581836">Priestor sa nedá vymazať, kým nie je známa veľkosť offline úložiska.</translation>
 <translation id="2476974672882258506">Ak chcete odinštalovať aplikáciu <ph name="PARALLELS_DESKTOP" />, vypnite Windows.</translation>
 <translation id="2477065602824695373">Nastavili ste viacero prepínačov, takže automatické prehľadávanie bolo vypnuté.</translation>
+<translation id="2477218554275525952">Po otvorení novej karty nechávať bočný panel Gemini otvorený</translation>
 <translation id="2477607419416067650">Ďalšie údaje na Googli</translation>
 <translation id="2478176599153288112">Povolenia súborov médií pre rozšírenie <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
@@ -3460,7 +3460,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3348973040180736882">Rozbaľuje sa</translation>
 <translation id="3349610303043713601">Prehliadať pomocou umelej inteligencie</translation>
 <translation id="3349933790966648062">Množstvo využívanej pamäte</translation>
-<translation id="3350450887151703713">Znova prehrať 10 sekúnd</translation>
 <translation id="3351472127384196879">Pridajte alebo vyhľadajte tlačidlá na pere</translation>
 <translation id="3353786022389205125">Zapnite možnosť „Po ukončení režimu spánku zobraziť uzamknutú obrazovku“ a skúste to znova</translation>
 <translation id="3354768182971982851">Staré verzie aplikácií pre Chrome sa po decembri 2022 nebudú dať otvoriť v zariadeniach so systémom Mac. Môžete skontrolovať, či je k dispozícii nová verzia.</translation>
@@ -3607,7 +3606,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3445925074670675829">Zariadenie USB-C</translation>
 <translation id="3446274660183028131">Spustite Parallels Desktop a nainštalujte tak Windows.</translation>
 <translation id="344630545793878684">Čítať vaše údaje na viacerých webových stránkach</translation>
-<translation id="3447644283769633681">Blokovať všetky súbory cookie tretích strán</translation>
 <translation id="3447644827015694497">Chcete skontrolovať neaktívne karty?</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> sa prenáša do zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Aktualizovať účet</translation>
@@ -3928,7 +3926,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3663417513679360795">Ďalšie informácie o zapnutí štandardného prednačítania</translation>
 <translation id="3664511988987167893">Ikona rozšírenia</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" />}=1{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalším}few{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalšími}many{Join tab group with <ph name="OWNER_FIRST_NAME" /> and # others}other{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalšími}}</translation>
-<translation id="3665100783276035932">Väčšina webov by mala fungovať podľa očakávaní.</translation>
 <translation id="3665301845536101715">Otvoriť v bočnom paneli</translation>
 <translation id="3665589677786828986">Chrome zistil, že niektoré nastavenia boli poškodené iným programom, a preto obnovil pôvodné predvolené nastavenia.</translation>
 <translation id="3665918214153961651">Nahrávanie súboru</translation>
@@ -6823,7 +6820,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5651308944918885595">Viditeľnosť pri Zdieľaní nablízku</translation>
 <translation id="5653154844073528838">Máte niekoľko uložených tlačiarní (<ph name="PRINTER_COUNT" />).</translation>
 <translation id="565461030474814383">Chcete uložiť v účte?</translation>
-<translation id="5654669866168491665">Ďalšie informácie o weboch, ktoré nemusia fungovať pri blokovaní súborov cookie tretích strán</translation>
 <translation id="5654751240928365405">Toto rozšírenie bolo vypnuté, pretože už nie je podporované</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Z dôvodu ochrany vášho súkromia boli z webu odstránené povolenia}few{Z dôvodu ochrany vášho súkromia boli z niektorých webov odstránené povolenia}many{To protect your privacy, permissions were removed from some sites}other{Z dôvodu ochrany vášho súkromia boli z niektorých webov odstránené povolenia}}</translation>
 <translation id="5655296450510165335">Registrácia zariadenia</translation>
@@ -7573,7 +7569,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6181431612547969857">Stiahnutie bolo zablokované</translation>
 <translation id="6183369864942961155">Automatický svetlý alebo tmavý motív</translation>
 <translation id="6184099524311454384">Vyhľadajte karty</translation>
-<translation id="6184868291074982484">Chrome automaticky obmedzuje súbory cookie tretích strán</translation>
 <translation id="6185132558746749656">Poloha zariadenia</translation>
 <translation id="6185151644843671709">Prístupový kľúč bol uložený a kód PIN vytvorený</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 heslo a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}few{{PASSWORD_COUNT} heslá a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}many{{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}other{{PASSWORD_COUNT} hesiel a ďalších položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}}</translation>
@@ -8585,7 +8580,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6878862640969460273">Na šírku</translation>
 <translation id="6880587130513028875">Obrázky boli na tejto stránke zablokované.</translation>
 <translation id="6881845890692344060">Váš správca sa odhlásil. Teraz máte všetko pod kontrolou.</translation>
-<translation id="6882210908253838664">Ak web nefunguje, môžete mu skúsiť udeliť dočasné povolenie používať súbory cookie tretích strán. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Ojoj! Systém nedokázal uložiť konfiguráciu zariadenia.</translation>
 <translation id="6883606786470492001">Spravujte témy reklám a ďalšie nastavenia, aby ste obmedzili, čo sa o vás weby môžu dozvedieť a aby sa vám zobrazovali prispôsobené reklamy</translation>
 <translation id="6884474387073389421">Naozaj chcete odstrániť vybrané prihlasovacie údaje?</translation>
@@ -8959,7 +8953,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7145413760160421938">Predchádzajúca relácia sa nedá obnoviť</translation>
 <translation id="7146882055510146554">V súprave Microsoft 365 sa súbory Word, Excel a PowerPoint otvárajú a upravujú pomocou služby OneDrive. Tieto súbory nájdete v bočnom navigačnom paneli aplikácie Súbory a budú označené „Microsoft OneDrive“. Budete sa musieť prihlásiť účtom Microsoft. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">Weby nemusia fungovať podľa vašich očakávaní. Túto možnosť vyberte, ak nechcete v zariadení uchovávať informácie o navštívených weboch.</translation>
-<translation id="7148954254185728510">Väčšina webov vás počas prehliadania nemôže sledovať pomocou súborov cookie tretích strán. Weby nemôžu používať súbory cookie tretích strán v režime inkognito.</translation>
 <translation id="7149839598364933473">Zmeňte toto zariadenie na zariadenie s operačným systémom <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
 <translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
@@ -10632,7 +10625,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8275038454117074363">Importovať</translation>
 <translation id="8275080796245127762">Zavolať z vášho zariadenia</translation>
 <translation id="8276560076771292512">Vymazať vyrovnávaciu pamäť a vynútiť opätovné načítanie</translation>
-<translation id="8276850948802942358">Ďalšie informácie o udelení dočasného povolenia webu na používanie súborov cookie tretej strany</translation>
 <translation id="8277907305629781277">Tento prístupový kľúč ste vytvorili <ph name="DATE" /></translation>
 <translation id="8278702675516957539">Weby, ktoré nemôžu používať optimalizáciu JavaScriptu</translation>
 <translation id="827966378414194229">Ovládajte Chromebook pohybmi hlavy a výrazmi tváre. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -11214,7 +11206,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8678192320753081984">Poskytuje najsilnejšie zabezpečenie účtu od Googlu ľuďom, ktorým hrozia cielené útoky</translation>
 <translation id="8678378565142776698">Reštartovať a dostávať automatické aktualizácie</translation>
 <translation id="8678538439778360739">Údaje boli <ph name="TIME" /> šifrované pomocou vašej prístupovej frázy synchronizácie. Nezahŕňa to spôsoby platby ani adresy zo služby Google Pay.</translation>
-<translation id="867882552362231068">Chrome obmedzuje typ informácií, pomocou ktorých vás môžu weby pri prehliadaní sledovať. Ak chcete vybrať vlastnú úroveň ochrany, môžete nastavenia zmeniť.</translation>
 <translation id="8678933587484842200">Ako sa má táto aplikácia spúšťať?</translation>
 <translation id="8679054765393461130">Zoznam výberov pre vykresľovanie siete aktivuje časté vyhľadávanie siete Wi‐Fi, čo môže ovplyvniť jej výkon.</translation>
 <translation id="8680251145628383637">Prihláste sa a používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach. Navyše sa tak automaticky prihlásite do služieb Googlu.</translation>
@@ -12024,6 +12015,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9207434080086272167">Slnečná</translation>
 <translation id="9207669213427469593">Ak prichytíte okno na jednu stranu a použijete rozdelenú obrazovku, zobrazia sa návrhy okien pre druhú stranu</translation>
 <translation id="9209563766569767417">Kontroluje sa nastavenie kontajnera Linux</translation>
+<translation id="9212565256020141627">Obrázok sa nepodarilo zdieľať s Gemini. Skúste to znova alebo nahrajte iný obrázok.</translation>
 <translation id="9214520840402538427">Ojoj! Časový limit pre inicializáciu atribútov času inštalácie uplynul. Kontaktujte zástupcu podpory.</translation>
 <translation id="9214695392875603905">Koláčik</translation>
 <translation id="9215293857209265904">Položka „<ph name="EXTENSION_NAME" />“ bola pridaná</translation>

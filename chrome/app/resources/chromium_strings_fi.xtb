@@ -283,6 +283,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="4118474109249235144">Chromiumin incognito-tila</translation>
 <translation id="4122186850977583290">Siirry Tietoja Chromiumista ‐sivulle</translation>
+<translation id="4135244987012252068">Tee Chromiumista näköisesi muokkaamalla selaimen tyyliä</translation>
 <translation id="4147856324248078748">M&amp;uokkaa Chromiumia</translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chromium</translation>

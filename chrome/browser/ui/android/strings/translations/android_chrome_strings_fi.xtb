@@ -427,6 +427,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2854916915045135148">Vaihda incognito-tilaan koskettamalla pitkään</translation>
 <translation id="2860954141821109167">Varmista, että puhelinsovellus on käytössä tällä laitteella</translation>
 <translation id="2861923151411510142">Jotkin Chromen ominaisuudet eivä\u2019t ole enää käytettävissä</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ja 1 muu välilehti}other{<ph name="URL" /> ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä}}</translation>
 <translation id="2869430948265924908">Jos haluat suojata autossa olevan arkaluontoisen sisällön, sinun on luotava profiililukko autoa varten.  Voit tehdä sen PIN-koodilla, koodilla tai salasanalla.</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2871733351037274014">Sivujen esilataus</translation>
@@ -445,6 +446,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2904414404539560095">Välilehden jakamisen laiteluettelo avataan koko näytön korkeudella.</translation>
 <translation id="2908243544703713905">Lukemattomia juttuja valmiina</translation>
 <translation id="2909615210195135082">Googlen ilmoitusalusta</translation>
+<translation id="2912247081180973411">Sulje ikkunat</translation>
 <translation id="2912345083818861431">Käytä näytön lukitusta incognito-välilehtien katseluun</translation>
 <translation id="2918484639460781603">Avaa asetukset</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, mykistetty välilehti</translation>
@@ -502,7 +504,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3159335509547415276">Lue lisää estetyistä tileistä</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, avautuu uudelle välilehdelle</translation>
 <translation id="3166827708714933426">Välilehti- ja ikkunapikanäppäimet</translation>
-<translation id="316694332262407393">Chrome on jo käynnissä täällä.</translation>
 <translation id="3167258285411721858">Voit pyytää mobiilisivustoa osoitteesta <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, monivalittu kiinnitetty ja mykistetty incognito-välilehti</translation>
@@ -1038,6 +1039,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5469852975082458401">Voit siirtyä sivuilla tekstikohdistimen avulla. Laita pois päältä painamalla F7.</translation>
 <translation id="5471273988133666918">Välilehteä (<ph name="TAB_TITLE" />) ei voi siirtää</translation>
 <translation id="548278423535722844">Avaa karttasovelluksessa</translation>
+<translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="549660026907543296">Liity nimellä <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Viimeaikaiset tapahtumat ‑alapaneeli</translation>
 <translation id="5526281268548144413">Ei voi sulkea useista ikkunoista</translation>
@@ -1146,6 +1148,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5958275228015807058">Löydät tiedostosi ja sivusi Latauksista</translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
+<translation id="5972844218283131174">Poista valinta kaikista</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5977976211062815271">Tällä laitteella</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 sivu lukulistallasi}other{# sivua lukulistallasi}}</translation>

@@ -281,6 +281,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{La organización cierra Chromium automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{La organización cierra Chromium automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="4118474109249235144">Incógnito en Chromium</translation>
 <translation id="4122186850977583290">Ir a la página Acerca de Chromium</translation>
+<translation id="4135244987012252068">Personaliza Chromium para darle un nuevo aspecto a tu navegador</translation>
 <translation id="4147856324248078748">Personaliza tu Chromium</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" />: Acceso a la red - Chromium</translation>

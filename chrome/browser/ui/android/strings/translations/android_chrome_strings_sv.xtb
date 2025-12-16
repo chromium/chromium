@@ -427,6 +427,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2854916915045135148">Tryck länge för att byta till inkognito</translation>
 <translation id="2860954141821109167">Kontrollera att en telefonapp har aktiverats på enheten</translation>
 <translation id="2861923151411510142">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> och 1 flik till}other{<ph name="URL" /> och <ph name="TAB_COUNT_MANY" /> flikar till}}</translation>
 <translation id="2869430948265924908">Du måste skapa ett profillås för bilen för att skydda känsligt innehåll i bilen.  Det kan du göra med en pinkod, en kod eller ett lösenord.</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
@@ -445,6 +446,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2904414404539560095">Listan över enheter som fliken kan delas med öppnades och tar upp hela skärmen.</translation>
 <translation id="2908243544703713905">Det finns olästa artiklar</translation>
 <translation id="2909615210195135082">Googles aviseringsplattform</translation>
+<translation id="2912247081180973411">Stäng fönster</translation>
 <translation id="2912345083818861431">Använd skärmlåset för att se öppna inkognitoflikar</translation>
 <translation id="2918484639460781603">Öppna Inställningar</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />, flik med ljud av</translation>
@@ -502,7 +504,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3159335509547415276">Läs mer om blockerade konton</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, öppnas på en ny flik</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
-<translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3167258285411721858">Du kan begära den mobila webbplatsen för <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud av som har valts tillsammans med andra</translation>
@@ -1039,6 +1040,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5469852975082458401">Du kan navigera på sidor med en textmarkör. Tryck på F7 om du vill inaktivera detta.</translation>
 <translation id="5471273988133666918">Det går inte att flytta fliken <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Öppna i kartapp</translation>
+<translation id="5494920125229734069">Markera alla</translation>
 <translation id="549660026907543296">Gå med som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Senaste aktiviteten i arket på nedre delen av skärmen</translation>
 <translation id="5526281268548144413">Kan inte stängas i flera fönster</translation>
@@ -1147,6 +1149,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5958275228015807058">Du hittar filerna och sidorna i Nedladdningar</translation>
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
+<translation id="5972844218283131174">Avmarkera alla</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5977976211062815271">På den här enheten</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 sida i läslistan}other{# sidor i läslistan}}</translation>

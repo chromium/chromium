@@ -6236,6 +6236,7 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="5148753489738115745">Permite especificar os parâmetros adicionais que são usados quando o <ph name="PRODUCT_FRAME_NAME" /> inicia o <ph name="PRODUCT_NAME" />. Se essa política não for configurada, será usada a linha de comando padrão.</translation>
 <translation id="5151099177901233471">Ativar relatórios de informações de fuso horário do dispositivo</translation>
 <translation id="5151163911478747031">Desativar a atribuição de extensão no rodapé da página "Nova guia"</translation>
+<translation id="5151850599880109339">Ativar o modo somente HTTPS no modo equilibrado</translation>
 <translation id="5152393033264257734">Permitir verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
@@ -9387,6 +9388,7 @@ a otimização do JavaScript será ativada.</translation>
 <translation id="7016587686120059767">Desativar o modo visitante</translation>
 <translation id="7019805045859631636">Rápida</translation>
 <translation id="7021590945154530517">Ativar o monitoramento de integridade do dispositivo</translation>
+<translation id="7021952112057614674">Desativar o modo somente HTTPS</translation>
 <translation id="7025153290982655996">Reverter para o comportamento do escopo legado dos cookies</translation>
 <translation id="7025332601572838001">Como configurar o comportamento dos TOS durante a primeira execução do CCT</translation>
 <translation id="7026351325994257733">Permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado.</translation>
@@ -11481,6 +11483,7 @@ configurados.</translation>
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> permitirá que os usuários controlem se ele será o padrão ou não e, caso não seja, se as notificações do usuário serão exibidas.
 
       Observação: para administradores do <ph name="MS_WIN_NAME" />, a ativação dessa configuração só funciona em máquinas com o Windows 7. Para versões mais recentes, é necessário implantar um arquivo de "associações de aplicativo padrão", que torna o <ph name="PRODUCT_NAME" /> o gerenciador dos protocolos <ph name="HTTPS_PROTOCOL" /> e <ph name="HTTP_PROTOCOL" /> e, opcionalmente, o protocolo <ph name="FTP_PROTOCOL" /> e outros formatos de arquivo. Consulte a Ajuda do Google Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437147918598002525">Ativar o modo somente HTTPS no modo estrito</translation>
 <translation id="8437836857126992452">Permite especificar quais extensões os usuários NÃO podem instalar. As extensões já instaladas serão desativadas se estiverem bloqueadas, sem a opção de o usuário ativá-las novamente. Quando uma extensão que tiver sido desativada devido à lista de bloqueios for removida da lista, ela será reativada automaticamente.
 
           Um valor "*" da lista de bloqueio significa que todas as extensões estão bloqueadas por padrão. As extensões que estão explicitamente na lista de permissões só são permitidas se estiverem assinadas (empacotadas). Todas as extensões descompactadas estão bloqueadas.
@@ -12647,6 +12650,27 @@ O padrão é RollbackDisabled.</translation>
 <translation id="922160134042190462">Não ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="9221827710437832530">Permitir acesso à geolocalização na tela de login.</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>
+<translation id="924360639456783890">Esta política controla se os usuários podem ativar o modo somente HTTPS (Sempre usar conexões seguras) nas Configurações. O modo somente HTTPS faz upgrade de todas as navegações para HTTPS.
+
+Se esta configuração for deixada sem definição ou definida como "permitida", os usuários poderão ativar o modo somente HTTPS.
+
+Se ela for definida como "não permitida", o modo somente HTTPS será desativado.
+
+Se ela for definida como "force_enabled", o modo somente HTTPS será ativado no modo estrito.
+
+Se ela for definida como "force_balanced_enabled", o modo somente HTTPS será ativado no modo equilibrado.
+
+A opção "force_enabled" está disponível a partir da versão M112, enquanto "force_balanced_enabled" está disponível a partir da M129.
+
+Também é possível recomendar "force_enabled" e "force_balanced_enabled" aos usuários.
+Inicialmente, o modo somente HTTPS será definido como "estrito" ou "equilibrado", mas os usuários poderão
+mudar a configuração.
+
+Se você definir essa política para um valor que não é compatível com a versão do Chrome que a recebe, o navegador vai usar a configuração permitida por padrão.
+
+A política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separada
+pode ser usada para evitar que determinados nomes de host ou padrões de nome do host sejam
+atualizados para HTTPS por esse recurso.</translation>
 <translation id="924557436754151212">Importar senhas salvas do navegador padrão na primeira execução</translation>
 <translation id="925379810778921867">Um SharedWorker do URL do blob herda um controlador.</translation>
 <translation id="927384371566552478">Se a política for definida como "Ativada" ou não for definida, a interface de exportação/importação ficará disponível para o usuário. Se a política for definida como "Desativada", a interface de exportação/importação não ficará disponível para o usuário.</translation>
