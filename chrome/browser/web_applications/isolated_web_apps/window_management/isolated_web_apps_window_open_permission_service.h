@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -94,6 +95,8 @@ class IsolatedWebAppsWindowOpenPermissionService : public KeyedService {
 
   // Set of AppIds for which a notification is currently active.
   base::flat_set<webapps::AppId> apps_with_active_notifications_;
+
+  std::map<webapps::AppId, base::OneShotTimer> dismissal_timers_;
 
   base::WeakPtrFactory<IsolatedWebAppsWindowOpenPermissionService>
       weak_ptr_factory_{this};

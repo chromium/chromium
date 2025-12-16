@@ -45,6 +45,8 @@ namespace {
 
 constexpr int kMaxNotificationShowCount = 3;
 
+constexpr base::TimeDelta kNotificationDismissalTime = base::Seconds(20);
+
 constexpr std::string_view
     kIsolatedWebAppsWindowOpenPermissionNotificationPattern =
         "isolated_web_apps_window_open_permission_notification_%s";
@@ -163,17 +165,23 @@ void IsolatedWebAppsWindowOpenPermissionService::OnWebContentsCreated(
     // It must be re-added.
     apps_with_active_notifications_.insert(opener_app_id);
     CreateAndDisplayNotification(opener_app_id);
+  } else {
+    notification_state = IsolationData::OpenedTabsCounterNotificationState(
+        notification_state.acknowledged(),
+        notification_state.times_shown() + 1);
 
-    return;
+    apps_with_active_notifications_.insert(opener_app_id);
+
+    PersistNotificationState(opener_app_id, notification_state);
+    CreateAndDisplayNotification(opener_app_id);
   }
 
-  notification_state = IsolationData::OpenedTabsCounterNotificationState(
-      notification_state.acknowledged(), notification_state.times_shown() + 1);
-
-  apps_with_active_notifications_.insert(opener_app_id);
-
-  PersistNotificationState(opener_app_id, notification_state);
-  CreateAndDisplayNotification(opener_app_id);
+  auto& timer = dismissal_timers_[opener_app_id];
+  timer.Start(
+      FROM_HERE, kNotificationDismissalTime,
+      base::BindOnce(
+          &IsolatedWebAppsWindowOpenPermissionService::CloseNotification,
+          weak_ptr_factory_.GetWeakPtr(), opener_app_id));
 }
 
 void IsolatedWebAppsWindowOpenPermissionService::OnNotificationAcknowledged(
@@ -260,6 +268,7 @@ void IsolatedWebAppsWindowOpenPermissionService::PersistNotificationState(
 
 void IsolatedWebAppsWindowOpenPermissionService::CloseNotification(
     const webapps::AppId& app_id) {
+  dismissal_timers_.erase(app_id);
   apps_with_active_notifications_.erase(app_id);
 
   NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
