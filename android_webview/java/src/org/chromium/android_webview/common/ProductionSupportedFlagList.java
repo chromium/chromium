@@ -1128,6 +1128,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ANDROID_SPELLING_UNDERLINE_IN_COMPOSITION_MODE,
                 "When enabled, misspelling / grammar underline could be shown when entering"
                         + " composition mode"),
+        Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_FREE_WITH_SIZE,
+                "Enables PartitionAlloc with the optimization of sized deallocation"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
