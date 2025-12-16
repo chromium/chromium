@@ -41,10 +41,10 @@ const LINK_VISITED = 'var(--color-read-anything-link-visited';
 // obstructing any text.
 const LINE_FOCUS_LINE_HEIGHT_SCALE = 2;
 const LINE_FOCUS_BOX_SHADOW_LINE = 'none';
-const LINE_FOCUS_BOX_SHADOW_WINDOW = '0 0 0 9999px rgba(0, 0, 0, 0.9)';
-// TODO(crbug.com/447427066): Get the finalized line color from UXD. Use the
-// same color as the text for now.
-const LINE_FOCUS_BG_LINE = 'var(--foreground-color)';
+const LINE_FOCUS_BOX_SHADOW_WINDOW =
+    '0 0 0 9999px var(--color-sys-state-scrim)';
+const LINE_FOCUS_BG_LINE_DEFAULT = 'var(--color-sys-state-focus-ring)';
+const LINE_FOCUS_BG_LINE_CUSTOM = 'var(--color-read-anything-line-focus';
 const LINE_FOCUS_BG_WINDOW = 'none';
 
 // Suffixes used in combination with the color vars above to get the color
@@ -97,9 +97,10 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--line-focus-shadow',
         isWindow ? LINE_FOCUS_BOX_SHADOW_WINDOW : LINE_FOCUS_BOX_SHADOW_LINE);
+    const lineFocusBgLine =
+        this.getLineFocusColor_(this.getCurrentColorSuffix_());
     this.setStyle_(
-        '--line-focus-bg',
-        isWindow ? LINE_FOCUS_BG_WINDOW : LINE_FOCUS_BG_LINE);
+        '--line-focus-bg', isWindow ? LINE_FOCUS_BG_WINDOW : lineFocusBgLine);
     this.setStyle_('--line-focus-display', 'block');
   }
 
@@ -179,12 +180,13 @@ export class AppStyleUpdater {
         this.getPreviousHighlightColor_(colorSuffix));
     this.setStyle_(
         '--sp-empty-state-heading-color',
-        EMPTY_STATE_HEADING + `${colorSuffix})`);
+        `${EMPTY_STATE_HEADING}${colorSuffix})`);
     this.setStyle_(
         '--sp-empty-state-body-color',
         this.getEmptyStateBodyColor_(colorSuffix));
-    this.setStyle_('--link-color', LINK_DEFAULT + `${colorSuffix})`);
-    this.setStyle_('--visited-link-color', LINK_VISITED + `${colorSuffix})`);
+    this.setStyle_('--link-color', `${LINK_DEFAULT}${colorSuffix})`);
+    this.setStyle_('--visited-link-color', `${LINK_VISITED}${colorSuffix})`);
+    this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
 
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColor_(colorSuffix));
@@ -270,5 +272,11 @@ export class AppStyleUpdater {
     return (window.matchMedia('(prefers-color-scheme: dark)').matches) ?
         SELECTION_FOREGROUND_DARK :
         SELECTION_FOREGROUND_LIGHT;
+  }
+
+  private getLineFocusColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        LINE_FOCUS_BG_LINE_DEFAULT :
+        (LINE_FOCUS_BG_LINE_CUSTOM + `${colorSuffix})`);
   }
 }

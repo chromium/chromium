@@ -60,6 +60,8 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus off hides view', () => {
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
+
     updater.setLineFocusStyle(LineFocusType.NONE);
 
     assertEquals('none', app.style.getPropertyValue('--line-focus-display'));
@@ -69,11 +71,15 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus line shows view', () => {
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
+
     updater.setLineFocusStyle(LineFocusType.LINE);
 
     assertNotEquals('none', app.style.getPropertyValue('--line-focus-display'));
     assertNotEquals('', app.style.getPropertyValue('--line-focus-shadow'));
-    assertNotEquals('', app.style.getPropertyValue('--line-focus-bg'));
+    assertEquals(
+        'var(--color-read-anything-line-focus-sepia-dark)',
+        app.style.getPropertyValue('--line-focus-bg'));
     assertNotEquals('', app.style.getPropertyValue('--line-focus-height'));
   });
 
@@ -317,6 +323,9 @@ suite('AppStyleUpdater', () => {
     const expectedLowContrastLinkVisited = 'rgb(28, 14, 14)';
     const expectedSepiaLightLinkVisited = 'rgb(14, 28, 28)';
     const expectedSepiaDarkLinkVisited = 'rgb(28, 14, 28)';
+    const expectedDefaultLineFocus = 'rgb(100, 100, 0)';
+    const expectedDarkLineFocus = 'rgb(200, 200, 0)';
+    const expectedLightLineFocus = 'rgb(50, 50, 0)';
     updateStyles({
       '--color-sys-base-container-elevated': expectedDefaultBackground,
       '--color-read-anything-background-yellow': expectedYellowBackground,
@@ -341,6 +350,15 @@ suite('AppStyleUpdater', () => {
           expectedSepiaLightForeground,
       '--color-read-anything-foreground-sepia-dark':
           expectedSepiaDarkForeground,
+      '--color-sys-state-focus-ring': expectedDefaultLineFocus,
+      '--color-read-anything-line-focus': expectedDarkLineFocus,
+      '--color-read-anything-line-focus-yellow': expectedLightLineFocus,
+      '--color-read-anything-line-focus-dark': expectedDarkLineFocus,
+      '--color-read-anything-line-focus-light': expectedLightLineFocus,
+      '--color-read-anything-line-focus-high-contrast': expectedDarkLineFocus,
+      '--color-read-anything-line-focus-low-contrast': expectedDarkLineFocus,
+      '--color-read-anything-line-focus-sepia-light': expectedLightLineFocus,
+      '--color-read-anything-line-focus-sepia-dark': expectedDarkLineFocus,
       '--color-text-selection-background': expectedDefaultSelectionBackground,
       '--color-read-anything-current-read-aloud-highlight-yellow':
           expectedYellowCurrentHighlight,
@@ -413,6 +431,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedDefaultLink, computeStyle('--link-color'));
     assertEquals(
         expectedDefaultLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedDefaultLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify yellow theme colors.
     chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
@@ -433,6 +452,12 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedYellowLink, computeStyle('--link-color'));
     assertEquals(
         expectedYellowLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedLightLineFocus, computeStyle('--line-focus-bg'));
+
+    // Verify light theme colors.
+    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    updater.setTheme();
+    assertEquals(expectedLightLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify dark theme colors.
     chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
@@ -451,6 +476,7 @@ suite('AppStyleUpdater', () => {
         expectedDarkEmptyBody, computeStyle('--sp-empty-state-body-color'));
     assertEquals(expectedDarkLink, computeStyle('--link-color'));
     assertEquals(expectedDarkLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify high contrast theme colors.
     updateStyles({'--google-grey-700': expectedHighContrastEmptyBody});
@@ -474,6 +500,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedHighContrastLink, computeStyle('--link-color'));
     assertEquals(
         expectedHighContrastLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify low contrast theme colors.
     updateStyles({'--google-grey-700': expectedLowContrastEmptyBody});
@@ -497,6 +524,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedLowContrastLink, computeStyle('--link-color'));
     assertEquals(
         expectedLowContrastLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify sepia light theme colors.
     updateStyles({'--google-grey-700': expectedSepiaLightEmptyBody});
@@ -520,6 +548,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedSepiaLightLink, computeStyle('--link-color'));
     assertEquals(
         expectedSepiaLightLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedLightLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify sepia dark theme colors.
     updateStyles({'--google-grey-700': expectedSepiaDarkEmptyBody});
@@ -543,6 +572,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedSepiaDarkLink, computeStyle('--link-color'));
     assertEquals(
         expectedSepiaDarkLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
   });
 
   test('setAllTextStyles updates all text styles', () => {
@@ -561,6 +591,7 @@ suite('AppStyleUpdater', () => {
     const expectedBlueEmptyBody = 'rgb(4, 5, 6)';
     const expectedBlueLink = 'rgb(16, 17, 18)';
     const expectedBlueLinkVisited = 'rgb(19, 20, 21)';
+    const expectedBlueLineFocus = 'rgb(22, 23, 24)';
     updateStyles({
       '--color-read-anything-background-blue': expectedBlueBackground,
       '--color-read-anything-foreground-blue': expectedBlueForeground,
@@ -571,6 +602,7 @@ suite('AppStyleUpdater', () => {
       '--google-grey-700': expectedBlueEmptyBody,
       '--color-read-anything-link-default-blue': expectedBlueLink,
       '--color-read-anything-link-visited-blue': expectedBlueLinkVisited,
+      '--color-read-anything-line-focus-blue': expectedBlueLineFocus,
     });
 
     updater.setAllTextStyles();
@@ -594,5 +626,6 @@ suite('AppStyleUpdater', () => {
         expectedBlueEmptyBody, computeStyle('--sp-empty-state-body-color'));
     assertEquals(expectedBlueLink, computeStyle('--link-color'));
     assertEquals(expectedBlueLinkVisited, computeStyle('--visited-link-color'));
+    assertEquals(expectedBlueLineFocus, computeStyle('--line-focus-bg'));
   });
 });
