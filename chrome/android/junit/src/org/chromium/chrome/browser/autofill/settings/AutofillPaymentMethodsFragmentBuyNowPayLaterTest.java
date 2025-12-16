@@ -60,8 +60,7 @@ import java.util.List;
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
     ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS,
-    ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING,
-    ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
+    ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING
 })
 public class AutofillPaymentMethodsFragmentBuyNowPayLaterTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

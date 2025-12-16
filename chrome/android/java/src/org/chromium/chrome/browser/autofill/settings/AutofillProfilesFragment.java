@@ -449,10 +449,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     private boolean disabledSettingsInThirdPartyMode() {
         return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
-                                UserPrefs.get(getProfile()))
-                        == AndroidAutofillAvailabilityStatus.AVAILABLE
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN);
+                        UserPrefs.get(getProfile()))
+                == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
     // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
