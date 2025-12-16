@@ -1566,6 +1566,9 @@ TEST_F(SharedPasswordControllerTest,
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
 
+  // Expect PasswordSuggestionHelper cleanup to be called.
+  OCMExpect([[suggestion_helper_ ignoringNonObjectArgs] cleanupForFrameId:""]);
+
   //  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_manager_, OnIframeDetach).Times(1);
   web_frames_manager_->RemoveWebFrame(frame->GetFrameId());
@@ -1839,6 +1842,59 @@ TEST_F(SharedPasswordControllerTest, DidFillField) {
 
   auto* agent = autofill::PasswordAutofillAgent::FromWebState(&web_state_);
   agent->DidFillField(frame.get(), form_id, field_id, value);
+}
+
+// Tests that cleanup is done on deleted frames.
+TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
+       CleanUpOnFrameDeletion) {
+  const std::string frame_id = "frame_123";
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame = web::FakeWebFrame::Create(frame_id, /*is_main_frame=*/false,
+                                             GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+  AddWebFrame(std::move(web_frame));
+
+  // Create a query.
+  FormSuggestionProviderQuery* query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:autofill::FormRendererId(1)
+       fieldIdentifier:@"field"
+       fieldRendererID:autofill::FieldRendererId(2)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(frame_id)
+          onlyPassword:NO];
+
+  // Expect extraction to be triggered again by
+  // checkIfSuggestionsAvailableForForm.
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
+  __block BOOL completion_called = NO;
+  [controller_ checkIfSuggestionsAvailableForForm:query
+                                   hasUserGesture:NO
+                                         webState:&web_state_
+                                completionHandler:^(BOOL available) {
+                                  completion_called = YES;
+                                }];
+
+  // Verify completion not called yet (pending).
+  EXPECT_FALSE(completion_called);
+
+  // Expect PasswordManager::OnIframeDetach to be called.
+  EXPECT_CALL(password_manager_,
+              OnIframeDetach(frame_id, testing::_, testing::_));
+
+  [controller_ webFramesManager:web_frames_manager_
+         frameBecameUnavailable:frame_id];
+
+  // Verify completion called.
+  EXPECT_TRUE(completion_called);
 }
 
 // TODO(crbug.com/40701292): Finish unit testing the rest of the public API.

@@ -413,6 +413,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   if (_webState->IsBeingDestroyed()) {
     return;
   }
+
+  [_suggestionHelper cleanupForFrameId:frameId];
+
   web::WebFramesManager* framesManager = [self webFramesManager];
   web::WebFrame* webFrame = framesManager->GetFrameWithId(frameId);
   if (!webFrame) {
