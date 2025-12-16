@@ -77,12 +77,8 @@ class GlicStatusIconTest : public testing::Test {
   ~GlicStatusIconTest() override = default;
 
   void SetUp() override {
-    auto profile_manager_unique = std::make_unique<FakeProfileManager>(
-        base::CreateUniqueTempDirectoryScopedToTest());
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        std::move(profile_manager_unique));
-
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/true);
 
     glic_status_icon_ =
         std::make_unique<GlicStatusIcon>(&glic_controller_, &status_tray_);
@@ -91,8 +87,7 @@ class GlicStatusIconTest : public testing::Test {
   void TearDown() override {
     glic_status_icon_.reset();
 
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   GlicStatusIcon* glic_status_icon() { return glic_status_icon_.get(); }

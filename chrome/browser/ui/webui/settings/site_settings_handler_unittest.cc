@@ -349,11 +349,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   SiteSettingsHandlerBaseTest() = default;
 
   void SetUp() override {
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    EXPECT_TRUE(testing_profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
-    profile_ = testing_profile_manager_->CreateTestingProfile(
+    raw_ptr<TestingProfileManager> testing_profile_manager =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
+    profile_ = testing_profile_manager->CreateTestingProfile(
         kTestUserEmail, {TestingProfile::TestingFactory{
                             HistoryServiceFactory::GetInstance(),
                             HistoryServiceFactory::GetDefaultFactory()}});
@@ -403,6 +402,15 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         partition->WaitForDeletionTasksForTesting();
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_user_manager_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    mock_privacy_sandbox_service_ = nullptr;
+    mock_browsing_topics_service_ = nullptr;
+    incognito_profile_ = nullptr;
+    profile_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1189,7 +1197,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
   content::TestWebUI web_ui_;

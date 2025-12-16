@@ -72,13 +72,6 @@ using testing::StrictMock;
 
 namespace {
 
-std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
-  std::unique_ptr<TestingProfileManager> profile_manager(
-      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
-  EXPECT_TRUE(profile_manager->SetUp());
-  return profile_manager;
-}
-
 // Helper class that tracks state transitions in BackgroundModeManager and
 // exposes them via getters.
 class TestBackgroundModeManager : public StrictMock<BackgroundModeManager> {
@@ -226,11 +219,6 @@ class BackgroundModeManagerTest : public testing::Test {
         std::vector<
             raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
             &policy_provider_});
-    profile_manager_ = CreateTestingProfileManager();
-    profile_ = profile_manager_->CreateTestingProfile(
-        "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
-        /*is_supervised_profile=*/false, std::nullopt,
-        std::move(policy_service));
 
     startup_launch_manager_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
@@ -240,7 +228,20 @@ class BackgroundModeManagerTest : public testing::Test {
             }));
 
     // Initialize StartupLaunchManager in GlobalFeatures.
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
+
+    profile_ = profile_manager_->CreateTestingProfile(
+        "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
+        /*is_supervised_profile=*/false, std::nullopt,
+        std::move(policy_service));
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   TestStartupLaunchManager* startup_launch_manager() {
@@ -254,7 +255,7 @@ class BackgroundModeManagerTest : public testing::Test {
   ui::UserDataFactory::ScopedOverride startup_launch_manager_override_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfileManager> profile_manager_ = nullptr;
   // Test profile used by all tests - this is owned by profile_manager_.
   raw_ptr<TestingProfile> profile_;
 };
@@ -271,12 +272,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   void SetUp() override {
     command_line_ =
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
-    profile_manager_ = CreateTestingProfileManager();
-    profile_ = profile_manager_->CreateTestingProfile("p1");
-
-    test_keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
-        KeepAliveRestartOption::DISABLED);
 
     startup_launch_manager_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
@@ -285,7 +280,14 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
                   &browser_process);
             }));
 
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
+    profile_ = profile_manager_->CreateTestingProfile("p1");
+
+    test_keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+        KeepAliveRestartOption::DISABLED);
 
     // Create our test BackgroundModeManager.
     manager_ = std::make_unique<TestBackgroundModeManager>(
@@ -316,7 +318,8 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     // The Notification UI Manager references the Message Center.
     // As a result, we have to clear the browser process state here
     // before tearing down the Message Center.
-    profile_manager_.reset();
+    profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
     // Clear the shutdown flag to isolate the remaining effect of this test.
     browser_shutdown::SetTryingToQuit(false);
@@ -339,7 +342,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
   std::unique_ptr<base::CommandLine> command_line_;
 
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfileManager> profile_manager_ = nullptr;
   // Test profile used by all tests - this is owned by profile_manager_.
   raw_ptr<TestingProfile> profile_;
 

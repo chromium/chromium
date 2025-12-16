@@ -64,10 +64,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
         profile_manager_->profile_manager());
@@ -91,9 +90,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
     }
 
     ChromeRenderViewHostTestHarness::TearDown();
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
 
-    profile_manager_.reset();
+    profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
@@ -133,7 +132,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  private:
   glic::GlicUnitTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfileManager> profile_manager_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
