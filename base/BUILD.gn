@@ -236,7 +236,6 @@ component("base") {
     "check_op.h",
     "command_line.cc",
     "command_line.h",
-    "compiler_specific.h",
     "component_export.h",
     "containers/adapters.h",
     "containers/adapters_internal.h",
@@ -2496,6 +2495,7 @@ component("base") {
   ]
 
   public_deps += [
+    ":compiler_specific",
     ":memory_dump_provider_name_variants",
     "//base/tracing/protos:chrome_track_event_zero",
     "//third_party/perfetto:libperfetto",
@@ -2543,6 +2543,11 @@ component("base") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+}
+
+# A separate source_set for this header to avoid circular dependencies.
+source_set("compiler_specific") {
+  public = [ "compiler_specific.h" ]
 }
 
 # Separate simdutf from ":base", so simdutf cannot accidentally affect the
@@ -2645,6 +2650,7 @@ if (is_linux || is_chromeos) {
     ]
 
     deps = [
+      ":compiler_specific",
       "//base/allocator/partition_allocator:raw_ptr",
       "//base/numerics:base_numerics",
       "//base/third_party/symbolize",

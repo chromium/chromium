@@ -613,6 +613,7 @@ if (is_ios) {
 executable("test_child_process") {
   testonly = true
   sources = [ "test_child_process.cc" ]
+  deps = [ "//base" ]
 }
 
 perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
