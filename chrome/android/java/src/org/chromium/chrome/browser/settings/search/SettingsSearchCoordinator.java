@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -182,7 +183,7 @@ public class SettingsSearchCoordinator {
 
         View query = mActivity.findViewById(R.id.search_query_container);
         if (mMultiColumnSettings != null) {
-            mHandler.post(this::updateMultiColumnSearchUi);
+            mHandler.post(this::initializeMultiColumnSearchUi);
         } else {
             // For single-column fragment, use ViewResizer to maintain the start/end padding.
             int defaultPadding =
@@ -219,6 +220,41 @@ public class SettingsSearchCoordinator {
 
         queryEdit.setText("");
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
+    }
+
+    private void initializeMultiColumnSearchUi() {
+        assert mMultiColumnSettings != null;
+        if (mMultiColumnSettings == null) return;
+
+        updateMultiColumnSearchUi();
+
+        // Determine the search bar visibility.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        mHandler.post(
+                () -> {
+                    searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
+                });
+        mMultiColumnSettings
+                .getSlidingPaneLayout()
+                .addPanelSlideListener(
+                        new SlidingPaneLayout.SimplePanelSlideListener() {
+                            @Override
+                            public void onPanelOpened(View panel) {
+                                searchBox.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onPanelClosed(View panel) {
+                                searchBox.setVisibility(View.VISIBLE);
+                            }
+                        });
+    }
+
+    private boolean isShowingMainSettings() {
+        if (mMultiColumnSettings != null) {
+            return mUseMultiColumn ? true : !mMultiColumnSettings.isLayoutOpen();
+        }
+        return false; // Immaterial, as search will be using multi-column settings.
     }
 
     /** Hide the icon for Help & Feedback. */
@@ -344,7 +380,7 @@ public class SettingsSearchCoordinator {
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
-        if (mMultiColumnSettings != null && !mMultiColumnSettings.isLayoutOpen()) {
+        if (mMultiColumnSettings != null && isShowingMainSettings()) {
             mMultiColumnSettings.getSlidingPaneLayout().openPane();
             mPaneOpenedBySearch = true;
         }
@@ -534,8 +570,8 @@ public class SettingsSearchCoordinator {
     /**
      * Adjust the UI when the layout (single vs. dual) switches. Used for multi-column settings
      * fragment only.
-     * <li>Moves the search bar (fake search box) around to fit the layout
-     * <li>Hide/show query edit
+     * <li>Moves the search bar around to fit the layout
+     * <li>Hide/show search bar - in single column mode, show it only in main settings
      * <li>Open the detail pane if needed.
      */
     private void switchSearchUiLayout() {
@@ -549,23 +585,35 @@ public class SettingsSearchCoordinator {
             ViewGroup actionBar = mActivity.findViewById(R.id.action_bar);
             setSearchBoxBottomMargin(searchBox, true);
             assumeNonNull(actionBar).addView(searchBox);
-            if (mFragmentState == FS_RESULTS) {
+            if (mFragmentState == FS_SETTINGS) {
+                searchBox.setVisibility(View.VISIBLE);
+                var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
+                lp.gravity = Gravity.END;
+                searchBox.setLayoutParams(lp);
+            }
+            if (mFragmentState == FS_RESULTS || mFragmentState == FS_SEARCH) {
                 // Make the query edit UI visible which was hidden in single-column mode.
                 query.setVisibility(View.VISIBLE);
+                var lp = (Toolbar.LayoutParams) query.getLayoutParams();
+                lp.gravity = Gravity.END;
+                query.setLayoutParams(lp);
             }
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
             setSearchBoxBottomMargin(searchBox, false);
             appBarLayout.addView(searchBox);
-
+            if (!isShowingMainSettings()) {
+                searchBox.setVisibility(View.GONE);
+                query.setVisibility(View.GONE);
+            }
             // Query edit UI should be hidden while we're browsing results.
             if (mFragmentState == FS_RESULTS) query.setVisibility(View.GONE);
 
             if (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS) {
-                if (!mMultiColumnSettings.isLayoutOpen()) {
+                if (isShowingMainSettings()) {
                     // Results in the detail pane should be slided in to be visible if the pane
-                    // is not in open state.
+                    // is showing main settings.
                     mMultiColumnSettings.getSlidingPaneLayout().openPane();
                     mPaneOpenedBySearch = true;
                 }
