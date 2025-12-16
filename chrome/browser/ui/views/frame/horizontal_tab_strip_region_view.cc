@@ -401,10 +401,6 @@ bool HorizontalTabStripRegionView::IsPositionInWindowCaption(
   return IsRectInWindowCaption(gfx::Rect(point, gfx::Size(1, 1)));
 }
 
-views::Button* HorizontalTabStripRegionView::GetNewTabButton() {
-  return new_tab_button_;
-}
-
 views::View::Views HorizontalTabStripRegionView::GetChildrenInZOrder() {
   views::View::Views children;
 

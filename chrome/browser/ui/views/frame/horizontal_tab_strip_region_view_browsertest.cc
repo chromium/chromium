@@ -150,8 +150,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
       RunScheduledLayouts();
       waiter.Wait();
     }
-    EXPECT_LE(tab_strip_region_view()->GetNewTabButton()->bounds().right(),
-              kTabStripRegionViewWidth);
+    EXPECT_LE(
+        tab_strip_region_view()->new_tab_button_for_testing()->bounds().right(),
+        kTabStripRegionViewWidth);
   }
 }
 
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
     waiter.Wait();
   }
 
-  EXPECT_EQ(tab_strip_region_view()->GetNewTabButton()->bounds().x(),
+  EXPECT_EQ(tab_strip_region_view()->new_tab_button_for_testing()->bounds().x(),
             tab_strip()->tab_at(0)->bounds().right());
 }
 
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonIn
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   auto* button = static_cast<TabStripControlButton*>(
-      tab_strip_region_view()->GetNewTabButton());
+      tab_strip_region_view()->new_tab_button_for_testing());
   for (int i = 0; i < 10; ++i) {
     button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
     chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   // The new tab button should sit flush with the top of the
   // |tab_strip_region_view()|.
   gfx::Point new_tab_button_origin(
-      tab_strip_region_view()->GetNewTabButton()->bounds().origin());
+      tab_strip_region_view()->new_tab_button_for_testing()->bounds().origin());
   views::View::ConvertPointToTarget(tab_strip(), tab_strip_region_view(),
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());

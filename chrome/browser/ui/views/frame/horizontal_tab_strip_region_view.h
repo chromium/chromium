@@ -60,8 +60,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  views::Button* GetNewTabButton();
-
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
   views::View* reserved_grab_handle_space_for_testing() {

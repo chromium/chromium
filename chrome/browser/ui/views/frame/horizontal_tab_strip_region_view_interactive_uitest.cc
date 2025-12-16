@@ -56,7 +56,7 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
   }
 
   views::View* new_tab_button() {
-    return tab_strip_region_view()->GetNewTabButton();
+    return tab_strip_region_view()->new_tab_button_for_testing();
   }
 
  protected:
