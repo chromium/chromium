@@ -90,6 +90,9 @@ const CGFloat kCloseModeButtonMargin = 6;
 /// The size of the close icon in the context indicator buttons.
 const CGFloat kCloseIndicatorSize = 10.0f;
 
+/// The index of the attachment section in the carousel.
+const NSInteger kCarouselAttachmentSectionIndex = 0;
+
 /// The image for the send button.
 UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   NSArray<UIColor*>* palette = @[
@@ -312,6 +315,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                   completion:^{
                     [weakSelf updateCarouselFade];
                     [weakSelf updateSendButtonStateIfNeeded];
+                    [weakSelf scrollToLast];
                   }];
 }
 
@@ -633,6 +637,38 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _leadingCarouselFadeView.hidden = contentOffsetX <= 0;
   _trailingCarouselFadeView.hidden =
       contentOffsetX + boundsWidth >= contentWidth;
+}
+
+/// Scrolls the last item in `_carouselView` into view.
+- (void)scrollToLast {
+  if (!_carouselView) {
+    return;
+  }
+  // Ensure the content width actually overflows. If not, no-op.
+  CGFloat contentOffsetX = _carouselView.contentOffset.x;
+  CGFloat contentWidth = _carouselView.contentSize.width;
+  CGFloat boundsWidth = _carouselView.bounds.size.width;
+  if (contentOffsetX + boundsWidth >= contentWidth) {
+    return;
+  }
+
+  BOOL attachmentSectionIsPresent = [_carouselView numberOfSections] != 0;
+  if (!attachmentSectionIsPresent) {
+    return;
+  }
+  NSInteger lastItemIndex =
+      [_carouselView numberOfItemsInSection:kCarouselAttachmentSectionIndex] -
+      1;
+  if (lastItemIndex < 0) {
+    return;
+  }
+  NSIndexPath* lastItemIndexPath =
+      [NSIndexPath indexPathForItem:lastItemIndex
+                          inSection:kCarouselAttachmentSectionIndex];
+  [_carouselView
+      scrollToItemAtIndexPath:lastItemIndexPath
+             atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
+                     animated:YES];
 }
 
 /// Initiates the glow animation around the input plate.
