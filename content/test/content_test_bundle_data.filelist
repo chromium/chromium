@@ -2315,15 +2315,15 @@ data/accessibility/event/add-subtree-expected-auralinux.txt
 data/accessibility/event/add-subtree-expected-uia-win.txt
 data/accessibility/event/add-subtree-expected-win.txt
 data/accessibility/event/add-subtree.html
-data/accessibility/event/alert-shadow-dom-ignored-changed-expected-android.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed-expected-android-exp.txt
+data/accessibility/event/alert-shadow-dom-ignored-changed-expected-android.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed-expected-auralinux.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed-expected-mac.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed-expected-uia-win.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed-expected-win.txt
 data/accessibility/event/alert-shadow-dom-ignored-changed.html
-data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-android.txt
 data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-android-exp.txt
+data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-android.txt
 data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-auralinux.txt
 data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-mac.txt
 data/accessibility/event/alert-shadow-dom-ignored-reparented-expected-uia-win.txt
