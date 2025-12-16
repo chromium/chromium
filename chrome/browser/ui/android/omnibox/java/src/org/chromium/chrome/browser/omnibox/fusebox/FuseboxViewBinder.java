@@ -405,13 +405,11 @@ class FuseboxViewBinder {
             cs.connect(id, ConstraintSet.BOTTOM, bottomToBottom, ConstraintSet.BOTTOM);
         }
 
-        // Reanchor the URL bar ensuring it stretches to the end of LocationBar in expanded state.
-        // The action_buttons_segment is a barrier, allowing us to anchor to it from either side.
         cs.connect(
                 R.id.url_bar,
                 ConstraintSet.END,
-                shouldShowCompactUi ? R.id.action_buttons_segment : ConstraintSet.PARENT_ID,
-                ConstraintSet.END);
+                shouldShowCompactUi ? R.id.action_buttons_segment : R.id.delete_button,
+                ConstraintSet.START);
 
         cs.applyTo(views.parentView);
     }
