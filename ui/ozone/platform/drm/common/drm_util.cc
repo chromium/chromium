@@ -1017,34 +1017,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       variable_refresh_rate_state, drm_formats_and_modifiers);
 }
 
-int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
-  // DRM atomic interface doesn't currently support specifying an alpha
-  // blending. We can simulate disabling alpha blending creating an fb
-  // with a format without the alpha channel.
-  switch (format) {
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      return DRM_FORMAT_XBGR8888;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      return DRM_FORMAT_XRGB8888;
-    case gfx::BufferFormat::BGRA_1010102:
-      return DRM_FORMAT_XRGB2101010;
-    case gfx::BufferFormat::RGBA_1010102:
-      return DRM_FORMAT_XBGR2101010;
-    case gfx::BufferFormat::BGR_565:
-      return DRM_FORMAT_RGB565;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return DRM_FORMAT_NV12;
-    case gfx::BufferFormat::YVU_420:
-      return DRM_FORMAT_YVU420;
-    case gfx::BufferFormat::P010:
-      return DRM_FORMAT_P010;
-    default:
-      NOTREACHED();
-  }
-}
-
 int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format) {
   // DRM atomic interface doesn't currently support specifying an alpha
   // blending. We can simulate disabling alpha blending creating an fb

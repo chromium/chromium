@@ -148,8 +148,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     uint8_t device_index);
 
-int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
-
 int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format);
 
 gfx::Size GetMaximumCursorSize(const DrmWrapper& drm);
