@@ -262,9 +262,7 @@ const CGFloat kSnackbarBottomMargin = 10;
                 didTapLensButton:(UIButton*)lensButton {
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
-          // TODO(crbug.com/452307696) : Add and update the entrypoint to
-          // reflect on the aim composebox.
-          initWithEntryPoint:LensEntrypoint::Keyboard
+          initWithEntryPoint:LensEntrypoint::Composebox
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   __weak id<LensCommands> handler =
