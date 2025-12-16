@@ -145,7 +145,7 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
                                     TimeUnit.MILLISECONDS.toMicros(durationMillis)));
         }
 
-        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V2)) {
             mExecutor.execute(
                     () ->
