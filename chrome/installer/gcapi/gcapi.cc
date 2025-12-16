@@ -15,6 +15,7 @@
 #include <sddl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <versionhelpers.h>
 
@@ -24,11 +25,7 @@
 
 #include <strsafe.h>
 #include <tlhelp32.h>
-#include <wrl/client.h>
 
-#include <algorithm>
-#include <cstdlib>
-#include <iterator>
 #include <limits>
 #include <set>
 #include <string>
@@ -39,6 +36,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
@@ -48,14 +46,10 @@
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/util_constants.h"
-#include "chrome/updater/app/server/win/updater_legacy_idl.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using base::Time;
 using base::win::RegKey;
 using base::win::ScopedCOMInitializer;
-using base::win::ScopedHandle;
-using Microsoft::WRL::ComPtr;
 
 namespace {
 
@@ -289,36 +283,6 @@ bool IsRunningElevated() {
   return (elevation_type == TokenElevationTypeFull);
 }
 
-bool GetUserIdForProcess(size_t pid, wchar_t** user_sid) {
-  HANDLE process_handle =
-      ::OpenProcess(PROCESS_QUERY_INFORMATION, TRUE, static_cast<DWORD>(pid));
-  if (process_handle == nullptr)
-    return false;
-
-  HANDLE process_token;
-  bool result = false;
-  if (::OpenProcessToken(process_handle, TOKEN_QUERY, &process_token)) {
-    DWORD size = 0;
-    ::GetTokenInformation(process_token, TokenUser, nullptr, 0, &size);
-    if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER ||
-        ::GetLastError() == ERROR_SUCCESS) {
-      DWORD actual_size = 0;
-      BYTE* token_user = new BYTE[size];
-      if ((::GetTokenInformation(process_token, TokenUser, token_user, size,
-                                 &actual_size)) &&
-          (actual_size <= size)) {
-        PSID sid = reinterpret_cast<TOKEN_USER*>(token_user)->User.Sid;
-        if (::ConvertSidToStringSid(sid, user_sid))
-          result = true;
-      }
-      delete[] token_user;
-    }
-    ::CloseHandle(process_token);
-  }
-  ::CloseHandle(process_handle);
-  return result;
-}
-
 struct SetWindowPosParams {
   int x;
   int y;
@@ -416,87 +380,15 @@ BOOL __stdcall LaunchGoogleChrome() {
   if (!GetGoogleChromePath(&chrome_exe_path))
     return false;
 
-  ScopedCOMInitializer com_initializer;
-  if (::CoInitializeSecurity(nullptr, -1, nullptr, nullptr,
-                             RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-                             RPC_C_IMP_LEVEL_IDENTIFY, nullptr,
-                             EOAC_DYNAMIC_CLOAKING, nullptr) != S_OK) {
-    return false;
-  }
-
-  bool impersonation_success = false;
-  absl::Cleanup revert_to_self = [&] {
-    if (impersonation_success) {
-      ::RevertToSelf();
-    }
-  };
-  if (IsRunningElevated()) {
-    wchar_t* curr_proc_sid;
-    if (!GetUserIdForProcess(GetCurrentProcessId(), &curr_proc_sid)) {
-      return false;
-    }
-
-    DWORD pid = 0;
-    ::GetWindowThreadProcessId(::GetShellWindow(), &pid);
-    if (pid <= 0) {
-      ::LocalFree(curr_proc_sid);
-      return false;
-    }
-
-    wchar_t* exp_proc_sid;
-    if (GetUserIdForProcess(pid, &exp_proc_sid)) {
-      if (_wcsicmp(curr_proc_sid, exp_proc_sid) == 0) {
-        ScopedHandle process_handle(::OpenProcess(
-            PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, pid));
-        if (process_handle.is_valid()) {
-          HANDLE process_token = nullptr;
-          HANDLE user_token = nullptr;
-          if (::OpenProcessToken(process_handle.Get(),
-                                 TOKEN_DUPLICATE | TOKEN_QUERY,
-                                 &process_token) &&
-              ::DuplicateTokenEx(process_token,
-                                 TOKEN_IMPERSONATE | TOKEN_QUERY |
-                                     TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE,
-                                 nullptr, SecurityImpersonation, TokenPrimary,
-                                 &user_token) &&
-              (::ImpersonateLoggedOnUser(user_token) != 0)) {
-            impersonation_success = true;
-          }
-          if (user_token)
-            ::CloseHandle(user_token);
-          if (process_token)
-            ::CloseHandle(process_token);
-        }
-      }
-      ::LocalFree(exp_proc_sid);
-    }
-
-    ::LocalFree(curr_proc_sid);
-    if (!impersonation_success) {
-      return false;
-    }
-  }
-
   base::CommandLine chrome_command(chrome_exe_path);
+  if (IsRunningElevated()) {
+    return base::win::RunDeElevated(chrome_command).has_value();
+  }
 
-  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID,
-  // to make sure that marshaling loads the proxy/stub from the correct (HKLM)
-  // hive.
-  // If Omaha's process launcher does not work, Omaha may not be installed at
-  // system level. Try just running Chrome instead.
-  ComPtr<IUnknown> unknown;
-  ComPtr<IProcessLauncher> ipl;
-  return (SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
-                                       CLSCTX_LOCAL_SERVER,
-                                       IID_PPV_ARGS(&unknown))) &&
-          (SUCCEEDED(unknown.CopyTo(__uuidof(IProcessLauncherSystem),
-                                    IID_PPV_ARGS_Helper(&ipl))) ||
-           SUCCEEDED(unknown.As(&ipl))) &&
-          SUCCEEDED(ipl->LaunchCmdLine(
-              chrome_command.GetCommandLineString().c_str()))) ||
-         base::LaunchProcess(chrome_command.GetCommandLineString(),
-                             base::LaunchOptions())
-             .IsValid();
+  base::LaunchOptions options;
+  options.grant_foreground_privilege = true;
+  return base::LaunchProcess(chrome_command.GetCommandLineString(), options)
+      .IsValid();
 }
 
 BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,

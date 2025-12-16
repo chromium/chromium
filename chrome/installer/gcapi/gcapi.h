@@ -61,9 +61,7 @@ BOOL __stdcall GoogleChromeCompatibilityCheck(BOOL set_flag,
                                               int shell_mode,
                                               DWORD* reasons);
 
-// This function launches Google Chrome after a successful install. Make
-// sure COM library is NOT initialized before you call this function (so if
-// you called CoInitialize, call CoUninitialize before calling this function).
+// This function launches Google Chrome after a successful install.
 BOOL __stdcall LaunchGoogleChrome();
 
 // This function launches Google Chrome after a successful install, ensuring
