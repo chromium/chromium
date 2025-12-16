@@ -107,11 +107,11 @@ cc::Region GetOccludingRegionForRRectF(
   const auto lower_left =
       bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft);
 
-  static constexpr auto union_rect(
-      [](const gfx::RectF& rect_f, cc::Region& region) {
-        region.Union(gfx::ToEnclosedRect(rect_f));
-      });
-
+  // The complex occluder is the enclosed rect of `bounds` with the enclosing
+  // bounds of the corners subtracted.
+  //
+  // The diagram below describes the rects that tessellate the complex occluder.
+  //
   // ___________________________________________
   // +       +                         +       +
   // |topLefCorner        R1           |topRightCorner
@@ -130,6 +130,14 @@ cc::Region GetOccludingRegionForRRectF(
   // |          |         R3        |          |
   // +____--____+___________________+__________+
   //
+  // - R1 fills the horizontal space between the top left and right corners.
+  // - R2 fills the vertical space between the top and bottom corners.
+  // - R3 fills the horizontal space between the bottom left and right corners.
+  //
+  // `cc::Region` requires integral rects, so R1, R2, and R3 are conservatively
+  // the enclosed rects of the actual bounds. The bottom of R1 and top of R2
+  // have the same Y value to avoid seams between the rects. The same goes for
+  // the bottom of R2 and top of R3.
 
   const bool uniform_top_corners =
       top_left == top_right || top_left.IsZero() || top_right.IsZero();
@@ -142,36 +150,50 @@ cc::Region GetOccludingRegionForRRectF(
       bounds_f.size().GetArea() >= minumum_quad_size_with_rounded_corners;
   if (should_generate_complex_occluder) {
     cc::Region occluding_region;
+
+    static constexpr auto union_rect(
+        [](const gfx::RectF& rect_f, cc::Region& region) {
+          region.Union(gfx::ToEnclosedRect(rect_f));
+        });
+
+    // Compute integer border between the three rects and round towards R2 in
+    // both cases. This ensures that we do not accidentally intersect with any
+    // of the rounded corners.
+    const int r2_top =
+        base::ClampCeil(bounds_f.y() + std::max(top_left.y(), top_right.y()));
+    const int r2_bottom =
+        base::ClampFloor(bounds_f.y() + bounds_f.height() -
+                         std::max(lower_left.y(), lower_right.y()));
+
     {
       // R1
-      float height = std::max(top_left.y(), top_right.y());
-      if (height > kEpsilon) {
-        float width = bounds_f.width() - (top_left.x() + top_right.x());
-        float x = bounds_f.x() + top_left.x();
-        float y = bounds_f.y();
-        union_rect({x, y, width, height}, occluding_region);
+      const int y = base::ClampCeil(bounds_f.y());
+      const int height = r2_top - y;
+      if (height > 0) {
+        const float x = bounds_f.x() + top_left.x();
+        const float width = bounds_f.width() - (top_left.x() + top_right.x());
+        union_rect(gfx::RectF(x, y, width, height), occluding_region);
       }
     }
     {
       // R2
-      float height =
-          bounds_f.height() - (std::max(top_left.y(), top_right.y()) +
-                               std::max(lower_left.y(), lower_right.y()));
-      if (height > kEpsilon) {
-        float width = bounds_f.width();
-        float x = bounds_f.x();
-        float y = bounds_f.y() + std::max(top_left.y(), top_right.y());
-        union_rect({x, y, width, height}, occluding_region);
+      const int y = r2_top;
+      const int height = r2_bottom - y;
+      if (height > 0) {
+        const float x = bounds_f.x();
+        const float width = bounds_f.width();
+        union_rect(gfx::RectF(x, y, width, height), occluding_region);
       }
     }
     {
       // R3
-      float height = std::max(lower_left.y(), lower_right.y());
-      if (height > kEpsilon) {
-        float width = bounds_f.width() - (lower_left.x() + lower_right.x());
-        float x = bounds_f.x() + lower_left.x();
-        float y = bounds_f.bottom() - std::max(lower_left.y(), lower_right.y());
-        union_rect({x, y, width, height}, occluding_region);
+      const int y = r2_bottom;
+      const int height = base::ClampFloor(bounds_f.bottom()) - y;
+      if (height > 0) {
+        const float x = bounds_f.x() + lower_left.x();
+        const float width =
+            bounds_f.width() - (lower_left.x() + lower_right.x());
+        union_rect(gfx::RectF(x, y, width, height), occluding_region);
       }
     }
 

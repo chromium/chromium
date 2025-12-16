@@ -23,6 +23,7 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/test_resource_factory.h"
 #include "components/viz/test/compositor_frame_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -3740,10 +3741,12 @@ TEST_P(QuadsWithComplexOccluderTest, OcclusionCullingWithRoundedCorner) {
     EXPECT_EQ(expected_visible_region_.size(),
               NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    int index = 0;
+    std::vector<gfx::Rect> visible_rects;
     for (auto* quad : frame.render_pass_list.front()->quad_list) {
-      EXPECT_EQ(quad->visible_rect, expected_visible_region_[index++]);
+      visible_rects.push_back(quad->visible_rect);
     }
+    EXPECT_THAT(visible_rects,
+                testing::ElementsAreArray(expected_visible_region_));
   }
 }
 
@@ -3819,7 +3822,38 @@ INSTANTIATE_TEST_SUITE_P(
                                    {0, 0, 1000, 2},
                                    {0, 2, 2, 995},
                                    {998, 2, 2, 995},
-                                   {0, 997, 1000, 3}})));
+                                   {0, 997, 1000, 3}}),
+        // Quads with non-integral radii should generate a complex occluder that
+        // conservatively excludes pixels partially covered by the rounded
+        // corners. It should not contain seams in the complex occluder.
+        std::make_tuple(
+            /*occluded_quad_rect=*/gfx::Rect(0, 0, 1000, 1000),
+            /*quad_rrectf_=*/
+            gfx::RRectF(gfx::RectF(0, 0, 1000, 1000), 10.5),
+            /*expected_visible_rects=*/
+            std::vector<gfx::Rect>{{0, 0, 1000, 1000},
+                                   {0, 0, 11, 11},
+                                   {989, 0, 11, 11},
+                                   {0, 989, 11, 11},
+                                   {989, 989, 11, 11}}),
+        // Quads with a non-integral rounded bounds should generate a complex
+        // occluder that is the integer rect enclosed by the bounds. There
+        // should be visible rects representing a 1-pixel wide border where the
+        // rounded bounds partially covers (and therefor does not occlude).
+        std::make_tuple(
+            /*occluded_quad_rect=*/gfx::Rect(0, 0, 1000, 1000),
+            /*quad_rrectf_=*/
+            gfx::RRectF(gfx::RectF(0.1, 0.2, 999.3, 999.4), 10),
+            /*expected_visible_rects=*/
+            std::vector<gfx::Rect>{{0, 0, 1000, 1000},
+                                   {0, 0, 1000, 1},
+                                   {0, 1, 11, 10},
+                                   {989, 1, 11, 10},
+                                   {0, 11, 1, 978},
+                                   {999, 11, 1, 978},
+                                   {0, 989, 11, 10},
+                                   {989, 989, 11, 10},
+                                   {0, 999, 1000, 1}})));
 
 // If a quad with rounded corners is smaller than a certain threshold, a simpler
 // occluder will be generated. This simpler occluder will be the largest
