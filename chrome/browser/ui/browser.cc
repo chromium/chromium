@@ -733,7 +733,7 @@ Browser::~Browser() {
   // The system incognito profile should not try be destroyed using
   // ProfileDestroyer::DestroyProfileWhenAppropriate(). This profile can be
   // used, at least, by the user manager window. This window is not a browser,
-  // therefore, BrowserList::IsOffTheRecordBrowserActiveForProfile(profile_)
+  // therefore, chrome::IsOffTheRecordBrowserActiveForProfile(profile_)
   // returns false, while the user manager window is still opened.
   // This cannot be fixed in ProfileDestroyer::DestroyProfileWhenAppropriate(),
   // because the ProfileManager needs to be able to destroy all profiles when
