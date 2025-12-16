@@ -28,6 +28,7 @@ const char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 
 const char kHandleStatusValid[] = "valid";
 const char kHandleStatusInvalid[] = "invalid";
+const char kHandleStatusStale[] = "stale";
 
 constexpr int kMaxRetries = 3;
 
@@ -50,7 +51,8 @@ bool MaybeReturnCachedStatus(
     return true;
   }
 
-  if (*saved_status == kHandleStatusInvalid) {
+  if (*saved_status == kHandleStatusInvalid ||
+      *saved_status == kHandleStatusStale) {
     std::move(*callback).Run(account_id, token, /*reauth_required=*/true);
     return true;
   }
