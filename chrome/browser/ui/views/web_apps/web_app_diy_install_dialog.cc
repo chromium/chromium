@@ -40,6 +40,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -121,40 +122,47 @@ void ShowDiyAppInstallDialog(
       InstallDialogType::kDiy);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  auto dialog_model =
-      ui::DialogModel::Builder(std::move(delegate))
-          .SetInternalName("WebAppDiyInstallDialog")
-          .SetTitle(l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_TITLE))
-          .SetSubtitle(
-              l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE))
-          .AddOkButton(
-              base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
-                             delegate_weak_ptr),
-              ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(IDS_INSTALL))
-                  .SetId(WebAppInstallDialogDelegate::kDiyAppsDialogOkButtonId))
-          .AddCancelButton(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
-          .SetCloseActionCallback(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
-          .SetDialogDestroyingCallback(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-          .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
-          .Build();
+  auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
+  dialog_model_builder.SetInternalName("WebAppDiyInstallDialog")
+      .SetTitle(l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_TITLE))
+      .SetSubtitle(
+          l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE))
+      .AddOkButton(
+          base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
+                         delegate_weak_ptr),
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(IDS_INSTALL))
+              .SetId(WebAppInstallDialogDelegate::kDiyAppsDialogOkButtonId))
+      .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
+                                      delegate_weak_ptr))
+      .SetCloseActionCallback(base::BindOnce(
+          &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+      .SetDialogDestroyingCallback(base::BindOnce(
+          &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel);
 
-  dialog_model->AddCustomField(std::make_unique<
-                               views::BubbleDialogModelHost::CustomView>(
-      std::make_unique<SiteIconTextAndOriginView>(
-          icon_image, app_name,
-          l10n_util::GetStringUTF16(IDS_DIY_APP_AX_BUBBLE_NAME_LABEL),
-          start_url, web_contents,
-          base::BindRepeating(
-              &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
-              delegate_weak_ptr)),
-      views::BubbleDialogModelHost::FieldType::kControl));
+  auto text_input_view = std::make_unique<SiteIconTextAndOriginView>(
+      icon_image, app_name,
+      l10n_util::GetStringUTF16(IDS_DIY_APP_AX_BUBBLE_NAME_LABEL), start_url,
+      web_contents,
+      base::BindRepeating(
+          &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
+          delegate_weak_ptr));
+  views::Textfield* text_field = text_input_view->title_field();
+
+  // Set the `text_field` as the focusable view of the dialog.
+  dialog_model_builder
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::move(text_input_view),
+              views::BubbleDialogModelHost::FieldType::kControl,
+              /*focusable_view=*/text_field),
+          WebAppInstallDialogDelegate::kDiyAppsDialogInputTextId)
+      .SetInitiallyFocusedField(
+          WebAppInstallDialogDelegate::kDiyAppsDialogInputTextId);
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::mojom::ModalType::kChild);
+      dialog_model_builder.Build(), ui::mojom::ModalType::kChild);
 
   views::BubbleDialogDelegate* dialog_delegate =
       dialog->AsBubbleDialogDelegate();
