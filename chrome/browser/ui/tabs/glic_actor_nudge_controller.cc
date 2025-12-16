@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -68,16 +70,16 @@ void GlicActorNudgeController::OnStateUpdateImpl(
       }
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:
-      UpdateNudgeLabelOrRetrigger(
-          l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
-      break;
-    case ActorTaskNudgeState::Text::kMultipleTasksNeedAttention:
-      UpdateNudgeLabelOrRetrigger(GetCheckTasksNudgeLabel());
+      UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
+          IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL,
+          actor_task_nudge_state.task_list_size));
       break;
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.
     case ActorTaskNudgeState::Text::kCompleteTasks:
       break;
+    default:
+      NOTREACHED();
   }
 
   if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {

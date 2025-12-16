@@ -18,7 +18,9 @@ TEST(ActorUiMetricsTest, CheckActorTaskNudgeVariantNames) {
 
   for (int i = 0; i <= static_cast<int>(ActorTaskNudgeState::Text::kMaxValue);
        i++) {
-    if (i == static_cast<int>(ActorTaskNudgeState::Text::kDefault)) {
+    if (i == static_cast<int>(ActorTaskNudgeState::Text::kDefault) ||
+        i == static_cast<int>(
+                 ActorTaskNudgeState::Text::kMultipleTasksNeedAttention)) {
       continue;  // Default state is not recorded or included in variant.
     }
     std::string state_string(ToString(ActorTaskNudgeState{

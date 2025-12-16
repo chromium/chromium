@@ -35,12 +35,6 @@ class GlicActorNudgeController {
 
   void OnStateUpdate(actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 
-  // TODO(crbug.com/446871477): Add to actor/resources/common_resources post
-  // M143.
-  static constexpr std::u16string GetCheckTasksNudgeLabel() {
-    return u"Check your tasks";
-  }
-
  private:
   void OnStateUpdateImpl(actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 

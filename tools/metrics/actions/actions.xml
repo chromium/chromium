@@ -3528,9 +3528,11 @@ should be able to be added at any place in this file.
     <variant name="CompleteTasks"
         summary="Task Nudge text shown when a task is complete."/>
     <variant name="MultipleTasksNeedAttention"
-        summary="Task Nudge text shown when multiple tasks need attention"/>
+        summary="Obsolete. Task Nudge text shown when multiple tasks need
+                 attention."/>
     <variant name="NeedsAttention"
-        summary="Task Nudge text shown when one task needs attention."/>
+        summary="Task Nudge text shown when one or more tasks needs
+                 attention."/>
   </token>
 </action>
 

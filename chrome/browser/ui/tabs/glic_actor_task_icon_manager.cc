@@ -88,12 +88,13 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       });
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
+
+  current_actor_task_nudge_state_.task_list_size =
+      actor_task_list_bubble_rows_.size();
   if (!paused_or_yielded_actor_tasks.empty() &&
       !actor_task_list_bubble_rows_.empty()) {
     current_actor_task_nudge_state_.text =
-        actor_task_list_bubble_rows_.size() > 1u
-            ? ActorTaskNudgeState::Text::kMultipleTasksNeedAttention
-            : ActorTaskNudgeState::Text::kNeedsAttention;
+        ActorTaskNudgeState::Text::kNeedsAttention;
   } else {
     // If no tasks needing attention, hide the nudge.
     current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;

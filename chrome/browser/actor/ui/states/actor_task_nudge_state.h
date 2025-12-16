@@ -7,6 +7,9 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
+#include "base/notreached.h"
+
 namespace actor::ui {
 // LINT.IfChange(ActorTaskNudgeState)
 struct ActorTaskNudgeState {
@@ -15,30 +18,33 @@ struct ActorTaskNudgeState {
     kDefault = 0,
     // `Needs attention` text.
     kNeedsAttention = 1,
-    // `Multiple tasks need attention` text.
+    // OBSOLETE. `Multiple tasks need attention` text.
     kMultipleTasksNeedAttention = 2,
     // `Complete Tasks` text.
     kCompleteTasks = 3,
     kMaxValue = kCompleteTasks,
   };
   Text text = Text::kDefault;
+  int task_list_size = 0;
 
   bool operator==(const ActorTaskNudgeState& other) const {
-    return text == other.text;
+    return text == other.text && task_list_size == other.task_list_size;
   }
 };
-// LINT.ThenChange(//chrome/tools/metrics/histograms/metadata/actor/enums.xml:TaskNudgeState)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:TaskNudgeState)
 
 inline std::string_view ToString(const ActorTaskNudgeState& state) {
+  DCHECK_NE(state.text, ActorTaskNudgeState::Text::kMultipleTasksNeedAttention)
+      << "MultipleTasksNeedAttention state is deprecated.";
   switch (state.text) {
     case ActorTaskNudgeState::Text::kDefault:
       return "Default";
     case ActorTaskNudgeState::Text::kNeedsAttention:
       return "NeedsAttention";
-    case ActorTaskNudgeState::Text::kMultipleTasksNeedAttention:
-      return "MultipleTasksNeedAttention";
     case ActorTaskNudgeState::Text::kCompleteTasks:
       return "CompleteTasks";
+    default:
+      NOTREACHED();
   }
 }
 

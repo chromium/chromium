@@ -83,11 +83,11 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
       mock_subscriber,
       OnStateChanged(AllOf(Field(&ActorTaskNudgeState::text,
                                  ActorTaskNudgeState::Text::kNeedsAttention))));
-  // Should only be one call for multiple tasks.
-  EXPECT_CALL(mock_subscriber,
-              OnStateChanged(AllOf(Field(
-                  &ActorTaskNudgeState::text,
-                  ActorTaskNudgeState::Text::kMultipleTasksNeedAttention))));
+  // Should only be one call for default.
+  EXPECT_CALL(
+      mock_subscriber,
+      OnStateChanged(AllOf(Field(&ActorTaskNudgeState::text,
+                                 ActorTaskNudgeState::Text::kDefault))));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
@@ -96,19 +96,24 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
 
+  actor_service()->StopTask(task_id_1,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->OnActorTaskStopped(task_id_1, actor::ActorTask::State::kFinished,
+                                /*task_title=*/"");
+  manager()->UpdateTaskListBubble(task_id_1);
+  manager()->UpdateTaskNudge();
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kDefault);
+
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
-  actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
+  actor_service()->StopTask(task_id_2,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->OnActorTaskStopped(task_id_2, actor::ActorTask::State::kFinished,
+                                /*task_title=*/"");
   manager()->UpdateTaskListBubble(task_id_2);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
-            ActorTaskNudgeState::Text::kMultipleTasksNeedAttention);
-
-  TaskId task_id_3 = actor_service()->CreateTaskForTesting();
-  actor_service()->GetTask(task_id_3)->Pause(/*from_actor=*/true);
-  manager()->UpdateTaskListBubble(task_id_3);
-  manager()->UpdateTaskNudge();
-  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
-            ActorTaskNudgeState::Text::kMultipleTasksNeedAttention);
+            ActorTaskNudgeState::Text::kDefault);
 }
 
 TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
@@ -146,7 +151,8 @@ TEST_F(GlicActorTaskIconManagerTest,
 
   EXPECT_CALL(mock_nudge_subscriber,
               OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kNeedsAttention}));
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
+                  .task_list_size = 1}));
   EXPECT_CALL(mock_bubble_subscriber, OnStateChanged(actor::TaskId(1)));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -175,11 +181,13 @@ TEST_F(GlicActorTaskIconManagerTest,
 
   EXPECT_CALL(mock_nudge_subscriber,
               OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kNeedsAttention}));
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
+                  .task_list_size = 1}));
   EXPECT_CALL(mock_bubble_subscriber, OnStateChanged(actor::TaskId(1)));
-  EXPECT_CALL(mock_nudge_subscriber,
-              OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kDefault}));
+  EXPECT_CALL(
+      mock_nudge_subscriber,
+      OnStateChanged(ActorTaskNudgeState{
+          .text = ActorTaskNudgeState::Text::kDefault, .task_list_size = 0}));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
@@ -212,12 +220,13 @@ TEST_F(GlicActorTaskIconManagerTest,
 
   EXPECT_CALL(mock_nudge_subscriber,
               OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kNeedsAttention}));
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
+                  .task_list_size = 1}));
   EXPECT_CALL(mock_bubble_subscriber, OnStateChanged(actor::TaskId(1)));
-  EXPECT_CALL(
-      mock_nudge_subscriber,
-      OnStateChanged(ActorTaskNudgeState{
-          .text = ActorTaskNudgeState::Text::kMultipleTasksNeedAttention}));
+  EXPECT_CALL(mock_nudge_subscriber,
+              OnStateChanged(ActorTaskNudgeState{
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
+                  .task_list_size = 2}));
   EXPECT_CALL(mock_bubble_subscriber, OnStateChanged(actor::TaskId(2)));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -230,7 +239,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskListBubble(task_id_2);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
-            ActorTaskNudgeState::Text::kMultipleTasksNeedAttention);
+            ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
 }
 }  // namespace tabs

@@ -57,6 +57,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -756,6 +757,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       tabs::GlicActorNudgeController::From(browser());
   auto actor_task_nudge_state = ActorTaskNudgeState();
   actor_task_nudge_state.text = ActorTaskNudgeState::Text::kNeedsAttention;
+  actor_task_nudge_state.task_list_size = 1;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
   ASSERT_TRUE(RunUntil([&]() {
@@ -768,7 +770,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
+            l10n_util::GetPluralStringFUTF16(
+                IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
   ResetAnimation(1);
 
@@ -788,6 +791,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       tabs::GlicActorNudgeController::From(browser());
   auto actor_task_nudge_state = ActorTaskNudgeState();
   actor_task_nudge_state.text = ActorTaskNudgeState::Text::kNeedsAttention;
+  actor_task_nudge_state.task_list_size = 1;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
   ASSERT_TRUE(RunUntil([&]() {
@@ -801,7 +805,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
+            l10n_util::GetPluralStringFUTF16(
+                IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
   ResetAnimation(1);
 
@@ -834,6 +839,7 @@ IN_PROC_BROWSER_TEST_F(
       tabs::GlicActorNudgeController::From(browser());
   auto actor_task_nudge_state = ActorTaskNudgeState();
   actor_task_nudge_state.text = ActorTaskNudgeState::Text::kNeedsAttention;
+  actor_task_nudge_state.task_list_size = 1;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
   ASSERT_TRUE(RunUntil([&]() {
@@ -847,18 +853,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
+            l10n_util::GetPluralStringFUTF16(
+                IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 1));
 
   ResetAnimation(1);
 
-  actor_task_nudge_state.text =
-      ActorTaskNudgeState::Text::kMultipleTasksNeedAttention;
+  actor_task_nudge_state.task_list_size = 2;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
   EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
-  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            actor_nudge_controller->GetCheckTasksNudgeLabel());
+            l10n_util::GetPluralStringFUTF16(
+                IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, 2));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
