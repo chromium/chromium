@@ -274,7 +274,7 @@
   PHPickerConfiguration* configuration = [[PHPickerConfiguration alloc] init];
   configuration.selectionLimit = _mediator.allowsMultipleSelection ? 0 : 1;
   configuration.preferredAssetRepresentationMode =
-      PHPickerConfigurationAssetRepresentationModeCurrent;
+      PHPickerConfigurationAssetRepresentationModeCompatible;
   if (_mediator.allowsImageSelection && !_mediator.allowsVideoSelection) {
     configuration.filter = PHPickerFilter.imagesFilter;
   } else if (_mediator.allowsVideoSelection &&

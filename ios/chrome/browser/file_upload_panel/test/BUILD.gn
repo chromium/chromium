@@ -12,9 +12,11 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/file_upload_panel/ui:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:buildflags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
   ]
+  frameworks = [ "Photos.framework" ]
 }

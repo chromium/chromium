@@ -6,8 +6,6 @@ source_set("coordinator") {
   sources = [
     "file_upload_panel_coordinator.h",
     "file_upload_panel_coordinator.mm",
-    "file_upload_panel_media_item.h",
-    "file_upload_panel_media_item.mm",
     "file_upload_panel_mediator.h",
     "file_upload_panel_mediator.mm",
     "file_upload_panel_picker_result_loader.h",

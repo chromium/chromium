@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <Photos/Photos.h>
+
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/download/model/download_app_interface.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/buildflags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -299,6 +304,46 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   }
   GREYAssertFalse(element.exists, @"Element still exists after 3 taps.");
 }
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+
+// Adds a video to the photo library.
+- (void)addVideoToPhotoLibrary {
+  base::FilePath video_path;
+  base::PathService::Get(base::DIR_ASSETS, &video_path);
+  video_path = video_path.AppendASCII(
+      "ios/testing/data/http_server_files/video_sample.mov");
+
+  NSURL* video_url =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(video_path.value())];
+
+  __block BOOL changes_performed = NO;
+  __block NSError* error = nil;
+  [[PHPhotoLibrary sharedPhotoLibrary]
+      performChanges:^{
+        [PHAssetChangeRequest
+            creationRequestForAssetFromVideoAtFileURL:video_url];
+      }
+      completionHandler:^(BOOL success, NSError* error_out) {
+        changes_performed = YES;
+        error = error_out;
+      }];
+
+  // Wait for the alert to appear and accept it, or for the changes to complete.
+  // The alert might not appear if the permission was already granted.
+  BOOL success = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^{
+        if (changes_performed) {
+          return YES;
+        }
+        [self checkAndAcceptSystemDialog];
+        return changes_performed;
+      });
+
+  GREYAssertTrue(success, @"Failed to add video to photo library: %@", error);
+}
+
+#endif
 
 // Tests that the file upload panel context menu appears and contains expected
 // elements when a file input element is tapped.
@@ -741,6 +786,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
       expectTotalCount:0
           forHistogram:@"IOS.FileUploadPanel.FilePicker.FileCount"];
   chrome_test_util::GREYAssertErrorNil(error);
+
   error = [MetricsAppInterface
       expectTotalCount:0
           forHistogram:
@@ -1131,5 +1177,238 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
           forHistogram:@"IOS.FileUploadPanel.PhotoPicker.FileCount"];
   chrome_test_util::GREYAssertErrorNil(error);
 }
+
+// Tests that picking a single photo from the photo picker logs the success
+// metrics.
+- (void)testPhotoPickerSingleSelection {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Tap the "Photo Library" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  XCUIApplication* photosPickerApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.mobileslideshow.photospicker"];
+  GREYAssertTrue(
+      [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
+                            timeout:30],
+      @"Photo picker did not launch");
+
+  // Select a photo.
+  XCUIElement* photo = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:0];
+  GREYAssertTrue([photo waitForExistenceWithTimeout:10],
+                 @"Photo button not hittable.");
+  [self forceTap:photo];
+  [photosPickerApp.buttons[@"Done"].firstMatch tap];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:1];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that picking multiple photos from the photo picker logs the success
+// metrics.
+- (void)testPhotoPickerMultipleSelection {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Tap the "Photo Library" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  XCUIApplication* photosPickerApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.mobileslideshow.photospicker"];
+  GREYAssertTrue(
+      [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
+                            timeout:30],
+      @"Photo picker did not launch");
+
+  // Select multiple photos.
+  XCUIElement* photo1 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:0];
+  XCUIElement* photo2 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:1];
+  XCUIElement* photo3 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:2];
+  XCUIElement* photo4 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:3];
+  XCUIElement* photo5 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:4];
+  XCUIElement* photo6 = [[photosPickerApp.images
+      matchingIdentifier:@"PXGGridLayout-Info"] elementBoundByIndex:5];
+  GREYAssertTrue([photo1 waitForExistenceWithTimeout:10],
+                 @"Photo 1 button not hittable.");
+  [self forceTap:photo1];
+  GREYAssertTrue([photo2 waitForExistenceWithTimeout:10],
+                 @"Photo 2 button not hittable.");
+  [self forceTap:photo2];
+  GREYAssertTrue([photo3 waitForExistenceWithTimeout:10],
+                 @"Photo 3 button not hittable.");
+  [self forceTap:photo3];
+  GREYAssertTrue([photo4 waitForExistenceWithTimeout:10],
+                 @"Photo 4 button not hittable.");
+  [self forceTap:photo4];
+  GREYAssertTrue([photo5 waitForExistenceWithTimeout:10],
+                 @"Photo 5 button not hittable.");
+  [self forceTap:photo5];
+  GREYAssertTrue([photo6 waitForExistenceWithTimeout:10],
+                 @"Photo 6 button not hittable.");
+  [self forceTap:photo6];
+  [photosPickerApp.buttons[@"Done"].firstMatch tap];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:6];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:6
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:6
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+#if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
+
+// Tests that picking a video from the photo picker logs the success metrics.
+- (void)testPhotoPickerVideoSelection {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Tap the "Photo Library" action.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
+      performAction:grey_tap()];
+
+  XCUIApplication* photosPickerApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.mobileslideshow.photospicker"];
+  GREYAssertTrue(
+      [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
+                            timeout:30],
+      @"Photo picker did not launch");
+
+  NSPredicate* videoPredicate =
+      [NSPredicate predicateWithFormat:@"label BEGINSWITH 'Video'"];
+  XCUIElementQuery* videos =
+      [photosPickerApp.images matchingPredicate:videoPredicate];
+
+  if (![videos.firstMatch waitForExistenceWithTimeout:5]) {
+    // Close the picker to add the video.
+    [photosPickerApp.buttons[@"Cancel"] tap];
+
+    [self addVideoToPhotoLibrary];
+    [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+    // Re-open picker.
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL)]
+        performAction:grey_tap()];
+
+    GREYAssertTrue(
+        [photosPickerApp waitForState:XCUIApplicationStateRunningForeground
+                              timeout:30],
+        @"Photo picker did not launch");
+
+    videos = [photosPickerApp.images matchingPredicate:videoPredicate];
+  }
+
+  XCUIElement* video = [videos firstMatch];
+  GREYAssertTrue([video waitForExistenceWithTimeout:10],
+                 @"Video button not hittable.");
+  [self forceTap:video];
+
+  [photosPickerApp.buttons[@"Add"] tap];
+
+  // Check histograms.
+  [self waitForSubmittedFileCount:1];
+
+  NSError* error = nil;
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // 1 for success
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.Result"];
+  chrome_test_util::GREYAssertErrorNil(error);
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1
+      forHistogram:@"IOS.FileUploadPanel.PhotoPicker.ResultLoader.FileCount"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
+#endif
 
 @end
