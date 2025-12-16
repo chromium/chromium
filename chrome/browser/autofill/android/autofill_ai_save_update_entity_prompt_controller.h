@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 
@@ -38,6 +39,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   std::u16string GetPositiveButtonText() const;
   std::u16string GetNegativeButtonText() const;
 
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
   // Called whenever the prompt is dismissed (e.g. because the user already
@@ -50,6 +52,8 @@ class AutofillAiSaveUpdateEntityPromptController {
   const EntityTypeName entity_type_name_;
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
+  // The corresponding Java SaveUpdateAddressProfilePromptController.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 }  // namespace autofill

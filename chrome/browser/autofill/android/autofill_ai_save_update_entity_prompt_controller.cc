@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -24,6 +25,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/AutofillAiSaveUpdateEntityPromptController_jni.h"
+
 namespace autofill {
 
 AutofillAiSaveUpdateEntityPromptController::
@@ -31,14 +35,18 @@ AutofillAiSaveUpdateEntityPromptController::
         std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
         EntityTypeName entity_type_name)
     : prompt_view_(std::move(prompt_view)),
-      entity_type_name_(entity_type_name) {
+      entity_type_name_(entity_type_name),
+      java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
+          base::android::AttachCurrentThread(),
+          reinterpret_cast<intptr_t>(this))) {
   CHECK(prompt_view_);
 }
 
 AutofillAiSaveUpdateEntityPromptController::
     ~AutofillAiSaveUpdateEntityPromptController() {
-  // TODO: crbug.com/460410690 - Notify the controller that the native side was
-  // destroyed.
+  Java_AutofillAiSaveUpdateEntityPromptController_onNativeDestroyed(
+      base::android::AttachCurrentThread(), java_object_);
+  java_object_.Reset();
 }
 
 void AutofillAiSaveUpdateEntityPromptController::DisplayPrompt() {
@@ -61,6 +69,11 @@ AutofillAiSaveUpdateEntityPromptController::GetNegativeButtonText() const {
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON);
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
+  return base::android::ScopedJavaLocalRef<jobject>(java_object_);
+}
+
 void AutofillAiSaveUpdateEntityPromptController::OnUserAccepted(JNIEnv* env) {
   had_user_interaction_ = true;
 }
@@ -73,3 +86,5 @@ void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
     JNIEnv* env) {}
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillAiSaveUpdateEntityPromptController)

@@ -17,6 +17,9 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/AutofillAiSaveUpdateEntityPrompt_jni.h"
+
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -29,7 +32,11 @@ AutofillAiSaveUpdateEntityPromptViewAndroid::
 
 AutofillAiSaveUpdateEntityPromptViewAndroid::
     ~AutofillAiSaveUpdateEntityPromptViewAndroid() {
-  // TODO: crbug.com/460410690 - Reset java object.
+  if (java_object_) {
+    Java_AutofillAiSaveUpdateEntityPrompt_dismiss(
+        base::android::AttachCurrentThread(), java_object_);
+    java_object_.Reset();
+  }
 }
 
 bool AutofillAiSaveUpdateEntityPromptViewAndroid::Show(
@@ -39,8 +46,22 @@ bool AutofillAiSaveUpdateEntityPromptViewAndroid::Show(
     return false;  // No window attached (yet or anymore).
   }
 
+  base::android::ScopedJavaLocalRef<jobject> java_controller =
+      controller->GetJavaObject();
+  if (!java_controller) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_object_.Reset(Java_AutofillAiSaveUpdateEntityPrompt_create(
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      java_controller));
+  if (!java_object_) {
+    return false;
+  }
+
   SetContent(controller);
-  // TODO: crbug.com/460410690 - Show prompt.
+  Java_AutofillAiSaveUpdateEntityPrompt_show(env, java_object_);
   return true;
 }
 
@@ -59,7 +80,8 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
       base::android::ConvertUTF16ToJavaString(
           env, controller->GetNegativeButtonText());
 
-  // TODO: crbug.com/460410690 - Set dialog details.
+  Java_AutofillAiSaveUpdateEntityPrompt_setDialogDetails(
+      env, java_object_, title, positive_button_text, negative_button_text);
 }
 
 }  // namespace autofill
