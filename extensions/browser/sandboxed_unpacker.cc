@@ -490,7 +490,7 @@ void SandboxedUnpacker::Unpack(const base::FilePath& directory) {
 }
 
 void SandboxedUnpacker::ReadManifestDone(
-    base::expected<base::Value, std::string> result) {
+    base::expected<base::Value, std::u16string> result) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   if (!result.has_value()) {
     ReportUnpackExtensionFailed(result.error());
@@ -502,21 +502,21 @@ void SandboxedUnpacker::ReadManifestDone(
     return;
   }
 
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  std::u16string utf16_error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(extension_root_, location_, *dict, creation_flags_,
-                        extension_id_, &utf16_error));
+                        extension_id_, &error));
   if (!extension) {
-    ReportUnpackExtensionFailed(base::UTF16ToUTF8(utf16_error));
+    ReportUnpackExtensionFailed(error);
     return;
   }
 
   std::string error_msg;
   std::vector<InstallWarning> warnings;
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
   if (!file_util::ValidateExtension(extension.get(), &error_msg, &warnings)) {
-    ReportUnpackExtensionFailed(error_msg);
+    ReportUnpackExtensionFailed(base::UTF8ToUTF16(error_msg));
     return;
   }
   extension->AddInstallWarnings(std::move(warnings));
@@ -787,11 +787,12 @@ void SandboxedUnpacker::MaybeComputeHashes(bool should_compute) {
   ReportSuccess();
 }
 
-void SandboxedUnpacker::ReportUnpackExtensionFailed(std::string_view error) {
+void SandboxedUnpacker::ReportUnpackExtensionFailed(
+    const std::u16string& error) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
-  ReportFailure(SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED,
-                l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_ERROR_MESSAGE,
-                                           base::UTF8ToUTF16(error)));
+  ReportFailure(
+      SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED,
+      l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_ERROR_MESSAGE, error));
 }
 
 std::u16string SandboxedUnpacker::FailureReasonToString16(
@@ -1051,7 +1052,7 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
-    ReadManifestDone(base::unexpected("File doesn't exist."));
+    ReadManifestDone(base::unexpected(u"File doesn't exist."));
     return;
   }
 
@@ -1059,7 +1060,9 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
       base::JSONReader::ReadAndReturnValueWithError(
           contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ReadManifestDone(std::move(result).transform_error(
-      [](const base::JSONReader::Error& error) { return error.ToString(); }));
+      [](const base::JSONReader::Error& error) {
+        return base::UTF8ToUTF16(error.ToString());
+      }));
 }
 
 }  // namespace extensions

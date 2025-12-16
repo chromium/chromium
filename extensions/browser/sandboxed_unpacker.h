@@ -199,11 +199,11 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
-  void ReadManifestDone(base::expected<base::Value, std::string> result);
+  void ReadManifestDone(base::expected<base::Value, std::u16string> result);
   void UnpackExtensionSucceeded(base::Value::Dict manifest);
 
   // Helper which calls ReportFailure.
-  void ReportUnpackExtensionFailed(std::string_view error);
+  void ReportUnpackExtensionFailed(const std::u16string& error);
 
   // Implementation of ImageSanitizer::Client:
   data_decoder::DataDecoder* GetDataDecoder() override;
