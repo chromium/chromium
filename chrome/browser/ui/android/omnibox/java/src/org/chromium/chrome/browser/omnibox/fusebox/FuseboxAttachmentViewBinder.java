@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,14 +39,6 @@ class FuseboxAttachmentViewBinder {
         ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (attachment.isUploadComplete()) {
-            boolean isImage = attachment.type == FuseboxAttachmentType.ATTACHMENT_IMAGE;
-            // Image attachments are narrower than file attachments since they don't have a title.
-            layoutParams.width =
-                    view.getResources()
-                            .getDimensionPixelSize(
-                                    isImage
-                                            ? R.dimen.fusebox_attachment_image_width
-                                            : R.dimen.fusebox_attachment_file_width);
             progressView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageDrawable(
@@ -57,13 +48,8 @@ class FuseboxAttachmentViewBinder {
                                     view.getContext(), R.drawable.ic_attach_file_24dp));
             applyTitleAndDescriptionIfPresent(attachment, view);
         } else {
-            // The "loading" version of the attachment is always 132dp so that there is space for
-            // the (x) and a centered spinner.
-            layoutParams.width =
-                    view.getResources()
-                            .getDimensionPixelSize(R.dimen.fusebox_attachment_loading_width);
-            imageView.setVisibility(View.GONE);
             progressView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
             TextView titleView = view.findViewById(R.id.attachment_title);
             if (titleView != null) {
                 titleView.setVisibility(View.GONE);
@@ -74,7 +60,6 @@ class FuseboxAttachmentViewBinder {
 
     private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {
         TextView titleView = view.findViewById(R.id.attachment_title);
-
         if (titleView == null) return;
 
         if (TextUtils.isEmpty(attachment.title)) {

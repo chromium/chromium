@@ -7,62 +7,63 @@ found in the LICENSE file.
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="148dp"
-    android:layout_height="48dp"
-    android:background="@drawable/navattach_item_background"
-    android:clipToOutline="true"
-    android:padding="4dp">
+    android:layout_width="@dimen/fusebox_attachment_file_width"
+    android:layout_height="@dimen/fusebox_attachment_item_height"
+    android:background="@drawable/inset_navattach_item_background"
+    android:clipToOutline="true">
 
-  <ProgressBar
-      android:id="@+id/attachment_spinner"
-      android:visibility="gone"
-      android:layout_height="@dimen/fusebox_attachment_spinner_size"
-      android:layout_width="@dimen/fusebox_attachment_spinner_size"
-      android:indeterminate="true"
-      android:indeterminateTint="@macro/circular_progress_icon_color_small_large"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
-      />
+    <ProgressBar
+        android:id="@+id/attachment_spinner"
+        android:layout_width="@dimen/fusebox_attachment_spinner_size"
+        android:layout_height="@dimen/fusebox_attachment_spinner_size"
+        android:indeterminate="true"
+        android:indeterminateTint="@macro/circular_progress_icon_color_small_large"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/attachment_thumbnail"
-        android:layout_width="@dimen/omnibox_suggestion_36dp_icon_size"
-        android:layout_height="@dimen/omnibox_suggestion_36dp_icon_size"
+        android:layout_width="@dimen/omnibox_suggestion_24dp_icon_size"
+        android:layout_height="@dimen/omnibox_suggestion_24dp_icon_size"
+        android:layout_marginStart="@dimen/fusebox_attachment_item_padding"
+        android:layout_marginEnd="@dimen/fusebox_attachment_item_padding"
         android:background="@drawable/navattach_item_thumbnail_background"
         android:clipToOutline="true"
-        android:scaleType="centerCrop"
         android:importantForAccessibility="no"
-        app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/attachment_title"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/attachment_title"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="@dimen/fusebox_attachment_visible_height"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-        app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/attachment_remove_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/attachment_remove_button"
-        android:layout_width="48dp"
-        android:layout_height="0dp"
-        android:src="@drawable/btn_close"
+        android:layout_width="@dimen/fusebox_attachment_remove_width"
+        android:layout_height="@dimen/fusebox_attachment_item_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/close"
+        android:padding="@dimen/fusebox_attachment_item_padding"
+        android:scaleType="fitCenter"
+        android:src="@drawable/btn_close"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:tint="@color/default_icon_color_secondary_baseline"/>
+        app:tint="@color/default_icon_color_secondary_baseline" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

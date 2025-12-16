@@ -347,6 +347,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_swap_vert_round.xml",
     "java/res/drawable/ic_tabs_24dp.xml",
     "java/res/drawable/ic_wb_sunny_round.xml",
+    "java/res/drawable/inset_navattach_item_background.xml",
     "java/res/drawable/logo_partly_cloudy.xml",
     "java/res/drawable/logo_translate_round.xml",
     "java/res/drawable/navattach_item_background.xml",
