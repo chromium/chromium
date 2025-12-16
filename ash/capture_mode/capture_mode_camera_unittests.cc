@@ -4594,8 +4594,6 @@ namespace {
 // Waits for several rendered frames and verifies that the content of the
 // received video frames are the same as that of the produced video frames.
 void WaitForAndVerifyRenderedVideoFrame() {
-  // PaintCanvasVideoRenderer needs a context provider that is capable of GPU
-  // raster to copy the video frame to a bitmap.
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
           viz::TestContextType::kRaster, /*support_locking=*/false);
