@@ -1359,6 +1359,10 @@ chromium-metrics-reviews@google.com.
     <variant name="EndSession"/>
     <variant name="GetSession"/>
     <variant name="JoinSessionViaAccessCode"/>
+    <variant name="ListCourses"/>
+    <variant name="ListCourseWorkMaterials"/>
+    <variant name="ListCourseWorks"/>
+    <variant name="ListStudents"/>
     <variant name="RemoveStudent"/>
     <variant name="StudentHeartbeat"/>
     <variant name="UpdateCaption"/>
