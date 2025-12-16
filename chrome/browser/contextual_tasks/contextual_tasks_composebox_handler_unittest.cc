@@ -39,6 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -274,3 +275,58 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       AutocompleteMatchType::SEARCH_SUGGEST, base::TimeTicks::Now(), false,
       false, u"other param", match, match);
 }
+
+struct ToolModeTestParam {
+  omnibox::ChromeAimToolsAndModels tool_mode;
+  bool expected_deep_search_selected;
+  bool expected_create_images_selected;
+};
+
+class ContextualTasksComposeboxHandlerToolModeTest
+    : public ContextualTasksComposeboxHandlerTest,
+      public ::testing::WithParamInterface<ToolModeTestParam> {};
+
+TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
+  const auto& param = GetParam();
+
+  if (param.tool_mode ==
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH) {
+    handler_->SetDeepSearchMode(true);
+  } else if (param.tool_mode ==
+             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
+    handler_->SetCreateImageMode(true, false);
+  } else if (param.tool_mode ==
+             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+    handler_->SetCreateImageMode(true, true);
+  }
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->deep_search_selected,
+                  param.expected_deep_search_selected);
+        EXPECT_EQ(info->create_images_selected,
+                  param.expected_create_images_selected);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage("test query");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksComposeboxHandlerToolModeTest,
+    ::testing::Values(
+        ToolModeTestParam{
+            omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED, false,
+            false},
+        ToolModeTestParam{
+            omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH, true,
+            false},
+        ToolModeTestParam{omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN,
+                          false, true},
+        ToolModeTestParam{
+            omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD, false,
+            true}));
