@@ -46,7 +46,7 @@ class HttpsOnlyModeBlockingPage
       security_interstitials::SecurityInterstitialCommand command) override;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
-  raw_ptr<HttpsUpgradeService, DanglingUntriaged> service_ = nullptr;
+  raw_ptr<HttpsUpgradeService> service_ = nullptr;
   std::unique_ptr<HttpsOnlyModeControllerClient> controller_;
 };
 
