@@ -37,7 +37,7 @@ include_rules = [
   "+ios/chrome/browser/policy/ui_bundled/management_util.h",
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
   "+ios/chrome/browser/push_notification/model",
-  "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
+  "+ios/chrome/browser/push_notification/coordinator/notifications_alert_presenter.h",
   "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/safari_data_import/public",

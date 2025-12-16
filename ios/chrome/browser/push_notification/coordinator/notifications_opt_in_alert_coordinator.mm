@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_alert_coordinator.h"
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
@@ -12,13 +12,13 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/coordinator/prominence_notification_setting_alert_coordinator.h"
+#import "ios/chrome/browser/push_notification/coordinator/prominence_notification_setting_alert_coordinator_delegate.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/metrics.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/prominence_notification_setting_alert_coordinator.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/prominence_notification_setting_alert_coordinator_delegate.h"
+#import "ios/chrome/browser/push_notification/public/metrics.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

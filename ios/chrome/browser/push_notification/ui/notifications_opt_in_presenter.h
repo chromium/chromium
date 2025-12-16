@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_NOTIFICATIONS_OPT_IN_PRESENTER_H_
-#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_NOTIFICATIONS_OPT_IN_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_NOTIFICATIONS_OPT_IN_PRESENTER_H_
+#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_NOTIFICATIONS_OPT_IN_PRESENTER_H_
 
 #import <vector>
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_item_identifier.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_item_identifier.h"
 
 enum class PushNotificationClientId;
 
@@ -27,4 +27,4 @@ enum class PushNotificationClientId;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_NOTIFICATIONS_OPT_IN_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_NOTIFICATIONS_OPT_IN_PRESENTER_H_

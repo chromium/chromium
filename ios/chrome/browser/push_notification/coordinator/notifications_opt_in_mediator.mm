@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_mediator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -17,10 +17,10 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/metrics.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_consumer.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_item_identifier.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_presenter.h"
+#import "ios/chrome/browser/push_notification/public/metrics.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_consumer.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_item_identifier.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_presenter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"

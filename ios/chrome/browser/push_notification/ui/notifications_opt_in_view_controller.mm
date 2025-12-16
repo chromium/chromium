@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_view_controller.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_view_controller.h"
 
-#import "ios/chrome/browser/push_notification/ui_bundled/push_notifications_constants.h"
+#import "ios/chrome/browser/push_notification/public/push_notifications_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"

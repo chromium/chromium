@@ -6,7 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
+#import "ios/chrome/browser/push_notification/test/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

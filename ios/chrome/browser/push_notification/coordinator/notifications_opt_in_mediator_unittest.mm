@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_mediator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_consumer.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_item_identifier.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_consumer.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_item_identifier.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

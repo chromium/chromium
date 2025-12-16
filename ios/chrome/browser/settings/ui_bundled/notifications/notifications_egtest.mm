@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/variations/pref_names.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
+#import "ios/chrome/browser/push_notification/test/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"

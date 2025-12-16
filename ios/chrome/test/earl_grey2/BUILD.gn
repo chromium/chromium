@@ -101,7 +101,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/policy/model:eg2_tests",
     "//ios/chrome/browser/policy_url_blocking/model:eg2_tests",
     "//ios/chrome/browser/prerender/model:eg2_tests",
-    "//ios/chrome/browser/push_notification/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/push_notification/test:eg2_tests",
     "//ios/chrome/browser/safari_data_import/test:eg2_tests",
     "//ios/chrome/browser/safe_browsing/model:eg2_tests",
     "//ios/chrome/browser/snapshots/model:eg2_tests",

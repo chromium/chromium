@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_METRICS_H_
-#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUBLIC_METRICS_H_
+#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUBLIC_METRICS_H_
 
 // Interactions with the Notifications Opt-In prompt. This is mapped to
 // the IOSNotificationsOptInActionOnPrompt enum in enums.xml for metrics.
@@ -31,4 +31,4 @@ extern const char kNotificationsOptInAlertError[];
 #pragma mark - Histograms
 extern const char kNotificationsOptInPromptActionHistogram[];
 
-#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUBLIC_METRICS_H_

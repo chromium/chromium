@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/push_notifications_constants.h"
+#import "ios/chrome/browser/push_notification/public/push_notifications_constants.h"
 
 NSString* const kNotificationsOptInContentAccessibilityID =
     @"kNotificationsOptInContentAccessibilityID";

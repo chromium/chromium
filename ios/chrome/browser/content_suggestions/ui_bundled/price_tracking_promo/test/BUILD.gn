@@ -14,7 +14,7 @@ source_set("eg2_tests") {
     "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/public:constants",
-    "//ios/chrome/browser/push_notification/ui_bundled:test_support",
+    "//ios/chrome/browser/push_notification/test:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

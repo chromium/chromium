@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
+#import "ios/chrome/browser/push_notification/test/scoped_notification_auth_swizzler.h"
 
 #import <UserNotifications/UserNotifications.h>
 

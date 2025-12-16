@@ -10,7 +10,7 @@
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/public/price_tracking_promo_constants.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
+#import "ios/chrome/browser/push_notification/test/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"

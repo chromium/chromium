@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -10,15 +10,15 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_alert_coordinator.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator_delegate.h"
+#import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_mediator.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/metrics.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator_delegate.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_item_identifier.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_mediator.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_presenter.h"
-#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_view_controller.h"
+#import "ios/chrome/browser/push_notification/public/metrics.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_item_identifier.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_presenter.h"
+#import "ios/chrome/browser/push_notification/ui/notifications_opt_in_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
