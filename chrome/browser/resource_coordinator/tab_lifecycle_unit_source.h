@@ -9,15 +9,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-forward.h"
 
+class GlobalBrowserCollection;
 class TabStripModel;
 
 namespace content {
@@ -30,7 +32,7 @@ class TabLifecycleStateObserver;
 class TabLifecycleUnitExternal;
 
 // Creates and destroys LifecycleUnits as tabs are created and destroyed.
-class TabLifecycleUnitSource : public BrowserListObserver,
+class TabLifecycleUnitSource : public BrowserCollectionObserver,
                                public LifecycleUnitSourceBase,
                                public LifecycleUnitObserver,
                                public TabStripModelObserver {
@@ -90,7 +92,7 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   TabStripModel* GetFocusedTabStripModel() const;
 
   // Updates the focused TabLifecycleUnit.
-  void UpdateFocusedTab(Browser* browser = nullptr);
+  void UpdateFocusedTab(BrowserWindowInterface* browser = nullptr);
 
   // Updates the focused TabLifecycleUnit to |new_focused_lifecycle_unit|.
   // TabInsertedAt() calls this directly instead of UpdateFocusedTab() because
@@ -117,10 +119,10 @@ class TabLifecycleUnitSource : public BrowserListObserver,
                     int index,
                     TabChangeType change_type) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
   // LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(LifecycleUnit* lifecycle_unit,
@@ -159,6 +161,9 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   // notifications to `lifecycle_unit_observers_`
   base::ScopedMultiSourceObservation<LifecycleUnit, LifecycleUnitObserver>
       lifecycle_unit_observations_{this};
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // The enterprise policy for setting a limit on total physical memory usage.
   bool memory_limit_enterprise_policy_ = false;
