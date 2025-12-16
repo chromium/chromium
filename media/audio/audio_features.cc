@@ -45,7 +45,9 @@ BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
 
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
-BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// TODO(crbug.com/468998638): Remove after successful launch.
+BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use stereo channel layout for input stream parameters.
 // TODO(crbug.com/440210010): Remove when the experiment is done.
