@@ -739,8 +739,7 @@ inline constexpr base::FeatureParam<bool> kOmniboxMultimodalInputMultiContext{
 inline constexpr base::FeatureParam<bool>
     kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument{
         &omnibox::kOmniboxMultimodalInput,
-        "prioritize_suggestions_for_first_document",
-        BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)};
+        "prioritize_suggestions_for_first_document", false};
 // <-- Fusebox
 #endif
 
