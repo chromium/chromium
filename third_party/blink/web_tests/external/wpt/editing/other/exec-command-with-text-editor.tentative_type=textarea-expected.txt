@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] In <textarea>, execCommand("cut", false, null), ab[]c): execCommand() should return false
   assert_equals: expected false but got true
 [FAIL] In <textarea>, execCommand("copy", false, null), abc[]d): execCommand() should return false
   assert_equals: expected false but got true
-[FAIL] In <textarea>, execCommand("paste", false, null), a[]c): <textarea>.value should be "a[bc]c"
-  assert_equals: expected "a[bc]c" but got "abc[]c"
 [FAIL] In <textarea>, execCommand("undo", false, null), [a]bc): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <textarea>, execCommand("undo", false, null), [a]bc): execCommand() should return false
@@ -54,8 +52,6 @@ Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [FAIL] In <textarea> in contenteditable, execCommand("copy", false, null), abc[]d): execCommand() should return false
   assert_equals: expected false but got true
-[FAIL] In <textarea> in contenteditable, execCommand("paste", false, null), a[]c): <textarea>.value should be "a[bc]c"
-  assert_equals: expected "a[bc]c" but got "abc[]c"
 [FAIL] In <textarea> in contenteditable, execCommand("undo", false, null), [a]bc): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <textarea> in contenteditable, execCommand("undo", false, null), [a]bc): execCommand() should return false

@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] In <input type="text">, execCommand("cut", false, null), ab[]c): execCommand() should return false
   assert_equals: expected false but got true
 [FAIL] In <input type="text">, execCommand("copy", false, null), abc[]d): execCommand() should return false
   assert_equals: expected false but got true
-[FAIL] In <input type="text">, execCommand("paste", false, null), a[]c): <input>.value should be "a[bc]c"
-  assert_equals: expected "a[bc]c" but got "abc[]c"
 [FAIL] In <input type="text">, execCommand("undo", false, null), [a]bc): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <input type="text">, execCommand("undo", false, null), [a]bc): execCommand() should return false
@@ -60,8 +58,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [FAIL] In <input type="text"> in contenteditable, execCommand("copy", false, null), abc[]d): execCommand() should return false
   assert_equals: expected false but got true
-[FAIL] In <input type="text"> in contenteditable, execCommand("paste", false, null), a[]c): <input>.value should be "a[bc]c"
-  assert_equals: expected "a[bc]c" but got "abc[]c"
 [FAIL] In <input type="text"> in contenteditable, execCommand("undo", false, null), [a]bc): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <input type="text"> in contenteditable, execCommand("undo", false, null), [a]bc): execCommand() should return false

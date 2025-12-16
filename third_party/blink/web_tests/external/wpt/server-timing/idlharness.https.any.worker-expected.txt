@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PerformanceResourceTiming interface: attribute workerMatchedRouterSource
+  assert_true: The prototype object must have a property "workerMatchedRouterSource" expected true got false
+[FAIL] PerformanceResourceTiming interface: attribute workerFinalRouterSource
+  assert_true: The prototype object must have a property "workerFinalRouterSource" expected true got false
+[FAIL] PerformanceResourceTiming interface: resource must inherit property "workerMatchedRouterSource" with the proper type
+  assert_inherits: property "workerMatchedRouterSource" not found in prototype chain
+[FAIL] PerformanceResourceTiming interface: resource must inherit property "workerFinalRouterSource" with the proper type
+  assert_inherits: property "workerFinalRouterSource" not found in prototype chain
+[FAIL] PerformanceResourceTiming interface: default toJSON operation on resource
+  assert_true: property "workerMatchedRouterSource" should be present in the output of PerformanceResourceTiming.prototype.toJSON() expected true got false
+Harness: the test ran to completion.
+

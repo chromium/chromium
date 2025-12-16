@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Transitions: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] CSS Transitions with transition: all: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Transitions with transition: all: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] CSS Animations: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Animations: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] Web Animations: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] Web Animations: property <offset-path> from [path('M 100 400 A 10 20 30 1 0 140 450')] to [path('M 300 200 A 50 60 70 0 1 380 290')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] CSS Transitions: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Transitions: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] CSS Transitions with transition: all: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Transitions with transition: all: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] CSS Animations: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] CSS Animations: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+[FAIL] Web Animations: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.125) should be [path('M 125 375 A 15 25 35 1 1 170 430')]
+  assert_equals: expected "path ( \\" M 125 375 A 15 25 35 1 1 170 430 \\" ) " but got "path ( \\" M 125 375 A 15 25 35 1 0 170 430 \\" ) "
+[FAIL] Web Animations: property <offset-path> from [path('m 100 400 a 10 20 30 1 0 40 50')] to [path('m 300 200 a 50 60 70 0 1 80 90')] at (0.875) should be [path('M 275 225 A 45 55 65 1 1 350 310')]
+  assert_equals: expected "path ( \\" M 275 225 A 45 55 65 1 1 350 310 \\" ) " but got "path ( \\" M 275 225 A 45 55 65 0 1 350 310 \\" ) "
+Harness: the test ran to completion.
+

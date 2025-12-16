@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Type conversion happens on the data member of the DigitalCredentialGetRequest object.
-  promise_rejects_js: function "function() { throw e; }" threw object "NetworkError: Error retrieving a token." ("NetworkError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-Harness: the test ran to completion.
-
