@@ -163,10 +163,6 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
-// When enabled, use Assistant for omnibox voice query recognition instead of
-// Android's built-in voice recognition service. Only works on Android.
-BASE_FEATURE(kOmniboxAssistantVoiceSearch, DISABLED);
-
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 

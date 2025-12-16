@@ -11861,7 +11861,6 @@ from previous Chrome versions.
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
-  <int value="-880201293" label="OmniboxAssistantVoiceSearch:disabled"/>
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
   <int value="-879024703" label="pwa-update-dialog-for-name-and-icon:enabled"/>
@@ -20425,7 +20424,6 @@ from previous Chrome versions.
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099676690" label="CastStreamingPerformanceOverlay:disabled"/>
   <int value="2099866799" label="TrackByDefaultOnMobile:disabled"/>
-  <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>
   <int value="2100299982"
       label="EnableSupervisedUserReauthenticationForSubframes:disabled"/>
