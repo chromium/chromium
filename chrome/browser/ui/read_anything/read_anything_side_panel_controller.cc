@@ -349,8 +349,12 @@ void ReadAnythingSidePanelController::TabWillDetach(
   if (!tab_->IsActivated()) {
     return;
   }
+  auto* browser_window_interface = tab_->GetBrowserWindowInterface();
+  if (!browser_window_interface) {
+    return;
+  }
   auto* const side_panel_ui =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+      browser_window_interface->GetFeatures().side_panel_ui();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
   // not create a SidePanelCoordinator. This block will be unnecessary once that
   // changes.
@@ -498,8 +502,10 @@ void ReadAnythingSidePanelController::UpdateOmniboxEntryPointIgnored(
           : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
   if (is_showing &&
       time_on_previous_page.InMilliseconds() > kShowPageActionDelayMs) {
-    read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
-        tab_->GetBrowserWindowInterface());
+    if (auto* browser_window_interface = tab_->GetBrowserWindowInterface()) {
+      read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
+          browser_window_interface);
+    }
   }
 }
 
