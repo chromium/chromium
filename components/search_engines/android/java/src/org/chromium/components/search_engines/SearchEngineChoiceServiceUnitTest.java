@@ -34,7 +34,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
@@ -53,7 +53,7 @@ public class SearchEngineChoiceServiceUnitTest {
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
         doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();
-        doReturn(new ObservableSupplierImpl<>(false))
+        doReturn(ObservableSuppliers.alwaysFalse())
                 .when(mDelegate)
                 .getIsDeviceChoiceRequiredSupplier();
     }
@@ -148,7 +148,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Test
     public void testGetIsDeviceChoiceRequiredSupplier() {
-        ObservableSupplier<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplier<Boolean> fakeSupplier = ObservableSuppliers.createMonotonic();
         doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
 
         var service = new SearchEngineChoiceService(mDelegate);

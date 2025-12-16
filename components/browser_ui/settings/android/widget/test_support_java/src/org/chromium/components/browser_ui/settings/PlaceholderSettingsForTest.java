@@ -10,14 +10,15 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 
 /** A placeholder {@link PreferenceFragmentCompat} for use in tests. */
 public class PlaceholderSettingsForTest extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage {
-    private final ObservableSupplier<String> mPageTitle =
-            new ObservableSupplierImpl<>("Placeholder Settings");
+    private final NonNullObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createNonNull("Placeholder Settings");
 
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {

@@ -17,7 +17,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,13 +46,13 @@ public class InlineSearchBox {
 
     private final SearchDelegate mSearchDelegate;
 
-    private final ObservableSupplierImpl<Boolean> mHasSearchTextSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHasSearchTextSupplier;
 
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     public InlineSearchBox(
             SearchDelegate searchDelegate,
-            ObservableSupplierImpl<Boolean> hasSearchTextSupplier,
+            SettableNonNullObservableSupplier<Boolean> hasSearchTextSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
         mSearchDelegate = searchDelegate;
         mHasSearchTextSupplier = hasSearchTextSupplier;

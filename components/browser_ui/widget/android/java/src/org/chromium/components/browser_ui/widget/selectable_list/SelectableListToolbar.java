@@ -42,7 +42,9 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -122,8 +124,8 @@ public class SelectableListToolbar<E> extends Toolbar
     @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;
 
-    private final ObservableSupplierImpl<Boolean> mIsSearchingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<Boolean> mIsSearchingSupplier =
+            ObservableSuppliers.createMonotonic();
     private boolean mHasSearchView;
 
     @SuppressWarnings("NullAway.Init")
@@ -177,8 +179,8 @@ public class SelectableListToolbar<E> extends Toolbar
     // current view type that SelectableListToolbar is showing
     private int mViewType;
     private boolean mIsLargeScreenWithKeyboard;
-    private final ObservableSupplierImpl<Boolean> mHasSearchTextSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mHasSearchTextSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /** Constructor for inflating from XML. */
     public SelectableListToolbar(Context context, AttributeSet attrs) {
