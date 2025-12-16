@@ -1601,8 +1601,14 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     } else if (controller_->IsPopupOpen() &&
                GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
-      *match = autocomplete_controller()->result().match_at(selection.line);
-      found_match_for_text = true;
+      // TODO(crbug.com/468047546): https://crrev.com/c/7191448 introduced a
+      // change in events that makes it possible for the selection to be out of
+      // bounds here. Follow up to figure out why this is and fix in a wholistic
+      // way.
+      if (selection.line < autocomplete_controller()->result().size()) {
+        *match = autocomplete_controller()->result().match_at(selection.line);
+        found_match_for_text = true;
+      }
     }
     if (found_match_for_text && alternate_nav_url &&
         (!popup_view_ || IsPopupSelectionOnInitialLine())) {
