@@ -7,6 +7,13 @@ build_webui_tests("build") {
   files = [
     "event_history_test.ts",
     "event_list/filter_bar_test.ts",
+    "event_list/filter_dialog/app_dialog_test.ts",
+    "event_list/filter_dialog/event_dialog_test.ts",
+    "event_list/filter_dialog/outcome_dialog_test.ts",
+    "event_list/filter_dialog/filter_dialog_footer_test.ts",
+    "event_list/filter_dialog/date_dialog_test.ts",
+    "event_list/filter_dialog/type_dialog_test.ts",
+    "event_list/filter_dialog/filter_dialog_test.ts",
   ]
 
   # Path mapping the WebUI host URL to the path where the WebUI's compiled

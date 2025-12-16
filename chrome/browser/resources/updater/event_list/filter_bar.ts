@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './filter_dialog.js';
+import '/strings.m.js';
+import './filter_dialog/filter_dialog.js';
+import './filter_dialog/app_dialog.js';
+import './filter_dialog/event_dialog.js';
+import './filter_dialog/outcome_dialog.js';
+import './filter_dialog/date_dialog.js';
+import './filter_dialog/type_dialog.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
@@ -23,7 +29,6 @@ import type {CommonUpdateOutcome, EventType} from '../event_history.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';
-import type {FilterMenuState} from './filter_dialog.js';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
   year: 'numeric',
@@ -50,6 +55,8 @@ export enum FilterCategory {
   OUTCOME = 'outcome',
   DATE = 'date',
 }
+
+export type FilterMenuState = FilterCategory|'closed'|'type';
 
 /**
  * Returns the filter category associated with an element via the
@@ -260,25 +267,25 @@ export class FilterBarElement extends CrLitElement {
     }
   }
 
-  protected onTypeSelectionChanged(e: CustomEvent<FilterMenuState>) {
+  protected onTypeSelectionChanged(e: CustomEvent<FilterCategory>) {
     this.filterMenuState = e.detail;
   }
 
-  protected async onAppFilterChanged(e: CustomEvent<Set<string>>) {
+  protected async onAppFilterChange(e: CustomEvent<Set<string>>) {
     this.updateFilterOrder(FilterCategory.APP, e.detail.size > 0);
     this.filterSettings.activeAppFilters = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
-  protected async onEventTypeFilterChanged(e: CustomEvent<Set<EventType>>) {
+  protected async onEventTypeFilterChange(e: CustomEvent<Set<EventType>>) {
     this.updateFilterOrder(FilterCategory.EVENT, e.detail.size > 0);
     this.filterSettings.activeEventTypeFilters = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
-  protected async onUpdateOutcomeFilterChanged(
+  protected async onUpdateOutcomeFilterChange(
       e: CustomEvent<Set<CommonUpdateOutcome>>) {
     this.updateFilterOrder(FilterCategory.OUTCOME, e.detail.size > 0);
     this.filterSettings.activeUpdateOutcomeFilters = new Set(e.detail);
@@ -286,7 +293,7 @@ export class FilterBarElement extends CrLitElement {
     await this.onFiltersChanged();
   }
 
-  protected async onDateFilterChanged(
+  protected async onDateFilterChange(
       e: CustomEvent<{start: Date | null, end: Date|null}>) {
     this.updateFilterOrder(
         FilterCategory.DATE, !!(e.detail.start || e.detail.end));
@@ -332,12 +339,23 @@ export class FilterBarElement extends CrLitElement {
     await this.onFiltersChanged();
   }
 
+  protected isEditing(): boolean {
+    return this.filterMenuState !== 'closed';
+  }
+
   protected isEditingViaInput(category: FilterCategory): boolean {
     return this.filterMenuState === category && this.menuHost === 'input';
   }
 
-  protected isEditingViaChip(category: FilterCategory): boolean {
-    return this.filterMenuState === category && this.menuHost === 'chip';
+  protected getDialogAnchor(): HTMLElement|null {
+    if (this.menuHost === 'input') {
+      return this.shadowRoot.querySelector('#add-filter-button');
+    }
+    if (this.filterMenuState !== 'closed') {
+      return this.shadowRoot.querySelector(
+          `.chip[data-filter-category="${this.filterMenuState}"]`);
+    }
+    return null;
   }
 
   protected onAddFilterClick() {

@@ -2,70 +2,85 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/strings.m.js';
-
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {FilterCategory} from './filter_bar.js';
 import type {FilterBarElement} from './filter_bar.js';
 
 export function getHtml(this: FilterBarElement) {
   // clang-format off
   return html`
-  <!--_html_template_start_-->
-  <div class="filter-bar">
-    <cr-icon icon="updater:filter"></cr-icon>
-    ${this.filterOrder.map(item => html`
-      <div class="chip-wrapper">
-        <cr-chip class="chip" ?disabled="${this.isEditingViaInput(item)}"
-            ?selected="${!this.isEditingViaInput(item)}" role="button"
-            aria-haspopup="dialog" data-filter-category="${item}"
-            @click="${this.onChipClick}"
-            @keydown="${this.onChipKeydown}">
-          ${this.getFilterLabel(item)}
-          <cr-icon-button iron-icon="cr:close"
-              data-filter-category="${item}"
-              @click="${this.onRemoveFilterClick}"
-              aria-label="$i18n{removeFilter}">
-          </cr-icon-button>
-        </cr-chip>
-        ${this.isEditingViaChip(item) ? html`
-          <filter-dialog .type="${this.filterMenuState}"
-              .filterSettings="${this.filterSettings}"
-              @type-selection-changed="${this.onTypeSelectionChanged}"
-              @app-filter-changed="${this.onAppFilterChanged}"
-              @event-filter-changed="${this.onEventTypeFilterChanged}"
-              @outcome-filter-changed="${this.onUpdateOutcomeFilterChanged}"
-              @date-filter-changed="${this.onDateFilterChanged}"
-              @close="${this.onFilterDialogClose}">
-          </filter-dialog>
-        ` : ''}
-      </div>
-    `)}
-
-    <div id="filterBarInputContainer" class="chip-wrapper">
-      <cr-button id="add-filter-button" aria-haspopup="dialog"
-          @click="${this.onAddFilterClick}">
-        $i18n{addFilter}
-      </cr-button>
-      ${this.filterMenuState !== 'closed' && this.menuHost === 'input' ? html`
-        <filter-dialog .type="${this.filterMenuState}"
-            .filterSettings="${this.filterSettings}"
-            @type-selection-changed="${this.onTypeSelectionChanged}"
-            @app-filter-changed="${this.onAppFilterChanged}"
-            @event-filter-changed="${this.onEventTypeFilterChanged}"
-            @outcome-filter-changed="${this.onUpdateOutcomeFilterChanged}"
-            @date-filter-changed="${this.onDateFilterChanged}"
-            @close="${this.onFilterDialogClose}">
-        </filter-dialog>
-      ` : ''}
+<!--_html_template_start_-->
+<div class="filter-bar">
+  <cr-icon icon="updater:filter"></cr-icon>
+  ${this.filterOrder.map(item => html`
+    <div class="chip-wrapper">
+      <cr-chip class="chip" ?disabled="${this.isEditingViaInput(item)}"
+          ?selected="${!this.isEditingViaInput(item)}" role="button"
+          aria-haspopup="dialog" data-filter-category="${item}"
+          @click="${this.onChipClick}" @keydown="${this.onChipKeydown}">
+        ${this.getFilterLabel(item)}
+        <cr-icon-button iron-icon="cr:close" data-filter-category="${item}"
+            @click="${this.onRemoveFilterClick}"
+            aria-label="$i18n{removeFilter}">
+        </cr-icon-button>
+      </cr-chip>
     </div>
-    ${this.filterOrder.length > 0 ? html`
-      <button id="clear-filters-button" @click="${this.onClearFiltersClick}"
-          aria-label="$i18n{clearAllFilters}">
-        &times;
-      </button>
-    ` : ''}
+  `)}
+
+  <div id="filterBarInputContainer" class="chip-wrapper">
+    <cr-button id="add-filter-button" aria-haspopup="dialog"
+        @click="${this.onAddFilterClick}">
+      $i18n{addFilter}
+    </cr-button>
   </div>
-  <!--_html_template_end_-->`;
+  ${this.filterOrder.length > 0 ? html`
+    <button id="clear-filters-button" @click="${this.onClearFiltersClick}"
+        aria-label="$i18n{clearAllFilters}">
+      &times;
+    </button>
+  ` : ''}
+
+  ${this.isEditing() ? html`
+    ${this.filterMenuState === 'type' ? html`
+      <type-dialog .anchorElement="${this.getDialogAnchor()}"
+          @type-selection-changed="${this.onTypeSelectionChanged}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-type>
+    ` : ''}
+    ${this.filterMenuState === FilterCategory.APP ? html`
+      <app-dialog .anchorElement="${this.getDialogAnchor()}"
+          .initialSelections="${this.filterSettings.activeAppFilters}"
+          @filter-change="${this.onAppFilterChange}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-app>
+    ` : ''}
+    ${this.filterMenuState === FilterCategory.EVENT ? html`
+      <event-dialog .anchorElement="${this.getDialogAnchor()}"
+          .initialSelections="${
+              this.filterSettings.activeEventTypeFilters}"
+          @filter-change="${this.onEventTypeFilterChange}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-event>
+    ` : ''}
+    ${this.filterMenuState === FilterCategory.OUTCOME ? html`
+      <outcome-dialog .anchorElement="${this.getDialogAnchor()}"
+          .initialSelections="${
+              this.filterSettings.activeUpdateOutcomeFilters}"
+          @filter-change="${this.onUpdateOutcomeFilterChange}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-outcome>
+    ` : ''}
+    ${this.filterMenuState === FilterCategory.DATE ? html`
+      <date-dialog .anchorElement="${this.getDialogAnchor()}"
+          .initialStartDate="${this.filterSettings.startDateFilter}"
+          .initialEndDate="${this.filterSettings.endDateFilter}"
+          @filter-change="${this.onDateFilterChange}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-date>
+    ` : ''}
+  ` : ''}
+</div>
+<!--_html_template_end_-->`;
   // clang-format on
 }

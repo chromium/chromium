@@ -12,6 +12,8 @@
  * See //docs/updater/history_log.md for details on the serialization format.
  */
 
+import '/strings.m.js';
+
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 // ---------------------------------------------------------------------------
@@ -422,6 +424,11 @@ export type MergedHistoryEvent =
 // Type Guards
 // ---------------------------------------------------------------------------
 
+// clang-format does not process the following lines correctly. It wants to
+// place the opening curly brace of each functions body on a new line, however
+// the style checking that runs at presubmit wants the curly brace on the
+// previous line.
+// clang-format off
 function isInstallStart(
     event: BaseEvent,
     ): event is BaseEvent&{
@@ -573,6 +580,7 @@ function isAppCommandEnd(
 } {
   return event.eventType === 'APP_COMMAND' && event.bound === 'END';
 }
+// clang-format on
 
 /**
  * Type guard for MergedHistoryEvent.

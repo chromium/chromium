@@ -8,6 +8,8 @@
  * the set to be overridden in tests.
  */
 
+import '/strings.m.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 /**
