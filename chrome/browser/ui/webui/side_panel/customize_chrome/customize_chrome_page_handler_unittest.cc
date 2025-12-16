@@ -1481,6 +1481,11 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_True) {
   mock_page_.FlushForTesting();
 
   EXPECT_TRUE(visible);
+  EXPECT_TRUE(profile()
+                  .GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kAllModulesId)
+                  .value_or(false));
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_False) {
@@ -1500,6 +1505,11 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_False) {
   mock_page_.FlushForTesting();
 
   EXPECT_FALSE(visible);
+  EXPECT_TRUE(profile()
+                  .GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kAllModulesId)
+                  .value_or(false));
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
@@ -1525,10 +1535,20 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
   const auto& disabled_module_ids =
       profile().GetPrefs()->GetList(prefs::kNtpDisabledModules);
   EXPECT_EQ(kTabResumptionId, disabled_module_ids.front().GetString());
+  EXPECT_TRUE(profile()
+                  .GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kMostRelevantTabResumptionModuleId)
+                  .value_or(false));
   const auto& microsoft_auth_settings = modules_settings[1];
   EXPECT_EQ(ntp_modules::kMicrosoftAuthenticationModuleId,
             microsoft_auth_settings->id);
   EXPECT_TRUE(microsoft_auth_settings->enabled);
+  EXPECT_FALSE(profile()
+                   .GetPrefs()
+                   ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                   .FindBool(ntp_modules::kMicrosoftAuthenticationModuleId)
+                   .value_or(false));
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest,
@@ -1581,6 +1601,11 @@ TEST_P(CustomizeChromePageHandlerWithModulesVisibilityTest, SetModulesVisible) {
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(ModulesVisible(), visible);
+  EXPECT_TRUE(profile()
+                  .GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kAllModulesId)
+                  .value_or(false));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
