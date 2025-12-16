@@ -36,12 +36,14 @@ namespace legion::phosphor {
 
 std::unique_ptr<quiche::BlindSignAuthInterface>
 TokenFetcherImpl::Delegate::CreateBlindSignAuth(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory) {
   privacy::ppn::BlindSignAuthOptions bsa_options{};
   bsa_options.set_enable_privacy_pass(true);
 
   return std::make_unique<quiche::BlindSignAuth>(
-      std::make_unique<ConfigHttp>(url_loader_factory), std::move(bsa_options));
+      std::make_unique<ConfigHttp>(std::move(pending_url_loader_factory)),
+      std::move(bsa_options));
 }
 
 TokenFetcherImpl::SequenceBoundFetch::SequenceBoundFetch(
@@ -71,12 +73,10 @@ TokenFetcherImpl::TokenFetcherImpl(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   CHECK(pending_url_loader_factory);
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      network::SharedURLLoaderFactory::Create(
-          std::move(pending_url_loader_factory));
 
-  helper_.emplace(thread_pool_task_runner_,
-                  delegate->CreateBlindSignAuth(url_loader_factory));
+  helper_.emplace(
+      thread_pool_task_runner_,
+      delegate->CreateBlindSignAuth(std::move(pending_url_loader_factory)));
 }
 
 TokenFetcherImpl::~TokenFetcherImpl() = default;

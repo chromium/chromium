@@ -67,10 +67,10 @@ const char kProtobufContentType[] = "application/x-protobuf";
 
 }  // namespace
 
-ConfigHttp::ConfigHttp(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
-  CHECK(url_loader_factory_);
+ConfigHttp::ConfigHttp(std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                           pending_url_loader_factory)
+    : pending_url_loader_factory_(std::move(pending_url_loader_factory)) {
+  CHECK(pending_url_loader_factory_);
 }
 
 ConfigHttp::~ConfigHttp() = default;
@@ -88,6 +88,15 @@ std::string ConfigHttp::GetInitialDataPath() {
 // static
 std::string ConfigHttp::GetTokensPath() {
   return legion::kLegionTokenServerGetTokensPath.Get();
+}
+
+network::SharedURLLoaderFactory* ConfigHttp::GetOrCreateURLLoaderFactory() {
+  if (!url_loader_factory_) {
+    CHECK(pending_url_loader_factory_);
+    url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+        std::move(pending_url_loader_factory_));
+  }
+  return url_loader_factory_.get();
 }
 
 void ConfigHttp::DoRequest(quiche::BlindSignMessageRequestType request_type,
@@ -143,7 +152,7 @@ void ConfigHttp::DoRequest(quiche::BlindSignMessageRequestType request_type,
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
-      url_loader_factory_.get(),
+      GetOrCreateURLLoaderFactory(),
       base::BindOnce(&ConfigHttp::OnDoRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
                      std::move(callback)),

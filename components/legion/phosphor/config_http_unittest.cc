@@ -37,7 +37,8 @@ class ConfigHttpTest : public testing::Test {
   void SetUp() override {
     http_fetcher_ = std::make_unique<ConfigHttp>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+            &test_url_loader_factory_)
+            ->Clone());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -152,7 +153,8 @@ TEST_F(ConfigHttpTest, DoRequestInvalidFinchParametersFailsGracefully) {
   // FeatureParams get used.
   std::unique_ptr<ConfigHttp> http_fetcher = std::make_unique<ConfigHttp>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_));
+          &test_url_loader_factory_)
+          ->Clone());
 
   auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
   std::string authorization_header = "token";

@@ -93,8 +93,8 @@ struct MockTokenFetcherImplDelegate : public TokenFetcherImpl::Delegate {
     std::move(callback).Run(response_result, std::move(response_access_token));
   }
   std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override {
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_url_loader_factory) override {
     return std::move(bsa_to_return);
   }
 
@@ -489,6 +489,42 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->AccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);
+}
+
+// This implementation of `TokenFetcherImpl::Delegate` does not override
+// `CreateBlindSignAuth()` and therefore uses production implementation of
+// `CreateBlindSignAuth()`.
+class ProdBlindSignAuthTokenFetcherImplDelegate
+    : public TokenFetcherImpl::Delegate {
+ public:
+  ProdBlindSignAuthTokenFetcherImplDelegate() = default;
+
+  ~ProdBlindSignAuthTokenFetcherImplDelegate() override = default;
+
+  // TokenFetcherImpl::Delegate override:
+  bool IsTokenFetchEnabled() override { return true; }
+  void RequestOAuthToken(RequestOAuthTokenCallback callback) override {}
+};
+
+class ProdBlindSignAuthTokenFetcherImplTest : public testing::Test {
+ public:
+  ProdBlindSignAuthTokenFetcherImplTest() = default;
+  ~ProdBlindSignAuthTokenFetcherImplTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
+// Tests that TokenFetcherImpl that uses
+// `ProdBlindSignAuthTokenFetcherImplDelegate` can safely be created and
+// destroyed.
+TEST_F(ProdBlindSignAuthTokenFetcherImplTest, CtorAndDtor) {
+  ProdBlindSignAuthTokenFetcherImplDelegate delegate;
+
+  TokenFetcherImpl fetcher(
+      &delegate, test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
 }
 
 }  // namespace legion::phosphor

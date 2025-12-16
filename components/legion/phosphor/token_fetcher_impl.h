@@ -53,7 +53,8 @@ class TokenFetcherImpl : public TokenFetcher {
     // Creates a `quiche::BlindSignAuthInterface` instance. Can be overridden
     // by tests to provide a mock.
     virtual std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+        std::unique_ptr<network::PendingSharedURLLoaderFactory>
+            pending_url_loader_factory);
   };
 
   explicit TokenFetcherImpl(
