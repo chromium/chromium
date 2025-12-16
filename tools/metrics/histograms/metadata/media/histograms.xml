@@ -3882,6 +3882,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.DoesGpuMatchWithDisplayOnMultiGpu"
+    enum="Boolean" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not the active GPU matches with the display GPU on multi-GPU
+    devices when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.GpuCount"
     enum="GpuOrDisplayCount" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
@@ -3894,7 +3906,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuNvidiaActiveWithExternalDisplay"
-    enum="GpuVendorId" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3906,7 +3918,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuWithExternalDisplay"
-    enum="GpuVendorId" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5299,6 +5311,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.MediaFoundationRenderer.PlaybackError.DoesGpuMatchWithDisplayOnMultiGpu"
+    enum="Boolean" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not the active GPU matches with the display GPU on multi-GPU
+    devices when the MediaFoundationRenderer hits a playback error. Reported
+    whenever such an event happens.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.PlaybackError.GpuCount"
     enum="GpuOrDisplayCount" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
@@ -5311,7 +5335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.PlaybackError.MultiGpuNvidiaActiveWithExternalDisplay"
-    enum="GpuVendorId" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5323,7 +5347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.PlaybackError.MultiGpuWithExternalDisplay"
-    enum="GpuVendorId" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
