@@ -33,6 +33,7 @@ schema_sources_ = [
   "processes.idl",
   "reading_list.webidl",
   "search.idl",
+  "sessions.json",
   "scripting.idl",
   "tab_capture.idl",
   "tabs.json",
@@ -61,8 +62,17 @@ uncompiled_sources_ = [
   "top_sites.json",
 ]
 
-# Some APIs (e.g. cookies) rely on types and headers from other APIs.
+# Some APIs rely on types and headers from other APIs.
 types_only_schema_sources_ = []
+
+# The sessions API depends on tabGroups API types, but tabGroups has not yet
+# been ported to desktop Android. For now, include just the tabGroup types on
+# desktop Android and the full schema on other platforms.
+if (enable_desktop_android_extensions) {
+  types_only_schema_sources_ += [ "tab_groups.json" ]
+} else {
+  schema_sources_ += [ "tab_groups.json" ]
+}
 
 if (enable_extensions) {
   schema_sources_ += [
@@ -83,11 +93,9 @@ if (enable_extensions) {
     "passwords_private.idl",
     "resources_private.idl",
     "safe_browsing_private.idl",
-    "sessions.json",
     "settings_private.idl",
     "side_panel.idl",
     "system_private.json",
-    "tab_groups.json",
 
     # Despite the name, these APIs do not rely on any WebRTC-specific bits and
     # as such do not belong in a conditional.

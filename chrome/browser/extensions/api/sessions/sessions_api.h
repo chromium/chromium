@@ -17,8 +17,11 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 
-class Browser;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+class BrowserWindowInterface;
 class Profile;
 
 namespace sync_sessions {
@@ -77,11 +80,11 @@ class SessionsRestoreFunction : public ExtensionFunction {
  private:
   ResponseValue GetRestoredTabResult(content::WebContents* contents);
   ResponseValue GetRestoredWindowResult(int window_id);
-  ResponseValue RestoreMostRecentlyClosed(Browser* browser);
+  ResponseValue RestoreMostRecentlyClosed(BrowserWindowInterface* browser);
   ResponseValue RestoreLocalSession(const SessionId& session_id,
-                                    Browser* browser);
+                                    BrowserWindowInterface* browser);
   ResponseValue RestoreForeignSession(const SessionId& session_id,
-                                      Browser* browser);
+                                      BrowserWindowInterface* browser);
 };
 
 class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
