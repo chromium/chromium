@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_HISTORY_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_HISTORY_UTIL_H_
 
-inline constexpr char kSignInStateKey[] = "signInState";
-
 class Profile;
 
 namespace content {

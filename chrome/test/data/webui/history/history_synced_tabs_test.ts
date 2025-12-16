@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import type {ForeignSession, HistorySyncedDeviceCardElement, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistorySignInState} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistorySignInState, TabsSyncState} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 // <if expr="not is_chromeos">
 import { isChildVisible } from 'chrome://webui-test/test_util.js';
@@ -45,18 +46,21 @@ suite('<history-synced-device-manager>', function() {
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
-
+    testService.setInitialIdentityState({
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
+    });
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
     // the same order in tests, in order to catch regressions like
     // https://crbug.com/915641.
     element.searchTerm = '';
     element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
       signInAllowed: true,
       guestSession: false,
     });
     document.body.appendChild(element);
+    return microtasksFinished();
   });
 
   test('single card, single window', async () => {
@@ -256,17 +260,15 @@ suite('<history-synced-device-manager>', function() {
   // this promo may be shown. For other platforms, the flag is true so this
   // promo is not shown (checked in other tests below).
   test('show sign in promo', async () => {
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertFalse(element.$['sign-in-guide'].hidden);
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
@@ -274,11 +276,11 @@ suite('<history-synced-device-manager>', function() {
   // </if>
 
   test('no synced tabs message', async () => {
+    await microtasksFinished();
     // When user is not logged in, there is no synced tabs.
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     element.clearSyncedDevicesForTest();
     await microtasksFinished();
@@ -287,10 +289,9 @@ suite('<history-synced-device-manager>', function() {
     let cards = getCards(element);
     assertEquals(0, cards.length);
 
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
 
     await microtasksFinished();
@@ -314,10 +315,9 @@ suite('<history-synced-device-manager>', function() {
     // If there are any synced tabs, hide the 'no synced tabs' message.
     assertTrue(element.$['no-synced-tabs'].hidden);
 
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
     // When user signs out, don't show the message.
@@ -326,17 +326,23 @@ suite('<history-synced-device-manager>', function() {
 
   test('hide sign in promo in guest mode', async () => {
     element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
       signInAllowed: true,
       guestSession: true,
+    });
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
   });
 
   test('hide sign-in promo if sign-in is disabled', async function() {
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
+    });
     element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
       signInAllowed: false,
       guestSession: false,
     });
@@ -345,6 +351,12 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('no synced tabs message displays on load', async () => {
+    // On initial load, the identityStateChanged_ callback is triggered, which
+    // sets fetchingSyncedTabs_ to true and shows the 'loading' message. To test
+    // the 'no synced results' message, we must simulate the completion of this
+    // fetch operation with an empty session list.
+    await microtasksFinished();
+    setForeignSessions([]);
     element.clearSyncedDevicesForTest();
     // Should show no synced tabs message on initial load. Regression test for
     // https://crbug.com/915641.
@@ -366,6 +378,10 @@ suite('<history-sync-optin>', function() {
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
+    testService.setInitialIdentityState({
+      signIn: HistorySignInState.WEB_ONLY_SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_OFF,
+    });
 
     // history-sync-optin elements are only shown when the
     // replaceSyncPromosWithSignInPromos is true
@@ -378,15 +394,15 @@ suite('<history-sync-optin>', function() {
     // the same order in tests, in order to catch regressions like
     // https://crbug.com/915641.
     element.searchTerm = '';
+    // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
+    // email and profile icon are only shown on the page when the sign in
+    // state is WEB_ONLY_SIGNED_IN.
     element.configureSignInForTest({
-      // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
-      // email and profile icon are only shown on the page when the sign in
-      // state is WEB_ONLY_SIGNED_IN.
-      signInState: HistorySignInState.WEB_ONLY_SIGNED_IN,
       signInAllowed: true,
       guestSession: false,
     });
     document.body.appendChild(element);
+    return microtasksFinished();
   });
 
   test('check history sync optin elements are visible', async () => {
@@ -403,11 +419,10 @@ suite('<history-sync-optin>', function() {
     assertTrue(isChildVisible(element, '#profile-icon'));
   });
 
-   test('check elements in signed out state', async () => {
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_OUT,
-      signInAllowed: true,
-      guestSession: false,
+  test('check elements in signed out state', async () => {
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
     // Should not be visible with kReplaceSyncPromosWithSignInPromos enabled.
@@ -425,10 +440,9 @@ suite('<history-sync-optin>', function() {
   });
 
   test('check elements in pending signin without tabs sync state', async () => {
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGN_IN_PENDING,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
 
@@ -448,10 +462,9 @@ suite('<history-sync-optin>', function() {
   });
 
   test('check elements in pending signin with tabs sync state', async () => {
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGN_IN_PENDING,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
     await microtasksFinished();
 
@@ -469,10 +482,9 @@ suite('<history-sync-optin>', function() {
   });
 
   test('check elements in SYNC_DISABLED sign in state', async () => {
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SYNC_DISABLED,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.DISABLED,
     });
     await microtasksFinished();
 
@@ -531,12 +543,11 @@ suite('<history-sync-optin>', function() {
   });
 
   test('calls turnOnHistorySync when button is clicked', async () => {
-    element.configureSignInForTest({
       // For the sake of diversity, using other signin state in this test,
       // different from WEB_ONLY_SIGN_IN
-      signInState: HistorySignInState.SIGNED_IN_NOT_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     const button =
         element.shadowRoot.querySelector<HTMLElement>('#sync-history-button');
@@ -548,35 +559,31 @@ suite('<history-sync-optin>', function() {
 
   test('check recorded metrics in pending signin', async () => {
     // The signin pending offered histogram is recorded once.
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGN_IN_PENDING,
+      tabsSync: TabsSyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
 
     // Firing a sign in pending state again does not record again.
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGN_IN_PENDING,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
     await microtasksFinished();
     assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
 
     // Signing in and then getting into sign in pending state again records the
     // histogram again.
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
     await microtasksFinished();
-    element.configureSignInForTest({
-      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
-      signInAllowed: true,
-      guestSession: false,
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGN_IN_PENDING,
+      tabsSync: TabsSyncState.TURNED_ON,
     });
     await microtasksFinished();
 

@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, VisitContextMenuAction} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, TabsSyncState, VisitContextMenuAction} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,8 +53,6 @@ suite('Metrics', function() {
     }));
     document.body.appendChild(app);
     await testService.handler.whenCalled('queryHistory');
-    webUIListenerCallback(
-        'sign-in-state-changed', HistorySignInState.SIGNED_OUT);
     return microtasksFinished();
   }
 
@@ -88,8 +86,10 @@ suite('Metrics', function() {
     await testService.whenCalled('otherDevicesInitialized');
 
     testService.resetResolver('recordHistogram');
-    webUIListenerCallback(
-        'sign-in-state-changed', HistorySignInState.SIGNED_IN_SYNCING_TABS);
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
+    });
     await testService.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
@@ -202,6 +202,11 @@ suite('Metrics', function() {
 
     navigateTo('/syncedTabs', app);
     await microtasksFinished();
+
+    webUIListenerCallback('history-identity-state-changed', {
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: TabsSyncState.TURNED_ON,
+    });
 
     const histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
     assertTrue(!!histogram);

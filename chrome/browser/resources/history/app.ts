@@ -44,8 +44,8 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
-import {HistoryPageViewHistogram, HistorySignInState} from './constants.js';
-import type {ForeignSession} from './externs.js';
+import {HistoryPageViewHistogram, HistorySignInState, TabsSyncState} from './constants.js';
+import type {ForeignSession, HistoryIdentityState} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
 import {convertDateToQueryValue} from './query_manager.js';
@@ -145,10 +145,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       sessionList_: {type: Array},
       // Updated on synced-device-manager attach by chrome.sending
       // 'otherDevicesInitialized'.
-      signInState_: {
-        type: Number,
-        value: () => loadTimeData.getInteger('signInState'),
-      },
+      identityState_: {type: Object},
       pendingDelete_: {type: Boolean},
       queryState_: {type: Object},
       // True if the window is narrow enough for the page to have a drawer.
@@ -197,7 +194,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('isHistoryClustersEnabled');
   protected accessor historyClustersVisible_: boolean =
       loadTimeData.getBoolean('isHistoryClustersVisible');
-  protected accessor signInState_: HistorySignInState;
+  protected accessor identityState_: HistoryIdentityState = {
+    signIn: HistorySignInState.SIGNED_OUT,
+    tabsSync: TabsSyncState.TURNED_OFF,
+  };
   protected accessor lastSelectedTab_: number =
       loadTimeData.getInteger('lastSelectedTab');
   protected accessor contentPage_: string = Page.HISTORY;
@@ -258,9 +258,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         document, 'record-history-link-click',
         this.onRecordHistoryLinkClick_.bind(this));
     this.addWebUiListener(
-        'sign-in-state-changed',
-        (signInState: HistorySignInState) =>
-            this.onSignInStateChanged_(signInState));
+        'history-identity-state-changed',
+        (identityState: HistoryIdentityState) =>
+            this.onIdentityStateChanged_(identityState));
     this.addWebUiListener(
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
@@ -268,6 +268,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.shadowRoot.querySelector('history-query-manager')!.initialize();
     this.browserService_.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
+    this.browserService_.getInitialIdentityState().then(
+        (identityState: HistoryIdentityState) =>
+            this.onIdentityStateChanged_(identityState));
 
     const mediaQuery = window.matchMedia('(max-width: 1023px)');
     this.hasDrawer_ = mediaQuery.matches;
@@ -591,8 +594,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   /**
    * Updates the sign-in state.
    */
-  private onSignInStateChanged_(signInState: HistorySignInState) {
-    this.signInState_ = signInState;
+  private onIdentityStateChanged_(identityState: HistoryIdentityState) {
+    this.identityState_ = identityState;
   }
 
   private onHasOtherFormsChanged_(hasOtherForms: boolean) {
@@ -708,8 +711,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
       case Page.SYNCED_TABS:
-        histogramValue = this.signInState_ ===
-                HistorySignInState.SIGNED_IN_SYNCING_TABS ?
+        histogramValue =
+            this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
+                this.identityState_.tabsSync === TabsSyncState.TURNED_ON ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;

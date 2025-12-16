@@ -134,8 +134,7 @@ export function getHtml(this: HistoryAppElement) {
             <div class="cr-scrollable-top-shadow"></div>
             <history-synced-device-manager id="synced-devices"
                 .sessionList="${this.sessionList_}"
-                .searchTerm="${this.queryState_.searchTerm}"
-                .signInState="${this.signInState_}">
+                .searchTerm="${this.queryState_.searchTerm}">
             </history-synced-device-manager>
           </div>` : ''}
       </cr-page-selector>

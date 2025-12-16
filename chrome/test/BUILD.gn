@@ -8301,7 +8301,7 @@ test("unit_tests") {
       "../browser/ui/webui/flags/flags_ui_handler_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
       "../browser/ui/webui/history/foreign_session_handler_unittest.cc",
-      "../browser/ui/webui/history/history_sign_in_state_watcher_unittest.cc",
+      "../browser/ui/webui/history/history_identity_state_watcher_unittest.cc",
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_ui_unittest.cc",

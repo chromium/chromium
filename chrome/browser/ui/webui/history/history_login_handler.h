@@ -10,13 +10,13 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-class HistorySignInStateWatcher;
+class HistoryIdentityStateWatcher;
 
 // The handler for login-related messages from chrome://history.
 class HistoryLoginHandler : public content::WebUIMessageHandler {
  public:
   explicit HistoryLoginHandler(
-      base::RepeatingClosure signin_state_changed_callback);
+      base::RepeatingClosure identity_state_changed_callback);
 
   HistoryLoginHandler(const HistoryLoginHandler&) = delete;
   HistoryLoginHandler& operator=(const HistoryLoginHandler&) = delete;
@@ -38,13 +38,19 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "recordSigninPendingOffered" message. No args.
   void HandleRecordSigninPendingOffered(const base::Value::List& args);
 
+  // Handler for the "getInitialIdentityState" message. Resolves with a
+  // DictionaryValue containing the initial identity state.
+  void HandleGetInitialIdentityState(const base::Value::List& args);
+
   // Called by |history_sign_in_state_watcher_| when the signin state changes
-  void SigninStateChanged();
+  void IdentityStateChanged();
+
+  base::Value::Dict GetHistoryIdentityStateDict();
 
   // Watches for changes to the history-related sign-in state.
-  std::unique_ptr<HistorySignInStateWatcher> history_sign_in_state_watcher_;
+  std::unique_ptr<HistoryIdentityStateWatcher> history_identity_state_watcher_;
 
-  base::RepeatingClosure signin_state_changed_callback_;
+  base::RepeatingClosure identity_state_changed_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_HISTORY_LOGIN_HANDLER_H_

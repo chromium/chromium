@@ -14,7 +14,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
+#include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -23,9 +23,9 @@
 #include "content/public/browser/web_ui.h"
 
 HistoryLoginHandler::HistoryLoginHandler(
-    base::RepeatingClosure signin_state_changed_callback)
-    : signin_state_changed_callback_(std::move(signin_state_changed_callback)) {
-}
+    base::RepeatingClosure identity_state_changed_callback)
+    : identity_state_changed_callback_(
+          std::move(identity_state_changed_callback)) {}
 
 HistoryLoginHandler::~HistoryLoginHandler() = default;
 
@@ -45,6 +45,11 @@ void HistoryLoginHandler::RegisterMessages() {
       base::BindRepeating(
           &HistoryLoginHandler::HandleRecordSigninPendingOffered,
           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getInitialIdentityState",
+      base::BindRepeating(&HistoryLoginHandler::HandleGetInitialIdentityState,
+                          base::Unretained(this)));
 }
 
 void HistoryLoginHandler::OnJavascriptAllowed() {
@@ -53,15 +58,17 @@ void HistoryLoginHandler::OnJavascriptAllowed() {
       IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  history_sign_in_state_watcher_ = std::make_unique<HistorySignInStateWatcher>(
-      identity_manager, sync_service,
-      base::BindRepeating(&HistoryLoginHandler::SigninStateChanged,
-                          base::Unretained(this)));
-  SigninStateChanged();
+  // base::Unretained(this) is safe here because `this` owns the watcher.'
+  history_identity_state_watcher_ =
+      std::make_unique<HistoryIdentityStateWatcher>(
+          identity_manager, sync_service,
+          base::BindRepeating(&HistoryLoginHandler::IdentityStateChanged,
+                              base::Unretained(this)));
+  IdentityStateChanged();
 }
 
 void HistoryLoginHandler::OnJavascriptDisallowed() {
-  history_sign_in_state_watcher_ = nullptr;
+  history_identity_state_watcher_ = nullptr;
 }
 
 void HistoryLoginHandler::HandleOtherDevicesInitialized(
@@ -69,14 +76,13 @@ void HistoryLoginHandler::HandleOtherDevicesInitialized(
   AllowJavascript();
 }
 
-void HistoryLoginHandler::SigninStateChanged() {
-  if (!signin_state_changed_callback_.is_null()) {
-    signin_state_changed_callback_.Run();
+void HistoryLoginHandler::IdentityStateChanged() {
+  if (!identity_state_changed_callback_.is_null()) {
+    identity_state_changed_callback_.Run();
   }
 
-  HistorySignInState sign_in_state =
-      history_sign_in_state_watcher_->GetSignInState();
-  FireWebUIListener("sign-in-state-changed", static_cast<int>(sign_in_state));
+  FireWebUIListener("history-identity-state-changed",
+                    GetHistoryIdentityStateDict());
 }
 
 void HistoryLoginHandler::HandleTurnOnSyncFlow(
@@ -100,3 +106,21 @@ void HistoryLoginHandler::HandleRecordSigninPendingOffered(
   signin_metrics::LogSigninPendingOffered(
       signin_metrics::AccessPoint::kRecentTabs);
 }
+
+void HistoryLoginHandler::HandleGetInitialIdentityState(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, GetHistoryIdentityStateDict());
+}
+
+// LINT.IfChange(GetHistoryIdentityStateDict)
+base::Value::Dict HistoryLoginHandler::GetHistoryIdentityStateDict() {
+  base::Value::Dict dict;
+  HistoryIdentityState history_identity_state =
+      history_identity_state_watcher_->GetHistoryIdentityState();
+  dict.Set("signIn", static_cast<int>(history_identity_state.sign_in));
+  dict.Set("tabsSync", static_cast<int>(history_identity_state.tab_sync));
+  return dict;
+}
+// LINT.ThenChange(/chrome/browser/resources/history/externs.ts:HistoryIdentityState)

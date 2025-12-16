@@ -36,8 +36,8 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
+#include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 #include "chrome/browser/ui/webui/history/history_login_handler.h"
-#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
 #include "chrome/browser/ui/webui/history/navigation_handler.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -320,14 +320,7 @@ void HistoryUI::UpdateDataSource() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-
   base::Value::Dict update;
-  update.Set(kSignInStateKey, static_cast<int>(GetHistorySignInState(
-                                  identity_manager, sync_service)));
 
   const bool is_managed = profile->GetPrefs()->IsManagedPreference(
       history_clusters::prefs::kVisible);
