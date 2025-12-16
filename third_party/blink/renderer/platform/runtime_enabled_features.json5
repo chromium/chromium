@@ -3944,6 +3944,7 @@
     {
       // Flag for enabling the pointer lock API on Android
       name: "PointerLockOnAndroid",
+      "status": "stable",
     },
     {
       // https://crbug.com/404479704
