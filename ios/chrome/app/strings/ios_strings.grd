@@ -194,6 +194,9 @@
       <message name="IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB" desc="The accessibility label for the new incognito tab button on the new tab page [Length: unlimited]">
         New incognito tab
       </message>
+      <message name="IDS_IOS_ACCNAME_OPEN_PAGE_ACTION_MENU" desc="The accessibility label for the button that opens the page action menu [Length: unlimited]">
+        Open page action menu
+      </message>
       <message name="IDS_IOS_ACCNAME_RELOAD" desc="The accessibility label for the reload button [Length: unlimited] [iOS only]">
         Reload
       </message>

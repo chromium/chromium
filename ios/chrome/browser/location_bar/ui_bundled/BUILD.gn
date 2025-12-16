@@ -143,6 +143,7 @@ source_set("badges") {
   deps = [
     ":constants",
     ":metrics",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/contextual_panel/model:public",
