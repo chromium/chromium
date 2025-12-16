@@ -819,12 +819,12 @@ enum class PasskeyUserVerificationStatus {
     }
   }
 
-  if (!IsPasswordSyncEnabled()) {
-    return PasskeyCreationEligibility::kPasswordSyncDisabled;
-  }
-
   if ([gaia length] == 0) {
     return PasskeyCreationEligibility::kSignedOut;
+  }
+
+  if (!IsPasswordSyncEnabled()) {
+    return PasskeyCreationEligibility::kPasswordSyncDisabled;
   }
 
   if (!passkeyRequestDetails.algorithmIsSupported) {

@@ -66,8 +66,8 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
 - (void)startMigrationWithCompletion:(void (^)(BOOL success,
                                                NSError* error))completion {
-  if (UIApplication.sharedApplication.applicationState !=
-      UIApplicationStateActive) {
+  if (UIApplication.sharedApplication.applicationState ==
+      UIApplicationStateBackground) {
     NSError* error =
         [NSError errorWithDomain:kCredentialProviderMigratorErrorDomain
                             code:kCredentialProviderMigratorErrorBackgroundedApp
