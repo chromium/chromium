@@ -307,6 +307,10 @@ class ScreenMac : public Screen {
     return gfx::ScreenPointFromNSPoint([NSEvent mouseLocation]);
   }
 
+  // TODO(crbug.com/469120978): Replace IsWindowUnderCursor() with
+  // GetLocalProcessWindowAtPoint(). On macOS, when a Chrome window enters
+  // fullscreen mode, the IsWindowUnderCursor() function returns an incorrect
+  // value, preventing the bookmarks bar menu from opening via mouse hover.
   bool IsWindowUnderCursor(gfx::NativeWindow native_window) override {
     NSWindow* window = native_window.GetNativeNSWindow();
     return [NSWindow windowNumberAtPoint:NSEvent.mouseLocation
