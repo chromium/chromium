@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,6 +45,9 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
         // TODO(pshmakov): address this problem in a more general way, http://crbug.com/952221
         outState.putString(KEY_CLIENT_PACKAGE, mClientPackageName);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {}
 
     public @Nullable String get() {
         return mClientPackageName;

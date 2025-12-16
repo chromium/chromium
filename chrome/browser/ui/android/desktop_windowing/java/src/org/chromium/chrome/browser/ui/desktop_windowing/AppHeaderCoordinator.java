@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.view.WindowInsetsController;
 
@@ -206,6 +207,11 @@ public class AppHeaderCoordinator
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        // TODO(crbug.com/459921316): Persist unfocused desktop windowing state.
     }
 
     /* Returns true if app header is customized. */

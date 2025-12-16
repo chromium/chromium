@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
@@ -269,6 +270,12 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnSaveInstanceState(Bundle outBundle) {
         for (SaveInstanceStateObserver observer : mSaveInstanceStateObservers) {
             observer.onSaveInstanceState(outBundle);
+        }
+    }
+
+    void dispatchOnSaveInstanceState(Bundle outBundle, PersistableBundle outPersistentState) {
+        for (SaveInstanceStateObserver observer : mSaveInstanceStateObservers) {
+            observer.onSaveInstanceState(outBundle, outPersistentState);
         }
     }
 
