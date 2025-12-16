@@ -227,6 +227,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Emulation.SetTimezoneOverrideParameters {
     return Parser.Emulation.parseSetTimezoneOverrideParams(params);
   }
+  parseSetTouchOverrideParams(
+    params: unknown,
+  ): Emulation.SetTouchOverrideParameters {
+    return Parser.Emulation.parseSetTouchOverrideParams(params);
+  }
   parseSetUserAgentOverrideParams(
     params: unknown,
   ): Emulation.SetUserAgentOverrideParameters {

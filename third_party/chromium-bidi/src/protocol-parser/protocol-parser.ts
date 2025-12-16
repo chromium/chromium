@@ -402,6 +402,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetTimezoneOverrideParametersSchema,
     ) as Protocol.Emulation.SetTimezoneOverrideParameters;
   }
+  export function parseSetTouchOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetTouchOverrideParametersSchema,
+    ) as Protocol.Emulation.SetTouchOverrideParameters;
+  }
   export function parseSetUserAgentOverrideParams(params: unknown) {
     return parseObject(
       params,

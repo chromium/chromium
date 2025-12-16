@@ -1310,6 +1310,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetScreenSettingsOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetTimezoneOverrideSchema,
+    Emulation.SetTouchOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,
   ]),
 );
@@ -1321,6 +1322,7 @@ export const EmulationResultSchema = z.lazy(() =>
     Emulation.SetScreenOrientationOverrideResultSchema,
     Emulation.SetScriptingEnabledResultSchema,
     Emulation.SetTimezoneOverrideResultSchema,
+    Emulation.SetTouchOverrideResultSchema,
     Emulation.SetUserAgentOverrideResultSchema,
   ]),
 );
@@ -1631,6 +1633,29 @@ export namespace Emulation {
   export const SetTimezoneOverrideResultSchema = z.lazy(
     () => EmptyResultSchema,
   );
+}
+export namespace Emulation {
+  export const SetTouchOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setTouchOverride'),
+      params: Emulation.SetTouchOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTouchOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      maxTouchPoints: z.union([JsUintSchema.gte(1), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTouchOverrideResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([

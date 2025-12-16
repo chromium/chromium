@@ -1055,6 +1055,7 @@ export type EmulationCommand =
   | Emulation.SetScreenSettingsOverride
   | Emulation.SetScriptingEnabled
   | Emulation.SetTimezoneOverride
+  | Emulation.SetTouchOverride
   | Emulation.SetUserAgentOverride;
 export type EmulationResult =
   | Emulation.SetForcedColorsModeThemeOverrideResult
@@ -1063,6 +1064,7 @@ export type EmulationResult =
   | Emulation.SetScreenOrientationOverrideResult
   | Emulation.SetScriptingEnabledResult
   | Emulation.SetTimezoneOverrideResult
+  | Emulation.SetTouchOverrideResult
   | Emulation.SetUserAgentOverrideResult;
 export namespace Emulation {
   export type SetForcedColorsModeThemeOverride = {
@@ -1324,6 +1326,28 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export type SetTimezoneOverrideResult = EmptyResult;
+}
+export namespace Emulation {
+  export type SetTouchOverride = {
+    method: 'emulation.setTouchOverride';
+    params: Emulation.SetTouchOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetTouchOverrideParameters = {
+    /**
+     * Must be greater than or equal to `1`.
+     */
+    maxTouchPoints: JsUint | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetTouchOverrideResult = EmptyResult;
 }
 export type NetworkCommand =
   | Network.AddDataCollector

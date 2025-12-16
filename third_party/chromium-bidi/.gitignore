@@ -24,3 +24,4 @@ wpt-metadata/mapper/headful/webdriver/tests/bidi/
 *.tsbuildinfo
 **.code-workspace
 .agent/
+**/.DS_Store
