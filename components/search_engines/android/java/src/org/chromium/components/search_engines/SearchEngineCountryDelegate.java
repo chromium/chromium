@@ -9,8 +9,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -75,8 +75,8 @@ public abstract class SearchEngineCountryDelegate {
 
     /** Proxy for {@link SearchEngineChoiceService#getIsDeviceChoiceRequiredSupplier()}. */
     @MainThread
-    public NullableObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
-        return ObservableSuppliers.alwaysFalse();
+    public ObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
+        return new ObservableSupplierImpl<>(false);
     }
 
     /** Proxy for {@link SearchEngineChoiceService#refreshDeviceChoiceRequiredNow}. */

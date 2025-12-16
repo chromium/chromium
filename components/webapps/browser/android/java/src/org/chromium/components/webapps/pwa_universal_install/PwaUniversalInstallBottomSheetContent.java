@@ -9,8 +9,7 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -29,10 +28,16 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     // A callback to run when the Back button is pressed.
     private final Runnable mRecordBackButtonCallback;
 
+    // Helps keep track of whether the Back button was pressed.
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
+
     public PwaUniversalInstallBottomSheetContent(
             PwaUniversalInstallBottomSheetView view, Runnable recordBackButtonCallback) {
         mView = view;
         mRecordBackButtonCallback = recordBackButtonCallback;
+
+        mBackPressStateChangedSupplier.set(true);
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -80,8 +85,8 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
-        return ObservableSuppliers.alwaysTrue();
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
@@ -70,7 +70,7 @@ public class SearchEngineChoiceService {
      */
     private final Promise<String> mDeviceCountryPromise;
 
-    private final NullableObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
+    private final ObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
 
     /** Returns the instance of the singleton. Creates the instance if needed. */
     @MainThread
@@ -226,7 +226,7 @@ public class SearchEngineChoiceService {
      * </ul>
      */
     @MainThread
-    public NullableObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
+    public ObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
         ThreadUtils.checkUiThread();
         return mIsDeviceChoiceRequiredSupplier;
     }

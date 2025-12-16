@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -161,7 +162,8 @@ public class MenuSheetContentUnitTest {
 
     @Test
     public void testGetBackPressStateChangedSupplier() {
-        assertTrue(mContent.getBackPressStateChangedSupplier().get());
+        ObservableSupplierImpl<Boolean> supplier = mContent.getBackPressStateChangedSupplier();
+        assertTrue(supplier.get());
     }
 
     @Test

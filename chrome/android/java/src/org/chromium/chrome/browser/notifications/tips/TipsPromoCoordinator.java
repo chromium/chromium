@@ -23,9 +23,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -330,8 +328,8 @@ public class TipsPromoCoordinator {
         private final PropertyModel mModel;
         private final BottomSheetController mController;
         private final BottomSheetObserver mBottomSheetOpenedObserver;
-        private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
-                ObservableSuppliers.createNonNull(false);
+        private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+                new ObservableSupplierImpl<>();
         private final @TipsNotificationsFeatureType int mFeatureTipType;
         private final ScrollView mScrollView;
 
@@ -422,7 +420,7 @@ public class TipsPromoCoordinator {
         }
 
         @Override
-        public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
             return mBackPressStateChangedSupplier;
         }
 

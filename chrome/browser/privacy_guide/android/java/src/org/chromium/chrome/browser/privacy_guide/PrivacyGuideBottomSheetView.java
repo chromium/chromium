@@ -9,8 +9,7 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -20,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     private final View mContentView;
     private final Runnable mCloseBottomSheetCallback;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
     private final float mHalfHeight;
     private final float mFullHeight;
 
@@ -34,6 +35,7 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
             float fullHeight) {
         mContentView = contentView;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
+        mBackPressStateChangedSupplier.set(true);
         mHalfHeight = halfHeight;
         mFullHeight = fullHeight;
     }
@@ -88,8 +90,8 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
-        return ObservableSuppliers.alwaysTrue();
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
     }
 
     @Override

@@ -83,7 +83,6 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Browser test for {@link AppHeaderCoordinator} */
 @RequiresApi(Build.VERSION_CODES.R)
@@ -549,19 +548,15 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Trigger a bottom sheet, verify that the sheet container's top margin is updated to
         // account for the app header height.
-
-        AtomicReference<TestBottomSheetContent> bottomSheetContentHolder = new AtomicReference<>();
+        var bottomSheetContent = new TestBottomSheetContent(activity, ContentPriority.HIGH, false);
         var bottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            bottomSheetContentHolder.set(
-                                    new TestBottomSheetContent(
-                                            activity, ContentPriority.HIGH, false));
                             var controller =
                                     (ManagedBottomSheetController)
                                             BottomSheetControllerProvider.from(
                                                     activity.getWindowAndroid());
-                            controller.requestShowContent(bottomSheetContentHolder.get(), false);
+                            controller.requestShowContent(bottomSheetContent, false);
                             return controller;
                         });
 
@@ -595,7 +590,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
         // Hide bottom sheet.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> bottomSheetController.hideContent(bottomSheetContentHolder.get(), false));
+                () -> bottomSheetController.hideContent(bottomSheetContent, false));
     }
 
     private void doTestOnTopResumedActivityChanged(

@@ -15,7 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -95,8 +95,8 @@ class ChoiceDialogMediator {
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final SearchEngineChoiceService mSearchEngineChoiceService;
-    private final NullableObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
-    private final Callback<@Nullable Boolean> mIsDeviceChoiceRequiredObserver;
+    private final ObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
+    private final Callback<Boolean> mIsDeviceChoiceRequiredObserver;
     private final PauseResumeWithNativeObserver mActivityLifecycleObserver;
 
     private @DialogType int mDialogType = DialogType.UNKNOWN;

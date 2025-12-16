@@ -11,8 +11,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,6 +33,8 @@ import org.chromium.content_public.browser.WebContents;
     private final View mThinWebView;
     private final WebContents mWebContents;
     private final int mToolbarHeightPx;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
     private @Nullable Runnable mBackPressCallback;
 
     /**
@@ -63,6 +64,7 @@ import org.chromium.content_public.browser.WebContents;
         mContentView.setPadding(
                 /* left= */ 0, /* top= */ mToolbarHeightPx, /* right= */ 0, /* bottom= */ 0);
         mContentView.addView(thinWebView, /* index= */ 0);
+        mBackPressStateChangedSupplier.set(true);
     }
 
     /**
@@ -139,8 +141,8 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
-        return ObservableSuppliers.alwaysTrue();
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
     }
 
     @Override
