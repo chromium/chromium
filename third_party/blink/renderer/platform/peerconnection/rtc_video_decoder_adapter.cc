@@ -640,7 +640,8 @@ bool RTCVideoDecoderAdapter::InitializeSync(
   }
 
   decoder_info_.implementation_name =
-      "ExternalDecoder (" + media::GetDecoderName(decoder_type_) + ")";
+      "ExternalDecoder (" + std::string(media::GetDecoderName(decoder_type_)) +
+      ")";
   return async_init_result_;
 }
 

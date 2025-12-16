@@ -302,7 +302,7 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   auto gfx_cs = config.color_space_info().ToGfxColorSpace();
   codec_string_ = base::StringPrintf(
       "name=%s:codec=%s:profile=%d:size=%s:cs=[%d,%d,%d,%d]:hdrm=%d",
-      GetDecoderName(decoder_->GetDecoderType()).c_str(),
+      GetDecoderName(decoder_->GetDecoderType()),
       GetCodecName(config.codec()).c_str(), config.profile(),
       config.coded_size().ToString().c_str(),
       static_cast<int>(gfx_cs.GetPrimaryID()),
@@ -418,9 +418,10 @@ void MojoVideoDecoderService::OnReaderRead(
     scoped_refptr<DecoderBuffer> buffer) {
   DVLOG(3) << __func__;
   if (trace_event) {
-    TRACE_EVENT_ASYNC_STEP_PAST1(
-        "media", kDecodeTraceName, trace_event.get(), "ReadDecoderBuffer",
-        "decoder_buffer", buffer ? buffer->AsHumanReadableString() : "null");
+    TRACE_EVENT_INSTANT("media", "ReadDecoderBuffer",
+                        perfetto::Track::FromPointer(trace_event.get()),
+                        "decoder_buffer",
+                        buffer ? buffer->AsHumanReadableString() : "null");
   }
 
   if (!buffer) {
@@ -453,8 +454,8 @@ void MojoVideoDecoderService::OnDecoderDecoded(
     media::DecoderStatus status) {
   DVLOG(3) << __func__;
   if (trace_event) {
-    TRACE_EVENT_ASYNC_STEP_PAST0("media", kDecodeTraceName, trace_event.get(),
-                                 "Decode");
+    TRACE_EVENT_INSTANT("media", "Decode",
+                        perfetto::Track::FromPointer(trace_event.get()));
     trace_event->EndTrace(status);
   }
 

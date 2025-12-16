@@ -310,9 +310,9 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
       if (current_memory_ > seq.second.total_memory_) {
         seq.second.total_memory_ = current_memory_;
         for (auto& sequence : sequence_trackers_) {
-          TRACE_EVENT_ASYNC_STEP_INTO1("gpu", "PeakMemoryTracking",
-                                       sequence.first, "Peak", "peak",
-                                       current_memory_);
+          TRACE_EVENT_INSTANT("gpu", "PeakMemoryTracking",
+                              perfetto::Track(sequence.first), "peak",
+                              current_memory_);
         }
         for (auto& memory_per_source : current_memory_per_source_) {
           seq.second.peak_memory_per_source_[memory_per_source.first] =

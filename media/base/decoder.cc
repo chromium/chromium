@@ -20,7 +20,7 @@ bool Decoder::SupportsDecryption() const {
   return false;
 }
 
-std::string GetDecoderName(VideoDecoderType type) {
+const char* GetDecoderName(VideoDecoderType type) {
   switch (type) {
     case VideoDecoderType::kUnknown:
       return "Unknown Video Decoder";
@@ -59,7 +59,7 @@ std::string GetDecoderName(VideoDecoderType type) {
   }
 }
 
-std::string GetDecoderName(AudioDecoderType type) {
+const char* GetDecoderName(AudioDecoderType type) {
   switch (type) {
     case AudioDecoderType::kUnknown:
       return "Unknown Audio Decoder";
