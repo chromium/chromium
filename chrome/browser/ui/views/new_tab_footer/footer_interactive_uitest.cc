@@ -149,15 +149,12 @@ class FooterInteractiveTest : public FooterInteractiveTestBase {
  public:
   FooterInteractiveTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{ntp_features::kNtpFooter, true},
-         {features::kSideBySide, GetParam()}});
+        {{ntp_features::kNtpFooter, true}});
   }
   ~FooterInteractiveTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(, FooterInteractiveTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterShowsOnExtensionNtp) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterShowsOnExtensionNtp) {
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension NTP.
@@ -167,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterShowsOnExtensionNtp) {
             EnsurePresent(kFooterWebViewSeparatorElementId)));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHiddenOnNonExtensionNtp) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHiddenOnNonExtensionNtp) {
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension NTP.
@@ -181,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHiddenOnNonExtensionNtp) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInGuestProfile) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInGuestProfile) {
   LoadNtpOverridingExtension();
   Browser* const guest_browser = CreateGuestBrowser();
   ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
@@ -196,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInGuestProfile) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInIncognito) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInIncognito) {
   LoadNtpOverridingExtension();
   Browser* const incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
@@ -211,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, FooterHidesInIncognito) {
       EnsureNotPresent(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
                        ExtensionAttributionTogglesVisibility) {
   LoadNtpOverridingExtension();
   RunTestSequence(
@@ -228,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest,
       WaitForHide(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, OpenAndCloseCustomizeChrome) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, OpenAndCloseCustomizeChrome) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabElementId1);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabElementId2);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFooterElementId1);
@@ -259,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, OpenAndCloseCustomizeChrome) {
 // Context menu tests flaky on Mac, possibly due to the Mac handling of context
 // menus.
 #if !BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, ContextMenuHidesFooter) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuHidesFooter) {
   // Override the ntp with an extension.
   LoadNtpOverridingExtension();
   RunTestSequence(
@@ -271,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, ContextMenuHidesFooter) {
       WaitForHide(kFooterLocalElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
   const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
                                     "customize-chrome-footer",
@@ -304,8 +301,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
   FooterEnterpriseInteractiveTest() {
     scoped_feature_list_.InitWithFeatureStates(
         {{ntp_features::kNtpFooter, true},
-         {features::kEnterpriseBadgingForNtpFooter, true},
-         {features::kSideBySide, GetParam()}});
+         {features::kEnterpriseBadgingForNtpFooter, true}});
   }
   ~FooterEnterpriseInteractiveTest() override = default;
 
@@ -392,9 +388,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
       guest_scoped_browser_management_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, FooterEnterpriseInteractiveTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest, FooterShowsOnNtpOnly) {
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest, FooterShowsOnNtpOnly) {
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension NTP.
@@ -412,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest, FooterShowsOnNtpOnly) {
       WaitForShow(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        ManagementNoticePolicyTogglesVisibility) {
   RunTestSequence(
       // Open NTP.
@@ -428,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForHide(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        CustomizationTogglesVisibility) {
   RunTestSequence(
       // Open NTP.
@@ -458,7 +452,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForHide(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        FooterShowsInGuestProfile) {
   // Create browser and add tab.
   Browser* guest_browser = CreateManagedGuestBrowser();
@@ -471,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForShow(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        FooterShowsInIncognito) {
   Browser* incognito_browser = CreateManagedIncognitoBrowser();
   RunTestSequenceInContext(
@@ -484,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForShow(kNtpFooterViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        CustomizeChromeButtonShowsCorrectly) {
   const DeepQuery kNtpCustomizeChromeButton = {
       "ntp-app", "ntp-customize-buttons", "#customizeButton"};
@@ -505,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForElementToRender(kNewTabElementId, kNtpCustomizeChromeButton));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        ThirdPartyNtpHidesCustomizeChromeButton) {
   RunTestSequence(
       // Open 3P WebUI NTP and wait for footer to show.
@@ -515,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       EnsureNotPresent(kFooterLocalElementId, kFooterCustomizeChromeButton));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        BackgroundAttributionShowsCorrectly) {
   const DeepQuery kNtpBackgroundAttribution = {"ntp-app",
                                                "#backgroundImageAttribution"};
@@ -546,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
       WaitForElementToRender(kNewTabElementId, kNtpBackgroundAttribution));
 }
 
-IN_PROC_BROWSER_TEST_P(FooterEnterpriseInteractiveTest,
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        BackgroundAttributionHidesOnThirdPartyNtp) {
   const DeepQuery kFooterBackgroundAttribution{
       "new-tab-footer-app", "#backgroundAttributionContainer"};

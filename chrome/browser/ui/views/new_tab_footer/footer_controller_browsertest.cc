@@ -179,22 +179,15 @@ class FooterControllerExtensionTestBase
   base::test::ScopedFeatureList feature_list_;
 };
 
-class FooterControllerExtensionTest : public FooterControllerExtensionTestBase,
-                                      public testing::WithParamInterface<bool> {
+class FooterControllerExtensionTest : public FooterControllerExtensionTestBase {
  public:
   FooterControllerExtensionTest() {
-    feature_list_.InitWithFeatureStates(
-        {{ntp_features::kNtpFooter, true},
-         {features::kSideBySide, side_by_side_enabled()}});
+    feature_list_.InitWithFeatureStates({{ntp_features::kNtpFooter, true}});
   }
   ~FooterControllerExtensionTest() override = default;
-
-  bool side_by_side_enabled() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(, FooterControllerExtensionTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest, TabChanged) {
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, TabChanged) {
   ASSERT_FALSE(footer()->GetVisible());
 
   auto extension = LoadNtpExtension();
@@ -213,43 +206,40 @@ IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest, TabChanged) {
   EXPECT_FALSE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest, UserPrefChanged) {
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, UserPrefChanged) {
   TestUserPrefChanged();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest,
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
                        AttributionPolicyChanged) {
   TestAttributionPolicyChanged();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest, MetricsRecorded) {
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, MetricsRecorded) {
   TestMetricsRecorded();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerExtensionTest, ShownTimeRecorded) {
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, ShownTimeRecorded) {
   TestShownTimeRecorded();
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class FooterControllerEnterpriseTest
     : public FooterControllerExtensionTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   FooterControllerEnterpriseTest() {
     feature_list_.InitWithFeatureStates(
         {{ntp_features::kNtpFooter, true},
-         {features::kEnterpriseBadgingForNtpFooter, true},
-         {features::kSideBySide, std::get<0>(GetParam())}});
+         {features::kEnterpriseBadgingForNtpFooter, true}});
   }
   ~FooterControllerEnterpriseTest() override = default;
 
-  bool managed() { return std::get<1>(GetParam()); }
+  bool managed() { return GetParam(); }
   PrefService* local_state() { return g_browser_process->local_state(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FooterControllerEnterpriseTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(, FooterControllerEnterpriseTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest, NoticePolicyEnabled) {
   policy::ScopedManagementServiceOverrideForTesting browser_management(
@@ -340,15 +330,14 @@ IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-class FooterControllerSideBySideTest
-    : public FooterControllerExtensionTestBase {
+class FooterControllerSplitViewTest : public FooterControllerExtensionTestBase {
  public:
-  FooterControllerSideBySideTest() {
+  FooterControllerSplitViewTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpFooter, features::kSideBySide},
+        /*enabled_features=*/{ntp_features::kNtpFooter},
         /*disabled_features=*/{});
   }
-  ~FooterControllerSideBySideTest() override = default;
+  ~FooterControllerSplitViewTest() override = default;
 
   void SetUpOnMainThread() override {
     FooterControllerExtensionTestBase::SetUpOnMainThread();
@@ -362,20 +351,16 @@ class FooterControllerSideBySideTest
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 };
 
-class FooterControllerSideBySideSingleTabTest
-    : public FooterControllerSideBySideTest,
+class FooterControllerSplitViewSingleTabTest
+    : public FooterControllerSplitViewTest,
       public testing::WithParamInterface<size_t> {
   void SetUpOnMainThread() override {
-    FooterControllerSideBySideTest::SetUpOnMainThread();
-    tab_strip_model()->ActivateTabAt(GetParam());
+    FooterControllerSplitViewTest::SetUpOnMainThread();
+    tab_strip_model()->ActivateTabAt(1);
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FooterControllerSideBySideSingleTabTest,
-                         testing::Values(0, 1));
-
-IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest, TabChanged) {
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewSingleTabTest, TabChanged) {
   auto extension = LoadNtpExtension();
 
   ASSERT_FALSE(footer()->GetVisible());
@@ -393,27 +378,27 @@ IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest, TabChanged) {
   EXPECT_TRUE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest,
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewSingleTabTest,
                        UserPrefChanged) {
   TestUserPrefChanged();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest,
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewSingleTabTest,
                        AttributionPolicyChanged) {
   TestAttributionPolicyChanged();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest,
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewSingleTabTest,
                        MetricsRecorded) {
   TestMetricsRecorded();
 }
 
-IN_PROC_BROWSER_TEST_P(FooterControllerSideBySideSingleTabTest,
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewSingleTabTest,
                        ShownTimeRecorded) {
   TestShownTimeRecorded();
 }
 
-IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, SwapTabInSplit) {
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, SwapTabInSplit) {
   auto extension = LoadNtpExtension();
 
   // Create a non-split tab.
@@ -438,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, SwapTabInSplit) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, ReverseSplit) {
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, ReverseSplit) {
   auto extension = LoadNtpExtension();
 
   tab_strip_model()->ActivateTabAt(0);
@@ -455,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, ReverseSplit) {
   EXPECT_FALSE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, CloseLeftTabInSplit) {
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, CloseLeftTabInSplit) {
   auto extension = LoadNtpExtension();
 
   tab_strip_model()->ActivateTabAt(0);
@@ -470,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, CloseLeftTabInSplit) {
   EXPECT_TRUE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(FooterControllerSideBySideTest, CloseRightTabInSplit) {
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, CloseRightTabInSplit) {
   auto extension = LoadNtpExtension();
 
   tab_strip_model()->ActivateTabAt(0);
