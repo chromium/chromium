@@ -60,8 +60,14 @@ class BackgroundApplicationListModelTest
  protected:
   // extensions::ExtensionServiceTestBase:
   void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
     model_ = std::make_unique<BackgroundApplicationListModel>(profile());
+  }
+
+  void TearDown() override {
+    model_.reset();
+    extensions::ExtensionServiceTestBase::TearDown();
   }
 
   bool IsBackgroundApp(const Extension& app) {

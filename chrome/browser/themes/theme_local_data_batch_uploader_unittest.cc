@@ -138,6 +138,15 @@ class ThemeLocalDataBatchUploaderTestBase
         }));
   }
 
+  void TearDown() override {
+    batch_uploader_.reset();
+    theme_extension_ = nullptr;
+    fake_change_processor_.reset();
+    theme_sync_service_ = nullptr;
+    theme_service_ = nullptr;
+    extensions::ExtensionServiceTestBase::TearDown();
+  }
+
   ThemeService* theme_service() { return theme_service_; }
 
   ThemeSyncableService* theme_sync_service() { return theme_sync_service_; }

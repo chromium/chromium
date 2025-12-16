@@ -29,6 +29,7 @@ class ExtensionPostInstallDialogModelTest
   ~ExtensionPostInstallDialogModelTest() override = default;
 
   void SetUp() override {
+    extensions::ExtensionServiceTestWithInstall::SetUp();
     InitializeEmptyExtensionService();
     service()->Init();
   }

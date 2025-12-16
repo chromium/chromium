@@ -223,6 +223,7 @@ void ToolbarActionsModelUnitTest::InitToolbarModelAndObserver() {
 
 void ToolbarActionsModelUnitTest::TearDown() {
   model_observer_.reset();
+  toolbar_model_ = nullptr;
   extensions::ExtensionServiceUserTestBase::TearDown();
 }
 

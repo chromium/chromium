@@ -182,6 +182,13 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     ASSERT_TRUE(pref_service_);
   }
 
+  void TearDown() override {
+    pref_service_ = nullptr;
+    theme_service_ = nullptr;
+    registry_ = nullptr;
+    extensions::ExtensionServiceTestBase::TearDown();
+  }
+
  protected:
   const extensions::ExtensionRegistry* registry() const { return registry_; }
   PrefService* pref_service() { return pref_service_; }

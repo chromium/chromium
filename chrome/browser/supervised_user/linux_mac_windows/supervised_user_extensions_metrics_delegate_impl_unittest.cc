@@ -38,7 +38,11 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
       : extensions::ExtensionServiceTestBase(
             std::make_unique<content::BrowserTaskEnvironment>(
                 base::test::TaskEnvironment::MainThreadType::IO,
-                content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)) {
+                content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)) {}
+
+  void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
+
     ExtensionServiceInitParams params;
     params.profile_is_supervised = true;
     InitializeExtensionService(std::move(params));
@@ -51,6 +55,11 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
                 extensions::ExtensionRegistry::Get(profile()), profile()),
             /*metrics_service_accessor_delegate=*/nullptr);
     CHECK(supervised_user_metrics_service_);
+  }
+
+  void TearDown() override {
+    supervised_user_metrics_service_.reset();
+    extensions::ExtensionServiceTestBase::TearDown();
   }
 
  protected:

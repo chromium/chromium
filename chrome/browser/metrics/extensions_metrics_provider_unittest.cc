@@ -226,6 +226,11 @@ class ExtensionMetricsProviderInstallsTest
     last_sample_time_ = base::Time::Now() - base::Minutes(30);
   }
 
+  void TearDown() override {
+    prefs_ = nullptr;
+    ExtensionServiceTestBase::TearDown();
+  }
+
   ExtensionInstallProto ConstructProto(const Extension& extension) {
     return ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
         extension, prefs_, last_sample_time_, profile());

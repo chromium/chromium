@@ -49,6 +49,7 @@ class SupervisedUserExtensionsManagerTestBase
   void TearDown() override {
     // Flush the message loop, to ensure all posted tasks run.
     base::RunLoop().RunUntilIdle();
+    manager_.reset();
     ExtensionServiceTestBase::TearDown();
   }
 

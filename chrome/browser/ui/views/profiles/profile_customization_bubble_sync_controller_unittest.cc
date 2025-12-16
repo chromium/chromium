@@ -96,6 +96,14 @@ class ProfileCustomizationBubbleSyncControllerTest
         NtpCustomBackgroundServiceFactory::GetForProfile(profile());
   }
 
+  void TearDown() override {
+    ntp_custom_background_service_ = nullptr;
+    theme_service_ = nullptr;
+    browser_.reset();
+    theme_extension_.reset();
+    extensions::ExtensionServiceTestBase::TearDown();
+  }
+
   void ApplyColorAndShowBubbleWhenNoValueSynced(
       ProfileCustomizationBubbleSyncController::ShowBubbleCallback
           show_bubble_callback) {
