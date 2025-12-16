@@ -354,6 +354,6 @@ base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool ComposeboxOmniboxClient::IsImageGenerationEnabled() const {
-  return [delegate_ composeboxMode] == ComposeboxMode::kImageGeneration;
+omnibox::ChromeAimToolsAndModels ComposeboxOmniboxClient::AimToolMode() const {
+  return [delegate_ composeboxToolMode];
 }

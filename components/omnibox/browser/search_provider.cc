@@ -706,12 +706,20 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
 #if BUILDFLAG(IS_IOS)
-  // When contextual typed state suggestions are disabled for composebox, do not
-  // query suggest and only show verbatim matches.
-  if (omnibox::IsComposebox(input_.current_page_classification()) &&
+  const bool has_lens_inputs_in_composebox =
+      omnibox::IsComposebox(input_.current_page_classification()) &&
       input_.lens_overlay_suggest_inputs().has_value() &&
-      !base::FeatureList::IsEnabled(
-          omnibox::kComposeboxAttachmentsTypedState)) {
+      !base::FeatureList::IsEnabled(omnibox::kComposeboxAttachmentsTypedState);
+  const bool is_image_gen_mode =
+      input_.aim_tool_mode() ==
+          omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD ||
+      input_.aim_tool_mode() ==
+          omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN;
+
+  // When contextual typed state suggestions are disabled for composebox, or
+  // when in image generation mode, do not query suggest and only show
+  // verbatim matches.
+  if (has_lens_inputs_in_composebox || is_image_gen_mode) {
     return;
   }
 #endif

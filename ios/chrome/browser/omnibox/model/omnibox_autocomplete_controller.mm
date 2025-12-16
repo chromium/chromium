@@ -588,25 +588,26 @@ using base::UserMetricsAction;
 #pragma mark - Private
 
 - (void)attachAimToolModeToAutocompleteInput:(AutocompleteInput&)input {
-  if (_omniboxPresentationContext != OmniboxPresentationContext::kComposebox) {
+  if (_omniboxPresentationContext != OmniboxPresentationContext::kComposebox ||
+      !_omniboxClient) {
     return;
   }
 
-  if (_omniboxClient->IsImageGenerationEnabled()) {
-    input.set_aim_tool_mode(
-        omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN);
-  } else {
-    input.set_aim_tool_mode(
-        omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED);
-  }
+  input.set_aim_tool_mode(_omniboxClient->AimToolMode());
 }
 
 /// Attaches the client's suggest inputs if valid.
 - (void)attachSuggestInputsToAutocompleteInput:(AutocompleteInput&)input {
+  if (!_omniboxClient) {
+    return;
+  }
+
   std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
       _omniboxClient->GetLensOverlaySuggestInputs();
 
-  if (!suggestInputs) {
+  if (!suggestInputs ||
+      _omniboxClient->AimToolMode() !=
+          omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED) {
     return;
   }
 

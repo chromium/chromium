@@ -41,4 +41,5 @@ include_rules = [
   "+ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h",
   "+components/contextual_search",
   "+mojo/public/cpp/base/big_buffer.h",
+  "+third_party/omnibox_proto/aim_tools_and_models.pb.h"
 ]
