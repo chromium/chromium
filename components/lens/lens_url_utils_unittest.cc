@@ -5,6 +5,7 @@
 #include "components/lens/lens_url_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
@@ -52,6 +53,58 @@ TEST(LensUrlUtilsTest, Base64EncodeRequestIdTest) {
   std::string encoded_id = lens::Base64EncodeRequestId(request_id);
   EXPECT_FALSE(encoded_id.empty());
   EXPECT_EQ(encoded_id, "CAEQAiIDQUJD");
+}
+
+TEST(LensUrlUtilsTest, AppendInvocationSourceParamToUrlAppendsEntryPoints) {
+  constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+  const GURL base_url(kResultsSearchBaseUrl);
+
+  std::string expected_app_menu_url =
+      base::StringPrintf("%s?source=chrome.cr.menu", kResultsSearchBaseUrl);
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, lens::LensOverlayInvocationSource::kAppMenu),
+            expected_app_menu_url);
+
+  std::string expected_context_menu_page_url =
+      base::StringPrintf("%s?source=chrome.cr.ctxp", kResultsSearchBaseUrl);
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url,
+                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
+            expected_context_menu_page_url);
+
+  std::string expected_context_menu_image_url =
+      base::StringPrintf("%s?source=chrome.cr.ctxi", kResultsSearchBaseUrl);
+  EXPECT_EQ(
+      lens::AppendInvocationSourceParamToURL(
+          base_url,
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage),
+      expected_context_menu_image_url);
+
+  std::string expected_toolbar_url =
+      base::StringPrintf("%s?source=chrome.cr.tbic", kResultsSearchBaseUrl);
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, lens::LensOverlayInvocationSource::kToolbar),
+            expected_toolbar_url);
+
+  std::string expected_find_in_page_url =
+      base::StringPrintf("%s?source=chrome.cr.find", kResultsSearchBaseUrl);
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, lens::LensOverlayInvocationSource::kFindInPage),
+            expected_find_in_page_url);
+
+  std::string expected_omnibox_url =
+      base::StringPrintf("%s?source=chrome.cr.obic", kResultsSearchBaseUrl);
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, lens::LensOverlayInvocationSource::kOmnibox),
+            expected_omnibox_url);
+
+  std::string expected_context_menu_video_url =
+      base::StringPrintf("%s?source=chrome.cr.ctxv", kResultsSearchBaseUrl);
+  EXPECT_EQ(
+      lens::AppendInvocationSourceParamToURL(
+          base_url,
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo),
+      expected_context_menu_video_url);
 }
 
 }  // namespace lens

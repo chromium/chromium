@@ -634,58 +634,6 @@ TEST_F(LensOverlayUrlBuilderTest,
 }
 
 TEST_F(LensOverlayUrlBuilderTest,
-       AppendInvocationSourceParamToUrlAppendsEntryPoints) {
-  const GURL base_url(kResultsSearchBaseUrl);
-
-  std::string expected_app_menu_url =
-      base::StringPrintf("%s?source=chrome.cr.menu", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kAppMenu),
-            expected_app_menu_url);
-
-  std::string expected_context_menu_page_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxp", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url,
-                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
-            expected_context_menu_page_url);
-
-  std::string expected_context_menu_image_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxi", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage),
-      expected_context_menu_image_url);
-
-  std::string expected_toolbar_url =
-      base::StringPrintf("%s?source=chrome.cr.tbic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kToolbar),
-            expected_toolbar_url);
-
-  std::string expected_find_in_page_url =
-      base::StringPrintf("%s?source=chrome.cr.find", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kFindInPage),
-            expected_find_in_page_url);
-
-  std::string expected_omnibox_url =
-      base::StringPrintf("%s?source=chrome.cr.obic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kOmnibox),
-            expected_omnibox_url);
-
-  std::string expected_context_menu_video_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxv", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo),
-      expected_context_menu_video_url);
-}
-
-TEST_F(LensOverlayUrlBuilderTest,
        AppendDarkModeParamToURLToUrlAppendsDarkMode) {
   const GURL base_url(kResultsSearchBaseUrl);
 

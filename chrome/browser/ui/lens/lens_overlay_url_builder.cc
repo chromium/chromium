@@ -63,25 +63,6 @@ inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
 // Parameters to trigger the Translation One-box.
 inline constexpr char kSrpStickinessSignalKey[] = "stick";
 
-// Query parameter for the invocation source.
-inline constexpr char kInvocationSourceParameterKey[] = "source";
-inline constexpr char kInvocationSourceAppMenu[] = "chrome.cr.menu";
-inline constexpr char kInvocationSourcePageSearchContextMenu[] =
-    "chrome.cr.ctxp";
-inline constexpr char kInvocationSourceImageSearchContextMenu[] =
-    "chrome.cr.ctxi";
-inline constexpr char kInvocationSourceTextSearchContextMenu[] =
-    "chrome.cr.ctxt";
-inline constexpr char kInvocationSourceVideoSearchContextMenu[] =
-    "chrome.cr.ctxv";
-inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
-inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
-inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
-inline constexpr char kInvocationSourceOmniboxPageAction[] = "chrome.cr.obpa";
-inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] =
-    "chrome.cr.obcs";
-inline constexpr char kInvocationSourceHomeworkActionChip[] = "chrome.cr.hwac";
-
 // The url query param for the viewport width and height.
 inline constexpr char kViewportWidthQueryParamKey[] = "biw";
 inline constexpr char kViewportHeightQueryParamKey[] = "bih";
@@ -220,55 +201,6 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
   return AppendCommonSearchParametersToURL(
       url_to_modify, g_browser_process->GetApplicationLocale(), use_dark_mode);
-}
-
-GURL AppendInvocationSourceParamToURL(
-    const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source) {
-  std::string param_value = "";
-  switch (invocation_source) {
-    case lens::LensOverlayInvocationSource::kAppMenu:
-      param_value = kInvocationSourceAppMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
-      param_value = kInvocationSourcePageSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
-      param_value = kInvocationSourceImageSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
-      param_value = kInvocationSourceTextSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
-      param_value = kInvocationSourceVideoSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kToolbar:
-      param_value = kInvocationSourceToolbarIcon;
-      break;
-    case lens::LensOverlayInvocationSource::kFindInPage:
-      param_value = kInvocationSourceFindInPage;
-      break;
-    case lens::LensOverlayInvocationSource::kOmnibox:
-      param_value = kInvocationSourceOmniboxIcon;
-      break;
-    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
-      param_value = kInvocationSourceOmniboxPageAction;
-      break;
-    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
-      param_value = kInvocationSourceOmniboxContextualSuggestion;
-      break;
-    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
-      param_value = kInvocationSourceHomeworkActionChip;
-      break;
-    case lens::LensOverlayInvocationSource::kLVFShutterButton:
-    case lens::LensOverlayInvocationSource::kLVFGallery:
-    case lens::LensOverlayInvocationSource::kContextMenu:
-    case lens::LensOverlayInvocationSource::kAIHub:
-    case lens::LensOverlayInvocationSource::kFREPromo:
-      NOTREACHED() << "Invocation source not supported.";
-  }
-  return net::AppendOrReplaceQueryParameter(
-      url_to_modify, kInvocationSourceParameterKey, param_value);
 }
 
 GURL AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(

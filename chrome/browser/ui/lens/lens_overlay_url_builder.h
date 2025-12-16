@@ -35,10 +35,6 @@ GURL AppendVideoContextParamToURL(const GURL& url_to_modify,
 
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 
-GURL AppendInvocationSourceParamToURL(
-    const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source);
-
 GURL BuildTextOnlySearchURL(
     base::Time query_start_time,
     const std::string& text_query,
