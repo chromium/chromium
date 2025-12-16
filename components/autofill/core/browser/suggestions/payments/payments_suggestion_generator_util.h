@@ -274,6 +274,11 @@ bool ShouldUseNewFopDisplay();
 // pointer to the linked AutofillOfferData as the value.
 std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
     const AutofillClient& autofill_client);
+
+// Returns the obfuscation length to be used for credit cards during suggestion
+// generation.
+int GetCreditCardObfuscationLength();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_UTIL_H_

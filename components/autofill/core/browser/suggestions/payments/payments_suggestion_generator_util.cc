@@ -115,15 +115,6 @@ std::vector<const CreditCard*> DeduplicateCreditCardsForSuggestions(
   return deduplicated_cards;
 }
 
-int GetObfuscationLength() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // On Android and iOS, the obfuscation length is 2.
-  return 2;
-#else
-  return ShouldUseNewFopDisplay() ? 2 : 4;
-#endif
-}
-
 bool ShouldSplitCardNameAndLastFourDigits() {
   return !BUILDFLAG(IS_IOS);
 }
@@ -220,17 +211,18 @@ GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
         return create_text(*identifier);
       } else {
         return create_text(
-            credit_card.NetworkAndLastFourDigits(GetObfuscationLength()),
+            credit_card.NetworkAndLastFourDigits(
+                GetCreditCardObfuscationLength()),
             credit_card.AbbreviatedExpirationDateForDisplay(false));
       }
     }
     if (ShouldSplitCardNameAndLastFourDigits()) {
       return create_text(credit_card.CardNameForAutofillDisplay(nickname),
                          credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-                             GetObfuscationLength()));
+                             GetCreditCardObfuscationLength()));
     }
     return create_text(credit_card.CardNameAndLastFourDigits(
-        nickname, GetObfuscationLength()));
+        nickname, GetCreditCardObfuscationLength()));
   }
 
   if (kCvcFieldTypes.contains(trigger_field_type)) {
@@ -282,7 +274,7 @@ void SetSuggestionLabelsForCard(
             IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
         u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))}};
+            GetCreditCardObfuscationLength()))}};
     return;
   }
 
@@ -300,7 +292,7 @@ void SetSuggestionLabelsForCard(
     if (ShouldUseNewFopDisplay() && !suggestion.main_text.value.empty() &&
         suggestion.minor_texts.empty()) {
       labels.push_back({Suggestion::Text(credit_card.NetworkAndLastFourDigits(
-                            GetObfuscationLength())),
+                            GetCreditCardObfuscationLength())),
                         Suggestion::Text(kEllipsisDotSeparator),
                         Suggestion::Text(credit_card.GetInfo(
                             CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))});
@@ -359,19 +351,19 @@ void SetSuggestionLabelsForCard(
     if (client.ShouldFormatForLargeKeyboardAccessory()) {
       suggestion.labels = {
           {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
-              nickname, GetObfuscationLength()))}};
+              nickname, GetCreditCardObfuscationLength()))}};
     } else {
       // On Mobile, the label is formatted as "••1234".
       suggestion.labels = {{Suggestion::Text(
           credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-              GetObfuscationLength()))}};
+              GetCreditCardObfuscationLength()))}};
     }
     return;
   }
 
   if (ShouldUseNewFopDisplay()) {
     suggestion.labels = {{Suggestion::Text(credit_card.NetworkAndLastFourDigits(
-                              GetObfuscationLength())),
+                              GetCreditCardObfuscationLength())),
                           Suggestion::Text(kEllipsisDotSeparator),
                           Suggestion::Text(credit_card.GetInfo(
                               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
@@ -386,7 +378,7 @@ void SetSuggestionLabelsForCard(
                           Suggestion::Text::IsPrimary(false),
                           Suggestion::Text::ShouldTruncate(true)),
          Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-             GetObfuscationLength()))}};
+             GetCreditCardObfuscationLength()))}};
     return;
   }
 
@@ -495,8 +487,9 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
       // minor_texts empty means that the card has either nickname or
       // product description, so add network and last four digits as a
       // separate label.
-      suggestion.labels = {{Suggestion::Text(
-          credit_card.NetworkAndLastFourDigits(GetObfuscationLength()))}};
+      suggestion.labels = {
+          {Suggestion::Text(credit_card.NetworkAndLastFourDigits(
+              GetCreditCardObfuscationLength()))}};
     }
     if (benefit_label && client.GetPersonalDataManager()
                              .payments_data_manager()
@@ -1151,8 +1144,8 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE) +
         u" " +
-        CreditCard::GetObfuscatedStringForCardDigits(GetObfuscationLength(),
-                                                     virtual_card_last_four);
+        CreditCard::GetObfuscatedStringForCardDigits(
+            GetCreditCardObfuscationLength(), virtual_card_last_four);
     if constexpr (BUILDFLAG(IS_ANDROID)) {
       // For Android keyboard accessory, we concatenate all the content to the
       // `main_text` to prevent the suggestion descriptor from being cut off.
@@ -1721,6 +1714,15 @@ bool ShouldUseNewFopDisplay() {
 #else
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
+int GetCreditCardObfuscationLength() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, the obfuscation length is 2.
+  return 2;
+#else
+  return ShouldUseNewFopDisplay() ? 2 : 4;
 #endif
 }
 
