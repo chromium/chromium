@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.UiUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
@@ -43,13 +42,14 @@ public class RecentlyClosedEntriesManager {
 
     private final TabModel mRegularTabModel;
 
+    // TODO:(crbug.com/444680856) Use MultiInstanceManager to restore instance.
+    @SuppressWarnings("UnusedVariable")
     private final MultiInstanceManager mMultiInstanceManager;
 
     private RecentlyClosedTabManager mRecentlyClosedTabManager;
 
     private List<RecentlyClosedEntry> mRecentlyClosedEntries = new ArrayList<>();
     private @Nullable Callback<List<RecentlyClosedEntry>> mEntriesUpdatedCallback;
-    private @Nullable InstanceStateObserver mInstanceStateObserver;
 
     /**
      * @param multiInstanceManager The {@link MultiInstanceManager} instance used to observe window
@@ -68,16 +68,6 @@ public class RecentlyClosedEntriesManager {
                         ? sRecentlyClosedTabManagerForTests
                         : new RecentlyClosedBridge(profile, tabModelSelector);
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
-        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            mInstanceStateObserver =
-                    new InstanceStateObserver() {
-                        @Override
-                        public void onInstanceClosed() {
-                            updateRecentlyClosedEntries();
-                        }
-                    };
-            mMultiInstanceManager.addInstanceStateObserver(mInstanceStateObserver);
-        }
     }
 
     /**
@@ -161,11 +151,6 @@ public class RecentlyClosedEntriesManager {
             mRecentlyClosedTabManager.destroy();
             mRecentlyClosedTabManager = null;
         }
-        if (mInstanceStateObserver != null) {
-            mMultiInstanceManager.removeInstanceStateObserver(mInstanceStateObserver);
-            mInstanceStateObserver = null;
-        }
-
         mEntriesUpdatedCallback = null;
     }
 

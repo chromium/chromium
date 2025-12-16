@@ -4555,10 +4555,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return mShowHistoryRunnable != null;
     }
 
-    public RecentlyClosedEntriesManager getRecentlyClosedEntriesManagerForTesting() {
-        return mRecentlyClosedEntriesManager;
-    }
-
     @Override
     public void onProvideKeyboardShortcuts(
             List<KeyboardShortcutGroup> data, Menu menu, int deviceId) {

@@ -54,9 +54,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -667,7 +664,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
-            if (a != null && !a.isFinishing()) {
+            if (a != null) {
                 // The task for the activity must match the persisted task.
                 int activityTaskId = a.getTaskId();
                 String error =
@@ -767,9 +764,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI when no task is present for it.
         // When out of range, ignore the ID and apply the normal allocation logic below.
-        // TODO(crbug.com/444681038): Block allocation if an activity for this windowId is currently
-        //  finishing. This prevents a race condition where the same ID is assigned to a new
-        //  activity before the previous one is fully destroyed.
         if (windowId >= 0 && instanceId == INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - selected Id allocated: " + windowId);
             profileType = getProfileType(windowId, isIncognitoIntent);
@@ -1102,16 +1096,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 : "To filter both ACTIVE and INACTIVE instance types, use"
                         + " PersistedInstanceType.ANY.";
         for (Integer id : allIds) {
-            Activity activity = getActivityById(id);
-            // Since activity destruction is asynchronous and lacks a reliable completion callback.
-            // we will preemptively clean up the TaskId and update lastAccessedTime to ensure
-            // surfaces like the Recent Tabs page receive an accurate list of inactive instances in
-            // real time.
-            if (activity != null && activity.isFinishing()) {
-                MultiInstancePersistentStore.writeLastAccessedTime(id);
-                MultiInstancePersistentStore.removeTaskId(id);
-            }
-
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
@@ -1378,8 +1362,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public void closeWindow(int instanceId, @CloseWindowAppSource int source) {
-        boolean shouldPermanentlyDelete = !isUserInitiatedClosure(source);
-        if (shouldPermanentlyDelete) {
+        if (!isUserInitiatedClosure(source)) {
             removeInstanceInfo(instanceId, source);
             TabModelSelector selector =
                     TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
@@ -1404,19 +1387,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         } else {
             MultiInstancePersistentStore.writeMarkedForDeletion(
                     instanceId, /* markedForDeletion= */ true);
-            MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
-            MultiInstancePersistentStore.removeTaskId(instanceId);
         }
         Activity activity = getActivityById(instanceId);
-        if (activity != null) {
-            activity.finishAndRemoveTask();
-        }
+        if (activity != null) activity.finishAndRemoveTask();
 
-        for (InstanceStateObserver instanceStateObserver : mInstanceStateObservers) {
-            instanceStateObserver.onInstanceClosed();
-        }
-
-        if (shouldPermanentlyDelete && mInstanceId != instanceId) {
+        if (!isUserInitiatedClosure(source) && mInstanceId != instanceId) {
             // Initiate synced tab groups cleanup only if the closed instance is not the
             // current one. If after closure of the current, second to last instance, a
             // single instance remains, this cleanup will be initiated on activity
@@ -1527,8 +1502,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // switcher dialog and Recent Tabs.
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
-        MultiInstancePersistentStore.removeTaskId(mInstanceId);
-
         if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
         }

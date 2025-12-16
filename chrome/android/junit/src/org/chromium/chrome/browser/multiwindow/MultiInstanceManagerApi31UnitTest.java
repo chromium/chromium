@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
@@ -145,12 +144,9 @@ import java.util.stream.Collectors;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
-    ChromeFeatureList.INSTANCE_SWITCHER_V2,
-    ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
+    ChromeFeatureList.INSTANCE_SWITCHER_V2
 })
-@DisableFeatures({
-    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-})
+@DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
@@ -818,6 +814,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     public void testGetInstanceInfo_size_softClosure() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -841,45 +838,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY)) {
             if (instanceInfo.instanceId == 1) {
                 assertTrue(instanceInfo.markedForDeletion);
-            } else {
-                assertFalse(instanceInfo.markedForDeletion);
-            }
-        }
-    }
-
-    @Test
-    public void testCloseWindow_InstanceStateObserverInvoked() {
-        // Setup InstanceStateObserver for testing.
-        InstanceStateObserver instanceStateObserver = Mockito.mock(InstanceStateObserver.class);
-        mMultiInstanceManager.addInstanceStateObserver(instanceStateObserver);
-
-        // Setup 3 instances.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
-
-        // Verify there are 3 active instances initially.
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
-
-        // Trigger a soft closure for instance ID 1.
-        when(mActivityTask57.isFinishing()).thenReturn(true);
-        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
-
-        // Verify the soft-closed instance becomes an inactive instance.
-        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
-        assertEquals(
-                1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE).size());
-
-        // Verify InstanceStateObserver is invoked.
-        verify(instanceStateObserver).onInstanceClosed();
-
-        // Verify the soft-closed instance is correctly marked for deletion.
-        for (InstanceInfo instanceInfo :
-                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY)) {
-            if (instanceInfo.instanceId == 1) {
-                assertTrue(instanceInfo.markedForDeletion);
-            } else {
-                assertFalse(instanceInfo.markedForDeletion);
+                break;
             }
         }
     }
