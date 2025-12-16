@@ -1534,6 +1534,8 @@ enum HostCapability {
   // Enables the experimental "Trust First" (Arm 2 - "Welcome Screen")
   // onboarding UI flow, bypassing the standard FRE flow.
   kTrustFirstOnboardingArm2 = 5,
+  // Glic host supports sharing additional image context.
+  kShareAdditionalImageContext = 6,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

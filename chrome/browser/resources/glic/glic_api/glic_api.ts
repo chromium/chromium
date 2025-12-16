@@ -2516,6 +2516,8 @@ export enum HostCapability {
   // Enables the experimental "Trust First" (Arm 2 - "Welcome Screen")
   // onboarding UI flow, bypassing the standard FRE flow.
   TRUST_FIRST_ONBOARDING_ARM2 = 5,
+  // Glic host supports sharing additional image context.
+  SHARE_ADDITIONAL_IMAGE_CONTEXT = 6,
 }
 
 ///////////////////////////////////////////////
