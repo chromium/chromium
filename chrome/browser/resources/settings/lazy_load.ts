@@ -10,6 +10,7 @@ import './ai_page/offer_writing_help_page.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_ai_section.js';
 import './autofill_page/autofill_section.js';
+import './autofill_page/walletable_pass_detection_toggle.js';
 // <if expr="is_win or is_macosx">
 import './autofill_page/passkeys_subpage.js';
 // </if>
@@ -192,6 +193,7 @@ export {PaymentsManagerImpl} from './autofill_page/payments_manager_proxy.js';
 export type {PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
+export {SettingsWalletablePassDetectionToggleElement} from './autofill_page/walletable_pass_detection_toggle.js';
 // <if expr="not is_chromeos">
 export {SettingsClearBrowsingDataAccountIndicator} from './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
 // </if>

@@ -5,6 +5,10 @@
     border-bottom: var(--cr-separator-line);
   }
 
+  #lastSection {
+    border-top: var(--cr-separator-line);
+  }
+
 </style>
 <settings-subpage page-title="$i18n{autofillAiPageTitle}">
 <div id="topSection">
@@ -65,4 +69,13 @@
     list-title="$i18n{autofillAiEntityInstancesHeader}"
     prefs="{{prefs}}">
 </settings-autofill-ai-entries-list>
+
+<template is="dom-if"
+    if="[[isUserEligibleForWalletablePassDetection_]]" restamp>
+  <div id="lastSection">
+    <settings-walletable-pass-detection-toggle
+        id="walletablePassDetectionToggle">
+    </settings-walletable-pass-detection-toggle>
+  </div>
+</template>
 </settings-subpage>

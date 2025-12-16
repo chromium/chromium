@@ -24,6 +24,7 @@ import '../internal/icons.html.js';
 // </if>
 
 import './autofill_ai_entries_list.js';
+import './walletable_pass_detection_toggle.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -99,6 +100,15 @@ export class SettingsAutofillAiSectionElement extends
           return loadTimeData.getBoolean('isWalletServerStorageEnabled');
         },
       },
+
+      isUserEligibleForWalletablePassDetection_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isUserEligibleForWalletablePassDetection');
+        },
+      },
+
       /**
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
@@ -123,6 +133,7 @@ export class SettingsAutofillAiSectionElement extends
   declare ineligibleUser: boolean;
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
   declare private isWalletServerStorageEnabled_: boolean;
+  declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =

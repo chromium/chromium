@@ -380,4 +380,22 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
   });
+
+  test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: true});
+    await createSection();
+    const component = section.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertTrue(!!component);
+  });
+
+  test('WalletablePassDetectionToggleHiddenWhenNotEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: false});
+    await createSection();
+    const component = section.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertFalse(!!component);
+  });
 });

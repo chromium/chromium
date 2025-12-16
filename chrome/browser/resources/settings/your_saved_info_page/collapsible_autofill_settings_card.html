@@ -68,4 +68,12 @@
       </ul>
     </div>
   </div>
+
+  <template is="dom-if" if="[[isUserEligibleForWalletablePassDetection_]]"
+      restamp>
+    <div class="hr"></div>
+    <settings-walletable-pass-detection-toggle
+        id="walletablePassDetectionToggle">
+    </settings-walletable-pass-detection-toggle>
+  </template>
 </cr-collapse>

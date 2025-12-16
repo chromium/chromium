@@ -1,0 +1,50 @@
+<style include="cr-shared-style settings-shared cr-icons
+    settings-columned-section">
+</style>
+
+<settings-toggle-button id="toggle"
+    on-settings-boolean-control-change="onChange_"
+    pref="{{walletablePassDetectionOptedIn_}}"
+    disabled="[[ineligibleUser_]]"
+    no-extension-indicator
+    label="$i18n{walletablePassDetectionToggleLabel}"
+    sub-label="$i18n{walletablePassDetectionToggleSubLabel}">
+</settings-toggle-button>
+
+<div class="settings-columned-section">
+  <div class="column">
+    <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+        </cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{walletablePassDetectionWhenOnSavedInfo}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="privacy:notifications" aria-hidden="true"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{walletablePassDetectionWhenOnNotifications}
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{walletablePassDetectionToConsiderDataUsage}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:wallet" aria-hidden="true"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{walletablePassDetectionToConsiderDataStorage}
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

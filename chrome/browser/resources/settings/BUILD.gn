@@ -88,6 +88,7 @@ build_webui("build") {
     "autofill_page/payments_list.ts",
     "autofill_page/payments_section.ts",
     "autofill_page/virtual_card_unenroll_dialog.ts",
+    "autofill_page/walletable_pass_detection_toggle.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog_v2.ts",
     "clear_browsing_data_dialog/clear_browsing_data_time_picker.ts",

@@ -21,6 +21,7 @@ import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
+import '../autofill_page/walletable_pass_detection_toggle.js';
 
 // </if>
 
@@ -91,6 +92,14 @@ export class CollapsibleCardElement extends
         }),
       },
 
+      isUserEligibleForWalletablePassDetection_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isUserEligibleForWalletablePassDetection');
+        },
+      },
+
       /**
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
@@ -116,6 +125,7 @@ export class CollapsibleCardElement extends
   declare private expanded_: boolean;
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
+  declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =

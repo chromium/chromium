@@ -1658,6 +1658,8 @@ static_library("ui") {
       "//components/user_education/common",
       "//components/user_education/webui",
       "//components/vector_icons",
+      "//components/wallet/core/browser",
+      "//components/wallet/core/common:features",
       "//components/web_modal",
       "//components/webapps/isolated_web_apps",
       "//components/webauthn/content/browser",

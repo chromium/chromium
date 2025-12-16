@@ -71,6 +71,16 @@ export interface EntityDataManagerProxy {
    * eligible to opt into Autofill AI.
    */
   setOptInStatus(optedIn: boolean): Promise<boolean>;
+
+  /**
+   * Gets the opt-in status for walletable pass detection for the current user.
+   */
+  getWalletablePassDetectionOptInStatus(): Promise<boolean>;
+
+  /**
+   * Sets the opt-in status for walletable pass detection for the current user.
+   */
+  setWalletablePassDetectionOptInStatus(optedIn: boolean): Promise<boolean>;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -114,6 +124,15 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
 
   setOptInStatus(optedIn: boolean) {
     return chrome.autofillPrivate.setAutofillAiOptInStatus(optedIn);
+  }
+
+  getWalletablePassDetectionOptInStatus() {
+    return chrome.autofillPrivate.getWalletablePassDetectionOptInStatus();
+  }
+
+  setWalletablePassDetectionOptInStatus(optedIn: boolean) {
+    return chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
+        optedIn);
   }
 
   static getInstance() {

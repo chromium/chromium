@@ -183,6 +183,7 @@ build_webui_tests("build") {
     "test_util.ts",
     "travel_page_test.ts",
     "v8_page_test.ts",
+    "walletable_pass_detection_toggle_test.ts",
     "your_saved_info_account_test.ts",
     "your_saved_info_page_test.ts",
     "your_saved_info_page_index_test.ts",

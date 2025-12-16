@@ -729,6 +729,24 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR" desc="An error message if the user clicks Save without having filled at least one value in the form.">
     Fill at least one field before saving
   </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_LABEL" desc="Label for the toggle in Settings that allows managing the full page save settings for wallet.">
+    Save info to Google Wallet from pages you view
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_SUB_LABEL" desc="The sub-label of the page in Settings that allows managing the full page save settings for wallet.">
+    Access your passes, like event tickets and loyalty cards, from your device
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title for wallet.">
+    Wallet can offer to save info from pages you're viewing, like tickets you purchase
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_NOTIFICATIONS" desc="Bullet 2 of 2 that appears beneath the 'When on' title for wallet.">
+    Later, Wallet can send you notifications about your events
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title for wallet.">
+    To offer suggestions and improve this feature, the URL and full page content of the site you visit are shared with Google
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE" desc="Bullet 2 of 2 that appears beneath the 'Things to consider' title for wallet.">
+    Your info is available in Google Wallet on any signed-in device
+  </message>
 
   <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">

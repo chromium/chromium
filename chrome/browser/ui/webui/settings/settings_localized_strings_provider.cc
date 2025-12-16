@@ -98,6 +98,8 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "components/zoom/page_zoom_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -1626,7 +1628,19 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"homeAndWorkAddressRemovedMessage",
        IDS_SETTINGS_HOME_AND_WORK_ADDRESS_REMOVED_MESSAGE},
       {"nameEmailAddressRemovedMessage",
-       IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVED_MESSAGE}};
+       IDS_SETTINGS_NAME_EMAIL_ADDRESS_REMOVED_MESSAGE},
+      {"walletablePassDetectionToggleLabel",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_LABEL},
+      {"walletablePassDetectionToggleSubLabel",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_SUB_LABEL},
+      {"walletablePassDetectionWhenOnSavedInfo",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_SAVED_INFO},
+      {"walletablePassDetectionWhenOnNotifications",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_NOTIFICATIONS},
+      {"walletablePassDetectionToConsiderDataUsage",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_USAGE},
+      {"walletablePassDetectionToConsiderDataStorage",
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE}};
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
@@ -1757,6 +1771,14 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           IsWalletServerStorageEnabled());
   html_source->AddBoolean("AutofillAiIgnoresWhetherAddressFillingIsEnabled",
                           AutofillAiIgnoresWhetherAddressFillingIsEnabled());
+
+  html_source->AddBoolean(
+      "isUserEligibleForWalletablePassDetection",
+      autofill_client &&
+          wallet::IsEligibleForWalletablePassDetection(
+              autofill_client->GetIdentityManager(),
+              wallet::GeoIpCountryCode(
+                  autofill_client->GetVariationConfigCountryCode().value())));
 
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",

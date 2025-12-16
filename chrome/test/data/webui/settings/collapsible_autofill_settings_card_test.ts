@@ -363,4 +363,22 @@ suite('CollapsibleAutofillSettingsCard', function() {
     assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
     assertFalse(!!getLoggingBullet());
   });
+
+  test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const component = card.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertTrue(!!component);
+  });
+
+  test('WalletablePassDetectionToggleHiddenWhenNotEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: false});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const component = card.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertFalse(!!component);
+  });
 });
