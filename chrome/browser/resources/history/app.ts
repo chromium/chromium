@@ -44,7 +44,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
-import {HistoryPageViewHistogram, HistorySignInState, TabsSyncState} from './constants.js';
+import {HistoryPageViewHistogram, HistorySignInState, SyncState} from './constants.js';
 import type {ForeignSession, HistoryIdentityState} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
@@ -196,7 +196,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('isHistoryClustersVisible');
   protected accessor identityState_: HistoryIdentityState = {
     signIn: HistorySignInState.SIGNED_OUT,
-    tabsSync: TabsSyncState.TURNED_OFF,
+    tabsSync: SyncState.TURNED_OFF,
+    historySync: SyncState.TURNED_OFF,
   };
   protected accessor lastSelectedTab_: number =
       loadTimeData.getInteger('lastSelectedTab');
@@ -713,7 +714,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       case Page.SYNCED_TABS:
         histogramValue =
             this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
-                this.identityState_.tabsSync === TabsSyncState.TURNED_ON ?
+                this.identityState_.tabsSync === SyncState.TURNED_ON ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;

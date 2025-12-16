@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BrowserService, ForeignSession, HistoryIdentityState} from 'chrome://history/history.js';
-import {HistorySignInState, TabsSyncState} from 'chrome://history/history.js';
+import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {
   PageCallbackRouter,
   PageHandlerRemote,
@@ -47,7 +47,8 @@ export class TestBrowserService extends TestBrowserProxy implements
 
     this.initialIdentityState_ = {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     };
 
     this.handler.setResultFor('queryHistory', Promise.resolve({

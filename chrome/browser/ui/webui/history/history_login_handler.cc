@@ -121,6 +121,8 @@ base::Value::Dict HistoryLoginHandler::GetHistoryIdentityStateDict() {
       history_identity_state_watcher_->GetHistoryIdentityState();
   dict.Set("signIn", static_cast<int>(history_identity_state.sign_in));
   dict.Set("tabsSync", static_cast<int>(history_identity_state.tab_sync));
+  dict.Set("historySync",
+           static_cast<int>(history_identity_state.history_sync));
   return dict;
 }
 // LINT.ThenChange(/chrome/browser/resources/history/externs.ts:HistoryIdentityState)

@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistorySignInState, TabsSyncState} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -24,7 +24,8 @@ suite('<history-synced-device-manager>', function() {
     BrowserServiceImpl.setInstance(testService);
     testService.setInitialIdentityState({
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     element = document.createElement('history-synced-device-manager');
     element.searchTerm = '';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ForeignSession, HistorySyncedDeviceCardElement, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistorySignInState, TabsSyncState} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -48,7 +48,8 @@ suite('<history-synced-device-manager>', function() {
     BrowserServiceImpl.setInstance(testService);
     testService.setInitialIdentityState({
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
@@ -262,13 +263,15 @@ suite('<history-synced-device-manager>', function() {
   test('show sign in promo', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertFalse(element.$['sign-in-guide'].hidden);
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
@@ -280,7 +283,8 @@ suite('<history-synced-device-manager>', function() {
     // When user is not logged in, there is no synced tabs.
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     element.clearSyncedDevicesForTest();
     await microtasksFinished();
@@ -291,7 +295,8 @@ suite('<history-synced-device-manager>', function() {
 
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
 
     await microtasksFinished();
@@ -317,7 +322,8 @@ suite('<history-synced-device-manager>', function() {
 
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     // When user signs out, don't show the message.
@@ -331,7 +337,8 @@ suite('<history-synced-device-manager>', function() {
     });
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertTrue(element.$['sign-in-guide'].hidden);
@@ -340,7 +347,8 @@ suite('<history-synced-device-manager>', function() {
   test('hide sign-in promo if sign-in is disabled', async function() {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     element.configureSignInForTest({
       signInAllowed: false,
@@ -380,7 +388,8 @@ suite('<history-sync-optin>', function() {
     BrowserServiceImpl.setInstance(testService);
     testService.setInitialIdentityState({
       signIn: HistorySignInState.WEB_ONLY_SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
 
     // history-sync-optin elements are only shown when the
@@ -422,7 +431,8 @@ suite('<history-sync-optin>', function() {
   test('check elements in signed out state', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     // Should not be visible with kReplaceSyncPromosWithSignInPromos enabled.
@@ -442,7 +452,8 @@ suite('<history-sync-optin>', function() {
   test('check elements in pending signin without tabs sync state', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
 
@@ -464,7 +475,8 @@ suite('<history-sync-optin>', function() {
   test('check elements in pending signin with tabs sync state', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
 
@@ -484,7 +496,8 @@ suite('<history-sync-optin>', function() {
   test('check elements in SYNC_DISABLED sign in state', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.DISABLED,
+      tabsSync: SyncState.DISABLED,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
 
@@ -547,7 +560,8 @@ suite('<history-sync-optin>', function() {
       // different from WEB_ONLY_SIGN_IN
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     const button =
         element.shadowRoot.querySelector<HTMLElement>('#sync-history-button');
@@ -561,7 +575,8 @@ suite('<history-sync-optin>', function() {
     // The signin pending offered histogram is recorded once.
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: TabsSyncState.TURNED_OFF,
+      tabsSync: SyncState.TURNED_OFF,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
@@ -569,7 +584,8 @@ suite('<history-sync-optin>', function() {
     // Firing a sign in pending state again does not record again.
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
@@ -578,12 +594,14 @@ suite('<history-sync-optin>', function() {
     // histogram again.
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: TabsSyncState.TURNED_ON,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
 

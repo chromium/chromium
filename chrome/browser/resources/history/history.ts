@@ -20,7 +20,7 @@ export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {HistoryAppElement} from './app.js';
 export type {BrowserService, RemoveVisitsRequest} from './browser_service.js';
 export {BrowserServiceImpl} from './browser_service.js';
-export {HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, TabsSyncState, VisitContextMenuAction} from './constants.js';
+export {HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from './constants.js';
 export type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryIdentityState} from './externs.js';
 export {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
 export {HistoryItemElement} from './history_item.js';

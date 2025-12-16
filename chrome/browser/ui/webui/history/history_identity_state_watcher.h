@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace signin {
@@ -33,16 +34,17 @@ struct HistoryIdentityState {
   // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
 
   // This enum is used to differentiate all the relevant history-sync states.
-  // LINT.IfChange(HistoryIdentityState.TabsSync)
-  enum class TabsSync {
+  // LINT.IfChange(HistoryIdentityState.SyncState)
+  enum class SyncState {
     kTurnedOff = 0,
     kTurnedOn = 1,
     kDisabled = 2,
   };
-  // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:TabsSyncState)
+  // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:SyncState)
 
   SignIn sign_in = SignIn::kSignedOut;
-  TabsSync tab_sync = TabsSync::kTurnedOff;
+  SyncState tab_sync = SyncState::kTurnedOff;
+  SyncState history_sync = SyncState::kTurnedOff;
 
   bool operator==(const HistoryIdentityState& other) const = default;
 };
@@ -83,8 +85,9 @@ class HistoryIdentityStateWatcher : public syncer::SyncServiceObserver,
   // Returns the current history-related sign-in state.
   HistoryIdentityState::SignIn GetHistorySignInState() const;
 
-  // Returns the current history-related tabs sync state.
-  HistoryIdentityState::TabsSync GetHistoryTabsSyncState() const;
+  // Returns the sync state for a given type.
+  HistoryIdentityState::SyncState GetSyncStateForType(
+      syncer::UserSelectableType type) const;
 
   // Checks if the sign-in and tabs sync state has changed and runs the callback
   // if it has.
