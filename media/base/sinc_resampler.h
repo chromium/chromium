@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_span.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 
@@ -26,8 +25,8 @@ class MEDIA_EXPORT SincResampler {
   // perceptible audio quality (see crbug.com/1407622), but fallback to 32 in
   // cases where `request_frames_` is too small (e.g. 10ms of 8kHz audio).
   // Use SincResampler::KernelSize() to check which size is being used.
-  static constexpr size_t kMaxKernelSize = 64;
-  static constexpr size_t kMinKernelSize = 32;
+  static constexpr int kMaxKernelSize = 64;
+  static constexpr int kMinKernelSize = 32;
 
   // Default request size.  Affects how often and for how much SincResampler
   // calls back for input.  Must be greater than 1.5 * `kernel_size_`.
@@ -48,7 +47,7 @@ class MEDIA_EXPORT SincResampler {
   using ReadCB = base::RepeatingCallback<void(int frames, float* destination)>;
 
   // Returns the kernel size which will be used for a given `request_frames`.
-  static size_t KernelSizeFromRequestFrames(int request_frames);
+  static int KernelSizeFromRequestFrames(int request_frames);
 
   // Constructs a SincResampler with the specified |read_cb|, which is used to
   // acquire audio data for resampling.  |io_sample_rate_ratio| is the ratio
@@ -100,9 +99,11 @@ class MEDIA_EXPORT SincResampler {
 
   // Return the actual kernel size used by the resampler. Should be
   // kMaxKernelSize most of the time, but varies based on `request_frames_`;
-  size_t KernelSize() const;
+  int KernelSize() const;
 
-  base::span<const float> get_kernel_for_testing() { return kernel_storage_; }
+  float* get_kernel_for_testing() { return kernel_storage_.get(); }
+
+  int kernel_storage_size_for_testing() { return kernel_storage_size_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SincResamplerTest, Convolve);
@@ -117,23 +118,27 @@ class MEDIA_EXPORT SincResampler {
   // linearly interpolated using |kernel_interpolation_factor|.  On x86, the
   // underlying implementation is chosen at run time based on SSE support.  On
   // ARM, NEON support is chosen at compile time based on compilation flags.
-  static float Convolve_C(const base::span<const float>& input_ptr,
-                          const base::span<const float>& k1,
-                          const base::span<const float>& k2,
+  static float Convolve_C(const int kernel_size,
+                          const float* input_ptr,
+                          const float* k1,
+                          const float* k2,
                           double kernel_interpolation_factor);
 #if defined(ARCH_CPU_X86_FAMILY)
-  static float Convolve_SSE(const base::span<const float>& input_ptr,
-                            const base::span<const float>& k1,
-                            const base::span<const float>& k2,
+  static float Convolve_SSE(const int kernel_size,
+                            const float* input_ptr,
+                            const float* k1,
+                            const float* k2,
                             double kernel_interpolation_factor);
-  static float Convolve_AVX2(const base::span<const float>& input_ptr,
-                             const base::span<const float>& k1,
-                             const base::span<const float>& k2,
+  static float Convolve_AVX2(const int kernel_size,
+                             const float* input_ptr,
+                             const float* k1,
+                             const float* k2,
                              double kernel_interpolation_factor);
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-  static float Convolve_NEON(const base::span<const float>& input_ptr,
-                             const base::span<const float>& k1,
-                             const base::span<const float>& k2,
+  static float Convolve_NEON(const int kernel_size,
+                             const float* input_ptr,
+                             const float* k1,
+                             const float* k2,
                              double kernel_interpolation_factor);
 #endif
 
@@ -141,7 +146,8 @@ class MEDIA_EXPORT SincResampler {
   // using SincResampler.
   void InitializeCPUSpecificFeatures();
 
-  const size_t kernel_size_;
+  const int kernel_size_;
+  const int kernel_storage_size_;
 
   // The ratio of input / output sample rates.
   double io_sample_rate_ratio_;
@@ -157,42 +163,40 @@ class MEDIA_EXPORT SincResampler {
   const ReadCB read_cb_;
 
   // The size (in samples) to request from each |read_cb_| execution.
-  const size_t request_frames_;
+  const int request_frames_;
 
   // The number of source frames processed per pass.
-  size_t block_size_;
+  int block_size_;
 
   // Cached value used for ChunkSize().  The maximum size in frames that
   // guarantees Resample() will only ask for input at most once.
-  size_t chunk_size_;
+  int chunk_size_;
 
   // The size (in samples) of the internal buffer used by the resampler.
-  const size_t input_buffer_size_;
+  const int input_buffer_size_;
 
   // Contains kKernelOffsetCount kernels back-to-back, each of size
   // `kernel_size_`. The kernel offsets are sub-sample shifts of a windowed sinc
   // shifted from 0.0 to 1.0 sample.
-  base::AlignedHeapArray<float> kernel_storage_;
-  base::AlignedHeapArray<float> kernel_pre_sinc_storage_;
-  base::AlignedHeapArray<float> kernel_window_storage_;
+  std::unique_ptr<float[], base::AlignedFreeDeleter> kernel_storage_;
+  std::unique_ptr<float[], base::AlignedFreeDeleter> kernel_pre_sinc_storage_;
+  std::unique_ptr<float[], base::AlignedFreeDeleter> kernel_window_storage_;
 
   // Data from the source is copied into this buffer for each processing pass.
-  base::AlignedHeapArray<float> input_buffer_;
+  std::unique_ptr<float[], base::AlignedFreeDeleter> input_buffer_;
 
   // Stores the runtime selection of which Convolve function to use.
-  using ConvolveProc = float (*)(const base::span<const float>&,
-                                 const base::span<const float>&,
-                                 const base::span<const float>&,
-                                 double);
+  using ConvolveProc =
+      float (*)(const int, const float*, const float*, const float*, double);
   ConvolveProc convolve_proc_;
 
   // Pointers to the various regions inside |input_buffer_|.  See the diagram at
   // the top of the .cc file for more information.
-  base::raw_span<float> r0_;
-  const base::raw_span<float> r1_;
-  const base::raw_span<float> r2_;
-  base::raw_span<float> r3_;
-  base::raw_span<float> r4_;
+  raw_ptr<float, AllowPtrArithmetic> r0_;
+  const raw_ptr<float, AllowPtrArithmetic> r1_;
+  const raw_ptr<float, AllowPtrArithmetic> r2_;
+  raw_ptr<float, AllowPtrArithmetic> r3_;
+  raw_ptr<float, AllowPtrArithmetic> r4_;
 };
 
 }  // namespace media

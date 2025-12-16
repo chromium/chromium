@@ -74,19 +74,21 @@
 // Note: we're glossing over how the sub-sample handling works with
 // |virtual_source_idx_|, etc.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/sinc_resampler.h"
 
 #include <limits>
 #include <numbers>
-#include <numeric>
 
 #include "base/check_op.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
-#include "base/memory/aligned_memory.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 
@@ -103,11 +105,8 @@
 #endif
 
 namespace media {
-namespace {
-constexpr size_t kAlignment = 32;
-}
 
-static double SincScaleFactor(double io_ratio, size_t kernel_size) {
+static double SincScaleFactor(double io_ratio, int kernel_size) {
   // |sinc_scale_factor| is basically the normalized cutoff frequency of the
   // low-pass filter.
   double sinc_scale_factor = io_ratio > 1.0 ? 1.0 / io_ratio : 1.0;
@@ -152,7 +151,7 @@ static int CalculateChunkSize(int block_size_, double io_ratio) {
 }
 
 // Static
-size_t SincResampler::KernelSizeFromRequestFrames(int request_frames) {
+int SincResampler::KernelSizeFromRequestFrames(int request_frames) {
   // We want the kernel size to *more* than 1.5 * `request_frames`.
   constexpr int kSmallKernelLimit = kMaxKernelSize * 3 / 2;
   return request_frames <= kSmallKernelLimit ? kMinKernelSize : kMaxKernelSize;
@@ -162,24 +161,23 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
                              int request_frames,
                              const ReadCB read_cb)
     : kernel_size_(KernelSizeFromRequestFrames(request_frames)),
+      kernel_storage_size_(kernel_size_ * (kKernelOffsetCount + 1)),
       io_sample_rate_ratio_(io_sample_rate_ratio),
       read_cb_(std::move(read_cb)),
       request_frames_(request_frames),
       input_buffer_size_(request_frames_ + kernel_size_),
       // Create input buffers with a 32-byte alignment for SIMD optimizations.
-      kernel_storage_(
-          base::AlignedUninit<float>(kernel_size_ * (kKernelOffsetCount + 1),
-                                     kAlignment)),
-      kernel_pre_sinc_storage_(
-          base::AlignedUninit<float>(kernel_size_ * (kKernelOffsetCount + 1),
-                                     kAlignment)),
-      kernel_window_storage_(
-          base::AlignedUninit<float>(kernel_size_ * (kKernelOffsetCount + 1),
-                                     kAlignment)),
-      input_buffer_(base::AlignedUninit<float>(input_buffer_size_, kAlignment)),
-      r1_(input_buffer_),
-      r2_(input_buffer_.subspan(kernel_size_ / 2)) {
-  CHECK_GT(request_frames, static_cast<int>(kernel_size_) * 3 / 2)
+      kernel_storage_(static_cast<float*>(
+          base::AlignedAlloc(sizeof(float) * kernel_storage_size_, 32))),
+      kernel_pre_sinc_storage_(static_cast<float*>(
+          base::AlignedAlloc(sizeof(float) * kernel_storage_size_, 32))),
+      kernel_window_storage_(static_cast<float*>(
+          base::AlignedAlloc(sizeof(float) * kernel_storage_size_, 32))),
+      input_buffer_(static_cast<float*>(
+          base::AlignedAlloc(sizeof(float) * input_buffer_size_, 32))),
+      r1_(input_buffer_.get()),
+      r2_(input_buffer_.get() + kernel_size_ / 2) {
+  CHECK_GT(request_frames, kernel_size_ * 3 / 2)
       << "request_frames must be greater than 1.5 kernels to allow sufficient "
          "data for resampling";
   // This means that after the first call to Flush we will have
@@ -187,11 +185,15 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
 
   InitializeCPUSpecificFeatures();
   DCHECK(convolve_proc_);
+  CHECK_GT(request_frames_, 0);
   Flush();
 
-  std::ranges::fill(kernel_storage_, 0);
-  std::ranges::fill(kernel_pre_sinc_storage_, 0);
-  std::ranges::fill(kernel_pre_sinc_storage_, 0);
+  memset(kernel_storage_.get(), 0,
+         sizeof(*kernel_storage_.get()) * kernel_storage_size_);
+  memset(kernel_pre_sinc_storage_.get(), 0,
+         sizeof(*kernel_pre_sinc_storage_.get()) * kernel_storage_size_);
+  memset(kernel_window_storage_.get(), 0,
+         sizeof(*kernel_window_storage_.get()) * kernel_storage_size_);
 
   InitializeKernel();
 }
@@ -201,18 +203,18 @@ SincResampler::~SincResampler() = default;
 void SincResampler::UpdateRegions(bool second_load) {
   // Setup various region pointers in the buffer (see diagram above).  If we're
   // on the second load we need to slide r0_ to the right by kernel_size_ / 2.
-  r0_ = input_buffer_.subspan(second_load ? kernel_size_ : kernel_size_ / 2);
-  r3_ = r0_.subspan(request_frames_ - kernel_size_);
-  r4_ = r0_.subspan(request_frames_ - kernel_size_ / 2);
-  block_size_ = r4_.data() - r2_.data();
+  r0_ = input_buffer_.get() + (second_load ? kernel_size_ : kernel_size_ / 2);
+  r3_ = r0_ + request_frames_ - kernel_size_;
+  r4_ = r0_ + request_frames_ - kernel_size_ / 2;
+  block_size_ = r4_ - r2_;
   chunk_size_ = CalculateChunkSize(block_size_, io_sample_rate_ratio_);
 
   // r1_ at the beginning of the buffer.
-  CHECK_EQ(r1_.data(), input_buffer_.data());
+  CHECK_EQ(r1_, input_buffer_.get());
   // r1_ left of r2_, r4_ left of r3_ and size correct.
-  CHECK_EQ(r2_.data() - r1_.data(), r4_.data() - r3_.data());
+  CHECK_EQ(r2_ - r1_, r4_ - r3_);
   // r2_ left of r3.
-  CHECK_LT(r2_.data(), r3_.data());
+  CHECK_LT(r2_, r3_);
 }
 
 void SincResampler::InitializeKernel() {
@@ -229,17 +231,15 @@ void SincResampler::InitializeKernel() {
   for (int offset_idx = 0; offset_idx <= kKernelOffsetCount; ++offset_idx) {
     const float subsample_offset =
         static_cast<float>(offset_idx) / kKernelOffsetCount;
-    // The algorithm below, deals with negative values, we don't want implicit
-    // conversion to unsigned values.
-    const int signed_kernel_size = static_cast<int>(kernel_size_);
-    for (int i = 0; i < signed_kernel_size; ++i) {
+
+    for (int i = 0; i < kernel_size_; ++i) {
       const int idx = i + offset_idx * kernel_size_;
-      const float pre_sinc = std::numbers::pi_v<float> *
-                             (i - signed_kernel_size / 2 - subsample_offset);
+      const float pre_sinc =
+          std::numbers::pi_v<float> * (i - kernel_size_ / 2 - subsample_offset);
       kernel_pre_sinc_storage_[idx] = pre_sinc;
 
       // Compute Blackman window, matching the offset of the sinc().
-      const float x = (i - subsample_offset) / signed_kernel_size;
+      const float x = (i - subsample_offset) / kernel_size_;
       const float window =
           static_cast<float>(kA0 - kA1 * cos(2.0 * std::numbers::pi * x) +
                              kA2 * cos(4.0 * std::numbers::pi * x));
@@ -268,7 +268,7 @@ void SincResampler::SetRatio(double io_sample_rate_ratio) {
   const double sinc_scale_factor =
       SincScaleFactor(io_sample_rate_ratio_, kernel_size_);
   for (int offset_idx = 0; offset_idx <= kKernelOffsetCount; ++offset_idx) {
-    for (size_t i = 0; i < kernel_size_; ++i) {
+    for (int i = 0; i < kernel_size_; ++i) {
       const int idx = i + offset_idx * kernel_size_;
       const float window = kernel_window_storage_[idx];
       const float pre_sinc = kernel_pre_sinc_storage_[idx];
@@ -287,7 +287,7 @@ void SincResampler::Resample(base::span<float> destination) {
 
   // Step (1) -- Prime the input buffer at the start of the input stream.
   if (!buffer_primed_ && remaining_frames) {
-    read_cb_.Run(request_frames_, r0_.data());
+    read_cb_.Run(request_frames_, r0_.get());
     buffer_primed_ = true;
   }
 
@@ -302,33 +302,29 @@ void SincResampler::Resample(base::span<float> destination) {
       while (virtual_source_idx_ < block_size_) {
         // |virtual_source_idx_| lies in between two kernel offsets so figure
         // out what they are.
-        const size_t source_idx = static_cast<size_t>(virtual_source_idx_);
+        const int source_idx = static_cast<int>(virtual_source_idx_);
         const double virtual_offset_idx =
             (virtual_source_idx_ - source_idx) * kKernelOffsetCount;
         const int offset_idx = static_cast<int>(virtual_offset_idx);
 
         // We'll compute "convolutions" for the two kernels which straddle
         // |virtual_source_idx_|.
-        const size_t starting_idx = offset_idx * kernel_size_;
-        const base::span<float> k1 =
-            kernel_storage_.subspan(starting_idx, kernel_size_);
-        const base::span<float> k2 =
-            kernel_storage_.subspan(starting_idx + kernel_size_, kernel_size_);
+        const float* k1 = kernel_storage_.get() + offset_idx * kernel_size_;
+        const float* k2 = k1 + kernel_size_;
 
         // Ensure |k1|, |k2| are 32-byte aligned for SIMD usage.  Should always
         // be true so long as `kernel_size_` is a multiple of 32.
-        DCHECK(base::IsAligned(k1.data(), kAlignment));
-        DCHECK(base::IsAligned(k2.data(), kAlignment));
+        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k1) & 0x1F);
+        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k2) & 0x1F);
 
         // Initialize input pointer based on quantized |virtual_source_idx_|.
-        const base::span<float> input_span =
-            r1_.subspan(source_idx, kernel_size_);
+        const float* input_ptr = r1_ + source_idx;
 
         // Figure out how much to weight each kernel's "convolution".
         const double kernel_interpolation_factor =
             virtual_offset_idx - offset_idx;
-        *dest_iter++ =
-            convolve_proc_(input_span, k1, k2, kernel_interpolation_factor);
+        *dest_iter++ = convolve_proc_(
+            kernel_size_, input_ptr, k1, k2, kernel_interpolation_factor);
 
         // Advance the virtual index.
         virtual_source_idx_ += io_sample_rate_ratio_;
@@ -344,7 +340,7 @@ void SincResampler::Resample(base::span<float> destination) {
 
     // Step (3) -- Copy r3_, r4_ to r1_, r2_.
     // This wraps the last input frames back to the start of the buffer.
-    r1_.first(kernel_size_).copy_from_nonoverlapping(r3_.first(kernel_size_));
+    memcpy(r1_, r3_, sizeof(*input_buffer_.get()) * kernel_size_);
 
     // Step (4) -- Reinitialize regions if necessary.
     if (r0_ == r2_) {
@@ -352,7 +348,7 @@ void SincResampler::Resample(base::span<float> destination) {
     }
 
     // Step (5) -- Refresh the buffer with more input.
-    read_cb_.Run(request_frames_, r0_.data());
+    read_cb_.Run(request_frames_, r0_.get());
   }
 }
 
@@ -367,7 +363,8 @@ void SincResampler::PrimeWithSilence() {
 void SincResampler::Flush() {
   virtual_source_idx_ = 0;
   buffer_primed_ = false;
-  std::ranges::fill(input_buffer_, 0);
+  memset(input_buffer_.get(), 0,
+         sizeof(*input_buffer_.get()) * input_buffer_size_);
   UpdateRegions(false);
 }
 
@@ -383,23 +380,24 @@ double SincResampler::BufferedFrames() const {
   return buffer_primed_ ? request_frames_ - virtual_source_idx_ : 0;
 }
 
-size_t SincResampler::KernelSize() const {
+int SincResampler::KernelSize() const {
   return kernel_size_;
 }
 
-float SincResampler::Convolve_C(const base::span<const float>& input_span,
-                                const base::span<const float>& k1,
-                                const base::span<const float>& k2,
+float SincResampler::Convolve_C(const int kernel_size,
+                                const float* input_ptr,
+                                const float* k1,
+                                const float* k2,
                                 double kernel_interpolation_factor) {
-  CHECK_EQ(k1.size(), input_span.size());
-  CHECK_EQ(k2.size(), input_span.size());
-  // Generate a single output sample.  Unrolling this loop hurt performance in
-  // local testing.
   float sum1 = 0;
   float sum2 = 0;
-  for (size_t i = 0; i < input_span.size(); ++i) {
-    sum1 += input_span[i] * k1[i];
-    sum2 += input_span[i] * k2[i];
+
+  // Generate a single output sample.  Unrolling this loop hurt performance in
+  // local testing.
+  int n = kernel_size;
+  while (n--) {
+    sum1 += *input_ptr * *k1++;
+    sum2 += *input_ptr++ * *k2++;
   }
 
   // Linearly interpolate the two "convolutions".
@@ -408,29 +406,28 @@ float SincResampler::Convolve_C(const base::span<const float>& input_span,
 }
 
 #if defined(ARCH_CPU_X86_FAMILY)
-float SincResampler::Convolve_SSE(const base::span<const float>& input_span,
-                                  const base::span<const float>& k1,
-                                  const base::span<const float>& k2,
+float SincResampler::Convolve_SSE(const int kernel_size,
+                                  const float* input_ptr,
+                                  const float* k1,
+                                  const float* k2,
                                   double kernel_interpolation_factor) {
-  CHECK_EQ(k1.size(), input_span.size());
-  CHECK_EQ(k2.size(), input_span.size());
   __m128 m_input;
   __m128 m_sums1 = _mm_setzero_ps();
   __m128 m_sums2 = _mm_setzero_ps();
 
-  // Based on |input_span| alignment, we need to use loadu or load.  Unrolling
+  // Based on |input_ptr| alignment, we need to use loadu or load.  Unrolling
   // these loops hurt performance in local testing.
-  if (base::IsAligned(input_span.data(), 16)) {
-    for (size_t i = 0; i < input_span.size(); i += 4) {
-      m_input = _mm_load_ps(&input_span[i]);
-      m_sums1 = _mm_add_ps(m_sums1, _mm_mul_ps(m_input, _mm_load_ps(&k1[i])));
-      m_sums2 = _mm_add_ps(m_sums2, _mm_mul_ps(m_input, _mm_load_ps(&k2[i])));
+  if (reinterpret_cast<uintptr_t>(input_ptr) & 0x0F) {
+    for (int i = 0; i < kernel_size; i += 4) {
+      m_input = _mm_loadu_ps(input_ptr + i);
+      m_sums1 = _mm_add_ps(m_sums1, _mm_mul_ps(m_input, _mm_load_ps(k1 + i)));
+      m_sums2 = _mm_add_ps(m_sums2, _mm_mul_ps(m_input, _mm_load_ps(k2 + i)));
     }
   } else {
-    for (size_t i = 0; i < input_span.size(); i += 4) {
-      m_input = _mm_loadu_ps(&input_span[i]);
-      m_sums1 = _mm_add_ps(m_sums1, _mm_mul_ps(m_input, _mm_load_ps(&k1[i])));
-      m_sums2 = _mm_add_ps(m_sums2, _mm_mul_ps(m_input, _mm_load_ps(&k2[i])));
+    for (int i = 0; i < kernel_size; i += 4) {
+      m_input = _mm_load_ps(input_ptr + i);
+      m_sums1 = _mm_add_ps(m_sums1, _mm_mul_ps(m_input, _mm_load_ps(k1 + i)));
+      m_sums2 = _mm_add_ps(m_sums2, _mm_mul_ps(m_input, _mm_load_ps(k2 + i)));
     }
   }
 
@@ -452,29 +449,29 @@ float SincResampler::Convolve_SSE(const base::span<const float>& input_span,
 }
 
 __attribute__((target("avx2,fma"))) float SincResampler::Convolve_AVX2(
-    const base::span<const float>& input_span,
-    const base::span<const float>& k1,
-    const base::span<const float>& k2,
+    const int kernel_size,
+    const float* input_ptr,
+    const float* k1,
+    const float* k2,
     double kernel_interpolation_factor) {
-  CHECK_EQ(k1.size(), input_span.size());
-  CHECK_EQ(k2.size(), input_span.size());
   __m256 m_input;
   __m256 m_sums1 = _mm256_setzero_ps();
   __m256 m_sums2 = _mm256_setzero_ps();
 
-  // Based on |input_span| alignment, we need to use loadu or load.  Unrolling
+  // Based on |input_ptr| alignment, we need to use loadu or load.  Unrolling
   // these loops has not been tested or benchmarked.
-  if (base::IsAligned(input_span.data(), 32)) {
-    for (size_t i = 0; i < input_span.size(); i += 8) {
-      m_input = _mm256_load_ps(&input_span[i]);
-      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(&k1[i]), m_sums1);
-      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(&k2[i]), m_sums2);
+  bool aligned_input = (reinterpret_cast<uintptr_t>(input_ptr) & 0x1F) == 0;
+  if (!aligned_input) {
+    for (size_t i = 0; i < static_cast<size_t>(kernel_size); i += 8) {
+      m_input = _mm256_loadu_ps(input_ptr + i);
+      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k1 + i), m_sums1);
+      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k2 + i), m_sums2);
     }
   } else {
-    for (size_t i = 0; i < input_span.size(); i += 8) {
-      m_input = _mm256_loadu_ps(&input_span[i]);
-      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(&k1[i]), m_sums1);
-      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(&k2[i]), m_sums2);
+    for (size_t i = 0; i < static_cast<size_t>(kernel_size); i += 8) {
+      m_input = _mm256_load_ps(input_ptr + i);
+      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k1 + i), m_sums1);
+      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k2 + i), m_sums2);
     }
   }
 
@@ -499,20 +496,23 @@ __attribute__((target("avx2,fma"))) float SincResampler::Convolve_AVX2(
   return result;
 }
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-float SincResampler::Convolve_NEON(const base::span<const float>& input_span,
-                                   const base::span<const float>& k1,
-                                   const base::span<const float>& k2,
+float SincResampler::Convolve_NEON(const int kernel_size,
+                                   const float* input_ptr,
+                                   const float* k1,
+                                   const float* k2,
                                    double kernel_interpolation_factor) {
-  CHECK_EQ(k1.size(), input_span.size());
-  CHECK_EQ(k2.size(), input_span.size());
   float32x4_t m_input;
   float32x4_t m_sums1 = vmovq_n_f32(0);
   float32x4_t m_sums2 = vmovq_n_f32(0);
 
-  for (size_t i = 0; i < input_span.size(); i += 4) {
-    m_input = vld1q_f32(&input_span[i]);
-    m_sums1 = vmlaq_f32(m_sums1, m_input, vld1q_f32(&k1[i]));
-    m_sums2 = vmlaq_f32(m_sums2, m_input, vld1q_f32(&k2[i]));
+  const float* upper = input_ptr + kernel_size;
+  for (; input_ptr < upper;) {
+    m_input = vld1q_f32(input_ptr);
+    input_ptr += 4;
+    m_sums1 = vmlaq_f32(m_sums1, m_input, vld1q_f32(k1));
+    k1 += 4;
+    m_sums2 = vmlaq_f32(m_sums2, m_input, vld1q_f32(k2));
+    k2 += 4;
   }
 
   // Linearly interpolate the two "convolutions".

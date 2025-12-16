@@ -8,6 +8,7 @@
 #include <numbers>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -167,24 +168,28 @@ TEST(SincResamplerTest, Convolve) {
   // The optimized Convolve methods are slightly more precise than Convolve_C(),
   // so comparison must be done using an epsilon.
   static const double kEpsilon = 0.00000005;
-  size_t kernel_size = resampler.KernelSize();
-  auto kernel = resampler.get_kernel_for_testing().first(kernel_size);
-  auto kernel_unaligned =
-      resampler.get_kernel_for_testing().subspan(1u, kernel_size);
 
   // Use a kernel from SincResampler as input and kernel data, this has the
   // benefit of already being properly sized and aligned for Convolve_SSE().
-  double result =
-      resampler.Convolve_C(kernel, kernel, kernel, kKernelInterpolationFactor);
-  double result2 = resampler.convolve_proc_(kernel, kernel, kernel,
-                                            kKernelInterpolationFactor);
+  double result = resampler.Convolve_C(
+      resampler.KernelSize(), resampler.kernel_storage_.get(),
+      resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
+      kKernelInterpolationFactor);
+  double result2 = resampler.convolve_proc_(
+      resampler.KernelSize(), resampler.kernel_storage_.get(),
+      resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
+      kKernelInterpolationFactor);
   EXPECT_NEAR(result2, result, kEpsilon);
 
   // Test Convolve() w/ unaligned input pointer.
-  result = resampler.Convolve_C(kernel_unaligned, kernel, kernel,
-                                kKernelInterpolationFactor);
-  result2 = resampler.convolve_proc_(kernel_unaligned, kernel, kernel,
-                                     kKernelInterpolationFactor);
+  result = resampler.Convolve_C(
+      resampler.KernelSize(), UNSAFE_TODO(resampler.kernel_storage_.get() + 1),
+      resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
+      kKernelInterpolationFactor);
+  result2 = resampler.convolve_proc_(
+      resampler.KernelSize(), UNSAFE_TODO(resampler.kernel_storage_.get() + 1),
+      resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
+      kKernelInterpolationFactor);
   EXPECT_NEAR(result2, result, kEpsilon);
 }
 
@@ -282,15 +287,22 @@ TEST_P(SincResamplerTest, Resample) {
       base::BindRepeating(&SinusoidalLinearChirpSource::ProvideInput,
                           base::Unretained(&resampler_source)));
 
+  const int kernel_storage_size = resampler.kernel_storage_size_for_testing();
+  const int kernel_storage_size_in_bytes = kernel_storage_size * sizeof(float);
 
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
-  auto kernel =
-      base::HeapArray<float>::CopiedFrom(resampler.get_kernel_for_testing());
+  auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
+  UNSAFE_TODO(memcpy(kernel.data(), resampler.get_kernel_for_testing(),
+                     kernel_storage_size_in_bytes));
   resampler.SetRatio(std::numbers::pi);
-  ASSERT_NE(kernel, resampler.get_kernel_for_testing());
+  UNSAFE_TODO(
+      ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                          kernel_storage_size_in_bytes)));
   resampler.SetRatio(io_ratio);
-  ASSERT_EQ(kernel, resampler.get_kernel_for_testing());
+  UNSAFE_TODO(
+      ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                          kernel_storage_size_in_bytes)));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.
@@ -372,14 +384,22 @@ TEST_P(SincResamplerTest, Resample_SmallKernel) {
 
   EXPECT_EQ(resampler.KernelSize(), SincResampler::kMinKernelSize);
 
+  const int kernel_storage_size = resampler.kernel_storage_size_for_testing();
+  const int kernel_storage_size_in_bytes = kernel_storage_size * sizeof(float);
+
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
-  auto kernel =
-      base::HeapArray<float>::CopiedFrom(resampler.get_kernel_for_testing());
+  auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
+  UNSAFE_TODO(memcpy(kernel.data(), resampler.get_kernel_for_testing(),
+                     kernel_storage_size_in_bytes));
   resampler.SetRatio(std::numbers::pi);
-  ASSERT_NE(kernel, resampler.get_kernel_for_testing());
+  UNSAFE_TODO(
+      ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                          kernel_storage_size_in_bytes)));
   resampler.SetRatio(io_ratio);
-  ASSERT_EQ(kernel, resampler.get_kernel_for_testing());
+  UNSAFE_TODO(
+      ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                          kernel_storage_size_in_bytes)));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.
