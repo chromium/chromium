@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -106,8 +105,7 @@ class PrivacyTableViewControllerTest
             static_cast<int>(IncognitoModeAvailability())));
 
     feature_list_.InitWithFeatureStates(
-        {{kPrivacyGuideIos, YES},
-         {kIOSSoftLock, SoftLockEnabled()},
+        {{kIOSSoftLock, SoftLockEnabled()},
          {safe_browsing::kMovePasswordLeakDetectionToggleIos,
           PasswordLeakCheckMoveEnabled()}});
   }
@@ -174,7 +172,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 8;
+  int expectedNumberOfSections = 7;
   if (PasswordLeakCheckMoveEnabled()) {
     expectedNumberOfSections += 1;
   }
@@ -186,13 +184,6 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil,
       currentSection, 0);
-
-  // PrivacyGuide section.
-  currentSection++;
-  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_GUIDE_TITLE), nil, currentSection,
-      0);
 
   // SafeBrowsing section.
   currentSection++;
@@ -288,7 +279,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterSignedOut) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 8;
+  int expectedNumberOfSections = 7;
   if (PasswordLeakCheckMoveEnabled()) {
     expectedNumberOfSections += 1;
   }

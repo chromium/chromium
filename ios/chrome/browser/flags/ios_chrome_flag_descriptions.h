@@ -840,9 +840,6 @@ extern const char kPhoneNumberDescription[];
 extern const char kPriceTrackingPromoName[];
 extern const char kPriceTrackingPromoDescription[];
 
-extern const char kPrivacyGuideIosName[];
-extern const char kPrivacyGuideIosDescription[];
-
 extern const char kProactiveSuggestionsFrameworkName[];
 extern const char kProactiveSuggestionsFrameworkDescription[];
 

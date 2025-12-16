@@ -117,7 +117,6 @@
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -1871,9 +1870,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableASWebAuthenticationSessionDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kEnableASWebAuthenticationSession)},
-    {"privacy-guide-ios", flag_descriptions::kPrivacyGuideIosName,
-     flag_descriptions::kPrivacyGuideIosDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPrivacyGuideIos)},
     {"autofill-payments-field-swapping",
      flag_descriptions::kAutofillPaymentsFieldSwappingName,
      flag_descriptions::kAutofillPaymentsFieldSwappingDescription,

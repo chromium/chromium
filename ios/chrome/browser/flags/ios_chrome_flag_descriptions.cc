@@ -1403,11 +1403,6 @@ const char kPriceTrackingPromoName[] =
 const char kPriceTrackingPromoDescription[] =
     "Enables being able to show the card in the Magic Stack";
 
-const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
-const char kPrivacyGuideIosDescription[] =
-    "Shows a new subpage in Settings that helps the user to review various "
-    "privacy settings.";
-
 const char kProactiveSuggestionsFrameworkName[] =
     "Proactive Suggestions Framework";
 const char kProactiveSuggestionsFrameworkDescription[] =

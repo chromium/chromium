@@ -207,9 +207,6 @@ extern NSString* const kSettingsMoveInactiveTabsCellId;
 // devices settings cell.
 extern NSString* const kSettingsAutomaticallyOpenTabGroupsCellId;
 
-// The accessibility identifier of the Privacy Guide settings cell.
-extern NSString* const kSettingsPrivacyGuideCellId;
-
 // The accessibility identifier of the Detect Units cell.
 extern NSString* const kSettingsDetectUnitsCellId;
 

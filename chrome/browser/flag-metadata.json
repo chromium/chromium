@@ -8523,14 +8523,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "privacy-guide-ios",
-    "owners": [
-      "arabm@google.com",
-      "chrome-privacy-controls@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "privacy-guide-preload-android",
     "owners": [
       "msramek@chromium.org",
