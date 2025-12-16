@@ -86,6 +86,11 @@ using base::UserMetricsAction;
 
   /// The context in which the omnibox is presented.
   OmniboxPresentationContext _presentationContext;
+
+  /// Leading icon from autocomplete.
+  UIImage* _autocompleteLeadingIcon;
+  /// Accessibility identifier for the `_autocompleteLeadingIcon`.
+  NSString* _autocompleteLeadingIconAccessibilityIdentifier;
 }
 
 @dynamic view;
@@ -446,8 +451,9 @@ using base::UserMetricsAction;
 
 - (void)updateAutocompleteIcon:(UIImage*)icon
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  [self.view setLeadingImage:icon
-      withAccessibilityIdentifier:accessibilityIdentifier];
+  _autocompleteLeadingIcon = icon;
+  _autocompleteLeadingIconAccessibilityIdentifier = accessibilityIdentifier;
+  [self updateLeadingImage];
 }
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
   self.searchByImageEnabled = searchByImageSupported;
@@ -508,6 +514,14 @@ using base::UserMetricsAction;
 #pragma mark - private
 
 - (void)updateLeadingImage {
+  // If autocomplete provides an icon, use this one.
+  if (_autocompleteLeadingIcon) {
+    [self.view setLeadingImage:_autocompleteLeadingIcon
+        withAccessibilityIdentifier:
+            _autocompleteLeadingIconAccessibilityIdentifier];
+    return;
+  }
+
   UIImage* image = self.textInput.text.length ? self.defaultLeadingImage
                                               : self.emptyTextLeadingImage;
   NSString* accessibilityID =
@@ -516,6 +530,11 @@ using base::UserMetricsAction;
           : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 
   [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
+}
+
+- (void)clearAutocompleteIcon {
+  _autocompleteLeadingIcon = nil;
+  _autocompleteLeadingIconAccessibilityIdentifier = nil;
 }
 
 - (BOOL)shouldUseLensInMenu {
@@ -590,6 +609,7 @@ using base::UserMetricsAction;
 - (void)clearButtonPressed {
   [self.mutator clearText];
   [self updateClearButtonVisibility];
+  [self clearAutocompleteIcon];
   [self updateLeadingImage];
 }
 
