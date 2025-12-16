@@ -180,7 +180,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "composeboxShowContextMenu",
       contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
-  source->AddBoolean("composeboxShowContextMenuDescription", true);
+  source->AddBoolean("composeboxShowContextMenuDescription", false);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
 

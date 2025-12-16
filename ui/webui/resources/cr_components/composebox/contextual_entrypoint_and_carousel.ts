@@ -178,8 +178,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor inputsDisabled_: boolean = false;
   protected accessor composeboxShowPdfUpload_: boolean =
       loadTimeData.getBoolean('composeboxShowPdfUpload');
-  protected accessor showContextMenuDescription_: boolean =
+  protected contextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
+  protected accessor showContextMenuDescription_: boolean =
+      this.contextMenuDescriptionEnabled_;
   protected accessor showRecentTabChip_: boolean =
       loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor showFileCarousel_: boolean = false;
@@ -363,14 +365,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.inputsDisabled_ = false;
       this.fire(
           'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
-      this.showContextMenuDescription_ = true;
+      this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
     } else if (this.inCreateImageMode_) {
       this.inCreateImageMode_ = false;
       this.fire('set-create-image-mode', {
         inCreateImageMode: this.inCreateImageMode_,
         imagePresent: this.hasImageFiles(),
       });
-      this.showContextMenuDescription_ = true;
+      this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
     }
   }
 
@@ -571,7 +573,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private isFileAllowed_(file: File, acceptedFileTypes: string): boolean {
-    // TODO(crbug.com/466876679):refractor isFileAllowed_ to use pre-split string arrays
+    // TODO(crbug.com/466876679):refractor isFileAllowed_ to use pre-split
+    // string arrays
     const fileType = file.type.toLowerCase();
     const allowedTypes = acceptedFileTypes.split(',');
     return allowedTypes.some(type => {
@@ -696,7 +699,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected onDeepSearchClick_() {
     if (this.entrypointName !== 'Realbox') {
-      this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      if (this.contextMenuDescriptionEnabled_) {
+        this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      }
       this.inputsDisabled_ = !this.inputsDisabled_;
       this.inDeepSearchMode_ = !this.inDeepSearchMode_;
     }
@@ -706,7 +711,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected onCreateImageClick_() {
     if (this.entrypointName !== 'Realbox') {
-      this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      if (this.contextMenuDescriptionEnabled_) {
+        this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+      }
       this.inCreateImageMode_ = !this.inCreateImageMode_;
       if (this.hasImageFiles()) {
         this.inputsDisabled_ = !this.inputsDisabled_;
