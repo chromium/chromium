@@ -4294,12 +4294,6 @@ inline constexpr char kTpcdMetadataGrantsDescription[] =
     "Provides a control for enabling/disabling Third-Party Cookie Deprecation "
     "Metadata Grants (WRT its default state) for testing.";
 
-inline constexpr char kTrackingProtection3pcdName[] =
-    "Tracking Protection for 3PCD";
-inline constexpr char kTrackingProtection3pcdDescription[] =
-    "Enables the tracking protection UI + prefs that will be used for the 3PCD "
-    "1%.";
-
 inline constexpr char kUndoMigrationOfSyncingUserToSignedInName[] =
     "Undo the migration of syncing users to signed-in state";
 inline constexpr char kUndoMigrationOfSyncingUserToSignedInDescription[] =
