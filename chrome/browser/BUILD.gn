@@ -4251,12 +4251,12 @@ static_library("browser") {
     ]
 
     sources += [
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_delegate.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_delegate.h",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.cc",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_delegate.cc",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_delegate.h",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.cc",
+      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h",
     ]
 
     #!is_android

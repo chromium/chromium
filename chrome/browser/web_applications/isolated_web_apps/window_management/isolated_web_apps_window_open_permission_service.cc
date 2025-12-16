@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h"
 
 #include <algorithm>
 #include <memory>
@@ -24,7 +24,7 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_delegate.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_delegate.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -46,8 +46,8 @@ namespace {
 constexpr int kMaxNotificationShowCount = 3;
 
 constexpr std::string_view
-    kIsolatedWebAppsOpenedTabsCounterNotificationPattern =
-        "isolated_web_apps_opened_tabs_counter_notification_%s";
+    kIsolatedWebAppsWindowOpenPermissionNotificationPattern =
+        "isolated_web_apps_window_open_permission_notification_%s";
 
 std::string GetAppName(Profile* profile, const webapps::AppId& app_id) {
   return web_app::WebAppProvider::GetForWebApps(profile)
@@ -57,7 +57,7 @@ std::string GetAppName(Profile* profile, const webapps::AppId& app_id) {
 
 std::string GetNotificationIdForApp(const webapps::AppId& app_id) {
   return base::StringPrintf(
-      kIsolatedWebAppsOpenedTabsCounterNotificationPattern, app_id);
+      kIsolatedWebAppsWindowOpenPermissionNotificationPattern, app_id);
 }
 
 }  // namespace
@@ -83,27 +83,26 @@ bool ShouldShowNotificationForWindowOpen(const web_app::WebApp& web_app) {
   return true;
 }
 
-IsolatedWebAppsOpenedTabsCounterService::
-    IsolatedWebAppsOpenedTabsCounterService(Profile* profile)
+IsolatedWebAppsWindowOpenPermissionService::
+    IsolatedWebAppsWindowOpenPermissionService(Profile* profile)
     : profile_(*profile),
       provider_(web_app::WebAppProvider::GetForWebApps(profile)) {
   provider()->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(
-          &IsolatedWebAppsOpenedTabsCounterService::RetrieveNotificationStates,
-          weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&IsolatedWebAppsWindowOpenPermissionService::
+                                    RetrieveNotificationStates,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::RetrieveNotificationStates() {
+void IsolatedWebAppsWindowOpenPermissionService::RetrieveNotificationStates() {
   provider()->scheduler().ScheduleCallback(
       "RetrieveIwaNotificationStates", web_app::AllAppsLockDescription(),
-      base::BindOnce(&IsolatedWebAppsOpenedTabsCounterService::
+      base::BindOnce(&IsolatedWebAppsWindowOpenPermissionService::
                          OnAllAppsLockAcquiredForStateRetrieval,
                      weak_ptr_factory_.GetWeakPtr()),
       /*on_complete=*/base::DoNothing());
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::
+void IsolatedWebAppsWindowOpenPermissionService::
     OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
                                            base::Value::Dict& debug_value) {
   for (const WebApp& web_app :
@@ -116,10 +115,10 @@ void IsolatedWebAppsOpenedTabsCounterService::
   }
 }
 
-IsolatedWebAppsOpenedTabsCounterService::
-    ~IsolatedWebAppsOpenedTabsCounterService() = default;
+IsolatedWebAppsWindowOpenPermissionService::
+    ~IsolatedWebAppsWindowOpenPermissionService() = default;
 
-void IsolatedWebAppsOpenedTabsCounterService::Shutdown() {
+void IsolatedWebAppsWindowOpenPermissionService::Shutdown() {
   std::vector<webapps::AppId> app_ids_to_close(
       apps_with_active_notifications_.begin(),
       apps_with_active_notifications_.end());
@@ -133,7 +132,7 @@ void IsolatedWebAppsOpenedTabsCounterService::Shutdown() {
   CHECK(apps_with_active_notifications_.empty());
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::OnWebContentsCreated(
+void IsolatedWebAppsWindowOpenPermissionService::OnWebContentsCreated(
     const webapps::AppId& opener_app_id) {
   const web_app::WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(opener_app_id);
@@ -177,7 +176,7 @@ void IsolatedWebAppsOpenedTabsCounterService::OnWebContentsCreated(
   CreateAndDisplayNotification(opener_app_id);
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::OnNotificationAcknowledged(
+void IsolatedWebAppsWindowOpenPermissionService::OnNotificationAcknowledged(
     const webapps::AppId& app_id) {
   auto it = notification_states_cache_.find(app_id);
   int times_shown =
@@ -190,7 +189,7 @@ void IsolatedWebAppsOpenedTabsCounterService::OnNotificationAcknowledged(
   CloseNotification(app_id);
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
+void IsolatedWebAppsWindowOpenPermissionService::CreateAndDisplayNotification(
     const webapps::AppId& app_id) {
   std::string app_name = GetAppName(profile(), app_id);
   std::u16string title = l10n_util::GetStringFUTF16(
@@ -204,13 +203,13 @@ void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
   rich_data.buttons.push_back(content_settings_button_info);
 
   scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<IsolatedWebAppsOpenedTabsCounterServiceDelegate>(
+      base::MakeRefCounted<IsolatedWebAppsWindowOpenPermissionServiceDelegate>(
           profile(), app_id,
-          base::BindRepeating(&IsolatedWebAppsOpenedTabsCounterService::
+          base::BindRepeating(&IsolatedWebAppsWindowOpenPermissionService::
                                   OnNotificationAcknowledged,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(
-              &IsolatedWebAppsOpenedTabsCounterService::CloseNotification,
+              &IsolatedWebAppsWindowOpenPermissionService::CloseNotification,
               weak_ptr_factory_.GetWeakPtr()));
 
   message_center::Notification notification(
@@ -230,12 +229,12 @@ void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
       /*metadata=*/nullptr);
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::PersistNotificationState(
+void IsolatedWebAppsWindowOpenPermissionService::PersistNotificationState(
     const webapps::AppId& app_id,
     const web_app::IsolationData::OpenedTabsCounterNotificationState&
         current_notification_state) {
   provider()->scheduler().ScheduleCallback(
-      "IsolatedWebAppsOpenedTabsCounterService::PersistNotificationState",
+      "IsolatedWebAppsWindowOpenPermissionService::PersistNotificationState",
       web_app::AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id,
@@ -259,7 +258,7 @@ void IsolatedWebAppsOpenedTabsCounterService::PersistNotificationState(
       base::DoNothing());
 }
 
-void IsolatedWebAppsOpenedTabsCounterService::CloseNotification(
+void IsolatedWebAppsWindowOpenPermissionService::CloseNotification(
     const webapps::AppId& app_id) {
   apps_with_active_notifications_.erase(app_id);
 
