@@ -1453,9 +1453,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAdditiveSymbols:
     case CSSPropertyID::kAscentOverride:
     case CSSPropertyID::kBasePalette:
+    case CSSPropertyID::kBaseUrl:
     case CSSPropertyID::kDescentOverride:
     case CSSPropertyID::kFallback:
     case CSSPropertyID::kFontDisplay:
+    case CSSPropertyID::kHash:
+    case CSSPropertyID::kHostname:
     case CSSPropertyID::kInherits:
     case CSSPropertyID::kInitialValue:
     case CSSPropertyID::kLineGapOverride:
@@ -1463,9 +1466,14 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kNegative:
     case CSSPropertyID::kOverrideColors:
     case CSSPropertyID::kPad:
+    case CSSPropertyID::kPathname:
+    case CSSPropertyID::kPattern:
+    case CSSPropertyID::kPort:
     case CSSPropertyID::kPrefix:
+    case CSSPropertyID::kProtocol:
     case CSSPropertyID::kRange:
     case CSSPropertyID::kResult:
+    case CSSPropertyID::kSearch:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
     case CSSPropertyID::kSuffix:

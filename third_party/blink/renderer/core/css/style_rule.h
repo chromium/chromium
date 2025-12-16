@@ -85,6 +85,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kContents,
     kPositionTry,
     kCustomMedia,
+    kRoute,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -121,6 +122,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPageRule() const { return GetType() == kPage; }
   bool IsPageRuleMargin() const { return GetType() == kPageMargin; }
   bool IsPropertyRule() const { return GetType() == kProperty; }
+  bool IsRouteRule() const { return GetType() == kRoute; }
   bool IsNavigationRule() const { return GetType() == kNavigation; }
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }

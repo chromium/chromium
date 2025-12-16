@@ -1483,6 +1483,7 @@
     "blur",
     "drop-shadow",
     "url",
+    "url-pattern",
 
     // colors
     "rgb",

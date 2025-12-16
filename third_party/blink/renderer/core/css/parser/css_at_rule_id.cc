@@ -71,9 +71,13 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "property")) {
     return CSSAtRuleID::kCSSAtRuleProperty;
   }
-  if (RuntimeEnabledFeatures::RouteMatchingEnabled() &&
-      EqualIgnoringASCIICase(name, "navigation")) {
-    return CSSAtRuleID::kCSSAtRuleNavigation;
+  if (RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    if (EqualIgnoringASCIICase(name, "route")) {
+      return CSSAtRuleID::kCSSAtRuleRoute;
+    }
+    if (EqualIgnoringASCIICase(name, "navigation")) {
+      return CSSAtRuleID::kCSSAtRuleNavigation;
+    }
   }
   if (EqualIgnoringASCIICase(name, "container")) {
     return CSSAtRuleID::kCSSAtRuleContainer;
@@ -195,6 +199,8 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@position-try";
     case CSSAtRuleID::kCSSAtRuleProperty:
       return "@property";
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      return "@route";
     case CSSAtRuleID::kCSSAtRuleNavigation:
       return "@navigation";
     case CSSAtRuleID::kCSSAtRuleContainer:
@@ -320,6 +326,7 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRulePageMargin;
     case CSSAtRuleID::kCSSAtRuleProperty:
       return WebFeature::kCSSAtRuleProperty;
+    case CSSAtRuleID::kCSSAtRuleRoute:
     case CSSAtRuleID::kCSSAtRuleNavigation:
       return WebFeature::kCSSAtRuleRoute;
     case CSSAtRuleID::kCSSAtRuleContainer:

@@ -8211,6 +8211,14 @@ Called by update_use_counter_css.py.-->
   <int value="899" label="timeline-trigger-range"/>
   <int value="900" label="timeline-trigger-exit-range"/>
   <int value="901" label="trigger-scope"/>
+  <int value="902" label="protocol"/>
+  <int value="903" label="hostname"/>
+  <int value="904" label="port"/>
+  <int value="905" label="pathname"/>
+  <int value="906" label="search"/>
+  <int value="907" label="hash"/>
+  <int value="908" label="base-url"/>
+  <int value="909" label="pattern"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

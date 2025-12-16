@@ -965,6 +965,14 @@ enum CSSSampleId {
     kTimelineTriggerRange = 899,
     kTimelineTriggerExitRange = 900,
     kTriggerScope = 901,
+    kProtocol = 902,
+    kHostname = 903,
+    kPort = 904,
+    kPathname = 905,
+    kSearch = 906,
+    kHash = 907,
+    kBaseUrl = 908,
+    kPattern = 909,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -44,6 +44,7 @@ backgroundPositionY
 backgroundRepeat
 backgroundSize
 basePalette
+baseUrl
 baselineShift
 baselineSource
 blockEllipsis
@@ -264,7 +265,9 @@ gridTemplate
 gridTemplateAreas
 gridTemplateColumns
 gridTemplateRows
+hash
 height
+hostname
 hyphenateCharacter
 hyphenateLimitChars
 hyphens
@@ -397,12 +400,15 @@ pageBreakInside
 pageOrientation
 paintOrder
 parentRule
+pathname
+pattern
 perspective
 perspectiveOrigin
 placeContent
 placeItems
 placeSelf
 pointerEvents
+port
 position
 positionAnchor
 positionArea
@@ -412,6 +418,7 @@ positionTryOrder
 positionVisibility
 prefix
 printColorAdjust
+protocol
 quotes
 r
 range
@@ -481,6 +488,7 @@ scrollTimelineName
 scrollbarColor
 scrollbarGutter
 scrollbarWidth
+search
 setProperty
 shapeImageThreshold
 shapeMargin

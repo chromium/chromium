@@ -84,6 +84,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
+  void AddRouteFromRule(const String& dashed_ident, URLPattern*);
   void AddAnonymousRoute(URLPattern*);
 
   const Route* FindRoute(const String& route_name) const;

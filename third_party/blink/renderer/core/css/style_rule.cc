@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
+#include "third_party/blink/renderer/core/css/css_route_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -120,6 +122,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kProperty:
       To<StyleRuleProperty>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kRoute:
+      To<StyleRuleRoute>(this)->TraceAfterDispatch(visitor);
       return;
     case kNavigation:
       To<StyleRuleNavigation>(this)->TraceAfterDispatch(visitor);
@@ -219,6 +224,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       return;
     case kProperty:
       To<StyleRuleProperty>(this)->~StyleRuleProperty();
+      return;
+    case kRoute:
+      To<StyleRuleRoute>(this)->~StyleRuleRoute();
       return;
     case kNavigation:
       To<StyleRuleNavigation>(this)->~StyleRuleNavigation();
@@ -324,6 +332,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kPageMargin:
       rule = MakeGarbageCollected<CSSMarginRule>(To<StyleRulePageMargin>(self),
                                                  parent_sheet);
+      break;
+    case kRoute:
+      rule = MakeGarbageCollected<CSSRouteRule>(To<StyleRuleRoute>(self),
+                                                parent_sheet);
       break;
     case kNavigation:
       rule = MakeGarbageCollected<CSSNavigationRule>(
@@ -637,6 +649,8 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kMedia:
       return CloneGroupRule(To<StyleRuleMedia>(this), new_parent,
                             mixin_parameter_bindings);
+    case kRoute:
+      return MakeGarbageCollected<StyleRuleRoute>(To<StyleRuleRoute>(*this));
     case kNavigation:
       return CloneGroupRule(To<StyleRuleNavigation>(this), new_parent,
                             mixin_parameter_bindings);

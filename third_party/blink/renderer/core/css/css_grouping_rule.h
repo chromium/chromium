@@ -163,6 +163,7 @@ struct DowncastTraits<CSSGroupingRule> {
       case CSSRule::kNestedDeclarationsRule:
       case CSSRule::kPositionTryRule:
       case CSSRule::kPropertyRule:
+      case CSSRule::kRouteRule:
       case CSSRule::kStyleRule:
       case CSSRule::kViewTransitionRule:
         // go/keep-sorted end

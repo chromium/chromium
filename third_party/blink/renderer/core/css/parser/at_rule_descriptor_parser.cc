@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
+#include "third_party/blink/renderer/core/css/css_url_pattern_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -289,6 +290,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
     case StyleRule::kFunction:
       return Parser::ParseAtFunctionDescriptor(id, stream, context);
+    case StyleRule::kRoute:
+      return Parser::ParseAtRouteDescriptor(id, stream, context);
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -547,6 +550,28 @@ CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
   }
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
                                                            &context);
+}
+
+CSSValue* AtRuleDescriptorParser::ParseAtRouteDescriptor(
+    AtRuleDescriptorID id,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  switch (id) {
+    case AtRuleDescriptorID::Pattern:
+      return css_parsing_utils::ConsumeUrlPattern(stream, context);
+    case AtRuleDescriptorID::Protocol:
+    case AtRuleDescriptorID::Hostname:
+    case AtRuleDescriptorID::Port:
+    case AtRuleDescriptorID::Pathname:
+    case AtRuleDescriptorID::Search:
+    case AtRuleDescriptorID::Hash:
+    case AtRuleDescriptorID::BaseUrl:
+      break;
+    default:
+      return nullptr;
+  }
+
+  return css_parsing_utils::ConsumeString(stream);
 }
 
 bool AtRuleDescriptorParser::ParseDescriptorValue(

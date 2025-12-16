@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
+#include "third_party/blink/renderer/core/css/css_url_pattern_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
@@ -1801,6 +1802,36 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
   }
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       *CollectUrlData(url.Value(), context));
+}
+CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream& stream,
+                                      const CSSParserContext& context) {
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+  stream.EnsureLookAhead();
+
+  CSSParserToken token = stream.Peek();
+  if (token.GetType() != kFunctionToken ||
+      token.FunctionId() != CSSValueID::kUrlPattern) {
+    return nullptr;
+  }
+
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    token = stream.ConsumeIncludingWhitespace();
+    if (token.GetType() == kBadStringToken || !stream.AtEnd()) {
+      return nullptr;
+    }
+    guard.Release();
+  }
+  DCHECK_EQ(token.GetType(), kStringToken);
+  stream.ConsumeWhitespace();
+
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+  if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CSSURLPatternValue>(AtomicString(token.Value()));
 }
 
 struct ColorInterpolationSpace {

@@ -49,6 +49,9 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtFunctionDescriptor(AtRuleDescriptorID,
                                              CSSParserTokenStream&,
                                              const CSSParserContext&);
+  static CSSValue* ParseAtRouteDescriptor(AtRuleDescriptorID,
+                                          CSSParserTokenStream&,
+                                          const CSSParserContext&);
 };
 
 }  // namespace blink
