@@ -415,6 +415,7 @@ class ComposeboxQueryController
   // Creates the encoded visual search interaction log data and attaches it to
   // the url param list.
   void AddEncodedVisualSearchInteractionLogDataParam(
+      const FileInfo* file_info,
       const std::optional<std::string>& query_text,
       std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
       std::map<std::string, std::string>& url_params_map);
