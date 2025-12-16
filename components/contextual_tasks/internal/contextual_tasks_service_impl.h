@@ -51,7 +51,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       AimEligibilityService* aim_eligibility_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      bool supports_ephemeral_only);
+      bool supports_ephemeral_only,
+      base::RepeatingCallback<size_t()> get_active_task_count_callback);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -171,6 +172,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // Barrier to run OnDataStoresLoaded() after both sync bridges have loaded
   // their data.
   base::RepeatingClosure on_data_loaded_barrier_;
+
+  // Callback to retrieve the number of active tasks.
+  base::RepeatingCallback<size_t()> get_active_task_count_callback_;
 
   // Whether the service is initialized.
   bool is_initialized_ = false;
