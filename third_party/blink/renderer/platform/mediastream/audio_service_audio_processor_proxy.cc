@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/platform/mediastream/audio_service_audio_processor_proxy.h"
 
-#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_processor_controls.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -31,8 +33,8 @@ void AudioServiceAudioProcessorProxy::SetControls(
 
   stats_update_timer_.Start(
       FROM_HERE, kStatsUpdateInterval,
-      base::BindRepeating(&AudioServiceAudioProcessorProxy::RequestStats,
-                          weak_this_));
+      blink::BindRepeating(&AudioServiceAudioProcessorProxy::RequestStats,
+                           weak_this_));
 }
 
 void AudioServiceAudioProcessorProxy::Stop() {
@@ -59,16 +61,17 @@ void AudioServiceAudioProcessorProxy::MaybeUpdateNumPreferredCaptureChannels(
 
   // Posting the task only when update is needed, to avoid spamming the main
   // thread.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AudioServiceAudioProcessorProxy::
-                                    SetPreferredNumCaptureChannelsOnMainThread,
-                                weak_this_, num_channels));
+  PostCrossThreadTask(
+      *main_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&AudioServiceAudioProcessorProxy::
+                              SetPreferredNumCaptureChannelsOnMainThread,
+                          weak_this_, num_channels));
 }
 
 void AudioServiceAudioProcessorProxy::RequestStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (processor_controls_) {
-    processor_controls_->GetStats(base::BindOnce(
+    processor_controls_->GetStats(blink::BindOnce(
         &AudioServiceAudioProcessorProxy::UpdateStats, weak_this_));
   }
 }
