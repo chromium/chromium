@@ -395,7 +395,12 @@
               <ul class="icon-bulleted-list">
                 <li>
                   <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
                       icon="settings20:arrow-selector-tool">
+</if>
+<if expr="_google_chrome">
+                      icon="settings-internal:arrow-selector-spark">
+</if>
                   </cr-icon>
                   <div class="secondary">
                     $i18n{glicWebActuationToggleWhenOn1}
