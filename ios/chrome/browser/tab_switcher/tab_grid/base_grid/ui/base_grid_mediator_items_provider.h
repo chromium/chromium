@@ -23,10 +23,7 @@ typedef void (^GroupTabSnapshotAndFaviconCompletionBlock)(
 
 // Returns YES if `itemID` is selected in selection mode.
 - (BOOL)isItemSelected:(GridItemIdentifier*)itemID;
-// Returns YES if the snapshot for `itemID` should be shown. If this returns
-// NO, the snapshot will be set to nil, which will display the empty thumbnail
-// view.
-- (BOOL)shouldShowSnapshotForItem:(GridItemIdentifier*)itemID;
+
 // Returns the information needed for showing the label on the cell. Returns nil
 // if the label shouldn't be displayed.
 - (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID;

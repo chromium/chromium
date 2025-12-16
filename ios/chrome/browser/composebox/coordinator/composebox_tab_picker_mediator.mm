@@ -81,30 +81,6 @@
 
 #pragma mark - parent class methods
 
-- (BOOL)shouldShowSnapshotForItem:(GridItemIdentifier*)itemID {
-  CHECK(self.modeHolder.mode == TabGridMode::kSelection);
-  if (itemID.type == GridItemType::kTab) {
-    web::WebState* webState = GetWebState(
-        self.webStateList,
-        WebStateSearchCriteria{
-            .identifier = itemID.tabSwitcherItem.identifier,
-            .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
-
-    if (!webState) {
-      return NO;
-    }
-
-    if ([_failedLoadedItemIDs containsObject:itemID] || webState->IsCrashed()) {
-      return NO;
-    }
-
-    BOOL cached = _validAPCwebStatesIDs.contains(
-        base::NumberToString(webState->GetUniqueIdentifier().identifier()));
-    return cached || (webState->IsRealized() && !webState->IsLoading());
-  }
-  return [super shouldShowSnapshotForItem:itemID];
-}
-
 - (void)configureToolbarsButtons {
   // NO-OP
 }
