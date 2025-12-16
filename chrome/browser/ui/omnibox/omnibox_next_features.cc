@@ -92,7 +92,9 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   image_upload->set_downscale_max_image_width(1600);
   image_upload->set_downscale_max_image_height(1600);
   image_upload->set_image_compression_quality(40);
-  image_upload->set_mime_types_allowed("image/*");
+  image_upload->set_mime_types_allowed(
+      "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/"
+      "heic");
 
   auto* attachment_upload = composebox->mutable_attachment_upload();
   attachment_upload->set_max_size_bytes(200000000);
