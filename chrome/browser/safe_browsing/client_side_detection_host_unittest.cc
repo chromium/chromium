@@ -332,6 +332,7 @@ class MockIntelligentScanDelegate
               ShouldShowScamWarning,
               (std::optional<IntelligentScanVerdict>),
               (override));
+  MOCK_METHOD(void, OnScamWarningShown, (), (override));
 };
 
 std::string ToString(credit_card_form::ReferringApp referring_app) {
@@ -3885,6 +3886,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   // Because the delegate has disabled intelligent scan, we will
   // NOT start the intelligent scan.
   EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, OnScamWarningShown()).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -3905,6 +3907,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_TRUE(Mock::VerifyAndClear(intelligent_scan_delegate_.get()));
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -3952,6 +3955,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 
+  EXPECT_CALL(*intelligent_scan_delegate_, OnScamWarningShown()).Times(0);
+
   PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
                         ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
                         /*did_match_high_confidence_allowlist=*/false);
@@ -3964,6 +3969,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_TRUE(Mock::VerifyAndClear(intelligent_scan_delegate_.get()));
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -4116,6 +4122,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
               ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
                   IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1)))
       .WillOnce(Return(true));
+  EXPECT_CALL(*intelligent_scan_delegate_, OnScamWarningShown()).Times(1);
+
   // Now we run the callback to receive a server response. We do expect the
   // blocking page to pop up on a non-phishy response with the scam experiment
   // verdict because the feature is now enabled despite the is_phishy field is
@@ -4139,6 +4147,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+  EXPECT_TRUE(Mock::VerifyAndClear(intelligent_scan_delegate_.get()));
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,

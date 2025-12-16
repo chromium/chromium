@@ -126,6 +126,8 @@ BASE_DECLARE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo);
 // Inquire the server-side model instead of the on-device model for scam
 // detection.
 BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionAndroid);
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelMaxScansPerDay;
 #endif
 
 // Show a warning to the user based on the

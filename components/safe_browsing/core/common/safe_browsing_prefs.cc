@@ -258,6 +258,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSecuritySettingsBundle,
       static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
+  registry->RegisterListPref(prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(

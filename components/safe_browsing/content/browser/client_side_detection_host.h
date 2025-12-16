@@ -156,6 +156,8 @@ class ClientSideDetectionHost
     // scan verdict.
     virtual bool ShouldShowScamWarning(
         std::optional<IntelligentScanVerdict> verdict) = 0;
+    // Called when a warning is shown based on an intelligent scan verdict.
+    virtual void OnScamWarningShown() {}
   };
 
   // The caller keeps ownership of the tab object and is responsible for

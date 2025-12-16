@@ -48,6 +48,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   bool CancelIntelligentScan(const base::UnguessableToken& scan_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
+  void OnScamWarningShown() override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -66,6 +67,13 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // Starts on-device model download.
   void StartModelDownload();
 
+  // Functions related to intelligent scan quota:
+  // Returns true if we have reached the quota limit. Also clears the expired
+  // timestamps.
+  bool IsAtIntelligentScanQuota();
+  void AddIntelligentScanQuota();
+  void RemoveLastIntelligentScanQuota();
+
   const raw_ref<PrefService> pref_;
   // This object is used to download the model and create sessions for on-device
   // model execution. It may be null after shutdown.
@@ -83,6 +91,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   PrefChangeRegistrar pref_change_registrar_;
 
   const bool is_feature_enabled_;
+  const bool is_server_model_enabled_;
 
   bool pause_inquiry_for_testing_ = false;
 };

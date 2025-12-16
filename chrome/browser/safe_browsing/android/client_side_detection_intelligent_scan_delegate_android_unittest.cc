@@ -113,7 +113,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
   }
 
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeAdaptationAsset fake_asset_{{.config = FeatureConfig()}};
   std::unique_ptr<FakeModelBroker> fake_broker_;
@@ -126,11 +127,12 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTest
     : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTest() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid,
-         kClientSideDetectionShowScamVerdictWarningAndroid,
-         kClientSideDetectionServerModelForScamDetectionAndroid},
-        {kClientSideDetectionKillswitch});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kClientSideDetectionSendIntelligentScanInfoAndroid, {}},
+         {kClientSideDetectionShowScamVerdictWarningAndroid, {}},
+         {kClientSideDetectionServerModelForScamDetectionAndroid,
+          {{"MaxIntelligentScansPerDay", "3"}}}},
+        /*disabled_features=*/{kClientSideDetectionKillswitch});
   }
 };
 
@@ -338,6 +340,107 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       StartIntelligentScan_QuotaChecks) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  constexpr int kMaxScansPerDay = 3;
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   _, _, _))
+      .Times(kMaxScansPerDay + 1);
+
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    delegate_->StartIntelligentScan("test", base::DoNothing());
+  }
+
+  // At quota, scan should fail.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan("test rendered text",
+                                        future.GetCallback());
+    EXPECT_FALSE(token.has_value());
+    ASSERT_TRUE(future.IsReady());
+    EXPECT_FALSE(future.Get().execution_success);
+  }
+
+  // Fast forward time by 2 days, the quota should be cleared.
+  task_environment_.FastForwardBy(base::Days(2));
+
+  // Scan should succeed now.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan("test rendered text",
+                                        future.GetCallback());
+    EXPECT_TRUE(token.has_value());
+  }
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       StartIntelligentScan_QuotaConsumedOnModelFailure) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  constexpr int kMaxScansPerDay = 3;
+
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    EXPECT_CALL(remote_model_executor_,
+                ExecuteModel(
+                    optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                    _, _, _))
+        .WillOnce(base::test::RunOnceCallback<3>(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                /*execution_info=*/nullptr),
+            /*log_entry=*/nullptr));
+    base::test::TestFuture<IntelligentScanResult> future;
+    delegate_->StartIntelligentScan("test", future.GetCallback());
+    EXPECT_FALSE(future.Get().execution_success);
+  }
+
+  // Next scan should fail due to quota.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan("test rendered text",
+                                        future.GetCallback());
+    EXPECT_FALSE(token.has_value());
+    ASSERT_TRUE(future.IsReady());
+    EXPECT_FALSE(future.Get().execution_success);
+  }
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
+       OnScamWarningShown_RefundsQuota) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  constexpr int kMaxScansPerDay = 3;
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   _, _, _))
+      .Times(kMaxScansPerDay + 1);
+
+  // Fill up the quota.
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    delegate_->StartIntelligentScan("test", base::DoNothing());
+  }
+
+  // A scam warning should refund one quota.
+  delegate_->OnScamWarningShown();
+
+  // Now a scan should succeed.
+  std::optional<base::UnguessableToken> token =
+      delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
+  EXPECT_TRUE(token.has_value());
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
        CancelIntelligentScan_MultipleInquiries) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
 
@@ -519,6 +622,25 @@ TEST_F(
   EXPECT_EQ(future.Get().model_version, -1);
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
+}
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateAndroidTestWithServerModelDisabled,
+    StartIntelligentScan_QuotaCheckIsDisabled) {
+  CreateDelegateWithOnDeviceModelResponse(
+      /*is_enhanced_protection_enabled=*/true,
+      ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+      "{\"brand\": \"test_brand\", \"intent\": \"test_intent\"}");
+  // Wait for the model to be available.
+  task_environment_.RunUntilIdle();
+
+  // With server model disabled, quota should not be enforced. We can make
+  // more than 5 calls (default quota).
+  for (int i = 0; i < 10; ++i) {
+    base::test::TestFuture<IntelligentScanResult> future;
+    delegate_->StartIntelligentScan("test rendered text", future.GetCallback());
+    EXPECT_TRUE(future.Get().execution_success);
+  }
 }
 
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithFeatureDisabled

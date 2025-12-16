@@ -1853,6 +1853,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
       // metrics to track specifics.
       if (should_show_scam_warning) {
         resource.threat_subtype = GetThreatSubtype(*intelligent_scan_verdict);
+        intelligent_scan_delegate_->OnScamWarningShown();
       }
       resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
           CreateForRenderFrameToken(
