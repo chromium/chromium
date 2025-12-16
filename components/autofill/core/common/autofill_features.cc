@@ -548,6 +548,12 @@ BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
 BASE_FEATURE(kAutofillEnableGermanTransliteration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the import of unchanged values for ADDRESS_HOME_COUNTRY and
+// ADDRESS_HOME_STATE fields is enabled.
+// TODO(crbug.com/40137859): Remove once launched.
+BASE_FEATURE(kAutofillEnableImportOfUnchangedValuesForCountryAndState,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
 // TODO(crbug.com/40742746) Remove once launched.
