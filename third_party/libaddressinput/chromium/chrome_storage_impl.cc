@@ -4,7 +4,7 @@
 
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
-#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/values.h"
@@ -20,11 +20,9 @@ ChromeStorageImpl::ChromeStorageImpl(WriteablePrefStore* store)
 
 ChromeStorageImpl::~ChromeStorageImpl() {}
 
-void ChromeStorageImpl::Put(const std::string& key, std::string* data) {
-  DCHECK(data);
-  backing_store_->SetValue(key, base::Value(*data),
+void ChromeStorageImpl::Put(const std::string& key, std::string data) {
+  backing_store_->SetValue(key, base::Value(std::move(data)),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  delete data;
 }
 
 void ChromeStorageImpl::Get(const std::string& key,
@@ -47,15 +45,15 @@ void ChromeStorageImpl::DoGet(const std::string& key,
     return;
   }
 
-  const base::Value* value = NULL;
-  std::unique_ptr<std::string> data(new std::string);
+  const base::Value* value = nullptr;
+  std::string data;
   if (backing_store_->GetValue(key, &value) && value->is_string()) {
-    *data = value->GetString();
-    data_ready(true, key, data.release());
-  } else if (FallbackDataStore::Get(key, data.get())) {
-    data_ready(true, key, data.release());
+    data = value->GetString();
+    data_ready(true, key, std::move(data));
+  } else if (FallbackDataStore::Get(key, &data)) {
+    data_ready(true, key, std::move(data));
   } else {
-    data_ready(false, key, NULL);
+    data_ready(false, key, std::nullopt);
   }
 }
 

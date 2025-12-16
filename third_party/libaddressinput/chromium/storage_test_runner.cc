@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <optional>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,10 +17,7 @@ namespace autofill {
 using ::i18n::addressinput::Storage;
 
 StorageTestRunner::StorageTestRunner(Storage* storage)
-    : storage_(storage),
-      success_(false),
-      key_(),
-      data_() {}
+    : storage_(storage), success_(false) {}
 
 StorageTestRunner::~StorageTestRunner() {}
 
@@ -42,13 +40,12 @@ std::unique_ptr<Storage::Callback> StorageTestRunner::BuildCallback() {
 
 void StorageTestRunner::OnDataReady(bool success,
                                     const std::string& key,
-                                    std::string* data) {
-  assert(!success || data != NULL);
+                                    std::optional<std::string> data) {
+  assert(!success || data.has_value());
   success_ = success;
   key_ = key;
-  if (data != NULL) {
-    data_ = *data;
-    delete data;
+  if (data.has_value()) {
+    data_ = *std::move(data);
   }
 }
 
@@ -64,7 +61,7 @@ void StorageTestRunner::GetWithoutPutReturnsEmptyData() {
 
 void StorageTestRunner::GetReturnsWhatWasPut() {
   ClearValues();
-  storage_->Put("key", new std::string("value"));
+  storage_->Put("key", "value");
   std::unique_ptr<Storage::Callback> callback(BuildCallback());
   storage_->Get("key", *callback);
 
@@ -75,8 +72,8 @@ void StorageTestRunner::GetReturnsWhatWasPut() {
 
 void StorageTestRunner::SecondPutOverwritesData() {
   ClearValues();
-  storage_->Put("key", new std::string("bad-value"));
-  storage_->Put("key", new std::string("good-value"));
+  storage_->Put("key", "bad-value");
+  storage_->Put("key", "good-value");
   std::unique_ptr<Storage::Callback> callback(BuildCallback());
   storage_->Get("key", *callback);
 

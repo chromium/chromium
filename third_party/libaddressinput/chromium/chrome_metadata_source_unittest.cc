@@ -4,6 +4,8 @@
 
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/core/embedder/embedder.h"
@@ -57,17 +59,17 @@ class ChromeMetadataSourceTest : public testing::Test {
   // Callback for when download is finished.
   void OnDownloaded(bool success,
                     const std::string& url,
-                    std::string* data) {
-    ASSERT_FALSE(success && data == NULL);
+                    std::optional<std::string> data) {
+    ASSERT_FALSE(success && !data.has_value());
     success_ = success;
-    data_.reset(data);
+    data_ = std::move(data);
   }
 
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   GURL url_;
-  std::unique_ptr<std::string> data_;
+  std::optional<std::string> data_;
   bool success_;
 };
 

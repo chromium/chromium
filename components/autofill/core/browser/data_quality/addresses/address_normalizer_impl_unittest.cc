@@ -41,15 +41,14 @@ class ChromiumTestdataSource : public TestdataSource {
 
   // For this test, only load the rules for the "US".
   void Get(const std::string& key, const Callback& data_ready) const override {
-    data_ready(
-        true, key,
-        new std::string("{\"data/US\": "
-                        "{\"id\":\"data/US\",\"key\":\"US\",\"name\":\"UNITED "
-                        "STATES\",\"lang\":\"en\",\"languages\":\"en\","
-                        "\"sub_keys\": \"CA\", \"sub_names\": \"California\"},"
-                        "\"data/US/CA\":{\"lang\":\"en\",\"name\":"
-                        "\"California\",\"key\":\"CA\",\"id\":"
-                        "\"data/US/CA\"}}"));
+    data_ready(true, key,
+               "{\"data/US\": "
+               "{\"id\":\"data/US\",\"key\":\"US\",\"name\":\"UNITED "
+               "STATES\",\"lang\":\"en\",\"languages\":\"en\","
+               "\"sub_keys\": \"CA\", \"sub_names\": \"California\"},"
+               "\"data/US/CA\":{\"lang\":\"en\",\"name\":"
+               "\"California\",\"key\":\"CA\",\"id\":"
+               "\"data/US/CA\"}}");
   }
 };
 
