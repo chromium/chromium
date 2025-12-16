@@ -448,6 +448,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/search_engine_choice/test:earl_grey_ui_test_util",

@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
@@ -1550,7 +1551,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     id<GREYMatcher> cancelButton =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier);
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(cancelButton,
                                             grey_sufficientlyVisible(), nil)]

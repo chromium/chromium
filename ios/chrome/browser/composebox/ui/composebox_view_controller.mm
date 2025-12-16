@@ -8,6 +8,7 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -95,6 +96,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   config.contentInsets = NSDirectionalEdgeInsetsZero;
   _closeButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.accessibilityIdentifier =
+      kOmniboxCancelButtonAccessibilityIdentifier;
   _closeButton.configuration = config;
   _closeButton.configurationUpdateHandler = ^(UIButton* button) {
     UIButtonConfiguration* updatedConfig = button.configuration;

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/browser_view/test/browser_view_visibility_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -222,7 +223,7 @@ const char kSecondURLText[] = "You've arrived";
 
   } else {
     id<GREYMatcher> cancel_button = grey_allOf(
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier),
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier),
         grey_sufficientlyVisible(), nil);
     [[EarlGrey selectElementWithMatcher:cancel_button]
         performAction:grey_tap()];

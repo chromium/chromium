@@ -6,6 +6,9 @@
 
 const CGFloat kOmniboxPlaceholderAlpha = 0.3;
 
+NSString* const kOmniboxCancelButtonAccessibilityIdentifier =
+    @"OmniboxCancelButtonAccessibilityIdentifier";
+
 NSString* const kOmniboxClearButtonAccessibilityIdentifier =
     @"OmniboxClearButtonAccessibilityIdentifier";
 

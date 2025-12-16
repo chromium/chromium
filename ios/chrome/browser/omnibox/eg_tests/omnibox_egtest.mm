@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -76,7 +77,7 @@ void DefocusOmnibox() {
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     id<GREYMatcher> cancel_button =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier);
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(cancel_button,
                                             grey_sufficientlyVisible(), nil)]
