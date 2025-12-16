@@ -613,9 +613,9 @@
     },
     "arch": {
       "arm64": {
-        "filename": "arm64/U/android-cts-arm64-15_r2.zip",
+        "filename": "arm64/V/android-cts-arm64-15_r2.zip",
         "_origin": "https://dl.google.com/dl/android/cts/android-cts-15_r2-linux_x86-arm.zip",
-        "unzip_dir": "arm64/U/15_r2/"
+        "unzip_dir": "arm64/V/15_r2/"
       },
       "x86": {
         "filename": "x86/V/android-cts-x86-15_r2.zip",
