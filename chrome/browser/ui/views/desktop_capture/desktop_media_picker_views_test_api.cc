@@ -154,10 +154,6 @@ bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
   return picker_->dialog_->IsAudioSharingApprovedByUser();
 }
 
-bool DesktopMediaPickerViewsTestApi::IsAudioSharingControlEnabled() const {
-  return picker_->dialog_->IsAudioSharingControlEnabled();
-}
-
 bool DesktopMediaPickerViewsTestApi::IsScreenAudioOffered() const {
   return picker_->dialog_->is_screen_audio_offered_;
 }

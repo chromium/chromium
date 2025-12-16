@@ -36,11 +36,6 @@ class DesktopMediaContentPaneView : public views::View {
   // be called if the class was created with a non-null share_audio_view.
   void SetAudioSharingApprovedByUser(bool is_on);
 
-  bool IsAudioSharingControlEnabled() const;
-  // Enables or disables the ShareAudioView audio control, meaning that while
-  // the control is disabled the user cannot interact with it. This method must
-  // only be called if the class was created with a non-null share_audio_view.
-  void SetAudioSharingControlEnabled(bool enabled);
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
   std::u16string_view GetAudioLabelText() const;

@@ -59,7 +59,6 @@ class DesktopMediaListBase : public DesktopMediaList {
 
     content::DesktopMediaID id;
     std::u16string name;
-    std::optional<bool> is_chromium_window;
   };
 
   DesktopMediaListBase(base::TimeDelta update_period,

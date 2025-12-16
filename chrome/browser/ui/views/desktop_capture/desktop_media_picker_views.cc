@@ -928,14 +928,6 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
          categories_[index].pane->IsAudioSharingApprovedByUser();
 }
 
-bool DesktopMediaPickerDialogView::IsAudioSharingControlEnabled() const {
-  const int index = GetSelectedTabIndex();
-  CHECK_GE(index, 0);
-  CHECK_LT(static_cast<size_t>(index), categories_.size());
-  return categories_[index].pane &&
-         categories_[index].pane->IsAudioSharingControlEnabled();
-}
-
 void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
   // Note that tabs are counted up to 1000, and windows/screens up to 100.
 
@@ -1214,47 +1206,7 @@ void DesktopMediaPickerDialogView::OnWidgetInitialized() {
   views::DialogDelegateView::OnWidgetInitialized();
 }
 
-void DesktopMediaPickerDialogView::
-    MaybeUpdateAudioSharingControlStateForApplicationAudioCapture() {
-  CHECK_EQ(GetSelectedSourceListType(), DesktopMediaList::Type::kWindow);
-  CHECK_EQ(window_audio_type_offered_, DesktopMediaID::AudioType::kApplication);
-
-  DisplaySurfaceCategory& window_category = categories_[GetSelectedTabIndex()];
-  const bool has_audio_control =
-      window_category.pane && window_category.pane->AudioOffered();
-  if (!has_audio_control || !window_category.audio_offered) {
-    return;
-  }
-
-  if (GetSelectedController()->HasSelectedChromiumWindow() &&
-      !is_chromium_window_selected_) {
-    // Disable the audio-checkbox if the selected window is a Chromium
-    // window, since we cannot capture audio from Chromium windows for privacy
-    // reasons.
-    if (window_category.pane) {
-      window_category.audio_checked =
-          window_category.pane->IsAudioSharingApprovedByUser();
-      window_category.pane->SetAudioSharingApprovedByUser(false);
-      window_category.pane->SetAudioSharingControlEnabled(false);
-    }
-    is_chromium_window_selected_ = true;
-  } else if (!GetSelectedController()->HasSelectedChromiumWindow() &&
-             is_chromium_window_selected_) {
-    // Restore the audio-checkbox state.
-    if (window_category.pane) {
-      window_category.pane->SetAudioSharingApprovedByUser(
-          window_category.audio_checked);
-      window_category.pane->SetAudioSharingControlEnabled(true);
-    }
-    is_chromium_window_selected_ = false;
-  }
-}
-
 void DesktopMediaPickerDialogView::OnSelectionChanged() {
-  if (GetSelectedSourceListType() == DesktopMediaList::Type::kWindow &&
-      window_audio_type_offered_ == DesktopMediaID::AudioType::kApplication) {
-    MaybeUpdateAudioSharingControlStateForApplicationAudioCapture();
-  }
   DialogModelChanged();
 }
 

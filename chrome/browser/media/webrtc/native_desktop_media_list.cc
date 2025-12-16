@@ -953,7 +953,6 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
       // Resize the string (in the case the title has shortened), and remove the
       // trailing null character.
       source_it->name.resize(title_length);
-      source_it->is_chromium_window = true;
     }
 #endif  // BUILDFLAG(IS_WIN)
 

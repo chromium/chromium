@@ -170,22 +170,6 @@ DesktopMediaListController::GetSelection() const {
   return view_ ? view_->GetSelection() : std::nullopt;
 }
 
-bool DesktopMediaListController::HasSelectedChromiumWindow() const {
-  std::optional<content::DesktopMediaID> selection = GetSelection();
-  if (!selection.has_value()) {
-    return false;
-  }
-
-  for (size_t i = 0; i < GetSourceCount(); ++i) {
-    const DesktopMediaList::Source& source = GetSource(i);
-    if (source.id == selection.value()) {
-      return source.is_chromium_window.value_or(false);
-    }
-  }
-
-  return false;
-}
-
 void DesktopMediaListController::ClearSelection() {
   if (view_) {
     view_->ClearSelection();
