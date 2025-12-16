@@ -188,6 +188,7 @@ class LoopbackMixinVerifier : public LoopbackSignalProviderInterface {
         OnDataCallback on_data_callback)
         : LoopbackMixin(std::move(signal_provider),
                         params,
+                        /*include_primary_source=*/true,
                         std::move(on_data_callback)) {}
   };
 };
