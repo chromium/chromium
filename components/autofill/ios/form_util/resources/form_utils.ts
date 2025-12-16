@@ -5,7 +5,15 @@
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isFormControlElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
+/**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+    gCrWeb.getRegisteredApi('autofill_form_features');
 
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
@@ -234,4 +242,155 @@ export function getFormElementFromRendererId(identifier: number):
     }
   }
   return null;
+}
+
+// LINT.IfChange(autofill_count_form_submission_in_renderer)
+// The source that triggered the sending of the form submission report.
+enum FormSubmissionReportSource {
+  // Report was sent immediately because quota was available.
+  INSTANT,
+  // Report was sent from the scheduled task.
+  SCHEDULED_TASK,
+  // Report was sent from unloading the page content.
+  UNLOAD_PAGE,
+}
+// LINT.ThenChange(//components/autofill/ios/form_util/form_activity_tab_helper.mm:autofill_count_form_submission_in_renderer)
+
+
+/**
+ * Represent the number of form submissions split by type.
+ */
+interface FormSubmissionCountReport {
+  // From a submit event.
+  htmlEvent: number;
+  // Triggered via `form.submit()`.
+  programmatic: number;
+}
+
+/**
+ * Manager of form submission reports. Takes care of throttling form submission
+ * reports via quota and schedules batches of aggregated reports.
+ */
+class FormSubmissionReportManager {
+  /**
+   * Time period for refreshing the report quota.
+   */
+  private static readonly QUOTA_REFRESH_PERIOD_MS = 4000;  // 4 seconds
+
+  /**
+   * Time period in milliseconds between each form submission count report.
+   */
+  private static readonly REPORT_PERIOD_MS = 2000;  // 2 seconds
+
+  /**
+   * Number of reports allowed by the quota.
+   */
+  private static readonly QUOTA_SIZE = 2;
+
+  // Maps the message handler to the pending reports to send to that handler.
+  private formSubmissionCountReportMap: Map<string, FormSubmissionCountReport> =
+      new Map();
+
+  /**
+   * Quota of form submission reports that can be sent before using throttling.
+   * Reports sent under the quota are sent directly to the browser without
+   * the need for scheduling a report which is much faster and reliable.
+   */
+  private formSubmissionReportQuotaRemaining =
+      FormSubmissionReportManager.QUOTA_SIZE;
+
+  constructor() {
+    window.addEventListener('unload', () => {
+      // Send the submission count report right now as the document is about to
+      // be unloaded, meaning that the reporting scheduled task is likely to be
+      // cancelled. This doesn't work when the entire tab is closed.
+      this.sendFormSubmissionCountReports(
+          FormSubmissionReportSource.UNLOAD_PAGE);
+    });
+  }
+
+  sendReport(isProgrammatic: boolean, handler: string): void {
+    if (!autofillFormFeaturesApi.getFunction(
+            'isAutofillCountFormSubmissionInRendererEnabled')()) {
+      // Do not report anything if the feature is disabled.
+      return;
+    }
+
+    const scheduleReport = this.formSubmissionCountReportMap.size === 0;
+
+    // Initialize the report if there isn't already one for the `handler`.
+    if (!this.formSubmissionCountReportMap.has(handler)) {
+      this.formSubmissionCountReportMap.set(
+          handler, {htmlEvent: 0, programmatic: 0});
+    }
+
+    const report: FormSubmissionCountReport =
+        this.formSubmissionCountReportMap.get(handler)!;
+
+    if (isProgrammatic) {
+      ++report.programmatic;
+    } else {
+      ++report.htmlEvent;
+    }
+
+    if (this.formSubmissionReportQuotaRemaining > 0) {
+      --this.formSubmissionReportQuotaRemaining;
+      // Report right away if the quota wasn't reached yet.
+      this.sendFormSubmissionCountReports(FormSubmissionReportSource.INSTANT);
+      // Reset the quota after a cooldown period.
+      setTimeout(
+          () => ++this.formSubmissionReportQuotaRemaining,
+          FormSubmissionReportManager.QUOTA_REFRESH_PERIOD_MS);
+      return;
+    }
+
+    if (scheduleReport) {
+      // If no quota is available, schedule a report if there isn't already
+      // one pending.
+      const reportFn = () => this.sendFormSubmissionCountReports(
+          FormSubmissionReportSource.SCHEDULED_TASK);
+      setTimeout(reportFn, FormSubmissionReportManager.REPORT_PERIOD_MS);
+    }
+  }
+
+  /**
+   * Sends the `formSubmissionCountReport` (if there is) to the browser.
+   */
+  private sendFormSubmissionCountReports(source: FormSubmissionReportSource):
+      void {
+    this.formSubmissionCountReportMap.forEach(
+        (report: FormSubmissionCountReport, handler: string) => {
+          const message = {
+            command: 'form.submit.count',
+            ...report,
+            source,
+          };
+          sendWebKitMessage(handler, message);
+        });
+
+    this.formSubmissionCountReportMap.clear();
+  }
+}
+
+const gFormSubmissionReportManager = new FormSubmissionReportManager();
+
+/**
+ * Reports periodically (as needed) the form submission counts that were
+ * detected before doing any processing. The count for each type of event is
+ * provided (regular or programmatic).
+ * @param isProgrammatic True if the source of the form submission is
+ *   programmatic (i.e. comes from the prototype override).
+ * @param handler Name of the browser handler to send the message with the count
+ *   report to.
+ */
+export function reportDetectedFormSubmission(
+    isProgrammatic: boolean, handler: string): void {
+  // Ignore reporting if there is an error as this isn't a critical function.
+  // Reporting form submission shouldn't have a side effect on processing the
+  // form submission.
+  try {
+    gFormSubmissionReportManager.sendReport(isProgrammatic, handler);
+  } catch {
+    // Ignore.
+  }
 }

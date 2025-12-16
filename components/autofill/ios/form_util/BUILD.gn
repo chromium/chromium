@@ -263,7 +263,10 @@ source_set("programmatic_form_submission_handler_feature") {
 optimize_ts("programatic_form_submission_js") {
   sources = [ "resources/programmatic_form_submission_handler.ts" ]
 
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    ":fill_js_dependencies",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 source_set("test_support") {

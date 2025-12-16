@@ -15,7 +15,7 @@ import {processChildFrameMessage} from '//components/autofill/ios/form_util/reso
 import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFieldIdentifier, getFormIdentifier, reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -220,7 +220,7 @@ function submitHandler(evt: Event): void {
  * happen before calling gCrWebLegacy.form.formSubmitted().
  */
 function submitHandlerWithErrorWrapper(evt: Event): void {
-  gCrWebLegacy.form.reportDetectedFormSubmission(
+  reportDetectedFormSubmission(
       /*isProgrammatic=*/ false, /*handler=*/ NATIVE_MESSAGE_HANDLER);
   try {
     submitHandler(evt);
@@ -323,7 +323,7 @@ function attachListeners(): void {
   if (formSubmitOriginalFunction === null) {
     formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-      gCrWebLegacy.form.reportDetectedFormSubmission(
+      reportDetectedFormSubmission(
           /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
       if (!autofillFormFeaturesApi.getFunction('isAutofillIsolatedContentWorldEnabled')()) {
         // If an error happens in formSubmitted, this will cancel the form
