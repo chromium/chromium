@@ -1083,7 +1083,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        SkipsUpdateDiscoveryTaskForNotAllowlistedIwa) {
   base::HistogramTester ht;
   // Turn off default skipping of allowlist for IWA tests
-  IwaKeyDistributionInfoProvider::GetInstance()
+  IwaKeyDistributionInfoProvider::GetInstanceForTesting()
       .SkipManagedAllowlistChecksForTesting(false);
 
   // Add both app to allowlist for installing them
@@ -1102,12 +1102,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
-          GetIwa1WebBundleId().id()));
-  EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
-          GetIwa2WebBundleId().id()));
+  EXPECT_FALSE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                   .IsManagedUpdatePermitted(GetIwa1WebBundleId().id()));
+  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                  .IsManagedUpdatePermitted(GetIwa2WebBundleId().id()));
 
   EXPECT_THAT(
       ht.GetAllSamples(kIwaKeyDistributionManagedUpdateAllowedHistogramName),

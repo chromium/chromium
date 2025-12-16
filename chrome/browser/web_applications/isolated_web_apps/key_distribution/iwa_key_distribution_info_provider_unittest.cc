@@ -491,7 +491,7 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithSuccess();
 
-  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstanceForTesting();
   base::test::TestFuture<void> future;
 
   RegisterComponentWithExpectationAndCallOnMaybeReadyInOrder(
@@ -506,7 +506,7 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
   WillRegisterAndLoadComponent(/*is_preloaded=*/false);
   WillNotRequestOnDemandUpdate();
 
-  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstanceForTesting();
   base::test::TestFuture<void> future;
 
   RegisterComponentWithExpectationAndCallOnMaybeReadyInOrder(
@@ -526,7 +526,7 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithoutSuccess();
 
-  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstanceForTesting();
 
   // Not using TestFuture<> here because it advances mock time while waiting,
   // and this is something we'd like to do manually.
@@ -553,7 +553,7 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithSuccess(/*load_delay=*/base::Seconds(30));
 
-  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  auto& key_provider = IwaKeyDistributionInfoProvider::GetInstanceForTesting();
   base::test::TestFuture<void> future;
 
   RegisterComponentWithExpectationAndCallOnMaybeReadyInOrder(

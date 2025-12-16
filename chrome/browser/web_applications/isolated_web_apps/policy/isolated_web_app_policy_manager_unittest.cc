@@ -509,7 +509,7 @@ class IsolatedWebAppManagedAllowlistTest
 
   void SetUp() override {
     IsolatedWebAppPolicyManagerTestBase::SetUp();
-    IwaKeyDistributionInfoProvider::GetInstance()
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
         .SkipManagedAllowlistChecksForTesting(false);
   }
 };
@@ -534,9 +534,8 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
-          web_bundle_id_1().id()));
+  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                  .IsManagedInstallPermitted(web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
@@ -576,9 +575,8 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
-          web_bundle_id_1().id()));
+  EXPECT_FALSE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                   .IsManagedInstallPermitted(web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),

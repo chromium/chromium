@@ -67,9 +67,7 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
       WebAppInternalsHandler>;
 
   static IwaKeyDistributionInfoProvider& GetInstance(InstanceAccessKey);
-
-  // TODO(crbug.com/466056393): Rename to GetInstanceForTesting().
-  static IwaKeyDistributionInfoProvider& GetInstance();
+  static IwaKeyDistributionInfoProvider& GetInstanceForTesting();
   static void DestroyInstanceForTesting();
 
   ~IwaKeyDistributionInfoProvider() override;

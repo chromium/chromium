@@ -37,12 +37,13 @@ using ComponentUpdateFuture = base::test::TestFuture<ComponentMetadataOrError>;
 
 base::CallbackListSubscription SetOnComponentUpdatedForTesting(
     base::RepeatingCallback<void(ComponentMetadataOrError)> callback) {
-  return IwaKeyDistributionInfoProvider::GetInstance()
+  return IwaKeyDistributionInfoProvider::GetInstanceForTesting()
       .OnComponentUpdatedForTesting(
           base::BindRepeating([](base::expected<void, IwaComponentUpdateError>
                                      result) {
             return result.transform([]() -> IwaComponentMetadata {
-              auto& instance = IwaKeyDistributionInfoProvider::GetInstance();
+              auto& instance =
+                  IwaKeyDistributionInfoProvider::GetInstanceForTesting();
               return {.version = *instance.GetVersion(),
                       .is_preloaded = *instance.IsPreloadedForTesting()};
             });
@@ -59,8 +60,8 @@ base::expected<void, IwaComponentUpdateError> KeyDistributionComponent::
 
 void KeyDistributionComponent::KeyDistributionComponent::
     InjectComponentDataDirectly() {
-  IwaKeyDistributionInfoProvider::GetInstance().SetComponentDataForTesting(
-      version, is_preloaded, component_data);
+  IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+      .SetComponentDataForTesting(version, is_preloaded, component_data);
 }
 
 KeyDistributionComponentBuilder::KeyDistributionComponentBuilder(
@@ -183,8 +184,8 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::FilePath& path) {
   ComponentUpdateFuture future;
   auto waiter = SetOnComponentUpdatedForTesting(future.GetRepeatingCallback());
-  IwaKeyDistributionInfoProvider::GetInstance().LoadKeyDistributionData(
-      version, path, /*is_preloaded=*/false);
+  IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+      .LoadKeyDistributionData(version, path, /*is_preloaded=*/false);
   ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
   CHECK(version == loaded_version && !is_preloaded);
   return base::ok();

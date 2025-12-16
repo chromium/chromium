@@ -107,7 +107,8 @@ IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance(
 }
 
 // static
-IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
+IwaKeyDistributionInfoProvider&
+IwaKeyDistributionInfoProvider::GetInstanceForTesting() {
   return GetInstance(base::PassKey<IwaKeyDistributionInfoProvider>());
 }
 

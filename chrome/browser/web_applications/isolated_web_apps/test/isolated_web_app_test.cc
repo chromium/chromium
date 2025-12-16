@@ -177,7 +177,7 @@ void IsolatedWebAppTest::SetUp() {
 
   // Do not require allowlisting app to install/update in normal tests.
   // Do not skip checks only when interaction with allowlist is tested.
-  IwaKeyDistributionInfoProvider::GetInstance()
+  IwaKeyDistributionInfoProvider::GetInstanceForTesting()
       .SkipManagedAllowlistChecksForTesting(true);
 }
 
@@ -208,7 +208,7 @@ void IsolatedWebAppTest::TearDown() {
   profile_ = nullptr;
   profile_manager_.DeleteAllTestingProfiles();
 
-  IwaKeyDistributionInfoProvider::GetInstance().DestroyInstanceForTesting();
+  IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();
 
   env_.reset();
 }
