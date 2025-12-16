@@ -1188,3 +1188,11 @@ try_.builder(
     use_javascript_coverage = True,
 )
 ############### Coverage Builders End ##################
+
+try_.builder(
+    name = "linux-metadata-validator",
+    description_html = "Validate README.chromium files.",
+    executable = "recipe:security/metadata_validator",
+    builderless = True,
+    contact_team_email = "chops-security-core@google.com",
+)

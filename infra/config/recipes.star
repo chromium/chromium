@@ -316,6 +316,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:security/metadata_validator",
+)
+
+build_recipe(
     name = "recipe:swarming/deterministic_build",
 )
 
