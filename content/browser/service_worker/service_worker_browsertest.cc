@@ -1511,8 +1511,8 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
     void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
                           delegate) override {
       delegate->SendHeadersContentAndFinish(
-          code_, reason_.value_or(net::GetHttpReasonPhrase(code_)), headers_,
-          content_);
+          code_, reason_.value_or(std::string(net::GetHttpReasonPhrase(code_))),
+          headers_, content_);
     }
 
    private:

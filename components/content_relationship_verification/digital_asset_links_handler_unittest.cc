@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -106,9 +107,8 @@ class DigitalAssetLinksHandlerTest : public ::testing::Test {
 
     auto response_head = network::mojom::URLResponseHead::New();
     std::string status_line =
-        "HTTP/1.1 " + base::NumberToString(response_code) + " " +
-        net::GetHttpReasonPhrase(
-            static_cast<net::HttpStatusCode>(response_code));
+        base::StrCat({"HTTP/1.1 ", base::NumberToString(response_code), " ",
+                      net::GetHttpReasonPhrase(response_code)});
     response_head->headers =
         base::MakeRefCounted<net::HttpResponseHeaders>(status_line);
     int expected_num_invocations = num_invocations_ + 1;

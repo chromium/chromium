@@ -105,8 +105,7 @@ GURL ParseRedirectUrl(const net::RedirectInfo& redirect_info,
     *out_error_message = base::ReplaceStringPlaceholders(
         errors::kHttpStatusCodeNotAllowed,
         {base::NumberToString(redirect_info.status_code),
-         net::GetHttpReasonPhrase(
-             static_cast<net::HttpStatusCode>(redirect_info.status_code)),
+         std::string(net::GetHttpReasonPhrase(redirect_info.status_code)),
          original_url.spec()},
         nullptr);
     log.Error(*out_error_message);

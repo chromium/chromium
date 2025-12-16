@@ -61,8 +61,7 @@ std::string FastPairHttpResult::ToString() const {
 
   std::string response_error =
       http_response_error_.has_value()
-          ? net::GetHttpReasonPhrase(
-                static_cast<net::HttpStatusCode>(*http_response_error_))
+          ? std::string(net::GetHttpReasonPhrase(*http_response_error_))
           : "[null]";
 
   return "status=" + status + ", net_error=" + net_error +

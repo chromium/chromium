@@ -108,8 +108,7 @@ std::string NearbyHttpStatus::ToString() const {
   std::string net_code = net::ErrorToString(net_error_code_);
   std::string response_code =
       http_response_code_.has_value()
-          ? net::GetHttpReasonPhrase(
-                static_cast<net::HttpStatusCode>(*http_response_code_))
+          ? std::string(net::GetHttpReasonPhrase(*http_response_code_))
           : "[null]";
 
   return "status=" + status + ", net_code=" + net_code +

@@ -363,8 +363,8 @@ base::DictValue LogDownloadedIconsErrors(
     for (const auto& url_and_http_code : icons_http_results) {
       const GURL& icon_url = url_and_http_code.first.url;
       int http_status_code = url_and_http_code.second;
-      const char* http_code_desc = net::GetHttpReasonPhrase(
-          static_cast<net::HttpStatusCode>(http_status_code));
+      std::string_view http_code_desc =
+          net::GetHttpReasonPhrase(http_status_code);
 
       // If the SkBitmap for`icon_url` is missing in `icons_map` then we report
       // this miss as an error, even for net::HttpStatusCode::HTTP_OK.

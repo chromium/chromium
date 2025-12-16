@@ -26,15 +26,6 @@ namespace em = enterprise_management;
 
 namespace {
 
-// C++ does not offer a mechanism to check if a given status code is present in
-// net::HttpStatusCode enum. To allow distinguishing standard HTTP status code
-// from custom ones, we define this array that will contain all standard codes.
-constexpr net::HttpStatusCode kStandardHttpStatusCodes[] = {
-#define HTTP_STATUS_ENUM_VALUE(label, code, reason) net::HttpStatusCode(code),
-#include "net/http/http_status_code_list.h"
-#undef HTTP_STATUS_ENUM_VALUE
-};
-
 std::unique_ptr<HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const std::string& content,
@@ -50,20 +41,8 @@ std::unique_ptr<HttpResponse> CreateHttpResponse(
 
 void CustomHttpResponse::SendResponse(
     base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
-  std::string reason = "Custom";
-  // The implementation of the BasicHttpResponse::reason() calls
-  // net::GetHttpReasonPhrase, which requires status code to be a standard HTTP
-  // status code and crashes otherwise. Hence we avoid calling it if a custom
-  // HTTP code is used.
-  // TODO(crbug.com/40209048): Make GetHttpReasonPhrase support custom codes
-  // instead.
-  if (std::find(std::begin(kStandardHttpStatusCodes),
-                std::end(kStandardHttpStatusCodes),
-                code()) != std::end(kStandardHttpStatusCodes)) {
-    reason = BasicHttpResponse::reason();
-  }
-  delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),
-                                        content());
+  delegate->SendHeadersContentAndFinish(code(), BasicHttpResponse::reason(),
+                                        BuildHeaders(), content());
 }
 
 std::string KeyValueFromUrl(GURL url, const std::string& key) {

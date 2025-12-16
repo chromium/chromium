@@ -97,7 +97,7 @@ class BasicHttpResponse : public HttpResponse {
     if (reason_) {
       return *reason_;
     } else {
-      return GetHttpReasonPhrase(code_);
+      return std::string(GetHttpReasonPhrase(code_));
     }
   }
   void set_reason(std::optional<std::string> reason) {

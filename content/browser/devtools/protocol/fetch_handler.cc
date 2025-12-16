@@ -222,12 +222,9 @@ void FetchHandler::FailRequest(const String& requestId,
 }
 
 namespace {
-std::string GetReasonPhrase(int responseCode) {
-  if (const char* phrase = net::TryToGetHttpReasonPhrase(
-          static_cast<net::HttpStatusCode>(responseCode))) {
-    return phrase;
-  }
-  return "";
+std::string GetReasonPhrase(int response_code) {
+  return std::string(
+      net::GetHttpReasonPhrase(response_code, /*default_value=*/""));
 }
 }  // namespace
 

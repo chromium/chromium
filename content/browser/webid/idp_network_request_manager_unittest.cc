@@ -13,6 +13,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -155,11 +156,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
                    const std::string& content,
                    bool cors_error = false) {
     auto head = network::mojom::URLResponseHead::New();
-    std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
-                             " " + net::GetHttpReasonPhrase(http_status) +
-                             "\n"
-                             "Content-type: " +
-                             mime_type + "\n\n";
+    std::string raw_header =
+        base::StrCat({"HTTP/1.1 ", base::NumberToString(http_status), " ",
+                      net::GetHttpReasonPhrase(http_status), "\n",
+                      "Content-type: ", mime_type, "\n\n"});
     head->headers = net::HttpResponseHeaders::TryToCreate(raw_header);
     test_url_loader_factory().AddResponse(
         url, std::move(head), content,

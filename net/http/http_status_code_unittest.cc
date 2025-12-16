@@ -10,9 +10,38 @@ namespace net {
 
 namespace {
 
-TEST(HttpStatusCode, OK) {
-  EXPECT_EQ(200, HTTP_OK);
-  EXPECT_STREQ("OK", GetHttpReasonPhrase(HTTP_OK));
+TEST(HttpStatusCode, GetHttpReasonPhrase) {
+  EXPECT_EQ("OK", GetHttpReasonPhrase(HTTP_OK));
+  EXPECT_EQ("OK", GetHttpReasonPhrase(HTTP_OK, "Overridden Default"));
+  EXPECT_EQ("OK", GetHttpReasonPhrase(200));
+  EXPECT_EQ("OK", GetHttpReasonPhrase(200, "Overridden Default"));
+
+  EXPECT_EQ("Not Found", GetHttpReasonPhrase(HTTP_NOT_FOUND));
+  EXPECT_EQ("Not Found",
+            GetHttpReasonPhrase(HTTP_NOT_FOUND, "Overridden Default"));
+  EXPECT_EQ("Not Found", GetHttpReasonPhrase(404));
+  EXPECT_EQ("Not Found", GetHttpReasonPhrase(404, "Overridden Default"));
+
+  EXPECT_EQ("Unknown Status Code",
+            GetHttpReasonPhrase(static_cast<HttpStatusCode>(599)));
+  EXPECT_EQ("Overridden Default",
+            GetHttpReasonPhrase(static_cast<HttpStatusCode>(599),
+                                "Overridden Default"));
+  EXPECT_EQ("Unknown Status Code", GetHttpReasonPhrase(599));
+  EXPECT_EQ("Overridden Default",
+            GetHttpReasonPhrase(599, "Overridden Default"));
+
+  EXPECT_EQ("Unknown Status Code",
+            GetHttpReasonPhrase(static_cast<HttpStatusCode>(1)));
+  EXPECT_EQ("Unknown Status Code", GetHttpReasonPhrase(1));
+
+  EXPECT_EQ("Unknown Status Code",
+            GetHttpReasonPhrase(static_cast<HttpStatusCode>(12345)));
+  EXPECT_EQ("Unknown Status Code", GetHttpReasonPhrase(12345));
+
+  EXPECT_EQ("Unknown Status Code",
+            GetHttpReasonPhrase(static_cast<HttpStatusCode>(-1)));
+  EXPECT_EQ("Unknown Status Code", GetHttpReasonPhrase(-1));
 }
 
 }  // namespace
