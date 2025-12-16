@@ -87,6 +87,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [super viewDidLoad];
 
   self.view.backgroundColor = _theme.composeboxBackgroundColor;
+  self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
 
   // Close button.
   UIColor* closeButtonBackgroundColor = _theme.closeButtonBackgroundColor;
@@ -198,7 +199,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     [_omniboxPopupContainer.trailingAnchor
         constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
     [_omniboxPopupContainer.bottomAnchor
-        constraintEqualToAnchor:safeAreaGuide.bottomAnchor],
+        constraintEqualToAnchor:self.view.bottomAnchor],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:safeAreaGuide.topAnchor],
   ]];
@@ -206,7 +207,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [_progressiveBlurEffect removeFromSuperview];
 
   switch ([self currentInputPlatePosition]) {
-    case ComposeboxInputPlatePosition::kBottom:
+    case ComposeboxInputPlatePosition::kBottom: {
       _progressiveBlurEffect = [self
           createBlurBackgroundEffectForPosition:[self
                                                     currentInputPlatePosition]];
@@ -216,10 +217,17 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
           _progressiveBlurEffect, _inputViewController.view, LayoutSides::kTop,
           NSDirectionalEdgeInsetsMake(-20, 0, 0, 0));
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
-                                LayoutSides::kBottom | LayoutSides::kLeading |
-                                    LayoutSides::kTrailing);
+                                LayoutSides::kLeading | LayoutSides::kTrailing);
+
+      NSLayoutConstraint* attachInputPlateToKeyboard =
+          [_inputViewController.view.bottomAnchor
+              constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                             constant:-kInputPlatePadding];
+      attachInputPlateToKeyboard.priority = UILayoutPriorityDefaultHigh;
 
       [_constraintsForCurrentPosition addObjectsFromArray:@[
+        [_progressiveBlurEffect.bottomAnchor
+            constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor],
         [_closeButton.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kCloseButtonDefaultPadding],
@@ -229,14 +237,16 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         [_inputViewController.view.trailingAnchor
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor
                            constant:-kInputPlatePadding],
+        attachInputPlateToKeyboard,
         [_inputViewController.view.bottomAnchor
-            constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                           constant:-kInputPlatePadding],
+            constraintLessThanOrEqualToAnchor:safeAreaGuide.bottomAnchor
+                                     constant:-kInputPlatePadding],
         [_inputViewController.view.topAnchor
             constraintGreaterThanOrEqualToAnchor:_closeButton.bottomAnchor
                                         constant:kInputPlatePadding],
       ]];
       break;
+    }
     case ComposeboxInputPlatePosition::kTop: {
       _progressiveBlurEffect = [self
           createBlurBackgroundEffectForPosition:[self

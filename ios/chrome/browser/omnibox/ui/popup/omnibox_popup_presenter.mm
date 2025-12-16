@@ -41,8 +41,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 @property(nonatomic, weak) OmniboxPopupViewController* viewController;
 /// Readwrite internal redefinition.
 @property(nonatomic, strong) UIView* popupContainerView;
-/// Separator for the bottom edge of the popup on iPad.
-@property(nonatomic, strong) UIView* bottomSeparator;
 /// Top constraint between the popup and it's container. This is used to animate
 /// suggestions when focusing the omnibox.
 @property(nonatomic, strong) NSLayoutConstraint* popupTopConstraint;
@@ -121,28 +119,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       _popupTopConstraint = [viewController.view.topAnchor
           constraintEqualToAnchor:_popupContainerView.topAnchor];
       _popupTopConstraint.active = YES;
-
-      // Add bottom separator. This will only be visible on iPad where
-      // the omnibox doesn't fill the whole screen.
-      _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-      _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-      _bottomSeparator.backgroundColor =
-          [UIColor colorNamed:kToolbarShadowColor];
-
-      [_popupContainerView addSubview:self.bottomSeparator];
-
-      CGFloat separatorHeight =
-          ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-      [NSLayoutConstraint activateConstraints:@[
-        [self.bottomSeparator.heightAnchor
-            constraintEqualToConstant:separatorHeight],
-        [self.bottomSeparator.leadingAnchor
-            constraintEqualToAnchor:_popupContainerView.leadingAnchor],
-        [self.bottomSeparator.trailingAnchor
-            constraintEqualToAnchor:_popupContainerView.trailingAnchor],
-        [self.bottomSeparator.topAnchor
-            constraintEqualToAnchor:_popupContainerView.bottomAnchor],
-      ]];
     }
   }
   return self;
@@ -156,7 +132,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     // popup view.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraintPhone.active = NO;
-      self.bottomSeparator.hidden = YES;
     }
 
     [self.viewController willMoveToParentViewController:nil];
@@ -214,7 +189,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     self.heightConstraintTablet.active = showRegularLayout;
   } else {
     self.bottomConstraintPhone.active = YES;
-    self.bottomSeparator.hidden = NO;
   }
 }
 
