@@ -334,9 +334,10 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return PlatformPriorityOverride();
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {
+    ThreadType initial_thread_type) {
   if (priority_override_handle == nullptr) {
     return;
   }

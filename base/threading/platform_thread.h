@@ -459,10 +459,9 @@ PlatformPriorityOverride SetThreadTypeOverride(
     PlatformThreadHandle thread_handle,
     ThreadType thread_type);
 void RemoveThreadTypeOverride(
-    const PlatformPriorityOverride& priority_override_handle);
-void RemoveThreadTypeOverrideImpl(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type);
+    ThreadType initial_thread_type);
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);

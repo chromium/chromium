@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
@@ -125,6 +126,22 @@ class JobHandleImpl : public v8::JobHandle {
 
  private:
   base::JobHandle handle_;
+};
+
+class ScopedBoostablePriorityImpl : public v8::ScopedBoostablePriority {
+ public:
+  ScopedBoostablePriorityImpl() = default;
+  ~ScopedBoostablePriorityImpl() override = default;
+
+  bool BoostPriority() override {
+    return scoped_boostable_priority_.BoostPriority(
+        base::PlatformThread::GetCurrentThreadType());
+  }
+
+  void Reset() override { scoped_boostable_priority_.Reset(); }
+
+ private:
+  base::ScopedBoostablePriority scoped_boostable_priority_;
 };
 
 class ScopedBlockingCallImpl : public v8::ScopedBlockingCall {
@@ -296,6 +313,11 @@ std::unique_ptr<v8::JobHandle> V8Platform::CreateJobImpl(
           base::Unretained(job_task_ptr)));
 
   return std::make_unique<JobHandleImpl>(std::move(handle));
+}
+
+std::unique_ptr<v8::ScopedBoostablePriority>
+V8Platform::CreateBoostablePriorityScope() {
+  return std::make_unique<ScopedBoostablePriorityImpl>();
 }
 
 std::unique_ptr<v8::ScopedBlockingCall> V8Platform::CreateBlockingScope(

@@ -474,12 +474,12 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return true;
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {
-  PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
-  SetThreadPriority(thread_handle, thread_type);
-  SetThreadQualityOfService(thread_handle, thread_type);
+    ThreadType initial_thread_type) {
+  SetThreadPriority(thread_handle, initial_thread_type);
+  SetThreadQualityOfService(thread_handle, initial_thread_type);
 }
 
 }  // namespace internal

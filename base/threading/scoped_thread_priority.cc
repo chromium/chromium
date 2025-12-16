@@ -70,12 +70,7 @@ ScopedBoostablePriority::ScopedBoostablePriority()
 
 ScopedBoostablePriority::~ScopedBoostablePriority() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (thread_handle_.is_null()) {
-    return;
-  }
-  if (did_override_priority_) {
-    internal::RemoveThreadTypeOverride(priority_override_handle_);
-  }
+  Reset();
 }
 
 bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
@@ -98,6 +93,17 @@ bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
   priority_override_handle_ =
       internal::SetThreadTypeOverride(thread_handle_, target_thread_type);
   return priority_override_handle_;
+}
+
+void ScopedBoostablePriority::Reset() {
+  if (thread_handle_.is_null()) {
+    return;
+  }
+  if (did_override_priority_) {
+    internal::RemoveThreadTypeOverride(
+        thread_handle_, priority_override_handle_, initial_thread_type_);
+    did_override_priority_ = false;
+  }
 }
 
 TaskMonitoringScopedBoostPriority::TaskMonitoringScopedBoostPriority(

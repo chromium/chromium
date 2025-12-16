@@ -134,13 +134,16 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return SetThreadNiceFromType(thread_id, thread_type);
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {
+    ThreadType initial_thread_type) {
   if (!priority_override_handle) {
     return;
   }
-  SetCurrentThreadTypeImpl(thread_type, MessagePumpType::DEFAULT);
+  PlatformThreadId thread_id(
+      pthread_gettid_np(thread_handle.platform_handle()));
+  SetThreadNiceFromType(thread_id, initial_thread_type);
 }
 
 }  // namespace internal
