@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_like_background.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -185,35 +186,6 @@ auto& GetViewCommandMap() {
 
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
-// Draws background akin to the tabstrip.
-class TabstripLikeBackground : public views::Background {
- public:
-  explicit TabstripLikeBackground(BrowserView* browser_view)
-      : browser_view_(browser_view) {}
-
- private:
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    bool painted = TopContainerBackground::PaintThemeCustomImage(canvas, view,
-                                                                 browser_view_);
-
-    if (!painted) {
-      SkColor frame_color;
-      // If the toolbar height side panel is visible, background should be
-      // painted the same as the toolbar rather than tab strip.
-      if (browser_view_->toolbar_height_side_panel()->GetVisible()) {
-        frame_color = view->GetColorProvider()->GetColor(kColorToolbar);
-      } else {
-        frame_color =
-            browser_view_->browser_widget()->GetFrameView()->GetFrameColor(
-                BrowserFrameActiveState::kUseCurrent);
-      }
-      canvas->DrawColor(frame_color);
-    }
-  }
-
-  const raw_ptr<BrowserView> browser_view_;
-};
 
 bool IsMigratedClickToCallBubble(
     IntentPickerBubbleView::BubbleType bubble_type) {
@@ -298,10 +270,10 @@ void ToolbarView::Init() {
   // The background views must be behind container_view_.
   background_view_left_ = AddChildViewAt(std::make_unique<View>(), 0);
   background_view_left_->SetBackground(
-      std::make_unique<TabstripLikeBackground>(browser_view_));
+      std::make_unique<TabStripLikeBackground>(browser_view_));
   background_view_right_ = AddChildViewAt(std::make_unique<View>(), 0);
   background_view_right_->SetBackground(
-      std::make_unique<TabstripLikeBackground>(browser_view_));
+      std::make_unique<TabStripLikeBackground>(browser_view_));
 
   active_state_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
