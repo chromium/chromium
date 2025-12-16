@@ -860,6 +860,13 @@ const CGFloat kDividerWidth = 1.0;
       [toggleSwitch addTarget:self
                        action:@selector(handleFeatureToggle:)
              forControlEvents:UIControlEventValueChanged];
+
+      if (feature.featureType == PageActionMenuCameraPermission ||
+          feature.featureType == PageActionMenuMicrophonePermission) {
+        [self updateAccessibilityLabelForSwitch:toggleSwitch
+                                    featureType:feature.featureType];
+      }
+
       [stackView addArrangedSubview:toggleSwitch];
       break;
     }
@@ -882,6 +889,11 @@ const CGFloat kDividerWidth = 1.0;
         if (feature.featureType == PageActionMenuPriceTracking) {
           UIImageView* chevronIcon = [self createNavigationChevron];
           [stackView addArrangedSubview:chevronIcon];
+          actionButton.accessibilityLabel = l10n_util::GetNSString(
+              IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL);
+        } else if (feature.featureType == PageActionMenuPopupBlocker) {
+          actionButton.accessibilityLabel = l10n_util::GetNSString(
+              IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL);
         }
       }
       break;
@@ -945,6 +957,26 @@ const CGFloat kDividerWidth = 1.0;
   return NO;
 }
 
+// Updates the accessibility label for a permission toggle switch.
+- (void)updateAccessibilityLabelForSwitch:(UISwitch*)toggleSwitch
+                              featureType:
+                                  (PageActionMenuFeatureType)featureType {
+  if (featureType == PageActionMenuCameraPermission) {
+    toggleSwitch.accessibilityLabel =
+        toggleSwitch.isOn
+            ? l10n_util::GetNSString(
+                  IDS_IOS_AI_HUB_TURN_OFF_CAMERA_ACCESSIBILITY_LABEL)
+            : l10n_util::GetNSString(
+                  IDS_IOS_AI_HUB_TURN_ON_CAMERA_ACCESSIBILITY_LABEL);
+  } else if (featureType == PageActionMenuMicrophonePermission) {
+    toggleSwitch.accessibilityLabel =
+        toggleSwitch.isOn
+            ? l10n_util::GetNSString(
+                  IDS_IOS_AI_HUB_TURN_OFF_MICROPHONE_ACCESSIBILITY_LABEL)
+            : l10n_util::GetNSString(
+                  IDS_IOS_AI_HUB_TURN_ON_MICROPHONE_ACCESSIBILITY_LABEL);
+  }
+}
 
 // Handles toggle switch changes for permission-based features.
 - (void)handleFeatureToggle:(UISwitch*)toggleSwitch {
@@ -953,6 +985,7 @@ const CGFloat kDividerWidth = 1.0;
       (PageActionMenuFeatureType)toggleSwitch.tag;
 
   [self.mutator updatePermission:toggleSwitch.isOn forFeature:featureType];
+  [self updateAccessibilityLabelForSwitch:toggleSwitch featureType:featureType];
 }
 
 // Handles button taps for action-based features like translate and popup
@@ -1110,6 +1143,11 @@ const CGFloat kDividerWidth = 1.0;
   [leadingButton addTarget:self
                     action:@selector(handleFeatureRowTap:)
           forControlEvents:UIControlEventTouchUpInside];
+
+  if (feature.featureType == PageActionMenuTranslate) {
+    leadingButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_AI_HUB_OPEN_TRANSLATE_SETTINGS_ACCESSIBILITY_LABEL);
+  }
 
   UIStackView* buttonContentStack =
       [self createFeatureRowContentStackWithFeature:feature];

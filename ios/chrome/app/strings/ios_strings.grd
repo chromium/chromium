@@ -311,6 +311,9 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel sync? You can turn on sync anytime in settings.
       </message>
+      <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
+        Always show pop-ups on this site
+      </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL" desc="The button label for the Camera permission feature of the AI hub.">
         Camera
       </message>
@@ -328,6 +331,12 @@
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL" desc="The button label for the Microphone permission feature of the AI hub.">
         Microphone
+      </message>
+      <message name="IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to open price tracking in the AI hub.">
+        Show price history for this product
+      </message>
+      <message name="IDS_IOS_AI_HUB_OPEN_TRANSLATE_SETTINGS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to open translate settings in the AI hub.">
+        Open Translate settings
       </message>
       <message name="IDS_IOS_AI_HUB_PERMISSION_SITE_EXPLANATION" desc="Explanation text for site permissions in the AI hub showing which site the permissions apply to.">
         "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" permissions will reset to off when you leave this site
@@ -361,6 +370,18 @@
       </message>
       <message name="IDS_IOS_AI_HUB_TRANSLATE_SHOW_ORIGINAL_BUTTON_LABEL" desc="The button label for showing original text in the Translate feature of the AI hub.">
         Show original
+      </message>
+      <message name="IDS_IOS_AI_HUB_TURN_OFF_CAMERA_ACCESSIBILITY_LABEL" desc="The accessibility label for the switch to turn off the camera permission in the AI hub.">
+        Turn off camera
+      </message>
+      <message name="IDS_IOS_AI_HUB_TURN_OFF_MICROPHONE_ACCESSIBILITY_LABEL" desc="The accessibility label for the switch to turn off the microphone permission in the AI hub.">
+        Turn off microphone
+      </message>
+      <message name="IDS_IOS_AI_HUB_TURN_ON_CAMERA_ACCESSIBILITY_LABEL" desc="The accessibility label for the switch to turn on the camera permission in the AI hub.">
+        Turn on camera
+      </message>
+      <message name="IDS_IOS_AI_HUB_TURN_ON_MICROPHONE_ACCESSIBILITY_LABEL" desc="The accessibility label for the switch to turn on the microphone permission in the AI hub.">
+        Turn on microphone
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_HEADER" translateable="false" desc="The title for the enhanced calendar page of the AI prototyping menu [Length: unlimited].">
         Enhanced Calendar
