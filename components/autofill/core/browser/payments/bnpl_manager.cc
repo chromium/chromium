@@ -327,13 +327,14 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
       case AiAmountExtractionResult::Error::kMissingServerResponse:
       case AiAmountExtractionResult::Error::kInvalidAmount:
       case AiAmountExtractionResult::Error::kMissingCurrency:
-        // TODO(crbug.com/467418149): Replace this general error dialog with a
-        // more specific error dialog for the non-USD currency case.
-      case AiAmountExtractionResult::Error::kUnsupportedCurrency:
       case AiAmountExtractionResult::Error::kTimeout:
         payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
             AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
                 /*is_permanent_error=*/false));
+        break;
+      case AiAmountExtractionResult::Error::kUnsupportedCurrency:
+        payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+            AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError());
         break;
     }
 

@@ -203,7 +203,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
               (override));
   MOCK_METHOD(void,
               CloseProgressUi,
-              (bool show_confirmation_before_closing),
+              (bool credit_card_fetched_successfully),
               (override));
   MOCK_METHOD(void,
               ShowAutofillErrorUi,
@@ -644,7 +644,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
   EXPECT_CALL(GetBnplUiDelegate(),
-              CloseProgressUi(/*show_confirmation_before_closing=*/true));
+              CloseProgressUi(/*credit_card_fetched_successfully=*/true));
 
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -690,7 +690,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
   EXPECT_CALL(GetBnplUiDelegate(),
-              CloseProgressUi(/*show_confirmation_before_closing=*/false));
+              CloseProgressUi(/*credit_card_fetched_successfully=*/false));
   EXPECT_CALL(GetBnplUiDelegate(),
               ShowAutofillErrorUi(
                   AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
@@ -1065,7 +1065,7 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer externally_linked_issuer = test::GetTestLinkedBnplIssuer(
       BnplIssuer::IssuerId::kBnplKlarna,
-      /*action_required=*/autofill::DenseSet(
+      /*actions_required=*/autofill::DenseSet(
           {autofill::PaymentInstrument::ActionRequired::kAcceptTos}));
 
   EXPECT_CALL(*payments_network_interface_,
@@ -2312,10 +2312,10 @@ TEST_F(BnplManagerTest,
 
   InSequence s;
   EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi);
-  EXPECT_CALL(GetBnplUiDelegate(),
-              ShowAutofillErrorUi(
-                  AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-                      /*is_permanent_error=*/false)));
+  EXPECT_CALL(
+      GetBnplUiDelegate(),
+      ShowAutofillErrorUi(
+          AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError()));
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
       base::unexpected(AiAmountExtractionResult::Error::kUnsupportedCurrency));
