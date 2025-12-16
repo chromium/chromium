@@ -6924,6 +6924,111 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   }
 }
 
+// Tests that a service worker-based extension with webRequestBlocking that
+// registers listeners conditionally doesn't hang the browser.
+// Regression test for crbug.com/467448815.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlocking_ListenersRegisteredConditionally) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking", "storage"],
+           "host_permissions": [
+             "http://block.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.storage.local.get(
+           ['shouldSkipRegistration'],
+           async (storage) => {
+             const shouldSkip = storage.shouldSkipRegistration === true;
+             if (shouldSkip) {
+               await chrome.storage.local.remove('shouldSkipRegistration');
+               chrome.test.sendMessage('skipped');
+             } else {
+               chrome.webRequest.onHeadersReceived.addListener(
+                   (details) => {},
+                   {urls: ['<all_urls>'], types: ['main_frame']},
+                   ['blocking']);
+               chrome.webRequest.onBeforeRequest.addListener(
+                   (details) => {
+                     return {cancel: true};
+                   },
+                   {urls: ['<all_urls>'], types: ['main_frame']},
+                   ['blocking']);
+               await chrome.storage.local.set({shouldSkipRegistration: true});
+               chrome.test.sendMessage('registered');
+             }
+           }
+         );
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ExtensionTestMessageListener registered_listener("registered");
+  ExtensionTestMessageListener skipped_listener("skipped");
+
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(registered_listener.WaitUntilSatisfied());
+
+  // Two webRequest listeners should be registered.
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onHeadersReceived"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onHeadersReceived"));
+
+  // Navigate to block.example. The worker will start, and register the
+  // listener. The request should be blocked.
+  {
+    content::WebContents* web_contents = GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_FALSE(NavigateToURL(
+        web_contents,
+        embedded_test_server()->GetURL("block.example", "/simple.html")));
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  }
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  base::RunLoop().RunUntilIdle();
+
+  // The listeners should still be registered, but should be counted as
+  // inactive listeners.
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onHeadersReceived"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onHeadersReceived"));
+
+  // Navigate to block.example. The worker will start, but NOT register the
+  // listeners. The request should proceed rather than hanging the browser.
+  {
+    content::WebContents* web_contents = GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(NavigateToURL(
+        web_contents,
+        embedded_test_server()->GetURL("block.example", "/simple.html")));
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+
+  ASSERT_TRUE(skipped_listener.WaitUntilSatisfied());
+}
+
 // Tests a service worker-based extension using webRequest for observational
 // purposes receives events after the worker stops.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,

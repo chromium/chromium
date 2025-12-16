@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router.h"
@@ -192,6 +193,23 @@ void EventDispatchHelper::DispatchEventImpl(
                                     *event, listener);
     }
   }
+
+  // NOTE: this code mirrors the logic in `EventRouter::DispatchPendingEvent`.
+  if (!contexts_pending_dispatch_.empty() && event->cannot_dispatch_callback) {
+    // Even though a context was active, there was no registered listener
+    // associated with this event. This can happen if an extension
+    // asynchronously registers event listeners. In this case, notify the caller
+    // (if they subscribed via a callback) and drop the event.
+    //
+    // NOTE: we need to post a task rather than just executing the callback,
+    // because the callback can rely on state that will be setup in the current
+    // sequence, e.g. `WebRequestEventRouter::OnHeadersReceived` sets up a
+    // `BlockedRequest` that has to be processed. Failure to do this can cause
+    // the browser to hang for `webRequestBlocking` events.
+    // See crbug.com/467448815.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(event->cannot_dispatch_callback));
+  }
 }
 
 void EventDispatchHelper::DispatchEventToLazyListener(
@@ -238,9 +256,14 @@ void EventDispatchHelper::DispatchEventToActiveListener(
   content::RenderProcessHost* process = listener->process();
   BrowserContext* listener_context = process->GetBrowserContext();
 
-  if (IsAlreadyQueued(LazyContextIdForListener(listener, *listener_context))) {
+  auto lazy_context_id = LazyContextIdForListener(listener, *listener_context);
+  if (IsAlreadyQueued(lazy_context_id)) {
     return;
   }
+  // The task wasn't queued in `DispatchEventToLazyListener` in expectation for
+  // dispatch to this active listener. We are about to process that dispatch,
+  // so we can remove the context from the set of pending ones.
+  contexts_pending_dispatch_.erase(lazy_context_id);
 
   // Determine the target context type.
   ProcessMap* listener_process_map = ProcessMap::Get(listener_context);
@@ -330,6 +353,10 @@ bool EventDispatchHelper::TryQueueEventDispatch(
   event.lazy_background_active_on_dispatch =
       queue->IsReadyToRunTasks(browser_context, extension);
   if (!queue->ShouldEnqueueTask(browser_context, extension)) {
+    // Keep track of contexts for which we decided not to enqueue the task,
+    // because the context was active. We expect to dispatch later to the
+    // corresponding non-lazy listener.
+    contexts_pending_dispatch_.insert(dispatch_context);
     return false;
   }
 
