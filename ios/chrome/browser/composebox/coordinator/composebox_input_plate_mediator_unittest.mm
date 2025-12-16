@@ -78,7 +78,11 @@
 }
 - (void)disableCreateImageActions:(BOOL)disabled {
 }
+- (void)hideCameraActions:(BOOL)hidden {
+}
 - (void)disableCameraActions:(BOOL)disabled {
+}
+- (void)hideGalleryActions:(BOOL)hidden {
 }
 - (void)disableGalleryActions:(BOOL)disabled {
 }

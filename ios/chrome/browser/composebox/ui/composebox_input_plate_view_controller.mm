@@ -172,8 +172,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   BOOL _createImageActionsDisabled;
   /// Camera action state.
   BOOL _cameraActionsDisabled;
+  BOOL _cameraActionsHidden;
   /// Gallery action state.
   BOOL _galleryActionsDisabled;
+  BOOL _galleryActionsHidden;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
 
@@ -482,11 +484,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updatePlusButtonItems];
 }
 
+- (void)hideCameraActions:(BOOL)hidden {
+  if (_cameraActionsHidden == hidden) {
+    return;
+  }
+  _cameraActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
 - (void)disableCameraActions:(BOOL)disabled {
   if (_cameraActionsDisabled == disabled) {
     return;
   }
   _cameraActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)hideGalleryActions:(BOOL)hidden {
+  if (_galleryActionsHidden == hidden) {
+    return;
+  }
+  _galleryActionsHidden = hidden;
   [self updatePlusButtonItems];
 }
 
@@ -1066,12 +1084,18 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   createImageAction.attributes = createImageAttributes;
 
   UIMenuElementAttributes galleryAttributes = 0;
+  if (_galleryActionsHidden) {
+    galleryAttributes |= UIMenuElementAttributesHidden;
+  }
   if (_galleryActionsDisabled) {
     galleryAttributes |= UIMenuElementAttributesDisabled;
   }
   galleryAction.attributes = galleryAttributes;
 
   UIMenuElementAttributes cameraAttributes = 0;
+  if (_cameraActionsHidden) {
+    cameraAttributes |= UIMenuElementAttributesHidden;
+  }
   if (_cameraActionsDisabled) {
     cameraAttributes |= UIMenuElementAttributesDisabled;
   }
