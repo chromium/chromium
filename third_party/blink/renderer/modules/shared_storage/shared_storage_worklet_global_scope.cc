@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
@@ -1216,7 +1217,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
         GetSecurityOrigin());
 
     cached_metadata_handler = MakeGarbageCollected<ScriptCachedMetadataHandler>(
-        TextEncoding(response_head->charset.c_str()), std::move(sender));
+        TextEncoding(StringView(base::as_byte_span(response_head->charset))),
+        std::move(sender));
 
     if (cached_metadata) {
       cached_metadata_handler->SetSerializedCachedMetadata(

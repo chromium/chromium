@@ -24,6 +24,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
@@ -47,12 +48,7 @@ static inline bool BytesEqual(base::span<const char> bytes,
 }
 
 static TextEncoding FindTextEncoding(std::string_view encoding_name) {
-  const wtf_size_t length =
-      base::checked_cast<wtf_size_t>(encoding_name.size());
-  Vector<char, 64> buffer(length + 1);
-  base::span(buffer).copy_prefix_from(encoding_name);
-  buffer[length] = '\0';
-  return TextEncoding(buffer.data());
+  return TextEncoding(StringView(base::as_byte_span(encoding_name)));
 }
 
 const TextEncoding& TextResourceDecoder::DefaultEncoding(

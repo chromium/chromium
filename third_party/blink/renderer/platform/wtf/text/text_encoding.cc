@@ -37,10 +37,7 @@
 
 namespace blink {
 
-TextEncoding::TextEncoding(const char* name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {}
-
-TextEncoding::TextEncoding(const String& name)
+TextEncoding::TextEncoding(StringView name)
     : name_(AtomicCanonicalTextEncodingName(name)) {}
 
 String TextEncoding::Decode(base::span<const uint8_t> data,

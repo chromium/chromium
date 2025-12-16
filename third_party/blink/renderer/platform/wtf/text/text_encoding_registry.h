@@ -42,10 +42,9 @@ class TextEncoding;
 WTF_EXPORT std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding&);
 
 // Only TextEncoding should use the following functions directly.
-AtomicString AtomicCanonicalTextEncodingName(const char* alias);
+AtomicString AtomicCanonicalTextEncodingName(StringView alias);
 template <typename CharacterType>
 const char* AtomicCanonicalTextEncodingName(const CharacterType*, size_t);
-AtomicString AtomicCanonicalTextEncodingName(const String&);
 bool NoExtendedTextEncodingNameUsed();
 
 // Exposed for testing (via window.internals) that the set of supported

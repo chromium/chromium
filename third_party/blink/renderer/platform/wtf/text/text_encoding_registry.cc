@@ -66,7 +66,7 @@ struct TextCodecFactory {
 // TODO(crbug.com/40476285): CaseFoldingHashTraits is expensive. Encoding names
 // consist of ASCII characters, and we can use IgnoringAsciiCaseHashTraits.
 using TextEncodingNameMap =
-    HashMap<const char*, AtomicString, CaseFoldingHashTraits<const char*>>;
+    HashMap<String, AtomicString, CaseFoldingHashTraits<String>>;
 using TextCodecMap = HashMap<AtomicString, TextCodecFactory>;
 
 static base::Lock& EncodingRegistryLock() {
@@ -91,14 +91,14 @@ ALWAYS_INLINE void AtomicSetDidExtendTextCodecMaps() {
 
 #if !DCHECK_IS_ON()
 
-static inline void CheckExistingName(const char*, const AtomicString&) {}
+static inline void CheckExistingName(StringView, const AtomicString&) {}
 
 #else
 
-static void CheckExistingName(const char* alias,
+static void CheckExistingName(StringView alias,
                               const AtomicString& canonical_name) {
   EncodingRegistryLock().AssertAcquired();
-  const auto it = g_text_encoding_name_map->find(alias);
+  const auto it = g_text_encoding_name_map->find(alias.ToString());
   if (it == g_text_encoding_name_map->end())
     return;
   const AtomicString& old_canonical_name = it->value;
@@ -106,8 +106,7 @@ static void CheckExistingName(const char* alias,
     return;
   }
   // Keep the warning silent about one case where we know this will happen.
-  if (UNSAFE_TODO(strcmp(alias, "ISO-8859-8-I")) == 0 &&
-      old_canonical_name == "ISO-8859-8-I" &&
+  if (alias == "ISO-8859-8-I" && old_canonical_name == "ISO-8859-8-I" &&
       EqualIgnoringASCIICase(canonical_name, "iso-8859-8")) {
     return;
   }
@@ -118,31 +117,33 @@ static void CheckExistingName(const char* alias,
 
 #endif
 
-static bool IsUndesiredAlias(const char* alias) {
+static bool IsUndesiredAlias(StringView alias) {
   // Reject aliases with version numbers that are supported by some back-ends
   // (such as "ISO_2022,locale=ja,version=0" in ICU).
-  if (UNSAFE_TODO(strchr(alias, ','))) {
+  if (alias.Find([](UChar ch) { return ch == ','; }) != kNotFound) {
     return true;
   }
   // 8859_1 is known to (at least) ICU, but other browsers don't support this
   // name - and having it caused a compatibility
   // problem, see bug 43554.
-  if (0 == UNSAFE_TODO(strcmp(alias, "8859_1"))) {
+  if (alias == "8859_1") {
     return true;
   }
   return false;
 }
 
 static void AddToTextEncodingNameMap(const char* alias, const char* name) {
-  DCHECK_LE(strlen(alias), kMaxEncodingNameLength);
+  StringView alias_view(alias);
+  DCHECK_LE(alias_view.length(), kMaxEncodingNameLength);
   EncodingRegistryLock().AssertAcquired();
-  if (IsUndesiredAlias(alias))
+  if (IsUndesiredAlias(alias_view)) {
     return;
+  }
   // TODO(tkent): This function creates AtomicStrings for an identical string
   // repeatedly. We should make the `name` argument AtomicString.
   AtomicString canonical_name(name);
-  CheckExistingName(alias, canonical_name);
-  g_text_encoding_name_map->insert(alias, canonical_name);
+  CheckExistingName(alias_view, canonical_name);
+  g_text_encoding_name_map->insert(alias_view.ToString(), canonical_name);
 }
 
 static void AddToTextCodecMap(const char* canonical_name,
@@ -194,15 +195,29 @@ std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
   return factory.function(encoding);
 }
 
-AtomicString AtomicCanonicalTextEncodingName(const char* name) {
-  if (!name || !name[0])
+AtomicString AtomicCanonicalTextEncodingName(StringView name) {
+  if (name.empty() || name.length() > kMaxEncodingNameLength) {
     return g_null_atom;
+  }
+  if (const auto* impl = name.SharedImpl()) {
+    // We perform a fast ASCII-only check for `StringView`s backed by a
+    // `StringImpl`. This is a pre-screening optimization for the hash map
+    // lookup below. It's safe to skip this check for other `StringView`
+    // types.
+    if (!impl->ContainsOnlyASCIIOrEmpty()) {
+      return g_null_atom;
+    }
+  }
+
+  // TODO(tkent): Producing a String only for HashMap lookups is inefficient. We
+  // should have a HashTranslator accepting StringViews.
+  String name_string = name.ToString();
   base::AutoLock lock(EncodingRegistryLock());
 
   if (!g_text_encoding_name_map)
     BuildBaseTextCodecMaps();
 
-  const auto it1 = g_text_encoding_name_map->find(name);
+  const auto it1 = g_text_encoding_name_map->find(name_string);
   if (it1 != g_text_encoding_name_map->end())
     return it1->value;
 
@@ -211,37 +226,8 @@ AtomicString AtomicCanonicalTextEncodingName(const char* name) {
 
   ExtendTextCodecMaps();
   AtomicSetDidExtendTextCodecMaps();
-  const auto it2 = g_text_encoding_name_map->find(name);
+  const auto it2 = g_text_encoding_name_map->find(name_string);
   return it2 != g_text_encoding_name_map->end() ? it2->value : g_null_atom;
-}
-
-template <typename CharacterType>
-AtomicString AtomicCanonicalTextEncodingName(
-    base::span<const CharacterType> characters) {
-  if (characters.size() > kMaxEncodingNameLength) {
-    return g_null_atom;
-  }
-  std::array<char, kMaxEncodingNameLength + 1> buffer;
-  size_t j = 0;
-  for (size_t i = 0; i < characters.size(); ++i) {
-    buffer[j++] = static_cast<char>(characters[i]);
-  }
-  buffer[j] = 0;
-  return AtomicCanonicalTextEncodingName(buffer.data());
-}
-
-AtomicString AtomicCanonicalTextEncodingName(const String& alias) {
-  if (alias.empty()) {
-    return g_null_atom;
-  }
-  if (alias.Contains('\0')) {
-    return g_null_atom;
-  }
-  if (!alias.ContainsOnlyASCIIOrEmpty()) {
-    return g_null_atom;
-  }
-  return VisitCharacters(
-      alias, [](auto chars) { return AtomicCanonicalTextEncodingName(chars); });
 }
 
 bool NoExtendedTextEncodingNameUsed() {
@@ -269,8 +255,8 @@ void DumpTextEncodingNameMap() {
   base::AutoLock lock(EncodingRegistryLock());
 
   for (const auto& it : *g_text_encoding_name_map) {
-    UNSAFE_TODO(
-        fprintf(stderr, "'%s' => '%s'\n", it.key, it.value.Latin1().c_str()));
+    UNSAFE_TODO(fprintf(stderr, "'%s' => '%s'\n", it.key.Latin1().c_str(),
+                        it.value.Latin1().c_str()));
   }
 }
 #endif
