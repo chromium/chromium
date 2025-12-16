@@ -472,13 +472,13 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
 StyleSelfAlignmentData ResolvedSelfAlignment(
     const StyleSelfAlignmentData& value,
     const StyleSelfAlignmentData& normal_value_behavior,
-    bool has_out_of_flow_position) {
+    bool has_anchor_center_offset) {
   if (value.GetPosition() == ItemPosition::kLegacy ||
       value.GetPosition() == ItemPosition::kNormal ||
       value.GetPosition() == ItemPosition::kAuto) {
     return normal_value_behavior;
   }
-  if (!has_out_of_flow_position &&
+  if (!has_anchor_center_offset &&
       value.GetPosition() == ItemPosition::kAnchorCenter) {
     return {ItemPosition::kCenter, value.Overflow(), value.PositionType()};
   }
@@ -492,12 +492,13 @@ StyleSelfAlignmentData ComputedStyle::ResolvedAlignSelf(
   // of each layout model.
   if (!parent_style || AlignSelf().GetPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(AlignSelf(), normal_value_behavior,
-                                 HasOutOfFlowPosition());
+                                 AnchorCenterOffset().has_value());
   }
 
   // The 'auto' keyword computes to the parent's align-items computed value.
   return ResolvedSelfAlignment(parent_style->AlignItems(),
-                               normal_value_behavior, HasOutOfFlowPosition());
+                               normal_value_behavior,
+                               AnchorCenterOffset().has_value());
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
@@ -507,12 +508,13 @@ StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
   // of each layout model.
   if (!parent_style || JustifySelf().GetPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(JustifySelf(), normal_value_behavior,
-                                 HasOutOfFlowPosition());
+                                 AnchorCenterOffset().has_value());
   }
 
   // The auto keyword computes to the parent's justify-items computed value.
   return ResolvedSelfAlignment(parent_style->JustifyItems(),
-                               normal_value_behavior, HasOutOfFlowPosition());
+                               normal_value_behavior,
+                               AnchorCenterOffset().has_value());
 }
 
 bool ComputedStyle::operator==(const ComputedStyle& o) const {
