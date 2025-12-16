@@ -308,6 +308,12 @@ LRESULT WinWindow::OnKeyEvent(UINT message, WPARAM w_param, LPARAM l_param) {
   return 0;
 }
 
+void WinWindow::OnInputLangChange(DWORD character_set, HKL input_language_id) {
+  if (input_method_) {
+    input_method_->OnInputLocaleChanged();
+  }
+}
+
 LRESULT WinWindow::OnImeMessages(UINT message, WPARAM w_param, LPARAM l_param) {
   if (input_method_) {
     LRESULT result = 0;
