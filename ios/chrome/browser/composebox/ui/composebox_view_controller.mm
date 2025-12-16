@@ -194,11 +194,13 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
   [_constraintsForCurrentPosition addObjectsFromArray:@[
     [_omniboxPopupContainer.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:safeAreaGuide.leadingAnchor],
     [_omniboxPopupContainer.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
     [_omniboxPopupContainer.bottomAnchor
         constraintEqualToAnchor:safeAreaGuide.bottomAnchor],
+    [_omniboxPopupContainer.topAnchor
+        constraintEqualToAnchor:safeAreaGuide.topAnchor],
   ]];
 
   [_progressiveBlurEffect removeFromSuperview];
@@ -221,8 +223,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         [_closeButton.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kCloseButtonDefaultPadding],
-        [_omniboxPopupContainer.topAnchor
-            constraintEqualToAnchor:_closeButton.bottomAnchor],
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
                            constant:kInputPlatePadding],
@@ -263,8 +263,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         [_closeButton.topAnchor
             constraintEqualToAnchor:_inputViewController.view.topAnchor
                            constant:kCloseButtonTopMargin],
-        [_omniboxPopupContainer.topAnchor
-            constraintEqualToAnchor:safeAreaGuide.topAnchor],
         [_omniboxPopupContainer.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor],
         [_omniboxPopupContainer.trailingAnchor
