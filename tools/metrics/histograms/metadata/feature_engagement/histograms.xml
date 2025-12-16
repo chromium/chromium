@@ -440,6 +440,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_NewTab" summary="new tab"/>
   <variant name="IPH_NewTabPageHomeButton"
       summary="(obsolete) new tab page button"/>
+  <variant name="IPH_NewTabPageThemeCustomization"
+      summary="informing user of customizing new tab page theme via NTP
+               customization option in the App menu"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
   <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>

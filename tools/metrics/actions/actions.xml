@@ -570,6 +570,8 @@ should be able to be added at any place in this file.
   <variant name="_NewTabPageButton" summary="Deprecated in M79-."/>
   <variant name="_NewTabPageHomeButton"
       summary="For NewTabPageHomeButton feature. (obsolete)"/>
+  <variant name="_NewTabPageThemeCustomization"
+      summary="In product help for NewTabPage theme customization feature."/>
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
   <variant name="_PageInfo" summary="In product help for opening PageInfo."/>
   <variant name="_PageInfoStoreInfo" summary="For PageInfoStoreInfo feature."/>
