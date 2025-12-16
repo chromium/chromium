@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -197,13 +195,11 @@ public class TabItemPickerCoordinator {
                 cachedTabIdsSet.add((int) id);
             }
         }
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActiveOrCachedTab =
                     FuseboxTabUtils.isTabActive(tab) || cachedTabIdsSet.contains(tab.getId());
-            if (FuseboxTabUtils.isTabEligibleForAttachment(tab, templateUrlService)
-                    && isActiveOrCachedTab) {
+            if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && isActiveOrCachedTab) {
                 tabsToShow.add(tab);
             }
         }
