@@ -57,6 +57,9 @@ interface PageHandler {
   // Opens the Help page in a new tab.
   OpenHelpUi();
 
+  // Opens the onboarding help page in a new tab.
+  OpenOnboardingHelpUi();
+
   // Moves the contents of the side panel to a new tab.
   MoveTaskUiToNewTab();
 

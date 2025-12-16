@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_components/composebox/composebox.js';
+import './onboarding_tooltip.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
@@ -15,10 +16,12 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 
 export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ComposeboxElement,
+    onboardingTooltip: ContextualTasksOnboardingTooltipElement,
   };
 }
 
@@ -41,6 +44,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
       tabSuggestions_: {type: Array},
+      showOnboardingTooltip_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showOnboardingTooltip'),
+      },
     };
   }
 
@@ -50,6 +57,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor showOnboardingTooltip_: boolean =
+      loadTimeData.getBoolean('showOnboardingTooltip');
   private eventTracker_: EventTracker = new EventTracker();
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -96,6 +105,38 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
                   '--carousel-height', `${e.detail.carouselHeight}px`);
             }
           });
+
+      this.eventTracker_.add(
+          composebox.getDropTarget(), 'on-context-files-changed', () => {
+            this.updateTooltipVisibility_();
+          });
+
+      // Initial check.
+      this.updateTooltipVisibility_();
+    }
+  }
+
+  private updateTooltipVisibility_() {
+    if (!loadTimeData.getBoolean('showOnboardingTooltip')) {
+      return;
+    }
+
+    const tooltip = this.$.onboardingTooltip;
+    if (!tooltip) {
+      return;
+    }
+
+    if (!tooltip.target) {
+      tooltip.target = this.$.composebox;
+    }
+
+    const context = this.$.composebox.getDropTarget();
+    const hasTabChip = context.hasTabFile();
+    tooltip.shouldShow = hasTabChip;
+    if (tooltip.shouldShow) {
+      tooltip.show();
+    } else {
+      tooltip.hide();
     }
   }
 

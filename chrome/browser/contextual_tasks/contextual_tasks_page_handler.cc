@@ -137,6 +137,12 @@ void ContextualTasksPageHandler::OpenHelpUi() {
   OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kHelpUrl));
 }
 
+void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
+  OpenUrlInNewTab(
+      web_ui_controller_->web_ui(),
+      GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()));
+}
+
 void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
   auto* browser = web_ui_controller_->GetBrowser();
   const auto& task_id = web_ui_controller_->GetTaskId();

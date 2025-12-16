@@ -40,6 +40,8 @@ build_webui("build") {
     "favicon_group.ts",
     "favicon_group.html.ts",
     "icons.html.ts",
+    "onboarding_tooltip.ts",
+    "onboarding_tooltip.html.ts",
     "post_message_handler.ts",
     "sources_menu.ts",
     "sources_menu.html.ts",
@@ -56,6 +58,7 @@ build_webui("build") {
     "error_page.css",
     "favicon_group.css",
     "sources_menu.css",
+    "onboarding_tooltip.css",
     "top_toolbar.css",
     "internals/app.css",
   ]

@@ -16,6 +16,9 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       --composebox-height: ${this.composeboxHeight_}px;
       --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
       >
+    ${this.showOnboardingTooltip_ ? html`
+      <contextual-tasks-onboarding-tooltip id="onboardingTooltip">
+      </contextual-tasks-onboarding-tooltip>` : ''}
     <cr-composebox
       id="composebox"
       ?autofocus="${false}"

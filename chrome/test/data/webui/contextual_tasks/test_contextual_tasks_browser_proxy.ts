@@ -96,6 +96,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'isShownInTab',
       'openMyActivityUi',
       'openHelpUi',
+      'openOnboardingHelpUi',
       'moveTaskUiToNewTab',
       'onTabClickedFromSourcesMenu',
       'getSearchUrl',
@@ -150,6 +151,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   openHelpUi() {
     this.methodCalled('openHelpUi');
+  }
+
+  openOnboardingHelpUi() {
+    this.methodCalled('openOnboardingHelpUi');
   }
 
   moveTaskUiToNewTab() {
