@@ -29,4 +29,9 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
   base::UmaHistogramBoolean(histogram_name, is_within_range);
 }
 
+void LogAiAmountExtractionApcFetchResult(bool success) {
+  base::UmaHistogramBoolean("Autofill.AiAmountExtraction.ApcFetchResult",
+                            success);
+}
+
 }  // namespace autofill::autofill_metrics

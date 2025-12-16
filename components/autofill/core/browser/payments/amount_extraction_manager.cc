@@ -176,6 +176,12 @@ void AmountExtractionManager::FetchAiPageContent() {
 
 void AmountExtractionManager::OnAiPageContentReceived(
     std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
+  if (!has_logged_apc_fetch_result_) {
+    autofill_metrics::LogAiAmountExtractionApcFetchResult(
+        /*success=*/result.has_value());
+    has_logged_apc_fetch_result_ = true;
+  }
+
   if (!result) {
     if (BnplManager* bnpl_manager =
             autofill_manager_->GetPaymentsBnplManager()) {
@@ -196,7 +202,6 @@ void AmountExtractionManager::OnAiPageContentReceived(
       {.execution_timeout = kAiBasedAmountExtractionWaitTime},
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,
                      weak_ptr_factory_.GetWeakPtr()));
-  // TODO(crbug.com/444683986): Log ApcGenerationResult to UMA.
 }
 
 void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {

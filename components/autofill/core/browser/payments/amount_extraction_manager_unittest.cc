@@ -1450,6 +1450,84 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_FetchReturnsEmpty) {
 }
 
 TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ApcFetchResultMetric_Success) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+  ApcFetchCallback fetch_callback;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  ASSERT_TRUE(fetch_callback);
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillOnce(Return(model_executor()));
+  EXPECT_CALL(*model_executor(), ExecuteModel);
+
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(123);
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ApcFetchResultMetric_Failure) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+  ApcFetchCallback fetch_callback;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  ASSERT_TRUE(fetch_callback);
+
+  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
+
+  std::move(fetch_callback).Run(std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.ApcFetchResult", false, 1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ApcFetchResultMetric_LogsOnlyOnce) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(123);
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillRepeatedly(Return(model_executor()));
+  EXPECT_CALL(*model_executor(), ExecuteModel).Times(2);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .Times(2)
+      .WillRepeatedly([&test_proto](ApcFetchCallback callback) {
+        std::move(callback).Run(std::make_optional(test_proto));
+      });
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
+}
+
+TEST_F(AmountExtractionManagerTest,
        AiAmountExtraction_ResetWhenAiFeatureEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAiBasedAmountExtraction};

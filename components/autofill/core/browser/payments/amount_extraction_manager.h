@@ -196,6 +196,10 @@ class AmountExtractionManager {
   // logged once per page load.
   bool has_logged_amount_extraction_result_ = false;
 
+  // Set to true after the first time the annotated page content (APC) fetch
+  // result is logged. Ensures that logging occurs at most once per page load.
+  bool has_logged_apc_fetch_result_ = false;
+
   // Indicates whether there is an amount search ongoing or not. If set, do not
   // trigger the search. It gets reset to false once the search is done. This is
   // to avoid re-triggering amount extraction multiple times during an ongoing

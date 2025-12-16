@@ -36,6 +36,10 @@ void LogAiAmountExtractionResult(AiAmountExtractionResult result,
 void LogAiAmountExtractedInIssuerRange(bool is_within_range,
                                        BnplIssuer::IssuerId issuer_id);
 
+// Logs the result (success/failure) of fetching the Annotated Page Content
+// (APC).
+void LogAiAmountExtractionApcFetchResult(bool success);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AI_AMOUNT_EXTRACTION_METRICS_H_
