@@ -387,8 +387,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     const VideoFrame* const frame) {
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (!frame ||
-      frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (!frame || !frame->HasMappableSharedImage()) {
     return nullptr;
   }
   gfx::GpuMemoryBufferHandle gmb_handle = frame->GetGpuMemoryBufferHandle();
