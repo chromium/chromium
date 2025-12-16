@@ -7,13 +7,10 @@ import ios_chrome_browser_shared_ui_util_util_swift
 import ios_chrome_browser_tab_switcher_tab_strip_ui_swift_constants
 
 /// View Controller displaying the TabStrip.
-// TODO(crbug.com/427169284): Replace @preconcurrency with @MainActor when all test bots
-// support this new syntax. @preconcurrency tells the Swift 6 compiler to do concurrency
-// chencking during the run-time instead of the compile time.
 @MainActor
 @objcMembers
 class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTabButtonDelegate,
-  @preconcurrency TabStripGroupCellDelegate, @preconcurrency TabStripTabCellDelegate
+  @MainActor TabStripGroupCellDelegate, @MainActor TabStripTabCellDelegate
 {
 
   // The enum used by the data source to manage the sections.

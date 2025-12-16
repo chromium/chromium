@@ -25,11 +25,9 @@ extension SettingsEnum {
   }
 }
 
-// TODO(crbug.com/427169284): Replace @preconcurrency with @MainActor when all test bots
-// support this new syntax. @preconcurrency tells the Swift 6 compiler to do concurrency
-// chencking during the run-time instead of the compile time.
+@MainActor
 @objc
-class SafetyCheckTableViewController: SettingsRootTableViewController, @preconcurrency
+class SafetyCheckTableViewController: SettingsRootTableViewController, @MainActor
   SafetyCheckConsumer
 {
   // The accessibility identifier of the safety check table view.
