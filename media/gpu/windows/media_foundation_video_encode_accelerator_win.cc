@@ -23,6 +23,7 @@
 #include "base/features.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -76,6 +77,16 @@ constexpr size_t kNumInputBuffers = 3;
 // Media Foundation uses 100 nanosecond units for time, see
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
 constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
+
+constexpr std::string_view kEncoderKeyFrameFullfilledHistogramPrefix =
+    "Media.VideoEncode.MFVEA.KeyFrameRequestFullfilled.";
+
+std::string GetEncoderKeyFrameFullfilledHistogramName(
+    VideoCodecProfile profile) {
+  return base::StrCat(
+      {kEncoderKeyFrameFullfilledHistogramPrefix,
+       GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
+}
 
 // Get distance from current frame to next temporal base layer frame.
 uint32_t GetDistanceToNextTemporalBaseLayer(uint32_t frame_number,
@@ -694,8 +705,7 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
   bool discard_high_layer_frames =
       (((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
         vendor_ == DriverVendor::kIntel) ||
-       (codec_ == VideoCodec::kH264 && (vendor_ == DriverVendor::kIntel ||
-                                        vendor_ == DriverVendor::kNvidia))) &&
+       codec_ == VideoCodec::kH264) &&
       IsTemporalScalabilityCoding() && effective_options.key_frame;
 
   if (discard_high_layer_frames) {
@@ -1857,7 +1867,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
         .qp = quantizer,
         .frame_id = input_since_keyframe_count_,
         .timestamp = input.timestamp,
-        .frame_encode_start_time = input.frame_encode_start_time});
+        .frame_encode_start_time = input.frame_encode_start_time,
+        .keyframe_request = input.options.key_frame});
   }
 
   {
@@ -2375,6 +2386,12 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   const bool keyframe = MFGetAttributeUINT32(
       output_data_buffer.pSample, MFSampleExtension_CleanPoint, false);
+
+  if (metadata.keyframe_request) {
+    base::UmaHistogramBoolean(
+        GetEncoderKeyFrameFullfilledHistogramName(profile_), keyframe);
+  }
+
   DWORD output_buffer_size = 0;
   hr = output_buffer->GetCurrentLength(&output_buffer_size);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer length", );

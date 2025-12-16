@@ -7931,6 +7931,18 @@ chromium-metrics-reviews@google.com.
   <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
+<histogram
+    name="Media.VideoEncode.MFVEA.KeyFrameRequestFullfilled.{VideoCodec}"
+    enum="Boolean" expires_after="2026-05-31">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records if the MediaFoundation {VideoCodec} encoder returns a delta frame on
+    an explicit key frame request. Recorded on every key frame request.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.VideoEncoder.D3D12VEA.EncodeStatus.{VideoCodec}"
     enum="EncoderStatus" expires_after="2026-05-31">
   <owner>eugene@chromium.org</owner>
