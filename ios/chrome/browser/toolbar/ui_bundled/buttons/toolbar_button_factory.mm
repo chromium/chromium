@@ -437,10 +437,8 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
   if (ios::provider::IsRaccoonEnabled()) {
-    if (@available(iOS 17.0, *)) {
-      button.hoverStyle = [UIHoverStyle
-          styleWithShape:[UIShape rectShapeWithCornerRadius:width / 4]];
-    }
+    button.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape rectShapeWithCornerRadius:width / 4]];
   }
   button.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* uiButton, UIPointerEffect* proposedEffect,
