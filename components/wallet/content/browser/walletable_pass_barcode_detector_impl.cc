@@ -170,7 +170,7 @@ void WalletablePassBarcodeDetectorImpl::OnAllBarcodesDetected(
     }
   }
   barcode_detector_.reset();
-  std::move(callback).Run(results);
+  std::move(callback).Run(std::move(results));
 }
 
 void WalletablePassBarcodeDetectorImpl::OnBarcodeDetectorDisconnected(

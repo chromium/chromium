@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
 #include "url/gurl.h"
@@ -34,8 +35,11 @@ class WalletablePassIngestionControllerTestApi {
       PassCategory pass_category,
       const optimization_guide::proto::AnnotatedPageContent&
           annotated_page_content) {
+    base::RepeatingClosure barrier = base::BindRepeating(
+        &WalletablePassIngestionController::FinishExtraction,
+        base::Unretained(&controller_.get()), url);
     controller_->ExtractWalletablePass(url, pass_category,
-                                       annotated_page_content);
+                                       annotated_page_content, barrier);
   }
 
   void StartWalletablePassDetectionFlow(const GURL& url) {

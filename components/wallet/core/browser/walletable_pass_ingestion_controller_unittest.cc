@@ -88,6 +88,7 @@ class MockWalletablePassIngestionController
               GetAnnotatedPageContent,
               (AnnotatedPageContentCallback),
               (override));
+  MOCK_METHOD(void, DetectBarcodes, (BarcodeDetectionCallback), (override));
 };
 
 class WalletablePassIngestionControllerTest : public testing::Test {
@@ -917,6 +918,380 @@ TEST_F(WalletablePassIngestionControllerTest,
       "Wallet.WalletablePass.ServerExtraction.Funnel.LoyaltyCard",
       metrics::WalletablePassServerExtractionFunnelEvents::kExtractionSucceeded,
       1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_StaleCallback_Ignored) {
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+
+  WalletablePassIngestionController::AnnotatedPageContentCallback callback1;
+  WalletablePassIngestionController::AnnotatedPageContentCallback callback2;
+
+  // We expect GetAnnotatedPageContent to be called twice.
+  // Capture the callbacks.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(
+          [&callback1](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { callback1 = std::move(cb); })
+      .WillOnce(
+          [&callback2](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { callback2 = std::move(cb); });
+
+  // We expect ExecuteModel to be called ONLY ONCE (for the second callback).
+  // Verify that the request uses `url2`.
+  optimization_guide::proto::WalletablePassExtractionRequest expected_request;
+  expected_request.set_pass_category(
+      optimization_guide::proto::PASS_CATEGORY_LOYALTY_CARD);
+  expected_request.mutable_page_context()->set_url(url2.spec());
+  expected_request.mutable_page_context()->set_title("title");
+  // The callback provides an empty content, so we expect it in the request.
+  *expected_request.mutable_page_context()->mutable_annotated_page_content() =
+      optimization_guide::proto::AnnotatedPageContent();
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction,
+                           EqualsProto(expected_request), _, _));
+  // GetPageTitle is called by ExtractWalletablePass.
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+
+  // Start 1st extraction
+  test_api(controller()).MaybeStartExtraction(url1, PassCategory::kLoyaltyCard);
+
+  // Start 2nd extraction (invalidates the first one)
+  test_api(controller()).MaybeStartExtraction(url2, PassCategory::kLoyaltyCard);
+
+  ASSERT_TRUE(callback1);
+  ASSERT_TRUE(callback2);
+
+  optimization_guide::proto::AnnotatedPageContent content;
+
+  // Run stale callback 1. Should be ignored (no ExecuteModel).
+  std::move(callback1).Run(content);
+
+  // Run fresh callback 2. Should trigger ExecuteModel.
+  std::move(callback2).Run(content);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_BoardingPass_DetectsBarcodesAndSaves) {
+  GURL url("https://example.com");
+
+  // Expect DetectBarcodes to be called.
+  WalletablePassIngestionController::BarcodeDetectionCallback barcode_callback;
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&barcode_callback](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            barcode_callback = std::move(cb);
+          });
+
+  // Expect GetAnnotatedPageContent NOT to be called.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
+
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kBoardingPass);
+
+  ASSERT_TRUE(barcode_callback);
+
+  // Prepare a barcode.
+  WalletBarcode barcode;
+  // Use a valid sample string for BCBP.
+  barcode.raw_value =
+      "M1DESMARAIS/LUC       EABC123 YYZORDAC 0834 326J001A0025 100";
+  barcode.format = WalletBarcodeFormat::PDF417;
+
+  // Expect ShowSaveBubble.
+  EXPECT_CALL(mock_client(), ShowWalletablePassSaveBubble(_, _));
+
+  std::vector<WalletBarcode> barcodes = {barcode};
+  std::move(barcode_callback).Run(std::move(barcodes));
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_LoyaltyCard_MergesBarcode) {
+  GURL url("https://example.com");
+
+  WalletablePassIngestionController::BarcodeDetectionCallback barcode_callback;
+  WalletablePassIngestionController::AnnotatedPageContentCallback
+      content_callback;
+
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&barcode_callback](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            barcode_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(
+          [&content_callback](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { content_callback = std::move(cb); });
+
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
+
+  ASSERT_TRUE(barcode_callback);
+  ASSERT_TRUE(content_callback);
+
+  // Prepare barcode.
+  WalletBarcode barcode;
+  barcode.raw_value = "123456789";
+  barcode.format = WalletBarcodeFormat::QR_CODE;
+  std::vector<WalletBarcode> barcodes = {barcode};
+
+  // Run barcode detection callback.
+  std::move(barcode_callback).Run(std::move(barcodes));
+
+  // Prepare content and execute model.
+  optimization_guide::proto::AnnotatedPageContent content;
+  content.set_tab_id(123);
+
+  // Set up model response.
+  optimization_guide::proto::WalletablePassExtractionResponse response;
+  auto* pass = response.add_walletable_pass();
+  pass->mutable_loyalty_card()->set_member_id("test_member_id");
+
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _))
+      .WillOnce(WithArgs<3>(
+          [&response](
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    nullptr),
+                nullptr);
+          }));
+
+  // Expect ShowSaveBubble with merged barcode.
+  WalletablePass expected_pass = CreateLoyaltyCard("test_member_id");
+  std::get<LoyaltyCard>(expected_pass.pass_data).barcode = barcode;
+
+  WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
+  ExpectSaveBubbleOnClient(expected_pass, &bubble_callback);
+
+  // Run content callback.
+  std::move(content_callback).Run(content);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_LoyaltyCard_NoBarcode_SavesWithoutBarcode) {
+  GURL url("https://example.com");
+
+  WalletablePassIngestionController::BarcodeDetectionCallback barcode_callback;
+  WalletablePassIngestionController::AnnotatedPageContentCallback
+      content_callback;
+
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&barcode_callback](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            barcode_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(
+          [&content_callback](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { content_callback = std::move(cb); });
+
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
+
+  // Return empty barcodes.
+  std::move(barcode_callback).Run(std::vector<WalletBarcode>());
+
+  // Prepare content and execute model.
+  optimization_guide::proto::AnnotatedPageContent content;
+  content.set_tab_id(123);
+
+  // Set up model response.
+  optimization_guide::proto::WalletablePassExtractionResponse response;
+  auto* pass = response.add_walletable_pass();
+  pass->mutable_loyalty_card()->set_member_id("test_member_id");
+
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _))
+      .WillOnce(WithArgs<3>(
+          [&response](
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    nullptr),
+                nullptr);
+          }));
+
+  // Expect ShowSaveBubble with pass (no barcode).
+  WalletablePass expected_pass = CreateLoyaltyCard("test_member_id");
+  // barcode remains empty/default.
+
+  WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
+  ExpectSaveBubbleOnClient(expected_pass, &bubble_callback);
+
+  // Run content callback.
+  std::move(content_callback).Run(content);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_LoyaltyCard_ModelFails_NoSave) {
+  GURL url("https://example.com");
+
+  WalletablePassIngestionController::BarcodeDetectionCallback barcode_callback;
+  WalletablePassIngestionController::AnnotatedPageContentCallback
+      content_callback;
+
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&barcode_callback](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            barcode_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(
+          [&content_callback](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { content_callback = std::move(cb); });
+
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
+
+  WalletBarcode barcode;
+  barcode.raw_value = "123";
+  std::move(barcode_callback).Run(std::vector<WalletBarcode>{barcode});
+
+  // Prepare content.
+  optimization_guide::proto::AnnotatedPageContent content;
+
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+  // Model execution fails (e.g. returns empty response or error).
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _))
+      .WillOnce(WithArgs<3>([](optimization_guide::
+                                   OptimizationGuideModelExecutionResultCallback
+                                       callback) {
+        // Run with null response to simulate failure.
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr),
+            nullptr);
+      }));
+
+  // Expect NO ShowSaveBubble.
+  EXPECT_CALL(mock_client(), ShowWalletablePassSaveBubble(_, _)).Times(0);
+
+  std::move(content_callback).Run(content);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_LoyaltyCard_AnnotationFails_NoSave) {
+  GURL url("https://example.com");
+
+  WalletablePassIngestionController::BarcodeDetectionCallback barcode_callback;
+  WalletablePassIngestionController::AnnotatedPageContentCallback
+      content_callback;
+
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&barcode_callback](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            barcode_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
+      .WillOnce(
+          [&content_callback](
+              WalletablePassIngestionController::AnnotatedPageContentCallback
+                  cb) { content_callback = std::move(cb); });
+
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
+
+  // Return some barcodes.
+  WalletBarcode barcode;
+  barcode.raw_value = "123";
+  std::move(barcode_callback).Run(std::vector<WalletBarcode>{barcode});
+
+  // Fail annotation.
+  std::move(content_callback).Run(std::nullopt);
+
+  // Expect NO ShowSaveBubble.
+  EXPECT_CALL(mock_client(), ShowWalletablePassSaveBubble(_, _)).Times(0);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       MaybeStartExtraction_StaleBarcodeCallback_Ignored) {
+  GURL url("https://example.com");
+
+  WalletablePassIngestionController::BarcodeDetectionCallback callback1;
+  WalletablePassIngestionController::BarcodeDetectionCallback callback2;
+
+  // We expect DetectBarcodes to be called twice.
+  EXPECT_CALL(*controller(), DetectBarcodes(_))
+      .WillOnce(
+          [&callback1](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            callback1 = std::move(cb);
+          })
+      .WillOnce(
+          [&callback2](
+              WalletablePassIngestionController::BarcodeDetectionCallback cb) {
+            callback2 = std::move(cb);
+          });
+
+  // Start 1st extraction
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kBoardingPass);
+
+  // Start 2nd extraction (invalidates the first one)
+  test_api(controller()).MaybeStartExtraction(url, PassCategory::kBoardingPass);
+
+  ASSERT_TRUE(callback1);
+  ASSERT_TRUE(callback2);
+
+  // Prepare a stale barcode.
+  WalletBarcode barcode1;
+  barcode1.raw_value = "stale_barcode";
+  barcode1.format = WalletBarcodeFormat::PDF417;
+  std::vector<WalletBarcode> barcodes1 = {barcode1};
+
+  // Prepare a fresh barcode.
+  WalletBarcode barcode2;
+  barcode2.raw_value =
+      "M1DESMARAIS/LUC       EABC123 YYZORDAC 0834 326J001A0025 100";
+  barcode2.format = WalletBarcodeFormat::PDF417;
+  std::vector<WalletBarcode> barcodes2 = {barcode2};
+
+  // Expect ShowSaveBubble to be called ONLY ONCE (for the second callback),
+  // and verify it contains barcode2.
+  WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
+  EXPECT_CALL(mock_client(), ShowWalletablePassSaveBubble(_, _))
+      .WillOnce(WithArgs<0, 1>(
+          [&barcode2, &bubble_callback](
+              WalletablePass pass,
+              WalletablePassClient::WalletablePassBubbleResultCallback
+                  callback) {
+            bubble_callback = std::move(callback);
+            ASSERT_TRUE(std::holds_alternative<BoardingPass>(pass.pass_data));
+            const auto& boarding_pass = std::get<BoardingPass>(pass.pass_data);
+            ASSERT_TRUE(boarding_pass.barcode.has_value());
+            EXPECT_EQ(boarding_pass.barcode->raw_value, barcode2.raw_value);
+          }));
+
+  // Run stale callback 1 with stale barcode. Should be ignored.
+  std::move(callback1).Run(std::move(barcodes1));
+
+  // Run fresh callback 2 with fresh barcode. Should trigger ShowSaveBubble.
+  std::move(callback2).Run(std::move(barcodes2));
 }
 
 }  // namespace

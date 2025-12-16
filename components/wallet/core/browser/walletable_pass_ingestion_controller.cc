@@ -4,7 +4,9 @@
 
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/notreached.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
@@ -15,6 +17,7 @@
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace wallet {
@@ -43,6 +46,15 @@ optimization_guide::proto::PassCategory ToProtoPassCategory(
 }
 
 }  // namespace
+
+WalletablePassIngestionController::ProcessingState::ProcessingState() = default;
+WalletablePassIngestionController::ProcessingState::~ProcessingState() =
+    default;
+WalletablePassIngestionController::ProcessingState::ProcessingState(
+    const ProcessingState&) = default;
+WalletablePassIngestionController::ProcessingState&
+WalletablePassIngestionController::ProcessingState::operator=(
+    const ProcessingState&) = default;
 
 WalletablePassIngestionController::WalletablePassIngestionController(
     WalletablePassClient* client)
@@ -85,6 +97,28 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
   }
 
   ShowConsentBubble(url, *pass_category);
+}
+
+void WalletablePassIngestionController::OnBarcodesDetected(
+    base::RepeatingClosure barrier,
+    std::vector<WalletBarcode> barcodes) {
+  processing_state_.detected_barcodes = barcodes;
+  barrier.Run();
+}
+
+void WalletablePassIngestionController::OnBoardingPassBarcodesDetected(
+    const GURL& url,
+    std::vector<WalletBarcode> barcodes) {
+  for (const auto& barcode : barcodes) {
+    // TODO(crbug.com/465616560): Handle multiple barcodes properly.
+    std::optional<WalletablePass> pass =
+        WalletablePass::CreateBoardingPass(barcode);
+    if (pass) {
+      ShowSaveBubble(url, std::move(*pass));
+      return;
+    }
+  }
+  // TODO(crbug.com/465909190): Report UMA for no barcode cases.
 }
 
 std::optional<PassCategory>
@@ -197,30 +231,60 @@ void WalletablePassIngestionController::MaybeStartExtraction(
                            kExtractionBlockedBySaveStrike);
     return;
   }
+
+  // Reset state for new extraction. This invalidates any pending callbacks from
+  // previous extraction attempts.
+  processing_weak_ptr_factory_.InvalidateWeakPtrs();
+  processing_state_ = ProcessingState();
+
+  // For boarding passes, all necessary data can be parsed directly from the
+  // barcode, making an LLM call unnecessary.
+  if (pass_category == PassCategory::kBoardingPass) {
+    DetectBarcodes(base::BindOnce(
+        &WalletablePassIngestionController::OnBoardingPassBarcodesDetected,
+        processing_weak_ptr_factory_.GetWeakPtr(), url));
+    return;
+  }
+
+  // Run barcode detection and page annotation extraction in parallel. The
+  // barrier waits for both tasks to complete before invoking FinishExtraction
+  // to merge results.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      2, base::BindOnce(&WalletablePassIngestionController::FinishExtraction,
+                        processing_weak_ptr_factory_.GetWeakPtr(), url));
+
+  DetectBarcodes(
+      base::BindOnce(&WalletablePassIngestionController::OnBarcodesDetected,
+                     processing_weak_ptr_factory_.GetWeakPtr(), barrier));
+
   GetAnnotatedPageContent(base::BindOnce(
       &WalletablePassIngestionController::OnGetAnnotatedPageContent,
-      weak_ptr_factory_.GetWeakPtr(), url, pass_category));
+      processing_weak_ptr_factory_.GetWeakPtr(), url, pass_category, barrier));
 }
 
 void WalletablePassIngestionController::OnGetAnnotatedPageContent(
     const GURL& url,
     PassCategory pass_category,
+    base::RepeatingClosure barrier,
     std::optional<optimization_guide::proto::AnnotatedPageContent>
         annotated_page_content) {
   if (!annotated_page_content) {
     metrics::LogServerExtractionEvent(
         pass_category, WalletablePassServerExtractionFunnelEvents::
                            kGetAnnotatedPageContentFailed);
+    barrier.Run();
     return;
   }
 
-  ExtractWalletablePass(url, pass_category, std::move(*annotated_page_content));
+  ExtractWalletablePass(url, pass_category, std::move(*annotated_page_content),
+                        barrier);
 }
 
 void WalletablePassIngestionController::ExtractWalletablePass(
     const GURL& url,
     PassCategory pass_category,
-    optimization_guide::proto::AnnotatedPageContent annotated_page_content) {
+    optimization_guide::proto::AnnotatedPageContent annotated_page_content,
+    base::RepeatingClosure barrier) {
   // Construct request
   optimization_guide::proto::WalletablePassExtractionRequest request;
   request.set_pass_category(ToProtoPassCategory(pass_category));
@@ -235,12 +299,12 @@ void WalletablePassIngestionController::ExtractWalletablePass(
       /*options=*/{},
       base::BindOnce(
           &WalletablePassIngestionController::OnExtractWalletablePass,
-          weak_ptr_factory_.GetWeakPtr(), url, pass_category));
+          processing_weak_ptr_factory_.GetWeakPtr(), pass_category, barrier));
 }
 
 void WalletablePassIngestionController::OnExtractWalletablePass(
-    const GURL& url,
     PassCategory pass_category,
+    base::RepeatingClosure barrier,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle model execution failure first.
@@ -248,6 +312,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
     metrics::LogServerExtractionEvent(
         pass_category,
         WalletablePassServerExtractionFunnelEvents::kModelExecutionFailed);
+    barrier.Run();
     return;
   }
 
@@ -259,6 +324,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
     metrics::LogServerExtractionEvent(
         pass_category,
         WalletablePassServerExtractionFunnelEvents::kResponseCannotBeParsed);
+    barrier.Run();
     return;
   }
 
@@ -266,6 +332,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
     metrics::LogServerExtractionEvent(
         pass_category,
         WalletablePassServerExtractionFunnelEvents::kNoPassExtracted);
+    barrier.Run();
     return;
   }
 
@@ -274,21 +341,46 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
     metrics::LogServerExtractionEvent(
         pass_category,
         WalletablePassServerExtractionFunnelEvents::kInvalidPassType);
+    barrier.Run();
     return;
   }
 
-  std::optional<WalletablePass> walletable_pass =
+  processing_state_.extracted_pass =
       WalletablePass::FromProto(parsed_response->walletable_pass(0));
-  if (!walletable_pass) {
+  if (!processing_state_.extracted_pass) {
     metrics::LogServerExtractionEvent(
         pass_category, WalletablePassServerExtractionFunnelEvents::
                            kWalletablePassConversionFailed);
+    barrier.Run();
     return;
   }
-  ShowSaveBubble(url, std::move(*walletable_pass));
   metrics::LogServerExtractionEvent(
       pass_category,
       WalletablePassServerExtractionFunnelEvents::kExtractionSucceeded);
+  barrier.Run();
+}
+
+void WalletablePassIngestionController::FinishExtraction(const GURL& url) {
+  if (processing_state_.extracted_pass) {
+    auto set_barcode = [&](auto& pass) {
+      if (!processing_state_.detected_barcodes.empty()) {
+        // TODO(crbug.com/465616560): Handle multiple barcodes properly.
+        pass.barcode = processing_state_.detected_barcodes[0];
+      }
+    };
+    std::visit(absl::Overload([&](LoyaltyCard& pass) { set_barcode(pass); },
+                              [&](EventPass& pass) { set_barcode(pass); },
+                              [&](BoardingPass& pass) {
+                                // TODO(crbug.com/465909190): Report UMA for
+                                // unexpected boarding pass from LLM response.
+                                // Ideally, boarding pass branch should never
+                                // be triggered, because LLM never returns
+                                // boarding pass proto.
+                              },
+                              [&](TransitTicket& pass) { set_barcode(pass); }),
+               processing_state_.extracted_pass->pass_data);
+    ShowSaveBubble(url, std::move(*processing_state_.extracted_pass));
+  }
 }
 
 void WalletablePassIngestionController::ShowSaveBubble(
