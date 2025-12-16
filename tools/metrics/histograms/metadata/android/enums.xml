@@ -1410,9 +1410,6 @@ chromium-metrics-reviews@google.com.
 <enum name="NewWindowAppSource">
   <int value="0" label="Undefined app source."/>
   <int value="1" label="Menu option (eg. app menu, context menu, etc.)"/>
-  <int value="2" label="Window Manager in app menu."/>
-  <int value="3" label="Keyboard shortcut."/>
-  <int value="4" label="Recent Tabs page."/>
 </enum>
 
 <enum name="NightMode">

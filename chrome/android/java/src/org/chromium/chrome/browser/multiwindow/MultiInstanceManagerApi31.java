@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.isRestorableInstance;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
@@ -1374,8 +1373,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         openAdjacently,
                         /* addTrustedIntentExtras= */ true,
                         source);
-        MultiInstancePersistentStore.writeMarkedForDeletion(
-                instanceId, /* markedForDeletion= */ false);
         mActivity.startActivity(intent);
     }
 

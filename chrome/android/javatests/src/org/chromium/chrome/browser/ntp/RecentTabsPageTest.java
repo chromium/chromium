@@ -501,21 +501,10 @@ public class RecentTabsPageTest {
 
         final String eventDescriptionString = "google.com and " + (tabCount - 1) + " other tabs";
         waitForView(title);
-        View view = waitForView(eventDescriptionString);
+        waitForView(eventDescriptionString);
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_window");
-
-        final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPage.onChildClick(null, null, groupIdx, 0, 0);
-                });
-
-        // Confirm the recently closed window is gone.
-        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
-                mActivity.getRecentlyClosedEntriesManagerForTesting();
-        assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
-        waitForViewToDisappear(eventDescriptionString);
+        // TODO(crbug.com/444680856): Initiate and verify item clicks.
     }
 
     @Test

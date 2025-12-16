@@ -298,10 +298,12 @@ public class RecentTabsManager
      * @param entry The entry to open.
      */
     public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
+        // TODO(crbug.com/444680856): implement open closed window logic.
         if (mIsDestroyed) return;
 
         assert !(entry instanceof RecentlyClosedTab)
                 : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
+        assert entry instanceof SessionRecentlyClosedEntry;
 
         if (entry instanceof RecentlyClosedGroup closedGroup) {
             mGroupSessionIdsRestored.put(closedGroup.getSessionId(), true);
@@ -309,10 +311,6 @@ public class RecentTabsManager
         } else if (entry instanceof RecentlyClosedBulkEvent closedBulkEvent) {
             mBulkSessionIdsRestored.put(closedBulkEvent.getSessionId(), true);
             RecordUserAction.record("MobileRecentTabManagerRecentBulkEventOpened");
-        } else if (entry instanceof RecentlyClosedWindow closedWindow) {
-            int instanceId = closedWindow.getInstanceId();
-            mWindowInstanceIdsRestored.put(instanceId, true);
-            RecordUserAction.record("MobileRecentTabManagerRecentWindowOpened");
         }
         mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
     }
