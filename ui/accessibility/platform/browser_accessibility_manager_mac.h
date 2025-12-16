@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
 
  private:
   void FireNativeMacNotification(NSString* mac_notification,
-                                 BrowserAccessibility* node);
+                                 BrowserAccessibility& node);
 
   // AXTreeObserver methods.
   void OnAtomicUpdateFinished(AXTree* tree,
