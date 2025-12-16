@@ -192,15 +192,15 @@ public class TabTest {
     @Feature({"Tab"})
     public void testTabAttachment() {
         assertNotNull(mTab.getWebContents());
-        assertFalse(mTab.isDetached());
+        assertFalse(mTab.isDetachedFromActivity());
 
         detachOnUiThread(mTab);
         assertNotNull(mTab.getWebContents());
-        assertTrue(mTab.isDetached());
+        assertTrue(mTab.isDetachedFromActivity());
 
         attachOnUiThread(mTab);
         assertNotNull(mTab.getWebContents());
-        assertFalse(mTab.isDetached());
+        assertFalse(mTab.isDetachedFromActivity());
     }
 
     @Test
@@ -212,15 +212,15 @@ public class TabTest {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(mTab);
         assertNotNull(mTab.getWebContents());
-        assertFalse(mTab.isDetached());
+        assertFalse(mTab.isDetachedFromActivity());
 
         detachOnUiThread(mTab);
         assertNotNull(mTab.getWebContents());
-        assertTrue(mTab.isDetached());
+        assertTrue(mTab.isDetachedFromActivity());
 
         attachOnUiThread(mTab);
         assertNotNull(mTab.getWebContents());
-        assertFalse(mTab.isDetached());
+        assertFalse(mTab.isDetachedFromActivity());
     }
 
     @Test
@@ -232,15 +232,15 @@ public class TabTest {
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         Tab tab = createSecondFrozenTab(url);
         assertNull(tab.getWebContents());
-        assertFalse(tab.isDetached());
+        assertFalse(tab.isDetachedFromActivity());
 
         detachOnUiThread(tab);
         assertNull(tab.getWebContents());
-        assertTrue(tab.isDetached());
+        assertTrue(tab.isDetachedFromActivity());
 
         attachOnUiThread(tab);
         assertNull(tab.getWebContents());
-        assertFalse(tab.isDetached());
+        assertFalse(tab.isDetachedFromActivity());
     }
 
     @Test

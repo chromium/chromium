@@ -171,7 +171,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         }
                     }
                 });
-        if (mTab.isInitialized() && !mTab.isDetached()) updateVisibilityDelegate();
+        if (mTab.isInitialized() && !mTab.isDetachedFromActivity()) updateVisibilityDelegate();
     }
 
     @Override

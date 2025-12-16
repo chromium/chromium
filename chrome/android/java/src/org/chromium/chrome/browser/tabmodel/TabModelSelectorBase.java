@@ -311,7 +311,7 @@ public abstract class TabModelSelectorBase
 
         // In case the tab needs to be closed while a reparenting task is executing. This could be
         // the case for navigations progressing while the tab is being moved between web clients.
-        if (tab.isDetached()) {
+        if (tab.isDetachedFromActivity()) {
             tab.setDidCloseWhileDetached();
             return true;
         }
@@ -330,7 +330,7 @@ public abstract class TabModelSelectorBase
                             + " Is destroyed "
                             + tab.isDestroyed()
                             + " Is detached "
-                            + tab.isDetached();
+                            + tab.isDetachedFromActivity();
             return false;
         }
     }

@@ -271,8 +271,14 @@ public interface Tab extends TabLifecycle {
      */
     boolean isUserInteractable();
 
-    /** Returns whether the tab is detached for reparenting. */
-    boolean isDetached();
+    /**
+     * Returns whether the tab is detached from an activity. This usually means the tab is being
+     * reparented; however for headless mode this is always true. A detached tab has a null {@link
+     * #getWindowAndroid()} or the window has no activity. Note that this is not the same as the tab
+     * being dragged for drag & drop, it also does not imply anything about whether the tab is in a
+     * tab model.
+     */
+    boolean isDetachedFromActivity();
 
     /** Returns whether this is the activated tab; AKA selected tab, or current tab. */
     boolean isActivated();

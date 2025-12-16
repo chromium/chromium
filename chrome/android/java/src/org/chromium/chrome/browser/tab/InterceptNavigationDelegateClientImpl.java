@@ -193,7 +193,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public boolean isTabDetached() {
-        return mTab.isDetached();
+        return mTab.isDetachedFromActivity();
     }
 
     @Override
