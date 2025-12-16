@@ -62,13 +62,6 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-// TODO(crbug.com/40124201): Add helpers as needed for:
-//    - STRING
-//    - LIST (and subtypes, e.g. int list, string list, etc)
-//    - DICTIONARY (and subtypes, e.g. int dictionary, string dictionary, etc)
-//    - Deleting a policy value
-//    - Setting multiple policies at once
-
 // Verifies that a bool type policy sets the pref properly.
 void VerifyBoolPolicy(const std::string& policy_key,
                       const std::string& pref_name) {
