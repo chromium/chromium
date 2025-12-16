@@ -10,8 +10,7 @@ import android.widget.ViewFlipper;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.android.whats_new.WhatsNewProperties.ViewState;
@@ -26,6 +25,10 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
 
     private final BottomSheetController mBottomSheetController;
 
+    // Helps keep track of whether the Back button was pressed.
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
+
     // The handler to notify when the (Android) Back button is pressed.
     private final Runnable mOsBackButtonClicked;
 
@@ -38,6 +41,7 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
 
         mOsBackButtonClicked = onOsBackButtonClicked;
+        mBackPressStateChangedSupplier.set(true);
     }
 
     void setViewState(@ViewState int viewState) {
@@ -106,8 +110,8 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
-        return ObservableSuppliers.alwaysTrue();
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
     }
 
     @Override

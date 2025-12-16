@@ -9,8 +9,7 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -32,6 +31,8 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Supplier<Integer> mVerticalScrollOffset;
     private final Runnable mBackPressCallback;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     /** Creates a new instance. */
     public MerchantTrustBottomSheetContent(
@@ -43,6 +44,7 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
         mContentView = contentView;
         mVerticalScrollOffset = verticalScrollOffset;
         mBackPressCallback = backPressHandler;
+        mBackPressStateChangedSupplier.set(true);
     }
 
     @Override
@@ -90,8 +92,8 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
-        return ObservableSuppliers.alwaysTrue();
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
     }
 
     @Override

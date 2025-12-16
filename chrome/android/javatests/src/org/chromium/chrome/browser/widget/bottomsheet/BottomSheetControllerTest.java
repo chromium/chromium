@@ -577,10 +577,7 @@ public class BottomSheetControllerTest {
         requestContentInSheet(mLowPriorityContent, false);
 
         TestBottomSheetContent customLifecycleContent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                new TestBottomSheetContent(
-                                        mActivity, BottomSheetContent.ContentPriority.LOW, true));
+                new TestBottomSheetContent(mActivity, BottomSheetContent.ContentPriority.LOW, true);
         requestContentInSheet(customLifecycleContent, false);
         assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
 
@@ -633,10 +630,7 @@ public class BottomSheetControllerTest {
     @MediumTest
     public void testCustomScrimLifecycle() {
         TestBottomSheetContent customScrimContent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                new TestBottomSheetContent(
-                                        mActivity, BottomSheetContent.ContentPriority.LOW, true));
+                new TestBottomSheetContent(mActivity, BottomSheetContent.ContentPriority.LOW, true);
         customScrimContent.setHasCustomScrimLifecycle(true);
         requestContentInSheet(customScrimContent, true);
 

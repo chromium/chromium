@@ -16,9 +16,7 @@ import android.widget.ScrollView;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -35,8 +33,8 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetOpenedObserver;
     private final RestoreTabsBackPressHandler mBackPressHandler;
-    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
-            ObservableSuppliers.createNonNull(false);
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
     private ScrollView mScrollView;
     private RecyclerView mRecyclerView;
 
@@ -123,7 +121,7 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressStateChangedSupplier;
     }
 

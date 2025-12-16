@@ -373,8 +373,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private TabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private SettableObservableSupplier<TabContentManager> mTabContentManagerSupplier =
-            ObservableSuppliers.createMonotonic();
+    private ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
+            new ObservableSupplierImpl<>();
     private TabContentManager mTabContentManager;
 
     private UmaActivityObserver mUmaActivityObserver;

@@ -9,7 +9,7 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -42,7 +42,7 @@ public class TabModelOrchestrator {
     private boolean mIsDestroyed;
 
     // TabModelStartupInfo variables
-    private @Nullable SettableObservableSupplier<TabModelStartupInfo> mTabModelStartupInfoSupplier;
+    private @Nullable ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private boolean mIgnoreIncognitoFiles;
     private int mStandardCount;
     private int mIncognitoCount;
@@ -249,7 +249,7 @@ public class TabModelOrchestrator {
      * @param observableSupplier The {@link TabModelStartupInfo} supplier.
      */
     public void setStartupInfoObservableSupplier(
-            @Nullable SettableObservableSupplier<TabModelStartupInfo> observableSupplier) {
+            ObservableSupplierImpl<TabModelStartupInfo> observableSupplier) {
         mTabModelStartupInfoSupplier = observableSupplier;
     }
 
