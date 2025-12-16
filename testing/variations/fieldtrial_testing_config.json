@@ -20978,22 +20978,26 @@
             ]
         }
     ],
-    "RenderDocumentWithNavigationQueueing_WebView": [
+    "RenderDocument_WebView": [
         {
             "platforms": [
                 "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "EnabledAllFrames",
+                    "name": "EnabledAllFrames_SkipThrottle_20251216",
                     "params": {
                         "level": "all-frames",
                         "queueing_level": "full"
                     },
                     "enable_features": [
                         "RenderDocument",
+                        "SkipRendererCancellationThrottle",
                         "WebViewAsyncDrawOnly",
                         "WebViewRenderDocument"
+                    ],
+                    "disable_features": [
+                        "RendererCancellationThrottleImprovements"
                     ]
                 }
             ]
