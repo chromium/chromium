@@ -124,6 +124,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure - Error dialog shown"/>
 </enum>
 
+<!-- LINT.IfChange(GpmPinAvailability) -->
+
+<enum name="GpmPinAvailability">
+  <int value="0" label="The PIN is set but not usable."/>
+  <int value="1" label="The PIN is set and usable."/>
+  <int value="2" label="The PIN is unset."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager_interface.h:GpmPinAvailability) -->
+
 <enum name="OnboardingEvents">
   <int value="0" label="Started (Create GPM passkey dialog shown)"/>
   <int value="1" label="Succeeded (GPM passkey created)"/>

@@ -162,6 +162,12 @@ class PasskeyUnlockManager : public KeyedService,
   void MaybeRecordDelayedPasskeyReadinessHistogram();
   // Records the `WebAuthentication.PasskeyReadiness` histogram.
   void RecordPasskeyReadinessHistogram();
+  // Schedules recording the `WebAuthentication.GpmPinStatus` histogram.
+  void MaybeRecordDelayedGpmPinStatusHistogram(
+      EnclaveManager::GpmPinAvailability gpm_pin_availability);
+  // Records the `WebAuthentication.GpmPinStatus` histogram.
+  void RecordGpmPinStatusHistogram(
+      EnclaveManager::GpmPinAvailability gpm_pin_availability);
 
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
@@ -180,6 +186,10 @@ class PasskeyUnlockManager : public KeyedService,
   // histogram needs to recorded. Set to true iff histogram was already
   // recorded.
   bool passkey_readiness_recorded_on_startup_ = false;
+  // Used for UMA to determine whether `WebAuthentication.GpmPinStatus`
+  // histogram needs to be recorded. Set to true iff histogram was already
+  // recorded.
+  bool gpm_pin_status_recorded_on_startup_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
