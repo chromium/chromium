@@ -7,4 +7,5 @@ found in the LICENSE file.
 <resources>
     <drawable name="btn_suggestion_refine_up">@drawable/north_east_24dp</drawable>
     <drawable name="btn_suggestion_refine_down">@drawable/south_east_24dp</drawable>
+    <drawable name="ic_suggestion_magnifier">@drawable/ic_search_24dp_rtl</drawable>
 </resources>

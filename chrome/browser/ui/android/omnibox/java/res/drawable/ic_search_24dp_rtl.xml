@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- This file is a mirrored version of ic_search_24dp.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M176,840L428,588Q458,612 497,626Q536,640 580,640Q689,640 764.5,564.5Q840,489 840,380Q840,271 764.5,195.5Q689,120 580,120Q471,120 395.5,195.5Q320,271 320,380Q320,424 334,463Q348,502 372,532L120,784L176,840ZM580,560Q505,560 452.5,507.5Q400,455 400,380Q400,305 452.5,252.5Q505,200 580,200Q655,200 707.5,252.5Q760,305 760,380Q760,455 707.5,507.5Q655,560 580,560Z"/>
+</vector>

@@ -278,6 +278,7 @@ android_resources("ui_java_resources") {
     "java/res/drawable/ic_expand_more_horizontal_black_24dp.xml",
     "java/res/drawable/ic_globe_24dp.xml",
     "java/res/drawable/ic_globe_48dp.xml",
+    "java/res/drawable/ic_search_24dp.xml",
     "java/res/drawable/list_menu_background.xml",
     "java/res/drawable/menu_bg_baseline.xml",
     "java/res/drawable/outline_chevron_right_24dp.xml",

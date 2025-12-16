@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -159,7 +160,7 @@ public class EntitySuggestionProcessorUnitTest {
         processSuggestion(suggHelper);
 
         Assert.assertNotNull(suggHelper.getIcon());
-        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
     }
 
     @Test
@@ -169,7 +170,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 
-        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
     }
 
     @Test
@@ -189,15 +190,15 @@ public class EntitySuggestionProcessorUnitTest {
         // Note, fallback is the bitmap drawable representing a search loupe.
         SuggestionTestHelper suggHelper = createSuggestion("", "", "", SEARCH_URL);
         processSuggestion(suggHelper);
-        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
 
         suggHelper = createSuggestion("", "", "#", SEARCH_URL);
         processSuggestion(suggHelper);
-        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
 
         suggHelper = createSuggestion("", "", "invalid", SEARCH_URL);
         processSuggestion(suggHelper);
-        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
     }
 
     @Test
