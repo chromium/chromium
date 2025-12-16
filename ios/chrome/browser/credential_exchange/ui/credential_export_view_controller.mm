@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -54,6 +55,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 
   self.navigationItem.rightBarButtonItem = [self createContinueButton];
   _toggleAllButton = [self createToggleAllButton];
@@ -379,6 +381,10 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   cell.contentConfiguration = contentConfig;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  selectedBackgroundView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  cell.selectedBackgroundView = selectedBackgroundView;
 }
 
 // Helper to load favicon and update configuration.
