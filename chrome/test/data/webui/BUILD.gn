@@ -365,6 +365,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui:ui_features",
       "//components/contextual_tasks/public",
