@@ -6021,27 +6021,6 @@
             ]
         }
     ],
-    "ChromnientUploadChunking": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "upload-chunk-retries": "2"
-                    },
-                    "enable_features": [
-                        "LensOverlayUploadChunking"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientVideoCitations": [
         {
             "platforms": [
