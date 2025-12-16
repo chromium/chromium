@@ -1471,6 +1471,7 @@ static_library("ui") {
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
+      "//chrome/browser/ui/waap",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:impl",
       "//chrome/browser/ui/web_applications:launch_utils",
