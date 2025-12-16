@@ -408,6 +408,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="InvalidMonitorId"/>
 </enum>
 
+<enum name="WebRtcDtlsVersion">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="DTLS 1.0"/>
+  <int value="2" label="DTLS 1.2"/>
+  <int value="3" label="DTLS 1.3"/>
+</enum>
+
 <enum name="WebRTCEventFrequency">
   <int value="0" label="None."/>
   <int value="1" label="Few."/>

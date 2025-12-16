@@ -1349,6 +1349,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.DtlsVersion{Role}"
+    enum="WebRtcDtlsVersion" expires_after="2026-11-10">
+  <owner>guidou@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    DTLS version used by the peer when acting as a DTLS {Role}. Recorded when
+    the DTLS state changes to Connected.
+  </summary>
+  <token key="Role">
+    <variant name="ClientRole"/>
+    <variant name="ServerRole"/>
+  </token>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Dtls{Role}ConnectionTime"
+    units="microseconds" expires_after="2026-11-10">
+  <owner>guidou@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Time elapsed between the moment the DTLS state changes from Connecting to
+    Connected if the peer is acting as a DTLS {Role}.
+  </summary>
+  <token key="Role">
+    <variant name="ClientRole"/>
+    <variant name="ServerRole"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.Duration.Network" units="microseconds"
     expires_after="2024-09-15">
   <owner>handellm@google.com</owner>
