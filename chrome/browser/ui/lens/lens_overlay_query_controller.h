@@ -203,7 +203,14 @@ class LensOverlayQueryController {
   }
 
   // Returns whether the query controller is off.
-  bool IsOff() { return query_controller_state_ == QueryControllerState::kOff; }
+  virtual bool IsOff();
+
+  // Returns the suggest inputs for the current query flow.
+  virtual const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs()
+      const;
+
+  // Sets a callback that will be called when the suggest inputs are ready.
+  virtual void SetSuggestInputsReadyCallback(base::RepeatingClosure callback);
 
   uint64_t gen204_id() const { return gen204_id_; }
 
@@ -243,14 +250,6 @@ class LensOverlayQueryController {
 
   lens::LensOverlayRequestIdGenerator* request_id_generator_for_testing() {
     return request_id_generator_.get();
-  }
-
-  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs() const {
-    return suggest_inputs_;
-  }
-
-  void SetSuggestInputsReadyCallback(base::RepeatingClosure callback) {
-    suggest_inputs_ready_callback_ = std::move(callback);
   }
 
   size_t total_chunk_progress_for_testing() { return total_chunk_progress_; }

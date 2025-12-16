@@ -23,10 +23,12 @@ using SearchUrlType =
     contextual_search::ContextualSearchContextController::SearchUrlType;
 
 // A router for queries that Lens should perform.
-class LensQueryFlowRouter {
+class LensQueryFlowRouter
+    : public contextual_search::ContextualSearchContextController::
+          FileUploadStatusObserver {
  public:
   explicit LensQueryFlowRouter(LensSearchController* lens_search_controller);
-  virtual ~LensQueryFlowRouter();
+  ~LensQueryFlowRouter() override;
 
   // Whether the query router is in an off state.
   bool IsOff() const;
@@ -101,6 +103,14 @@ class LensQueryFlowRouter {
   virtual const SkBitmap& GetViewportScreenshot() const;
 
  private:
+  // contextual_search::ContextualSearchContextController::FileUploadStatusObserver:
+  void OnFileUploadStatusChanged(
+      const base::UnguessableToken& file_token,
+      lens::MimeType mime_type,
+      contextual_search::FileUploadStatus file_upload_status,
+      const std::optional<contextual_search::FileUploadErrorType>& error_type)
+      override;
+
   LensOverlayQueryController* lens_overlay_query_controller() const {
     return lens_search_controller_->lens_overlay_query_controller();
   }
@@ -185,6 +195,9 @@ class LensQueryFlowRouter {
   // contextual tasks UI for ownership.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       pending_session_handle_;
+
+  // The callback for when the suggest inputs are ready.
+  base::RepeatingClosure suggest_inputs_ready_callback_;
 
   raw_ptr<LensSearchController> lens_search_controller_;
 
