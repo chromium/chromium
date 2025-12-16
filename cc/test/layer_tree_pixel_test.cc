@@ -86,24 +86,9 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             viz::TestContextType::kRaster, /*support_locking=*/false);
 
-    viz::TestContextType worker_ri_type;
-    switch (raster_type()) {
-      case TestRasterType::kGpu:
-        worker_ri_type = viz::TestContextType::kRaster;
-        break;
-      case TestRasterType::kOneCopy:
-        worker_ri_type = viz::TestContextType::kRaster;
-        break;
-      case TestRasterType::kZeroCopy:
-        worker_ri_type = viz::TestContextType::kRaster;
-        break;
-      case TestRasterType::kBitmap:
-        NOTREACHED();
-    }
-
     worker_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            worker_ri_type, /*support_locking=*/true);
+            viz::TestContextType::kRaster, /*support_locking=*/true);
     // Bind worker context to main thread like it is in production. This is
     // needed to fully initialize the context. Compositor context is bound to
     // the impl thread in LayerTreeFrameSink::BindToCurrentSequence().
