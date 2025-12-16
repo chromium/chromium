@@ -45,6 +45,10 @@ BASE_DECLARE_FEATURE(kComposeboxAIMNudge);
 // Used to show the title in the + button menu of the composebox.
 BASE_DECLARE_FEATURE(kComposeboxMenuTitle);
 
+// Determines if the persistent re-enable AIM button stays visible after the
+// user exits the session.
+bool IsComposeboxAIMNudgeEnabled();
+
 // Whether the composebox + menu should show the title.
 bool IsComposeboxMenuTitleEnabled();
 

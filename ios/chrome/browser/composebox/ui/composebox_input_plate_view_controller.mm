@@ -762,11 +762,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     config.background.backgroundColor =
         [_theme aimButtonBackgroundColorWithAIMEnabled:NO];
     config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
-
-    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-      _aimButton.layer.borderWidth = 1;
-      _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
-    }
+    _aimButton.layer.borderWidth = 1;
+    _aimButton.layer.borderColor =
+        [_theme aimButtonBorderColorWithAIMEnabled:NO].CGColor;
   }
 
   _aimButton.configuration = config;

@@ -39,6 +39,9 @@
 // The background color of the AIM button when enabled.
 - (UIColor*)aimButtonBackgroundColorWithAIMEnabled:(BOOL)AIMEnabled;
 
+// The border color of the AIM button when enabled.
+- (UIColor*)aimButtonBorderColorWithAIMEnabled:(BOOL)AIMEnabled;
+
 // The color of the text in the image generation button.
 - (UIColor*)imageGenerationButtonTextColor;
 
