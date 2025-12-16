@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "components/on_device_translation/public/supported_languages.h"
 
 namespace on_device_translation {
 namespace {

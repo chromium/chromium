@@ -17,6 +17,15 @@ source_set("on_device_translation") {
   ]
 }
 
+source_set("public") {
+  sources = [
+    "public/supported_languages.cc",
+    "public/supported_languages.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/prefs" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

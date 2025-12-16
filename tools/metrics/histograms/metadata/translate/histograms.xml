@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
   <variant name="zh-Hant"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/on_device_translation/language_pack_util.h:SupportedLanguage) -->
+<!-- LINT.ThenChange(//components/on_device_translation/public/supported_languages.h:SupportedLanguage) -->
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
     enum="LocaleCodeBCP47" expires_after="2026-04-12">
