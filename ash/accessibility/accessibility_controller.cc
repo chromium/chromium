@@ -1398,14 +1398,10 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kAccessibilityAutoclickMenuPosition,
       static_cast<int>(kDefaultAutoclickMenuPosition),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-
-  if (::features::IsAccessibilityBounceKeysEnabled()) {
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityBounceKeysDelayMs,
-        kDefaultAccessibilityBounceKeysDelay.InMilliseconds(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
-
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityBounceKeysDelayMs,
+      kDefaultAccessibilityBounceKeysDelay.InMilliseconds(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityFloatingMenuPosition,
       static_cast<int>(kDefaultFloatingMenuPosition),
@@ -1418,12 +1414,10 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  if (::features::IsAccessibilitySlowKeysEnabled()) {
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilitySlowKeysDelayMs,
-        kDefaultAccessibilitySlowKeysDelay.InMilliseconds(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilitySlowKeysDelayMs,
+      kDefaultAccessibilitySlowKeysDelay.InMilliseconds(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -2670,20 +2664,15 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateAutoclickMenuPositionFromPref,
           base::Unretained(this)));
-  if (::features::IsAccessibilityBounceKeysEnabled()) {
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityBounceKeysDelayMs,
-        base::BindRepeating(
-            &AccessibilityController::UpdateBounceKeysDelayFromPref,
-            base::Unretained(this)));
-  }
-  if (::features::IsAccessibilitySlowKeysEnabled()) {
-    pref_change_registrar_->Add(
-        prefs::kAccessibilitySlowKeysDelayMs,
-        base::BindRepeating(
-            &AccessibilityController::UpdateSlowKeysDelayFromPref,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityBounceKeysDelayMs,
+      base::BindRepeating(
+          &AccessibilityController::UpdateBounceKeysDelayFromPref,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilitySlowKeysDelayMs,
+      base::BindRepeating(&AccessibilityController::UpdateSlowKeysDelayFromPref,
+                          base::Unretained(this)));
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityMouseKeysAcceleration,
@@ -2810,12 +2799,8 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickStabilizePositionFromPref();
   UpdateAutoclickMovementThresholdFromPref();
   UpdateAutoclickMenuPositionFromPref();
-  if (::features::IsAccessibilityBounceKeysEnabled()) {
-    UpdateBounceKeysDelayFromPref();
-  }
-  if (::features::IsAccessibilitySlowKeysEnabled()) {
-    UpdateSlowKeysDelayFromPref();
-  }
+  UpdateBounceKeysDelayFromPref();
+  UpdateSlowKeysDelayFromPref();
   if (::features::IsAccessibilityMouseKeysEnabled()) {
     UpdateMouseKeysAccelerationFromPref();
     UpdateMouseKeysMaxSpeedFromPref();
@@ -3924,11 +3909,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       }
       break;
     case FeatureType::kSlowKeys:
-      if (::features::IsAccessibilitySlowKeysEnabled()) {
-        input_method::InputMethodManager::Get()
-            ->GetImeKeyboard()
-            ->SetSlowKeysEnabled(enabled);
-      }
+      input_method::InputMethodManager::Get()
+          ->GetImeKeyboard()
+          ->SetSlowKeysEnabled(enabled);
       break;
     case FeatureType::kStickyKeys:
       Shell::Get()->sticky_keys_controller()->Enable(enabled);

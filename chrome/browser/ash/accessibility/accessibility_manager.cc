@@ -1973,28 +1973,23 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
           prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
     }
 
-    if (::features::IsAccessibilityBounceKeysEnabled()) {
-      bool bounce_keys_enabled =
-          prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled);
-      base::UmaHistogramBoolean("Accessibility.CrosBounceKeys",
-                                bounce_keys_enabled);
-      if (bounce_keys_enabled) {
-        base::UmaHistogramSparse(
-            "Accessibility.CrosBounceKeysDelay",
-            prefs->GetInteger(prefs::kAccessibilityBounceKeysDelayMs));
-      }
+    bool bounce_keys_enabled =
+        prefs->GetBoolean(prefs::kAccessibilityBounceKeysEnabled);
+    base::UmaHistogramBoolean("Accessibility.CrosBounceKeys",
+                              bounce_keys_enabled);
+    if (bounce_keys_enabled) {
+      base::UmaHistogramSparse(
+          "Accessibility.CrosBounceKeysDelay",
+          prefs->GetInteger(prefs::kAccessibilityBounceKeysDelayMs));
     }
 
-    if (::features::IsAccessibilitySlowKeysEnabled()) {
-      bool slow_keys_enabled =
-          prefs->GetBoolean(prefs::kAccessibilitySlowKeysEnabled);
-      base::UmaHistogramBoolean("Accessibility.CrosSlowKeys",
-                                slow_keys_enabled);
-      if (slow_keys_enabled) {
-        base::UmaHistogramSparse(
-            "Accessibility.CrosSlowKeysDelay",
-            prefs->GetInteger(prefs::kAccessibilitySlowKeysDelayMs));
-      }
+    bool slow_keys_enabled =
+        prefs->GetBoolean(prefs::kAccessibilitySlowKeysEnabled);
+    base::UmaHistogramBoolean("Accessibility.CrosSlowKeys", slow_keys_enabled);
+    if (slow_keys_enabled) {
+      base::UmaHistogramSparse(
+          "Accessibility.CrosSlowKeysDelay",
+          prefs->GetInteger(prefs::kAccessibilitySlowKeysDelayMs));
     }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",

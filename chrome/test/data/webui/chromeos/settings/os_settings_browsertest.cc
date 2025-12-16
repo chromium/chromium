@@ -115,18 +115,6 @@ class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
       ::features::kAccessibilityMagnifierFollowsChromeVox};
 };
 
-class OSSettingsMochaTestFilterKeysEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsMochaTestFilterKeysEnabled() {
-    scoped_feature_list_.InitWithFeatures({::features::kAccessibilityBounceKeys,
-                                           ::features::kAccessibilitySlowKeys},
-                                          {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -913,8 +901,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled,
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFilterKeysEnabled,
-                       OsA11yPageFilterKeys) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageFilterKeys) {
   RunSettingsTest("os_a11y_page/filter_keys_test.js");
 }
 

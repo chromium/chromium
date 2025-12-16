@@ -1906,19 +1906,6 @@ TEST_F(AccessibilityControllerTest, LogsDurationAtShutdown) {
   ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 }
 
-TEST_F(AccessibilityControllerTest,
-       FilterKeysEventRewriterNotInitializedWhenBounceKeysFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kAccessibilityBounceKeys);
-  // Initialize the EventRewriterController manually so that all EventRewriters
-  // get initialized.
-  EventRewriterController::Get()->Initialize(nullptr, nullptr);
-  // AccessibilityController shouldn't have a reference to the
-  // FilterKeysEventRewriter.
-  ASSERT_EQ(controller()->GetFilterKeysEventRewriterForTest(), nullptr);
-}
-
 TEST_F(AccessibilityControllerTest, FaceGazeNotifications) {
   ASSERT_FALSE(
       prefs()->GetBoolean(prefs::kFaceGazeDlcSuccessNotificationHasBeenShown));
@@ -2664,9 +2651,6 @@ class AccessibilityControllerBounceKeysTest
   ~AccessibilityControllerBounceKeysTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityBounceKeys);
-
     AccessibilityControllerTestBase::SetUp();
 
     EventRewriterController::Get()->Initialize(nullptr, nullptr);

@@ -128,24 +128,10 @@ export class SettingsKeyboardAndTextInputPageElement extends
             'prefs.settings.accessibility.value)',
       },
 
-      isSlowKeysFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAccessibilitySlowKeysEnabled');
-        },
-      },
-
       slowKeysDelayVirtualPref_: {
         type: Object,
         computed: 'computeSlowKeysDelayVirtualPref_(' +
             'prefs.settings.a11y.slow_keys_delay_ms.value)',
-      },
-
-      isBounceKeysFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAccessibilityBounceKeysEnabled');
-        },
       },
 
       bounceKeysDelayVirtualPref_: {
@@ -201,9 +187,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
       chrome.settingsPrivate.PrefObject<number>;
   private defaultCaretBlinkRateMs_: number;
   private caretBlinkIntervalOffSliderValue_ = 40;
-  private isSlowKeysFeatureEnabled_: boolean;
   private slowKeysDelayVirtualPref_: chrome.settingsPrivate.PrefObject<number>;
-  private isBounceKeysFeatureEnabled_: boolean;
   private bounceKeysDelayVirtualPref_:
       chrome.settingsPrivate.PrefObject<number>;
   private millisInSec_ = 1000;
@@ -452,7 +436,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
 
   private computeSlowKeysDelayVirtualPref_():
       chrome.settingsPrivate.PrefObject<number> {
-    const delayMillis = (this.isSlowKeysFeatureEnabled_ && this.prefs) ?
+    const delayMillis = this.prefs ?
         this.getPref<number>('settings.a11y.slow_keys_delay_ms').value :
         loadTimeData.getInteger('defaultSlowKeysDelayMillis');
     const delaySecs = delayMillis / this.millisInSec_;
@@ -464,9 +448,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
   }
 
   private updateSlowKeysDelayFromVirtualPref_(): void {
-    if (!this.isSlowKeysFeatureEnabled_) {
-      return;
-    }
     const delaySecs = this.slowKeysDelayVirtualPref_.value;
     const delayMillis = Math.round(delaySecs * this.millisInSec_);
     this.setPrefValue('settings.a11y.slow_keys_delay_ms', delayMillis);
@@ -480,7 +461,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
 
   private computeBounceKeysDelayVirtualPref_():
       chrome.settingsPrivate.PrefObject<number> {
-    const delayMillis = (this.isBounceKeysFeatureEnabled_ && this.prefs) ?
+    const delayMillis = this.prefs ?
         this.getPref<number>('settings.a11y.bounce_keys_delay_ms').value :
         loadTimeData.getInteger('defaultBounceKeysDelayMillis');
     const delaySecs = delayMillis / this.millisInSec_;
@@ -492,9 +473,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
   }
 
   private updateBounceKeysDelayFromVirtualPref_(): void {
-    if (!this.isBounceKeysFeatureEnabled_) {
-      return;
-    }
     const delaySecs = this.bounceKeysDelayVirtualPref_.value;
     const delayMillis = Math.round(delaySecs * this.millisInSec_);
     this.setPrefValue('settings.a11y.bounce_keys_delay_ms', delayMillis);
