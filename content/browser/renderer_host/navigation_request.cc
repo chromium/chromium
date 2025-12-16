@@ -1759,23 +1759,38 @@ NavigationRequest::NavigationRequest(
 #endif
   CheckSoftNavigationHeuristicsInvariants();
 
+#if !BUILDFLAG(IS_ANDROID)
+  // It should not be possible to navigate away from the initial WebUI page,
+  // except when recovering from a crash or doing a manual reload from e.g.
+  // DevTools.
+  bool current_rfh_is_initial_webui =
+      GetContentClient()->browser()->IsInitialWebUIURL(
+          frame_tree_node_->current_frame_host()
+              ->GetSiteInstance()
+              ->GetSiteURL());
+  bool is_reload_or_crash_recovery_from_initial_webui =
+      current_rfh_is_initial_webui &&
+      (IsReload() ||
+       !frame_tree_node_->current_frame_host()->IsRenderFrameLive());
+  CHECK(!current_rfh_is_initial_webui ||
+        is_reload_or_crash_recovery_from_initial_webui);
   if (IsInitialWebUINavigation()) {
     // Initial WebUI navigations must satisfy all these conditions
     // - Is browser initiated
     // - Occur on the outermost main frame
-    // - Have not navigated before
+    // - Have not navigated before, or is navigating away from the initial
+    // WebUI in the cases mentioned above.
     CHECK(!IsRendererInitiated());
     CHECK(!frame_tree_node_->GetParentOrOuterDocumentOrEmbedder());
-    CHECK(frame_tree_node_->is_on_initial_empty_document());
-    CHECK(frame_tree_node_->navigator()
-              .controller()
-              .GetLastCommittedEntry()
-              ->IsInitialEntry());
+    bool is_navigating_from_initial_empty_document =
+        frame_tree_node_->is_on_initial_empty_document() &&
+        frame_tree_node_->navigator()
+            .controller()
+            .GetLastCommittedEntry()
+            ->IsInitialEntry();
+    CHECK(is_navigating_from_initial_empty_document ||
+          is_reload_or_crash_recovery_from_initial_webui);
   }
-#if !BUILDFLAG(IS_ANDROID)
-  // It should not be possible to navigate away from the initial WebUI page.
-  CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(
-      frame_tree_node_->current_url()));
 #endif
 
   ScopedCrashKeys crash_keys(*this);
