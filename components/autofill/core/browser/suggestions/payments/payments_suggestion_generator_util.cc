@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -671,7 +671,6 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
   return candidate_card->virtual_card_enrollment_state() ==
          CreditCard::VirtualCardEnrollmentState::kEnrolled;
 }
-
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.

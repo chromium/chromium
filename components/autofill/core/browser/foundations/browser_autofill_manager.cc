@@ -137,7 +137,7 @@
 #include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/plus_addresses/plus_address.h"
 #include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -445,7 +445,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 
   if (context.filling_product == FillingProduct::kCreditCard) {
-    // TODO(crbug.com/41484171): Move to payments_suggestion_generator.cc.
+    // TODO(crbug.com/41484171): Move to payments_suggestion_generator_util.cc.
     autofill_metrics::LogSuggestionsCount(
         std::ranges::count_if(suggestions,
                               [](const Suggestion& suggestion) {

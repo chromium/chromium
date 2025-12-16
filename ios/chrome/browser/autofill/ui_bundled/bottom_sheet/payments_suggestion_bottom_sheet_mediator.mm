@@ -14,7 +14,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #import "components/autofill/core/browser/foundations/autofill_manager.h"
-#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
