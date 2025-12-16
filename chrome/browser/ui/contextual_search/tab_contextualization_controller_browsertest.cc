@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/lens/tab_contextualization_controller.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"

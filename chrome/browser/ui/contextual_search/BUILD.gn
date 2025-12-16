@@ -2,29 +2,86 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+import("//pdf/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("contextual_search") {
   sources = [
-    "searchbox_context_data.cc",
-    "searchbox_context_data.h",
+    "tab_contextualization_controller.cc",
+    "tab_contextualization_controller.h",
   ]
+
+  if (!is_android) {
+    sources += [
+      "searchbox_context_data.cc",
+      "searchbox_context_data.h",
+    ]
+  }
+
+  public_deps = [ "//ui/base/unowned_user_data" ]
 
   deps = [
     "//base",
+    "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//components/viz/common",
+    "//content/public/browser",
+    "//pdf:buildflags",
+    "//skia",
   ]
+
+  if (enable_pdf) {
+    public_deps += [
+      "//components/pdf/browser",
+      "//pdf/mojom",
+    ]
+  }
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "searchbox_context_data_unittest.cc" ]
-  deps = [
-    ":contextual_search",
-    "//base",
-    "//base/test:test_support",
-    "//components/omnibox/browser:mojo_bindings",
-    "//testing/gtest",
-    "//url",
-  ]
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "searchbox_context_data_unittest.cc" ]
+    deps = [
+      ":contextual_search",
+      "//base",
+      "//base/test:test_support",
+      "//components/omnibox/browser:mojo_bindings",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "tab_contextualization_controller_browsertest.cc" ]
+    deps = [
+      ":contextual_search",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/lens",
+      "//components/optimization_guide/content/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//pdf:buildflags",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+    if (enable_pdf) {
+      deps += [
+        "//chrome/browser/pdf:pdf_extension_test_utils",
+        "//pdf:features",
+      ]
+    }
+  }
 }

@@ -101,6 +101,7 @@ source_set("searchbox_test_utils") {
   public_deps = [
     ":searchbox",
     "//base",
+    "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/omnibox:test_support",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//components/lens",
@@ -125,6 +126,7 @@ source_set("browser_tests") {
     ":searchbox",
     ":searchbox_test_utils",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/test:test_support_ui",

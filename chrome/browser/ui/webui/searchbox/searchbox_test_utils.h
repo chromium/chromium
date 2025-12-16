@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_TEST_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
-#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/searchbox.mojom.h"

@@ -51,6 +51,7 @@ source_set("searchbox_impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
