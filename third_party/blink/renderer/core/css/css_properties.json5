@@ -6582,7 +6582,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-edge-end-inset",
+      name: "column-rule-edge-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6595,7 +6595,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-edge-end-inset",
+      name: "row-rule-edge-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6608,7 +6608,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-edge-start-inset",
+      name: "column-rule-edge-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6621,7 +6621,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-edge-start-inset",
+      name: "row-rule-edge-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6634,7 +6634,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-interior-end-inset",
+      name: "column-rule-interior-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6647,7 +6647,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-interior-end-inset",
+      name: "row-rule-interior-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6660,7 +6660,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-interior-start-inset",
+      name: "column-rule-interior-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6673,7 +6673,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-interior-start-inset",
+      name: "row-rule-interior-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -8983,23 +8983,23 @@
     },
     {
       name: "column-rule-inset",
-      longhands: ["column-rule-edge-start-inset", "column-rule-edge-end-inset", "column-rule-interior-start-inset",
-                  "column-rule-interior-end-inset"],
+      longhands: ["column-rule-edge-inset-start", "column-rule-edge-inset-end", "column-rule-interior-inset-start",
+                  "column-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },
     {
       name: "row-rule-inset",
-      longhands: ["row-rule-edge-start-inset", "row-rule-edge-end-inset", "row-rule-interior-start-inset",
-                  "row-rule-interior-end-inset"],
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end", "row-rule-interior-inset-start",
+                  "row-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },
     {
       name: "rule-inset",
-      longhands: ["row-rule-edge-start-inset", "row-rule-edge-end-inset", "row-rule-interior-start-inset",
-                  "row-rule-interior-end-inset", "column-rule-edge-start-inset", "column-rule-edge-end-inset",
-                  "column-rule-interior-start-inset", "column-rule-interior-end-inset"],
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end", "row-rule-interior-inset-start",
+                  "row-rule-interior-inset-end", "column-rule-edge-inset-start", "column-rule-edge-inset-end",
+                  "column-rule-interior-inset-start", "column-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },

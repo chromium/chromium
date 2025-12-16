@@ -2382,16 +2382,16 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInset(
   CHECK_EQ(shorthand.length(), 4u);
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeStartInset)));
+          direction, CSSGapDecorationPropertyType::kEdgeInsetStart)));
   CHECK(shorthand.properties()[1]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeEndInset)));
+          direction, CSSGapDecorationPropertyType::kEdgeInsetEnd)));
   CHECK(shorthand.properties()[2]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorStartInset)));
+          direction, CSSGapDecorationPropertyType::kInteriorInsetStart)));
   CHECK(shorthand.properties()[3]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorEndInset)));
+          direction, CSSGapDecorationPropertyType::kInteriorInsetEnd)));
 
   const CSSValue* rule_edge_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);

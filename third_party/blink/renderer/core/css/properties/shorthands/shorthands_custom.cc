@@ -1259,19 +1259,19 @@ bool ColumnRuleInset::ParseShorthand(
   }
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleEdgeStartInset, CSSPropertyID::kColumnRuleInset,
+      CSSPropertyID::kColumnRuleEdgeInsetStart, CSSPropertyID::kColumnRuleInset,
       *rule_edge_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleEdgeEndInset, CSSPropertyID::kColumnRuleInset,
+      CSSPropertyID::kColumnRuleEdgeInsetEnd, CSSPropertyID::kColumnRuleInset,
       *rule_edge_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleInteriorStartInset,
+      CSSPropertyID::kColumnRuleInteriorInsetStart,
       CSSPropertyID::kColumnRuleInset, *rule_interior_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleInteriorEndInset,
+      CSSPropertyID::kColumnRuleInteriorInsetEnd,
       CSSPropertyID::kColumnRuleInset, *rule_interior_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
@@ -1309,19 +1309,19 @@ bool RowRuleInset::ParseShorthand(
   }
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleEdgeStartInset, CSSPropertyID::kRowRuleInset,
+      CSSPropertyID::kRowRuleEdgeInsetStart, CSSPropertyID::kRowRuleInset,
       *rule_edge_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleEdgeEndInset, CSSPropertyID::kRowRuleInset,
+      CSSPropertyID::kRowRuleEdgeInsetEnd, CSSPropertyID::kRowRuleInset,
       *rule_edge_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleInteriorStartInset, CSSPropertyID::kRowRuleInset,
+      CSSPropertyID::kRowRuleInteriorInsetStart, CSSPropertyID::kRowRuleInset,
       *rule_interior_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleInteriorEndInset, CSSPropertyID::kRowRuleInset,
+      CSSPropertyID::kRowRuleInteriorInsetEnd, CSSPropertyID::kRowRuleInset,
       *rule_interior_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
@@ -1359,36 +1359,36 @@ bool RuleInset::ParseShorthand(
   }
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleEdgeStartInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kColumnRuleEdgeInsetStart, CSSPropertyID::kRuleInset,
       *rule_edge_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleEdgeEndInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kColumnRuleEdgeInsetEnd, CSSPropertyID::kRuleInset,
       *rule_edge_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleInteriorStartInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kColumnRuleInteriorInsetStart, CSSPropertyID::kRuleInset,
       *rule_interior_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnRuleInteriorEndInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kColumnRuleInteriorInsetEnd, CSSPropertyID::kRuleInset,
       *rule_interior_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleEdgeStartInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kRowRuleEdgeInsetStart, CSSPropertyID::kRuleInset,
       *rule_edge_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleEdgeEndInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kRowRuleEdgeInsetEnd, CSSPropertyID::kRuleInset,
       *rule_edge_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleInteriorStartInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kRowRuleInteriorInsetStart, CSSPropertyID::kRuleInset,
       *rule_interior_start_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowRuleInteriorEndInset, CSSPropertyID::kRuleInset,
+      CSSPropertyID::kRowRuleInteriorInsetEnd, CSSPropertyID::kRuleInset,
       *rule_interior_end_inset, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 

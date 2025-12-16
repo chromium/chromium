@@ -8200,14 +8200,14 @@ Called by update_use_counter_css.py.-->
   <int value="888" label="rule-inset"/>
   <int value="889" label="column-rule-visibility-items"/>
   <int value="890" label="row-rule-visibility-items"/>
-  <int value="891" label="column-rule-edge-start-inset"/>
-  <int value="892" label="column-rule-edge-end-inset"/>
-  <int value="893" label="column-rule-interior-start-inset"/>
-  <int value="894" label="column-rule-interior-end-inset"/>
-  <int value="895" label="row-rule-edge-start-inset"/>
-  <int value="896" label="row-rule-edge-end-inset"/>
-  <int value="897" label="row-rule-interior-start-inset"/>
-  <int value="898" label="row-rule-interior-end-inset"/>
+  <int value="891" label="column-rule-edge-inset-start"/>
+  <int value="892" label="column-rule-edge-inset-end"/>
+  <int value="893" label="column-rule-interior-inset-start"/>
+  <int value="894" label="column-rule-interior-inset-end"/>
+  <int value="895" label="row-rule-edge-inset-start"/>
+  <int value="896" label="row-rule-edge-inset-end"/>
+  <int value="897" label="row-rule-interior-inset-start"/>
+  <int value="898" label="row-rule-interior-inset-end"/>
   <int value="899" label="timeline-trigger-range"/>
   <int value="900" label="timeline-trigger-exit-range"/>
   <int value="901" label="trigger-scope"/>

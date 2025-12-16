@@ -5515,10 +5515,10 @@ CSSValue* ConsumeGapDecorationPropertyValue(
         return ConsumeIdent(stream);
       }
       return nullptr;
-    case CSSGapDecorationPropertyType::kEdgeEndInset:
-    case CSSGapDecorationPropertyType::kEdgeStartInset:
-    case CSSGapDecorationPropertyType::kInteriorEndInset:
-    case CSSGapDecorationPropertyType::kInteriorStartInset:
+    case CSSGapDecorationPropertyType::kEdgeInsetEnd:
+    case CSSGapDecorationPropertyType::kEdgeInsetStart:
+    case CSSGapDecorationPropertyType::kInteriorInsetEnd:
+    case CSSGapDecorationPropertyType::kInteriorInsetStart:
       return nullptr;
   }
 }

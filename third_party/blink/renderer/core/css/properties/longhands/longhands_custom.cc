@@ -5972,7 +5972,7 @@ const CSSValue* RowRuleBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RowRuleBreak());
 }
 
-const CSSValue* ColumnRuleEdgeEndInset::ParseSingleValue(
+const CSSValue* ColumnRuleEdgeInsetEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -5980,16 +5980,16 @@ const CSSValue* ColumnRuleEdgeEndInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleEdgeEndInset::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleEdgeInsetEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleEdgeEndInset(), style);
+      style.ColumnRuleEdgeInsetEnd(), style);
 }
 
-const CSSValue* RowRuleEdgeEndInset::ParseSingleValue(
+const CSSValue* RowRuleEdgeInsetEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -5997,16 +5997,16 @@ const CSSValue* RowRuleEdgeEndInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleEdgeEndInset::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleEdgeInsetEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleEdgeEndInset(), style);
+      style.RowRuleEdgeInsetEnd(), style);
 }
 
-const CSSValue* ColumnRuleEdgeStartInset::ParseSingleValue(
+const CSSValue* ColumnRuleEdgeInsetStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6014,16 +6014,16 @@ const CSSValue* ColumnRuleEdgeStartInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleEdgeStartInset::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleEdgeInsetStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleEdgeStartInset(), style);
+      style.ColumnRuleEdgeInsetStart(), style);
 }
 
-const CSSValue* RowRuleEdgeStartInset::ParseSingleValue(
+const CSSValue* RowRuleEdgeInsetStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6031,16 +6031,16 @@ const CSSValue* RowRuleEdgeStartInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleEdgeStartInset::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleEdgeInsetStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleEdgeStartInset(), style);
+      style.RowRuleEdgeInsetStart(), style);
 }
 
-const CSSValue* ColumnRuleInteriorEndInset::ParseSingleValue(
+const CSSValue* ColumnRuleInteriorInsetEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6048,16 +6048,16 @@ const CSSValue* ColumnRuleInteriorEndInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleInteriorEndInset::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInteriorInsetEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleInteriorEndInset(), style);
+      style.ColumnRuleInteriorInsetEnd(), style);
 }
 
-const CSSValue* RowRuleInteriorEndInset::ParseSingleValue(
+const CSSValue* RowRuleInteriorInsetEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6065,16 +6065,16 @@ const CSSValue* RowRuleInteriorEndInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleInteriorEndInset::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInteriorInsetEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleInteriorEndInset(), style);
+      style.RowRuleInteriorInsetEnd(), style);
 }
 
-const CSSValue* ColumnRuleInteriorStartInset::ParseSingleValue(
+const CSSValue* ColumnRuleInteriorInsetStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6082,16 +6082,16 @@ const CSSValue* ColumnRuleInteriorStartInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleInteriorStartInset::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInteriorInsetStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleInteriorStartInset(), style);
+      style.ColumnRuleInteriorInsetStart(), style);
 }
 
-const CSSValue* RowRuleInteriorStartInset::ParseSingleValue(
+const CSSValue* RowRuleInteriorInsetStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -6099,13 +6099,13 @@ const CSSValue* RowRuleInteriorStartInset::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleInteriorStartInset::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInteriorInsetStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleInteriorStartInset(), style);
+      style.RowRuleInteriorInsetStart(), style);
 }
 
 const CSSValue* ColumnRuleVisibilityItems::CSSValueFromComputedStyleInternal(

@@ -139,10 +139,10 @@ column-gap: normal
 column-height: auto
 column-rule-break: auto
 column-rule-color: rgb(0, 0, 0)
-column-rule-edge-end-inset: 0px
-column-rule-edge-start-inset: 0px
-column-rule-interior-end-inset: -50%
-column-rule-interior-start-inset: -50%
+column-rule-edge-inset-end: 0px
+column-rule-edge-inset-start: 0px
+column-rule-interior-inset-end: -50%
+column-rule-interior-inset-start: -50%
 column-rule-style: none
 column-rule-visibility-items: all
 column-rule-width: 3px
@@ -339,10 +339,10 @@ rotate: none
 row-gap: normal
 row-rule-break: auto
 row-rule-color: rgb(0, 0, 0)
-row-rule-edge-end-inset: 0px
-row-rule-edge-start-inset: 0px
-row-rule-interior-end-inset: -50%
-row-rule-interior-start-inset: -50%
+row-rule-edge-inset-end: 0px
+row-rule-edge-inset-start: 0px
+row-rule-interior-inset-end: -50%
+row-rule-interior-inset-start: -50%
 row-rule-style: none
 row-rule-visibility-items: all
 row-rule-width: 3px
