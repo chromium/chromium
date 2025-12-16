@@ -48,14 +48,14 @@
   }
 }
 
-.text {
+.promo-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+  width: 100%;
   margin-right: 28px;
   margin-top: 6px;
-  max-width: 573px;
 }
 
 .title {
@@ -66,8 +66,43 @@
 
 .description {
   color: var(--cr-secondary-text-color);
+  max-width: 573px;
+}
+
+.web-only-signed-in-description {
+  color: var(--cr-secondary-text-color);
+  max-width: 726px;
 }
 
 .action-button {
   margin-top: 8px;
+}
+
+.profile-row {
+  text-align: left;
+  align-items: center;
+  display: flex;
+  margin-top: 16px;
+}
+
+.avatar {
+  border-radius: 50%;
+  height: 32px;
+  margin-inline-end: 12px;
+  width: 32px;
+}
+
+.account-name {
+  font-size: 13px;
+}
+
+.account-email {
+  font-size: 12px;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
 }
