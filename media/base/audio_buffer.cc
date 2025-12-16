@@ -19,6 +19,7 @@
 #include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace media {
 
@@ -57,7 +58,7 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
 
 AudioBufferMemoryPool::AudioBufferMemoryPool()
     : AudioBufferMemoryPool(AudioBus::kChannelAlignment) {}
-AudioBufferMemoryPool::AudioBufferMemoryPool(int alignment)
+AudioBufferMemoryPool::AudioBufferMemoryPool(size_t alignment)
     : alignment_(alignment) {}
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;
 
@@ -138,11 +139,11 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   CHECK_LE(channel_count_, limits::kMaxChannels);
   CHECK_GE(frame_count, 0);
 
-  DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
-         ChannelLayoutToChannelCount(channel_layout) == channel_count);
+  CHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
+        ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
-  const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  const int channel_alignment =
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  const size_t channel_alignment =
       pool_ ? pool_->GetChannelAlignment() : AudioBus::kChannelAlignment;
   CHECK_LE(bytes_per_channel, channel_alignment);
 
@@ -150,6 +151,10 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   if (!create_buffer) {
     return;
   }
+
+  absl::Cleanup populate_channel_data_on_exit = [this] {
+    PopulateChannelData();
+  };
 
   CHECK_NE(sample_format, kUnknownSampleFormat);
 
@@ -161,7 +166,7 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     data_size_ = forced_data_size;
     data_ =
         pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
-    channel_data_.push_back(data_->span().data());
+    channel_spans_.push_back(data_->span());
 
     auto needs_zeroing = data_->span();
 
@@ -178,34 +183,42 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     std::ranges::fill(needs_zeroing, 0u);
     return;
   }
-  int data_size_per_channel = frame_count * bytes_per_channel;
+
+  const size_t data_size_per_channel = frame_count * bytes_per_channel;
   if (IsPlanar(sample_format)) {
     DCHECK(!IsBitstreamFormat()) << sample_format_;
     // Planar data, so need to allocate buffer for each channel.
     // Determine per channel data size, taking into account alignment.
-    int block_size_per_channel = base::bits::AlignUpDeprecatedDoNotUse(
-        data_size_per_channel, channel_alignment);
-    DCHECK_GE(block_size_per_channel, data_size_per_channel);
+    const size_t block_size_per_channel =
+        base::bits::AlignUp(data_size_per_channel, channel_alignment);
+    CHECK_GE(block_size_per_channel, data_size_per_channel);
 
     // Allocate a contiguous buffer for all the channel data.
     data_size_ = channel_count_ * block_size_per_channel;
     data_ =
         pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
-    channel_data_.reserve(channel_count_);
+    channel_spans_.reserve(channel_count_);
+
+    auto remaining_channels = data_->span();
 
     // Copy each channel's data into the appropriate spot.
     for (int i = 0; i < channel_count_; ++i) {
-      channel_data_.push_back(
-          UNSAFE_TODO(data_->span().data() + i * block_size_per_channel));
+      auto [channel, rem] = remaining_channels.split_at(block_size_per_channel);
       if (data) {
-        UNSAFE_TODO(memcpy(channel_data_[i], data[i], data_size_per_channel));
+        channel.first(data_size_per_channel)
+            .copy_from_nonoverlapping(
+                UNSAFE_TODO(base::span(data[i], data_size_per_channel)));
       }
+      channel_spans_.push_back(channel);
+      remaining_channels = rem;
     }
+
+    CHECK(remaining_channels.empty());
     return;
   }
 
   // Remaining formats are interleaved data.
-  DCHECK(IsInterleaved(sample_format)) << sample_format_;
+  CHECK(IsInterleaved(sample_format)) << sample_format_;
   // Allocate our own buffer and copy the supplied data into it. Buffer must
   // contain the data for all channels.
   if (!IsBitstreamFormat()) {
@@ -215,9 +228,10 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   }
 
   data_ = pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
-  channel_data_.push_back(data_->span().data());
+  channel_spans_.push_back(data_->span());
   if (data) {
-    UNSAFE_TODO(memcpy(data_->span().data(), data[0], data_size_));
+    data_->span().copy_from_nonoverlapping(
+        UNSAFE_TODO(base::span(data[0], data_size_)));
   }
 }
 
@@ -246,37 +260,45 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   CHECK_NE(sample_format, kUnknownSampleFormat);
   CHECK(data_);
 
-  DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
-         ChannelLayoutToChannelCount(channel_layout) == channel_count);
+  CHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
+        ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
   if (IsBitstreamFormat()) {
     data_size_ = data_->span().size();
-    DCHECK_GT(data_size_, 0u);
+    CHECK_GT(data_size_, 0u);
     return;
   }
 
-  int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  int data_size_per_channel = frame_count * bytes_per_channel;
+  absl::Cleanup populate_channel_data_on_exit = [this] {
+    PopulateChannelData();
+  };
+
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  const size_t data_size_per_channel = frame_count * bytes_per_channel;
 
   data_size_ = channel_count_ * data_size_per_channel;
   CHECK_GE(data_->span().size(), data_size_);
 
   if (IsInterleaved(sample_format)) {
-    channel_data_.push_back(data_->span().data());
-  } else if (IsPlanar(sample_format)) {
+    channel_spans_.push_back(data_->span());
+    return;
+  }
+
+  if (IsPlanar(sample_format)) {
     // Planar data, so need to set up pointers for each channel.
-    channel_data_.reserve(channel_count_);
+    channel_spans_.reserve(channel_count_);
+
+    auto remaining_channels = data_->span();
     // Set each channel's data pointer into the appropriate spot.
     for (int i = 0; i < channel_count_; ++i) {
-      channel_data_.push_back(
-          UNSAFE_TODO(data_->span().data() + i * data_size_per_channel));
-      CHECK_LE(data_->span().data(), channel_data_.back());
-      UNSAFE_TODO(CHECK_GE(data_->span().data() + data_->span().size(),
-                           channel_data_.back() + data_size_per_channel));
+      auto [channel, rem] = remaining_channels.split_at(data_size_per_channel);
+      channel_spans_.push_back(channel);
+      remaining_channels = rem;
     }
-  } else {
-    NOTREACHED() << sample_format;
+    return;
   }
+
+  NOTREACHED() << sample_format;
 }
 
 AudioBuffer::~AudioBuffer() = default;
@@ -692,6 +714,15 @@ void AudioBuffer::TrimRange(int start, int end) {
 
 bool AudioBuffer::IsBitstreamFormat() const {
   return IsBitstream(sample_format_);
+}
+
+void AudioBuffer::PopulateChannelData() {
+  CHECK(channel_data_.empty());
+
+  channel_data_.reserve(channel_spans_.size());
+
+  std::ranges::transform(channel_spans_, std::back_inserter(channel_data_),
+                         [](base::span<uint8_t> span) { return span.data(); });
 }
 
 }  // namespace media

@@ -259,7 +259,10 @@ class MEDIA_EXPORT AudioBuffer
   // write directly to. For planar formats the vector elements correspond to
   // the channels. For interleaved formats the resulting vector has exactly
   // one element which contains the buffer pointer.
-  const std::vector<uint8_t*>& channel_data() const { return channel_data_; }
+  const std::vector<uint8_t*>& channel_data() const {
+    CHECK_EQ(channel_spans_.size(), channel_data_.size());
+    return channel_data_;
+  }
 
   // The size of allocated data memory block. For planar formats channels go
   // sequentially in this block.
@@ -275,6 +278,11 @@ class MEDIA_EXPORT AudioBuffer
 
   virtual ~AudioBuffer();
 
+  // Copies each `data()` pointer from `channel_spans_` into `channel_data_`.
+  // Called exactly once at the end of construction.
+  // TODO(crbug.com/373960632): Delete this when deleting `channel_data_`.
+  void PopulateChannelData();
+
   const SampleFormat sample_format_;
   const ChannelLayout channel_layout_;
   const int channel_count_;
@@ -288,8 +296,13 @@ class MEDIA_EXPORT AudioBuffer
   size_t data_size_ = 0;
   std::unique_ptr<ExternalMemory> data_;
 
-  // For planar data, points to each channels data.
+  // Raw pointers to the beginning of each span in `channel_spans_`.
+  // TODO(crbug.com/373960632): Delete this once `channel_spans_` is used
+  // everywhere instead.
   std::vector<uint8_t*> channel_data_;
+
+  // For planar data, points to each channels data.
+  std::vector<base::raw_span<uint8_t>> channel_spans_;
 
   // Allows recycling of memory data to avoid repeated allocations.
   scoped_refptr<AudioBufferMemoryPool> pool_;
@@ -312,12 +325,12 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   AudioBufferMemoryPool();
-  explicit AudioBufferMemoryPool(int alignment);
+  explicit AudioBufferMemoryPool(size_t alignment);
   AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
   AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;
 
   size_t GetPoolSizeForTesting();
-  int GetChannelAlignment() const { return alignment_; }
+  size_t GetChannelAlignment() const { return alignment_; }
 
   class ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
    public:
@@ -342,7 +355,7 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   std::unique_ptr<ExternalMemoryFromPool> CreateBuffer(size_t size);
   void ReturnBuffer(ExternalMemoryFromPool memory);
 
-  const int alignment_;
+  const size_t alignment_;
   base::Lock entry_lock_;
   std::list<ExternalMemoryFromPool> entries_ GUARDED_BY(entry_lock_);
 };
