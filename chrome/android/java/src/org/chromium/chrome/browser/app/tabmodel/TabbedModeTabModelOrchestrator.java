@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -296,9 +297,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             TabCreatorManager shadowTabCreatorManager =
                     incognito -> incognito ? mIncognitoShadowTabCreator : mRegularShadowTabCreator;
             assert !mWindowTag.isEmpty();
+
+            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
+            assert service != null;
+
             mShadowTabPersistentStore =
                     new TabStateStore(
-                            TabStateStorageServiceFactory.getForProfile(profile),
+                            service,
                             mTabModelSelector,
                             mWindowTag,
                             shadowTabCreatorManager,

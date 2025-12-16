@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isTabStorageEnabled;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -17,9 +19,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 @JNINamespace("tabs")
 @NullMarked
 public final class TabStateStorageServiceFactory {
+    private static final ScopedStorageBatch EMPTY_SCOPED_BATCH = () -> {};
     private static @Nullable TabStateStorageService sTabStateStorageServiceForTesting;
 
-    public static TabStateStorageService getForProfile(Profile profile) {
+    public static @Nullable TabStateStorageService getForProfile(Profile profile) {
         if (sTabStateStorageServiceForTesting != null) {
             return sTabStateStorageServiceForTesting;
         }
@@ -28,6 +31,21 @@ public final class TabStateStorageServiceFactory {
     }
 
     private TabStateStorageServiceFactory() {}
+
+    /**
+     * Creates a batch. This will batch write all save to storage operations performed during its
+     * lifetime upon calling {@link ScopedStorageBatch#close()}.
+     *
+     * @param profile The profile associated with the save operations.
+     */
+    public static ScopedStorageBatch createBatch(Profile profile) {
+        if (!isTabStorageEnabled()) return EMPTY_SCOPED_BATCH;
+
+        TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
+        if (service == null) return EMPTY_SCOPED_BATCH;
+
+        return service.createBatch();
+    }
 
     /**
      * @param testService The test service to override with. Pass null to remove override.

@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
+    "java/src/org/chromium/chrome/browser/tab/ScopedStorageBatch.java",
     "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
     "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
     "java/src/org/chromium/chrome/browser/tab/StorageRestoreOrchestratorFactory.java",
