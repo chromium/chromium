@@ -87,11 +87,11 @@
 </template>
 
 <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
-  <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
+  <button id="addPreferredButton" class="dropdown-item" hidden="[[!showAddPreferred_]]"
       on-click="onAddPreferredClick_">
     $i18n{knownNetworksMenuAddPreferred}
   </button>
-  <button class="dropdown-item"
+  <button id="removePreferredButton" class="dropdown-item"
       hidden="[[!showRemovePreferred_]]" on-click="onRemovePreferredClick_">
     $i18n{knownNetworksMenuRemovePreferred}
   </button>
