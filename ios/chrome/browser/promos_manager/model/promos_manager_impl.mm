@@ -56,9 +56,9 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 void RecordRegistrationStateChanges(
     promos_manager::Promo promo,
     promos_manager::PromoRegistrationState state) {
-  std::string metric_name =
-      base::StrCat({"IOS.PromosManager.", promos_manager::NameForPromo(promo),
-                    ".RegistrationStateChanged"});
+  std::string metric_name = base::StrCat(
+      {"IOS.PromosManager.", promos_manager::ShortNameForPromo(promo),
+       ".RegistrationStateChanged"});
   base::UmaHistogramEnumeration(metric_name.c_str(), state);
 }
 
