@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -10,7 +10,7 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"

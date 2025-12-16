@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/coordinator/quick_delete_browsing_data_coordinator.h"
 
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/coordinator/quick_delete_browsing_data_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
