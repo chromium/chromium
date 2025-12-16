@@ -298,7 +298,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.FragmentAttached"
-    enum="AndroidSettingsFragmentHashes" expires_after="2026-04-12">
+    enum="AndroidSettingsFragmentHashes" expires_after="2026-06-14">
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-browser-privacy@google.com</owner>
   <summary>

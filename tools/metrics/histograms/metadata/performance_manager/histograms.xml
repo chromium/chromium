@@ -323,7 +323,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.ResourceQueryTime.{Function}"
-    units="microseconds" expires_after="2026-04-12">
+    units="microseconds" expires_after="2026-06-14">
   <owner>joenotcharles@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
