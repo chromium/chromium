@@ -60,8 +60,9 @@ java_library {
 java_library {
     name: "${GN2BP_MODULE_PREFIX}java",
     static_libs: [
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_and_jni_registration_java",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
@@ -76,8 +77,9 @@ java_library {
 java_library {
     name: "${GN2BP_MODULE_PREFIX}java__testing",
     static_libs: [
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java__testing",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java__testing",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java__testing",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_jni_registration_java__testing",
     ],
     sdk_version: "module_current",

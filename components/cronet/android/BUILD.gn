@@ -68,12 +68,9 @@ android_library("cronet_build_config_java") {
 }
 
 # Use java_library instead of android_library to avoid stripping GEN_JNI.java
-java_library("cronet_build_config_and_jni_registration_java") {
+java_library("cronet_jni_registration_java") {
   supports_android = true
-  srcjar_deps = [
-    ":cronet_build_config_srcjar",
-    ":cronet_jni_registration",
-  ]
+  srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
 java_cpp_enum("effective_connection_type_java") {
@@ -776,7 +773,8 @@ template("collect_proguard_configs") {
   _build_config = "$target_gen_dir/${target_name}.build_config.json"
 
   _deps = [
-    ":cronet_build_config_and_jni_registration_java",
+    ":cronet_build_config_java",
+    ":cronet_jni_registration_java",
     ":repackage_api",
     ":repackage_native_impl",
   ]
@@ -1073,7 +1071,16 @@ template("repackage_jars") {
 
 repackage_jars("repackage_shared") {
   output = "$_package_dir/cronet_shared_java.jar"
-  deps = cronet_shared_java_deps_to_package + [ ":cronet_shared_java" ]
+  deps = cronet_shared_java_deps_to_package + [
+           # Compilation targets are fed a placeholder BuildConfig. We still
+           # have to ship the final non-placeholder BuildConfig; this is what
+           # we do here. We do it here because we only want to include
+           # BuildConfig in the jars that we ship; we don't want to feed it to
+           # e.g. test APK targets because Chromium APK gn rules already do
+           # that, so it would result in conflicts.
+           ":cronet_build_config_java",
+           ":cronet_shared_java",
+         ]
 }
 
 repackage_jars("repackage_api") {
@@ -1110,7 +1117,7 @@ repackage_jars("repackage_httpengine_native_provider") {
 repackage_jars("repackage_native") {
   output = "$_package_dir/cronet_impl_native_java.jar"
   deps = [
-    ":cronet_build_config_and_jni_registration_java",
+    ":cronet_jni_registration_java",
     ":repackage_native_java",
   ]
   jar_excluded_patterns = _jar_excluded_patterns
