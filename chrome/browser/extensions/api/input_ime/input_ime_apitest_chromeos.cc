@@ -18,6 +18,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -52,6 +53,53 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, Basic) {
       ->GetActiveIMEState()
       ->SetEnabledExtensionImes(extension_ime_ids);
   ASSERT_TRUE(RunExtensionTest("input_ime/basic")) << message_;
+}
+
+// Tests that the Ctrl key is sent through with the correct `KeyboardEvent.key`.
+// Regression test for crbug.com/467185174.
+IN_PROC_BROWSER_TEST_F(InputImeApiTest, ControlKey) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Enable the test extension to be an IME.
+  std::vector<std::string> extension_ime_ids{
+      "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest"};
+  ash::input_method::InputMethodManager::Get()
+      ->GetActiveIMEState()
+      ->SetEnabledExtensionImes(extension_ime_ids);
+
+  ExtensionTestMessageListener set_current_input_method("set_input_success");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("input_ime/control_key"),
+      {.wait_for_renderers = true, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  // Confirm the current input method has been set to the test extension.
+  ASSERT_TRUE(set_current_input_method.WaitUntilSatisfied());
+
+  // Open page with a text box.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/extensions/test_file_with_text_field.html")));
+
+  // Focus the text field.
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(
+      content::ExecJs(tab, "document.getElementById('textField').focus();"));
+  // Assert the text box is focused.
+  ASSERT_EQ(
+      true,
+      content::EvalJsAfterLifecycleUpdate(
+          tab,
+          /*raf_script=*/"",
+          "document.activeElement === document.getElementById('textField');")
+          .ExtractBool());
+
+  ResultCatcher result_catcher;
+  // Type a "Ctrl" key into the text box so we can examine the
+  // `KeyboardEvent.key` in the OnKeyEvent() listener.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_CONTROL, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
 // Tests that if an extension service worker shuts down due to idle timeout that
