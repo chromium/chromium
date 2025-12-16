@@ -1288,25 +1288,30 @@ CreateInputDataFromAnnotatedPageContent(
       _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL canAddMoreImages = [self maxNumberOfGalleryItemsAllowed] > 0;
   BOOL attachmentsAvailable = canCreateImage || canSearchWithAI;
+  BOOL canAddMoreAttachement = [self canAddMoreAttachments];
 
   // Image generation action.
   [self.consumer disableCreateImageActions:hasTabOrFile];
   [self.consumer hideCreateImageActions:!canCreateImage];
 
   // Add tabs action.
-  [self.consumer disableAttachTabActions:isImageCreationMode];
+  [self.consumer
+      disableAttachTabActions:isImageCreationMode || !canAddMoreAttachement];
   [self.consumer hideAttachTabActions:!canSearchWithAI];
 
   // Add files action.
-  [self.consumer disableAttachFileActions:isImageCreationMode];
+  [self.consumer
+      disableAttachFileActions:isImageCreationMode || !canAddMoreAttachement];
   [self.consumer hideAttachFileActions:!canUploadFiles || !canSearchWithAI];
 
   // Add pictures from user gallery action.
-  [self.consumer disableGalleryActions:!canAddMoreImages];
+  [self.consumer
+      disableGalleryActions:!canAddMoreImages || !canAddMoreAttachement];
   [self.consumer hideGalleryActions:!attachmentsAvailable];
 
   // Add picture from camera action.
-  [self.consumer disableCameraActions:!canAddMoreImages];
+  [self.consumer
+      disableCameraActions:!canAddMoreImages || !canAddMoreAttachement];
   [self.consumer hideCameraActions:!attachmentsAvailable];
 }
 
