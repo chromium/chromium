@@ -18,6 +18,7 @@
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -435,16 +436,26 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
 
     viz::TextureDrawQuad* xr_content_quad =
         render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-    xr_content_quad->SetNew(
-        xr_content_quad_state,
-        /*rect=*/output_rect,
-        /*visible_rect=*/output_rect,
-        /*needs_blending=*/true, renderer_buffer->id,
-        /*uv_top_left=*/xr_frame->bounds_left.origin(),
-        /*uv_bottom_right=*/xr_frame->bounds_left.bottom_right(),
-        /*background_color=*/SkColors::kTransparent,
-        /*nearest_neighbor=*/false,
-        /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+    const gfx::Size shared_image_size = renderer_buffer->shared_image->size();
+    const gfx::PointF uv_top_left =
+        gfx::ScalePoint(xr_frame->bounds_left.origin(),
+                        shared_image_size.width(), shared_image_size.height());
+    const gfx::PointF uv_bottom_right =
+        gfx::ScalePoint(xr_frame->bounds_left.bottom_right(),
+                        shared_image_size.width(), shared_image_size.height());
+    xr_content_quad->SetNew(xr_content_quad_state,
+                            /*rect=*/output_rect,
+                            /*visible_rect=*/output_rect,
+                            /*needs_blending=*/true, renderer_buffer->id,
+                            /*top_left=*/
+                            uv_top_left,
+                            /*bottom_right=*/
+                            uv_bottom_right,
+                            /*background=*/SkColors::kTransparent,
+                            /*nearest*/ false,
+                            /*secure_output=*/false,
+                            gfx::ProtectedVideoType::kClear,
+                            /*is_tex_coords_normalized=*/false);
 
     viz::TransferableResource::MetadataOverride render_resource_overrides = {
         .is_overlay_candidate = false,
@@ -479,17 +490,22 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
 
   viz::TextureDrawQuad* camera_quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+
+  const gfx::Size shared_image_size = camera_buffer->shared_image->size();
+  const gfx::PointF uv_bottom_right(shared_image_size.width(),
+                                    shared_image_size.height());
+
   // UV from 0,0 to 1,1 because the camera texture is fullscreen.
   camera_quad->SetNew(camera_quad_state,
                       /*rect=*/output_rect,
                       /*visible_rect=*/output_rect,
                       /*needs_blending=*/true, camera_buffer->id,
-                      /*uv_top_left=*/gfx::PointF(0.f, 0.f),
-                      /*uv_bottom_right=*/gfx::PointF(1.f, 1.f),
-                      /*background_color=*/SkColors::kTransparent,
-                      /*nearest_neighbor=*/false,
-                      /*secure_output_only=*/false,
-                      gfx::ProtectedVideoType::kClear);
+                      /*top_left=*/gfx::PointF(0.f, 0.f),
+                      /*bottom_right=*/uv_bottom_right,
+                      /*background=*/SkColors::kTransparent,
+                      /*nearest*/ false,
+                      /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+                      /*is_tex_coords_normalized=*/false);
 
   viz::TransferableResource::MetadataOverride camera_resource_overrides = {
       .is_overlay_candidate = false,

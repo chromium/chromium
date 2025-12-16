@@ -739,6 +739,10 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
 
   // We may only have one eye view, i.e. in smartphone immersive AR mode.
   // Use all-zero bounds for unused views.
+  // TODO(crbug.com/451876192): Investigate sending unnormalized coordinates
+  // from here. We create TextureDrawQuads with unnormalized coordinates, so
+  // removing this redundant normalization/unnormalization step would reduce
+  // floating-point precision issues.
   gfx::RectF left_coords =
       left ? gfx::RectF(
                  static_cast<float>(left->x()) / width,
