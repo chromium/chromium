@@ -56,6 +56,14 @@ void RecordMetricsPrefetchMatchAheadOfPrerenderDebug(
       GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
           prefetch_ahead_of_prerender_debug_metrics.servable_state,
           prefetch_ahead_of_prerender_debug_metrics.match_resolver_action));
+  base::UmaHistogramSparse(
+      WITH(prefix,
+           "PrefetchMatchMetrics.ExistsPaopThen."
+           "PotentialCandidateCollectResultAndServableStateAndMatcherAction"),
+      GetCodeOfPotentialCandidateCollectResultAndServableStateAndMatcherAction(
+          prefetch_ahead_of_prerender_debug_metrics.collect_result,
+          prefetch_ahead_of_prerender_debug_metrics.servable_state,
+          prefetch_ahead_of_prerender_debug_metrics.match_resolver_action));
   // Cardinality: `#PrefetchPotentialCandidateServingResult * 16 = 14 * 16 =
   // 224.
   base::UmaHistogramSparse(

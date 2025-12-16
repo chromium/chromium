@@ -493,6 +493,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchMatchResolver.ExistsPaopThen.PrefetchPotentialCandidateCollectResult"
+    enum="PrefetchPotentialCandidateCollectResult" expires_after="2026-11-12">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records `PrefetchPotentialCandidateCollectResult` when a prerender that
+    triggered prefetch ahead of prerender, tried to use prefetch but there is no
+    prefetch candidate in `PrefetchMatchResolver`.
+  </summary>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchMatchResolver.OnDeterminedHeadWithUnmatch.PotentialCandidateServingResultAndServableStateAndMatcherAction"
     units="code" expires_after="2026-05-06">
   <owner>kenoss@chromium.org</owner>

@@ -26,6 +26,20 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(PrefetchPotentialCandidateCollectResult) -->
+
+<enum name="PrefetchPotentialCandidateCollectResult">
+  <int value="1" label="kAvailable"/>
+  <int value="2" label="kUnavailablePrefetchIsNotInPrefetchService"/>
+  <int value="3" label="kUnavailableNotServable"/>
+  <int value="4"
+      label="kUnavailableNavigationIsNotPrerenderAndPrefetchEligibilityNotGotYet"/>
+  <int value="5" label="kUnavailablePrefetchIsDecoy"/>
+  <int value="6" label="kUnavailablePrefetchStatusNotUsedCookiesChanged"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_match_resolver.h:PrefetchPotentialCandidateCollectResult) -->
+
 <!-- LINT.IfChange(PrefetchPotentialCandidateServingResult) -->
 
 <enum name="PrefetchPotentialCandidateServingResult">

@@ -2068,10 +2068,14 @@ PrefetchService::CollectMatchCandidates(
     const PrefetchKey& key,
     bool is_nav_prerender,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
-        serving_page_metrics_container) {
+        serving_page_metrics_container,
+    const PrefetchKey* key_ahead_of_prerender,
+    PrefetchPotentialCandidateCollectResult*
+        collect_result_ahead_of_prerender) {
   return CollectMatchCandidatesGeneric(
       owned_prefetches(), key, is_nav_prerender,
-      std::move(serving_page_metrics_container));
+      std::move(serving_page_metrics_container), key_ahead_of_prerender,
+      collect_result_ahead_of_prerender);
 }
 
 PrefetchContainer* PrefetchService::FindPrefetchAheadOfPrerenderForMetrics(

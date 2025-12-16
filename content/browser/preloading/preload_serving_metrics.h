@@ -17,6 +17,7 @@
 
 namespace content {
 
+enum class PrefetchPotentialCandidateCollectResult;
 enum class PrefetchPotentialCandidateServingResult;
 class NavigationHandle;
 class PrefetchContainer;
@@ -93,6 +94,7 @@ struct CONTENT_EXPORT PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics final {
   PrefetchMatchResolverAction match_resolver_action;
   int queue_size;
   std::optional<int> queue_index;
+  PrefetchPotentialCandidateCollectResult collect_result;
 };
 
 // Debug information of prefetch ahead of prerender at prefetch matching.

@@ -144,6 +144,15 @@ int GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
          action_prefetch_container_load_state_int * 10 + action_is_expired;
 }
 
+int GetCodeOfPotentialCandidateCollectResultAndServableStateAndMatcherAction(
+    PrefetchPotentialCandidateCollectResult collect_result,
+    PrefetchServableState servable_state,
+    const PrefetchMatchResolverAction& match_resolver_action) {
+  return static_cast<int>(collect_result) * 10000 +
+         GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
+             servable_state, match_resolver_action);
+}
+
 int GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
     PrefetchPotentialCandidateServingResult serving_result,
     PrefetchServableState servable_state,
@@ -152,4 +161,5 @@ int GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
          GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
              servable_state, match_resolver_action);
 }
+
 }  // namespace content

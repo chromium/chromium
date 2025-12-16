@@ -13,6 +13,7 @@
 namespace content {
 
 enum class PrefetchContainerLoadState;
+enum class PrefetchPotentialCandidateCollectResult;
 enum class PrefetchPotentialCandidateServingResult;
 
 // TODO(crbug.com/372186548): Revisit the shape of `PrefetchServableState`.
@@ -122,6 +123,16 @@ int GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
     PrefetchServableState servable_state,
     const PrefetchMatchResolverAction& match_resolver_action);
 
+// Encodes collect result, servable state and matcher action to int for debug.
+//
+// See the comment of
+// `GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug()` for
+// cardinality.
+int GetCodeOfPotentialCandidateCollectResultAndServableStateAndMatcherAction(
+    content::PrefetchPotentialCandidateCollectResult collect_result,
+    PrefetchServableState servable_state,
+    const PrefetchMatchResolverAction& match_resolver_action);
+
 // Encodes serving result, servable state and matcher action to int for debug.
 //
 // See the comment of
@@ -131,6 +142,7 @@ int GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
     content::PrefetchPotentialCandidateServingResult serving_result,
     PrefetchServableState servable_state,
     const PrefetchMatchResolverAction& match_resolver_action);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVABLE_STATE_H_
