@@ -132,6 +132,10 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
+void BwgBrowserAgent::UpdateGeminiOverlayOffset(CGFloat offset) {
+  ios::provider::UpdateOverlayOffset(offset);
+}
+
 #pragma mark - Private
 
 void BwgBrowserAgent::PresentBwgOverlayWithState(

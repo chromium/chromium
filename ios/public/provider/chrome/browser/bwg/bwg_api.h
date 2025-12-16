@@ -109,6 +109,12 @@ void UpdatePageContext(GeminiPageContext* gemini_page_context);
 // Returns the Gemini settings that the user is eligible for.
 NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
     AuthenticationService* auth_service);
+
+// Updates Gemini overlay offset. A positive `offset` will move the overlay
+// towards the top of the viewport while a negative `offset` will move the
+// overlay towards the bottom and even below the viewport.
+void UpdateOverlayOffset(CGFloat offset);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_

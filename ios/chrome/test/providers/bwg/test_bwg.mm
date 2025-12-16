@@ -45,4 +45,6 @@ NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
   return nil;
 }
 
+void UpdateOverlayOffset(CGFloat offset) {}
+
 }  // namespace ios::provider

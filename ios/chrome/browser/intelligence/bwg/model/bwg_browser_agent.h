@@ -73,6 +73,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                      PageContextWrapperError> expected_page_context);
 
+  // Updates Gemini overlay offset.
+  void UpdateGeminiOverlayOffset(CGFloat offset);
+
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
