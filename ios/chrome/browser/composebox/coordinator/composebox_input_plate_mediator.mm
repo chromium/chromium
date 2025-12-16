@@ -1012,6 +1012,30 @@ CreateInputDataFromAnnotatedPageContent(
       FROM_HERE, std::move(task), GetUploadDelay());
 }
 
+// Handles the image data after it has been converted, and uploads it.
+- (void)handleImageUploadWithData:(NSData*)data
+                forItemIdentifier:(base::UnguessableToken)identifier
+                          options:(const lens::ImageEncodingOptions&)options {
+  if (!data) {
+    [self handleFailedAttachment:identifier];
+    return;
+  }
+
+  if (!_contextualSearchSession) {
+    return;
+  }
+
+  mojo_base::BigBuffer buffer(base::apple::NSDataToSpan(data));
+  __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindOnce(^(const base::UnguessableToken& serverToken) {
+    [weakSelf onFileContextAdded:serverToken forIdentifier:identifier];
+  });
+
+  _contextualSearchSession->AddFileContext(kPortableNetworkGraphicMimeType,
+                                           std::move(buffer), options,
+                                           std::move(callback));
+}
+
 // Uploads the `image` for the item with the given `identifier`.
 - (void)uploadImage:(UIImage*)image
      itemIdentifier:(base::UnguessableToken)identifier {
@@ -1027,16 +1051,18 @@ CreateInputDataFromAnnotatedPageContent(
   image_options.max_height = 1024;
   image_options.compression_quality = 80;
 
-  NSData* data = UIImagePNGRepresentation(image);
-  mojo_base::BigBuffer buffer(base::apple::NSDataToSpan(data));
+  // UIImagePNGRepresentation is an expensive operation. We execute this on a
+  // background thread to prevent blocking the UI, especially during batch
+  // processing.
   __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindOnce(^(const base::UnguessableToken& serverToken) {
-    [weakSelf onFileContextAdded:serverToken forIdentifier:identifier];
-  });
-
-  _contextualSearchSession->AddFileContext(kPortableNetworkGraphicMimeType,
-                                           std::move(buffer), image_options,
-                                           std::move(callback));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&UIImagePNGRepresentation, image),
+      base::BindOnce(^(NSData* data) {
+        [weakSelf handleImageUploadWithData:data
+                          forItemIdentifier:identifier
+                                    options:image_options];
+      }));
 }
 
 // Handles uploading the context after the snapshot is generated.
