@@ -156,6 +156,12 @@ bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
   return this_properties->HasSameNonReconfigurableSettings(*others_properties);
 }
 
+std::optional<media::AudioCapturerSource::ErrorCode>
+MediaStreamAudioSource::ErrorCode() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return error_code_;
+}
+
 void MediaStreamAudioSource::DoChangeSource(
     const MediaStreamDevice& new_device) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -276,6 +282,12 @@ void MediaStreamAudioSource::LogMessage(const std::string& message) {
   blink::WebRtcLogMessage(
       base::StringPrintf("MSAS::%s [this=0x%" PRIXPTR "]", message.c_str(),
                          reinterpret_cast<uintptr_t>(this)));
+}
+
+void MediaStreamAudioSource::SetErrorCode(
+    media::AudioCapturerSource::ErrorCode code) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  error_code_ = code;
 }
 
 }  // namespace blink

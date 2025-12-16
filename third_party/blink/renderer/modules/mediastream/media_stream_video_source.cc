@@ -566,6 +566,11 @@ VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   return base::DoNothing();
 }
 
+size_t MediaStreamVideoSource::NumTracks() const {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return tracks_.size();
+}
+
 void MediaStreamVideoSource::SetStartCallback(SourceStartCallback callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   start_callback_ = std::move(callback);
