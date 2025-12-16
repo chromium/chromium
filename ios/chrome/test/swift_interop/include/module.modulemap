@@ -49,4 +49,9 @@ module Closure {
   export *
 }
 
+module Vector {
+  header "vector.h"
+  export *
+}
+
 }

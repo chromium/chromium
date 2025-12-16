@@ -51,9 +51,11 @@ source_set("swift_interop_tests_support_files") {
     "include/string_helper.h",
     "include/struct.h",
     "include/unique_ptr.h",
+    "include/vector.h",
     "pointer/pointer_returner.cc",
     "pointer/shared_ptr.cc",
     "pointer/unique_ptr.cc",
+    "stl/vector.cc",
     "string/string_helper.cc",
   ]
   deps = [ "//base" ]
@@ -74,6 +76,7 @@ swift_source_set("swift_interop_tests") {
     "pointer/pointer_xctest.swift",
     "pointer/shared_ptr_xctest.swift",
     "pointer/unique_ptr_xctest.swift",
+    "stl/vector_xctest.swift",
     "string/string_xctest.swift",
     "struct/struct_xctest.swift",
   ]
