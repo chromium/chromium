@@ -4,8 +4,14 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.daily_refresh;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+
+import android.graphics.Bitmap;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -14,6 +20,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+
+import java.util.concurrent.Executor;
 
 @NullMarked
 /** Handles the daily refresh of a customized NTP's background color or image. */
@@ -53,29 +63,102 @@ public class NtpThemeDailyRefreshManager {
     }
 
     /**
+     * Get the primary theme color for a theme collection. If a daily refresh has been applied, it
+     * retrieves the color for the refreshed theme.
+     */
+    public @ColorInt int getNtpThemeColorForThemeCollection() {
+        if (mIsDailyUpdateApplied) {
+            return NtpCustomizationUtils
+                    .getDailyRefreshCustomizedPrimaryColorFromSharedPreference();
+        }
+
+        return NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
+    }
+
+    /**
+     * Gets the background image info for a theme collection. If a daily refresh has been applied,
+     * it retrieves the info for the refreshed theme's image.
+     */
+    public @Nullable BackgroundImageInfo getNtpBackgroundImageInfoForThemeCollection() {
+        if (mIsDailyUpdateApplied) {
+            return NtpCustomizationUtils.readDailyRefreshNtpBackgroundImageInfo();
+        }
+
+        return NtpCustomizationUtils.readNtpBackgroundImageInfo();
+    }
+
+    /**
+     * Reads the background image bitmap for a theme collection. If a daily refresh has been
+     * applied, it reads the image for the refreshed theme.
+     */
+    public void readNtpBackgroundImageForThemeCollection(
+            Callback<@Nullable Bitmap> callback, Executor executor) {
+        if (mIsDailyUpdateApplied) {
+            NtpCustomizationUtils.readDailyRefreshNtpBackgroundImage(callback, executor);
+            return;
+        }
+
+        NtpCustomizationUtils.readNtpBackgroundImage(callback, executor);
+    }
+
+    /**
+     * Gets the custom background info for a theme collection. If a daily refresh has been applied,
+     * it retrieves the info for the refreshed theme.
+     */
+    public @Nullable CustomBackgroundInfo getNtpCustomBackgroundInfoForThemeCollection() {
+        if (mIsDailyUpdateApplied) {
+            return NtpCustomizationUtils.getDailyRefreshCustomBackgroundInfoFromSharedPreference();
+        }
+
+        return NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+    }
+
+    /**
      * Returns the next color ID if daily refresh is enabled and hasn't been updated within 24
      * hours.
      *
      * @param currentColorId The current color ID.
      */
     @VisibleForTesting
-    public @NtpThemeColorId int mayApplyDailyRefreshForChromeColor(
+    public @NtpThemeColorId int maybeApplyDailyRefreshForChromeColor(
             @NtpThemeColorId int currentColorId) {
         if (!isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR)) {
             return currentColorId;
         }
 
-        return applyDailyRefresh(currentColorId);
+        return applyDailyRefreshForChromeColorTheme(currentColorId);
+    }
+
+    /**
+     * Checks if daily refresh for a theme collection should be applied and updates the status if
+     * needed.
+     */
+    @VisibleForTesting
+    public void maybeApplyDailyRefreshForThemeCollection() {
+        if (isDailyRefreshEnabled(THEME_COLLECTION)) {
+            setDailyUpdateStatusForThemeCollection(TimeUtils.currentTimeMillis());
+        }
     }
 
     @VisibleForTesting
     boolean isDailyRefreshEnabled(@NtpBackgroundImageType int backgroundType) {
-        if (backgroundType != NtpBackgroundImageType.CHROME_COLOR) {
+        if (backgroundType != NtpBackgroundImageType.CHROME_COLOR
+                && backgroundType != THEME_COLLECTION) {
             return false;
         }
 
-        if (!NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference()) {
+        if (backgroundType == NtpBackgroundImageType.CHROME_COLOR
+                && !NtpCustomizationUtils
+                        .getIsChromeColorDailyRefreshEnabledFromSharedPreference()) {
             return false;
+        }
+
+        if (backgroundType == THEME_COLLECTION) {
+            CustomBackgroundInfo customBackgroundInfo =
+                    NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+            if (customBackgroundInfo == null || !customBackgroundInfo.isDailyRefreshEnabled) {
+                return false;
+            }
         }
 
         long dailyRefreshHoursMs =
@@ -90,9 +173,9 @@ public class NtpThemeDailyRefreshManager {
     }
 
     @NtpThemeColorId
-    int applyDailyRefresh(@NtpThemeColorId int currentColorId) {
+    int applyDailyRefreshForChromeColorTheme(@NtpThemeColorId int currentColorId) {
         @NtpThemeColorId int newColorId = getNextColorId(currentColorId);
-        setDailyUpdateStatus(newColorId, TimeUtils.currentTimeMillis());
+        setDailyUpdateStatusForChromeColor(newColorId, TimeUtils.currentTimeMillis());
         return newColorId;
     }
 
@@ -106,14 +189,27 @@ public class NtpThemeDailyRefreshManager {
     }
 
     @VisibleForTesting
-    void setDailyUpdateStatus(@NtpThemeColorId int newColorId, long timestamp) {
+    void setDailyUpdateStatusForChromeColor(@NtpThemeColorId int newColorId, long timestamp) {
         mNtpThemeColorId = newColorId;
         mLastDailyUpdateTimestamp = timestamp;
         mIsDailyUpdateApplied = true;
     }
 
+    /**
+     * Sets the internal state to indicate that a daily refresh for a Theme Collection has been
+     * applied.
+     *
+     * @param timestamp The timestamp of the refresh.
+     */
+    @VisibleForTesting
+    void setDailyUpdateStatusForThemeCollection(long timestamp) {
+        mLastDailyUpdateTimestamp = timestamp;
+        mIsDailyUpdateApplied = true;
+        mNtpThemeColorId = null;
+    }
+
     /** Saves the existing daily refresh settings to the SharedPreference and resets. */
-    public void maybeSaveDailyRefreshAndReset() {
+    public void maybeSaveDailyRefreshAndReset(Runnable onDailyRefreshThemeCollectionApplied) {
         if (!mIsDailyUpdateApplied || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
             return;
         }
@@ -121,6 +217,12 @@ public class NtpThemeDailyRefreshManager {
         if (mNtpThemeColorId != null) {
             NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(mNtpThemeColorId);
             mNtpThemeColorId = null;
+        }
+
+        if (NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference()
+                == THEME_COLLECTION) {
+            NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
+            onDailyRefreshThemeCollectionApplied.run();
         }
 
         if (mLastDailyUpdateTimestamp != null) {

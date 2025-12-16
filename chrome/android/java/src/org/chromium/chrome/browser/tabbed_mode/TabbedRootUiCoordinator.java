@@ -2044,4 +2044,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActivity.setTitle(title + ": " + subTitle);
         }
     }
+
+    /**
+     * Called after a daily refresh theme collection has been applied to the NTP. Triggers fetching
+     * the next image for the theme collection to be used for the following day's refresh.
+     */
+    public void onDailyRefreshThemeCollectionApplied() {
+        if (mNtpSyncedThemeManager != null) {
+            mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
+        }
+    }
 }

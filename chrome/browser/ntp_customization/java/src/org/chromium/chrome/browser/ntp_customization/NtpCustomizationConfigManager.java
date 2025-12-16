@@ -121,8 +121,7 @@ public class NtpCustomizationConfigManager {
         mHomepageStateListeners = new ObserverList<>();
 
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
-        if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK
-                || mBackgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
+        if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
             mIsInitialized = true;
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
             NtpCustomizationUtils.readNtpBackgroundImage(
@@ -130,10 +129,19 @@ public class NtpCustomizationConfigManager {
                         onBackgroundImageAvailable(bitmap, imageInfo);
                     },
                     EXECUTOR);
-            if (mBackgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
-                mCustomBackgroundInfo =
-                        NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
-            }
+        } else if (mBackgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
+            mIsInitialized = true;
+            NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
+                    NtpThemeDailyRefreshManager.getInstance();
+            BackgroundImageInfo imageInfo =
+                    ntpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection();
+            ntpThemeDailyRefreshManager.readNtpBackgroundImageForThemeCollection(
+                    (bitmap) -> {
+                        onBackgroundImageAvailable(bitmap, imageInfo);
+                    },
+                    EXECUTOR);
+            mCustomBackgroundInfo =
+                    ntpThemeDailyRefreshManager.getNtpCustomBackgroundInfoForThemeCollection();
         }
 
         mIsMvtToggleOn =

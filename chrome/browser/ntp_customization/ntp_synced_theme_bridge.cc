@@ -45,6 +45,13 @@ void NtpSyncedThemeBridge::Destroy(JNIEnv* env) {
 
 NtpSyncedThemeBridge::~NtpSyncedThemeBridge() = default;
 
+void NtpSyncedThemeBridge::FetchNextThemeCollectionImage(JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+  ntp_custom_background_service_->RefreshBackgroundIfNeeded();
+}
+
 ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
     JNIEnv* env) {
   std::optional<CustomBackground> background =

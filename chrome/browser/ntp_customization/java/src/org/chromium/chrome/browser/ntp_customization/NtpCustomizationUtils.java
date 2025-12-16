@@ -269,21 +269,28 @@ public class NtpCustomizationUtils {
             return null;
         }
 
+        NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
+                NtpThemeDailyRefreshManager.getInstance();
+        @ColorInt int color;
         if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
-            NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
-                    NtpThemeDailyRefreshManager.getInstance();
             @NtpThemeColorId
             int colorId = ntpThemeDailyRefreshManager.getNtpThemeColorIdForChromeColorTheme();
             if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
                 return null;
             }
             if (checkDailyRefresh) {
-                colorId = ntpThemeDailyRefreshManager.mayApplyDailyRefreshForChromeColor(colorId);
+                colorId = ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForChromeColor(colorId);
             }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
+        } else if (imageType == NtpBackgroundImageType.THEME_COLLECTION) {
+            if (checkDailyRefresh) {
+                ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForThemeCollection();
+            }
+            color = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
+        } else {
+            color = getCustomizedPrimaryColorFromSharedPreference();
         }
 
-        @ColorInt int color = getCustomizedPrimaryColorFromSharedPreference();
         return (color != NtpThemeColorInfo.COLOR_NOT_SET) ? color : null;
     }
 
@@ -430,7 +437,7 @@ public class NtpCustomizationUtils {
      * @param file The file to save the image to.
      */
     @VisibleForTesting
-    static void saveBitmapImageToFile(@Nullable Bitmap backgroundImageBitmap, File file) {
+    public static void saveBitmapImageToFile(@Nullable Bitmap backgroundImageBitmap, File file) {
         if (backgroundImageBitmap == null) {
             deleteBackgroundImageFile(file);
             return;
@@ -452,7 +459,7 @@ public class NtpCustomizationUtils {
      *     landscape matrices.
      */
     @VisibleForTesting
-    static void updateBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
+    public static void updateBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
         prefs.writeString(
@@ -468,7 +475,8 @@ public class NtpCustomizationUtils {
      *     landscape matrices.
      */
     @VisibleForTesting
-    static void updateDailyRefreshBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
+    public static void updateDailyRefreshBackgroundImageInfo(
+            BackgroundImageInfo backgroundImageInfo) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
         prefs.writeString(
@@ -1065,7 +1073,7 @@ public class NtpCustomizationUtils {
      *     collection info.
      */
     @VisibleForTesting
-    static void setCustomBackgroundInfoToSharedPreference(
+    public static void setCustomBackgroundInfoToSharedPreference(
             CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeString(
@@ -1079,7 +1087,7 @@ public class NtpCustomizationUtils {
      * @param customBackgroundInfo The new {@link CustomBackgroundInfo} for daily refresh.
      */
     @VisibleForTesting
-    static void setDailyRefreshCustomBackgroundInfoToSharedPreference(
+    public static void setDailyRefreshCustomBackgroundInfoToSharedPreference(
             CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeString(
@@ -1273,7 +1281,7 @@ public class NtpCustomizationUtils {
      * image settings with the daily refresh settings. This includes updating SharedPreferences and
      * renaming the background image file.
      */
-    static void applyDailyRefreshThemeCollectionImage() {
+    public static void commitThemeCollectionDailyRefresh() {
         // 1. Overwrite current theme collection image info with daily refresh image info in
         // SharedPreferences.
         BackgroundImageInfo dailyRefreshNtpBackgroundImageInfo =

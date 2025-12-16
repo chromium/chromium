@@ -3522,7 +3522,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
-            NtpThemeDailyRefreshManager.getInstance().maybeSaveDailyRefreshAndReset();
+            NtpThemeDailyRefreshManager.getInstance()
+                    .maybeSaveDailyRefreshAndReset(
+                            ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                                    ::onDailyRefreshThemeCollectionApplied);
         }
 
         TipsUtils.performNotificationSchedulerSteps(

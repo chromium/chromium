@@ -383,6 +383,54 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_themeCollection() {
+        NtpThemeDailyRefreshManager.createInstanceForTesting();
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.THEME_COLLECTION);
+
+        // Test with daily refresh disabled.
+        CustomBackgroundInfo infoNoRefresh =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        /* collectionId= */ "id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(infoNoRefresh);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        assertEquals(
+                "Without daily refresh, it should return the regular color.",
+                Color.RED,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ true));
+
+        // Test with daily refresh enabled.
+        CustomBackgroundInfo infoWithRefresh =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        /* collectionId= */ "id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(infoWithRefresh);
+        NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(Color.BLUE);
+        assertEquals(
+                "With daily refresh, it should return the daily refresh color.",
+                Color.BLUE,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ true));
+        // Verify that after daily refresh, getting the color without daily refresh returns the new
+        // color.
+        assertEquals(
+                "After daily refresh, it should return the new color even without check.",
+                Color.BLUE,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testLoadColorInfoFromSharedPreference_flagDisabled() {
         assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
@@ -923,7 +971,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testApplyDailyRefreshThemeCollectionImage() {
+    public void testCommitThemeCollectionDailyRefresh() {
         // 1. Set up daily refresh info.
         // BackgroundImageInfo for daily refresh
         Matrix portraitMatrix = new Matrix();
@@ -965,7 +1013,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertFalse(mainFile.exists());
 
         // 2. Call the method under test.
-        NtpCustomizationUtils.applyDailyRefreshThemeCollectionImage();
+        NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
         BaseRobolectricTestRule.runAllBackgroundAndUi(); // Wait for async file operations.
 
         // 3. Assertions.

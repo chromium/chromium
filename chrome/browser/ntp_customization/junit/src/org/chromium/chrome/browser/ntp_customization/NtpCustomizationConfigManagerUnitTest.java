@@ -18,6 +18,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 
@@ -43,21 +44,27 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.concurrent.Executor;
 
 /** Unit tests for {@link NtpCustomizationConfigManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,8 +72,10 @@ import org.chromium.url.JUnitTestGURLs;
 public class NtpCustomizationConfigManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private HomepageStateListener mListener;
+    @Mock private NtpThemeDailyRefreshManager mNtpThemeDailyRefreshManager;
     @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
     @Captor private ArgumentCaptor<BackgroundImageInfo> mBackgroundImageInfoCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
     private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -81,6 +90,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        NtpThemeDailyRefreshManager.setInstanceForTesting(mNtpThemeDailyRefreshManager);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mNtpCustomizationConfigManager = new NtpCustomizationConfigManager());
 
@@ -105,6 +115,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         NtpCustomizationUtils.deleteBackgroundImageFileImpl(
                 NtpCustomizationUtils.createBackgroundImageFile());
+        NtpCustomizationUtils.deleteBackgroundImageFileImpl(
+                NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
         NtpCustomizationConfigManager.setInstanceForTesting(null);
     }
 
@@ -547,6 +559,54 @@ public class NtpCustomizationConfigManagerUnitTest {
                 mBitmap, customBackgroundInfo, mBackgroundImageInfo);
         assertEquals(
                 customBackgroundInfo, mNtpCustomizationConfigManager.getCustomBackgroundInfo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testInitialization_withThemeCollection() {
+        // 1. Set up shared preferences to indicate a theme collection background.
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.THEME_COLLECTION);
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+
+        // 2. Mock NtpThemeDailyRefreshManager behavior.
+        when(mNtpThemeDailyRefreshManager.getNtpBackgroundImageInfoForThemeCollection())
+                .thenReturn(mBackgroundImageInfo);
+        when(mNtpThemeDailyRefreshManager.getNtpCustomBackgroundInfoForThemeCollection())
+                .thenReturn(customBackgroundInfo);
+
+        // 3. Create a new instance, which will trigger the constructor logic.
+        NtpCustomizationConfigManager configManager =
+                ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
+
+        // 4. Verify that the manager tried to read the background image.
+        verify(mNtpThemeDailyRefreshManager)
+                .readNtpBackgroundImageForThemeCollection(
+                        mBitmapCallbackCaptor.capture(), any(Executor.class));
+
+        // 5. Add a listener and simulate the bitmap becoming available.
+        configManager.addListener(mListener, mContext, /* skipNotify= */ true);
+        mBitmapCallbackCaptor.getValue().onResult(mBitmap);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        // 6. Verify listener is notified with correct data from initialization.
+        verify(mListener)
+                .onBackgroundImageChanged(
+                        eq(mBitmap),
+                        eq(mBackgroundImageInfo),
+                        /* fromInitialization= */ eq(true),
+                        /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
+                        /* newType= */ eq(NtpBackgroundImageType.THEME_COLLECTION));
+
+        // 7. Verify internal state is correct.
+        assertEquals(
+                NtpBackgroundImageType.THEME_COLLECTION, configManager.getBackgroundImageType());
+        assertEquals(customBackgroundInfo, configManager.getCustomBackgroundInfo());
     }
 
     private void testOnBackgroundImageAvailableImpl(
