@@ -88,6 +88,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       result_: {type: Object},
       searchboxLayoutMode_: {type: String},
       showContextEntrypoint_: {type: Boolean},
+      isLensSearchEnabled_: {type: Boolean},
+      isLensSearchEligible_: {type: Boolean},
     };
   }
 
@@ -101,6 +103,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
   protected accessor showContextEntrypoint_: boolean = false;
+  protected accessor isLensSearchEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowLensSearchChip');
+  protected accessor isLensSearchEligible_: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_ = new EventTracker();
@@ -126,6 +131,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       this.callbackRouter_.setKeywordSelected.addListener(
           (isKeywordSelected: boolean) => {
             this.isInKeywordMode_ = isKeywordSelected;
+          }),
+      this.callbackRouter_.updateLensSearchEligibility.addListener(
+          (eligible: boolean) => {
+            this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
           }),
     ];
     canShowSecondarySideMediaQueryList.addEventListener(

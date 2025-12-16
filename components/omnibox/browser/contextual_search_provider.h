@@ -48,6 +48,12 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // present in the Omnibox toolbelt.
   bool HasToolbeltLensAction() const;
 
+  // Show on web & SRP, but not NTP.
+  // Http, https, & local files are allowed but not other local schemes.
+  // Do not show if Lens is already opened.
+  static bool LensEntrypointEligible(const AutocompleteInput& input,
+                                     const AutocompleteProviderClient* client);
+
  protected:
   ~ContextualSearchProvider() override;
 

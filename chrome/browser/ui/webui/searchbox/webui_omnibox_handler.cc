@@ -30,7 +30,9 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/contextual_search_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -94,6 +96,15 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
+
+void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
+                                  const AutocompleteInput& input) {
+  const AutocompleteProviderClient* client =
+      autocomplete_controller()->autocomplete_provider_client();
+  page_->UpdateLensSearchEligibility(
+      ContextualSearchProvider::LensEntrypointEligible(input, client) &&
+      input.IsZeroSuggest());
+}
 
 void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
                                           bool default_match_changed) {

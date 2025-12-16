@@ -400,4 +400,7 @@ interface Page {
   // replace the previously auto suggested tab with the new tab. If the provided
   // tab is null, the suggested tab should be removed from the UI.
   UpdateAutoSuggestedTabContext(TabInfo? tab);
+
+  // Called when Lens search eligibility changes.
+  UpdateLensSearchEligibility(bool eligible);
 };
