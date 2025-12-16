@@ -20,7 +20,7 @@ BASE_FEATURE(kIPHDummyFeature, "IPH_Dummy", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // Feature used to add on-device storage for feature engagement.
-BASE_FEATURE(kOnDeviceStorage, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 bool IsOnDeviceStorageEnabled() {
