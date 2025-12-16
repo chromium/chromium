@@ -9,6 +9,7 @@
   <release seq="1">
     <structures>
       <structure name="IDR_ACTOR_TAB_INDICATOR_SPINNER" file="tab_icon_indicator.json" type="lottie" compress="brotli" />
+      <structure name="IDR_ACTOR_AUTO_BROWSE_SPINNER" file="auto_browse_spinner.json" type="lottie" compress="brotli" />
     </structures>
 
     <!-- NOTE: file is currently marked as untranslatable in
