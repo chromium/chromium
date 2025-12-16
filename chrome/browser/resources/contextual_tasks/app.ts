@@ -43,6 +43,10 @@ export class ContextualTasksAppElement extends CrLitElement {
       threadUrl_: {type: String},
       threadTitle_: {type: String},
       contextTabs_: {type: Array},
+      darkMode_: {
+        type: Boolean,
+        reflect: true,
+      },
       showComposebox_: {type: Boolean, reflect: true},
     };
   }
@@ -50,6 +54,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   accessor isShownInTab_: boolean = true;  // Most start in a tab.
   protected accessor threadUrl_: string = '';
+  protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
@@ -188,7 +193,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   private async updateCommonSearchParams() {
     // TODO(crbug.com/463729504): Add support for dark mode.
     const {params} = await this.browserProxy_.handler.getCommonSearchParams(
-        /*isDarkMode=*/ false, /*isSidePanel=*/ !this.isShownInTab_);
+        /*isDarkMode=*/ this.darkMode_,
+        /*isSidePanel=*/ !this.isShownInTab_);
     this.commonSearchParams_ = params;
     this.maybeLoadPendingUrl_();
   }

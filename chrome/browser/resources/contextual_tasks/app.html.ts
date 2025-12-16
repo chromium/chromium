@@ -19,7 +19,8 @@ export function getHtml(this: ContextualTasksAppElement) {
   `}
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>
   <contextual-tasks-composebox id="composebox"
-      ?hidden="${!this.showComposebox_}"></contextual-tasks-composebox>
+    ?hidden="${!this.showComposebox_}">
+  </contextual-tasks-composebox>
   <!--_html_template_end_-->`;
 }
 // clang-format on
