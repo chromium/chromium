@@ -43,11 +43,7 @@ static const size_t kDefaultMaxTotalSizeOfHeapEntries = 32 * 1024 * 1024;
 
 ImageDecodingStore::ImageDecodingStore()
     : heap_limit_in_bytes_(kDefaultMaxTotalSizeOfHeapEntries),
-      heap_memory_usage_in_bytes_(0),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kImageDecodingStore,
-          this) {}
+      heap_memory_usage_in_bytes_(0) {}
 
 ImageDecodingStore::~ImageDecodingStore() {
 #if DCHECK_IS_ON()
@@ -224,17 +220,6 @@ void ImageDecodingStore::Prune() {
 
     // Remove from cache list as well.
     RemoveFromCacheListInternal(cache_entries_to_delete);
-  }
-}
-
-void ImageDecodingStore::OnMemoryPressure(base::MemoryPressureLevel level) {
-  switch (level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      Clear();
-      break;
   }
 }
 
