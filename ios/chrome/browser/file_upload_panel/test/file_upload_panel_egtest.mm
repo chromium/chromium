@@ -1180,7 +1180,14 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that picking a single photo from the photo picker logs the success
 // metrics.
-- (void)testPhotoPickerSingleSelection {
+// TODO(crbug.com/469417242): Fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPhotoPickerSingleSelection testPhotoPickerSingleSelection
+#else
+#define MAYBE_testPhotoPickerSingleSelection \
+  DISABLED_testPhotoPickerSingleSelection
+#endif
+- (void)MAYBE_testPhotoPickerSingleSelection {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
@@ -1240,7 +1247,14 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that picking multiple photos from the photo picker logs the success
 // metrics.
-- (void)testPhotoPickerMultipleSelection {
+// TODO(crbug.com/469417242): Fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPhotoPickerMultipleSelection testPhotoPickerMultipleSelection
+#else
+#define MAYBE_testPhotoPickerMultipleSelection \
+  DISABLED_testPhotoPickerMultipleSelection
+#endif
+- (void)MAYBE_testPhotoPickerMultipleSelection {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
