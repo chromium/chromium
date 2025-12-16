@@ -551,10 +551,11 @@ void RemoveDistributionRegistryState() {
 }
 
 // Deletes {root}\Software\Classes\{prog_id} registry key.
-bool DeleteProgIdFromSoftwareClasses(HKEY root, const std::wstring& prog_id) {
+bool DeleteSoftwareClassesSubkey(HKEY root, const std::wstring& subkey) {
+  CHECK(!subkey.empty());
   std::wstring reg_prog_id(ShellUtil::kRegClasses);
   reg_prog_id.push_back(base::FilePath::kSeparators[0]);
-  reg_prog_id.append(prog_id);
+  reg_prog_id.append(subkey);
   return DeleteRegistryKey(root, reg_prog_id, WorkItem::kWow64Default);
 }
 
@@ -602,7 +603,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   // Delete {root}\Software\Classes\ChromeHTML.
   const std::wstring html_prog_id(install_static::GetBrowserProgIdPrefix() +
                                   browser_entry_suffix);
-  DeleteProgIdFromSoftwareClasses(root, html_prog_id);
+  DeleteSoftwareClassesSubkey(root, html_prog_id);
 
   // Delete {root}\Software\Classes\Chrome.
 
@@ -610,10 +611,18 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   // would try to figure out the currently installed suffix.
   const std::wstring chrome_prog_id(install_static::GetBaseAppId() +
                                     browser_entry_suffix);
-  DeleteProgIdFromSoftwareClasses(root, chrome_prog_id);
+  DeleteSoftwareClassesSubkey(root, chrome_prog_id);
 
   // TODO(crbug.com/40384442): Delete ChromePDF ProgId once support for
   // PDF docs has landed.
+
+  // Delete {root}\Software\Classes\<DirectLaunchUrlScheme> (e.g.,
+  // google-chrome, chromium).
+  const std::wstring direct_launch_url_scheme =
+      base::ASCIIToWide(install_static::GetDirectLaunchUrlScheme());
+  if (!direct_launch_url_scheme.empty()) {
+    DeleteSoftwareClassesSubkey(root, direct_launch_url_scheme);
+  }
 
   // Delete Software\Classes\CLSID\|toast_activator_clsid|.
   const std::wstring toast_activator_reg_path =

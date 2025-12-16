@@ -40,6 +40,9 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
+      "exists": "forbidden"
+    },
     "HKEY_CURRENT_USER\\$CHROME_UPDATE_REGISTRY_SUBKEY_BETA": {
       "exists": "required",
       "values": {

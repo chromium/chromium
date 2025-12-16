@@ -352,6 +352,7 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
 
   AddInstallWorkItems(install_params, &work_item_list);
 }
+
 #endif
 
 // Tests for installer::AddUpdateBrandCodeWorkItem().

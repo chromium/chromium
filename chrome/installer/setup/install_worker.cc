@@ -1263,6 +1263,13 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
                                 const InstallerState& installer_state,
                                 const base::FilePath& setup_path,
                                 WorkItemList* list) {
+  // Add work items to register the google-chrome URI scheme.
+  ShellUtil::AddChromeUriSchemeWorkItems(
+      installer_state.target_path().Append(installer::kChromeExe),
+      ShellUtil::GetCurrentInstallationSuffix(
+          installer_state.target_path().Append(installer::kChromeExe)),
+      list);
+
   // Cleanup for breaking downgrade first in the post install to avoid
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);

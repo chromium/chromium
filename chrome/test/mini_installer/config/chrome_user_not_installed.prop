@@ -62,6 +62,9 @@
     },
     "HKEY_CURRENT_USER\\Software\\Classes\\TypeLib\\$CHROME_ELEVATOR_IID": {
       "exists": "forbidden"
+    },
+    "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
+      "exists": "forbidden"
     }
   }
 }
