@@ -17,7 +17,7 @@ export {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS} from './content/
 export {LineFocusController} from './content/line_focus_controller.js';
 export type {LineFocusListener} from './content/line_focus_controller.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './content/node_store.js';
-export {LineFocusType, ToolbarEvent} from './content/read_anything_types.js';
+export {LineFocus, LineFocusType, ToolbarEvent} from './content/read_anything_types.js';
 export {SelectionController} from './content/selection_controller.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';

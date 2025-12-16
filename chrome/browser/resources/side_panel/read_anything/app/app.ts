@@ -409,6 +409,24 @@ export class AppElement extends AppElementBase implements SpeechListener,
         this.lineFocusController_.getHeight(), this.$.containerParent);
   }
 
+  onNeedScrollForLineFocus(scrollDiff: number): void {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    const top = this.$.containerScroller.scrollTop + scrollDiff;
+    this.$.containerScroller.scrollTo({top, behavior: 'smooth'});
+  }
+
+  onNeedScrollToTop(): void {
+    if (!chrome.readingMode.isLineFocusEnabled ||
+        this.$.containerScroller.scrollTop === 0) {
+      return;
+    }
+
+    this.$.containerScroller.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
   onContentStateChange(): void {
     this.contentState_ = this.contentController_.getState();
   }
@@ -595,8 +613,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
         this.lineFocusController_.isEnabled() && isVerticalArrow(e.key)) {
       e.stopPropagation();
       e.preventDefault();
-      this.lineFocusController_.snapToNextLine(
-          isForwardArrow(e.key), this.$.containerScroller);
+      this.lineFocusController_.snapToNextLine(isForwardArrow(e.key));
     }
   }
 }

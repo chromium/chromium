@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {assert} from '//resources/js/assert.js';
 
-import {type LineFocus, LineFocusType} from '../content/read_anything_types.js';
+import {LineFocus, LineFocusType} from '../content/read_anything_types.js';
 import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 
@@ -11,6 +11,8 @@ import {LineFocusModel} from './line_focus_model.js';
 
 export interface LineFocusListener {
   onLineFocusMove(): void;
+  onNeedScrollForLineFocus(scrollDiff: number): void;
+  onNeedScrollToTop(): void;
 }
 
 // Handles the business logic for managing the line focus feature.
@@ -46,13 +48,14 @@ export class LineFocusController {
     return (
         chrome.readingMode.isLineFocusEnabled &&
         !!this.model_.getCurrentLineFocus() &&
-        this.getCurrentLineFocusType() !== LineFocusType.NONE);
+        (this.model_.getCurrentLineFocus() !== LineFocus.OFF));
   }
 
   onMouseMove(y: number) {
     // Line focus should follow along with speech if it's active, so ignore
     // mouse movements.
-    if (this.isEnabled() && !this.speechController_.isSpeechActive()) {
+    if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
+        !this.isStatic_()) {
       this.model_.setCurrentLineIndex(null);
       this.setY_(Math.max(this.model_.getMinY(), y));
     }
@@ -61,6 +64,9 @@ export class LineFocusController {
   onTextLocationsChange(container: HTMLElement, height: number) {
     if (this.isEnabled()) {
       this.calculateNewPositions_(container, height);
+      if (this.isStatic_()) {
+        return;
+      }
       if (this.speechController_.isSpeechActive()) {
         const highlights = container.querySelectorAll<HTMLElement>(
             `.${currentReadHighlightClass}`);
@@ -86,11 +92,16 @@ export class LineFocusController {
       this.highlightObserver_.disconnect();
     } else {
       this.calculateNewPositions_(container, height);
-      this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
+      if (this.isStatic_()) {
+        // Set the static line in the center of the visible area.
+        this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
+      } else {
+        this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
+      }
     }
   }
 
-  snapToNextLine(isForward: boolean, scrollContainer: HTMLElement) {
+  snapToNextLine(isForward: boolean) {
     if (!this.isEnabled() || this.speechController_.isSpeechActive()) {
       return;
     }
@@ -107,7 +118,7 @@ export class LineFocusController {
       const firstIndex =
           this.clampLineIndex_(this.getFirstLineIndex_(isForward));
       this.model_.setCurrentLineIndex(firstIndex);
-      this.setY_(lines[firstIndex]!);
+      this.setyOrScroll_(lines[firstIndex]!);
       return;
     }
 
@@ -127,22 +138,19 @@ export class LineFocusController {
         // TODO(crbug.com/447427066): Consider whether to instead scroll one
         // line at a time. If so, uncomment the code below and remove the center
         // logic below.
-        // scrollContainer.scrollTop += lines[newIndex]! -
-        // lines[currentLineIndex]!;
+        // const scrollDiff = lines[newIndex]! - lines[currentLineIndex]!;
 
         // Center it vertically.
-        const newTop = scrollContainer.scrollTop +
-            (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
-        scrollContainer.scrollTo({top: newTop, behavior: 'smooth'});
+        const scrollDiff = (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
+        this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
       } else if (this.model_.getCurrentLineIndex() !== previousLineIndex) {
-        this.setY_(lines[newIndex]!);
+        this.setyOrScroll_(lines[newIndex]!);
       }
 
       // If the user has navigated back to the top of the panel, but there's
       // still a little bit left to scroll, scroll to the top.
-      if (this.model_.getCurrentLineIndex() === previousLineIndex &&
-          scrollContainer.scrollTop !== 0) {
-        scrollContainer.scrollTo({top: 0, behavior: 'smooth'});
+      if (this.model_.getCurrentLineIndex() === previousLineIndex) {
+        this.listeners_.forEach(l => l.onNeedScrollToTop());
       }
     }
   }
@@ -160,6 +168,21 @@ export class LineFocusController {
     return this.getCurrentLineFocusType() === LineFocusType.LINE ?
         index :
         Math.max(index, this.getCurrentLineFocusLines_() - 1);
+  }
+
+  private isStatic_(): boolean {
+    return this.model_.getCurrentLineFocus() === LineFocus.STATIC_LINE;
+  }
+
+  // When the current line focus mode is static, scroll the content instead of
+  // moving the line focus element.
+  private setyOrScroll_(newY: number) {
+    if (this.isStatic_()) {
+      const scrollDiff = newY - this.model_.getY();
+      this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
+    } else {
+      this.setY_(newY);
+    }
   }
 
   private setY_(y: number) {
@@ -238,7 +261,7 @@ export class LineFocusController {
     // Adjust line focus to remain at the same text line even if it's moved,
     // due to font or other spacing changes.
     const currentLineIndex = this.model_.getCurrentLineIndex();
-    if (currentLineIndex && currentLineIndex >= 0 &&
+    if (!this.isStatic_() && currentLineIndex && currentLineIndex >= 0 &&
         currentLineIndex < newLines.length - 1) {
       this.setY_(newLines[currentLineIndex]!);
     }
@@ -273,7 +296,7 @@ export class LineFocusController {
     if (highlights.length > 0) {
       const maxY =
           Math.max(...highlights.map(h => h.getBoundingClientRect().bottom));
-      this.setY_(maxY);
+      this.setyOrScroll_(maxY);
     }
   }
 

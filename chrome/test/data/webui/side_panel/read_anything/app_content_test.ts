@@ -638,4 +638,18 @@ suite('AppContent', () => {
     });
     // </if>
   });
+
+  test('onNeedScrollForLineFocus scrolls', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const startingScrollTop = app.$.containerScroller.scrollTop;
+    let scrollTo = 0;
+    app.$.containerScroller.scrollTo = (options) => {
+      scrollTo = (options as ScrollToOptions).top ?? 0;
+    };
+
+    const scrollDiff = 30;
+    app.onNeedScrollForLineFocus(scrollDiff);
+
+    assertEquals(startingScrollTop + scrollDiff, scrollTo);
+  });
 });

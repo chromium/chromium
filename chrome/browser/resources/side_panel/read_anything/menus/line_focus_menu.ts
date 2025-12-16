@@ -9,8 +9,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../content/read_anything_types.js';
-import {LineFocusType} from '../content/read_anything_types.js';
-import type {LineFocus} from '../content/read_anything_types.js';
+import {LineFocus} from '../content/read_anything_types.js';
 
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';
@@ -50,23 +49,27 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
   protected options_: Array<MenuStateItem<LineFocus>> = [
     {
       title: loadTimeData.getString('lineFocusOffTitle'),
-      data: {type: LineFocusType.NONE, lines: 0},
+      data: LineFocus.OFF,
     },
     {
       title: loadTimeData.getString('lineFocusOneLineTitle'),
-      data: {type: LineFocusType.WINDOW, lines: 1},
+      data: LineFocus.ONE_LINE_WINDOW,
     },
     {
       title: loadTimeData.getString('lineFocusThreeLineTitle'),
-      data: {type: LineFocusType.WINDOW, lines: 3},
+      data: LineFocus.THREE_LINE_WINDOW,
     },
     {
       title: loadTimeData.getString('lineFocusFiveLineTitle'),
-      data: {type: LineFocusType.WINDOW, lines: 5},
+      data: LineFocus.FIVE_LINE_WINDOW,
+    },
+    {
+      title: loadTimeData.getString('lineFocusStaticLineTitle'),
+      data: LineFocus.STATIC_LINE,
     },
     {
       title: loadTimeData.getString('lineFocusCursorLineTitle'),
-      data: {type: LineFocusType.LINE, lines: 1},
+      data: LineFocus.CURSOR_LINE,
     },
   ];
 
@@ -79,7 +82,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     return 0;
   }
 
-  protected onLineFocusChange_(_event: CustomEvent<{data: number}>) {
+  protected onLineFocusChange_(_event: CustomEvent<{data: LineFocus}>) {
     // TODO(crbug.com/447427066): Implement this to log the change and store
     // it in prefs.
   }

@@ -10,9 +10,17 @@ export enum LineFocusType {
   WINDOW = 2,
 }
 
-export interface LineFocus {
-  type: LineFocusType;
-  lines: number;
+export class LineFocus {
+  static readonly OFF = new LineFocus(LineFocusType.NONE, 0);
+  static readonly ONE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 1);
+  static readonly THREE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 3);
+  static readonly FIVE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 5);
+  static readonly STATIC_LINE = new LineFocus(LineFocusType.LINE, 0);
+  static readonly CURSOR_LINE = new LineFocus(LineFocusType.LINE, 1);
+
+  // Private constructor prevents others from creating new options
+  private constructor(
+      public readonly type: LineFocusType, public readonly lines: number) {}
 }
 
 // Events emitted from the toolbar to the app
