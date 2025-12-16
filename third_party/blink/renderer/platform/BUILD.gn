@@ -904,6 +904,8 @@ component("platform") {
     "graphics/canvas_resource_provider.cc",
     "graphics/canvas_resource_provider.h",
     "graphics/canvas_snapshot_provider.h",
+    "graphics/canvas_snapshot_provider_external_bitmap.cc",
+    "graphics/canvas_snapshot_provider_external_bitmap.h",
     "graphics/color.cc",
     "graphics/color.h",
     "graphics/color_behavior.h",
