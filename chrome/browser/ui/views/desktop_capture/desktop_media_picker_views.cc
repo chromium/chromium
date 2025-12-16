@@ -600,11 +600,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             DesktopMediaList::Type::kWindow, std::move(list_controller),
             /*audio_offered=*/IsWindowAudioOffered(),
             /*audio_checked=*/
-            window_audio_type_offered_ ==
-                    DesktopMediaID::AudioType::kApplication
-                ? true
-                : params.force_audio_checkboxes_to_default_checked ||
-                      system_audio_capture_default_checked,
+            params.force_audio_checkboxes_to_default_checked ||
+                system_audio_capture_default_checked,
             supports_reselect_button, std::move(window_scroll_view));
         panes.emplace_back(window_title_text, std::move(pane));
         break;
