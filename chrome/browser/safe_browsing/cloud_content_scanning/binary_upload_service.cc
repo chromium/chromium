@@ -20,31 +20,6 @@
 
 namespace safe_browsing {
 
-namespace {
-
-using ::enterprise_connectors::BinaryUploadRequest;
-using ::enterprise_connectors::GetBrowserPolicyConnector;
-
-}  // namespace
-
-BinaryUploadService::Request::Request(
-    ContentAnalysisCallback callback,
-    enterprise_connectors::CloudOrLocalAnalysisSettings settings)
-    : BinaryUploadRequest(std::move(callback),
-                          std::move(settings),
-                          base::BindRepeating(&GetBrowserPolicyConnector)) {}
-
-BinaryUploadService::Request::Request(
-    ContentAnalysisCallback content_analysis_callback,
-    enterprise_connectors::CloudOrLocalAnalysisSettings settings,
-    Request::RequestStartCallback start_callback)
-    : BinaryUploadRequest(std::move(content_analysis_callback),
-                          std::move(settings),
-                          std::move(start_callback),
-                          base::BindRepeating(&GetBrowserPolicyConnector)) {}
-
-BinaryUploadService::Request::~Request() = default;
-
 // static
 BinaryUploadService* BinaryUploadService::GetForProfile(
     Profile* profile,

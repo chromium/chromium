@@ -21,7 +21,7 @@ constexpr size_t kMaxPageSize = 50 * 1024 * 1024;
 PagePrintAnalysisRequest::PagePrintAnalysisRequest(
     const AnalysisSettings& analysis_settings,
     base::ReadOnlySharedMemoryRegion page,
-    safe_browsing::BinaryUploadService::ContentAnalysisCallback callback)
+    BinaryUploadRequest::ContentAnalysisCallback callback)
     : BinaryUploadRequest(std::move(callback),
                           analysis_settings.cloud_or_local_settings,
                           base::BindRepeating(&GetBrowserPolicyConnector)),

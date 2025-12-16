@@ -6,6 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
@@ -19,6 +20,9 @@
 
 namespace safe_browsing {
 namespace {
+
+using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::GetBrowserPolicyConnector;
 
 constexpr char kData[] = "data";
 constexpr char kTestUrl[] = "https://example.com";
@@ -80,9 +84,9 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
     SetTokenFetcherForTesting(std::make_unique<TestSafeBrowsingTokenFetcher>());
   }
 
-  void OnGetRequestData(Request::Id request_id,
+  void OnGetRequestData(BinaryUploadRequest::Id request_id,
                         enterprise_connectors::ScanRequestUploadResult result,
-                        Request::Data data) override {
+                        BinaryUploadRequest::Data data) override {
     auto* request = GetRequest(request_id);
 
     ASSERT_TRUE(request);
@@ -117,15 +121,16 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
   bool profile_request_;
 };
 
-class TestRequest : public CloudBinaryUploadService::Request {
+class TestRequest : public BinaryUploadRequest {
  public:
-  TestRequest(BinaryUploadService::ContentAnalysisCallback callback,
+  TestRequest(BinaryUploadRequest::ContentAnalysisCallback callback,
               enterprise_connectors::CloudOrLocalAnalysisSettings settings)
-      : CloudBinaryUploadService::Request(std::move(callback),
-                                          std::move(settings)) {}
+      : BinaryUploadRequest(std::move(callback),
+                            std::move(settings),
+                            base::BindRepeating(&GetBrowserPolicyConnector)) {}
 
   void GetRequestData(DataCallback callback) override {
-    CloudBinaryUploadService::Request::Data data;
+    BinaryUploadRequest::Data data;
     data.contents = kData;
     data.size = data.contents.size();
 

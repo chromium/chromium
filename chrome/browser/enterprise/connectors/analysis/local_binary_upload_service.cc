@@ -132,7 +132,7 @@ std::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
 #if defined(_DEBUG)
 void DumpSdkAnalysisResponse(
     const char* prefix,
-    LocalBinaryUploadService::Request::Id id,
+    BinaryUploadRequest::Id id,
     const content_analysis::sdk::ContentAnalysisResponse& response) {
   DVLOG(1) << prefix << " id=" << id << " token=" << response.request_token();
   DVLOG(1) << prefix << " id=" << id
@@ -163,7 +163,7 @@ void DumpSdkAnalysisResponse(
 }
 
 void DumpAnalysisResponse(const char* prefix,
-                          LocalBinaryUploadService::Request::Id id,
+                          BinaryUploadRequest::Id id,
                           const ContentAnalysisResponse& response) {
   auto final_action = TriggeredRule::ACTION_UNSPECIFIED;
   std::string tag;
@@ -243,7 +243,7 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   // the specified timeout.  This timer remains active as the request moves
   // from the pending list to the active list (and possibly back and forth in
   // the case of agent errors).
-  Request::Id id = request_id_generator_.GenerateNextId();
+  BinaryUploadRequest::Id id = request_id_generator_.GenerateNextId();
   request->set_id(id);
   auto info = RequestInfo(std::move(request),
                           base::BindOnce(&LocalBinaryUploadService::OnTimeout,
@@ -426,9 +426,9 @@ void LocalBinaryUploadService::ResetClient(
 }
 
 void LocalBinaryUploadService::DoLocalContentAnalysis(
-    Request::Id id,
+    BinaryUploadRequest::Id id,
     enterprise_connectors::ScanRequestUploadResult result,
-    Request::Data data) {
+    BinaryUploadRequest::Data data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": id=" << id;
 
@@ -498,7 +498,7 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(
 
 void LocalBinaryUploadService::HandleResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    safe_browsing::BinaryUploadService::Request::Data data,
+    BinaryUploadRequest::Data data,
     std::optional<content_analysis::sdk::ContentAnalysisResponse>
         sdk_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -516,7 +516,7 @@ void LocalBinaryUploadService::HandleResponse(
   // Find the request that corresponds to this response.  It's possible the
   // request is not found if for example it was cancelled by the user or it
   // timed out.
-  Request::Id id = FindRequestByToken(sdk_response.value());
+  BinaryUploadRequest::Id id = FindRequestByToken(sdk_response.value());
   if (id) {
 #if defined(_DEBUG)
     DumpSdkAnalysisResponse(__func__, id, sdk_response.value());
@@ -592,17 +592,16 @@ void LocalBinaryUploadService::HandleCancelResponse(
   }
 }
 
-LocalBinaryUploadService::Request::Id
-LocalBinaryUploadService::FindRequestByToken(
+BinaryUploadRequest::Id LocalBinaryUploadService::FindRequestByToken(
     const content_analysis::sdk::ContentAnalysisResponse& sdk_response) {
-  // Request must be currently active.
+  // BinaryUploadRequest must be currently active.
   const auto& request_token = sdk_response.request_token();
   auto it = std::find_if(active_requests_.begin(), active_requests_.end(),
                          [request_token](const auto& value_type) {
                            return request_token ==
                                   value_type.second.request->request_token();
                          });
-  return it != active_requests_.end() ? it->first : Request::Id();
+  return it != active_requests_.end() ? it->first : BinaryUploadRequest::Id();
 }
 
 void LocalBinaryUploadService::ProcessNextPendingRequest() {
@@ -611,13 +610,13 @@ void LocalBinaryUploadService::ProcessNextPendingRequest() {
   if (pending_requests_.size() > 0) {
     auto info = std::move(pending_requests_.front());
     pending_requests_.erase(pending_requests_.begin());
-    Request::Id id = info.request->id();
+    BinaryUploadRequest::Id id = info.request->id();
     active_requests_.emplace(id, std::move(info));
     ProcessRequest(id);
   }
 }
 
-bool LocalBinaryUploadService::ProcessRequest(Request::Id id) {
+bool LocalBinaryUploadService::ProcessRequest(BinaryUploadRequest::Id id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": id=" << id;
   DCHECK_GT(active_requests_.count(id), 0u);
@@ -644,7 +643,7 @@ bool LocalBinaryUploadService::ProcessRequest(Request::Id id) {
 }
 
 void LocalBinaryUploadService::FinishRequest(
-    Request::Id id,
+    BinaryUploadRequest::Id id,
     enterprise_connectors::ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -703,7 +702,7 @@ void LocalBinaryUploadService::SendCancelRequestsIfNeeded() {
   }
 }
 
-void LocalBinaryUploadService::OnTimeout(Request::Id id) {
+void LocalBinaryUploadService::OnTimeout(BinaryUploadRequest::Id id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": id=" << id;
 

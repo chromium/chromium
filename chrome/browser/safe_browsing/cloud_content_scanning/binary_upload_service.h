@@ -25,37 +25,6 @@ class BinaryUploadService : public KeyedService {
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
 
-  // Callbacks used to pass along the results of scanning. The response protos
-  // will only be populated if the result is SUCCESS. Will run on UI thread.
-  using ContentAnalysisCallback =
-      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
-                              enterprise_connectors::ContentAnalysisResponse)>;
-
-  // A class to encapsulate the a request for upload. This class will provide
-  // all the functionality needed to generate a ContentAnalysisRequest, and
-  // subclasses will provide different sources of data to upload (e.g. file,
-  // page or string).
-  class Request : public enterprise_connectors::BinaryUploadRequest {
-   public:
-    using enterprise_connectors::BinaryUploadRequest::Data;
-    using enterprise_connectors::BinaryUploadRequest::DataCallback;
-    using enterprise_connectors::BinaryUploadRequest::Id;
-    using enterprise_connectors::BinaryUploadRequest::RequestStartCallback;
-
-    Request(ContentAnalysisCallback,
-            enterprise_connectors::CloudOrLocalAnalysisSettings settings);
-    // Optional constructor which accepts RequestStartCallback. Will be called
-    // before request attempts upload.
-    Request(ContentAnalysisCallback,
-            enterprise_connectors::CloudOrLocalAnalysisSettings settings,
-            RequestStartCallback);
-    ~Request() override;
-    Request(const Request&) = delete;
-    Request& operator=(const Request&) = delete;
-    Request(Request&&) = delete;
-    Request& operator=(Request&&) = delete;
-  };
-
   static BinaryUploadService* GetForProfile(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& settings);

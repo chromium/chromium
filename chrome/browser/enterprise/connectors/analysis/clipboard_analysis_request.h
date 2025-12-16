@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_ANALYSIS_REQUEST_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_ANALYSIS_REQUEST_H_
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace enterprise_connectors {
@@ -13,19 +13,18 @@ namespace enterprise_connectors {
 // A `BinaryUploadService::Request` implementation that gets the data to scan
 // from a string corresponding to some clipboard data (either text or image
 // bytes).
-class ClipboardAnalysisRequest
-    : public safe_browsing::BinaryUploadService::Request {
+class ClipboardAnalysisRequest : public BinaryUploadRequest {
  public:
   ClipboardAnalysisRequest(
       CloudOrLocalAnalysisSettings settings,
       std::string text,
-      safe_browsing::BinaryUploadService::ContentAnalysisCallback callback);
+      BinaryUploadRequest::ContentAnalysisCallback callback);
   ~ClipboardAnalysisRequest() override;
 
   ClipboardAnalysisRequest(const ClipboardAnalysisRequest&) = delete;
   ClipboardAnalysisRequest& operator=(const ClipboardAnalysisRequest&) = delete;
 
-  // safe_browsing::BinaryUploadService::Request:
+  // BinaryUploadRequest
   void GetRequestData(DataCallback callback) override;
 
  private:

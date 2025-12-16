@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
@@ -32,13 +33,13 @@ using ::testing::SaveArg;
 constexpr char kFakeUserActionId[] = "1234567890";
 constexpr char kFakeUserActionId2[] = "0987654321";
 
-class MockRequest : public BinaryUploadService::Request {
+class MockRequest : public BinaryUploadRequest {
  public:
-  MockRequest(BinaryUploadService::ContentAnalysisCallback callback,
+  MockRequest(BinaryUploadRequest::ContentAnalysisCallback callback,
               LocalAnalysisSettings settings)
-      : BinaryUploadService::Request(
-            std::move(callback),
-            CloudOrLocalAnalysisSettings(std::move(settings))) {}
+      : BinaryUploadRequest(std::move(callback),
+                            CloudOrLocalAnalysisSettings(std::move(settings)),
+                            base::BindRepeating(&GetBrowserPolicyConnector)) {}
   MOCK_METHOD1(GetRequestData, void(DataCallback));
 };
 
@@ -152,8 +153,8 @@ class LocalBinaryUploadServiceTest : public testing::Test {
         settings);
     request->set_tab_title("tab_title");
     ON_CALL(*request, GetRequestData(_))
-        .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
-          BinaryUploadService::Request::Data data;
+        .WillByDefault([](BinaryUploadRequest::DataCallback callback) {
+          BinaryUploadRequest::Data data;
           data.contents = "contents";
           data.size = data.contents.size();
           std::move(callback).Run(
@@ -386,10 +387,10 @@ TEST_F(LocalBinaryUploadServiceTest, TimeoutWhileActive) {
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
-  const std::map<LocalBinaryUploadService::Request::Id,
+  const std::map<BinaryUploadRequest::Id,
                  LocalBinaryUploadService::RequestInfo>& actives =
       lbus.GetActiveRequestsForTesting();
-  LocalBinaryUploadService::Request::Id id = actives.begin()->first;
+  BinaryUploadRequest::Id id = actives.begin()->first;
   lbus.OnTimeoutForTesting(id);
 
   EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
@@ -417,7 +418,7 @@ TEST_F(LocalBinaryUploadServiceTest, TimeoutWhilePending) {
 
   const std::vector<LocalBinaryUploadService::RequestInfo>& pendings =
       lbus.GetPendingRequestsForTesting();
-  LocalBinaryUploadService::Request::Id id = pendings[0].request->id();
+  BinaryUploadRequest::Id id = pendings[0].request->id();
   lbus.OnTimeoutForTesting(id);
 
   EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());

@@ -84,8 +84,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     return pending_requests_.size();
   }
 
-  const std::map<Request::Id, RequestInfo>& GetActiveRequestsForTesting()
-      const {
+  const std::map<BinaryUploadRequest::Id, RequestInfo>&
+  GetActiveRequestsForTesting() const {
     return active_requests_;
   }
 
@@ -93,7 +93,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     return pending_requests_;
   }
 
-  void OnTimeoutForTesting(Request::Id id) { OnTimeout(id); }
+  void OnTimeoutForTesting(BinaryUploadRequest::Id id) { OnTimeout(id); }
 
  protected:
   // Map to keep track of whether the agent's authenticity has been
@@ -144,16 +144,16 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   // Starts a local content analysis for the analysis request given by `id`.
   void DoLocalContentAnalysis(
-      Request::Id id,
+      BinaryUploadRequest::Id id,
       enterprise_connectors::ScanRequestUploadResult result,
-      Request::Data data);
+      BinaryUploadRequest::Data data);
 
   // Handles a response from the agent for a given request.
   // `data` is not used directly by this function, but is needed to keep a
   // scoped handle alive.
   void HandleResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      safe_browsing::BinaryUploadService::Request::Data data,
+      BinaryUploadRequest::Data data,
       std::optional<content_analysis::sdk::ContentAnalysisResponse>
           sdk_response);
 
@@ -182,7 +182,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
       std::unique_ptr<BinaryUploadCancelRequests> cancel) {}
 
   // Find the request that corresponds to the given response.
-  Request::Id FindRequestByToken(
+  BinaryUploadRequest::Id FindRequestByToken(
       const content_analysis::sdk::ContentAnalysisResponse& sdk_response);
 
   // Move the next request from the pending list, if any, to the active
@@ -192,11 +192,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Starts the request given by `id` that is already on the active
   // list.  If this function returns true the active request list is still
   // valid.  Otherwise the active request list has been cleared.
-  bool ProcessRequest(Request::Id id);
+  bool ProcessRequest(BinaryUploadRequest::Id id);
 
   // Finish the request given by `id` and inform caller of the the resulting
   // verdict.
-  void FinishRequest(Request::Id id,
+  void FinishRequest(BinaryUploadRequest::Id id,
                      enterprise_connectors::ScanRequestUploadResult result,
                      ContentAnalysisResponse response);
 
@@ -206,7 +206,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   // Handles a timeout for the request given by `id`.  The request could
   // be in either the active or pending lists.
-  void OnTimeout(Request::Id id);
+  void OnTimeout(BinaryUploadRequest::Id id);
 
   // If there haven't been too many retries, moves all requests from the active
   // list to the pending list and queues up a task to reconnect to the agent.
@@ -237,10 +237,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   raw_ptr<Profile> profile_;
 
-  Request::Id::Generator request_id_generator_;
+  BinaryUploadRequest::Id::Generator request_id_generator_;
 
   // Keeps track of outstanding requests sent to the agent.
-  std::map<Request::Id, RequestInfo> active_requests_;
+  std::map<BinaryUploadRequest::Id, RequestInfo> active_requests_;
 
   // Keeps track of pending requests not yet sent.
   std::vector<RequestInfo> pending_requests_;

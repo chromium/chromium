@@ -9,6 +9,8 @@
 
 namespace safe_browsing {
 
+using ::enterprise_connectors::BinaryUploadRequest;
+
 TestBinaryUploadService::TestBinaryUploadService() = default;
 TestBinaryUploadService::~TestBinaryUploadService() = default;
 
@@ -17,12 +19,13 @@ base::WeakPtr<BinaryUploadService> TestBinaryUploadService::AsWeakPtr() {
 }
 
 void TestBinaryUploadService::MaybeUploadForDeepScanning(
-    std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   last_request_ = request->content_analysis_request();
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&Request::FinishRequest, std::move(request),
-                                saved_result_, saved_response_));
+      FROM_HERE,
+      base::BindOnce(&BinaryUploadRequest::FinishRequest, std::move(request),
+                     saved_result_, saved_response_));
   was_called_ = true;
 }
 
