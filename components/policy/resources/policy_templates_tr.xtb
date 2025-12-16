@@ -6476,34 +6476,6 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 
 Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme geçmişi silinemez. Bu politika devre dışı bırakılsa bile tarama ve indirme geçmişinin saklanacağı garanti edilmez. Kullanıcılar geçmiş veritabanındaki dosyaları doğrudan düzenleyebilir veya silebilirler. Ayrıca tarayıcının kendisinin süresi dolabilir veya geçmiş öğelerinin herhangi birini veya tümünü her an arşive alabilir.</translation>
 <translation id="5322649594584715998">Pili standart bir hızda tam olarak şarj et. Bu mod, "Uyarlanabilir" ve "Sınırlı" şarjı devre dışı bırakır.</translation>
-<translation id="5322726025747768984">Bu politika ayarlandığında, hedef URL'ye ve diğer koşullara bağlı olarak tarayıcının kullanacağı proxy'yi belirleyen kurallar yapılandırılır. Bu politika; <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası, <ph name="PROXY_SETTINGS_EXTENSION_API" /> uzantı API'si veya manuel kullanıcı ayarları aracılığıyla belirlenen proxy ayarlarına göre öncelikli olur.
-
-Politika ayarlanmadan bırakılırsa diğer proxy politikaları veya kullanıcı ayarları etkilenmez.
-
-Tarayıcının, kullanacağı proxy'ye karar vermesi gerektiğinde aşağıdaki noktaların tümünü karşılayan bir giriş bulunana kadar <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikasının girişleri sırayla değerlendirilir:
-  *<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içindeki URL kalıplarından en az biriyle eşleşir.
-  *<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> içindeki hiçbir URL kalıbı eşleşmez.
-  *<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> belirtilmişse ve boş olmayan bir listeyse girişleri tarafından temsil edilen tüm koşullar karşılanır.
-Bu tür bir eşleşme için proxy olarak <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> içindeki değer kullanılır. Eşleşme bulunamazsa proxy ayarları, <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasında ayarlanan değerlere geri döner.
-
-<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> ve <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> tarafından desteklenen URL kalıplarını https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns adresinde bulabilirsiniz.
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> alan girişleri, PAC dosyalarının dize değerlerine karşılık gelir. Örneğin:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Alternatif olarak proxy'yi doğrudan belirtmek için URL benzeri proxy tanımlayıcıları kullanılabilir. Örneğin:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-Listedeki ulaşılabilecek ilk giriş, proxy olarak kullanılır. Listedeki geçersiz girişler yoksayılır.
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> alanı, geçersiz kılma kuralı kullanılarak proxy'ye karar verilmesi için karşılanması gereken koşulların listesini içerir. Ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içinde en az bir ana makine eşleştiği sürece giriş kullanılır.
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> koşulu, sağlanan DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> öğesinin bir IP adresine çözümlenip çözümlenemediğini kontrol eder. <ph name="PROXY_OVERRIDE_RULES_RESULT" /> değeri "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" ise koşul karşılanmış kabul edilir. Değer <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> olarak ayarlanmışsa çözüm başarısız olduğunda koşul karşılanmış kabul edilir.</translation>
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="5323271643727095577">beforeunload etkinliği için event.preventDefault() çağrıldığında iptal iletişim kutusunu gösterme beforeunload event.returnValue, beforeunload etkinliği için boş dize olduğunda iptal iletişim kutusunu göster.</translation>
 <translation id="5324430722441910403">Site arama ayarları</translation>

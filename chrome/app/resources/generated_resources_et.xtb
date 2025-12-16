@@ -2209,6 +2209,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2476901513051581836">Salvestusruumi ei saa vabastada enne, kui on teada võrguvälise salvestusruumi maht.</translation>
 <translation id="2476974672882258506">Tarkvara <ph name="PARALLELS_DESKTOP" /> desinstallimiseks lülitage Windows välja.</translation>
 <translation id="2477065602824695373">Kuna seadistasite mitu seadet, on automaatne skannimine välja lülitatud.</translation>
+<translation id="2477218554275525952">Gemini külgriba hoidmine avatuna, kui avate uue vahekaardi</translation>
 <translation id="2477607419416067650">Muud Google'i andmed</translation>
 <translation id="2478176599153288112">Meediafaili load laiendusele „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Lubage andmete taastamise teenus.</translation>
@@ -2985,7 +2986,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3008142279736625920">Juustukook</translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et looksite täna WiFi-ühenduse, et värskendus alla laadida. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}other{<ph name="MANAGER" /> nõuab, et looksite ühenduse WiFi-võrguga ja laadiksite enne tähtaega alla värskenduse. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}}</translation>
-<translation id="3008923556848076408">Gemini jätkab teie ülesande kallal töötamist</translation>
 <translation id="3008926075262837186">Lugege mugavalt ja minimaalsete segajatega</translation>
 <translation id="3009178788565917040">Väljund</translation>
 <translation id="3009352964623081324">Otsinguklahv + O, seejärel S. Kasutage seda häälte installimiseks, haldamiseks ja kohandamiseks.</translation>
@@ -9711,6 +9711,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7676019765091965045">Ohustatud parooli tuvastamine</translation>
 <translation id="7676119992609591770">Päringule „<ph name="SEARCH_TEXT" />” leiti <ph name="NUM" /> vaheleht</translation>
 <translation id="7676867886086876795">Saatke oma hääl Google'ile, et lubada dikteerimine kõigil tekstiväljadel.</translation>
+<translation id="7678198209643823714">Eemalda <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Kas lähtestada kõik USB-seadme õigused?</translation>
 <translation id="7679171213002716280">Olemas on <ph name="PRINTER_COUNT" /> hallatud printerit.</translation>
 <translation id="7679895819123160382">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. <ph name="PRODUCT_NAME" /> kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust. Turvalisi ühendusi ei kasutata teatud domeenide jaoks, mille on seadistanud teie administraator.</translation>
@@ -12000,6 +12001,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9207434080086272167">Päikesepaisteline</translation>
 <translation id="9207669213427469593">Kui tõmbate jagatud ekraani kasutamiseks akna ühele küljele, näete teise külje akna soovitusi</translation>
 <translation id="9209563766569767417">Linuxi konteineri seadistuse kontrollimine</translation>
+<translation id="9212565256020141627">Pilti ei saanud Geminiga jagada. Proovige uuesti või katsetage teise pildiga.</translation>
 <translation id="9214520840402538427">Installimisaja atribuutide lähtestamisel ilmnes ajalõpp. Võtke ühendust tugiteenuse esindajaga.</translation>
 <translation id="9214695392875603905">Keeks</translation>
 <translation id="9215293857209265904">Lisati „<ph name="EXTENSION_NAME" />”</translation>

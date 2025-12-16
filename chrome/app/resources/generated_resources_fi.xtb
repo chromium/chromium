@@ -2217,6 +2217,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2476901513051581836">Tallennustilaa ei voi vapauttaa, ennen kuin offline-tallennustilan koko on tiedossa.</translation>
 <translation id="2476974672882258506">Sammuta Windows, jotta <ph name="PARALLELS_DESKTOP" /> voidaan poistaa.</translation>
 <translation id="2477065602824695373">Koska olet ottanut käyttöön useita kytkimiä, automaattinen skannaus on laitettu pois päältä.</translation>
+<translation id="2477218554275525952">Pidä Gemini-sivupaneeli auki, kun avaat uuden välilehden</translation>
 <translation id="2477607419416067650">Muu Google-data</translation>
 <translation id="2478176599153288112">Mediatiedoston luvat laajennukselle <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Ota datan palautuspalvelu käyttöön.</translation>
@@ -2993,7 +2994,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3008142279736625920">Juustokakku</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon tänään ja lataat päivityksen. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).}other{<ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon ja lataat päivityksen ennen määräaikaa. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).}}</translation>
-<translation id="3008923556848076408">Gemini jatkaa tehtävän parissa</translation>
 <translation id="3008926075262837186">Lue mukavasti ja ilman häiriöitä</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
 <translation id="3009352964623081324">Haku + O ja sitten S. Käytä äänten asentamiseen, ylläpitämiseen ja muokkaamiseen.</translation>
@@ -9716,6 +9716,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7676019765091965045">Vaarantuneiden salasanojen tunnistus</translation>
 <translation id="7676119992609591770">Haulla "<ph name="SEARCH_TEXT" />" löydettiin <ph name="NUM" /> välilehti</translation>
 <translation id="7676867886086876795">Lähetä äänesi Googlelle, jotta sanelu on mahdollista kaikissa tekstikentissä.</translation>
+<translation id="7678198209643823714">Poista <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Nollataanko kaikki USB-laitteiden luvat?</translation>
 <translation id="7679171213002716280">Hallinnoituja tulostimia on <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. <ph name="PRODUCT_NAME" /> käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS-järjestelmästä. Turvallisia yhteyksiä ei käytetä tiettyjen järjestelmänvalvojan määrittämien verkkotunnusten kanssa.</translation>
@@ -12005,6 +12006,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9207434080086272167">Aurinkoinen</translation>
 <translation id="9207669213427469593">Jos siirrät ikkunan automaattisesti yhdelle puolelle käyttääksesi jaettua näyttöä, näet ikkunaehdotuksia toiselle puolelle</translation>
 <translation id="9209563766569767417">Tarkistetaan Linux-säilön asetuksia</translation>
+<translation id="9212565256020141627">Kuvaa ei voitu jakaa Geminille. Yritä uudelleen tai kokeile toista kuvaa.</translation>
 <translation id="9214520840402538427">Hups! Asennus-aika-attribuuttien alustaminen on aikakatkaistu. Ota yhteyttä tukipalveluun.</translation>
 <translation id="9214695392875603905">Kuppikakku</translation>
 <translation id="9215293857209265904"><ph name="EXTENSION_NAME" /> lisätty</translation>

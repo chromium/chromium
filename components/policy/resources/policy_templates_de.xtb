@@ -6358,34 +6358,6 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 
 Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf nicht gelöscht werden. Dies bedeutet jedoch nicht unbedingt, dass die Verläufe erhalten bleiben. Möglicherweise sind Nutzer berechtigt, die Dateien der Verlaufsdatenbanken direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
 <translation id="5322649594584715998">Lädt den Akku mit normaler Geschwindigkeit vollständig auf. In diesem Modus werden das adaptive und das begrenzte Laden deaktiviert.</translation>
-<translation id="5322726025747768984">Wenn du diese Richtlinie festlegst, werden Regeln konfiguriert, über die der vom Browser verwendete Proxy je nach der Ziel-URL und anderen Bedingungen ausgewählt wird. Diese Richtlinie hat Vorrang vor den Proxy-Einstellungen, die über die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, die Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ oder manuelle Nutzereinstellungen festgelegt werden, sofern vorhanden.
-
-Wenn die Richtlinie nicht festgelegt ist, hat dies keine Auswirkungen auf andere Proxy-Richtlinien oder Nutzereinstellungen.
-
-Wenn die Proxy-Auswahl über den Browser getroffen wird, werden die Einträge der Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach ausgewertet, bis ein Eintrag alle folgenden Anforderungen erfüllt:
-  * Es besteht eine Übereinstimmung mit mindestens einem der URL-Muster in „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“.
-  * Es besteht keine Übereinstimmung mit den URL-Mustern in „<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />“.
-  * Wenn das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ angegeben und eine nicht leere Liste ist, sind alle durch die Einträge dargestellten Bedingungen erfüllt.
-Der Wert in „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ wird als Proxy für eine solche Übereinstimmung verwendet. Wenn keine Übereinstimmung gefunden wird, werden die Proxy-Einstellungen auf die in der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ festgelegten Werte zurückgesetzt.
-
-Die von „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“ und „<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />“ unterstützten URL-Muster sind unter https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns dokumentiert.
-
-Die Einträge im Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ entsprechen Stringwerten von PAC-Dateien wie:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Alternativ können URL-ähnliche Proxy-Spezifizierer direkt zum Angeben des Proxys verwendet werden, z. B.:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-Der erste erreichbare Eintrag in der Liste wird als Proxy verwendet. Ungültige Einträge in der Liste werden ignoriert.
-
-Das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ enthält eine Liste von Bedingungen, die alle erfüllt sein müssen, damit die Überschreibungsregel zur Auswahl des zu verwendenden Proxys genutzt wird. Bei Nichtfestlegung wird der Eintrag verwendet, solange mindestens ein Host in „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“ übereinstimmt.
-
-Mit der Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ wird geprüft, ob das angegebene DNS „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ in eine IP-Adresse aufgelöst werden kann. Wenn der Wert von „<ph name="PROXY_OVERRIDE_RULES_RESULT" />“ „<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />“ ist, gilt die Bedingung als erfüllt. Wenn der Wert stattdessen auf „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“ festgelegt ist, gilt die Bedingung als erfüllt, wenn die Auflösung fehlgeschlagen ist.</translation>
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>

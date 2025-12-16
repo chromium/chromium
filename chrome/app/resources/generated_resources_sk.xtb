@@ -2207,6 +2207,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2476901513051581836">Priestor sa nedá vymazať, kým nie je známa veľkosť offline úložiska.</translation>
 <translation id="2476974672882258506">Ak chcete odinštalovať aplikáciu <ph name="PARALLELS_DESKTOP" />, vypnite Windows.</translation>
 <translation id="2477065602824695373">Nastavili ste viacero prepínačov, takže automatické prehľadávanie bolo vypnuté.</translation>
+<translation id="2477218554275525952">Po otvorení novej karty nechávať bočný panel Gemini otvorený</translation>
 <translation id="2477607419416067650">Ďalšie údaje na Googli</translation>
 <translation id="2478176599153288112">Povolenia súborov médií pre rozšírenie <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
@@ -2983,7 +2984,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3008142279736625920">Tvarohový koláč</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vyžaduje, aby ste sa dnes pripojili k sieti Wi‑Fi a stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}few{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}many{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}other{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}}</translation>
-<translation id="3008923556848076408">Gemini bude na vašej úlohe ďalej pracovať</translation>
 <translation id="3008926075262837186">Čítajte pohodlne s minimálnym rozptyľovaním</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3009352964623081324">Tlačidlo vyhľadávania + O, potom S. Používa sa na inštaláciu, správu a prispôsobenie hlasov.</translation>
@@ -9710,6 +9710,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7676019765091965045">Detekcia odhalených hesiel</translation>
 <translation id="7676119992609591770">Bola nájdená <ph name="NUM" /> karta pre dopyt <ph name="SEARCH_TEXT" /></translation>
 <translation id="7676867886086876795">Odošlite svoj hlas do Googlu a umožnite tak diktovanie do všetkých textových polí.</translation>
+<translation id="7678198209643823714">Odstrániť <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Chcete resetovať všetky povolenia pre zariadenia s rozhraním USB?</translation>
 <translation id="7679171213002716280">Počet spravovaných tlačiarní: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Sťažte ľuďom s prístupom k vašej internetovej premávke možnosť zistiť, ktoré weby navštevujete. <ph name="PRODUCT_NAME" /> vyhľadá adresu IP webu v systéme doménových názvov (DNS) prostredníctvom zabezpečeného pripojenia. Zabezpečené pripojenia sa nepoužívajú v prípade niektorých domén nakonfigurovaných správcom.</translation>
@@ -12001,6 +12002,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9207434080086272167">Slnečná</translation>
 <translation id="9207669213427469593">Ak prichytíte okno na jednu stranu a použijete rozdelenú obrazovku, zobrazia sa návrhy okien pre druhú stranu</translation>
 <translation id="9209563766569767417">Kontroluje sa nastavenie kontajnera Linux</translation>
+<translation id="9212565256020141627">Obrázok sa nepodarilo zdieľať s Gemini. Skúste to znova alebo nahrajte iný obrázok.</translation>
 <translation id="9214520840402538427">Ojoj! Časový limit pre inicializáciu atribútov času inštalácie uplynul. Kontaktujte zástupcu podpory.</translation>
 <translation id="9214695392875603905">Koláčik</translation>
 <translation id="9215293857209265904">Položka „<ph name="EXTENSION_NAME" />“ bola pridaná</translation>

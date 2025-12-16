@@ -2994,7 +2994,6 @@
 <translation id="3008142279736625920">芝士蛋糕</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您在今天內連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}other{<ph name="MANAGER" /> 要求您連接 Wi-Fi 並在期限前下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}}</translation>
-<translation id="3008923556848076408">Gemini 會繼續處理工作</translation>
 <translation id="3008926075262837186">在干擾最少的情況下輕鬆閱讀</translation>
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009352964623081324">搜尋 + O，然後按 S。此操作用於安裝、管理和自訂語音。</translation>
@@ -9709,6 +9708,7 @@
 <translation id="7676019765091965045">密碼盜用偵測</translation>
 <translation id="7676119992609591770">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="7676867886086876795">傳送語音給 Google，透過語音輸入填寫文字欄位。</translation>
+<translation id="7678198209643823714">移除 <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">要重設所有 USB 裝置權限嗎？</translation>
 <translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 部受管理嘅打印機。</translation>
 <translation id="7679895819123160382">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。管理員設定的部分網域不會使用安全連線。</translation>
@@ -11992,6 +11992,7 @@
 <translation id="9207434080086272167">晴朗</translation>
 <translation id="9207669213427469593">將視窗移到畫面其中一側後，系統就會使用分割螢幕，並在另一側顯示視窗建議</translation>
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>
+<translation id="9212565256020141627">無法與 Gemini 分享圖片，請再試一次或嘗試其他圖片。</translation>
 <translation id="9214520840402538427">糟糕！系統嘗試初始設定安裝時間 (installation-time) 屬性，但是動作已逾時。請與您的支援代表聯絡。</translation>
 <translation id="9214695392875603905">紙杯蛋糕</translation>
 <translation id="9215293857209265904">已新增「<ph name="EXTENSION_NAME" />」</translation>

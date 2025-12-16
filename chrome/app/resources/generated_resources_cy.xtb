@@ -2221,6 +2221,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2476901513051581836">Methu â glanhau storfa nes bod maint y storfa all-lein yn hysbys.</translation>
 <translation id="2476974672882258506">Diffoddwch Windows i ddadosod <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Gan eich bod wedi gosod sawl switsh, mae awtosganio wedi'i ddiffodd.</translation>
+<translation id="2477218554275525952">Cadwch y bar ochr Gemini ar agor pan fyddwch yn agor tab newydd</translation>
 <translation id="2477607419416067650">Data Google eraill</translation>
 <translation id="2478176599153288112">Caniatadau Ffeil Cyfryngau ar gyfer "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Galluogi'r gwasanaeth adfer data.</translation>
@@ -2997,7 +2998,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3008142279736625920">Cacen gaws</translation>
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi heddiw i lawrlwytho diweddariad. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}zero{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}two{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}few{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}many{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}other{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}}</translation>
-<translation id="3008923556848076408">Bydd Gemini yn parhau i weithio ar eich tasg</translation>
 <translation id="3008926075262837186">Darllenwch yn gyfforddus gydag ychydig iawn o dynnu sylw</translation>
 <translation id="3009178788565917040">Allbwn</translation>
 <translation id="3009352964623081324">Search + O, yna S. Defnyddiwch i osod, rheoli, ac addasu lleisiau.</translation>
@@ -9730,6 +9730,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7676019765091965045">Canfod cyfrinair sydd wedi'i ddatgelu</translation>
 <translation id="7676119992609591770">Wedi canfod <ph name="NUM" /> o Dabiau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Anfonwch eich llais at Google i ganiatáu arddweud i unrhyw faes testun.</translation>
+<translation id="7678198209643823714">Tynnu <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Ailosod pob caniatâd dyfais USB?</translation>
 <translation id="7679171213002716280">Mae yna <ph name="PRINTER_COUNT" /> argraffydd a reolir.</translation>
 <translation id="7679895819123160382">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae <ph name="PRODUCT_NAME" /> yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP gwefan yn y DNS (System Enw Parth). Ni ddefnyddir cysylltiadau diogel ar gyfer rhai parthau sydd wedi'u ffurfweddu gan eich gweinyddwr.</translation>
@@ -12022,6 +12023,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9207434080086272167">Heulog</translation>
 <translation id="9207669213427469593">Os byddwch ym snapio ffenestr i un ochr i ddefnyddio sgrîn hollt, byddwch yn gweld awgrymiadau ffenestr ar gyfer yr ochr arall</translation>
 <translation id="9209563766569767417">Wrthi'n gwirio gosodiad y cynhwysydd Linux</translation>
+<translation id="9212565256020141627">Methu â rhannu llun gyda Gemini. Rhowch gynnig arall arni neu rhowch gynnig ar lun arall.</translation>
 <translation id="9214520840402538427">Wps!  Mae cychwyn y priodweddau amser gosod wedi darfod.  Cysylltwch â'ch cynrychiolydd cymorth.</translation>
 <translation id="9214695392875603905">Cacen gwpan</translation>
 <translation id="9215293857209265904">Ychwanegwyd "<ph name="EXTENSION_NAME" />"</translation>

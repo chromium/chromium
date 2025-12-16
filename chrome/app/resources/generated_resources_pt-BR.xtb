@@ -2219,6 +2219,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2476901513051581836">Não é possível limpar o armazenamento até que se saiba o tamanho do espaço off-line.</translation>
 <translation id="2476974672882258506">Desligue o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">A leitura automática foi desativada porque você configurou vários interruptores.</translation>
+<translation id="2477218554275525952">Manter a barra lateral do Gemini aberta ao abrir uma nova guia</translation>
 <translation id="2477607419416067650">Outros dados do Google</translation>
 <translation id="2478176599153288112">Permissões de arquivos de mídia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ativar o serviço de recuperação de dados.</translation>
@@ -2994,7 +2995,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você se conecte hoje ao Wi-Fi para baixar uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}one{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e faça o download de uma atualização antes do fim do prazo. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}other{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e faça o download de uma atualização antes do fim do prazo. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}}</translation>
-<translation id="3008923556848076408">O Gemini vai continuar trabalhando na sua tarefa</translation>
 <translation id="3008926075262837186">Leia com conforto e sem distrações</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Pesquisa + O e depois S. Use para instalar, gerenciar e personalizar vozes.</translation>
@@ -9724,6 +9724,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7676019765091965045">Detecção de senhas comprometidas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> guia encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envie sua voz para que o Google permita que o ditado seja usado em qualquer campo de texto.</translation>
+<translation id="7678198209643823714">Remover <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Redefinir todas as permissões de dispositivos USB?</translation>
 <translation id="7679171213002716280">Há <ph name="PRINTER_COUNT" /> impressoras gerenciadas.</translation>
 <translation id="7679895819123160382">Dificulte o acesso ao seu tráfego da Internet, que mostra os sites que você visita. O <ph name="PRODUCT_NAME" /> usa uma conexão segura para procurar o endereço IP de um site no Sistema de Nomes de Domínio (DNS). As conexões seguras não são usadas para alguns domínios configurados pelo seu administrador.</translation>
@@ -12014,6 +12015,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9207434080086272167">Ensolarado</translation>
 <translation id="9207669213427469593">Se você ajustar uma janela de um lado para usar a tela dividida, sugestões de janela vão aparecer para o outro lado</translation>
 <translation id="9209563766569767417">Verificando a configuração do contêiner Linux</translation>
+<translation id="9212565256020141627">Não foi possível compartilhar a imagem com o Gemini. Tente novamente ou use outra imagem.</translation>
 <translation id="9214520840402538427">Ops! A inicialização dos atributos de tempo de instalação ultrapassou o tempo limite. Entre em contato com o representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>

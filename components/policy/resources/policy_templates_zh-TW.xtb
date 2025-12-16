@@ -6237,34 +6237,6 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
 
 如果將這項政策設為停用，系統就無法刪除瀏覽記錄和下載記錄。即使關閉這項政策，瀏覽及下載記錄也不一定會保留。使用者或許可以直接編輯或刪除歷史記錄資料庫檔案，而瀏覽器本身也可能隨時清除或封存部分或所有歷史記錄項目。</translation>
 <translation id="5322649594584715998">以標準充電速度將電池完全充飽。這個模式會停用自動調節充電和限制充電功能。</translation>
-<translation id="5322726025747768984">透過這項政策設定規則，根據目的地網址和其他條件選取瀏覽器使用的 Proxy。這項政策的效力高於其他方式的 Proxy 設定，包括透過 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 擴充功能 API，以及使用者手動設定。
-
-如果未設定這項政策，其他 Proxy 政策或使用者設定都不會受到影響。
-
-瀏覽器必須決定要使用的 Proxy 時，會依序評估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的項目，直到有一個項目符合下列所有條件為止：
-  * 符合 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中的至少一個網址模式。
-  * 與 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 中的網址模式均不相符。
-  * 如果指定了 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />，而且不是空白清單，則須符合該清單項目表示的所有條件。
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 的值會做為這類相符項目的 Proxy。如果找不到相符項目，就會回頭使用 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策指定的 Proxy 設定。
-
-如要瞭解 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 和 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 支援的網址模式，請參閱 https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns。
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 欄位項目會對應到 PAC 檔案的字串值，例如：
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-或者，也可以直接用類似網址的 Proxy 指定碼來指定 Proxy，例如：
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-清單中第一個可連線的項目會做為 Proxy。系統會忽略清單中的無效項目。
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 欄位內含條件清單；必須符合所有條件，才能使用覆寫規則決定要使用的 Proxy。如果未設定，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 有一個主機符合條件，系統就會使用該項目。
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 條件會檢查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> 能否解析為 IP 位址。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值為「<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />」，就會判定符合條件。如果值改設為 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，則解析失敗時，系統會判定符合條件。</translation>
 <translation id="5323200200131319468">在登入畫面上啟用互動朗讀功能</translation>
 <translation id="5323271643727095577">針對 beforeunload 事件呼叫 event.preventDefault() 時，不要顯示取消對話方塊。如果 beforeunload event.returnValue 是 beforeunload 事件的空白字串，顯示取消對話方塊。</translation>
 <translation id="5324430722441910403">網站搜尋設定</translation>

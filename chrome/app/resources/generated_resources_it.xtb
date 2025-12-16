@@ -2205,6 +2205,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2476901513051581836">Non è possibile pulire lo spazio di archiviazione finché non si conoscono le dimensioni dello spazio di archiviazione offline.</translation>
 <translation id="2476974672882258506">Arresta la VM Windows per disinstallare <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Dato che hai configurato più sensori, la scansione automatica è stata disattivata.</translation>
+<translation id="2477218554275525952">Mantieni aperta la barra laterale di Gemini quando apri una nuova scheda</translation>
 <translation id="2477607419416067650">Altri dati di Google</translation>
 <translation id="2478176599153288112">Autorizzazioni file multimediali per "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
@@ -2981,7 +2982,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento oggi stesso. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}other{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}}</translation>
-<translation id="3008923556848076408">Gemini continuerà a lavorare sulla tua attività</translation>
 <translation id="3008926075262837186">Leggi comodamente con distrazioni minime</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009352964623081324">Tasto per la ricerca + O, poi S. Usa questa scorciatoia per installare, gestire e personalizzare voci.</translation>
@@ -9703,6 +9703,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7676019765091965045">Rilevamento di password compromesse</translation>
 <translation id="7676119992609591770">È stata trovata <ph name="NUM" /> scheda per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Invia i tuoi dati audio a Google per consentire la dettatura in tutti i campi di testo.</translation>
+<translation id="7678198209643823714">Rimuovi <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Vuoi reimpostare tutte le autorizzazioni del dispositivo USB?</translation>
 <translation id="7679171213002716280">Ci sono <ph name="PRINTER_COUNT" /> stampanti gestite disponibili.</translation>
 <translation id="7679895819123160382">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. <ph name="PRODUCT_NAME" /> utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System). Le connessioni sicure non vengono utilizzate per alcuni domini configurati dall'amministratore.</translation>
@@ -11992,6 +11993,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9207434080086272167">Soleggiato</translation>
 <translation id="9207669213427469593">Se sposti una finestra da un lato per utilizzare lo schermo diviso, visualizzerai suggerimenti per le finestre nell'altro lato</translation>
 <translation id="9209563766569767417">Controllo della configurazione del container Linux</translation>
+<translation id="9212565256020141627">Impossibile condividere l'immagine con Gemini. Riprova o prova con un'altra immagine.</translation>
 <translation id="9214520840402538427">Spiacenti. L'inizializzazione degli attributi installation-time è scaduta. Contatta il tuo rappresentante dell'assistenza.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" aggiunta</translation>

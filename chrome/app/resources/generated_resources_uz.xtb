@@ -2984,7 +2984,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3008142279736625920">Chizkeyk</translation>
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> domeni bugunoq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}other{<ph name="MANAGER" /> Wi-Fi tarmoqqa ulanib, yangilanishni oxirgi muddatdan oldin yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}}</translation>
-<translation id="3008923556848076408">Gemini vazifangizda ishlashda davom etadi</translation>
 <translation id="3008926075262837186">Minimal chalgʻish bilan qulay oʻqish</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
 <translation id="3009352964623081324">Search + O, keyin S. Ovozlarni oʻrnatish, boshqarish va moslash uchun ishlatiladi.</translation>
@@ -9706,6 +9705,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7676019765091965045">Oshkor etilgan parollarni aniqlash</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="7676867886086876795">Diktovka istalgan matn maydonida ishlatilishi uchun ovozingiz Google serverlariga yuboriladi.</translation>
+<translation id="7678198209643823714">Olib tashlash: <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">USB qurilmalar uchun barcha ruxsatlar tiklansinmi?</translation>
 <translation id="7679171213002716280">Boshqariladigan <ph name="PRINTER_COUNT" /> ta printer bor.</translation>
 <translation id="7679895819123160382">Internetingizni kuzatuvchi tomonlarga ochadigan saytlaringizni koʻrishni qiyinlashtiring. <ph name="PRODUCT_NAME" /> DNS (Domen nomlari tizimi) qaydlaridan saytning IP manzilini shifrlangan aloqa yordamida tekshiradi. Administrator sozlagan ayrim domenlarda xavfsiz ulanish ishlatilmaydi.</translation>
@@ -11994,6 +11994,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9207434080086272167">Quyoshli</translation>
 <translation id="9207669213427469593">Ajratilgan ekran rejimi uchun oynani yonga tortsangiz, ikkinchi tomon oynasiga takliflar chiqadi</translation>
 <translation id="9209563766569767417">Linux konteyneri sozlamalari tekshirilmoqda</translation>
+<translation id="9212565256020141627">Geminiga rasm ulashilmadi Qayta urining yoki boshqa rasmni tanlang.</translation>
 <translation id="9214520840402538427">Afsuski, vaqt sozlamalarini o‘rnatishga tayyorlash vaqti tugadi. Xizmat ko‘rsatish markazi bilan bog‘laning.</translation>
 <translation id="9214695392875603905">Keks</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" qo‘shildi</translation>

@@ -6610,34 +6610,6 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 
 Se a política for desativada, o histórico de navegação e o de downloads não poderão ser excluídos. Mesmo que a política esteja desativada, não há garantia de que o histórico de navegação e o de downloads serão preservados. Os usuários poderão editar ou excluir os arquivos de banco de dados de histórico diretamente, e o próprio navegador poderá expirar ou arquivar todo ou qualquer item de histórico a qualquer momento.</translation>
 <translation id="5322649594584715998">Carrega totalmente a bateria na velocidade padrão. Esse modo desativa o carregamento adaptável e limitado.</translation>
-<translation id="5322726025747768984">A definição desta política configura regras que selecionam qual proxy o navegador usa, dependendo do URL de destino e de outras condições. Esta política terá precedência sobre as configurações de proxy definidas pela política <ph name="PROXY_SETTINGS_POLICY_NAME" />, pela API de extensão <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou pelas configurações manuais do usuário, se alguma delas estiver definida.
-
-Se a política não for definida, isso não vai afetar outras políticas de proxy ou configurações do usuário.
-
-Quando o navegador precisa decidir qual proxy usar, as entradas da política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> são avaliadas em sequência até que uma delas satisfaça todos os pontos a seguir:
-  * Pelo menos um dos padrões de URL em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> é correspondente.
-  * Nenhum dos padrões de URL em <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> é correspondente.
-  * Se <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> for especificado e for uma lista não vazia, todas as condições representadas pelas entradas serão satisfeitas.
-O valor em <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> será usado como proxy para essa correspondência. Se nenhuma correspondência for encontrada, as configurações de proxy vão voltar para o que está definido na política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Os padrões de URL compatíveis com <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> estão documentados em https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-As entradas do campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> correspondem a valores de string de arquivos PAC, como:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Como alternativa, especificadores de proxy semelhantes a URLs podem ser usados diretamente para especificar o proxy, por exemplo:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-A primeira entrada acessível na lista será usada como proxy. As entradas inválidas na lista são ignoradas.
-
-O campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> tem uma lista de condições que precisam ser atendidas para que a regra de substituição seja usada para decidir o proxy. Se for deixado sem definição, a entrada será usada desde que tenha correspondência com pelo menos um host em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-
-A condição <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se o <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fornecido pode ser resolvido para um endereço IP. Se o valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> for "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", a condição será considerada atendida. Se o valor for definido como <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, a condição será considerada atendida se a resolução falhar.</translation>
 <translation id="5323200200131319468">Ativar a resposta falada na tela de login.</translation>
 <translation id="5323271643727095577">Não mostrar a caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Mostrar a caixa de diálogo de cancelamento quando beforeunload event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5324430722441910403">Configurações da pesquisa no site</translation>

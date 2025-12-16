@@ -2193,6 +2193,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2476901513051581836">Nie można wyczyścić pamięci, dopóki nie będzie znany jej rozmiar.</translation>
 <translation id="2476974672882258506">Aby odinstalować <ph name="PARALLELS_DESKTOP" />, zamknij system Windows.</translation>
 <translation id="2477065602824695373">Automatyczne skanowanie zostało wyłączone, bo masz skonfigurowanych kilka przełączników.</translation>
+<translation id="2477218554275525952">Pozostaw otwarty pasek boczny Gemini po otwarciu nowej karty</translation>
 <translation id="2477607419416067650">Inne dane Google</translation>
 <translation id="2478176599153288112">Uprawnienia pliku multimedialnego dla rozszerzenia „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Włącz usługę przywracania danych.</translation>
@@ -2967,7 +2968,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3008142279736625920">Sernik</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji dzisiaj. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}few{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}many{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}other{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}}</translation>
-<translation id="3008923556848076408">Gemini będzie nadal pracować nad Twoim zadaniem</translation>
 <translation id="3008926075262837186">Czytaj wygodnie i bez rozpraszania uwagi</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
 <translation id="3009352964623081324">Wyszukaj + O, a następnie S. Służy do instalowania i dostosowywania głosów oraz do zarządzania nimi.</translation>
@@ -9685,6 +9685,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7676019765091965045">Wykrywanie przejętych haseł</translation>
 <translation id="7676119992609591770">Znaleziono <ph name="NUM" /> kartę dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Wysyła Twój głos do Google, by umożliwić dyktowanie w dowolnym polu tekstowym.</translation>
+<translation id="7678198209643823714">Usuń <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Zresetować wszystkie uprawnienia urządzenia USB?</translation>
 <translation id="7679171213002716280">Liczba zarządzanych drukarek: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w systemie nazw domenowych (DNS) <ph name="PRODUCT_NAME" /> używa bezpiecznego połączenia. Bezpieczne połączenia nie są używane w przypadku niektórych domen skonfigurowanych przez administratora.</translation>
@@ -11969,6 +11970,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9207434080086272167">Słoneczny</translation>
 <translation id="9207669213427469593">Jeśli przyciągniesz okno na jedną stronę, aby podzielić ekran, zobaczysz sugerowane okna dla drugiej strony</translation>
 <translation id="9209563766569767417">Sprawdzam konfigurację kontenera Linuksa</translation>
+<translation id="9212565256020141627">Nie udało się udostępnić obrazu w Gemini. Spróbuj ponownie lub prześlij inny obraz.</translation>
 <translation id="9214520840402538427">Upłynął limit czasu inicjowania atrybutów instalacyjnych. Skontaktuj się z przedstawicielem obsługi klienta.</translation>
 <translation id="9214695392875603905">Babeczka</translation>
 <translation id="9215293857209265904">Dodano „<ph name="EXTENSION_NAME" />”</translation>

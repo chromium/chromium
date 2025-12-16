@@ -2214,6 +2214,7 @@
 <translation id="2476901513051581836">ከመስመር ውጭ ማከማቻ መጠን እስከሚታወቅ ድረስ ማከማቻውን ማጽዳት አይቻልም።</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ለማራገፍ መስኮቶቹን ይዝጉ።</translation>
 <translation id="2477065602824695373">ብዙ መቀየሪያዎችን ስላዋቀሩ ራስ-ቅኝት ጠፍቷል።</translation>
+<translation id="2477218554275525952">አዲስ ትር ሲከፍቱ የGemini የጎን አሞሌን ክፍት አድርገው ያቆዩ</translation>
 <translation id="2477607419416067650">ሌላ የGoogle ውሂብ</translation>
 <translation id="2478176599153288112">የ«<ph name="EXTENSION" />» ማህደረ መረጃ ፋይል ፍቃዶች</translation>
 <translation id="24786041351753425">የውሂብ መልሶ ማግኛ አገልግሎትን አንቃ</translation>
@@ -2990,7 +2991,6 @@
 <translation id="3008142279736625920">ቺዝ ኬክ</translation>
 <translation id="3008272652534848354">ፈቃዶችን ዳግም ያቀናብሩ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ዝማኔን ለማውረድ ዛሬ ከWi-Fi ጋር እንዲገናኙ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}one{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}other{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}}</translation>
-<translation id="3008923556848076408">Gemini በእርስዎ ተግባር ላይ መሥራት ይቀጥላል</translation>
 <translation id="3008926075262837186">ባነሱ የሚያዘናጉ ነገሮች ምቹ ሆነው ያንብቡ</translation>
 <translation id="3009178788565917040">ውጽዓት</translation>
 <translation id="3009352964623081324">+ O፣ ከዚያ Sን ይፈልጉ። ድምፆችን ለመጫን፣ ለማቀናበር እና ብጁ ለማድረግ ይጠቀሙ።</translation>
@@ -9716,6 +9716,7 @@
 <translation id="7676019765091965045">የተጠለፈ የይለፍ ቃል ማወቂያ</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ትር ለ«<ph name="SEARCH_TEXT" />» ተገኝቷል</translation>
 <translation id="7676867886086876795">ወደ ማናቸውም የጽሑፍ መስክ በቃል ማስጻፍን ለመፍቀድ ድምጽዎን ወደ Google ይላኩ።</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" />ን አስወግድ</translation>
 <translation id="7678588695732963732">ሁሉንም የUSB መሣሪያ ፈቃዶች እንደገና ያስጀምር?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> የሚተዳደሩ ማተሚያዎች አሉ።</translation>
 <translation id="7679895819123160382">የበይነመረብ ትራፊክዎ መዳረሻ ላላቸው ሰዎች እርስዎ የትኛዎቹን ጣቢያዎች እንደሚጎበኙ ማየት ያክብዱባቸው። <ph name="PRODUCT_NAME" /> የጣቢያውን የአይፒ አድራሻ በዲኤንኤስ (የጎራ ስም ሥርዓት) ውስጥ ለመፈለግ የተመሰጠረ ግንኙነትን ይጠቀማል። የተመሰጠሩ ግንኙነቶች በአስተዳዳሪዎ ለተዋቀሩ አንዳንድ ጎራዎች ጥቅም ላይ አይውሉም።</translation>
@@ -12011,6 +12012,7 @@ nil</translation>
 <translation id="9207434080086272167">ፀሐያማ</translation>
 <translation id="9207669213427469593">የተከፈለ ማያ ገጽን ለመጠቀም መስኮትን ወደ አንድ ጎን ቢያዞሩ ለሌላው ጎን መስኮት ጥቆማዎችን ያያሉ</translation>
 <translation id="9209563766569767417">የLinux መያዣ ቅንብሩን በመፈተሽ ላይ</translation>
+<translation id="9212565256020141627">ምስልን ከGemini ጋር ማጋራት አልተቻለም። እንደገና ይሞክሩ ወይም ሌላ ምስል ይሞክሩ።</translation>
 <translation id="9214520840402538427">ውይ!  የጭነት ጊዜ መገለጫ ባህሪያት ጊዜ አልፎባቸዋል።  እባክዎ የድጋፍ ተወካይዎን ያግኙ።</translation>
 <translation id="9214695392875603905">ዘቢብ ኬክ</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ታክሏል</translation>

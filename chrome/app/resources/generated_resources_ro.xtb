@@ -2206,6 +2206,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2476901513051581836">Nu poți elibera spațiu de stocare înainte să cunoști dimensiunea spațiului stocare offline.</translation>
 <translation id="2476974672882258506">Închide Windows pentru a dezinstala <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Întrucât ai configurat mai multe comutatoare, scanarea automată a fost dezactivată.</translation>
+<translation id="2477218554275525952">Păstrează bara laterală Gemini deschisă când deschizi o filă nouă</translation>
 <translation id="2477607419416067650">Alte date Google</translation>
 <translation id="2478176599153288112">Permisiuni privind fișierele media pentru „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Activează serviciul de recuperare a datelor.</translation>
@@ -2982,7 +2983,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Resetează permisiunile</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să te conectezi azi la rețeaua Wi-Fi pentru a descărca o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}few{<ph name="MANAGER" /> solicită să te conectezi la rețeaua Wi-Fi și să descarci o actualizare înainte de termenul limită. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}other{<ph name="MANAGER" /> solicită să te conectezi la rețeaua Wi-Fi și să descarci o actualizare înainte de termenul limită. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}}</translation>
-<translation id="3008923556848076408">Gemini va continua să lucreze la activitatea ta</translation>
 <translation id="3008926075262837186">Citește confortabil, cu distrageri minime</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
 <translation id="3009352964623081324">Tasta de căutare + O, apoi S. Folosește opțiunea pentru a instala, a gestiona și a personaliza voci.</translation>
@@ -9707,6 +9707,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7676019765091965045">Detectarea parolelor compromise</translation>
 <translation id="7676119992609591770">S-a găsit <ph name="NUM" /> filă pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Trimite-ți vocea la Google pentru a permite dictarea în orice câmp de text.</translation>
+<translation id="7678198209643823714">Elimină <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Resetezi toate permisiunile pentru dispozitivul USB?</translation>
 <translation id="7679171213002716280">Sunt disponibile <ph name="PRINTER_COUNT" /> imprimante gestionate.</translation>
 <translation id="7679895819123160382">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. <ph name="PRODUCT_NAME" /> folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii). Conexiunile securizate nu sunt folosite pentru anumite domenii configurate de administrator.</translation>
@@ -11997,6 +11998,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9207434080086272167">Însorit</translation>
 <translation id="9207669213427469593">Dacă fixezi o fereastră într-o parte pentru a folosi ecranul împărțit, vei vedea sugestii de ferestre pentru cealaltă parte</translation>
 <translation id="9209563766569767417">Verificarea configurației containerului Linux este în curs</translation>
+<translation id="9212565256020141627">Imaginea nu a putut fi trimisă către Gemini. Încercați din nou sau folosiți altă imagine.</translation>
 <translation id="9214520840402538427">Hopa! Inițializarea atributelor necesare în momentul instalării a expirat. Contactați reprezentantul dvs. de asistență.</translation>
 <translation id="9214695392875603905">Brioșă</translation>
 <translation id="9215293857209265904">S-a adăugat „<ph name="EXTENSION_NAME" />”</translation>

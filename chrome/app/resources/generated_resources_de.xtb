@@ -2202,6 +2202,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2476901513051581836">Der Speicherplatz kann erst freigegeben werden, wenn die Größe des Offlinespeichers bekannt ist.</translation>
 <translation id="2476974672882258506">Bitte Windows herunterfahren, um <ph name="PARALLELS_DESKTOP" /> zu deinstallieren.</translation>
 <translation id="2477065602824695373">Da du mehrere Schalter eingerichtet hast, wurde der automatische Scan deaktiviert.</translation>
+<translation id="2477218554275525952">Gemini-Seitenleiste geöffnet lassen, wenn ein neuer Tab geöffnet wird</translation>
 <translation id="2477607419416067650">Andere Google-Daten</translation>
 <translation id="2478176599153288112">Mediendatei-Berechtigungen für "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dienst zur Datenwiederherstellung aktivieren</translation>
@@ -2978,7 +2979,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, sich heute mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}other{Gemäß <ph name="MANAGER" /> ist es notwendig, sich vor Ablauf der Frist mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}}</translation>
-<translation id="3008923556848076408">Gemini arbeitet weiter an deiner Aufgabe</translation>
 <translation id="3008926075262837186">Texte ungestört und in einem übersichtlichen Format lesen</translation>
 <translation id="3009178788565917040">Ausgang</translation>
 <translation id="3009352964623081324">Suchtaste + O, anschließend S. Zum Installieren, Verwalten und Personalisieren von Stimmen verwenden.</translation>
@@ -9697,6 +9697,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7676019765091965045">Kompromittierte Passwörter erkennen</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab für "<ph name="SEARCH_TEXT" />" gefunden</translation>
 <translation id="7676867886086876795">Deine Spracheingaben werden an Google gesendet, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> entfernen</translation>
 <translation id="7678588695732963732">Alle Berechtigungen für USB-Geräte zurücksetzen?</translation>
 <translation id="7679171213002716280">Es gibt <ph name="PRINTER_COUNT" /> verwaltete Drucker.</translation>
 <translation id="7679895819123160382">Du kannst es Personen mit Zugriff auf deinen Internettraffic erschweren, zu sehen, welche Websites du besuchst. <ph name="PRODUCT_NAME" /> nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln. Für einige von deinem Administrator konfigurierte Domains werden keine verschlüsselten Verbindungen verwendet.</translation>
@@ -11986,6 +11987,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9207434080086272167">Sonnig</translation>
 <translation id="9207669213427469593">Wenn du bei der Verwendung von Splitscreen ein Fenster auf einer Seite andockst, werden dir Fenster für die andere Seite vorgeschlagen</translation>
 <translation id="9209563766569767417">Einrichtung des Linux-Containers wird geprüft</translation>
+<translation id="9212565256020141627">Das Bild konnte nicht mit Gemini geteilt werden. Versuche es noch einmal oder verwende ein anderes Bild.</translation>
 <translation id="9214520840402538427">Hoppla! Bei der Initialisierung der Installationszeit-Attribute ist eine Zeitüberschreitung aufgetreten. Bitte wende dich an deinen Support-Mitarbeiter.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" hinzugefügt</translation>

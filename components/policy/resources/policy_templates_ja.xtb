@@ -6137,34 +6137,6 @@ Protected Audience API のサポートを終了により、このポリシーは
 
 このポリシーを無効に設定した場合、閲覧とダウンロードの履歴は削除できません。なお、このポリシーを無効にした場合も、閲覧とダウンロードの履歴が保持される保証はありません。ユーザーが履歴データベースのファイルを直接編集または削除できる可能性もあります。また、ブラウザ自体で履歴の有効期限が切れたりすべての履歴アイテムがアーカイブされたりする場合もあります。</translation>
 <translation id="5322649594584715998">標準速度でバッテリーをフル充電する。（アダプティブ充電と制限充電は無効になります）。</translation>
-<translation id="5322726025747768984">このポリシーでは、接続先の URL やその他の条件に基づいてブラウザで使用するプロキシを選択するルールを設定します。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシー、<ph name="PROXY_SETTINGS_EXTENSION_API" /> の拡張機能 API、またはユーザーが手動で設定したプロキシ設定より優先されます（設定されている場合）。
-
-このポリシーを未設定のままにした場合、他のプロキシ ポリシーやユーザー設定には影響しません。
-
-ブラウザで使用するプロキシを決定する必要がある場合、次のすべての条件を満たすエントリが見つかるまで、<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーのエントリが順番に照合されます。
-  * <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> の URL パターンの少なくとも 1 つに一致する。
-  * <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> の URL パターンのいずれにも一致しない。
-  * <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> で空白以外のリストが指定されている場合、そのエントリが示すすべての条件が満たされている。
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> の値は、一致した場合にプロキシとして使用されます。一致するエントリが見つからない場合は、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーで設定されたプロキシにフォールバックされます。
-
-<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> と <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> でサポートされている URL パターンについては、https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns をご覧ください。
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> フィールドのエントリは、次のような PAC ファイルの文字列値に対応します。
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-または、URL と似た形式のプロキシ指定子を使用して、次のようにプロキシを直接指定することもできます。
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-リスト内の最初に到達可能なエントリがプロキシとして使用されます。リスト内の無効なエントリは無視されます。
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> フィールドには、オーバーライド ルールで使用するプロキシを決定する際に、すべて満たす必要がある条件のリストを指定します。未設定の場合、<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> の少なくとも 1 つのホストが一致すれば、エントリが使用されます。
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 条件は、指定された DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> が IP アドレスに解決可能かどうかを判定します。<ph name="PROXY_OVERRIDE_RULES_RESULT" /> の値が「<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />」の場合は、条件が満たされたと判定されます。代わりにこの値を「<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />」に設定した場合は、解決に失敗すると、条件が満たされたと判定されます。</translation>
 <translation id="5323200200131319468">ログイン画面で音声フィードバックを有効にする</translation>
 <translation id="5323271643727095577">beforeunload イベントで event.preventDefault() が呼び出されたときにキャンセル ダイアログを表示しない。beforeunload イベントで beforeunload event.returnValue が空の文字列のときにキャンセル ダイアログを表示する。</translation>
 <translation id="5324430722441910403">サイト内検索の設定</translation>

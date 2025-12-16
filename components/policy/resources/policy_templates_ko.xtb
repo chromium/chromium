@@ -6460,34 +6460,6 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
 정책을 사용 안함으로 설정하면 방문 기록 및 다운로드 기록이 삭제되지 않습니다. 정책을 사용 중지해도 방문 및 다운로드 기록이 반드시 보관되는 것은 아닙니다. 사용자는 기록 데이터베이스 파일을 직접 수정하거나 삭제할 수 있습니다. 또한 브라우저는 언제든지 기록 항목을 자체적으로 만료시키거나 보관처리할 수 있습니다.</translation>
 <translation id="5322649594584715998">배터리를 일반 속도로 완전히 충전합니다. 이 모드는 자동 조절 충전 및 제한 충전을 사용 중지합니다.</translation>
-<translation id="5322726025747768984">이 정책을 설정하면 대상 URL 및 기타 조건에 따라 브라우저에서 사용할 프록시를 선택하는 규칙이 구성됩니다. 이 정책은 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책, <ph name="PROXY_SETTINGS_EXTENSION_API" /> 확장 프로그램 API 또는 수동 사용자 설정에서 설정된 프록시 설정보다 우선 적용됩니다.
-
-정책을 설정하지 않아도 다른 프록시 정책 또는 사용자 설정에 영향을 미치지 않습니다.
-
-브라우저에서 사용할 프록시를 결정해야 하는 경우 항목이 다음 사항을 모두 충족할 때까지 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책의 항목이 순서대로 평가됩니다.
-  * <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 URL 패턴 중 하나 이상이 일치합니다.
-  * <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />의 URL 패턴 중 일치하는 패턴이 없습니다.
-  * <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />이(가) 지정되고 목록이 비어 있지 않은 경우 해당 항목으로 표현된 모든 조건이 충족됩니다.
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />의 값이 이러한 일치의 프록시로 사용됩니다. 일치하는 항목이 없으면 프록시 설정이 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책에 설정된 항목으로 되돌아갑니다.
-
-<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 및 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />에서 지원되는 URL 패턴은 https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns에 설명되어 있습니다.
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 필드 항목은 다음과 같은 PAC 파일의 문자열 값에 해당합니다.
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-또는 URL과 유사한 프록시 지정자를 직접 사용하여 다음과 같이 프록시를 지정할 수 있습니다.
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-목록에서 연결 가능한 첫 번째 항목이 프록시로 사용됩니다. 목록의 잘못된 항목은 무시됩니다.
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 필드에는 사용할 프록시를 결정하기 위해 재정의 규칙을 사용하려면 모두 충족해야 하는 조건 목록이 포함됩니다. 설정하지 않으면 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 호스트 중 하나 이상이 일치하는 한 항목이 사용됩니다.
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 조건은 제공된 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" />가 IP 주소로 확인할 수 있는지 확인합니다. <ph name="PROXY_OVERRIDE_RULES_RESULT" />의 값이 "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />"인 경우 조건이 충족된 것으로 간주됩니다. 대신 값이 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />로 설정되면 해결이 실패한 경우 조건이 충족된 것으로 간주됩니다.</translation>
 <translation id="5323200200131319468">로그인 화면에서 음성 피드백 사용 설정</translation>
 <translation id="5323271643727095577">beforeunload 이벤트에 대해 event.preventDefault()가 호출될 때 취소 대화상자를 표시하지 않습니다. beforeunload event.returnValue가 beforeunload 이벤트의 빈 문자열인 경우 취소 대화상자를 표시합니다.</translation>
 <translation id="5324430722441910403">사이트 검색 설정</translation>

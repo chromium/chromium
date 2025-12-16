@@ -2983,7 +2983,6 @@ Quer pará-lo?</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi hoje para transferir uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}other{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi e transfira uma atualização antes do prazo. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}}</translation>
-<translation id="3008923556848076408">O Gemini vai continuar a trabalhar na sua tarefa</translation>
 <translation id="3008926075262837186">Leia confortavelmente com o mínimo de distrações</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Pesquisa + O e, em seguida, S. Utilize o atalho para instalar, gerir e personalizar vozes.</translation>
@@ -9710,6 +9709,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7676019765091965045">Deteção de palavras-passe comprometidas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> separador encontrado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envie a sua voz para a Google para permitir a introdução por voz em qualquer campo de texto.</translation>
+<translation id="7678198209643823714">Remover <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Repor todas as autorizações dos dispositivos USB?</translation>
 <translation id="7679171213002716280">Existem <ph name="PRINTER_COUNT" /> impressoras geridas.</translation>
 <translation id="7679895819123160382">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O <ph name="PRODUCT_NAME" /> usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio). As ligações seguras não são usadas para alguns domínios configurados pelo seu administrador.</translation>
@@ -11999,6 +11999,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9207434080086272167">Alegre</translation>
 <translation id="9207669213427469593">Se encaixar uma janela a um dos lados para usar o ecrã dividido, vai ver sugestões de janelas para o outro lado</translation>
 <translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
+<translation id="9212565256020141627">Não foi possível partilhar a imagem com o Gemini. Tente novamente ou experimente outra imagem.</translation>
 <translation id="9214520840402538427">Ups! A inicialização dos atributos de tempo de instalação expirou. Contacte o seu representante de suporte.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>

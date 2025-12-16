@@ -2208,6 +2208,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2476901513051581836">Pohrana se ne može osloboditi dok se ne zna veličina izvanmrežne pohrane.</translation>
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Budući da ste postavili više prekidača, automatsko skeniranje je isključeno.</translation>
+<translation id="2477218554275525952">Ostavi bočnu traku Geminija otvorenom kad otvorim novu karticu</translation>
 <translation id="2477607419416067650">Ostali podaci u Googleovim proizvodima</translation>
 <translation id="2478176599153288112">Dozvole medijske datoteke za proširenje "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Omogući uslugu oporavka podataka.</translation>
@@ -2984,7 +2985,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3008142279736625920">Torta od sira</translation>
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da se danas povežete s Wi-Fijem da biste preuzeli ažuriranje. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}one{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}few{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}other{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}}</translation>
-<translation id="3008923556848076408">Gemini će nastaviti raditi na vašem zadatku</translation>
 <translation id="3008926075262837186">Čitajte u miru uz minimalna ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Pretraživanje + O, a zatim S. Koristite za instaliranje, upravljanje i prilagođavanje glasova.</translation>
@@ -9708,6 +9708,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7676019765091965045">Otkrivanje ugroženih zaporki</translation>
 <translation id="7676119992609591770">Pronađena je <ph name="NUM" /> kartica za '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Pošaljite audiopodatke o svojem glasu Googleu da biste omogućili diktiranje za bilo koje tekstno polje.</translation>
+<translation id="7678198209643823714">Ukloni <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Želite li poništiti sva dopuštenja za USB uređaje?</translation>
 <translation id="7679171213002716280">Postoji sljedeći broj upravljanih pisača: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Otežajte korisnicima s pristupom vašem internetskom prometu da vide koje web-lokacije posjećujete. <ph name="PRODUCT_NAME" /> upotrebljava sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System). Sigurne veze ne upotrebljavaju se za neke domene koje je konfigurirao vaš administrator.</translation>
@@ -11999,6 +12000,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9207434080086272167">Sunčano</translation>
 <translation id="9207669213427469593">Ako pomaknete prozor na jednu stranu radi upotrebe podijeljenog zaslona, za drugu će se stranu prikazivati prijedlozi prozora</translation>
 <translation id="9209563766569767417">Provjera postavljanja Linuxovog spremnika</translation>
+<translation id="9212565256020141627">Dijeljenje slike s Geminijem nije uspjelo. Pokušajte ponovno ili upotrijebite drugu sliku.</translation>
 <translation id="9214520840402538427">Ups! Inicijalizacija atributa vremena instalacije istekla je. Obratite se predstavniku podrške.</translation>
 <translation id="9214695392875603905">Kolač</translation>
 <translation id="9215293857209265904">Dodano je proširenje "<ph name="EXTENSION_NAME" />"</translation>

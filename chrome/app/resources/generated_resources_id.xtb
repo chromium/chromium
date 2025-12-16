@@ -2218,6 +2218,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2476901513051581836">Tidak dapat mengosongkan penyimpanan hingga ukuran penyimpanan offline diketahui.</translation>
 <translation id="2476974672882258506">Matikan Windows untuk menguninstal <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Karena Anda menyiapkan beberapa tombol akses, pemindaian otomatis telah dinonaktifkan.</translation>
+<translation id="2477218554275525952">Biarkan sidebar Gemini tetap terbuka saat Anda membuka tab baru</translation>
 <translation id="2477607419416067650">Data Google lainnya</translation>
 <translation id="2478176599153288112">Izin File-Media untuk "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktifkan layanan pemulihan data.</translation>
@@ -2994,7 +2995,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3008142279736625920">Kue keju</translation>
 <translation id="3008272652534848354">Reset izin</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi hari ini untuk mendownload update. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}other{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi dan mendownload update sebelum batas waktu. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}}</translation>
-<translation id="3008923556848076408">Gemini akan terus mengerjakan tugas Anda</translation>
 <translation id="3008926075262837186">Baca dengan nyaman dengan gangguan minimal</translation>
 <translation id="3009178788565917040">Keluaran</translation>
 <translation id="3009352964623081324">Search + O, lalu S. Gunakan untuk menginstal, mengelola, dan menyesuaikan suara.</translation>
@@ -9719,6 +9719,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7676019765091965045">Deteksi sandi yang telah dibobol</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="7676867886086876795">Kirimkan suara Anda ke Google untuk memungkinkan pengetikan dengan suara ke kolom teks.</translation>
+<translation id="7678198209643823714">Hapus <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Reset semua izin perangkat USB?</translation>
 <translation id="7679171213002716280">Ada <ph name="PRINTER_COUNT" /> printer terkelola.</translation>
 <translation id="7679895819123160382">Mempersulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. <ph name="PRODUCT_NAME" /> menggunakan koneksi aman untuk mencari alamat IP situs di DNS (Domain Name System). Koneksi aman tidak digunakan untuk beberapa domain yang dikonfigurasi oleh administrator Anda.</translation>
@@ -12008,6 +12009,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9207434080086272167">Cerah</translation>
 <translation id="9207669213427469593">Jika Anda memindahkan jendela ke satu sisi untuk menggunakan layar terpisah, Anda akan melihat saran jendela untuk sisi lainnya</translation>
 <translation id="9209563766569767417">Memeriksa penyiapan container Linux</translation>
+<translation id="9212565256020141627">Tidak dapat membagikan gambar ke Gemini. Coba lagi atau gunakan gambar lain.</translation>
 <translation id="9214520840402538427">Uups!  Waktu pemulaian atribut waktu pemasangan telah habis.  Hubungi perwakilan dukungan Anda.</translation>
 <translation id="9214695392875603905">Kue mangkok</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambahkan</translation>

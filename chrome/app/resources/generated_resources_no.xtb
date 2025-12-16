@@ -2212,6 +2212,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2476901513051581836">Kan ikke frigjøre lagringsplass før vi vet størrelsen på lagringsplassen uten nett.</translation>
 <translation id="2476974672882258506">Slå av Windows for å avinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Siden du har konfigurert flere brytere, er automatisk skanning slått av.</translation>
+<translation id="2477218554275525952">Hold Gemini-sidefeltet åpent når du åpner en ny fane</translation>
 <translation id="2477607419416067650">Andre Google-data</translation>
 <translation id="2478176599153288112">Mediafilrettigheter for «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
@@ -2988,7 +2989,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3008142279736625920">Ostekake</translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
-<translation id="3008923556848076408">Gemini fortsetter å jobbe med oppgaven</translation>
 <translation id="3008926075262837186">Les komfortabelt med færrest mulig forstyrrelser</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009352964623081324">Søk + O og deretter S. Bruk for å installere, administrere og tilpasse stemmer.</translation>
@@ -9709,6 +9709,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7676019765091965045">Oppdagelse av passord utsatt for sikkerhetsbrudd</translation>
 <translation id="7676119992609591770">Fant <ph name="NUM" /> fane for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="7676867886086876795">Send stemmen din til Google for å tillate diktat til hvilket som helst tekstfelt.</translation>
+<translation id="7678198209643823714">Fjern <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Vil du tilbakestille alle USB-enhetstillatelser?</translation>
 <translation id="7679171213002716280">Det er <ph name="PRINTER_COUNT" /> administrerte skrivere.</translation>
 <translation id="7679895819123160382">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. <ph name="PRODUCT_NAME" /> bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System). Sikre tilkoblinger brukes ikke for enkelte domener som er konfigurert av administratoren din.</translation>
@@ -11998,6 +11999,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9207434080086272167">Sol</translation>
 <translation id="9207669213427469593">Hvis du fester et vindu til den ene siden for å bruke delt skjerm, får du se forslag til vinduer på den andre siden</translation>
 <translation id="9209563766569767417">Sjekker konfigurasjonen av Linux-beholderen</translation>
+<translation id="9212565256020141627">Kunne ikke dele bildet med Gemini. Prøv på nytt, eller velg et annet bilde.</translation>
 <translation id="9214520840402538427">Beklager. Oppstarten av attributtene for installasjonstid er tidsavbrutt. Ta kontakt med brukerstøtterepresentanten din.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ble lagt til</translation>

@@ -2218,6 +2218,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2476901513051581836">Không thể giải phóng bộ nhớ chừng nào chưa xác định được dung lượng bộ nhớ ngoại tuyến.</translation>
 <translation id="2476974672882258506">Hãy tắt Windows để gỡ cài đặt <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Vì bạn thiết lập nhiều công tắc, hệ thống đã tắt tính năng tự động quét.</translation>
+<translation id="2477218554275525952">Vẫn mở thanh bên Gemini khi bạn mở một thẻ mới</translation>
 <translation id="2477607419416067650">Dữ liệu khác trên Google</translation>
 <translation id="2478176599153288112">Quyền của tệp phương tiện cho "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Bật dịch vụ khôi phục dữ liệu.</translation>
@@ -2994,7 +2995,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3008142279736625920">Bánh phô mai</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}}</translation>
-<translation id="3008923556848076408">Gemini sẽ tiếp tục xử lý yêu cầu của bạn</translation>
 <translation id="3008926075262837186">Đọc thuận tiện hơn và ít bị phân tâm</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3009352964623081324">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn S. Dùng để cài đặt, quản lý và tùy chỉnh giọng nói.</translation>
@@ -8874,7 +8874,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7088960765736518739">Tiếp cận bằng công tắc</translation>
 <translation id="7089253021944603172">Thẻ hoạt động trở lại</translation>
 <translation id="7090714929377281710">Tự động tắt điểm phát sóng</translation>
-<translation id="7092452922791061650">Nhấp chuột phải vào thẻ này rồi chọn "Chế độ xem phân tách mới với thẻ hiện tại"</translation>
+<translation id="7092452922791061650">Nhấp chuột phải vào thẻ này rồi chọn "Màn hình chia đôi mới với thẻ hiện tại"</translation>
 <translation id="7092504544229909737">Không dùng được với ứng dụng Android</translation>
 <translation id="7093220653036489319">Thông tin nhanh</translation>
 <translation id="7093866338626856921">Trao đổi dữ liệu với thiết bị có tên: <ph name="HOSTNAMES" /></translation>
@@ -9576,7 +9576,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7586498138629385861">Chrome sẽ tiếp tục chạy khi ứng dụng Chrome đang mở.</translation>
 <translation id="7587297195142686341">Gemini có thể đăng nhập thay bạn</translation>
 <translation id="7587806318633605613">Nhật ký đề xuất</translation>
-<translation id="7589448773774086276">Chế độ xem phân tách mới với thẻ hiện tại</translation>
+<translation id="7589448773774086276">Màn hình chia đôi mới với thẻ hiện tại</translation>
 <translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7592060599656252486">Một vài</translation>
@@ -9722,6 +9722,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7676019765091965045">Phát hiện mật khẩu bị lộ</translation>
 <translation id="7676119992609591770">Đã tìm thấy <ph name="NUM" /> thẻ cho "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Gửi giọng nói của bạn tới Google để cho phép nhập bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
+<translation id="7678198209643823714">Xoá <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Đặt lại tất cả các quyền của thiết bị USB?</translation>
 <translation id="7679171213002716280">Có <ph name="PRINTER_COUNT" /> máy in được quản lý.</translation>
 <translation id="7679895819123160382">Giữ kín danh sách các trang web bạn truy cập sao cho những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được hơn. <ph name="PRODUCT_NAME" /> dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền). Không sử dụng kết nối bảo mật cho một số miền do quản trị viên của bạn định cấu hình.</translation>
@@ -12011,6 +12012,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9207434080086272167">Có nắng</translation>
 <translation id="9207669213427469593">Nếu di chuyển một cửa sổ sang một bên để sử dụng chế độ chia đôi màn hình, bạn sẽ được đề xuất cửa sổ cho bên còn lại</translation>
 <translation id="9209563766569767417">Đang kiểm tra quá trình thiết lập vùng chứa Linux</translation>
+<translation id="9212565256020141627">Không chia sẻ được hình ảnh với Gemini. Hãy thử lại hoặc thử dùng một hình ảnh khác.</translation>
 <translation id="9214520840402538427">Rất tiếc! Việc chạy thuộc tính thời gian cài đặt đã hết thời gian. Vui lòng liên hệ với người đại diện hỗ trợ của bạn.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">Đã thêm "<ph name="EXTENSION_NAME" />"</translation>

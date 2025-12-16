@@ -6363,34 +6363,6 @@ https://drafts.csswg.org/css-viewport/#zoom-property
 
 Если правило отключено, историю браузера и список скачанных файлов удалить нельзя. Даже если это правило отключено, история браузера и список скачанных файлов могут не сохраниться. Пользователи могут самостоятельно изменить или удалить файлы истории, браузер может устареть, а элементы истории могут быть перемещены в архив в любое время.</translation>
 <translation id="5322649594584715998">Полная зарядка батареи в обычном режиме. В этом случае адаптивная и ограниченная зарядка отключаются.</translation>
-<translation id="5322726025747768984">Правило настраивает алгоритмы выбора прокси-сервера в зависимости от целевого URL и других условий. Оно имеет приоритет над настройками прокси-сервера, заданными в правиле <ph name="PROXY_SETTINGS_POLICY_NAME" />, через API расширения <ph name="PROXY_SETTINGS_EXTENSION_API" /> или вручную пользователем.
-
-Если правило не настроено, это не повлияет на другие параметры прокси-сервера и пользовательские настройки.
-
-Когда браузер выбирает прокси-сервер, записи правила <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> оцениваются последовательно, пока не будут удовлетворены все условия ниже:
-  * Найдено совпадение хотя бы с одним из шаблонов URL в правиле <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-  * Не найдено совпадение ни с одним из шаблонов URL в правиле <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
-  * Если указан параметр <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> и его значением является непустой список, выполняются все условия, представленные его записями.
-При совпадении в качестве прокси-сервера будет использоваться значение поля <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />. Если совпадений не найдено, будут применены настройки прокси-сервера, заданные в правиле <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Шаблоны URL, поддерживаемые правилами <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> и <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />, указаны на странице https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Записи в поле <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> соответствуют строковым значениям файлов PAC, например:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-В качестве прокси-сервера можно также использовать спецификаторы прокси, похожие на URL, например:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-В качестве прокси-сервера будет использоваться первая доступная запись в списке. Недопустимые записи в списке игнорируются.
-
-В поле <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> содержится список условий, которые необходимо выполнить, чтобы для выбора прокси-сервера использовалось правило переопределения. Если правило не настроено, но есть совпадение хотя бы с одним хостом в <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />, запись будет использоваться.
-
-Условие <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> проверяет, может ли указанный DNS-сервер (<ph name="PROXY_OVERRIDE_RULES_HOST" />) преобразовать имя хоста в IP-адрес. Если для параметра <ph name="PROXY_OVERRIDE_RULES_RESULT" /> указано значение <ph name="PROXY_OVERRIDE_RULES_RESOLVED" />, условие считается выполненным. Если вместо этого указано значение <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, условие считается выполненным, когда преобразование невозможно.</translation>
 <translation id="5323200200131319468">Включить озвучивание текста на экране входа</translation>
 <translation id="5323271643727095577">Не показывать диалоговое окно для отмены при вызове функции event.preventDefault() для события beforeunload. Показывать диалоговое окно для отмены, когда в значении event.returnValue для события beforeunload указана пустая строка.</translation>
 <translation id="5324430722441910403">Настройки поиска по сайту</translation>

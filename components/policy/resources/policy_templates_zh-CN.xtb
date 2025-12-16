@@ -6310,34 +6310,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 
 如果此政策已停用，系统将无法删除浏览器历史记录和下载记录。即使此政策停用，浏览和下载记录也不一定会保留。用户可能能够直接修改或删除历史记录数据库文件，而且浏览器本身也可能会随时将任意或所有历史记录项设为失效或进行归档。</translation>
 <translation id="5322649594584715998">以标准速率将电池充满。此模式会停用自动调节充电和受限充电模式。</translation>
-<translation id="5322726025747768984">设置此政策会配置一系列规则，根据目标网址和其他条件来选择浏览器使用的代理。此政策优先于您通过 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 扩展程序 API 或手动用户设置指定的任何代理设置。
-
-如果您未设置此政策，则其他代理政策或用户设置不会受到影响。
-
-当浏览器需要决定使用哪个代理时，系统会按顺序评估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的条目，直到有条目满足以下所有条件为止：
-  * 与 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中的至少 1 个网址格式匹配。
-  * 与 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 中的所有网址格式都不匹配。
-  * 符合由 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />（如果已指定为一个非空列表）的条目表示的所有条件。
-如果找到匹配项，<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 中的值将用作代理。如果未找到匹配项，则代理设置将回退到 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策中的设置。
-
-<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 和 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 支持的网址格式都记录在这里：https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns。
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 字段条目对应于 PAC 文件的字符串值，例如：
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-或者，您也可以直接使用与网址类似的代理说明符来指定代理，例如：
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-列表中第一个可连接的条目将用作代理。系统会忽略列表中的无效条目。
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 字段包含一系列条件，只有满足所有这些条件，系统才会使用其替换规则来决定要使用的代理。如果未设置该字段，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中至少有 1 个匹配的主机，系统就会使用相应条目。
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 条件会检查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> 是否能够解析为 IP 地址。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值为“<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />”，则视为满足条件。如果该值设为 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，则当解析失败时，系统会认为已满足条件。</translation>
 <translation id="5323200200131319468">在登录屏幕上启用语音反馈</translation>
 <translation id="5323271643727095577">针对 beforeunload 事件调用 event.preventDefault() 时不显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，显示取消对话框。</translation>
 <translation id="5324430722441910403">网站搜索设置</translation>

@@ -2204,6 +2204,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2476901513051581836">Non se pode liberar espazo de almacenamento mentres non se saiba o tamaño do almacenamento sen conexión.</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, pecha Windows.</translation>
 <translation id="2477065602824695373">Como configuraches varios interruptores, desactivouse a función de exploración automática.</translation>
+<translation id="2477218554275525952">Mantén aberta a barra lateral de Gemini cando abras unha pestana nova</translation>
 <translation id="2477607419416067650">Outros datos de Google</translation>
 <translation id="2478176599153288112">Permisos de ficheiros multimedia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activar servizo de recuperación de datos.</translation>
@@ -2980,7 +2981,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3008142279736625920">Torta de queixo</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
-<translation id="3008923556848076408">Gemini seguirá traballando na túa tarefa</translation>
 <translation id="3008926075262837186">Le comodamente con poucas distraccións</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>
@@ -9705,6 +9705,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7676019765091965045">Detección de contrasinais vulnerados</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestana atopada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía a túa voz a Google para utilizar o ditado en calquera campo de texto.</translation>
+<translation id="7678198209643823714">Quitar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Queres restablecer os permisos de todos os dispositivos USB?</translation>
 <translation id="7679171213002716280">Hai <ph name="PRINTER_COUNT" /> impresoras xestionadas.</translation>
 <translation id="7679895819123160382">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. <ph name="PRODUCT_NAME" /> usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios). As conexións seguras non se usan para algúns dominios configurados pola persoa administradora.</translation>
@@ -11993,6 +11994,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9207434080086272167">Alegre</translation>
 <translation id="9207669213427469593">Se axustas a ventá nun lado para usar a pantalla dividida, verás suxestións de ventás para o outro lado</translation>
 <translation id="9209563766569767417">Comprobando configuración do contedor de Linux</translation>
+<translation id="9212565256020141627">Non se puido compartir a imaxe con Gemini. Téntao de novo ou proba con outra imaxe.</translation>
 <translation id="9214520840402538427">Esgotouse o tempo de inicio dos atributos de tempo de instalación. Ponte en contacto co representante do servizo de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">Engadiuse "<ph name="EXTENSION_NAME" />"</translation>

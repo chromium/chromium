@@ -2217,6 +2217,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2476901513051581836">Nem lehet tárhelyet felszabadítani, amíg nem ismert az offline tárhely mérete.</translation>
 <translation id="2476974672882258506">Állítsa le a Windows VM-et a(z) <ph name="PARALLELS_DESKTOP" /> eltávolításához.</translation>
 <translation id="2477065602824695373">Mivel több kapcsolót is beállított, az automatikus keresést kikapcsolta a rendszer.</translation>
+<translation id="2477218554275525952">Maradjon megnyitva a Gemini oldalsávja új lap megnyitásakor</translation>
 <translation id="2477607419416067650">Egyéb Google-adatok</translation>
 <translation id="2478176599153288112">Médiafájl-engedélyek a következőnek: „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Adat-helyreállítási szolgáltatás engedélyezése.</translation>
@@ -2993,7 +2994,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3008142279736625920">Sajttorta</translation>
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével a mai napon Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ebben az esetben a szolgáltató díjat számíthat fel).}other{A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést a határidő előtt. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ebben az esetben a szolgáltató díjat számíthat fel).}}</translation>
-<translation id="3008923556848076408">A Gemini folytatja a feladat végrehajtását</translation>
 <translation id="3008926075262837186">Kényelmesen olvashat minimális zavaró tényezőkkel</translation>
 <translation id="3009178788565917040">Kimenet</translation>
 <translation id="3009352964623081324">Keresés + O, majd S. Használja a hangok telepítéséhez, kezeléséhez és személyre szabásához.</translation>
@@ -9718,6 +9718,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7676019765091965045">Illetéktelen kezekbe került jelszavak észlelése</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> lap található a következőre: „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">A hangjának elküldése a Google számára, hogy bármely szövegmezőbe diktálhasson.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> eltávolítása</translation>
 <translation id="7678588695732963732">Visszaállítja az összes USB-eszközengedélyt?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> kezelt nyomtató van.</translation>
 <translation id="7679895819123160382">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A(z) <ph name="PRODUCT_NAME" /> biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez. A biztonságos kapcsolatok nem használhatók a rendszergazda által konfigurált egyes domaineknél.</translation>
@@ -12007,6 +12008,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9207434080086272167">Napos</translation>
 <translation id="9207669213427469593">Ha az ablakot az egyik oldalra rakja az osztott képernyő használatához, a másik oldalra vonatkozó ablakjavaslatokat fog látni.</translation>
 <translation id="9209563766569767417">Linux-tároló beállításainak ellenőrzése</translation>
+<translation id="9212565256020141627">Nem sikerült megosztani a képet a Geminivel. Próbálja meg újra, vagy próbálkozzon másik képpel.</translation>
 <translation id="9214520840402538427">Hoppá! A telepítés alatti attribútumok inicializálásakor időtúllépés történt. Kérjük, lépjen kapcsolatba az ügyfélszolgálattal.</translation>
 <translation id="9214695392875603905">Muffin</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />” hozzáadva</translation>

@@ -2219,6 +2219,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2476901513051581836">Ayikwazi ukuhlanza isitoreji kuze kube yilapho usayizi wesitoreji esingaxhunyiwe ku-inthanethi waziwa.</translation>
 <translation id="2476974672882258506">Vala i-Windows ukuze ukhiphe i-<ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Njengoba usetha amaswishi amaningi, ukuskena okuzenzakalelayo kuvaliwe.</translation>
+<translation id="2477218554275525952">Gcina ibha eseceleni yeGemini ivuliwe uma uvula ithebhu entsha</translation>
 <translation id="2477607419416067650">Enye idatha yeGoogle</translation>
 <translation id="2478176599153288112">Izimvume zefayela lemidiya le-"<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Nika amandla isevisi yokuthola idatha.</translation>
@@ -2995,7 +2996,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3008142279736625920">ICheesecake</translation>
 <translation id="3008272652534848354">Setha kabusha izimvume</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{I-<ph name="MANAGER" /> idinga ukuthi uxhumeke ku-Wi-Fi namuhla ukuze ulande isibuyekezo. Noma, ulande ngokuxhuma okwenziwe imitha (kungaba nezinkokhelo).}one{I-<ph name="MANAGER" /> idinga ukuthi uxhume ku-Wi-Fi bese ulanda isibuyekezo ngaphambi kwesikhathi esimisiwe. Noma, ulande ngokuxhuma okwenziwe imitha (kungaba nezinkokhelo).}other{I-<ph name="MANAGER" /> idinga ukuthi uxhume ku-Wi-Fi bese ulanda isibuyekezo ngaphambi kwesikhathi esimisiwe. Noma, ulande ngokuxhuma okwenziwe imitha (kungaba nezinkokhelo).}}</translation>
-<translation id="3008923556848076408">IGemini izoqhubeka nomsebenzi wakho</translation>
 <translation id="3008926075262837186">Funda ngokunethezeka ngokuphazamiseka okuncane</translation>
 <translation id="3009178788565917040">Okukhiphayo</translation>
 <translation id="3009352964623081324">Sesha + O, bese u-S. Kusebenzisele ukufaka, ukuphatha, nokwenza amazwi ngokwezifiso.</translation>
@@ -9722,6 +9722,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7676019765091965045">Ukutholwa kwephasiwedi eyonakalisiwe</translation>
 <translation id="7676119992609591770">Kutholakale Amathebhu angu-<ph name="NUM" /> we-'<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Thumela izwi lakho ku-Google ukuze uvumele ukutholwa kunoma iyiphi inkambu yombhalo.</translation>
+<translation id="7678198209643823714">Susa i-<ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Setha kabusha zonke izimvume zedivayisi ye-USB?</translation>
 <translation id="7679171213002716280">Kukhona amaphrinta angu-<ph name="PRINTER_COUNT" /> aphethwe.</translation>
 <translation id="7679895819123160382">Kwenze kube nzima kubantu abanokufinyelela kuthrafikhi yakho ye-inthanethi ukuze babone ukuthi imaphi amasayithi owavakashelayo. I-<ph name="PRODUCT_NAME" /> isebenzisa ukuxhuma okuvikelekile ukuze ibheke ikheli lasesizindeni se-inthanethi lesayithi ku-DNS (Isistimu Yokwetha Isizinda). Ukuxhuma okuvikelekile akusetshenziswa kwezinye izizinda ezilungiselelwe umlawuli wakho.</translation>
@@ -12011,6 +12012,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9207434080086272167">Kunelanga</translation>
 <translation id="9207669213427469593">Uma uthwebula iwindi ohlangothini olulodwa ukuze usebenzise ukuhlukanisa isikrini, uzobona iziphakamiso zewindi kolunye uhlangothi</translation>
 <translation id="9209563766569767417">Kuhlola isiqukathi sokusetha se-Linux</translation>
+<translation id="9212565256020141627">Ayikwazanga ukwabelana ngesithombe neGemini. Zama futhi noma uzame esinye isithombe.</translation>
 <translation id="9214520840402538427">Eshu! Ukuqaliswa kwezichasiso zesikhathi sokufakwa kuphelelwe yisikhathi. Sicela uxhumane nabaqokelwe ukumela abanye bakho bosekelo.</translation>
 <translation id="9214695392875603905">I-Cupcake</translation>
 <translation id="9215293857209265904">I-"<ph name="EXTENSION_NAME" />" ingeziwe</translation>

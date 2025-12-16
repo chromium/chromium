@@ -2217,6 +2217,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2476901513051581836">Nje moguće obrisati pohranu dok veličina offline pohrane ne bude poznata.</translation>
 <translation id="2476974672882258506">Isključite Windows da deinstalirate <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Pošto ste postavili više prekidača, automatsko skeniranje je isključeno.</translation>
+<translation id="2477218554275525952">Ostavi bočnu traku Geminija otvorenom prilikom otvaranja nove kartice</translation>
 <translation id="2477607419416067650">Drugi Google podaci</translation>
 <translation id="2478176599153288112">Odobrenja medijskog fajla za ekstenziju "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Omogućite uslugu za oporavak podataka.</translation>
@@ -2993,7 +2994,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3008142279736625920">Torta sa sirom</translation>
 <translation id="3008272652534848354">Poništi odobrenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> zahtijeva da se danas povežete s WiFi mrežom radi preuzimanja ažuriranja. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}one{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}few{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}other{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}}</translation>
-<translation id="3008923556848076408">Gemini će nastaviti raditi na vašem zadatku</translation>
 <translation id="3008926075262837186">Čitajte udobno uz minimalna ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Tipka za pretraživanje + O, a zatim S. Koristite da instalirate, upravljate i prilagodite glasove.</translation>
@@ -9723,6 +9723,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7676019765091965045">Otkrivanje ugroženih lozinki</translation>
 <translation id="7676119992609591770">Za upit "<ph name="SEARCH_TEXT" />" je pronađen sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Pošaljite Googleu svoj glas da dozvolite diktiranje u bilo koje tekstualno polje.</translation>
+<translation id="7678198209643823714">Uklanjanje prečice <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Poništiti sva odobrenja za USB uređaj?</translation>
 <translation id="7679171213002716280">Postoji sljedeći broj upravljanih štampača: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. <ph name="PRODUCT_NAME" /> koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistemu naziva domena). Sigurne veze se ne koriste za određene domene koje je administrator konfigurirao.</translation>
@@ -12014,6 +12015,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9207434080086272167">Sunčano</translation>
 <translation id="9207669213427469593">Ako pomaknete prozor na jednu stranu da koristite podijeljeni ekran, vidjet ćete prijedloge prozora za drugu stranu</translation>
 <translation id="9209563766569767417">Provjeravanje postavljanja Linux spremnika</translation>
+<translation id="9212565256020141627">Dijeljenje slike s Geminijem nije uspjelo. Pokušajte ponovo ili s drugom slikom.</translation>
 <translation id="9214520840402538427">Ups!  Pokretanje atributa za vrijeme instalacije je isteklo.  Obratite se predstavniku za podršku.</translation>
 <translation id="9214695392875603905">Kolačić</translation>
 <translation id="9215293857209265904">Dodana je ekstenzija "<ph name="EXTENSION_NAME" />"</translation>

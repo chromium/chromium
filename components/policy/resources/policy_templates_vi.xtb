@@ -6462,34 +6462,6 @@ Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</transl
 
 Khi bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ không thể xoá nhật ký duyệt web và nhật ký tải xuống. Ngay cả khi chính sách này bị tắt, không có gì đảm bảo rằng nhật ký duyệt web và nhật ký tải xuống sẽ được giữ lại. Người dùng có thể trực tiếp chỉnh sửa hoặc xoá các tệp cơ sở dữ liệu nhật ký. Ngoài ra, trình duyệt có thể tự hết hạn hoặc lưu trữ tất cả hay một số mục bất kỳ trong nhật ký tại bất kỳ thời điểm nào.</translation>
 <translation id="5322649594584715998">Sạc đầy pin ở tốc độ chuẩn. Khi chọn chế độ này, bạn sẽ không thể chọn chế độ sạc thích ứng và sạc giới hạn.</translation>
-<translation id="5322726025747768984">Nếu bạn đặt chính sách này, hệ thống sẽ định cấu hình các quy tắc chọn proxy mà trình duyệt sử dụng tuỳ thuộc vào URL của đích đến và các điều kiện khác. Chính sách này sẽ được ưu tiên hơn chế độ cài đặt proxy được thiết lập dựa vào chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />, API tiện ích <ph name="PROXY_SETTINGS_EXTENSION_API" /> hoặc chế độ cài đặt thủ công của người dùng (nếu có).
-
-Nếu bạn không đặt chính sách này, các chính sách proxy khác hoặc chế độ cài đặt của người dùng sẽ không bị ảnh hưởng.
-
-Khi trình duyệt cần xác định proxy nào sẽ được sử dụng, các mục trong chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sẽ được đánh giá theo trình tự cho đến khi một mục đáp ứng tất cả các điểm sau:
-  * Ít nhất một mẫu URL trong <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> trùng khớp.
-  * Không có mẫu URL nào trong <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> trùng khớp.
-  * Nếu bạn chỉ định <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> và đó là một danh sách không trống, thì tất cả các điều kiện được thể hiện bằng các mục trong danh sách đó đều được đáp ứng.
-Giá trị trong <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> sẽ được dùng làm proxy cho trường hợp trùng khớp đó. Nếu không tìm thấy kết quả trùng khớp, chế độ cài đặt proxy sẽ chuyển về chế độ cài đặt trong chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Các mẫu URL mà <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> và <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> hỗ trợ được nêu tại https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Các mục trong trường <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> tương ứng với các giá trị dạng chuỗi trong tệp PAC, chẳng hạn như:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Ngoài ra, bạn có thể sử dụng trực tiếp các thông số proxy dạng URL để chỉ định proxy, chẳng hạn như:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-Mục đầu tiên có thể truy cập trong danh sách sẽ được dùng làm proxy. Các mục không hợp lệ trong danh sách sẽ bị bỏ qua.
-
-Trường <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> chứa một danh sách các điều kiện mà tất cả đều phải được đáp ứng thì quy tắc ghi đè tương ứng mới được dùng để xác định proxy nào sẽ được sử dụng. Nếu bạn không đặt trường này, mục này sẽ được sử dụng miễn là có ít nhất một máy chủ lưu trữ trong <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> trùng khớp.
-
-Điều kiện <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> kiểm tra xem <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS được cung cấp có thể phân giải thành một địa chỉ IP hay không. Nếu giá trị của <ph name="PROXY_OVERRIDE_RULES_RESULT" /> là "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", điều kiện sẽ được coi là đã được đáp ứng. Nếu bạn đặt giá trị thành <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, điều kiện sẽ được coi là đã được đáp ứng nếu quá trình phân giải không thành công.</translation>
 <translation id="5323200200131319468">Bật tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="5323271643727095577">Không hiện hộp thoại huỷ khi có lệnh gọi event.preventDefault() cho sự kiện beforeunload. Hiện hộp thoại huỷ khi event.returnValue cho sự kiện beforeunload là chuỗi trống.</translation>
 <translation id="5324430722441910403">Cài đặt tìm kiếm trên trang web</translation>

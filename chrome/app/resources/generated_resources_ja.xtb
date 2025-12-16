@@ -2977,7 +2977,6 @@
 <translation id="3008142279736625920">チーズケーキ</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
-<translation id="3008923556848076408">Gemini はタスクの処理を続行します</translation>
 <translation id="3008926075262837186">気が散る要因を減らして読みやすくします</translation>
 <translation id="3009178788565917040">出力</translation>
 <translation id="3009352964623081324">検索+O の後、S キーを押します。音声のインストール、管理、カスタマイズを行います。</translation>
@@ -9691,6 +9690,7 @@
 <translation id="7676019765091965045">不正使用されたパスワードの検出</translation>
 <translation id="7676119992609591770">「<ph name="SEARCH_TEXT" />」に該当するタブが <ph name="NUM" /> 個見つかりました</translation>
 <translation id="7676867886086876795">テキスト欄で音声入力できるように Google に音声を送信します。</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> を削除</translation>
 <translation id="7678588695732963732">USB デバイスの権限をすべてリセットしますか？</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> 件の管理対象プリンタがあります。</translation>
 <translation id="7679895819123160382">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。<ph name="PRODUCT_NAME" /> では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。安全な接続は、管理者が構成した一部のドメインでは使用されません。</translation>
@@ -11979,6 +11979,7 @@
 <translation id="9207434080086272167">快活</translation>
 <translation id="9207669213427469593">ウィンドウを片側にスナップして分割画面を使うと、反対側のウィンドウ候補が表示されます</translation>
 <translation id="9209563766569767417">Linux コンテナの設定を確認しています</translation>
+<translation id="9212565256020141627">画像を Gemini と共有できませんでした。もう一度お試しいただくか、別の画像をお試しください。</translation>
 <translation id="9214520840402538427">installation-time 属性の初期化がタイムアウトしました。サポート担当者にお問い合わせください。</translation>
 <translation id="9214695392875603905">カップケーキ</translation>
 <translation id="9215293857209265904">「<ph name="EXTENSION_NAME" />」が追加されました</translation>

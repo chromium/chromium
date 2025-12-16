@@ -6463,34 +6463,6 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 
 Se la policy viene impostata su Disattivata, la cronologia di navigazione e quella dei download non possono essere eliminate. Non è garantita la memorizzazione della cronologia di navigazione e di quella dei download, anche se questa policy viene disattivata. Gli utenti potrebbero essere in grado di modificare o eliminare direttamente i file dei database delle cronologie e il browser stesso potrebbe far scadere o archiviare una o tutte le voci delle cronologie in qualsiasi momento.</translation>
 <translation id="5322649594584715998">Carica completamente la batteria con la modalità standard. Questa modalità disattiva le ricariche adattiva e limitata.</translation>
-<translation id="5322726025747768984">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
-
-Se non viene configurata, la policy non influisce su altre policy del proxy o impostazioni utente.
-
-Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non soddisfa tutti i seguenti punti:
-  * Almeno uno dei pattern URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
-  * Nessuno dei pattern URL in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> corrisponde.
-  * Se <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> è specificato ed è un elenco non vuoto, tutte le condizioni rappresentate dalle relative voci sono soddisfatte.
-Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-I pattern URL supportati da <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> sono documentati all'indirizzo https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corrispondono a valori stringa dei file PAC, ad esempio:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-In alternativa, è possibile utilizzare direttamente identificatori proxy simili a URL per specificare il proxy, ad esempio:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-La prima voce raggiungibile nell'elenco verrà utilizzata come proxy. Le voci non valide nell'elenco verranno ignorate.
-
-Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
-
-La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>

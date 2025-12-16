@@ -2206,6 +2206,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2476901513051581836">Impossible de nettoyer l'espace de stockage tant que la taille de l'espace de stockage hors connexion n'est pas connue.</translation>
 <translation id="2476974672882258506">Arrêtez la VM Windows pour désinstaller <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">L'exploration automatique a été désactivée, car vous avez configuré plusieurs contacteurs.</translation>
+<translation id="2477218554275525952">Laisser la barre latérale Gemini ouverte lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="2477607419416067650">Autres données Google</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
@@ -2982,7 +2983,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi aujourd'hui afin de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}one{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}other{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}}</translation>
-<translation id="3008923556848076408">Gemini continuera à travailler sur votre tâche</translation>
 <translation id="3008926075262837186">Lisez confortablement avec un minimum de distractions</translation>
 <translation id="3009178788565917040">Sortie</translation>
 <translation id="3009352964623081324">Utilisez la touche Recherche+O puis S pour installer, gérer et personnaliser les voix.</translation>
@@ -9707,6 +9707,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7676019765091965045">Détection des mots de passe compromis</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> onglet trouvé pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Transmettez votre voix à Google pour pouvoir dicter ce que vous voulez dans n'importe quelle zone de texte.</translation>
+<translation id="7678198209643823714">Supprimer <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Réinitialiser toutes les autorisations de périphérique USB ?</translation>
 <translation id="7679171213002716280">Il y a <ph name="PRINTER_COUNT" /> imprimantes gérées.</translation>
 <translation id="7679895819123160382">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. <ph name="PRODUCT_NAME" /> utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS). Les connexions sécurisées ne sont pas utilisées pour certains domaines configurés par votre administrateur.</translation>
@@ -11997,6 +11998,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9207434080086272167">Ensoleillé</translation>
 <translation id="9207669213427469593">Si vous ancrez une fenêtre d'un côté pour utiliser l'écran partagé, vous verrez des suggestions de fenêtres pour l'autre côté</translation>
 <translation id="9209563766569767417">Vérification de la configuration du conteneur Linux…</translation>
+<translation id="9212565256020141627">Impossible de partager l'image avec Gemini. Réessayez ou utilisez une autre image.</translation>
 <translation id="9214520840402538427">Petit problème… Le délai alloué à l'initialisation des attributs de temps d'installation a expiré. Veuillez contacter le service d'assistance.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ajoutée</translation>

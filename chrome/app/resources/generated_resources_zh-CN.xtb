@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作地点</translation>
+<translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -2198,6 +2198,7 @@
 <translation id="2476901513051581836">在知道离线存储空间大小之前，无法清理存储空间。</translation>
 <translation id="2476974672882258506">请关闭 Windows 以卸载 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
+<translation id="2477218554275525952">打开新标签页时保持 Gemini 边栏处于打开状态</translation>
 <translation id="2477607419416067650">其他 Google 数据</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
@@ -2973,7 +2974,6 @@
 <translation id="3008142279736625920">奶酪蛋糕</translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}other{<ph name="MANAGER" /> 要求您在截止日期前连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}}</translation>
-<translation id="3008923556848076408">Gemini 将继续处理您的任务</translation>
 <translation id="3008926075262837186">尽可能减少干扰，舒适阅读</translation>
 <translation id="3009178788565917040">输出</translation>
 <translation id="3009352964623081324">搜索键 + O，然后按 S。用于安装、管理和自定义语音功能。</translation>
@@ -9691,6 +9691,7 @@
 <translation id="7676019765091965045">密码泄露检测</translation>
 <translation id="7676119992609591770">找到了 <ph name="NUM" /> 个与“<ph name="SEARCH_TEXT" />”相符的标签页</translation>
 <translation id="7676867886086876795">将您的语音内容发送给 Google，以便能向任何文本字段输入语音内容。</translation>
+<translation id="7678198209643823714">移除“<ph name="SHORTCUT_TITLE" />”</translation>
 <translation id="7678588695732963732">重置所有 USB 设备权限？</translation>
 <translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 台受管理的打印机。</translation>
 <translation id="7679895819123160382">让对您的网络流量有访问权限的用户更难看到您访问的网站。<ph name="PRODUCT_NAME" /> 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。由您的管理员配置的某些网域不会使用安全连接。</translation>
@@ -11980,6 +11981,7 @@
 <translation id="9207434080086272167">晴朗</translation>
 <translation id="9207669213427469593">将窗口移至一侧，即可使用分屏。此时，系统会在另一侧显示窗口建议</translation>
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
+<translation id="9212565256020141627">无法与 Gemini 分享图片。请重试或使用其他图片。</translation>
 <translation id="9214520840402538427">糟糕！安装时间属性的初始化已过期，请与您的支持代表联系。</translation>
 <translation id="9214695392875603905">纸杯蛋糕</translation>
 <translation id="9215293857209265904">已添加“<ph name="EXTENSION_NAME" />”</translation>

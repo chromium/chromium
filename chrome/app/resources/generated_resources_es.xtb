@@ -2206,6 +2206,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2476901513051581836">No se puede liberar espacio de almacenamiento hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2476974672882258506">Apaga Windows para desinstalar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Como has configurado varios interruptores, se ha desactivado la búsqueda automática.</translation>
+<translation id="2477218554275525952">Mantener abierta la barra lateral de Gemini al abrir una pestaña nueva</translation>
 <translation id="2477607419416067650">Otros datos de Google</translation>
 <translation id="2478176599153288112">Permisos de archivos multimedia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Habilitar el servicio de recuperación de datos.</translation>
@@ -2982,7 +2983,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3008142279736625920">Tarta de queso</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi hoy para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}}</translation>
-<translation id="3008923556848076408">Gemini seguirá trabajando en tu tarea</translation>
 <translation id="3008926075262837186">Lee cómodamente y con las mínimas distracciones</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, después, S. Se usa para instalar, gestionar y personalizar voces.</translation>
@@ -9705,6 +9705,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7676019765091965045">Detección de contraseñas vulneradas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestaña encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para utilizar el dictado en cualquier campo de texto.</translation>
+<translation id="7678198209643823714">Quitar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">¿Restablecer todos los permisos del dispositivo USB?</translation>
 <translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras gestionadas.</translation>
 <translation id="7679895819123160382">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Algunos dominios que ha configurado tu administrador no usan conexiones seguras.</translation>
@@ -11994,6 +11995,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9207434080086272167">Soleado</translation>
 <translation id="9207669213427469593">Si acoplas una ventana a un lado para usar la pantalla dividida, verás sugerencias de ventanas para el otro lado</translation>
 <translation id="9209563766569767417">Comprobando la configuración del contenedor de Linux</translation>
+<translation id="9212565256020141627">No se ha podido compartir la imagen con Gemini. Vuelve a intentarlo o prueba con otra imagen.</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Ponte en contacto con el representante del servicio de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" añadida</translation>

@@ -2219,6 +2219,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2476901513051581836">Ekki er hægt að hreinsa upp geymslurými fyrr en stærð geymslurýmis án nettengingar er þekkt.</translation>
 <translation id="2476974672882258506">Lokaðu Windows til að fjarlægja <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Slökkt var á sjálfvirkri skönnun vegna þess að þú hefur sett upp marga rofa.</translation>
+<translation id="2477218554275525952">Haltu Gemini-hliðarstikunni opinni þegar þú opnar nýjan flipa</translation>
 <translation id="2477607419416067650">Önnur Google-gögn</translation>
 <translation id="2478176599153288112">Heimildir margmiðlunarskráa fyrir „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Kveikja á þjónustu fyrir endurheimt gagna.</translation>
@@ -2995,7 +2996,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3008142279736625920">Ostakaka</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi í dag til að sækja uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}one{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}other{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}}</translation>
-<translation id="3008923556848076408">Gemini mun halda áfram að vinna í verkefninu</translation>
 <translation id="3008926075262837186">Lestu á þægilegan hátt með lágmarkstruflunum</translation>
 <translation id="3009178788565917040">Úttak</translation>
 <translation id="3009352964623081324">Leita + O og svo S. Notað til að setja upp, stjórna og sérstilla raddir.</translation>
@@ -9722,6 +9722,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7676019765091965045">Greining á aðgangsorðum í hættu</translation>
 <translation id="7676119992609591770">Fann <ph name="NUM" /> flipa fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Sendu rödd þína til Google til að bjóða upp á upplestur fyrir hvaða textareit sem er.</translation>
+<translation id="7678198209643823714">Fjarlægja <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Endurstilla allar heimildir USB-tækja?</translation>
 <translation id="7679171213002716280">Hér eru <ph name="PRINTER_COUNT" /> prentarar sem er stjórnað.</translation>
 <translation id="7679895819123160382">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. <ph name="PRODUCT_NAME" /> notar örugga tengingu til að finna IP-tölu vefsvæðis í nafnakerfi léna (DNS). Öruggar tengingar eru ekki notaðar fyrir sum lén sem kerfisstjórinn þinn stillir.</translation>
@@ -12011,6 +12012,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9207434080086272167">Sólskin</translation>
 <translation id="9207669213427469593">Ef þú smellir glugga til annarrar hliðar til að nota skjáskiptingu þá sérðu tillögur um glugga fyrir hina hliðina</translation>
 <translation id="9209563766569767417">Athugar uppsetningu Linux-geymis</translation>
+<translation id="9212565256020141627">Ekki tókst að deila mynd með Gemini. Reyndu aftur eða prófaðu aðra mynd.</translation>
 <translation id="9214520840402538427">Úbbs! Frumstilling uppsetningareiginda rann út á tíma. Hafðu samband við þjónustufulltrúann þinn.</translation>
 <translation id="9214695392875603905">Kaka</translation>
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />“ bætt við</translation>

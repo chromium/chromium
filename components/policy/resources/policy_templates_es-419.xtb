@@ -6612,34 +6612,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 
 Si inhabilitas la política, no podrán borrarse los historiales de navegación ni de descargas. Incluso con la política desactivada, no se garantiza la conservación de los historiales de navegación y de descarga. Es posible que los usuarios puedan editar o borrar los archivos de la base de datos del historial directamente, y que el propio navegador pueda caducar o archivar algunos o todos los elementos del historial en cualquier momento.</translation>
 <translation id="5322649594584715998">Cargar la batería por completo a un ritmo normal. Este modo inhabilita la carga adaptable y limitada.</translation>
-<translation id="5322726025747768984">Si estableces esta política, se configuran reglas que seleccionan qué proxy usa el navegador según la URL de destino y otras condiciones. Esta política tendrá prioridad sobre la configuración de proxy establecida desde la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, la API de extensión <ph name="PROXY_SETTINGS_EXTENSION_API" /> o la configuración manual del usuario, si se establece alguna.
-
-Si no estableces la política, no se verán afectadas otras políticas de proxy ni la configuración del usuario.
-
-Cuando el navegador necesita decidir qué proxy usar, las entradas de la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se evalúan en secuencia hasta que una entrada cumpla con todos los siguientes puntos:
-  * Coincide con al menos uno de los patrones de URL en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-  * No coincide con ninguno de los patrones de URL en <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
-  * Si se especifica <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> y es una lista no vacía, se cumplen todas las condiciones representadas por sus entradas.
-El valor de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> se usará como un proxy para esa coincidencia. Si no se encuentra ninguna coincidencia, la configuración del proxy volverá a la que se estableció en la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Los patrones de URL compatibles con <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> y <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> se documentan en https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
-
-Las entradas del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corresponden a valores de cadena de archivos PAC, como los siguientes:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-  * SOCKS4 host:port
-  * SOCKS5 host:port
-Como alternativa, se pueden usar directamente especificadores de proxy similares a URLs para especificar el proxy, por ejemplo:
-  * http://host:port
-  * https://host:port
-  * socks4://host:port
-  * socks5://host:port
-La primera entrada accesible de la lista se usará como proxy. Se ignorarán las entradas no válidas de la lista.
-
-El campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene una lista de condiciones que se deben cumplir para que se use su regla de anulación a la hora de decidir el proxy que se usará. Si no se establece, la entrada se usará siempre que coincida al menos un host en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-
-La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica si el DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> proporcionado puede resolverse en una dirección IP. Si el valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> es "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", se considera que se cumple la condición. Si el valor se establece en <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condición se considera cumplida si la resolución falló.</translation>
 <translation id="5323200200131319468">Habilita las descripciones por voz en la pantalla de acceso</translation>
 <translation id="5323271643727095577">No mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload Mostrar el diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload</translation>
 <translation id="5324430722441910403">Configuración de las búsquedas en sitios</translation>

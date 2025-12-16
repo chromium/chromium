@@ -2220,6 +2220,7 @@
 <translation id="2476901513051581836">오프라인 스토리지 크기가 제공될 때까지 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
+<translation id="2477218554275525952">새 탭을 열 때 Gemini 사이드바를 열어 둠</translation>
 <translation id="2477607419416067650">기타 Google 데이터</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
@@ -2996,7 +2997,6 @@
 <translation id="3008142279736625920">치즈 케이크</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
-<translation id="3008923556848076408">Gemini가 작업을 계속 진행합니다.</translation>
 <translation id="3008926075262837186">방해 요소가 최소화된 상태에서 편안하게 읽으세요.</translation>
 <translation id="3009178788565917040">출력</translation>
 <translation id="3009352964623081324">검색 + O를 누른 후 S. 음성을 설치, 관리, 맞춤설정할 수 있습니다.</translation>
@@ -9720,6 +9720,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7676019765091965045">유출된 비밀번호 감지</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="7676867886086876795">모든 텍스트 입력란에서 음성기록 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> 삭제</translation>
 <translation id="7678588695732963732">모든 USB 기기 권한을 재설정하시겠습니까?</translation>
 <translation id="7679171213002716280">관리되는 프린터가 <ph name="PRINTER_COUNT" />대 있습니다.</translation>
 <translation id="7679895819123160382">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. <ph name="PRODUCT_NAME" />에서는 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다. 관리자가 구성한 일부 도메인에는 보안 연결이 사용되지 않습니다.</translation>
@@ -12010,6 +12011,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9207434080086272167">화창</translation>
 <translation id="9207669213427469593">화면 분할을 사용하기 위해 창을 한쪽으로 옮기면 다른 쪽에 창 추천이 표시됩니다</translation>
 <translation id="9209563766569767417">Linux 컨테이너 설정 확인 중</translation>
+<translation id="9212565256020141627">Gemini와 이미지를 공유할 수 없습니다. 다시 시도하거나 다른 이미지를 사용해 보세요.</translation>
 <translation id="9214520840402538427">설치 시간 속성의 시작 시간이 초과되었습니다. 지원 담당자에게 문의하시기 바랍니다.</translation>
 <translation id="9214695392875603905">컵케이크</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />'이(가) 추가됨</translation>

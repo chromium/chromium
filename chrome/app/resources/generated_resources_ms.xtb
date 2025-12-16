@@ -2995,7 +2995,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3008142279736625920">Kek keju</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi hari ini untuk memuat turun kemaskinian. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).}other{<ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi dan memuat turun kemaskinian sebelum tarikh akhir. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).}}</translation>
-<translation id="3008923556848076408">Gemini akan terus melakukan tugasan anda</translation>
 <translation id="3008926075262837186">Baca dengan selesa dengan gangguan minimum</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Cari + O, kemudian S. Gunakan untuk memasang, mengurus dan menyesuaikan suara.</translation>
@@ -9721,6 +9720,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7676019765091965045">Pengesanan kata laluan yang terjejas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="7676867886086876795">Hantar suara anda kepada Google untuk membolehkan pengimlakan dalam mana-mana medan teks.</translation>
+<translation id="7678198209643823714">Alih keluar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Tetapkan semula semua kebenaran peranti USB?</translation>
 <translation id="7679171213002716280">Terdapat <ph name="PRINTER_COUNT" /> pencetak terurus.</translation>
 <translation id="7679895819123160382">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. <ph name="PRODUCT_NAME" /> menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain). Sambungan selamat tidak digunakan untuk sesetengah domain yang dikonfigurasikan oleh pentadbir anda.</translation>
@@ -12011,6 +12011,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9207434080086272167">Cerah</translation>
 <translation id="9207669213427469593">Jika anda menyentap tetingkap pada satu sisi untuk menggunakan skrin pisah, anda akan dapat melihat cadangan tetingkap untuk sisi yang lain</translation>
 <translation id="9209563766569767417">Menyemak persediaan bekas Linux</translation>
+<translation id="9212565256020141627">Tidak dapat berkongsi imej dengan Gemini. Cuba lagi atau cuba imej lain.</translation>
 <translation id="9214520840402538427">Alamak! Pemulaan sifat masa pemasangan telah tamat masa. Sila hubungi wakil sokongan anda.</translation>
 <translation id="9214695392875603905">Kek cawan</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambah</translation>

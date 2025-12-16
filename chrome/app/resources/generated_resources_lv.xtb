@@ -2207,6 +2207,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2476901513051581836">Nevar atbrīvot vietu krātuvē, ja nav zināms bezsaistes krātuves lielums.</translation>
 <translation id="2476974672882258506">Lai atinstalētu <ph name="PARALLELS_DESKTOP" />, izslēdziet Windows datoru.</translation>
 <translation id="2477065602824695373">Tā kā iestatījāt vairākus slēdžus, automātiskā pārlūkošana ir izslēgta.</translation>
+<translation id="2477218554275525952">Saglabāt Gemini sānjoslu atvērtu, kad atverat jaunu cilni</translation>
 <translation id="2477607419416067650">Citi Google dati</translation>
 <translation id="2478176599153288112">Multivides faila atļaujas paplašinājumam “<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Iespējojiet datu atkopšanas pakalpojumu</translation>
@@ -2983,7 +2984,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3008142279736625920">Siera kūka</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
-<translation id="3008923556848076408">Gemini turpinās darbu ar jūsu uzdevumu</translation>
 <translation id="3008926075262837186">Ērti lasiet ar minimāliem traucējumiem</translation>
 <translation id="3009178788565917040">Izvade</translation>
 <translation id="3009352964623081324">Search+O, pēc tam S. Izmantojiet, lai instalētu, pārvaldītu un pielāgotu balsis.</translation>
@@ -9707,6 +9707,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7676019765091965045">Uzlauztu paroļu noteikšana</translation>
 <translation id="7676119992609591770">Atrasta <ph name="NUM" /> cilne, kas atbilst meklēšanas vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Nosūtiet savus balss datus Google serveriem, lai atļautu diktēšanu jebkurā teksta laukā.</translation>
+<translation id="7678198209643823714">Noņemt <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Vai atiestatīt visas USB ierīču atļaujas?</translation>
 <translation id="7679171213002716280">Pārvaldīto printeru skaits: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. <ph name="PRODUCT_NAME" /> izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā). Noteiktiem administratora konfigurētiem domēniem netiek izmantoti droši savienojumi.</translation>
@@ -11998,6 +11999,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9207434080086272167">Saulains</translation>
 <translation id="9207669213427469593">Ja pārnesīsiet logu uz vienu pusi, lai izmantotu ekrāna sadalīšanu, tiks rādīti logu ieteikumi otrai pusei</translation>
 <translation id="9209563766569767417">Linux konteinera iestatījumu pārbaude</translation>
+<translation id="9212565256020141627">Nevarēja kopīgot attēlu ar Gemini. Mēģiniet vēlreiz vai izmantojiet citu attēlu.</translation>
 <translation id="9214520840402538427">Instalācijas laika atribūtu inicializēšanā diemžēl iestājās noildze. Lūdzu, sazinieties ar savu atbalsta pārstāvi.</translation>
 <translation id="9214695392875603905">Glazūrkēkss</translation>
 <translation id="9215293857209265904">Ir pievienots paplašinājums <ph name="EXTENSION_NAME" /></translation>

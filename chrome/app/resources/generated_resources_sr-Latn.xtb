@@ -2980,7 +2980,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3008142279736625920">Čizkejk</translation>
 <translation id="3008272652534848354">Resetuj dozvole</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva da se danas povežete na WiFi da biste preuzeli ažuriranje. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}one{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}few{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}other{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}}</translation>
-<translation id="3008923556848076408">Gemini će nastaviti da radi na vašem zadatku</translation>
 <translation id="3008926075262837186">Čitajte udobno uz minimalno ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Taster za pretragu + O, a zatim S. Koristite za instaliranje i prilagođavanje glasova i upravljanje njima.</translation>
@@ -9709,6 +9708,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7676019765091965045">Otkrivanje ugroženih lozinki</translation>
 <translation id="7676119992609591770">Pronađenih kartica za „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Šaljite podatke o glasu Google-u da bi se omogućilo diktiranje u svim poljima za tekst.</translation>
+<translation id="7678198209643823714">Ukloni <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Želite da resetujete sve dozvole za USB uređaj?</translation>
 <translation id="7679171213002716280">Upravljanih štampača ima: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="7679895819123160382">Otežajte onima koji imaju pristup vašem internet saobraćaju da vide koje sajtove posećujete. <ph name="PRODUCT_NAME" /> koristi bezbednu vezu da bi tražio IP adresu sajta u DNS-u (sistemu imena domena). Bezbedne veze se ne koriste za neke domene koje je konfigurisao administrator.</translation>
@@ -12000,6 +12000,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9207434080086272167">Sunčano</translation>
 <translation id="9207669213427469593">Ako pomerite prozor na jednu stranu da biste koristili podeljeni ekran, videćete predloge prozora za drugu stranu</translation>
 <translation id="9209563766569767417">Proverava se podešavanje Linux kontejnera</translation>
+<translation id="9212565256020141627">Deljenje slike sa Gemini-jem nije uspelo. Probajte ponovo ili probajte sa drugom slikom.</translation>
 <translation id="9214520840402538427">Ups! Vreme pokretanja atributa za vreme instalacije je isteklo. Kontaktirajte predstavnika podrške.</translation>
 <translation id="9214695392875603905">Mafin</translation>
 <translation id="9215293857209265904">Dodat je „<ph name="EXTENSION_NAME" />“</translation>

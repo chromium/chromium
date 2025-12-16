@@ -2218,6 +2218,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2476901513051581836">Can’t clean up storage until offline storage size is known.</translation>
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
+<translation id="2477218554275525952">Keep the Gemini sidebar open when you open a new tab</translation>
 <translation id="2477607419416067650">Other Google data</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Enable data recovery service.</translation>
@@ -2994,7 +2995,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
-<translation id="3008923556848076408">Gemini will keep working on your task</translation>
 <translation id="3008926075262837186">Read comfortably with minimal distractions</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Search + O, then S. Use to install, manage and customise voices.</translation>
@@ -9720,6 +9720,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7676019765091965045">Compromised password detection</translation>
 <translation id="7676119992609591770">Found <ph name="NUM" /> tab for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Send your voice to Google to allow dictation into any text field.</translation>
+<translation id="7678198209643823714">Remove <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Reset all USB device permissions?</translation>
 <translation id="7679171213002716280">There are <ph name="PRINTER_COUNT" /> managed printers.</translation>
 <translation id="7679895819123160382">Make it harder for people with access to your Internet traffic to see which sites you visit. <ph name="PRODUCT_NAME" /> uses a secure connection to look up a site's IP address in the DNS (Domain Name System). Secure connections are not used for some domains configured by your administrator.</translation>
@@ -12009,6 +12010,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9207434080086272167">Sunny</translation>
 <translation id="9207669213427469593">If you snap a window to one side to use split screen, you'll see window suggestions for the other side</translation>
 <translation id="9209563766569767417">Checking the Linux container setup</translation>
+<translation id="9212565256020141627">Could not share image with Gemini. Try again or try another image.</translation>
 <translation id="9214520840402538427">Oops!  The initialisation of the installation-time attributes has timed out.  Please contact your support representative.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" added</translation>

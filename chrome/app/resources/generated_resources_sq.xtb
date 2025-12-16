@@ -2203,6 +2203,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2476901513051581836">Hapësira ruajtëse nuk mund të pastrohet derisa të mësohet madhësia e hapësirës ruajtëse offline.</translation>
 <translation id="2476974672882258506">Fike sistemin Windows për ta çinstaluar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Duke qenë se ke konfiguruar shumë çelësa, skanimi automatik është çaktivizuar.</translation>
+<translation id="2477218554275525952">Mbaje të hapur shiritin anësor të Gemini kur hap një skedë të re</translation>
 <translation id="2477607419416067650">Të dhëna të tjera të Google</translation>
 <translation id="2478176599153288112">Lejet e skedarëve të medias për "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktivizo shërbimin e rikuperimit të të dhënave.</translation>
@@ -2979,7 +2980,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3008142279736625920">Qumështor</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi sot për të shkarkuar një përditësim. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}other{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi dhe të shkarkosh një përditësim para afatit. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}}</translation>
-<translation id="3008923556848076408">Gemini do të vazhdojë të punojë për detyrën tënde</translation>
 <translation id="3008926075262837186">Lexo në qetësi dhe me shpërqendrime minimale</translation>
 <translation id="3009178788565917040">Dalja</translation>
 <translation id="3009352964623081324">Tasti "Search" + O, më pas S. Përdore për të instaluar, menaxhuar dhe personalizuar zërat.</translation>
@@ -9702,6 +9702,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7676019765091965045">Zbulimi i fjalëkalimeve të komprometuara</translation>
 <translation id="7676119992609591770">U gjet <ph name="NUM" /> skedë për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Dërgoja zërin Google për të lejuar diktimin në çfarëdo fushe teksti.</translation>
+<translation id="7678198209643823714">Hiq <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Të rivendosen të gjitha lejet për pajisjet USB?</translation>
 <translation id="7679171213002716280">Ka <ph name="PRINTER_COUNT" /> printerë të menaxhuar.</translation>
 <translation id="7679895819123160382">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. <ph name="PRODUCT_NAME" /> përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Lidhjet e sigurta nuk përdoren për disa domene të konfiguruara nga administratori yt.</translation>
@@ -11990,6 +11991,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9207434080086272167">Me diell</translation>
 <translation id="9207669213427469593">Nëse vendos një dritare në njërën anë për të përdorur ekranin e ndarë, do të shohësh sugjerime për dritaren për anën tjetër</translation>
 <translation id="9209563766569767417">Po kontrollon konfigurimin e kontejnerit të Linux</translation>
+<translation id="9212565256020141627">Imazhi nuk mund të ndahej me Gemini. Provo përsëri ose provo një imazh tjetër.</translation>
 <translation id="9214520840402538427">Mos! Nisjes së atributeve të kohës së instalimit i ka përfunduar afati. Kontakto me përfaqësuesin e mbështetjes.</translation>
 <translation id="9214695392875603905">Kek në kupë</translation>
 <translation id="9215293857209265904">U shtua "<ph name="EXTENSION_NAME" />"</translation>

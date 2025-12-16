@@ -2205,6 +2205,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2476901513051581836">Kan de opslag pas opschonen als de offline opslaggrootte bekend is.</translation>
 <translation id="2476974672882258506">Sluit Windows af om <ph name="PARALLELS_DESKTOP" /> te verwijderen.</translation>
 <translation id="2477065602824695373">Automatische scan is uitgezet omdat je meerdere schakelaars hebt ingesteld.</translation>
+<translation id="2477218554275525952">De Gemini-zijbalk openhouden als je een nieuw tabblad opent</translation>
 <translation id="2477607419416067650">Andere Google-gegevens</translation>
 <translation id="2478176599153288112">Mediabestandsrechten voor '<ph name="EXTENSION" />'</translation>
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
@@ -2981,7 +2982,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag verbinding maakt met wifi om een update te downloaden. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}other{<ph name="MANAGER" /> vereist dat je vóór de deadline verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}}</translation>
-<translation id="3008923556848076408">Gemini blijft aan je taak werken</translation>
 <translation id="3008926075262837186">Lees comfortabel met minimale afleiding</translation>
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009352964623081324">Zoeken + O, dan S. Gebruik dit om stemmen te installeren, te beheren en aan te passen.</translation>
@@ -9698,6 +9698,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7676019765091965045">Detectie van gehackte wachtwoorden</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> tabblad gevonden voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Verzend je stem naar Google zodat je kunt dicteren in tekstvelden.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> verwijderen</translation>
 <translation id="7678588695732963732">Rechten voor alle USB-apparaten resetten?</translation>
 <translation id="7679171213002716280">Er zijn <ph name="PRINTER_COUNT" /> beheerde printers.</translation>
 <translation id="7679895819123160382">Maak het moeilijker voor mensen met toegang tot je internetverkeer om te zien welke sites je bezoekt. <ph name="PRODUCT_NAME" /> gebruikt een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System). Beveiligde verbindingen worden niet gebruikt voor bepaalde domeinen die door je beheerder zijn ingesteld.</translation>
@@ -11988,6 +11989,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9207434080086272167">Zonnig</translation>
 <translation id="9207669213427469593">Als je een venster aan de ene kant uitlijnt om het gesplitste scherm te gebruiken, zie je aan de andere kant suggesties voor vensters</translation>
 <translation id="9209563766569767417">De installatie van de Linux-container wordt gecontroleerd</translation>
+<translation id="9212565256020141627">Kan de afbeelding niet delen met Gemini. Probeer het opnieuw of probeer een andere afbeelding.</translation>
 <translation id="9214520840402538427">De initialisatie van de kenmerken van de installatietijd is verlopen. Neem contact op met je ondersteuningsmedewerker.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />' toegevoegd</translation>

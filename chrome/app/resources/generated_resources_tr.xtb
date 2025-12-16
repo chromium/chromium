@@ -2203,6 +2203,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2476901513051581836">Çevrimdışı depolama alanı boyutu öğrenilene kadar depolama alanı temizlenemez.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> yüklemesini kaldırmak için Windows'u kapatın.</translation>
 <translation id="2477065602824695373">Birden fazla anahtar ayarladığınız için otomatik tarama özelliği kapatıldı.</translation>
+<translation id="2477218554275525952">Yeni bir sekme açtığınızda Gemini kenar çubuğunu açık tutun</translation>
 <translation id="2477607419416067650">Diğer Google verileri</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" için Medya Dosya İzinleri</translation>
 <translation id="24786041351753425">Veri kurtarma hizmetini etkinleştirme.</translation>
@@ -2979,7 +2980,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />, güncelleme indirmek için bugün kablosuz ağa bağlanmanızı zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}other{<ph name="MANAGER" />, kablosuz ağa bağlanıp son tarihten önce güncelleme indirmenizi zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}}</translation>
-<translation id="3008923556848076408">Gemini, göreviniz üzerinde çalışmaya devam edecek</translation>
 <translation id="3008926075262837186">Dikkatiniz dağılmadan rahatça okuyun</translation>
 <translation id="3009178788565917040">Çıkış</translation>
 <translation id="3009352964623081324">Ara + O, ardından S. Sesleri yüklemek, yönetmek ve özelleştirmek için kullanın.</translation>
@@ -9702,6 +9702,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7676019765091965045">Güvenliği ihlal edilmiş şifre algılama</translation>
 <translation id="7676119992609591770">"<ph name="SEARCH_TEXT" />" İçin <ph name="NUM" /> Sekme Bulundu</translation>
 <translation id="7676867886086876795">Dikte özelliğiyle metin alanına herhangi bir şey yazabilmek için sesinizi Google'a gönderin.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> kısayolunu kaldır</translation>
 <translation id="7678588695732963732">Tüm USB cihaz izinleri sıfırlansın mı?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> adet yönetilen yazıcı var.</translation>
 <translation id="7679895819123160382">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. <ph name="PRODUCT_NAME" />, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır. Yöneticiniz tarafından yapılandırılmış bazı alanlarda güvenli bağlantılar kullanılmaz.</translation>
@@ -11991,6 +11992,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9207434080086272167">Güneşli</translation>
 <translation id="9207669213427469593">Bölünmüş ekran kullanmak için pencereyi ekranın bir tarafına tutturursanız diğer taraf için pencere önerileri görürsünüz</translation>
 <translation id="9209563766569767417">Linux kapsayıcı kurulumu kontrol ediliyor</translation>
+<translation id="9212565256020141627">Görüntü Gemini ile paylaşılamadı. Tekrar deneyin veya başka bir görüntü yükleyin.</translation>
 <translation id="9214520840402538427">Hata! Yükleme zamanı özniteliklerini başlatma işlemi zaman aşımına uğradı. Lütfen destek temsilcinizle görüşün.</translation>
 <translation id="9214695392875603905">Küçük kek</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" eklendi</translation>

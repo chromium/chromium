@@ -2215,6 +2215,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2476901513051581836">Haiwezi kufuta ili kupata nafasi ya kuhifadhi hadi ukubwa wa nafasi ya hifadhi ya nje ya mtandao ujulikane.</translation>
 <translation id="2476974672882258506">Zima Windows ili uondoe <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Kwa vile umeweka mipangilio ya swichi nyingi, kipengele cha kuchanganua kiotomatiki kimezimwa.</translation>
+<translation id="2477218554275525952">Usifunge utepe wa Gemini ukifungua kichupo kipya</translation>
 <translation id="2477607419416067650">Data nyingine ya Google</translation>
 <translation id="2478176599153288112">Ruhusa za Faili ya Maudhui kwa "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ruhusu huduma ya kurejesha data.</translation>
@@ -2991,7 +2992,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3008142279736625920">Keki ya jibini</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji uunganishe kwenye Wi-Fi leo ili upakue sasisho. Au, pakua kwa kutumia muunganisho wa mtandao unaopima data (huenda ukatozwa ada).}other{<ph name="MANAGER" /> inahitaji uunganishe kwenye Wi-Fi na upakue sasisho kabla ya tarehe ya mwisho. Au, pakua kwa kutumia muunganisho wa mtandao unaopima data (huenda ukatozwa ada).}}</translation>
-<translation id="3008923556848076408">Gemini itaendelea kufanyia kazi jukumu lako</translation>
 <translation id="3008926075262837186">Soma kwa urahisi bila usumbufu mwingi</translation>
 <translation id="3009178788565917040">Towe</translation>
 <translation id="3009352964623081324">Search + O, kisha S. Tumia kusakinisha, kudhibiti na kuweka mapendeleo kwenye sauti.</translation>
@@ -9715,6 +9715,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7676019765091965045">Utambuzi wa nenosiri lililoathiriwa</translation>
 <translation id="7676119992609591770">Imepata Kichupo <ph name="NUM" /> Cha '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Tuma sauti yako kwa Google ili uruhusu kuandika kwa kutamka katika sehemu ya maandishi.</translation>
+<translation id="7678198209643823714">Ondoa <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Ungependa kuweka upya ruhusa zote za kifaa cha USB?</translation>
 <translation id="7679171213002716280">Kuna printa <ph name="PRINTER_COUNT" /> zinazodhibitiwa.</translation>
 <translation id="7679895819123160382">Fanya iwe vigumu kwa watu wanaoweza kufikia shughuli zako kwenye intaneti kuona tovuti unazotembelea. <ph name="PRODUCT_NAME" /> hutumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa). Vikoa vingine vilivyowekewa mipangilio na msimamizi havitumii miunganisho salama.</translation>
@@ -12004,6 +12005,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9207434080086272167">Jua kali</translation>
 <translation id="9207669213427469593">Ukisogeza dirisha upande mmoja ili utumie skrini iliyogawanywa, utaona mapendekezo ya dirisha la upande mwingine</translation>
 <translation id="9209563766569767417">Inakagua mipangilio ya metadata ya Linux</translation>
+<translation id="9212565256020141627">Imeshindwa kutuma picha kwa Gemini. Jaribu tena au ujaribu picha nyingine.</translation>
 <translation id="9214520840402538427">Lo! Uanzishaji wa muda wa usakinishaji sifa umechina. Tafadhali wasiliana na mwakilishi wako wa kutoa msaada.</translation>
 <translation id="9214695392875603905">Keki dogo</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" limeongezwa</translation>

@@ -2202,6 +2202,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2476901513051581836">No se puede liberar espacio hasta que se conozca el tamaño del almacenamiento sin conexión.</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
 <translation id="2477065602824695373">Dado que configuraste varios interruptores, se desactivó el escaneo automático.</translation>
+<translation id="2477218554275525952">Mantener abierta la barra lateral de Gemini cuando abras una pestaña nueva</translation>
 <translation id="2477607419416067650">Otros datos de Google</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
@@ -2978,7 +2979,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización hoy. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
-<translation id="3008923556848076408">Gemini seguirá trabajando en tu tarea</translation>
 <translation id="3008926075262837186">Lee cómodamente con distracciones mínimas</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, luego, S. Se usa para instalar, administrar y personalizar voces.</translation>
@@ -9704,6 +9704,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7676019765091965045">Detección de contraseñas hackeadas</translation>
 <translation id="7676119992609591770">Se encontró <ph name="NUM" /> pestaña para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para habilitar el dictado en cualquier campo de texto.</translation>
+<translation id="7678198209643823714">Quitar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">¿Quieres restablecer todos los permisos de dispositivos USB?</translation>
 <translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras administradas.</translation>
 <translation id="7679895819123160382">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Las conexiones seguras no se usan para algunos dominios que configuró el administrador.</translation>
@@ -11993,6 +11994,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9207434080086272167">Soleado</translation>
 <translation id="9207669213427469593">Si ajustas una ventana a un lado para usar la pantalla dividida, verás sugerencias de ventanas para el otro lado</translation>
 <translation id="9209563766569767417">Revisando la configuración del contenedor de Linux</translation>
+<translation id="9212565256020141627">No se pudo compartir la imagen con Gemini. Vuelve a intentarlo o prueba con otra imagen.</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Comunícate con el representante de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" agregada</translation>
