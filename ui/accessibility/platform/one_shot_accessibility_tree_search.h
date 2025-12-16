@@ -30,8 +30,6 @@ typedef bool (*AccessibilityMatchPredicate)(
                                     BrowserAccessibility* this_element)
 
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityArticlePredicate);
-DECLARE_ACCESSIBILITY_PREDICATE(
-    AccessibilityContainedInAtomicLiveRegionPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityBlockquotePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityCheckboxPredicate);

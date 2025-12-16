@@ -271,24 +271,6 @@ bool AccessibilityComboboxPredicate(BrowserAccessibility* start,
           node->GetRole() == ax::mojom::Role::kComboBoxSelect);
 }
 
-bool AccessibilityContainedInAtomicLiveRegionPredicate(
-    BrowserAccessibility* start,
-    BrowserAccessibility* node) {
-  // Nodes contained in an atomic live region must record the ID of their root
-  // node. If it is not present, we should not store the node as a match.
-  if (!node->HasIntAttribute(ax::mojom::IntAttribute::kMemberOfId)) {
-    return false;
-  }
-  bool is_contained =
-      node->GetBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic);
-  int node_root_id =
-      node->GetIntAttribute(ax::mojom::IntAttribute::kMemberOfId);
-  int start_id = start->GetData().id;
-  // We are only interested in nodes that are contained in the live region
-  // rooted at `start`.
-  return is_contained && (node_root_id == start_id);
-}
-
 bool AccessibilityControlPredicate(BrowserAccessibility* start,
                                    BrowserAccessibility* node) {
   if (IsControl(node->GetRole())) {

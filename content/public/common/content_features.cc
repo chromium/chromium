@@ -1262,12 +1262,6 @@ BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
              "AccessibilityRequestLayoutBasedActions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, supports atomic announcements, meaning that when
-// aria-atomic=true, the entire live region will be announced not just the node
-// that changed.
-BASE_FEATURE(kAccessibilityAtomicLiveRegions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
 // This version of the experiment explores enabling OS-level adjustments.

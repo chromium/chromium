@@ -1130,10 +1130,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_FREE_WITH_SIZE,
                 "Enables PartitionAlloc with the optimization of sized deallocation"),
-        Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_ATOMIC_LIVE_REGIONS,
-                "When enabled, supports atomic announcements, meaning that when aria-atomic=true,"
-                    + " the entire live region will be announced not just the node that changed."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 

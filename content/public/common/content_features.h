@@ -341,7 +341,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDeprecateTypeAnnounce);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtendedSelection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityImproveLiveRegionAnnounce);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRequestLayoutBasedActions);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAtomicLiveRegions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoomV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPopulateSupplementalDescriptionApi);
