@@ -433,7 +433,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   _badgeBackgroundView.hidden = !hasVisibleBadges;
 
   if (hasVisibleBadges) {
-    self.tintColor = [UIColor whiteColor];
+    self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
 
     _badgeBackgroundView.layer.cornerRadius =
         _badgeBackgroundView.bounds.size.height / 2.0;
