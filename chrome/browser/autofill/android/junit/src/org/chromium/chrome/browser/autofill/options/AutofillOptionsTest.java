@@ -383,7 +383,7 @@ public class AutofillOptionsTest {
         // Create completely replaces the menu with only the help icon.
         mFragment.onCreateOptionsMenu(helpMenu, mock(MenuInflater.class));
         verify(helpMenu).clear();
-        verify(helpItem).setIcon(R.drawable.ic_help_and_feedback);
+        verify(helpItem).setIcon(R.drawable.ic_help_24dp);
 
         // Trigger the help as it would happen on tap.
         mFragment.onOptionsItemSelected(helpItem);

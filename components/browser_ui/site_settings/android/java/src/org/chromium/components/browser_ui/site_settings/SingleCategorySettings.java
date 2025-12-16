@@ -597,9 +597,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                             R.string.menu_help);
             help.setIcon(
                     TraceEventVectorDrawableCompat.create(
-                            getResources(),
-                            R.drawable.ic_help_and_feedback,
-                            getContext().getTheme()));
+                            getResources(), R.drawable.ic_help_24dp, getContext().getTheme()));
         }
     }
 

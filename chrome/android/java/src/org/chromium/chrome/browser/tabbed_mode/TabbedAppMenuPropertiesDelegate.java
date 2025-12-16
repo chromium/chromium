@@ -993,7 +993,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.help_id,
                         R.string.menu_help,
-                        shouldShowIconBeforeItem() ? R.drawable.help_outline : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : 0));
     }
 
     private boolean shouldShowQuickDeleteItem() {

@@ -144,7 +144,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
         launchAutofillBuyNowPayLaterFragment();
         mAutofillBuyNowPayLaterFragment.onCreateOptionsMenu(mHelpMenu, mock(MenuInflater.class));
         verify(mHelpMenu).clear();
-        verify(mHelpItem).setIcon(R.drawable.ic_help_and_feedback);
+        verify(mHelpItem).setIcon(R.drawable.ic_help_24dp);
 
         mAutofillBuyNowPayLaterFragment.onOptionsItemSelected(mHelpItem);
 

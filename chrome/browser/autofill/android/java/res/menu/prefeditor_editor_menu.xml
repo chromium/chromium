@@ -17,7 +17,7 @@ found in the LICENSE file.
 
     <item
         android:id="@+id/help_menu_id"
-        android:icon="@drawable/ic_help_and_feedback"
+        android:icon="@drawable/ic_help_24dp"
         android:title="@string/help"
         app:showAsAction="ifRoom" />
 
