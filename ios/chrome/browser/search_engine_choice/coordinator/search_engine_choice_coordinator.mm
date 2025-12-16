@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/debug/crash_logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
@@ -180,12 +181,15 @@ using search_engines::SearchEngineChoiceScreenEvents;
 
 - (void)didTapPrimaryButton {
   if (_didTapPrimaryButton) {
-    NOTREACHED() << "Double tap on primary button [_firstRun = " << _firstRun
-                 << " ; delay : "
-                 << (base::Time::Now() -
-                     _lastCallToDidTapPrimaryButtonTimestamp)
-                        .InMilliseconds()
-                 << " ms]";
+    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "isfirstrun", _firstRun);
+    int64_t delay =
+        (base::Time::Now() - _lastCallToDidTapPrimaryButtonTimestamp)
+            .InMilliseconds();
+    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "delay", delay);
+    NOTREACHED(base::NotFatalUntil::M150)
+        << "Double tap on primary button [_firstRun = " << _firstRun
+        << " ; delay : " << delay << " ms]";
+    return;
   }
   _didTapPrimaryButton = YES;
   _lastCallToDidTapPrimaryButtonTimestamp = base::Time::Now();
