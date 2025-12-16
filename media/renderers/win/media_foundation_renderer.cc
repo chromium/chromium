@@ -398,6 +398,27 @@ void ReportGpuInfoUma(const std::string& uma_prefix,
       base::UmaHistogramSparse(uma_prefix + ".NonActiveGpuVendorId",
                                nonactive_gpu_id);
     }
+
+    // On multi-gpu devices with NVIDIA active gpu associated with an external
+    // display
+    const auto multigpu_nvidia_active_with_external =
+        nonactive_gpu_count > 0 && active_gpu_vendor_id == kGpuVendorIdNvidia &&
+        active_gpu_display_info == ActiveGpuDisplayInfo::kLikelyExternal;
+    DVLOG(3) << __func__ << ": multigpu_nvidia_active_with_external="
+             << multigpu_nvidia_active_with_external;
+    base::UmaHistogramBoolean(
+        uma_prefix + ".MultiGpuNvidiaActiveWithExternalDisplay",
+        multigpu_nvidia_active_with_external);
+
+    // On multi-gpu devices where the active gpu associated with an external
+    // display
+    const auto multigpu_with_external =
+        nonactive_gpu_count > 0 &&
+        active_gpu_display_info == ActiveGpuDisplayInfo::kLikelyExternal;
+    DVLOG(3) << __func__
+             << ": multigpu_with_external=" << multigpu_with_external;
+    base::UmaHistogramBoolean(uma_prefix + ".MultiGpuWithExternalDisplay",
+                              multigpu_with_external);
   }
 
   const auto display_count = GetTotalDisplayCount();

@@ -3881,6 +3881,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuNvidiaActiveWithExternalDisplay"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not a multi-GPU device has NVIDIA active GPU associated with an
+    external displays when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuWithExternalDisplay"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not a multi-GPU device has an active GPU associated with an
+    external displays when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.NonActiveGpuVendorId"
     enum="GpuVendorId" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
@@ -5269,6 +5293,30 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of GPUs when the MediaFoundationRenderer hits a playback error.
+    Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationRenderer.PlaybackError.MultiGpuNvidiaActiveWithExternalDisplay"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not a multi-GPU device has NVIDIA active GPU associated with an
+    external displays when the MediaFoundationRenderer hits a playback error.
+    Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationRenderer.PlaybackError.MultiGpuWithExternalDisplay"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not a multi-GPU device has an active GPU associated with an
+    external displays when the MediaFoundationRenderer hits a playback error.
     Reported whenever such an event happens.
   </summary>
 </histogram>
