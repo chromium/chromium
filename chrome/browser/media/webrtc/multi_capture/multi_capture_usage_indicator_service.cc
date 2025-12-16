@@ -159,8 +159,6 @@ void MultiCaptureUsageIndicatorService::MultiCaptureStarted(
   RefreshNotifications();
 }
 
-// TODO(crbug.com/428895438): Trigger this function when the capturing window is
-// closed.
 void MultiCaptureUsageIndicatorService::MultiCaptureStopped(
     const std::string& label) {
   if (!label_to_app_id_.contains(label)) {
