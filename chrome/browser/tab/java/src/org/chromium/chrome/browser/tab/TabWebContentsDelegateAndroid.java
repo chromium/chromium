@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
@@ -36,6 +37,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @param disposition WindowOpenDisposition indicating how the tab should be created.
      * @param windowFeatures Initial window features to be used for the new tab.
      * @param userGesture {@code true} if opened by user gesture.
+     * @param pictureInPictureWindowOptions Picture-in-Picture window options.
      * @return {@code true} if new tab was created successfully with a given WebContents.
      */
     protected abstract boolean addNewContents(
@@ -44,7 +46,8 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
             GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
-            boolean userGesture);
+            boolean userGesture,
+            @Nullable PictureInPictureWindowOptions pictureInPictureWindowOptions);
 
     /**
      * Sets the overlay mode.

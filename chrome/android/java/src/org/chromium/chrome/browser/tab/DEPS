@@ -64,6 +64,7 @@ include_rules = [
   "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
   "+chrome/browser/url_constants/android/java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolver.java",
   "+chrome/browser/url_constants/android/java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverFactory.java",
+  "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/PictureInPictureWindowOptions.java",
   "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/WindowFeatures.java",
   "+chrome/browser/feature_engagement/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
   "+chrome/browser/flags",

@@ -81,6 +81,8 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/android/rect_jni_conversion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -117,6 +119,23 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
           window_features.bounds.width(), window_features.bounds.height(),
           window_features.has_x, window_features.has_y,
           window_features.has_width, window_features.has_height));
+}
+
+static ScopedJavaLocalRef<jobject>
+JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
+    JNIEnv* env,
+    const blink::mojom::PictureInPictureWindowOptions& options) {
+  const display::Screen* screen = display::Screen::Get();
+  const display::Display display =
+      screen->GetDisplayNearestWindow(gfx::NativeWindow());
+
+  gfx::Rect bounds =
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(options, display);
+
+  return ScopedJavaLocalRef<jobject>(
+      Java_TabWebContentsDelegateAndroidImpl_createPictureInPictureWindowOptions(
+          env, bounds, options.disallow_return_to_opener));
 }
 
 void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
@@ -391,9 +410,17 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
             env, window_features);
     ScopedJavaLocalRef<jobject> jurl =
         url::GURLAndroid::FromNativeGURL(env, target_url);
+
+    ScopedJavaLocalRef<jobject> jpicture_in_picture_options;
+    if (new_contents->GetPictureInPictureOptions().has_value()) {
+      jpicture_in_picture_options =
+          JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
+              env, new_contents->GetPictureInPictureOptions().value());
+    }
+
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
         env, obj, jsource, jnew_contents, jurl, static_cast<jint>(disposition),
-        jwindow_features, user_gesture);
+        jwindow_features, user_gesture, jpicture_in_picture_options);
   }
 
   if (was_blocked)

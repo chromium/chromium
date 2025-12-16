@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -238,7 +239,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
-            boolean userGesture) {
+            boolean userGesture,
+            @Nullable PictureInPictureWindowOptions pictureInPictureWindowOptions) {
         TabCreator tabCreator = mTabCreatorManager.getTabCreator(mTab.isIncognito());
         assert tabCreator != null;
 
@@ -253,9 +255,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         boolean openingDocumentPip =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
                         && disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE
+                        && pictureInPictureWindowOptions != null
                         && window != null
                         && PopupCreator.isTaskMoveAllowedOnDisplay(
-                                windowFeatures,
+                                pictureInPictureWindowOptions.windowBounds,
                                 window.getDisplay()); // Require task move enabled for docpip;
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             RecordHistogram.recordBooleanHistogram(
@@ -264,9 +267,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (openingDocumentPip) {
             // Document pip doesn't require a tab to be created, so we can return early.
+            assert pictureInPictureWindowOptions != null;
+
             PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
-                    webContents, windowFeatures);
+                    webContents, pictureInPictureWindowOptions);
             return true;
+        } else if (disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE) {
+            // We are unable to open a document pip window
+            return false;
         }
 
         // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we

@@ -55,7 +55,11 @@ constexpr double kInitialAspectRatio = 1.0;
 
 // The minimum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.
+#if !BUILDFLAG(IS_ANDROID)
 constexpr gfx::Size kMinWindowSize(240, 52);
+#else
+constexpr gfx::Size kMinWindowSize(220, 220);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The maximum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.

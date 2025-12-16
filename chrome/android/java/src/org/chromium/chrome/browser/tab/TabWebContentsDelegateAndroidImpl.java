@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -122,6 +123,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @CalledByNative
+    private static PictureInPictureWindowOptions createPictureInPictureWindowOptions(
+            @JniType("gfx::Rect") Rect windowBounds, boolean disallowReturnToOpener) {
+        return new PictureInPictureWindowOptions(windowBounds, disallowReturnToOpener);
+    }
+
+    @CalledByNative
     private static FindNotificationDetails createFindNotificationDetails(
             int numberOfMatches,
             @JniType("gfx::Rect") Rect rendererSelectionRect,
@@ -164,14 +171,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
-            boolean userGesture) {
+            boolean userGesture,
+            @Nullable PictureInPictureWindowOptions pictureInPictureWindowOptions) {
         return mDelegate.addNewContents(
                 sourceWebContents,
                 webContents,
                 targetUrl,
                 disposition,
                 windowFeatures,
-                userGesture);
+                userGesture,
+                pictureInPictureWindowOptions);
     }
 
     @Override

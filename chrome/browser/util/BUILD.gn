@@ -15,6 +15,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
     "android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
+    "android/java/src/org/chromium/chrome/browser/util/PictureInPictureWindowOptions.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/WindowFeatures.java",
   ]

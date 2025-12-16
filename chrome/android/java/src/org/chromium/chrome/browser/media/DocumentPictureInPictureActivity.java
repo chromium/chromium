@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.media;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.view.ViewGroup;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.version_info.VersionInfo;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -39,12 +42,16 @@ import org.chromium.url.GURL;
 
 @NullMarked
 public class DocumentPictureInPictureActivity extends AsyncInitializationActivity {
+    private static final String TAG = "DocumentPiPActivity";
     public static final String WEB_CONTENTS_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WebContents";
+    public static final String WINDOW_OPTIONS_KEY =
+            "org.chromium.chrome.browser.media.DocumentPictureInPicture.WindowOptions";
     private WebContents mWebContents;
     private Tab mInitiatorTab;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable TabObserver mInitiatorTabObserver;
+    private @Nullable @SuppressWarnings("unused") PictureInPictureWindowOptions mWindowOptions;
 
     @Override
     protected void onPreCreate() {
@@ -54,6 +61,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
         WebContents webContents = intent.getParcelableExtra(WEB_CONTENTS_KEY);
         if (webContents == null) {
+            Log.e(TAG, "WebContents is null, finishing.");
             finish();
             return;
         }
@@ -62,9 +70,18 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         WebContents parentWebContents = mWebContents.getDocumentPictureInPictureOpener();
         mInitiatorTab = TabUtils.fromWebContents(parentWebContents);
         if (parentWebContents == null || TabUtils.getActivity(mInitiatorTab) == null) {
+            Log.e(TAG, "Parent web contents or initiator tab is null, finishing.");
             finish();
             return;
         }
+
+        Bundle windowOptionsBundle = intent.getBundleExtra(WINDOW_OPTIONS_KEY);
+        if (windowOptionsBundle == null) {
+            Log.e(TAG, "Window options bundle is null, finishing.");
+            finish();
+            return;
+        }
+        mWindowOptions = new PictureInPictureWindowOptions(windowOptionsBundle);
     }
 
     /**

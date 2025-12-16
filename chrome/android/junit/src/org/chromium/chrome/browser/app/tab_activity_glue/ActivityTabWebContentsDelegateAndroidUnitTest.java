@@ -267,7 +267,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                 new WindowFeatures(),
-                false);
+                false,
+                null);
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
     }
 
@@ -293,7 +294,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                 new WindowFeatures(),
-                false);
+                false,
+                null);
         verify(mTabGroupModelFilter)
                 .mergeListOfTabsToGroup(
                         Arrays.asList(newTab), parentTab, MergeNotificationType.DONT_NOTIFY);
@@ -316,7 +318,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_POPUP,
                 new WindowFeatures(),
-                true);
+                true,
+                null);
 
         verify(mTabCreator, times(1))
                 .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), eq(true));
