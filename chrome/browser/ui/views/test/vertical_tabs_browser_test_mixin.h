@@ -64,11 +64,13 @@ class VerticalTabsBrowserTestMixin : public T {
   void EnterVerticalTabsMode() {
     T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
                                                     true);
+    T::RunScheduledLayouts();
   }
 
   void ExitVerticalTabsMode() {
     T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
                                                     false);
+    T::RunScheduledLayouts();
   }
 
   tabs_api::TabStripService* tab_strip_service() {

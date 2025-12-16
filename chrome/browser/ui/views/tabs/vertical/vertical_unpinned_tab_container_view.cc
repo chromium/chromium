@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +21,8 @@ constexpr int kTabVerticalPadding = 2;
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
     TabCollectionNode* collection_node)
     : collection_node_(collection_node) {
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
+      std::make_unique<views::DelegatingLayoutManager>(this)));
   node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
       base::BindOnce(&VerticalUnpinnedTabContainerView::ResetCollectionNode,
                      base::Unretained(this)));

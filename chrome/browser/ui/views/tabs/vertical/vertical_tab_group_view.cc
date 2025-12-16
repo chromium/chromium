@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -48,7 +49,8 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
           GetTabGroupVisualDataFromNode(collection_node_)))),
       group_line_(AddChildView(std::make_unique<views::View>())) {
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
+      std::make_unique<views::DelegatingLayoutManager>(this)));
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabGroupView::ResetCollectionNode, base::Unretained(this)));
