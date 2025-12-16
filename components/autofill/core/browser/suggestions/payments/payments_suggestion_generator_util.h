@@ -181,6 +181,59 @@ bool IsCreditCardFooterSuggestion(
     const base::span<const Suggestion>& suggestions,
     size_t line_number);
 
+// Helper function to decide whether to show the virtual card option for
+// `candidate_card`.
+// TODO(crbug.com/326950201): Pass the argument by reference.
+bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+                                 const AutofillClient& client);
+
+// Determines whether the "Save and Fill" suggestion should be shown in the
+// credit card autofill dropdown. The suggestion is shown if all of the
+// conditions are met.
+bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
+                                     bool is_complete_form,
+                                     const FormFieldData& trigger_field);
+
+// Returns non credit card suggestions which are displayed below credit card
+// suggestions in the Autofill popup. `should_show_scan_credit_card` is used
+// to conditionally add scan credit card suggestion. `is_autofilled` is used to
+// conditionally add suggestion for clearing all autofilled fields.
+// `should_show_bnpl_suggestion` is used to conditionally append a BNPL
+// suggestion to the end of the payment methods suggestions.
+// `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
+// payment methods suggestion.
+std::vector<Suggestion> GetCreditCardFooterSuggestions(
+    const AutofillClient& client,
+    bool should_show_bnpl_suggestion,
+    bool should_show_scan_credit_card,
+    bool is_autofilled,
+    bool with_gpay_logo);
+
+// Creates a suggestion for the given `credit_card`. `virtual_card_option`
+// suggests whether the suggestion is a virtual card option.
+// `card_linked_offer_available` indicates whether a card-linked offer is
+// attached to the `credit_card`. `metadata_logging_context` contains card
+// metadata related information used for metrics logging.
+// TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
+// Keyboard Accessory.
+Suggestion CreateCreditCardSuggestion(
+    const CreditCard& credit_card,
+    const AutofillClient& client,
+    FieldType trigger_field_type,
+    bool virtual_card_option,
+    bool card_linked_offer_available,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+
+// Returns a mapping of credit card guid values to virtual card last fours for
+// standalone CVC field. Cards will only be added to the returned map if they
+// have usage data on the webpage and the VCN last four was found on webpage
+// DOM.
+base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+GetVirtualCreditCardsForStandaloneCvcField(
+    const PaymentsDataManager& data_manager,
+    const url::Origin& origin,
+    const std::vector<std::string>& four_digit_combinations_in_dom);
+
 // Exposes `GetOrderedCardsToSuggest` in tests.
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     const AutofillClient& client,
