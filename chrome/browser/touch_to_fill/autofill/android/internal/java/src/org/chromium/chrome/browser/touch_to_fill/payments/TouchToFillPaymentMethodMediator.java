@@ -310,7 +310,6 @@ class TouchToFillPaymentMethodMediator {
 
     // LINT.IfChange
 
-    // TODO(crbug.com/438785863): Add ToS user actions.
     @VisibleForTesting
     static final String TOUCH_TO_FILL_BNPL_USER_ACTION = "Autofill.TouchToFill.Bnpl.UserAction";
 
@@ -678,8 +677,6 @@ class TouchToFillPaymentMethodMediator {
                         .setExtractedAmount(isAmountSupportedByAnyIssuer ? extractedAmount : null);
                 showBnplIssuers(bnplIssuerContexts);
             } else {
-                // TODO(crbug.com/438784412): If the amount exists but is not supported by any
-                // issuer, we still need to gray out BNPL suggestion on the home screen.
                 showErrorScreen(
                         mContext.getString(R.string.autofill_bnpl_error_dialog_title),
                         mContext.getString(R.string.autofill_bnpl_temporary_error_description));
@@ -1035,8 +1032,6 @@ class TouchToFillPaymentMethodMediator {
     private void showHomeScreen() {
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         if (mSuggestions != null) {
-            // TODO(crbug.com/438784993): Disable and grey out BNPL chip if no issuers are available
-            // for the transaction.
             // TODO(crbug.com/430575808): Reset mBnplIssuerContexts when navigating back to the
             // payment method home screen after pressing the back button.
             setPaymentMethodsHomeScreenItems();

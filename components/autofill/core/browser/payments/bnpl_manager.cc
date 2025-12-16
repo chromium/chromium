@@ -152,15 +152,6 @@ void BnplManager::OnDidAcceptBnplSuggestion(
       break;
     }
     case kCheckAmountExtractionBeforeContinuingFlow: {
-      base::OnceClosure cancel_callback;
-#if BUILDFLAG(IS_ANDROID)
-      cancel_callback =
-          base::BindOnce(&BnplManager::OnTouchToFillIssuerSelectionCancelled,
-                         weak_factory_.GetWeakPtr());
-#else
-      cancel_callback =
-          base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr());
-#endif  // BUILDFLAG(IS_ANDROID)
       // Shows the issuer selection screen when amount extraction returns a
       // valid amount.
       if (ongoing_flow_state_->final_checkout_amount.has_value()) {
@@ -169,7 +160,8 @@ void BnplManager::OnDidAcceptBnplSuggestion(
                 GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
                 base::BindOnce(&BnplManager::OnIssuerSelected,
                                weak_factory_.GetWeakPtr()),
-                std::move(cancel_callback), HasSeenAmountExtractionAiTerms());
+                base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
+                HasSeenAmountExtractionAiTerms());
       } else {
         // We can only enter this branch if the user selected the BNPL chip
         // before amount extraction returned. If amount extraction had already
@@ -267,8 +259,6 @@ void BnplManager::OnAmountExtractionReturned(
         // screen is currently visible following the BNPL chip click. The UI
         // will then update its state based on the result of amount extraction.
         ongoing_flow_state_->final_checkout_amount = extracted_amount;
-        // TODO(crbug.com/438784412): Handle cases where the amount is present
-        // but unsupported by all issuers, or if the amount is null.
         payments_autofill_client().OnPurchaseAmountExtracted(
             extracted_amount.has_value() ? GetSortedBnplIssuerContext()
                                          : std::vector<BnplIssuerContext>(),
@@ -988,13 +978,5 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
 
   return result;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void BnplManager::OnTouchToFillIssuerSelectionCancelled() {
-  // TODO(crbug.com/430575808): Add a metric to track cancellations on the
-  // selection screen.
-  Reset();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill::payments
