@@ -292,4 +292,8 @@ bool IsGeminiPersonalizationEnabled();
 BASE_DECLARE_FEATURE(kGeminiCopresence);
 bool IsGeminiCopresenceEnabled();
 
+// Feature flag for  Gemini Dynamic Settings.
+BASE_DECLARE_FEATURE(kGeminiDynamicSettings);
+bool IsGeminiDynamicSettingsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

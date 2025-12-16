@@ -72,8 +72,7 @@
 }
 
 - (void)loadDynamicSettings {
-  // TODO(crbug.com/467402810): Use flag for dynamic settings instead of p13n
-  if (IsGeminiPersonalizationEnabled()) {
+  if (IsGeminiDynamicSettingsEnabled()) {
     NSArray<GeminiSettingsMetadata*>* eligibleSettingsMetadata =
         ios::provider::GetEligibleSettings(_authService);
 

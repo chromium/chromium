@@ -404,3 +404,9 @@ BASE_FEATURE(kGeminiCopresence, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiCopresenceEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCopresence);
 }
+
+BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiDynamicSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiDynamicSettings);
+}

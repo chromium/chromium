@@ -5479,6 +5479,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "gemini-dynamic-settings",
+    "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-full-chat-history",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148

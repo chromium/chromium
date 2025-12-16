@@ -690,6 +690,10 @@ const char kGeminiCrossTabName[] = "Gemini Cross Tab";
 const char kGeminiCrossTabDescription[] =
     "When enabled, the Gemini floaty conversation persists across all tabs.";
 
+const char kGeminiDynamicSettingsName[] = "Gemini Dynamic Settings";
+const char kGeminiDynamicSettingsDescription[] =
+    "Enables loading Gemini settings dynamically using the Gemini SDK.";
+
 const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
 const char kGeminiFullChatHistoryDescription[] =
     "Enables the full chat history being shown in the floaty.";

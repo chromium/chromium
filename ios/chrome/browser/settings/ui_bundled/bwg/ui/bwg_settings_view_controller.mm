@@ -144,7 +144,7 @@ NSInteger const kDynamicSettingsIdOffset = 10000;
   [model setFooter:pageContentSharingFooterItem
       forSectionWithIdentifier:SectionIdentifierPageContent];
 
-  if (!IsGeminiPersonalizationEnabled()) {
+  if (!IsGeminiDynamicSettingsEnabled()) {
     [model addSectionWithIdentifier:SectionIdentifierActivity];
     [model addItem:[self BWGAppActivityItem]
         toSectionWithIdentifier:SectionIdentifierActivity];
@@ -286,7 +286,8 @@ NSInteger const kDynamicSettingsIdOffset = 10000;
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
 
-  if (sectionIdentifier >= kDynamicSettingsIdOffset) {
+  if (IsGeminiDynamicSettingsEnabled() &&
+      sectionIdentifier >= kDynamicSettingsIdOffset) {
     NSInteger potentialDynamicSettingsId =
         sectionIdentifier - kDynamicSettingsIdOffset;
     switch (potentialDynamicSettingsId) {
