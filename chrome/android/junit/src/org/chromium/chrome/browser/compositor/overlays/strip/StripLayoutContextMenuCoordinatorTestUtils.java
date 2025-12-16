@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.listmenu.ListItemType.DIVIDER;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
@@ -114,8 +113,7 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
         int modelListSizeBeforeNav = modelList.size();
         var moveToOtherWindowItem = modelList.get(indexOfAddToWindow);
         var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
-        int expectedNumberOfItems =
-                1 + (otherWindowTitles.isEmpty() ? 0 : 1 + otherWindowTitles.size());
+        int expectedNumberOfItems = 1 + otherWindowTitles.size();
         assertEquals(
                 "Submenu should have "
                         + expectedNumberOfItems
@@ -147,25 +145,21 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                 R.string.menu_new_window,
                 modelList.get(1).model.get(TITLE_ID));
         if (!otherWindowTitles.isEmpty()) {
-            assertEquals(
-                    "Expected 3rd item to be divider, but was " + getDebugString(modelList),
-                    DIVIDER,
-                    modelList.get(2).type);
             for (int i = 0; i < otherWindowTitles.size(); i++) {
                 assertEquals(
-                        "Expected window row at position " + (i + 3) + " to have MENU_ITEM type",
+                        "Expected window row at position " + (i + 2) + " to have MENU_ITEM type",
                         MENU_ITEM,
-                        modelList.get(1).type);
+                        modelList.get(i + 2).type);
                 assertEquals(
                         "Expected window row at position "
                                 + (i + 2)
                                 + " to have text "
                                 + otherWindowTitles.get(i),
                         otherWindowTitles.get(i),
-                        modelList.get(i + 3).model.get(TITLE));
+                        modelList.get(i + 2).model.get(TITLE));
                 assertTrue(
-                        "Expected window row at position " + (i + 3) + " to be enabled",
-                        modelList.get(i + 3).model.get(ENABLED));
+                        "Expected window row at position " + (i + 2) + " to be enabled",
+                        modelList.get(i + 2).model.get(ENABLED));
             }
         }
         headerItem.model.get(CLICK_LISTENER).onClick(new View(activity));
@@ -197,8 +191,8 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
             ModelList modelList, int moveToOtherWindowIdx, String expectedWindowTitle, View view) {
         var moveToOtherWindowItem = modelList.get(moveToOtherWindowIdx);
         moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(view);
-        assertEquals("Expected model list to have 4 items", 4, modelList.size());
-        MVCListAdapter.ListItem windowRowItem = modelList.get(3);
+        assertEquals("Expected model list to have 3 items", 3, modelList.size());
+        MVCListAdapter.ListItem windowRowItem = modelList.get(2);
         assertEquals("Expected 4th item to be a menu item", MENU_ITEM, windowRowItem.type);
         assertEquals(
                 "Expected 4th item to display the name of the other window",

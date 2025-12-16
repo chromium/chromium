@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
@@ -492,7 +491,6 @@ public abstract class TabOverflowMenuCoordinator<T>
         List<InstanceInfo> activeInstances =
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
         if (activeInstances.size() > 1) {
-            submenuItems.add(buildMenuDivider(isIncognito));
             for (InstanceInfo instanceInfo : activeInstances) {
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
                     continue;

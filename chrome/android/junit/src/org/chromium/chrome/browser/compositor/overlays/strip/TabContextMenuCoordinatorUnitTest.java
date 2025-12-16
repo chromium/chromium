@@ -1373,9 +1373,9 @@ public class TabContextMenuCoordinatorUnitTest {
         assertNotNull(moveToWindowItem);
 
         var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
-        assertEquals("Submenu should have 3 items", 3, subMenu.size());
+        assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
-        ListItem otherWindowItem = subMenu.get(2);
+        ListItem otherWindowItem = subMenu.get(1);
         assertEquals(
                 "The title for the other window should be the incognito window title string.",
                 mActivity.getString(R.string.instance_switcher_entry_empty_window),
@@ -1402,13 +1402,13 @@ public class TabContextMenuCoordinatorUnitTest {
         var subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
         assertNotNull("Submenu should be present", subMenu);
         assertEquals(
-                "Submenu should have 3 items, but was " + getDebugString(subMenu),
-                3,
+                "Submenu should have 2 items, but was " + getDebugString(subMenu),
+                2,
                 subMenu.size());
         addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
         assertEquals(
-                "Expected 4 items to be displayed, but was " + getDebugString(modelList),
-                4,
+                "Expected 3 items to be displayed, but was " + getDebugString(modelList),
+                3,
                 modelList.size());
         ListItem headerItem = modelList.get(0);
         assertEquals(
@@ -1430,14 +1430,12 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(1).model.get(TITLE_ID));
         assertTrue("Expected New Group item to be enabled", modelList.get(1).model.get(ENABLED));
         assertEquals(
-                "Expected 3rd submenu item to have DIVIDER type", DIVIDER, modelList.get(2).type);
-        assertEquals(
-                "Expected 4th submenu child to have MENU_ITEM type",
+                "Expected 3rd submenu child to have MENU_ITEM type",
                 MENU_ITEM,
-                modelList.get(3).type);
-        PropertyModel tabGroupRowModel = modelList.get(3).model;
+                modelList.get(2).type);
+        PropertyModel tabGroupRowModel = modelList.get(2).model;
         assertEquals(
-                "Expected 4th submenu child to contain the tab group identifier",
+                "Expected 3rd submenu child to contain the tab group identifier",
                 expectedTabGroupName,
                 tabGroupRowModel.get(TITLE));
         GradientDrawable drawable = (GradientDrawable) tabGroupRowModel.get(START_ICON_DRAWABLE);

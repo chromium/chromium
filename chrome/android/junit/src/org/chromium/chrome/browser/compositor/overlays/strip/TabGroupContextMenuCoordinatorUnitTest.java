@@ -992,9 +992,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertNotNull(moveToWindowItem);
 
         var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
-        assertEquals("Submenu should have 3 items", 3, subMenu.size());
+        assertEquals("Submenu should have 2 items", 2, subMenu.size());
 
-        ListItem otherWindowItem = subMenu.get(2);
+        ListItem otherWindowItem = subMenu.get(1);
         assertEquals(
                 "The title for the other window should be the incognito window title string.",
                 mActivity.getString(R.string.instance_switcher_entry_empty_window),

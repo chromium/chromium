@@ -470,7 +470,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
                         : getRegularTabGroups(tabs, groupToNotBeIncluded);
         if (!potentialGroups.isEmpty()) {
-            submenuItems.add(buildMenuDivider(isIncognito));
             submenuItems.addAll(potentialGroups);
         }
 
