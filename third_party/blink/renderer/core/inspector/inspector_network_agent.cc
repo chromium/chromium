@@ -785,6 +785,24 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
   NOTREACHED();
 }
 
+String RenderBlockingBehaviorToString(RenderBlockingBehavior behavior) {
+  switch (behavior) {
+    case RenderBlockingBehavior::kUnset:
+      NOTREACHED();
+    case RenderBlockingBehavior::kNonBlocking:
+      return protocol::Network::RenderBlockingBehaviorEnum::NonBlocking;
+    case RenderBlockingBehavior::kBlocking:
+      return protocol::Network::RenderBlockingBehaviorEnum::Blocking;
+    case RenderBlockingBehavior::kPotentiallyBlocking:
+      return protocol::Network::RenderBlockingBehaviorEnum::PotentiallyBlocking;
+    case RenderBlockingBehavior::kNonBlockingDynamic:
+      return protocol::Network::RenderBlockingBehaviorEnum::NonBlockingDynamic;
+    case RenderBlockingBehavior::kInBodyParserBlocking:
+      return protocol::Network::RenderBlockingBehaviorEnum::
+          InBodyParserBlocking;
+  }
+}
+
 }  // namespace
 
 // static
@@ -802,8 +820,9 @@ InspectorNetworkAgent::URLPatternMatcher::Create(const String& pattern,
 }
 
 void InspectorNetworkAgent::Restore() {
-  if (enabled_.Get())
+  if (enabled_.Get()) {
     Enable();
+  }
   if (!blocked_patterns_cbor_.Get().empty()) {
     protocol::Array<protocol::Network::BlockPattern> blocked_patterns;
     crdtp::DeserializerState state(blocked_patterns_cbor_.Get());
@@ -856,18 +875,21 @@ static bool FormDataToString(
     protocol::Array<protocol::Network::PostDataEntry>* data_entries,
     String* content) {
   *content = "";
-  if (!body || body->IsEmpty())
+  if (!body || body->IsEmpty()) {
     return false;
+  }
 
   // SizeInBytes below doesn't support all element types, so first check if all
   // the body elements are of the right type.
   for (const auto& element : body->Elements()) {
-    if (element.type_ != FormDataElement::kData)
+    if (element.type_ != FormDataElement::kData) {
       return true;
+    }
   }
 
-  if (max_body_size != 0 && body->SizeInBytes() > max_body_size)
+  if (max_body_size != 0 && body->SizeInBytes() > max_body_size) {
     return true;
+  }
 
   for (const auto& element : body->Elements()) {
     auto data_entry = protocol::Network::PostDataEntry::create().build();
@@ -892,8 +914,9 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
     const net::SSLInfo& ssl_info) {
   // This function should be kept in sync with the corresponding function in
   // network_handler.cc in //content.
-  if (!ssl_info.cert)
+  if (!ssl_info.cert) {
     return nullptr;
+  }
   auto signed_certificate_timestamp_list = std::make_unique<
       protocol::Array<protocol::Network::SignedCertificateTimestamp>>();
   for (auto const& sct : ssl_info.signed_certificate_timestamps) {
@@ -975,11 +998,13 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
   if (ssl_info.key_exchange_group != 0) {
     const char* key_exchange_group =
         SSL_get_curve_name(ssl_info.key_exchange_group);
-    if (key_exchange_group)
+    if (key_exchange_group) {
       security_details->setKeyExchangeGroup(key_exchange_group);
+    }
   }
-  if (mac)
+  if (mac) {
     security_details->setMac(mac);
+  }
   if (ssl_info.peer_signature_algorithm != 0) {
     security_details->setServerSignatureAlgorithm(
         ssl_info.peer_signature_algorithm);
@@ -1018,12 +1043,15 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
   if (url.HasFragmentIdentifier()) {
     result->setUrlFragment(StrCat({"#", url.FragmentIdentifier().ToString()}));
   }
-  if (!data_string.empty())
+  if (!data_string.empty()) {
     result->setPostData(data_string);
-  if (data_entries->size())
+  }
+  if (data_entries->size()) {
     result->setPostDataEntries(std::move(data_entries));
-  if (has_post_data)
+  }
+  if (has_post_data) {
     result->setHasPostData(true);
+  }
   if (request.TrustTokenParams()) {
     result->setTrustTokenParams(
         BuildTrustTokenParams(*request.TrustTokenParams()));
@@ -1071,8 +1099,9 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
                                const ExecutionContext* context,
                                const Resource* cached_resource = nullptr,
                                bool* is_empty = nullptr) {
-  if (response.IsNull())
+  if (response.IsNull()) {
     return nullptr;
+  }
 
   int status = response.HttpStatusCode();
   String status_text = response.HttpStatusText();
@@ -1112,8 +1141,9 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     }
   }
 
-  if (is_empty)
+  if (is_empty) {
     *is_empty = !status && mime_type.empty() && !headers_map.size();
+  }
 
   std::unique_ptr<protocol::Network::Response> response_object =
       protocol::Network::Response::create()
@@ -1224,8 +1254,9 @@ void InspectorNetworkAgent::Trace(Visitor* visitor) const {
 }
 
 void InspectorNetworkAgent::ShouldBlockRequest(const KURL& url, bool* result) {
-  if (blocked_pattern_matchers_.empty() && blocked_urls_.IsEmpty())
+  if (blocked_pattern_matchers_.empty() && blocked_urls_.IsEmpty()) {
     return;
+  }
 
   GURL gurl(url);
   for (const auto& matcher : blocked_pattern_matchers_) {
@@ -1247,8 +1278,9 @@ void InspectorNetworkAgent::ShouldBlockRequest(const KURL& url, bool* result) {
 }
 
 void InspectorNetworkAgent::ShouldBypassServiceWorker(bool* result) {
-  if (bypass_service_worker_.Get())
+  if (bypass_service_worker_.Get()) {
     *result = true;
+  }
 }
 
 void InspectorNetworkAgent::DidBlockRequest(
@@ -1262,8 +1294,9 @@ void InspectorNetworkAgent::DidBlockRequest(
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request,
+
                           ResourceResponse(), options, type,
-                          base::TimeTicks::Now());
+                          base::TimeTicks::Now(), std::nullopt);
 
   String request_id = RequestId(loader, request.InspectorId());
 
@@ -1302,8 +1335,9 @@ String InspectorNetworkAgent::RequestId(DocumentLoader* loader,
   // It's difficult to go from a loader to an execution context, and in the case
   // of iframes the loader that is resolved via |GetTargetExecutionContext()| is
   // not the intended loader
-  if (loader)
+  if (loader) {
     return IdentifiersFactory::RequestId(loader, identifier);
+  }
   return IdentifiersFactory::RequestId(GetTargetExecutionContext(), identifier);
 }
 
@@ -1314,7 +1348,8 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     const ResourceResponse& redirect_response,
     const ResourceLoaderOptions& options,
     InspectorPageAgent::ResourceType type,
-    base::TimeTicks timestamp) {
+    base::TimeTicks timestamp,
+    std::optional<RenderBlockingBehavior> render_blocking_behavior) {
   String loader_id = IdentifiersFactory::LoaderId(loader);
   String request_id = RequestId(loader, request.InspectorId());
   NetworkResourcesData::ResourceData const* data =
@@ -1343,8 +1378,9 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     type = InspectorPageAgent::kPingResource;
   }
 
-  if (pending_request_type_)
+  if (pending_request_type_) {
     type = *pending_request_type_;
+  }
   resources_data_->SetResourceType(request_id, type);
 
   String frame_id = loader && loader->GetFrame()
@@ -1371,21 +1407,31 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   request_info->setReferrerPolicy(
       GetReferrerPolicy(request.GetReferrerPolicy()));
-  if (options.initiator_info.is_link_preload)
+  if (options.initiator_info.is_link_preload) {
     request_info->setIsLinkPreload(true);
+  }
 
   String resource_type = InspectorPageAgent::ResourceTypeJson(type);
   String documentURL = loader
                            ? UrlWithoutFragment(loader->Url()).GetString()
                            : UrlWithoutFragment(fetch_context_url).GetString();
   std::optional<String> maybe_frame_id;
-  if (!frame_id.empty())
+  if (!frame_id.empty()) {
     maybe_frame_id = frame_id;
+  }
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
     request_info->setIsSameSite(
         loader->GetFrame()->GetDocument()->SiteForCookies().IsFirstParty(
             GURL(request.Url())));
   }
+
+  std::optional<String> protocol_render_blocking_behavior;
+  if (render_blocking_behavior &&
+      *render_blocking_behavior != RenderBlockingBehavior::kUnset) {
+    protocol_render_blocking_behavior =
+        RenderBlockingBehaviorToString(*render_blocking_behavior);
+  }
+
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
       timestamp.since_origin().InSecondsF(),
@@ -1393,9 +1439,11 @@ void InspectorNetworkAgent::WillSendRequestInternal(
       redirect_response.EmittedExtraInfo(),
       BuildObjectForResourceResponse(redirect_response,
                                      GetTargetExecutionContext()),
-      resource_type, std::move(maybe_frame_id), request.HasUserGesture());
-  if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously)
+      resource_type, std::move(maybe_frame_id), request.HasUserGesture(),
+      std::move(protocol_render_blocking_behavior));
+  if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously) {
     GetFrontend()->flush();
+  }
 
   if (pending_xhr_replay_data_) {
     resources_data_->SetXHRReplayData(request_id,
@@ -1417,10 +1465,11 @@ void InspectorNetworkAgent::WillSendNavigationRequest(
       resources_data_->Data(request_id);
   // Support for POST request redirect.
   scoped_refptr<EncodedFormData> post_data;
-  if (data)
+  if (data) {
     post_data = data->PostData();
-  else if (http_body)
+  } else if (http_body) {
     post_data = http_body->DeepCopy();
+  }
   resources_data_->ResourceCreated(request_id, loader_id, url, post_data);
   resources_data_->SetResourceType(request_id,
                                    InspectorPageAgent::kDocumentResource);
@@ -1447,8 +1496,9 @@ void InspectorNetworkAgent::SetDevToolsIds(
   // are unexpected to the user and usually do not hit the remote server).
   // Ignore them and do not set the devtools id, so that other systems like
   // network interceptor in the browser do not mistakenly report it.
-  if (initiator_info.name == fetch_initiator_type_names::kInternal)
+  if (initiator_info.name == fetch_initiator_type_names::kInternal) {
     return;
+  }
   request.SetDevToolsToken(devtools_token_);
 
   // The loader parameter is for generating a browser generated ID for a browser
@@ -1463,8 +1513,9 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
                                            ResourceLoaderOptions& options,
                                            ResourceType resource_type) {
   // Ignore the request initiated internally.
-  if (options.initiator_info.name == fetch_initiator_type_names::kInternal)
+  if (options.initiator_info.name == fetch_initiator_type_names::kInternal) {
     return;
+  }
 
   if (!extra_request_headers_.IsEmpty()) {
     for (const String& key : extra_request_headers_.Keys()) {
@@ -1492,8 +1543,9 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
       request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
     }
   }
-  if (bypass_service_worker_.Get())
+  if (bypass_service_worker_.Get()) {
     request.SetSkipServiceWorker(true);
+  }
 
   if (attach_debug_stack_enabled_.Get() &&
       // Preserving existing stack id when cloning requests instead of
@@ -1519,8 +1571,9 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
           base::RefCountedData<base::flat_set<net::SourceStreamType>>>();
     }
     if (!accepted_encodings_.Get("none")) {
-      for (auto key : accepted_encodings_.Keys())
+      for (auto key : accepted_encodings_.Keys()) {
         accepted_stream_types->data.insert(SourceTypeFromString(key));
+      }
     }
     request.SetDevToolsAcceptedStreamTypes(std::move(accepted_stream_types));
   }
@@ -1537,14 +1590,16 @@ void InspectorNetworkAgent::WillSendRequest(
     RenderBlockingBehavior render_blocking_behavior,
     base::TimeTicks timestamp) {
   // Ignore the request initiated internally.
-  if (options.initiator_info.name == fetch_initiator_type_names::kInternal)
+  if (options.initiator_info.name == fetch_initiator_type_names::kInternal) {
     return;
+  }
 
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request, redirect_response,
-                          options, type, timestamp);
+                          options, type, timestamp,
+                          std::make_optional(render_blocking_behavior));
 }
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,

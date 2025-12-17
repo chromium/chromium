@@ -1,0 +1,10 @@
+Tests that Network.requestWillBeSent reports render blocking status.
+async: PotentiallyBlocking
+default-blocking: Blocking
+default-blocking-css: Blocking
+defer: NonBlocking
+dynamic: NonBlocking
+dynamic-style: NonBlockingDynamic
+dynamic-style-blocking: Blocking
+non-blocking-media: NonBlocking
+

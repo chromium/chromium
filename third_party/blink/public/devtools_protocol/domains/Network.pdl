@@ -166,6 +166,15 @@ domain Network
       High
       VeryHigh
 
+  # The render blocking behavior of a resource request.
+  experimental type RenderBlockingBehavior extends string
+    enum
+      Blocking
+      InBodyParserBlocking
+      NonBlocking
+      NonBlockingDynamic
+      PotentiallyBlocking
+
   # Post data entry for HTTP request
   type PostDataEntry extends object
     properties
@@ -1498,6 +1507,8 @@ domain Network
       optional Page.FrameId frameId
       # Whether the request is initiated by a user gesture. Defaults to false.
       optional boolean hasUserGesture
+      # The render blocking behavior of the request.
+      experimental optional RenderBlockingBehavior renderBlockingBehavior
 
   # Fired when resource loading priority is changed
   experimental event resourceChangedPriority
