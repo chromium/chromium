@@ -577,10 +577,9 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     TRACE_EVENT1("media,gpu", "VAVEA::EncodeTask", "timestamp",
                  frame->timestamp().InMicroseconds());
     // |frame| can be nullptr to indicate a flush.
-    const bool is_expected_storage_type =
-        native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
-            : frame->IsMappable();
+    const bool is_expected_storage_type = native_input_mode_
+                                              ? frame->HasMappableSharedImage()
+                                              : frame->IsMappable();
     if (!is_expected_storage_type) {
       NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                    "Unexpected storage: " +
@@ -602,7 +601,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
-  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
+  DCHECK(frame.HasMappableSharedImage());
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
 
   if (frame.format() != PIXEL_FORMAT_NV12) {
