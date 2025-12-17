@@ -5,15 +5,19 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_API_H_
 
+#include <optional>
 #include <string>
 
-#include "components/tab_groups/tab_group_visual_data.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/range/range.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Browser;
 namespace tab_groups {
 class TabGroupId;
+class TabGroupVisualData;
 }
 
 namespace extensions {

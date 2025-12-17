@@ -17,14 +17,11 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
@@ -34,19 +31,34 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 using tabs::TabModel;
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kCannotMoveGroupIntoMiddleOfOtherGroupError[] =
     "Cannot move the group to an index that is in the middle of another group.";
 constexpr char kCannotMoveGroupIntoMiddleOfPinnedTabsError[] =
     "Cannot move the group to an index that is in the middle of pinned tabs.";
+#else
+constexpr char kNotYetImplementedError[] =
+    "Not yet implemented on this platform.";
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Returns true if a group could be moved into the |target_index| of the given
 // |tab_strip|. Sets the |error| string otherwise.
 bool IndexSupportsGroupMove(TabStripModel* tab_strip,
@@ -74,10 +86,15 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 
   return true;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return RespondNow(Error(kNotYetImplementedError));
+#else
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
   DCHECK(params.has_value());
@@ -98,9 +115,14 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       ExtensionTabUtil::CreateTabGroupObject(id, *visual_data))));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return RespondNow(Error(kNotYetImplementedError));
+#else
   std::optional<api::tab_groups::Query::Params> params =
       api::tab_groups::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -191,9 +213,14 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       });
 
   return RespondNow(WithArguments(std::move(result_list)));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return RespondNow(Error(kNotYetImplementedError));
+#else
   std::optional<api::tab_groups::Update::Params> params =
       api::tab_groups::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -253,9 +280,14 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       ExtensionTabUtil::CreateTabGroupObject(tab_group->id(),
                                              *tab_group->visual_data()))));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return RespondNow(Error(kNotYetImplementedError));
+#else
   std::optional<api::tab_groups::Move::Params> params =
       api::tab_groups::Move::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -277,6 +309,7 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       *ExtensionTabUtil::CreateTabGroupObject(group))));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
@@ -284,6 +317,10 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return false;
+#else
   WindowController* source_window = nullptr;
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   if (!ExtensionTabUtil::GetGroupById(
@@ -376,6 +413,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   source_tab_strip->MoveGroupTo(*group, new_index);
 
   return true;
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
@@ -386,6 +424,10 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
     const gfx::Range& tabs,
     int new_index,
     std::string* error) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219902): Port to desktop Android.
+  return false;
+#else
   TabStripModel* target_tab_strip =
       ExtensionTabUtil::GetEditableTabStripModel(target_browser);
   if (!target_tab_strip) {
@@ -426,6 +468,7 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
                                              new_index);
 
   return true;
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

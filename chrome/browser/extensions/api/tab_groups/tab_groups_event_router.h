@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -24,6 +23,8 @@ namespace extensions {
 // inside extension process renderers.
 // TabGroupsEventRouter will only route events from windows/tabs within a
 // profile to extension processes in the same profile.
+// TODO(crbug.com/405219902): Port to desktop Android when there is a
+// replacement for TabStripModelObserver that understands tab groups.
 class TabGroupsEventRouter : public TabStripModelObserver,
                              public BrowserTabStripTrackerDelegate,
                              public KeyedService {

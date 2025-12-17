@@ -36,6 +36,7 @@ schema_sources_ = [
   "sessions.json",
   "scripting.idl",
   "tab_capture.idl",
+  "tab_groups.json",
   "tabs.json",
   "web_authentication_proxy.webidl",
   "web_navigation.json",
@@ -64,15 +65,6 @@ uncompiled_sources_ = [
 
 # Some APIs rely on types and headers from other APIs.
 types_only_schema_sources_ = []
-
-# The sessions API depends on tabGroups API types, but tabGroups has not yet
-# been ported to desktop Android. For now, include just the tabGroup types on
-# desktop Android and the full schema on other platforms.
-if (enable_desktop_android_extensions) {
-  types_only_schema_sources_ += [ "tab_groups.json" ]
-} else {
-  schema_sources_ += [ "tab_groups.json" ]
-}
 
 if (enable_extensions) {
   schema_sources_ += [

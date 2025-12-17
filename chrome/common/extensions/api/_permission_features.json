@@ -998,9 +998,7 @@
   "tabGroups": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "min_manifest_version": 3,
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "min_manifest_version": 3
   },
   "tabs": [
     {
