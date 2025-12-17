@@ -163,6 +163,13 @@ class CWVAutofillControllerTest : public web::WebTest {
         {autofill::AutofillJavaScriptFeature::GetInstance()});
   }
 
+  void TearDown() override {
+    password_manager_client_ = nullptr;
+    [password_controller_ stopMocking];
+    autofill_controller_ = nil;
+    web::WebTest::TearDown();
+  }
+
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
     web_frames_manager_->AddWebFrame(std::move(frame));
   }
