@@ -22,7 +22,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
-class SkRegion;
 
 namespace glic {
 
@@ -72,7 +71,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
               base::OnceClosure callback) override;
   void SetDraggableAreas(
       const std::vector<gfx::Rect>& draggable_areas) override;
-  void SetDraggableRegion(const SkRegion& draggable_region) override;
   void EnableDragResize(bool enabled) override;
   void Attach() override;
   void Detach() override;

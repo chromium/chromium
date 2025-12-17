@@ -47,6 +47,7 @@ WebUIContentsContainer::WebUIContentsContainer(
   CHECK(web_contents_);
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_contents_->SetSupportsDraggableRegions(true);
 
   web_contents_->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(

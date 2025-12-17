@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -152,12 +151,6 @@ void GlicFloatingUi::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
   if (auto* glic_view = GetGlicView()) {
     glic_view->SetDraggableAreas(draggable_areas);
-  }
-}
-
-void GlicFloatingUi::SetDraggableRegion(const SkRegion& draggable_region) {
-  if (auto* glic_view = GetGlicView()) {
-    glic_view->SetDraggableRegion(draggable_region);
   }
 }
 

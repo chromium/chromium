@@ -52,9 +52,11 @@ class GlicView : public views::WebView {
 
   // views::WebView:
   void SetWebContents(content::WebContents* web_contents) override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
 
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
-  void SetDraggableRegion(const SkRegion& region);
 
   bool IsPointWithinDraggableArea(const gfx::Point& point);
 
@@ -76,6 +78,8 @@ class GlicView : public views::WebView {
   }
 
  private:
+  void SetDraggableRegion(const SkRegion& region, bool for_webview);
+
   std::optional<SkColor> GetClientBackgroundColor();
 
   base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate_;
@@ -85,7 +89,9 @@ class GlicView : public views::WebView {
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
+
   SkRegion draggable_region_;
+  SkRegion webview_draggable_region_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};

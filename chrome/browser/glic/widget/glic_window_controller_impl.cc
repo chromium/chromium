@@ -61,7 +61,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -1225,13 +1224,6 @@ void GlicWindowControllerImpl::AddGlobalStateObserver(
 void GlicWindowControllerImpl::RemoveGlobalStateObserver(
     PanelStateObserver* observer) {
   RemoveStateObserver(observer);
-}
-
-void GlicWindowControllerImpl::SetDraggableRegion(
-    const SkRegion& draggable_region) {
-  if (auto* glic_view = GetGlicView(); glic_view) {
-    glic_view->SetDraggableRegion(draggable_region);
-  }
 }
 
 void GlicWindowControllerImpl::NotifyIfPanelStateChanged() {

@@ -32,7 +32,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
-class SkRegion;
 
 namespace tabs {
 class TabInterface;
@@ -114,7 +113,6 @@ class GlicInstanceCoordinatorImpl
 
   void AddGlobalStateObserver(StateObserver* observer) override;
   void RemoveGlobalStateObserver(StateObserver* observer) override;
-  void SetDraggableRegion(const SkRegion& draggable_region) override;
 
   bool IsDetached() const override;
   bool IsPanelShowingForBrowser(

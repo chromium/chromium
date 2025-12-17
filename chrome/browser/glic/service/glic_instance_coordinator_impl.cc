@@ -54,7 +54,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget_observer.h"
@@ -268,13 +267,6 @@ void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
   // the floating window is showing and one for the state of an individual
   // panel.
   NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::SetDraggableRegion(
-    const SkRegion& draggable_region) {
-  if (auto* floaty_instance = GetInstanceWithFloaty()) {
-    floaty_instance->host().SetPanelDraggableRegion(draggable_region);
-  }
 }
 
 bool GlicInstanceCoordinatorImpl::IsDetached() const {

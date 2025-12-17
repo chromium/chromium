@@ -24,7 +24,6 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget_observer.h"
 
-class SkRegion;
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -64,7 +63,6 @@ class GlicSidePanelUi
               base::OnceClosure callback) override;
   void SetDraggableAreas(
       const std::vector<gfx::Rect>& draggable_areas) override;
-  void SetDraggableRegion(const SkRegion& draggable_region) override;
   void EnableDragResize(bool enabled) override;
   void Attach() override;
   void Detach() override;

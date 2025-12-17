@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkRegion.h"
 
 namespace glic {
 
@@ -45,7 +44,6 @@ class MockGlicWindowController
   MOCK_METHOD(void, MaybeSetWidgetCanResize, (), (override));
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
   MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
-  MOCK_METHOD(void, SetDraggableRegion, (const SkRegion&), ());
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void,

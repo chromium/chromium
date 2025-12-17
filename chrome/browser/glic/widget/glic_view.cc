@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_variant.h"
@@ -78,18 +79,36 @@ void GlicView::SetWebContents(content::WebContents* web_contents) {
   }
 }
 
+void GlicView::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  // `GlicView::DraggableRegionsChanged()` is called when draggable regions for
+  // either the main-webcontents or guest-webcontents are changed.
+  // guest-webcontents are the webcontents associated to `<webview>` hosting the
+  // glic web app,
+  const bool is_webview_contents = web_contents() != contents;
+
+  SkRegion sk_region;
+  for (const auto& region : regions) {
+    sk_region.op(
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.right(), region->bounds.bottom()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+  }
+
+  SetDraggableRegion(sk_region, /*for_webview=*/is_webview_contents);
+}
+
 void GlicView::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
   draggable_areas_.assign(draggable_areas.begin(), draggable_areas.end());
 }
 
-void GlicView::SetDraggableRegion(const SkRegion& region) {
-  draggable_region_ = region;
-}
-
 bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
   if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    return draggable_region_.contains(point.x(), point.y());
+    // Draggable region of webview takes precedence.
+    return webview_draggable_region_.contains(point.x(), point.y()) ||
+           draggable_region_.contains(point.x(), point.y());
   }
 
   for (const gfx::Rect& rect : draggable_areas_) {
@@ -143,6 +162,10 @@ bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   }
 
   return false;
+}
+
+void GlicView::SetDraggableRegion(const SkRegion& region, bool for_webview) {
+  (for_webview ? webview_draggable_region_ : draggable_region_) = region;
 }
 
 std::optional<SkColor> GlicView::GetClientBackgroundColor() {

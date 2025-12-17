@@ -31,7 +31,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/skia/include/core/SkRegion.h"
 
 namespace glic {
 
@@ -515,10 +514,6 @@ void Host::SetPanelDraggableAreas(
   if (handler_info_ && handler_info_->page_handler == page_handler) {
     delegate_->SetDraggableAreas(draggable_areas);
   }
-}
-
-void Host::SetPanelDraggableRegion(const SkRegion& draggable_region) {
-  delegate_->SetDraggableRegion(draggable_region);
 }
 
 void Host::SetMinimumWidgetSize(GlicPageHandler* page_handler,
