@@ -30,6 +30,12 @@ AwWebPerformanceMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+AwWebPerformanceMetricsObserver::OnEnterBackForwardCache(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  return CONTINUE_OBSERVING;
+}
+
 void AwWebPerformanceMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   content::WebContents* web_contents = GetDelegate().GetWebContents();

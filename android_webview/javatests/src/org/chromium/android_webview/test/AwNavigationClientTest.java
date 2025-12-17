@@ -8,6 +8,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
@@ -21,9 +23,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.List;
@@ -90,6 +94,15 @@ public class AwNavigationClientTest extends AwParameterizedTest {
 
                 // Run the task once the DOM is ready
                 document.addEventListener('DOMContentLoaded', runHeavyTask);
+            """;
+    private static final String METRICS_BF_CACHE_JS =
+            """
+                let count = 0;
+                window.addEventListener('pageshow', (event) => {
+                        performance.mark('mark' + count);
+                        count++;
+                        testListener.postMessage("page shown");
+                });
             """;
 
     public AwNavigationClientTest(AwSettingsMutation param) {
@@ -272,6 +285,76 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                     "Time of mark differs between js and listener",
                     jsMark.getLong("startTime"),
                     listenerMark.markTimeMs);
+        }
+    }
+
+    // Test that web performance metrics are still recorded after a page is
+    // restored from the BFCache. For simplicity we test using performance mark only.
+    // See @link (AwWebPerformanceMetricsObserver::OnEnterBackForwardCache)
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testMetricsBFCache() throws Exception, Throwable {
+        AwContents awContents = mTestContainerView.getAwContents();
+        awContents.getSettings().setBackForwardCacheEnabled(true);
+
+        mActivityTestRule.getAwSettingsOnUiThread(awContents).setJavaScriptEnabled(true);
+
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                awContents, JS_OBJECT_NAME, new String[] {"*"}, listener);
+
+        // Load initial page
+        String testPageInitial =
+                mWebServer.setResponse(
+                        "/web_performance_metrics_initial.html",
+                        String.format(WEB_PERFORMANCE_METRICS_HTML, METRICS_BF_CACHE_JS),
+                        null);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testPageInitial);
+
+        // Wait for post message to verify page has been shown and mark should have been set
+        listener.waitForOnPostMessage();
+
+        // Check we obseve the first performance mark
+        List<TestAwNavigationListener.PerformanceMark> listenerPerformanceMarks =
+                mNavigationListener.getPerformanceMarks();
+        Assert.assertEquals(
+                "Initial load - number of marks observered via listener is incorrect",
+                1,
+                listenerPerformanceMarks.size());
+
+        // Navigate forward
+        String testPageForward =
+                mWebServer.setResponse(
+                        "/web_performance_metrics_forward.html",
+                        WEB_PERFORMANCE_METRICS_HTML,
+                        null);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testPageForward);
+
+        // Navigate back to initial page
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents.getWebContents(),
+                mContentsClient.getOnPageStartedHelper());
+
+        // Wait for post message to verify page has been shown again and mark should have been set
+        listener.waitForOnPostMessage();
+
+        // Check that we received another mark after the page was restored from the cache
+        listenerPerformanceMarks = mNavigationListener.getPerformanceMarks();
+        Assert.assertEquals(
+                "After restore - number of marks observered via listener is incorrect",
+                2,
+                listenerPerformanceMarks.size());
+        for (int i = 0; i < 2; i++) {
+            TestAwNavigationListener.PerformanceMark listenerMark = listenerPerformanceMarks.get(i);
+            String expectedMarkName = "mark" + i;
+            Assert.assertEquals(
+                    "Name of mark observered via listener is incorrect",
+                    expectedMarkName,
+                    listenerMark.markName);
         }
     }
 }
