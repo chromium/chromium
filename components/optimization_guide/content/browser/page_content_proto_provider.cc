@@ -71,10 +71,11 @@ class GetAIPageContentTimeoutHelper {
   base::OnceClosure GetClosureForMainFrame() {
     return base::BindOnce(
         &GetAIPageContentTimeoutHelper::OnMainFrameRunOrTimeout,
-        weak_ptr_factory_.GetWeakPtr());
+        weak_ptr_factory_.GetWeakPtr(),
+        /*did_timeout=*/false);
   }
 
-  void Start(base::OnceClosure callback,
+  void Start(base::OnceCallback<void(bool /*main_frame_did_timeout*/)> callback,
              std::optional<base::TimeDelta> subframe_timeout,
              std::optional<base::TimeDelta> main_frame_timeout) {
     CHECK(callback);
@@ -95,7 +96,8 @@ class GetAIPageContentTimeoutHelper {
           FROM_HERE, main_frame_timeout.value(),
           base::BindOnce(
               &GetAIPageContentTimeoutHelper::OnMainFrameRunOrTimeout,
-              base::Unretained(this)));
+              base::Unretained(this),
+              /*did_timeout=*/true));
     }
     std::move(concurrent_for_subframes_)
         .Done(base::BindOnce(
@@ -116,12 +118,12 @@ class GetAIPageContentTimeoutHelper {
     std::move(continue_callback).Run();
   }
 
-  void OnMainFrameRunOrTimeout() {
+  void OnMainFrameRunOrTimeout(bool did_timeout) {
     CHECK(!has_main_frame_run_or_timed_out_);
     has_main_frame_run_or_timed_out_ = true;
 
-    if (have_all_subframes_responded_or_timed_out_) {
-      std::move(callback_).Run();
+    if (did_timeout || have_all_subframes_responded_or_timed_out_) {
+      std::move(callback_).Run(did_timeout);
     }
   }
 
@@ -129,7 +131,8 @@ class GetAIPageContentTimeoutHelper {
     have_all_subframes_responded_or_timed_out_ = true;
     subframe_timeout_timer_.Stop();
     if (has_main_frame_run_or_timed_out_ && callback_) {
-      std::move(callback_).Run();
+      // If the main frame timed out it must already have invoked the callback.
+      std::move(callback_).Run(/*main_frame_did_timeout=*/false);
     }
   }
 
@@ -148,7 +151,7 @@ class GetAIPageContentTimeoutHelper {
   bool have_all_subframes_responded_or_timed_out_ = false;
   std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map_;
   base::ConcurrentClosures concurrent_for_subframes_;
-  base::OnceClosure callback_;
+  base::OnceCallback<void(bool /*main_frame_did_timeout*/)> callback_;
   base::WeakPtrFactory<GetAIPageContentTimeoutHelper> weak_ptr_factory_{this};
 };
 
@@ -441,11 +444,17 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
     ukm::SourceId source_id,
     const gfx::Size& main_frame_viewport,
     std::unique_ptr<GetAIPageContentTimeoutHelper> timeout_helper,
-    OnAIPageContentDone done_callback) {
+    OnAIPageContentDone done_callback,
+    bool main_frame_did_timeout) {
   optimization_guide::AIPageContentResult page_content;
   optimization_guide::FrameTokenSet frame_token_set;
   auto mode = main_frame_options->mode;
   bool on_critical_path = main_frame_options->on_critical_path;
+
+  if (main_frame_did_timeout) {
+    std::move(done_callback).Run(base::unexpected("Timeout in Main Frame"));
+    return;
+  }
 
   if (auto result = optimization_guide::ConvertAIPageContentToProto(
           std::move(main_frame_options), main_frame_token,
