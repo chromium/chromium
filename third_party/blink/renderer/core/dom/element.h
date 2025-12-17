@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/animation/animatable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
@@ -79,11 +78,14 @@ namespace blink {
 
 class AnchorElementObserver;
 class AnchorPositionScrollData;
+class Animation;
 class AnimationTrigger;
 class AriaNotificationOptions;
 class Attr;
 class Attribute;
+class CheckVisibilityOptions;
 class ColumnPseudoElement;
+class ComputedStyleBuilder;
 class ContainerQueryData;
 class ContainerQueryEvaluator;
 class ContentData;
@@ -93,26 +95,28 @@ class CSSPseudoElement;
 class CSSStyleDeclaration;
 class CustomElementDefinition;
 class CustomElementRegistry;
+class DisplayLockContext;
+class DisplayStyle;
+class Document;
 class DOMRect;
 class DOMRectList;
 class DOMStringMap;
 class DOMTokenList;
-class DisplayLockContext;
-class DisplayStyle;
-class Document;
 class EditContext;
+class Element;
 class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
 class ElementRareDataVector;
 class ExceptionState;
 class FocusOptions;
+class GetAnimationsOptions;
 class HTMLElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
-class InvokerData;
 class InterestInvokerTargetData;
+class InvokerData;
 class KURL;
 class Locale;
 class MutableCSSPropertyValueSet;
@@ -125,9 +129,10 @@ class PseudoElement;
 class ResizeObservation;
 class ResizeObserver;
 class ResizeObserverSize;
-class ScrollIntoViewOptions;
-class CheckVisibilityOptions;
 class ScopedCSSName;
+class ScriptState;
+class ScriptValue;
+class ScrollIntoViewOptions;
 class ScrollMarkerGroupData;
 class ScrollMarkerPseudoElement;
 class ScrollToOptions;
@@ -136,6 +141,7 @@ class SetHTMLUnsafeOptions;
 class ShadowRoot;
 class ShadowRootInit;
 class SpaceSplitString;
+class StyleAdjuster;
 class StyleEngine;
 class StyleHighlightData;
 class StylePropertyMap;
@@ -144,10 +150,9 @@ class StyleRecalcContext;
 class StyleScopeData;
 class TextVisitor;
 class V8UnionBooleanOrScrollIntoViewOptions;
+class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
 class V8UnionStringOrTrustedHTML;
-class ComputedStyleBuilder;
-class StyleAdjuster;
 
 template <typename IDLType>
 class FrozenArray;
@@ -272,11 +277,15 @@ static constexpr double kDefaultInterestDelayEndSeconds = 0.25;
 
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
+struct GetAnimationsOptionsResolved {
+  bool use_subtree;
+};
+
 // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-get-trusted-type-data-for-attribute
 typedef HashMap<AtomicString, std::pair<SpecificTrustedType, AtomicString>>
     AttrNameToTrustedType;
 
-class CORE_EXPORT Element : public ContainerNode, public Animatable {
+class CORE_EXPORT Element : public ContainerNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -297,8 +306,26 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kForce = 1,
   };
 
-  // Animatable implementation.
-  Element* GetAnimationTarget() override;
+  // Animatable implementation (most of it in animatable.cc).
+  // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
+
+  // Returns the target element of the animation that these methods are being
+  // called on.
+  Element* GetAnimationTarget();
+
+  Animation* animate(
+      ScriptState* script_state,
+      const ScriptValue& keyframes,
+      const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+      ExceptionState& exception_state);
+
+  Animation* animate(ScriptState*, const ScriptValue&, ExceptionState&);
+
+  HeapVector<Member<Animation>> getAnimations(
+      GetAnimationsOptions* options = nullptr);
+
+  HeapVector<Member<Animation>> GetAnimationsInternal(
+      GetAnimationsOptionsResolved options);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecopy, kBeforecopy)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecut, kBeforecut)
@@ -2568,6 +2595,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // only when they are added. Attribute _values_ are not part of this
   // filter, except for the values of class="".
   uint32_t attribute_or_class_bloom_ = 0;
+
+  // Do not add new members to Element without a good reason; prefer to
+  // add to ElementRareData unless it is performance-critical. Element
+  // is 88 bytes on typical 64-bit platforms, and growing it can cause
+  // both memory and performance regressions if you are not careful.
 };
 
 template <>

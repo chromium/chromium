@@ -1,8 +1,9 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "third_party/blink/renderer/core/animation/animatable.h"
+//
+// Implementation of the Animatable part of Element. (We don't make this
+// a separate interface, because it bloats the size of Element.)
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
@@ -54,7 +55,7 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
 }  // namespace
 
 // https://w3.org/TR/web-animations-1/#dom-animatable-animate
-Animation* Animatable::animate(
+Animation* Element::animate(
     ScriptState* script_state,
     const ScriptValue& keyframes,
     const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
@@ -108,9 +109,9 @@ Animation* Animatable::animate(
 }
 
 // https://w3.org/TR/web-animations-1/#dom-animatable-animate
-Animation* Animatable::animate(ScriptState* script_state,
-                               const ScriptValue& keyframes,
-                               ExceptionState& exception_state) {
+Animation* Element::animate(ScriptState* script_state,
+                            const ScriptValue& keyframes,
+                            ExceptionState& exception_state) {
   if (!script_state->ContextIsValid())
     return nullptr;
   Element* element = GetAnimationTarget();
@@ -130,14 +131,14 @@ Animation* Animatable::animate(ScriptState* script_state,
 }
 
 // https://w3.org/TR/web-animations-1/#dom-animatable-getanimations
-HeapVector<Member<Animation>> Animatable::getAnimations(
+HeapVector<Member<Animation>> Element::getAnimations(
     GetAnimationsOptions* options) {
   bool use_subtree = options && options->subtree();
   return GetAnimationsInternal(
       GetAnimationsOptionsResolved{.use_subtree = use_subtree});
 }
 
-HeapVector<Member<Animation>> Animatable::GetAnimationsInternal(
+HeapVector<Member<Animation>> Element::GetAnimationsInternal(
     GetAnimationsOptionsResolved options) {
   Element* element = GetAnimationTarget();
   if (options.use_subtree) {
