@@ -2,11 +2,12 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-html {
-  height: 100%;
-}
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
 
-body {
+:host {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -23,24 +24,25 @@ button {
 
 /* Header */
 
-#log-checkbox-container button {
+#logOptionsContainer button {
   margin-inline-end: 8px;
 }
 
-#log-checkbox-container,
+#logCheckboxContainer,
+#logOptionsContainer,
 label {
   align-items: center;
   display: inline-flex;
 }
 
-#log-level-select {
+#logLevelSelect {
   margin: 0 3px;
   padding: 0 5px;
 }
 
 /* Log */
 
-#log-container {
+#logContainer {
   border: 1px solid rgb(220, 220, 220);
   flex: 1 1 100%;
   font-size: 12px;
@@ -48,7 +50,7 @@ label {
   padding: 5px;
 }
 
-#log-container p {
+#logContainer p {
   font-family: monospace;
   line-height: 20px;
   margin: 2px;

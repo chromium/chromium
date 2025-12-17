@@ -37,6 +37,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//chrome/browser/resources/device_log:build_ts",
     "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
     "//chrome/browser/resources/extensions:build_ts",
