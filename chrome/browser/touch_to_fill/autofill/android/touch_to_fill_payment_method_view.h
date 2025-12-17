@@ -55,7 +55,6 @@ class TouchToFillPaymentMethodView {
       const std::u16string& title,
       const std::u16string& description) = 0;
   virtual bool ShowBnplIssuerTos(
-      const TouchToFillPaymentMethodViewController& controller,
       const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) = 0;
   virtual void Hide() = 0;
   virtual void SetVisible(bool visible) = 0;

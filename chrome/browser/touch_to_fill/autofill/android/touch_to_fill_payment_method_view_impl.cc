@@ -44,14 +44,11 @@ static base::android::ScopedJavaLocalRef<jobject>
 ConvertBnplIssuerTosDetailToJavaObject(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
-    const autofill::TouchToFillPaymentMethodViewController& controller,
     const autofill::payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
   return Java_BnplIssuerTosDetail_Constructor(
       env,
       std::string(
           ConvertToBnplIssuerIdString(bnpl_issuer_tos_detail.issuer_id)),
-      controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id),
-      controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id_dark),
       bnpl_issuer_tos_detail.is_linked_issuer,
       bnpl_issuer_tos_detail.issuer_name,
       autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
@@ -304,7 +301,6 @@ bool TouchToFillPaymentMethodViewImpl::ShowErrorScreen(
 }
 
 bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuerTos(
-    const TouchToFillPaymentMethodViewController& controller,
     const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
   if (!java_object_) {
     return false;  // View should already be shown.
@@ -314,7 +310,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuerTos(
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuerTos(
       env, java_object_,
-      ConvertBnplIssuerTosDetailToJavaObject(env, java_object_, controller,
+      ConvertBnplIssuerTosDetailToJavaObject(env, java_object_,
                                              bnpl_issuer_tos_detail));
 
   return true;

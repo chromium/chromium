@@ -231,17 +231,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuerTos(
     base::OnceClosure cancel_callback) {
   if (!view_ ||
       !view_->ShowBnplIssuerTos(
-          *this,
           payments::BnplIssuerTosDetail(
               bnpl_tos_model.issuer.issuer_id(),
-              /*header_icon_id=*/
-              payments::AndroidBnplUiDelegate::GetDuoBrandedIconForBnplIssuer(
-                  bnpl_tos_model.issuer.issuer_id(),
-                  /*is_dark_mode=*/false),
-              /*header_icon_id_dark=*/
-              payments::AndroidBnplUiDelegate::GetDuoBrandedIconForBnplIssuer(
-                  bnpl_tos_model.issuer.issuer_id(),
-                  /*is_dark_mode=*/true),
               /*is_linked_issuer=*/
               bnpl_tos_model.issuer.payment_instrument().has_value(),
               bnpl_tos_model.issuer.GetDisplayName(),

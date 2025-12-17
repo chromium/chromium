@@ -105,8 +105,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                const std::u16string& description));
   MOCK_METHOD(bool,
               ShowBnplIssuerTos,
-              (const TouchToFillPaymentMethodViewController& controller,
-               const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
+              (const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, SetVisible, (bool visible));
 };
@@ -545,13 +544,9 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       TestLegalMessageLine("This is the entire message.")};
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(*mock_view_,
-              ShowBnplIssuerTos(
-                  Ref(payment_method_controller()),
-                  FieldsAre(BnplIssuer::IssuerId::kBnplAffirm,
-                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM,
-                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK, true,
-                            u"Affirm", bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(FieldsAre(
+                               BnplIssuer::IssuerId::kBnplAffirm, true,
+                               u"Affirm", bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 
@@ -574,13 +569,9 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   bnpl_tos_model.issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(
-      *mock_view_,
-      ShowBnplIssuerTos(
-          Ref(payment_method_controller()),
-          FieldsAre(BnplIssuer::IssuerId::kBnplZip, IDR_AUTOFILL_GOOGLE_PAY_ZIP,
-                    IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, false, u"Zip",
-                    bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(FieldsAre(
+                               BnplIssuer::IssuerId::kBnplZip, false, u"Zip",
+                               bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 

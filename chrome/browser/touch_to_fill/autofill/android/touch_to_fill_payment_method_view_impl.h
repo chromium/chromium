@@ -69,7 +69,6 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                        const std::u16string& title,
                        const std::u16string& description) override;
   bool ShowBnplIssuerTos(
-      const TouchToFillPaymentMethodViewController& controller,
       const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) override;
   void Hide() override;
   void SetVisible(bool visible) override;
