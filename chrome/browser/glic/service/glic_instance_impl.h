@@ -51,6 +51,7 @@ class GlicZeroStateSuggestionsManager;
 // even if it has no GlicUiEmbedder showing the UI. A host could have many
 // different GlicUiEmbedders during its lifetime.
 class GlicInstanceImpl : public GlicInstance,
+                         public GlicInstanceHelper::Instance,
                          public BrowserListObserver,
                          public Host::InstanceDelegate,
                          public Host::Observer,

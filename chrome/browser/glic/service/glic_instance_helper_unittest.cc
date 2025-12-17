@@ -13,6 +13,20 @@
 
 namespace glic {
 
+class FakeGlicInstance : public GlicInstanceHelper::Instance {
+ public:
+  explicit FakeGlicInstance(InstanceId id) : id_(id) {}
+  ~FakeGlicInstance() = default;
+
+  const InstanceId& id() const override { return id_; }
+  std::optional<std::string> conversation_id() const override {
+    return "test_conversation_id";
+  }
+
+ private:
+  InstanceId id_;
+};
+
 class GlicInstanceHelperTest : public testing::Test {
  public:
   GlicInstanceHelperTest() = default;
@@ -45,12 +59,20 @@ TEST_F(GlicInstanceHelperTest, DestructionLogsNothingIfEmpty) {
 TEST_F(GlicInstanceHelperTest, LogsBindCount) {
   {
     GlicInstanceHelper helper(&mock_tab_);
-    InstanceId id1 = base::Uuid::GenerateRandomV4();
-    InstanceId id2 = base::Uuid::GenerateRandomV4();
-    helper.SetInstanceId(id1);
-    helper.SetInstanceId(id2);
-    // Duplicate should be ignored in count
-    helper.SetInstanceId(id1);
+    InstanceId id1_val = base::Uuid::GenerateRandomV4();
+    InstanceId id2_val = base::Uuid::GenerateRandomV4();
+    FakeGlicInstance instance1(id1_val);
+    FakeGlicInstance instance2(id2_val);
+
+    helper.SetBoundInstance(&instance1);
+    helper.SetBoundInstance(&instance2);
+    // Duplicate should be ignored in count (if it were the same instance ID,
+    // although here we are checking unique instance IDs bound).
+    // The metric logic counts unique IDs.
+    helper.SetBoundInstance(&instance1);
+
+    // Clean up to prevent UAF in helper destructor
+    helper.SetBoundInstance(nullptr);
   }
   histogram_tester_.ExpectUniqueSample("Glic.Tab.InstanceBindCount", 2, 1);
 }
@@ -58,9 +80,33 @@ TEST_F(GlicInstanceHelperTest, LogsBindCount) {
 TEST_F(GlicInstanceHelperTest, LogsPinCount) {
   {
     GlicInstanceHelper helper(&mock_tab_);
-    helper.OnPinnedByInstance(base::Uuid::GenerateRandomV4());
+    FakeGlicInstance instance(base::Uuid::GenerateRandomV4());
+    helper.OnPinnedByInstance(&instance);
+
+    // Cleanup
+    helper.OnUnpinnedByInstance(&instance);
   }
   histogram_tester_.ExpectUniqueSample("Glic.Tab.InstancePinCount", 1, 1);
+}
+
+TEST_F(GlicInstanceHelperTest, GettersWork) {
+  GlicInstanceHelper helper(&mock_tab_);
+  InstanceId id = base::Uuid::GenerateRandomV4();
+  FakeGlicInstance instance(id);
+
+  helper.SetBoundInstance(&instance);
+  EXPECT_EQ(helper.GetInstanceId(), id);
+  EXPECT_EQ(helper.GetConversationId(), "test_conversation_id");
+
+  helper.OnPinnedByInstance(&instance);
+  EXPECT_THAT(helper.GetPinnedInstances(), testing::ElementsAre(&instance));
+
+  helper.OnUnpinnedByInstance(&instance);
+  EXPECT_TRUE(helper.GetPinnedInstances().empty());
+
+  helper.SetBoundInstance(nullptr);
+  EXPECT_FALSE(helper.GetInstanceId().has_value());
+  EXPECT_FALSE(helper.GetConversationId().has_value());
 }
 
 TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoAction) {

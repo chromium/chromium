@@ -241,6 +241,14 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   for (const auto& key : keys) {
     UnbindEmbedder(key);
   }
+
+  for (auto* web_contents : sharing_manager().GetPinnedTabs()) {
+    if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+      if (auto* helper = GlicInstanceHelper::From(tab)) {
+        helper->OnUnpinnedByInstance(this);
+      }
+    }
+  }
 }
 
 glic::GlicInstanceMetrics* GlicInstanceImpl::instance_metrics() {
@@ -561,16 +569,20 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   instance_metrics_.OnUnbindEmbedder(key);
-  if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) &&
-      std::holds_alternative<tabs::TabInterface*>(key)) {
-    auto* tab = std::get<tabs::TabInterface*>(key);
+  if (auto* tab = std::get_if<tabs::TabInterface*>(&key)) {
+    auto tab_handle = (*tab)->GetHandle();
     std::optional<GlicPinnedTabUsage> usage =
-        sharing_manager().GetPinnedTabUsage(tab->GetHandle());
+        sharing_manager().GetPinnedTabUsage(tab_handle);
     // If the conversation hasn't had a turn since the tab was pinned and the
     // tab was not manually pinned, then we will unpin the tab.
-    if (usage.has_value() && usage->Unused() &&
+    if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) &&
+        usage.has_value() && usage->Unused() &&
         !usage->IsExplicitlyPinnedByUser()) {
-      sharing_manager().UnpinTabs({tab->GetHandle()});
+      sharing_manager().UnpinTabs({tab_handle});
+    }
+
+    if (auto* helper = GlicInstanceHelper::From(*tab)) {
+      helper->SetBoundInstance(nullptr);
     }
   }
 
@@ -892,7 +904,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   EmbedderEntry& new_entry = it->second;
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
-  helper->SetInstanceId(id_);
+  helper->SetBoundInstance(this);
   new_entry.destruction_subscription = helper->SubscribeToDestruction(
       base::BindRepeating(&GlicInstanceImpl::OnBoundTabDestroyed,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -1069,7 +1081,7 @@ void GlicInstanceImpl::Hibernate() {
 
 void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
                                                  bool pinned) {
-  if (!tab || !pinned) {
+  if (!tab) {
     return;
   }
 
@@ -1078,7 +1090,13 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
     return;
   }
 
-  helper->OnPinnedByInstance(id());
+  if (pinned) {
+    helper->OnPinnedByInstance(this);
+  } else {
+    helper->OnUnpinnedByInstance(this);
+    return;
+  }
+
   auto instance_id = helper->GetInstanceId();
   if (!base::FeatureList::IsEnabled(kGlicAlwaysBindOnPin) &&
       instance_id.has_value()) {
