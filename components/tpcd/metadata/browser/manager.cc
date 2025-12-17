@@ -164,11 +164,6 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
                    : content_settings::mojom::TpcdMetadataCohort::
                          GRACE_PERIOD_FORCED_ON;
 
-      if (parser_->get_metadata_source() == MetadataSource::kServer &&
-          Parser::IsTestEntry(metadata_entry)) {
-        helpers::WriteCohortDistributionMetrics(cohort.value());
-      }
-
       ScopedDictPrefUpdate update(&delegate_->GetLocalState(), prefs::kCohorts);
       update->Set(key_hash, static_cast<int32_t>(cohort.value()));
 
@@ -236,10 +231,6 @@ std::string GenerateKeyHash(const MetadataEntry& metadata_entry) {
   return base::Base64Encode(base::SHA1HashString(key));
 }
 
-void WriteCohortDistributionMetrics(
-    const content_settings::mojom::TpcdMetadataCohort& cohort) {
-  base::UmaHistogramEnumeration(kMetadataCohortDistributionHistogram, cohort);
-}
 }  // namespace helpers
 
 }  // namespace tpcd::metadata

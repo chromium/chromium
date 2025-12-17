@@ -2961,22 +2961,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Navigation.TpcdMitigations.MetadataCohortDistribution"
-    enum="TpcdMetadataCohort" expires_after="2026-01-18">
-  <owner>njeunje@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Represents the cohort related to the Stage rollback of the Third Party
-    Cookies Deprecation trial (TPCD) token grace period defined within the TPCD
-    Metadata.
-
-    This is reccorded only for a specific dummy entry within the TPCD Metadata.
-
-    This will help assess the uniformity in cohort distribution per the DTRP
-    (Deprecation Trial Rollout Percentage) attribute.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.TpcdMitigations.MetadataInstallationResult"
     enum="TpcdMetadataInstallationResult" expires_after="2026-07-13">
   <owner>njeunje@chromium.org</owner>
