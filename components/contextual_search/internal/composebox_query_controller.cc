@@ -1221,6 +1221,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     case lens::MimeType::kAnnotatedPageContent:
       CHECK(contextual_input_data->context_input.has_value() &&
             contextual_input_data->context_input->size() > 0);
+      [[fallthrough]];
+    case lens::MimeType::kUnknown:
       // Call CreateContentextualDataUploadPayload off the main thread to avoid
       // blocking the main thread on compression.
       create_request_task_runner_->PostTaskAndReplyWithResult(
@@ -1604,6 +1606,8 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
       interaction_data.set_interaction_type(
           lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
       break;
+    case lens::MimeType::kUnknown:
+      [[fallthrough]];
     case lens::MimeType::kImage:
       interaction_data.set_interaction_type(
           lens::LensOverlayInteractionRequestMetadata::REGION);
