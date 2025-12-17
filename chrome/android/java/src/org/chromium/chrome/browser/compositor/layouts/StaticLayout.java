@@ -42,6 +42,7 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
@@ -57,7 +58,10 @@ public class StaticLayout extends Layout {
     private static @Nullable Integer sToolbarTextBoxBackgroundColorForTesting;
 
     private final boolean mHandlesTabLifecycles;
-    private final boolean mNeedsOffsetTag;
+
+    // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
+    // on the TabStripSceneLayer already if tablet UI is present.
+    private final BooleanSupplier mNeedsOffsetTag;
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
@@ -107,7 +111,7 @@ public class StaticLayout extends Layout {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            boolean needsOffsetTag) {
+            BooleanSupplier needsOffsetTag) {
         this(
                 context,
                 updateHost,
@@ -137,7 +141,7 @@ public class StaticLayout extends Layout {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             @Nullable StaticTabSceneLayer testSceneLayer,
-            boolean needsOffsetTag) {
+            BooleanSupplier needsOffsetTag) {
         super(context, updateHost, renderHost);
 
         mContext = context;
@@ -184,7 +188,7 @@ public class StaticLayout extends Layout {
                             @BrowserControlsState int constraints,
                             boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            if (mNeedsOffsetTag) {
+                            if (mNeedsOffsetTag.getAsBoolean()) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET_TAG,
                                         offsetTagsInfo.getContentOffsetTag());

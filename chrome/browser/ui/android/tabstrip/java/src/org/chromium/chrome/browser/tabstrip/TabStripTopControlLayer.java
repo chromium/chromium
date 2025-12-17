@@ -129,6 +129,8 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
      */
     public void initializeWithNative(TabStripSceneLayerHolder tabStrip) {
         mTabStrip = tabStrip;
+
+        mTabStrip.updateOffsetTagsInfo(mOffsetTagsInfo);
     }
 
     public NonNullObservableSupplier<Integer> getSupplier() {
