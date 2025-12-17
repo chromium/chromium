@@ -21,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -61,7 +62,8 @@ enum class OnDeviceModelStatus {
   // has changed recently.
   kModelInstallerNotRegisteredForUnknownReason = 3,
   // The model is ready, but it wasn't ready early enough for
-  // OnDeviceModelServiceController to use it.
+  // OnDeviceModelServiceController to use it. (Not used anymore, keep it for
+  // logs in the past).
   kModelInstalledTooLate = 4,
   // The model is not ready, and the reason is unknown.
   kNotReadyForUnknownReason = 5,
@@ -150,6 +152,10 @@ struct OnDeviceModelRegistrationAttributes {
   std::vector<Hint> supported_hints;
 };
 
+using MaybeOnDeviceModelComponentState =
+    base::expected<std::reference_wrapper<const OnDeviceModelComponentState>,
+                   OnDeviceModelStatus>;
+
 // Manages the state of the on-device component.
 // This object needs to have lifetime equal to the browser process, and outside
 // of tests is created by a static NoDestructor initializer.
@@ -186,7 +192,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
    public:
     // Called whenever the on-device component state changes. `state` is null if
     // the component is not available.
-    virtual void StateChanged(const OnDeviceModelComponentState* state) = 0;
+    virtual void StateChanged(MaybeOnDeviceModelComponentState state) = 0;
   };
 
   struct RegistrationCriteria {
@@ -253,9 +259,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
-  // Returns the current OnDeviceModelStatus.
-  OnDeviceModelStatus GetOnDeviceModelStatus();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -317,6 +320,11 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   void UninstallComponent();
 
   void NotifyStateChanged();
+
+  MaybeOnDeviceModelComponentState GetOnDeviceModelState();
+
+  // Returns the current OnDeviceModelStatus.
+  OnDeviceModelStatus GetOnDeviceModelStatus();
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::SafeRef<PerformanceClassifier> performance_classifier_

@@ -92,13 +92,7 @@ void CloseFilesInBackground(on_device_model::ModelAssets assets) {
 
 OnDeviceModelEligibilityReason GetBaseModelError(
     mojom::OnDeviceFeature feature,
-    OnDeviceModelComponentStateManager* state_manager) {
-  if (!state_manager) {
-    return OnDeviceModelEligibilityReason::kModelNotEligible;
-  }
-  OnDeviceModelStatus on_device_model_status =
-      state_manager->GetOnDeviceModelStatus();
-
+    OnDeviceModelStatus on_device_model_status) {
   switch (on_device_model_status) {
     case OnDeviceModelStatus::kNotEligible:
       return OnDeviceModelEligibilityReason::kModelNotEligible;
@@ -145,8 +139,6 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     UsageTracker& usage_tracker,
     base::SafeRef<on_device_model::ServiceClient> service_client)
     : access_controller_(std::move(access_controller)),
-      on_device_component_state_manager_(
-          std::move(on_device_component_state_manager)),
       usage_tracker_(usage_tracker),
       service_client_(std::move(service_client)),
       safety_client_(service_client_->GetWeakPtr()),
@@ -162,7 +154,7 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
   model_metadata_loader_.emplace(
       base::BindRepeating(&OnDeviceModelServiceController::UpdateModel,
                           weak_ptr_factory_.GetWeakPtr()),
-      on_device_component_state_manager_);
+      std::move(on_device_component_state_manager));
 }
 
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
@@ -174,6 +166,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
               base::ToString(feature));
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
+
   return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
       OnDeviceModelEligibilityReason::kSuccess);
 }
@@ -226,12 +219,21 @@ void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
 }
 
 void OnDeviceModelServiceController::UpdateModel(
-    std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
+    MaybeOnDeviceModelMetadata model_metadata) {
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelServiceController::UpdateModel", "has_model",
-              !!model_metadata);
-  base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(),
-                                 std::move(model_metadata));
+              model_metadata.has_value());
+
+  if (!model_metadata.has_value()) {
+    base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
+    base_model_status_ = model_metadata.error();
+  } else {
+    base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(),
+                                   std::make_unique<OnDeviceModelMetadata>(
+                                       std::move(model_metadata.value())));
+    base_model_status_ = OnDeviceModelStatus::kReady;
+  }
+
   UpdateSolutionProviders();
 }
 
@@ -309,9 +311,7 @@ OnDeviceModelServiceController::GetCapabilities() {
 
 OnDeviceModelServiceController::MaybeSolution
 OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
-  auto error =
-      GetBaseModelError(feature, on_device_component_state_manager_.get());
-
+  auto error = GetBaseModelError(feature, base_model_status_);
   if (error != OnDeviceModelEligibilityReason::kModelToBeInstalled) {
     // Device eligibility not determined yet or device ineligible takes
     // precedence over feature usage.
@@ -362,7 +362,7 @@ OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
 void OnDeviceModelServiceController::UpdateSolutionProviders() {
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelServiceController::UpdateSolutionProviders");
-  for (const auto& feature : model_broker_impl_.GetCapabilityKeys()) {
+  for (auto feature : OnDeviceFeatureSet::All()) {
     UpdateSolutionProvider(feature);
   }
 }

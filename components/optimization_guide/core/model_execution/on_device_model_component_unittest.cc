@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_add_feature_flags.h"
 #include "base/task/current_thread.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -67,14 +68,15 @@ std::vector<proto::OnDeviceModelPerformanceHint> AllHints() {
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
-  void StateChanged(const OnDeviceModelComponentState* state) override {
-    state_ = state;
+  void StateChanged(MaybeOnDeviceModelComponentState state) override {
+    state_ = std::move(state);
   }
 
-  const OnDeviceModelComponentState* GetState() { return state_; }
+  const MaybeOnDeviceModelComponentState& GetState() { return state_; }
 
  private:
-  raw_ptr<const OnDeviceModelComponentState> state_;
+  MaybeOnDeviceModelComponentState state_ =
+      base::unexpected(OnDeviceModelStatus::kNotReadyForUnknownReason);
 };
 
 class OnDeviceModelComponentTest : public testing::Test {
@@ -497,7 +499,10 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 
   EXPECT_FALSE(state->GetInstallDirectory().empty());
   EXPECT_EQ(state->GetComponentVersion(), base::Version("0.0.1"));
-  ASSERT_EQ(observer.GetState(), state);
+
+  ASSERT_OK_AND_ASSIGN(const OnDeviceModelComponentState& observer_state,
+                       observer.GetState());
+  EXPECT_EQ(&observer_state, state);
 }
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {

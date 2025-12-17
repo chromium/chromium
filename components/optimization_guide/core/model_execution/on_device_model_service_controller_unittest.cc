@@ -77,6 +77,7 @@ namespace optimization_guide {
 namespace {
 
 using ::on_device_model::mojom::LoadModelResult;
+using ::on_device_model::mojom::PerformanceClass;
 using ExecuteModelResult = ::optimization_guide::OnDeviceExecution::Result;
 
 using ::testing::AllOf;
@@ -154,7 +155,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_crash_backoff_base_time", "1m"},
            {"on_device_model_max_crash_backoff_time", "1h"}}},
          {features::kOnDeviceModelPerformanceParams,
-          {{"compatible_on_device_performance_classes", "*"},
+          {{"compatible_on_device_performance_classes", "3,4,5,6"},
            {"compatible_low_tier_on_device_performance_classes", "3"}}},
          {features::kTextSafetyClassifier, {}},
          {features::kOnDeviceModelValidation,
@@ -3485,6 +3486,62 @@ TEST_F(OnDeviceModelServiceControllerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
       OnDeviceModelPerformanceClass::kVeryHigh, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       BrokerCreateSessionFailedOnDeviceIncapable) {
+  // Arrange for a performance check to be run which will classify the device as
+  // ineligible for both GPU and CPU models.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      on_device_model::features::kOnDeviceModelCpuBackend);
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
+  broker_.local_state().SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      "0.0.0.1");
+
+  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
+  OptimizationGuideLogger logger;
+
+  ModelBrokerClient broker_client(pending_broker.InitWithNewPipeAndPassRemote(),
+                                  logger.GetWeakPtr());
+  base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
+  broker_client.CreateSession(mojom::OnDeviceFeature::kCompose,
+                              SessionConfigParams{},
+                              session_future.GetCallback());
+  broker_.GetOrCreateBrokerState().BindModelBroker(std::move(pending_broker));
+  EXPECT_EQ(session_future.Take(), nullptr);
+
+  // Create session with another feature will also fail.
+  broker_client.CreateSession(mojom::OnDeviceFeature::kTest,
+                              SessionConfigParams{},
+                              session_future.GetCallback());
+  EXPECT_EQ(session_future.Take(), nullptr);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       BrokerCreateSessionFailedOnNotEnoughDiskSpace) {
+  // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
+  broker_.component_state().SetFreeDiskSpace(base::GiB(20) -
+                                             base::ByteCount(1));
+
+  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
+  OptimizationGuideLogger logger;
+
+  ModelBrokerClient broker_client(pending_broker.InitWithNewPipeAndPassRemote(),
+                                  logger.GetWeakPtr());
+  base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
+  broker_client.CreateSession(mojom::OnDeviceFeature::kCompose,
+                              SessionConfigParams{},
+                              session_future.GetCallback());
+  broker_.GetOrCreateBrokerState().BindModelBroker(std::move(pending_broker));
+  EXPECT_EQ(session_future.Take(), nullptr);
+
+  // Create session with another feature will also fail
+  broker_client.CreateSession(mojom::OnDeviceFeature::kTest,
+                              SessionConfigParams{},
+                              session_future.GetCallback());
+  EXPECT_EQ(session_future.Take(), nullptr);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, Priority) {

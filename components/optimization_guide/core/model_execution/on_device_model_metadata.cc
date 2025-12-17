@@ -44,29 +44,24 @@ OnDeviceModelMetadata::OnDeviceModelMetadata(
   }
 }
 
+OnDeviceModelMetadata::OnDeviceModelMetadata(const OnDeviceModelMetadata&) =
+    default;
+OnDeviceModelMetadata::OnDeviceModelMetadata(OnDeviceModelMetadata&&) = default;
 OnDeviceModelMetadata::~OnDeviceModelMetadata() = default;
 
-// static
-std::unique_ptr<OnDeviceModelMetadata> OnDeviceModelMetadata::New(
-    base::FilePath model_path,
-    std::string version,
-    const OnDeviceBaseModelSpec& model_spec,
-    std::unique_ptr<proto::OnDeviceModelExecutionConfig> config) {
-  if (!config) {
-    // OnDeviceModelExecutionConfig failed to load / parse.
-    return nullptr;
-  }
-  return base::WrapUnique(new OnDeviceModelMetadata(
-      model_path, version, model_spec, std::move(*config)));
-}
+OnDeviceModelMetadata& OnDeviceModelMetadata::operator=(
+    const OnDeviceModelMetadata&) = default;
+OnDeviceModelMetadata& OnDeviceModelMetadata::operator=(
+    OnDeviceModelMetadata&&) = default;
 
 OnDeviceModelMetadataLoader::OnDeviceModelMetadataLoader(
     OnLoadFn on_load_fn,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager)
     : on_load_fn_(std::move(on_load_fn)) {
-  // Set background task priority to user visible if feature param is specified
-  // to load config with higher priority. Otherwise, use best effort.
+  // Set background task priority to user visible if feature param is
+  // specified to load config with higher priority. Otherwise, use best
+  // effort.
   auto background_task_priority =
       features::ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority()
           ? base::TaskPriority::USER_VISIBLE
@@ -77,7 +72,6 @@ OnDeviceModelMetadataLoader::OnDeviceModelMetadataLoader(
   if (on_device_component_state_manager) {
     on_device_component_state_manager_ =
         std::move(on_device_component_state_manager);
-    StateChanged(on_device_component_state_manager_->GetState());
     on_device_component_state_manager_->AddObserver(this);
   }
 }
@@ -96,29 +90,40 @@ void OnDeviceModelMetadataLoader::Load(
       FROM_HERE,
       base::BindOnce(&ReadOnDeviceModelExecutionConfig,
                      model_path.Append(kOnDeviceModelExecutionConfigFile)),
-      base::BindOnce(&OnDeviceModelMetadata::New, model_path, version,
-                     model_spec)
+      base::BindOnce(
+          [](const base::FilePath& model_path, const std::string& version,
+             const OnDeviceBaseModelSpec& model_spec,
+             std::unique_ptr<proto::OnDeviceModelExecutionConfig> config)
+              -> MaybeOnDeviceModelMetadata {
+            if (!config) {
+              return base::unexpected(OnDeviceModelStatus::kInstallNotComplete);
+            }
+
+            return OnDeviceModelMetadata(model_path, version, model_spec,
+                                         std::move(*config));
+          },
+          model_path, version, model_spec)
           .Then(on_load_fn_));
 }
 
 void OnDeviceModelMetadataLoader::StateChanged(
-    const OnDeviceModelComponentState* state) {
+    MaybeOnDeviceModelComponentState state) {
   // Invalidate the current model immediately.
-  Invalidate();
-  if (!state) {
+  Invalidate(state.error_or(OnDeviceModelStatus::kInstallNotComplete));
+
+  if (!state.has_value()) {
     return;
   }
-  Load(state->GetInstallDirectory(), state->GetComponentVersion().GetString(),
-       state->GetBaseModelSpec());
+  Load(state.value().get().GetInstallDirectory(),
+       state.value().get().GetComponentVersion().GetString(),
+       state.value().get().GetBaseModelSpec());
 }
 
-void OnDeviceModelMetadataLoader::Invalidate() {
+void OnDeviceModelMetadataLoader::Invalidate(OnDeviceModelStatus status) {
   // Post task to remove model again after any ongoing Load() completes.
   background_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(),
-      base::BindOnce([]() -> std::unique_ptr<OnDeviceModelMetadata> {
-        return nullptr;
-      }).Then(on_load_fn_));
+      base::BindOnce(on_load_fn_, base::unexpected(status)));
 }
 
 }  // namespace optimization_guide

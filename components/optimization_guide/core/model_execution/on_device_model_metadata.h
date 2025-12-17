@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -23,14 +24,16 @@ namespace optimization_guide {
 
 class OnDeviceModelMetadata final {
  public:
+  OnDeviceModelMetadata(const base::FilePath& model_path,
+                        const std::string& version,
+                        const OnDeviceBaseModelSpec& model_spec,
+                        proto::OnDeviceModelExecutionConfig config);
+  OnDeviceModelMetadata(const OnDeviceModelMetadata&);
+  OnDeviceModelMetadata(OnDeviceModelMetadata&&);
   ~OnDeviceModelMetadata();
 
-  // Bindable constructor for an OnDeviceModelMetadata.
-  static std::unique_ptr<OnDeviceModelMetadata> New(
-      base::FilePath model_path,
-      std::string version,
-      const OnDeviceBaseModelSpec& model_spec,
-      std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
+  OnDeviceModelMetadata& operator=(const OnDeviceModelMetadata&);
+  OnDeviceModelMetadata& operator=(OnDeviceModelMetadata&&);
 
   const base::FilePath& model_path() const { return model_path_; }
   const std::string& version() const { return version_; }
@@ -48,11 +51,6 @@ class OnDeviceModelMetadata final {
   }
 
  private:
-  OnDeviceModelMetadata(const base::FilePath& model_path,
-                        const std::string& version,
-                        const OnDeviceBaseModelSpec& model_spec,
-                        proto::OnDeviceModelExecutionConfig config);
-
   base::FilePath model_path_;
   std::string version_;
   OnDeviceBaseModelSpec model_spec_;
@@ -60,13 +58,15 @@ class OnDeviceModelMetadata final {
   on_device_model::Capabilities capabilities_;
 };
 
+using MaybeOnDeviceModelMetadata =
+    base::expected<OnDeviceModelMetadata, OnDeviceModelStatus>;
+
 // Provides a stream of updated ModelMetadatas from component states.
 // Provides null values between valid states.
 class OnDeviceModelMetadataLoader final
     : public OnDeviceModelComponentStateManager::Observer {
  public:
-  using OnLoadFn =
-      base::RepeatingCallback<void(std::unique_ptr<OnDeviceModelMetadata>)>;
+  using OnLoadFn = base::RepeatingCallback<void(MaybeOnDeviceModelMetadata)>;
 
   OnDeviceModelMetadataLoader(OnLoadFn on_load_fn,
                               base::WeakPtr<OnDeviceModelComponentStateManager>
@@ -74,7 +74,7 @@ class OnDeviceModelMetadataLoader final
   ~OnDeviceModelMetadataLoader() final;
 
   // OnDeviceModelComponentStateManager::Observer.
-  void StateChanged(const OnDeviceModelComponentState* state) final;
+  void StateChanged(MaybeOnDeviceModelComponentState state) final;
 
   // Loads OnDeviceModelMetadata with the data from file_dir.
   void Load(const base::FilePath& model_path,
@@ -83,7 +83,7 @@ class OnDeviceModelMetadataLoader final
 
  private:
   // Provides a null ModelMetadata in the stream.
-  void Invalidate();
+  void Invalidate(OnDeviceModelStatus status);
 
   OnLoadFn on_load_fn_;
 

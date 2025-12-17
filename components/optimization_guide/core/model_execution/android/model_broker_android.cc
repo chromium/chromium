@@ -290,9 +290,8 @@ void ModelBrokerAndroid::SolutionFactory::MaybeUpdateModelAdaptation(
 }
 
 void ModelBrokerAndroid::SolutionFactory::UpdateSolutionProviders() {
-  auto keys = parent_->impl_.GetCapabilityKeys();
-  for (const auto& key : keys) {
-    UpdateSolutionProvider(key);
+  for (auto feature : OnDeviceFeatureSet::All()) {
+    UpdateSolutionProvider(feature);
   }
 }
 

@@ -160,17 +160,14 @@ class ChromeModelComponentStateManagerObserver final
       return;
     }
     observation_.Observe(state_manager.get());
-    if (const OnDeviceModelComponentState* state = state_manager->GetState()) {
-      StateChanged(state);
-    }
   }
 
   // OnDeviceModelComponentStateManager::Observer:
-  void StateChanged(const OnDeviceModelComponentState* state) override {
-    if (state) {
+  void StateChanged(MaybeOnDeviceModelComponentState state) override {
+    if (state.has_value()) {
       ChromeOnDeviceModelServiceController::
           RegisterPerformanceHintSyntheticTrial(
-              state->GetBaseModelSpec().selected_performance_hint);
+              state.value().get().GetBaseModelSpec().selected_performance_hint);
     }
   }
 

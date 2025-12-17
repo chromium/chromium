@@ -52,15 +52,6 @@ ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
   return solution_providers_.emplace(feature, feature).first->second;
 }
 
-absl::flat_hash_set<mojom::OnDeviceFeature> ModelBrokerImpl::GetCapabilityKeys()
-    const {
-  absl::flat_hash_set<mojom::OnDeviceFeature> keys;
-  for (const auto& [key, _] : solution_providers_) {
-    keys.insert(key);
-  }
-  return keys;
-}
-
 ModelBrokerImpl::Solution::Solution() = default;
 ModelBrokerImpl::Solution::~Solution() = default;
 
