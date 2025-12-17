@@ -333,9 +333,9 @@ TEST_F(AlternativeStateNameMapUpdaterTest, AssertCorrectStateNameMapConstant) {
   for (size_t i = 0; i < kCountriesWithAlternativeStateNames.length(); i += 2) {
     std::string country =
         std::string(kCountriesWithAlternativeStateNames.substr(i, 2));
-    int32_t resourceId = GetResourceIdForCountryFromGeneratedMap(country);
-    ASSERT_NE(resourceId, -1);
-    EXPECT_EQ(resourceId, FindResourceIdForCountry(country));
+    int32_t resource_id = GetResourceIdForCountryFromGeneratedMap(country);
+    ASSERT_NE(resource_id, -1);
+    EXPECT_EQ(resource_id, FindResourceIdForCountry(country));
   }
 }
 

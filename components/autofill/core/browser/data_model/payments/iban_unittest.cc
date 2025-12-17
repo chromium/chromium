@@ -23,13 +23,13 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 // This is useful to simplify the expectations in tests.
 std::u16string GetHumanReadableIbanString(const Iban& iban,
                                           bool is_value_masked) {
-  std::u16string identifierIbanValue =
+  std::u16string identifier_iban_value =
       iban.GetIdentifierStringForAutofillDisplay(is_value_masked);
-  base::ReplaceChars(identifierIbanValue, kEllipsisOneSpace, u" ",
-                     &identifierIbanValue);
-  base::ReplaceChars(identifierIbanValue, kEllipsisOneDot, u"*",
-                     &identifierIbanValue);
-  return identifierIbanValue;
+  base::ReplaceChars(identifier_iban_value, kEllipsisOneSpace, u" ",
+                     &identifier_iban_value);
+  base::ReplaceChars(identifier_iban_value, kEllipsisOneDot, u"*",
+                     &identifier_iban_value);
+  return identifier_iban_value;
 }
 
 void SetPrefixAndSuffix(Iban& iban,

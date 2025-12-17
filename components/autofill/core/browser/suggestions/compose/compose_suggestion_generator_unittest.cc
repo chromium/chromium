@@ -72,19 +72,19 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, SizeIs(1))))
-      .WillOnce(SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
               Run(Pair(FillingProduct::kCompose, SizeIs(1))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {savedCallbackArgument},
+                                client(), {saved_callback_argument},
                                 suggestions_generated_callback.Get());
 }
 
@@ -109,19 +109,19 @@ TEST_F(ComposeSuggestionGeneratorTest, NoComposeSuggestionIfFeatureDisabled) {
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, IsEmpty())))
-      .WillOnce(SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
               Run(Pair(FillingProduct::kCompose, IsEmpty())));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {savedCallbackArgument},
+                                client(), {saved_callback_argument},
                                 suggestions_generated_callback.Get());
 }
 

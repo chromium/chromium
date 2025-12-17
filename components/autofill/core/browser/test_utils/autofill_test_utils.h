@@ -189,7 +189,7 @@ CreditCard GetVirtualCard();
 
 // Returns a randomly generated credit card of |record_type|. Note that the
 // card is not guaranteed to be valid/sane from a card validation standpoint.
-CreditCard GetRandomCreditCard(CreditCard::RecordType record_Type);
+CreditCard GetRandomCreditCard(CreditCard::RecordType record_type);
 
 // Returns a copy of `credit_card` with `cvc` set as specified.
 CreditCard WithCvc(CreditCard credit_card, std::u16string cvc = u"123");

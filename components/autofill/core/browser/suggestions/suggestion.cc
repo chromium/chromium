@@ -263,10 +263,10 @@ Suggestion::AutofillProfilePayload::CreateJavaObject() const {
 
 Suggestion::IdentityCredentialPayload::IdentityCredentialPayload() = default;
 Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(
-    GURL configURL,
+    GURL config_url,
     std::string account_id,
     const std::map<FieldType, std::u16string>& fields)
-    : config_url(std::move(configURL)),
+    : config_url(std::move(config_url)),
       account_id(std::move(account_id)),
       fields(fields) {}
 

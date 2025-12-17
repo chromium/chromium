@@ -159,11 +159,11 @@ TEST_F(PaymentsDataCleanerTest,
 
   EXPECT_EQ(4U,
             personal_data().payments_data_manager().GetCreditCards().size());
-  std::unordered_set<std::u16string> expectedToRemain = {u"Alice", u"Bob",
-                                                         u"Clyde", u"Frank"};
+  std::unordered_set<std::u16string> expected_to_remain = {u"Alice", u"Bob",
+                                                           u"Clyde", u"Frank"};
   for (auto* card : personal_data().payments_data_manager().GetCreditCards()) {
-    EXPECT_NE(expectedToRemain.end(),
-              expectedToRemain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
+    EXPECT_NE(expected_to_remain.end(),
+              expected_to_remain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
   }
 
   // Verify histograms are logged.

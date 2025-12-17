@@ -174,7 +174,7 @@ struct Suggestion {
   struct IdentityCredentialPayload final {
     IdentityCredentialPayload();
     IdentityCredentialPayload(
-        GURL configURL,
+        GURL config_url,
         std::string account_id,
         const std::map<FieldType, std::u16string>& fields);
     IdentityCredentialPayload(const IdentityCredentialPayload&);

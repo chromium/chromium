@@ -365,20 +365,20 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   AutofillProfile p3 = CreateProfileWithAddress("1 Some Street #3", "",
                                                 "Carver City", "ca", "", "ZA");
 
-  AutofillProfile differentCountry =
+  AutofillProfile different_country =
       CopyAndModify(p1, {{ADDRESS_HOME_COUNTRY, u"CA"}});
-  AutofillProfile differentZip =
+  AutofillProfile different_zip =
       CopyAndModify(p1, {{ADDRESS_HOME_ZIP, u"32145"}});
-  AutofillProfile differentState = CopyAndModify(
+  AutofillProfile different_state = CopyAndModify(
       p1, {{ADDRESS_HOME_ZIP, u""}, {ADDRESS_HOME_STATE, u"Florida"}});
-  AutofillProfile differentCity = CopyAndModify(
+  AutofillProfile different_city = CopyAndModify(
       p1, {{ADDRESS_HOME_ZIP, u""}, {ADDRESS_HOME_CITY, u"Metropolis"}});
-  AutofillProfile differentAddress =
+  AutofillProfile different_address =
       CopyAndModify(p1, {{ADDRESS_HOME_LINE1, u"17 Park Lane"},
                          {ADDRESS_HOME_LINE2, u"Suite 150"}});
-  AutofillProfile differentLocality =
+  AutofillProfile different_locality =
       CopyAndModify(p1, {{ADDRESS_HOME_DEPENDENT_LOCALITY, u"Funky Chicken"}});
-  AutofillProfile differentSortingCode =
+  AutofillProfile different_sortingCode =
       CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
 
   AutofillProfile name_email_profile{AccountInfo{}};
@@ -399,13 +399,13 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p3, p2));
 
   // Changing things about |p1| causes its copies to stop being mergeable.
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentCountry));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentZip));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentState));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentCity));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentAddress));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentLocality));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentSortingCode));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_country));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_zip));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_state));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_city));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_address));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_locality));
+  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, different_sortingCode));
 
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(name_email_profile, p1));
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, name_email_profile));

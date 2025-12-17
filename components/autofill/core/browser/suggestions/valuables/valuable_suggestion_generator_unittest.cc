@@ -568,13 +568,13 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
   LoyaltyCardSuggestionGenerator generator;
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kLoyaltyCard,
                         testing::SizeIs(3))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
@@ -591,9 +591,9 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
                                           "loyalty_card_id_3"),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsManageLoyaltyCardsSuggestion()))));
-  generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                test_autofill_client(), {savedCallbackArgument},
-                                suggestions_generated_callback.Get());
+  generator.GenerateSuggestions(
+      form().ToFormData(), field(), &form(), &field(), test_autofill_client(),
+      {saved_callback_argument}, suggestions_generated_callback.Get());
 }
 
 }  // namespace

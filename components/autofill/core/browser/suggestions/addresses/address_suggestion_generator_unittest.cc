@@ -1393,13 +1393,13 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
       /*log_manager=*/nullptr);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAddress,
                         testing::ElementsAre(profile1))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form_data, field, form_structure.get(),
                                 form_structure->field(0), *autofill_client(),
                                 suggestion_data_callback.Get());
@@ -1414,7 +1414,7 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
               EqualsSuggestion(SuggestionType::kManageAddress)))));
   generator.GenerateSuggestions(form_data, field, form_structure.get(),
                                 form_structure->field(0), *autofill_client(),
-                                {savedCallbackArgument},
+                                {saved_callback_argument},
                                 suggestions_generated_callback.Get());
 }
 
@@ -1451,13 +1451,13 @@ TEST_F(AddressSuggestionGeneratorTest,
       /*log_manager=*/nullptr);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAddress,
                         testing::ElementsAre(profile1))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form_data, field, form_structure.get(),
                                 form_structure->field(0), *autofill_client(),
                                 suggestion_data_callback.Get());
@@ -1468,7 +1468,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   base::flat_map<SuggestionGenerator::SuggestionDataSource,
                  std::vector<SuggestionGenerator::SuggestionData>>
       all_suggestion_data;
-  all_suggestion_data.insert(savedCallbackArgument);
+  all_suggestion_data.insert(saved_callback_argument);
   all_suggestion_data.insert(
       {SuggestionGenerator::SuggestionDataSource::kPlusAddress,
        std::move(plus_address_data)});

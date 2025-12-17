@@ -46,7 +46,7 @@ TEST(PhoneNumberI18NTest, NormalizePhoneNumber) {
 
 struct ParseNumberTestCase {
   // Expected parsing result.
-  bool isPossibleNumber;
+  bool is_possible_number;
   // Inputs.
   std::u16string input;
   std::string assumed_region;
@@ -71,7 +71,7 @@ TEST_P(ParseNumberTest, ParsePhoneNumber) {
   std::u16string country_code, city_code, number;
   std::string deduced_region;
   ::i18n::phonenumbers::PhoneNumber unused_i18n_number;
-  EXPECT_EQ(test_case.isPossibleNumber,
+  EXPECT_EQ(test_case.is_possible_number,
             ParsePhoneNumber(test_case.input, test_case.assumed_region,
                              &country_code, &city_code, &number,
                              &deduced_region, &unused_i18n_number));

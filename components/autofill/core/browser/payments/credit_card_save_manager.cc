@@ -1541,13 +1541,14 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
                  << Tag{"table"};
 
   for (int i = 0; i < autofill_metrics::kNumCardUploadDecisionMetrics; i++) {
-    autofill_metrics::CardUploadDecision currentBitmaskValue =
+    autofill_metrics::CardUploadDecision current_bitmask_value =
         static_cast<autofill_metrics::CardUploadDecision>(1 << i);
-    if (!(upload_decision_metrics & currentBitmaskValue))
+    if (!(upload_decision_metrics & current_bitmask_value)) {
       continue;
+    }
 
     std::string result;
-    switch (currentBitmaskValue) {
+    switch (current_bitmask_value) {
       case autofill_metrics::UPLOAD_OFFERED:
         result = "UPLOAD_OFFERED";
         break;

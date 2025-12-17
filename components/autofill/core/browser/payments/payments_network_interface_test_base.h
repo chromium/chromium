@@ -58,10 +58,6 @@ class PaymentsNetworkInterfaceTestBase {
       int response_code,
       const std::string& response_body);
 
-  void assertIncludedInRequest(std::string field_name_or_value);
-
-  void assertNotIncludedInRequest(std::string field_name_or_value);
-
   PaymentsAutofillClient::PaymentsRpcResult result_ =
       PaymentsAutofillClient::PaymentsRpcResult::kNone;
 

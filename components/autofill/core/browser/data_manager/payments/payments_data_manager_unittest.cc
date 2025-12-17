@@ -1421,10 +1421,10 @@ TEST_F(PaymentsDataManagerTest, DeleteLocalCreditCards) {
 
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
-  std::unordered_set<std::u16string> expectedToRemain = {u"Clyde"};
+  std::unordered_set<std::u16string> expected_to_remain = {u"Clyde"};
   for (auto* card : payments_data_manager().GetCreditCards()) {
-    EXPECT_NE(expectedToRemain.end(),
-              expectedToRemain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
+    EXPECT_NE(expected_to_remain.end(),
+              expected_to_remain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
   }
 }
 
@@ -3180,9 +3180,9 @@ TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
-  CreditCard cardToCompare;
-  cardToCompare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
-  ASSERT_TRUE(payments_data_manager().IsKnownCard(cardToCompare));
+  CreditCard card_to_compare;
+  card_to_compare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
+  ASSERT_TRUE(payments_data_manager().IsKnownCard(card_to_compare));
 }
 
 TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesLocalCard) {
@@ -3198,9 +3198,9 @@ TEST_F(PaymentsDataManagerTest, IsKnownCard_MatchesLocalCard) {
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
-  CreditCard cardToCompare;
-  cardToCompare.SetNumber(u"4234567890122110" /* Visa */);
-  ASSERT_TRUE(payments_data_manager().IsKnownCard(cardToCompare));
+  CreditCard card_to_compare;
+  card_to_compare.SetNumber(u"4234567890122110" /* Visa */);
+  ASSERT_TRUE(payments_data_manager().IsKnownCard(card_to_compare));
 }
 
 TEST_F(PaymentsDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
@@ -3216,9 +3216,9 @@ TEST_F(PaymentsDataManagerTest, IsKnownCard_TypeDoesNotMatch) {
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
-  CreditCard cardToCompare;
-  cardToCompare.SetNumber(u"5105 1051 0510 2110" /* American Express */);
-  ASSERT_FALSE(payments_data_manager().IsKnownCard(cardToCompare));
+  CreditCard card_to_compare;
+  card_to_compare.SetNumber(u"5105 1051 0510 2110" /* American Express */);
+  ASSERT_FALSE(payments_data_manager().IsKnownCard(card_to_compare));
 }
 
 TEST_F(PaymentsDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
@@ -3234,9 +3234,9 @@ TEST_F(PaymentsDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
 
-  CreditCard cardToCompare;
-  cardToCompare.SetNumber(u"4234 5678 9012 0000" /* Visa */);
-  ASSERT_FALSE(payments_data_manager().IsKnownCard(cardToCompare));
+  CreditCard card_to_compare;
+  card_to_compare.SetNumber(u"4234 5678 9012 0000" /* Visa */);
+  ASSERT_FALSE(payments_data_manager().IsKnownCard(card_to_compare));
 }
 
 TEST_F(PaymentsDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
@@ -3261,9 +3261,9 @@ TEST_F(PaymentsDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
 
-  CreditCard cardToCompare;
-  cardToCompare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
-  ASSERT_TRUE(payments_data_manager().IsServerCard(&cardToCompare));
+  CreditCard card_to_compare;
+  card_to_compare.SetNumber(u"4234 5678 9012 2110" /* Visa */);
+  ASSERT_TRUE(payments_data_manager().IsServerCard(&card_to_compare));
   ASSERT_TRUE(payments_data_manager().IsServerCard(&local_card));
 }
 

@@ -574,22 +574,22 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.name = u"Bruno", .use_count = 1});
   EntityInstance passport2 = test::GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe", .number = u"927908CYGAS1", .use_count = 10});
-  EntityInstance driversLicense1 =
+  EntityInstance drivers_license1 =
       test::GetDriversLicenseEntityInstanceWithRandomGuid({.use_count = 9});
-  EntityInstance driversLicense2 =
+  EntityInstance drivers_license2 =
       test::GetDriversLicenseEntityInstanceWithRandomGuid(
           {.name = u"Mr Pink", .use_count = 8});
-  SetEntities({passport1, passport2, driversLicense1, driversLicense2});
+  SetEntities({passport1, passport2, drivers_license1, drivers_license2});
   SetForm({NAME_FULL, PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER});
 
   // `passport1` comes before vehicle entities because the entity of highest
   // frecency is also a passport entity.
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(
-      res, SuggestionsAre(HasMainText(GetPassportName(passport2)),
-                          HasMainText(GetPassportName(passport1)),
-                          HasMainText(GetDriversLicenseName(driversLicense1)),
-                          HasMainText(GetDriversLicenseName(driversLicense2))));
+  EXPECT_THAT(res, SuggestionsAre(
+                       HasMainText(GetPassportName(passport2)),
+                       HasMainText(GetPassportName(passport1)),
+                       HasMainText(GetDriversLicenseName(drivers_license1)),
+                       HasMainText(GetDriversLicenseName(drivers_license2))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,

@@ -78,14 +78,4 @@ void PaymentsNetworkInterfaceTestBase::ReturnResponse(
       response_code, response_body);
 }
 
-void PaymentsNetworkInterfaceTestBase::assertIncludedInRequest(
-    std::string field_name_or_value) {
-  EXPECT_TRUE(GetUploadData().find(field_name_or_value) != std::string::npos);
-}
-
-void PaymentsNetworkInterfaceTestBase::assertNotIncludedInRequest(
-    std::string field_name_or_value) {
-  EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
-}
-
 }  // namespace autofill::payments

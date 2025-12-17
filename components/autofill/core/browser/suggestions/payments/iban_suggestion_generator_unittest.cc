@@ -240,13 +240,13 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   IbanSuggestionGenerator generator;
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kIban,
                         testing::SizeIs(4))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
@@ -261,7 +261,7 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
                       MatchesTextAndSuggestionType(separator_suggestion),
                       MatchesTextAndSuggestionType(footer_suggestion)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {savedCallbackArgument},
+                                client(), {saved_callback_argument},
                                 suggestions_generated_callback.Get());
   task_environment().RunUntilIdle();
 }

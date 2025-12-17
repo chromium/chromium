@@ -20,19 +20,19 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 // A helper function to format the IBAN value returned by
 // GetIdentifierStringForAutofillDisplay(), replacing the ellipsis ('\u2006')
 // with a whitespace.
-std::u16string FormatIbanForDisplay(std::u16string identifierIbanValue) {
-  base::ReplaceChars(identifierIbanValue, kEllipsisOneSpace, u" ",
-                     &identifierIbanValue);
-  return identifierIbanValue;
+std::u16string FormatIbanForDisplay(std::u16string identifier_iban_value) {
+  base::ReplaceChars(identifier_iban_value, kEllipsisOneSpace, u" ",
+                     &identifier_iban_value);
+  return identifier_iban_value;
 }
 
 TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
-  Iban localIban(
+  Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  localIban.set_value(u"CH5604835012345678009");
+  local_iban.set_value(u"CH5604835012345678009");
 
   auto ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
-      localIban.GetIdentifierStringForAutofillDisplay(
+      local_iban.GetIdentifierStringForAutofillDisplay(
           /*is_value_masked=*/false));
 
   EXPECT_FALSE(ui_info.is_server_save);
@@ -50,12 +50,12 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
 }
 
 TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
-  Iban localIban(
+  Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  localIban.set_value(u"FR7630006000011234567890189");
+  local_iban.set_value(u"FR7630006000011234567890189");
 
   auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
-      localIban.GetIdentifierStringForAutofillDisplay(
+      local_iban.GetIdentifierStringForAutofillDisplay(
           /*is_value_masked=*/false),
       LegalMessageLines());
 

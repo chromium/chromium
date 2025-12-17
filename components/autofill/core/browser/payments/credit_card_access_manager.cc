@@ -425,7 +425,7 @@ bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
     return false;
   }
 
-  bool isCardInfoRetrievalEnrolled =
+  bool is_card_info_retrieval_enrolled =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableCardInfoRuntimeRetrieval) &&
       (card_->card_info_retrieval_enrollment_state() ==
@@ -433,7 +433,7 @@ bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
   return !card_->IsExpired(AutofillClock::Now()) &&
          (base::FeatureList::IsEnabled(
               features::kAutofillEnableFpanRiskBasedAuthentication) ||
-          isCardInfoRetrievalEnrolled);
+          is_card_info_retrieval_enrolled);
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
