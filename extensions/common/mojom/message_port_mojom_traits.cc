@@ -19,14 +19,14 @@ extensions::mojom::MessageDataDataView::Tag UnionTraits<
   if (std::holds_alternative<std::string>(data)) {
     return extensions::mojom::MessageDataDataView::Tag::kJson;
   }
-  return extensions::mojom::MessageDataDataView::Tag::kStructuredCloned;
+  return extensions::mojom::MessageDataDataView::Tag::kStructuredClone;
 }
 
 // static
-extensions::StructureClonedMessageWireData
+extensions::StructuredCloneMessageWireData
 UnionTraits<extensions::mojom::MessageDataDataView, extensions::MessageData>::
-    structured_cloned(const extensions::MessageData& data) {
-  return std::get<extensions::StructureClonedMessageWireData>(data).Clone();
+    structured_clone(const extensions::MessageData& data) {
+  return std::get<extensions::StructuredCloneMessageWireData>(data).Clone();
 }
 
 // static
@@ -43,12 +43,12 @@ bool UnionTraits<
       *out = std::move(json);
       return true;
     }
-    case extensions::mojom::MessageDataDataView::Tag::kStructuredCloned: {
-      extensions::StructureClonedMessageWireData structured_cloned;
-      if (!data.ReadStructuredCloned(&structured_cloned)) {
+    case extensions::mojom::MessageDataDataView::Tag::kStructuredClone: {
+      extensions::StructuredCloneMessageWireData structured_clone;
+      if (!data.ReadStructuredClone(&structured_clone)) {
         return false;
       }
-      *out = std::move(structured_cloned);
+      *out = std::move(structured_clone);
       return true;
     }
   }

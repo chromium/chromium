@@ -23,8 +23,8 @@ Message::Message(MessageData data,
       from_privileged_context_(from_privileged_context) {
   if (format_ == mojom::SerializationFormat::kJson) {
     CHECK(std::holds_alternative<std::string>(data_));
-  } else if (format_ == mojom::SerializationFormat::kStructuredCloned) {
-    CHECK(std::holds_alternative<StructureClonedMessageWireData>(data_));
+  } else if (format_ == mojom::SerializationFormat::kStructuredClone) {
+    CHECK(std::holds_alternative<StructuredCloneMessageWireData>(data_));
     CHECK(base::FeatureList::IsEnabled(
         extensions_features::kStructuredCloningForMessaging));
   }
@@ -37,7 +37,7 @@ Message::Message(const Message& other)
   if (std::holds_alternative<std::string>(other.data_)) {
     data_ = std::get<std::string>(other.data_);
   } else {
-    data_ = std::get<StructureClonedMessageWireData>(other.data_).Clone();
+    data_ = std::get<StructuredCloneMessageWireData>(other.data_).Clone();
   }
 }
 
@@ -52,7 +52,7 @@ Message& Message::operator=(const Message& other) {
   if (std::holds_alternative<std::string>(other.data_)) {
     data_ = std::get<std::string>(other.data_);
   } else {
-    data_ = std::get<StructureClonedMessageWireData>(other.data_).Clone();
+    data_ = std::get<StructuredCloneMessageWireData>(other.data_).Clone();
   }
   return *this;
 }
@@ -69,13 +69,13 @@ bool Message::operator==(const Message& other) const {
     case mojom::SerializationFormat::kJson:
       message_data_equal = std::get<std::string>(data_) == other.data();
       break;
-    case mojom::SerializationFormat::kStructuredCloned:
+    case mojom::SerializationFormat::kStructuredClone:
       CHECK(base::FeatureList::IsEnabled(
           extensions_features::kStructuredCloningForMessaging));
       // `mojo_base::BigBuffer` does not have a comparison operator so we
       // convert to comparable `base::span`s.
       message_data_equal =
-          base::span<const uint8_t>(std::get<StructureClonedMessageWireData>(
+          base::span<const uint8_t>(std::get<StructuredCloneMessageWireData>(
               data_)) == base::span<const uint8_t>(other.structured_data());
       break;
     default:
@@ -91,9 +91,9 @@ const std::string& Message::data() const {
   return std::get<std::string>(data_);
 }
 
-const StructureClonedMessageWireData& Message::structured_data() const {
-  CHECK(std::holds_alternative<StructureClonedMessageWireData>(data_));
-  return std::get<StructureClonedMessageWireData>(data_);
+const StructuredCloneMessageWireData& Message::structured_data() const {
+  CHECK(std::holds_alternative<StructuredCloneMessageWireData>(data_));
+  return std::get<StructuredCloneMessageWireData>(data_);
 }
 
 }  // namespace extensions

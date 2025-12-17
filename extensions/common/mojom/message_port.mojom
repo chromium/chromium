@@ -25,7 +25,7 @@ enum SerializationFormat {
   // `extensions_features::kStructuredCloningForMessaging` is enabled) Used for
   // standard extension messaging channels (`ChannelType::kSendMessage`,
   // `ChannelType::kConnect`) to support richer data types.
-  kStructuredCloned,
+  kStructuredClone,
   // Serialized using JSON. Used for all `ChannelType`s (if
   // `extensions_features::kStructuredCloningForMessaging` is disabled).
   // Otherwise only used for `ChannelType::kNative` messaging (which
@@ -102,7 +102,7 @@ struct ExternalConnectionInfo {
 // The data payload of a message.
 union MessageData {
   string json;
-  mojo_base.mojom.BigBuffer structured_cloned;
+  mojo_base.mojom.BigBuffer structured_clone;
 };
 
 // A message that is serialized across the channel.

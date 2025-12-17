@@ -30,12 +30,12 @@ struct UnionTraits<extensions::mojom::MessageDataDataView,
     return std::get<std::string>(data);
   }
 
-  static bool IsStructuredCloned(const extensions::MessageData& data) {
-    return std::holds_alternative<extensions::StructureClonedMessageWireData>(
+  static bool IsStructuredClone(const extensions::MessageData& data) {
+    return std::holds_alternative<extensions::StructuredCloneMessageWireData>(
         data);
   }
 
-  static extensions::StructureClonedMessageWireData structured_cloned(
+  static extensions::StructuredCloneMessageWireData structured_clone(
       const extensions::MessageData& data);
 
   static bool Read(extensions::mojom::MessageDataDataView data,

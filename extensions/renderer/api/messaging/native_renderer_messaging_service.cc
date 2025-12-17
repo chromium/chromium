@@ -367,7 +367,7 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
 
   // TODO(crbug.com/40321352): Instead of inferring the
   // mojom::SerializationFormat from Message, it'd be better to have the clients
-  // pass it directly. This is because, in case of `kStructuredCloned` to
+  // pass it directly. This is because, in case of `kStructuredClone` to
   // `kJson` fallback, the format for the ports will also be `kJson`. This is
   // inconsistent with what we do for ports for long-lived channels where the
   // port's `mojom::SerializationFormat` is always the same as that passed by

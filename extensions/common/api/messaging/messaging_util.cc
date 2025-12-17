@@ -23,7 +23,7 @@ mojom::SerializationFormat GetSerializationFormat(
     case mojom::ChannelType::kConnect:
       if (base::FeatureList::IsEnabled(
               extensions_features::kStructuredCloningForMessaging)) {
-        return mojom::SerializationFormat::kStructuredCloned;
+        return mojom::SerializationFormat::kStructuredClone;
       }
       return mojom::SerializationFormat::kJson;
     case mojom::ChannelType::kNative:

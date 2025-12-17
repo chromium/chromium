@@ -16,9 +16,9 @@ namespace extensions {
 // TODO(crbug.com/40321352): `mojo_base::BigBuffer`, by itself, doesn't support
 // JS `Blob`s because it doesn't have the `Blob`'s metadata. Switch to
 // `blink::mojom::CloneableMessage` to get `Blob` support.
-using StructureClonedMessageWireData = mojo_base::BigBuffer;
+using StructuredCloneMessageWireData = mojo_base::BigBuffer;
 // C++ type-safe representation of the `extensions::mojom::MessageData` `union`.
-using MessageData = std::variant<std::string, StructureClonedMessageWireData>;
+using MessageData = std::variant<std::string, StructuredCloneMessageWireData>;
 
 // Represents a message sent between extension components, encapsulating the
 // data payload and associated metadata. This class is represented in mojom as
@@ -35,7 +35,7 @@ using MessageData = std::variant<std::string, StructureClonedMessageWireData>;
 //    class can hold data serialized by Blink's `(Web)SerializedScriptValue`.
 //    This wire data is stored in the `structured_data_` member as a
 //    `mojo_base::BigBuffer`, and the `format()` will be
-//    `mojom::SerializationFormat::kStructuredCloned`.
+//    `mojom::SerializationFormat::kStructuredClone`.
 //
 // Metadata:
 // - `user_gesture`: This boolean indicates whether the message was sent as a
@@ -67,7 +67,7 @@ class Message {
   // `message_data()` once the feature is complete and callers are updated to
   // handle the variant.
   const std::string& data() const;
-  const StructureClonedMessageWireData& structured_data() const;
+  const StructuredCloneMessageWireData& structured_data() const;
   const MessageData& message_data() const { return data_; }
   mojom::SerializationFormat format() const { return format_; }
   bool user_gesture() const { return user_gesture_; }

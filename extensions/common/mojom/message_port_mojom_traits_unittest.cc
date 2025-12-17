@@ -19,7 +19,7 @@ namespace extensions {
 
 TEST(MessagePortMojomTraitsTest, PortId) {
   PortId input(base::UnguessableToken::Create(), 32, true,
-               mojom::SerializationFormat::kStructuredCloned);
+               mojom::SerializationFormat::kStructuredClone);
   PortId output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::PortId>(
       input, output));
@@ -101,9 +101,9 @@ class StructuredMessagePortMojomTraitsTest : public testing::Test {
 
 TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
   const std::string kData("text");
-  StructureClonedMessageWireData wire_format_data(base::as_byte_span(kData));
+  StructuredCloneMessageWireData wire_format_data(base::as_byte_span(kData));
   Message input(std::move(wire_format_data),
-                mojom::SerializationFormat::kStructuredCloned,
+                mojom::SerializationFormat::kStructuredClone,
                 /*user_gesture=*/true, /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
@@ -115,15 +115,15 @@ TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
 
 TEST_F(StructuredMessagePortMojomTraitsTest, MessageDataStructured) {
   const std::string kData("text");
-  StructureClonedMessageWireData wire_format_data(base::as_byte_span(kData));
+  StructuredCloneMessageWireData wire_format_data(base::as_byte_span(kData));
   MessageData input = std::move(wire_format_data);
   MessageData output;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<extensions::mojom::MessageData>(
           input, output));
-  EXPECT_TRUE(std::holds_alternative<StructureClonedMessageWireData>(output));
-  EXPECT_EQ(base::span(std::get<StructureClonedMessageWireData>(input)),
-            base::span(std::get<StructureClonedMessageWireData>(output)));
+  EXPECT_TRUE(std::holds_alternative<StructuredCloneMessageWireData>(output));
+  EXPECT_EQ(base::span(std::get<StructuredCloneMessageWireData>(input)),
+            base::span(std::get<StructuredCloneMessageWireData>(output)));
 }
 
 }  // namespace extensions
