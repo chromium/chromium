@@ -30,7 +30,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Browser;
 class BrowserWindowInterface;
-class ExtensionFunction;
 class GURL;
 class Profile;
 class TabListInterface;
@@ -102,32 +101,6 @@ class ExtensionTabUtil {
     ScrubTabBehaviorType committed_info;
     ScrubTabBehaviorType pending_info;
   };
-
-#if !BUILDFLAG(IS_ANDROID)
-  struct OpenTabParams {
-    OpenTabParams();
-    ~OpenTabParams();
-
-    bool create_browser_if_needed = false;
-    std::optional<int> window_id;
-    std::optional<int> opener_tab_id;
-    std::optional<std::string> url;
-    std::optional<bool> active;
-    std::optional<bool> split;
-    std::optional<bool> pinned;
-    std::optional<int> index;
-    std::optional<int> bookmark_id;
-  };
-
-  // Opens a new tab given an extension function `function` and creation
-  // parameters `params`. If a tab can be produced, it will return a
-  // base::Value::Dict representing the tab, otherwise it will optionally return
-  // an error message, if any is appropriate.
-  static base::expected<base::Value::Dict, std::string> OpenTab(
-      ExtensionFunction* function,
-      const OpenTabParams& params,
-      bool user_gesture);
-#endif
 
   static int GetWindowId(BrowserWindowInterface* browser);
   static int GetTabId(const content::WebContents* web_contents);

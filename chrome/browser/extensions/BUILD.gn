@@ -810,6 +810,8 @@ source_set("extensions") {
       "initial_external_extension_loader.cc",
       "initial_external_extension_loader.h",
       "menu_icon_loader.h",
+      "open_tab_helper.cc",
+      "open_tab_helper.h",
       "theme_installed_infobar_delegate.cc",
       "theme_installed_infobar_delegate.h",
       "warning_badge_service.cc",

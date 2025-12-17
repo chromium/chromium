@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/common/apps/platform_apps/api/browser.h"
 
 namespace chrome_apps {
@@ -19,12 +19,12 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
       browser::OpenTab::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  extensions::ExtensionTabUtil::OpenTabParams options;
+  extensions::OpenTabHelper::Params options;
   options.create_browser_if_needed = true;
   options.url = params->options.url;
 
   const auto result =
-      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
+      extensions::OpenTabHelper::OpenTab(this, options, user_gesture());
   return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 

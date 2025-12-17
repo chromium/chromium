@@ -45,6 +45,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -175,7 +176,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
       return Error(ExtensionTabUtil::kTabStripNotEditableError);
     }
 
-    ExtensionTabUtil::OpenTabParams options;
+    OpenTabHelper::Params options;
     options.window_id = params->create_properties.window_id;
     options.opener_tab_id = params->create_properties.opener_tab_id;
     options.active = params->create_properties.selected;
@@ -185,7 +186,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     options.index = params->create_properties.index;
     options.url = params->create_properties.url;
 
-    auto result = ExtensionTabUtil::OpenTab(this, options, user_gesture());
+    auto result = OpenTabHelper::OpenTab(this, options, user_gesture());
     if (!result.has_value()) {
       return Error(result.error());
     }

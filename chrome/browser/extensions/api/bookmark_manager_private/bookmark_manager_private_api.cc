@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/importer/importer_uma.h"
 #include "chrome/browser/platform_util.h"
@@ -676,7 +677,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   if (!node->is_url())
     return Error("Cannot open a folder in a new tab.");
 
-  ExtensionTabUtil::OpenTabParams options;
+  OpenTabHelper::Params options;
   options.url = node->url().spec();
   if (params->params.has_value()) {
     options.active = params->params.value().active;
@@ -684,8 +685,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   }
   options.bookmark_id = node->id();
 
-  auto result =
-      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
+  auto result = OpenTabHelper::OpenTab(this, options, user_gesture());
   if (!result.has_value())
     return Error(result.error());
 
