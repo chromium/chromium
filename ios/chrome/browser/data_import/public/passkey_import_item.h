@@ -9,18 +9,16 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/data_import/public/credential_import_item.h"
+
+@class URLWithTitle;
+
 namespace webauthn {
 struct ImportedPasskeyInfo;
 }  // namespace webauthn
 
 /// A passkey item to be imported.
-@interface PasskeyImportItem : NSObject
-
-/// The Relying Party identifier of a passkey.
-@property(nonatomic, readonly, strong) NSString* rpId;
-
-/// The username for the passkey.
-@property(nonatomic, readonly, strong) NSString* username;
+@interface PasskeyImportItem : CredentialImportItem
 
 /// Converts list of `ImportedPasskeyInfo` to a list of `PasskeyImportItem`.
 + (NSArray<PasskeyImportItem*>*)passkeyImportItemsFromImportedPasskeyInfos:
@@ -28,7 +26,8 @@ struct ImportedPasskeyInfo;
 
 - (instancetype)initWithRpId:(NSString*)rpId
                     username:(NSString*)username NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithUrl:(URLWithTitle*)url
+                   username:(NSString*)username NS_UNAVAILABLE;
 
 @end
 

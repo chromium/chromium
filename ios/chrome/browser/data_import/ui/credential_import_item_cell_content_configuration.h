@@ -8,14 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @class FaviconAttributes;
+@class PasskeyImportItem;
 @class PasswordImportItem;
 
 /// Content configuration for a cell that displays a credential import item.
 @interface CredentialImportItemCellContentConfiguration
     : NSObject <UIContentConfiguration>
 
-/// Information from `PasswordImportItem`.
+/// Either a URL of a password or Relying Party identifier of a passkey.
 @property(nonatomic, readonly) NSString* URL;
+
+/// Username of the credential.
 @property(nonatomic, readonly) NSString* username;
 
 /// Message displayed under `username` and its highlight status.
@@ -33,6 +36,9 @@
 
 /// Initializes cell provider showing the error message.
 + (instancetype)cellConfigurationForErrorMessage:(PasswordImportItem*)item;
+
+/// Initializes cell provider showing passkey.
++ (instancetype)cellConfigurationForPasskey:(PasskeyImportItem*)item;
 
 - (instancetype)init NS_UNAVAILABLE;
 

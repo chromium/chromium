@@ -7,9 +7,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/import/import_results.h"
-#import "components/url_formatter/elide_url.h"
-#import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/data_import/public/password_import_item_favicon_data_source.h"
+#import "ios/chrome/browser/data_import/public/utils.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "url/gurl.h"
 
@@ -51,25 +49,9 @@ PasswordImportStatus GetPasswordImportStatusFromImportEntryStatus(
   NOTREACHED();
 }
 
-// URL and its formatted string representation.
-URLWithTitle* GetURLWithTitleForURLString(const std::string& url_string) {
-  GURL url = url_formatter::FixupURL(url_string, std::string());
-  if (url.is_empty()) {
-    return nil;
-  }
-  NSString* title = base::SysUTF16ToNSString(
-      url_formatter::
-          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-              url));
-  return [[URLWithTitle alloc] initWithURL:url title:title];
-}
-
 }  // namespace
 
-@implementation PasswordImportItem {
-  /// Indicates whether favicon loading is initiated.
-  BOOL _faviconLoadingInitiated;
-}
+@implementation PasswordImportItem
 
 + (NSArray<PasswordImportItem*>*)passwordImportItemsFromImportResults:
     (const password_manager::ImportResults&)results {
@@ -92,23 +74,12 @@ URLWithTitle* GetURLWithTitleForURLString(const std::string& url_string) {
                    username:(NSString*)username
                    password:(NSString*)password
                      status:(PasswordImportStatus)status {
-  self = [super init];
+  self = [super initWithUrl:url username:username];
   if (self) {
-    _url = url;
-    _username = username;
     _password = password;
     _status = status;
   }
   return self;
-}
-
-- (void)loadFaviconWithUIUpdateHandler:(ProceduralBlock)handler {
-  if (_faviconLoadingInitiated) {
-    return;
-  }
-  _faviconLoadingInitiated =
-      [self.faviconDataSource passwordImportItem:self
-              loadFaviconAttributesWithUIHandler:handler];
 }
 
 @end

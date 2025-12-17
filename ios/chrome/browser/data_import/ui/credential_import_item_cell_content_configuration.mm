@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_view.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -82,6 +83,15 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
                     username:item.username
                      message:GetErrorMessageForPasswordImportStatus(item.status)
       shouldHighlightMessage:YES];
+}
+
++ (instancetype)cellConfigurationForPasskey:(PasskeyImportItem*)item {
+  return [[CredentialImportItemCellContentConfiguration alloc]
+          initPrivateWithURL:item.url.title
+                    username:item.username
+                     // TODO(crbug.com/450982128): Pass creation date.
+                     message:nil
+      shouldHighlightMessage:NO];
 }
 
 #pragma mark - Private initializer

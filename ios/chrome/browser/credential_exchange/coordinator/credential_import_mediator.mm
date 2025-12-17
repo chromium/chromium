@@ -12,10 +12,11 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/data_import/public/password_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -23,7 +24,7 @@
 #import "url/gurl.h"
 
 @interface CredentialImportMediator () <CredentialImporterDelegate,
-                                        PasswordImportItemFaviconDataSource>
+                                        CredentialImportItemFaviconDataSource>
 @end
 
 @implementation CredentialImportMediator {
@@ -158,9 +159,9 @@
                                         selectedPasskeyIds:selectedPasskeyIds];
 }
 
-#pragma mark - PasswordImportItemFaviconDataSource
+#pragma mark - CredentialImportItemFaviconDataSource
 
-- (BOOL)passwordImportItem:(PasswordImportItem*)item
+- (BOOL)credentialImportItem:(CredentialImportItem*)item
     loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
   // Make sure `handler` is run on the original sequence.
   base::RepeatingClosure faviconLoadClosure =

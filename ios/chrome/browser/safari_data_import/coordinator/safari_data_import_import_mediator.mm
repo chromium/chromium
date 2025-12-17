@@ -17,10 +17,11 @@
 #import "components/sync/service/sync_service.h"
 #import "components/user_data_importer/ios/ios_bookmark_parser.h"
 #import "components/user_data_importer/utility/safari_data_importer.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/data_import/public/password_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/safari_data_import/model/ios_safari_data_import_client.h"
@@ -32,7 +33,7 @@
 #import "url/gurl.h"
 
 @interface SafariDataImportImportMediator () <
-    PasswordImportItemFaviconDataSource>
+    CredentialImportItemFaviconDataSource>
 
 @end
 
@@ -134,9 +135,9 @@
   _disconnected = YES;
 }
 
-#pragma mark - PasswordImportItemFaviconDataSource
+#pragma mark - CredentialImportItemFaviconDataSource
 
-- (BOOL)passwordImportItem:(PasswordImportItem*)item
+- (BOOL)credentialImportItem:(CredentialImportItem*)item
     loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
   // Make sure `handler` is run on the original sequence.
   base::RepeatingClosure faviconLoadClosure =

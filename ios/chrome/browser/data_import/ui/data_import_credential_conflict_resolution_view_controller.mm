@@ -205,21 +205,19 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 /// Returns the cell with the properties of the `item` displayed.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ConflictItemIdentifier*)identifier {
+  UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
+
   /// Populate cell with information.
   if (identifier.type == CredentialConflictType::kPasskey) {
     PasskeyImportItem* item = _passkeyConflicts[identifier.index];
-    UITableViewCell* cell =
-        DequeueTableViewCell<UITableViewCell>(self.tableView);
-    TableViewCellContentConfiguration* contentConfig =
-        [[TableViewCellContentConfiguration alloc] init];
-    contentConfig.title = item.username;
-    contentConfig.subtitle = item.rpId;
-    cell.contentConfiguration = contentConfig;
+    CredentialImportItemCellContentConfiguration* config =
+        [CredentialImportItemCellContentConfiguration
+            cellConfigurationForPasskey:item];
+    cell.contentConfiguration = config;
     return cell;
   }
 
   PasswordImportItem* item = _passwordConflicts[identifier.index];
-  UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
   cell.accessibilityIdentifier =
       GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
           identifier.index);
