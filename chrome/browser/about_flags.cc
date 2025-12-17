@@ -6478,11 +6478,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHubBackButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHubBackButton)},
 
-    // Hub slide animation.
-    {"hub-slide-animation", flag_descriptions::kHubSlideAnimationName,
-     flag_descriptions::kHubSlideAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kHubSlideAnimation)},
-
     {"tab-freezing-uses-discard",
      flag_descriptions::kTabFreezingUsesDiscardName,
      flag_descriptions::kTabFreezingUsesDiscardDescription, kOsAndroid,

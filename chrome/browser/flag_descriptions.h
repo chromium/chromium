@@ -5432,10 +5432,6 @@ inline constexpr char kHubBackButtonName[] = "Hub back button";
 inline constexpr char kHubBackButtonDescription[] =
     "Enables a back button on the hub for large screen devices.";
 
-inline constexpr char kHubSlideAnimationName[] = "Hub Slide Animation";
-inline constexpr char kHubSlideAnimationDescription[] =
-    "Enables the slide animation on the hub when panes are switched.";
-
 inline constexpr char kMagicStackAndroidName[] = "Magic Stack Android";
 inline constexpr char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "

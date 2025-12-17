@@ -31,8 +31,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -114,7 +112,6 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_NewPaneToTheRight() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -133,7 +130,6 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_NewPaneToTheLeft() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -152,7 +148,6 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_multiplePaneChanges() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(

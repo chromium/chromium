@@ -24,7 +24,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.animation.AnimationHandler;
 
 import java.util.Objects;
@@ -35,14 +34,12 @@ public class HubPaneHostView extends FrameLayout {
     private FrameLayout mPaneFrame;
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
-    private final AnimationHandler mFadeAnimatorHandler;
     private final AnimationHandler mSlideAnimatorHandler;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        mFadeAnimatorHandler = new AnimationHandler();
         mSlideAnimatorHandler = new AnimationHandler();
     }
 
@@ -68,48 +65,18 @@ public class HubPaneHostView extends FrameLayout {
         mCurrentViewRoot = newRootView;
 
         if (oldRootView != null && newRootView != null) {
-            if (isSlideAnimationEnabled()) {
-                // If width is not available, just swap views without animation.
-                if (mPaneFrame.getWidth() == 0) {
-                    mPaneFrame.removeAllViews();
-                    tryAddViewToFrame(newRootView);
-                } else {
-                    animateSlideTransition(oldRootView, newRootView, isSlideAnimationLeftToRight);
-                }
-                return;
+            // If width is not available, just swap views without animation.
+            if (mPaneFrame.getWidth() == 0) {
+                mPaneFrame.removeAllViews();
+                tryAddViewToFrame(newRootView);
             } else {
-                animateFadeTransition(oldRootView, newRootView);
+                animateSlideTransition(oldRootView, newRootView, isSlideAnimationLeftToRight);
             }
         } else if (newRootView == null) {
             mPaneFrame.removeAllViews();
         } else { // oldRootView == null
             tryAddViewToFrame(newRootView);
         }
-    }
-
-    private void animateFadeTransition(View oldRootView, View newRootView) {
-        mFadeAnimatorHandler.forceFinishAnimation();
-
-        newRootView.setAlpha(0);
-        tryAddViewToFrame(newRootView);
-
-        Animator fadeOut = ObjectAnimator.ofFloat(oldRootView, View.ALPHA, 1, 0);
-        fadeOut.setDuration(HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS);
-
-        Animator fadeIn = ObjectAnimator.ofFloat(newRootView, View.ALPHA, 0, 1);
-        fadeIn.setDuration(HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(fadeOut, fadeIn);
-        animatorSet.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mPaneFrame.removeView(oldRootView);
-                        oldRootView.setAlpha(1);
-                    }
-                });
-        mFadeAnimatorHandler.startAnimation(animatorSet);
     }
 
     private void animateSlideTransition(View oldRootView, View newRootView, boolean isLeftToRight) {
@@ -186,9 +153,5 @@ public class HubPaneHostView extends FrameLayout {
     public void setXrSpaceModeObservableSupplier(
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
-    }
-
-    private boolean isSlideAnimationEnabled() {
-        return ChromeFeatureList.sHubSlideAnimation.isEnabled();
     }
 }

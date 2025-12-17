@@ -341,7 +341,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHomeModulePrefRefactor,
     &kHomepageIsNewTabPagePolicyAndroid,
     &kHubBackButton,
-    &kHubSlideAnimation,
     &kIncognitoNtpSmallIcon,
     &kIncognitoScreenshot,
     &kIncognitoThemeOverlayTesting,
@@ -676,7 +675,6 @@ BASE_FEATURE(kHistoryPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeModulePrefRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomepageIsNewTabPagePolicyAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHubBackButton, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kHubSlideAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoNtpSmallIcon, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoThemeOverlayTesting, base::FEATURE_DISABLED_BY_DEFAULT);
