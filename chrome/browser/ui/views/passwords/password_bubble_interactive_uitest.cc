@@ -223,7 +223,28 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, temp) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       CredentialLeak_ActorOperating_NoDialog) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  AddActorTask();
+  auto origin = GURL("https://example.com");
+  PasswordForm form;
+  form.url = origin;
+  form.signon_realm = origin.GetWithEmptyPath().spec();
+  form.username_value = u"Eve";
+  form.password_value = u"password";
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CredentialLeakFlags::kPasswordSaved, std::move(form),
+      /*in_account_store=*/false));
+
+  // Dialog controller is only present when there is a dialog shown.
+  EXPECT_FALSE(GetController()->dialog_controller());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordBubbleInteractiveUiTest,
+    BiometricAuthenticationForFilling_ActorOperating_NoBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   AddActorTask();
@@ -582,6 +603,25 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   // Wait until the auto-signin bubble has disappeared, which should happen
   // after its timeout.
   EXPECT_TRUE(base::test::RunUntil([&] { return !IsBubbleShowing(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       CredentialLeak_OpensDialog) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  SetupPendingPassword();
+
+  auto origin = GURL("https://example.com");
+  PasswordForm form;
+  form.url = origin;
+  form.signon_realm = origin.GetWithEmptyPath().spec();
+  form.username_value = u"Eve";
+  form.password_value = u"password";
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CredentialLeakFlags::kPasswordSaved, std::move(form),
+      /*in_account_store=*/false));
+
+  // Dialog controller is present when there is a dialog shown.
+  EXPECT_TRUE(GetController()->dialog_controller());
 }
 
 // Test that triggering the leak detection dialog successfully hides a showing
