@@ -120,7 +120,7 @@ static void CheckExistingName(StringView alias,
 static bool IsUndesiredAlias(StringView alias) {
   // Reject aliases with version numbers that are supported by some back-ends
   // (such as "ISO_2022,locale=ja,version=0" in ICU).
-  if (alias.Find([](UChar ch) { return ch == ','; }) != kNotFound) {
+  if (alias.contains(',')) {
     return true;
   }
   // 8859_1 is known to (at least) ICU, but other browsers don't support this

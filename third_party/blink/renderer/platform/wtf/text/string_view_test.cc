@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -643,6 +645,20 @@ TEST(StringViewTest, NextCodePointOffset) {
   const UChar kTrail = 0xDC00;
   StringView broken3(base::span_from_ref(kTrail));
   EXPECT_EQ(1u, broken3.NextCodePointOffset(0));
+}
+
+TEST(StringViewTest, Contains) {
+  EXPECT_FALSE(StringView().contains(0));
+  EXPECT_FALSE(StringView("").contains(0));
+  EXPECT_FALSE(StringView(u"").contains(0));
+  EXPECT_FALSE(StringView("ascii").contains(0));
+  EXPECT_FALSE(StringView(u"ascii").contains(0));
+  EXPECT_TRUE(StringView(base::byte_span_from_cstring("as\0cii")).contains(0));
+  EXPECT_TRUE(StringView(base::span_from_cstring(u"asci\0i")).contains(0));
+
+  EXPECT_FALSE(StringView("ascii").contains(uchar::kBlackSquare));
+  EXPECT_FALSE(StringView(u"ascii").contains(uchar::kBlackSquare));
+  EXPECT_TRUE(StringView(u"ascii\u25A0").contains(uchar::kBlackSquare));
 }
 
 }  // namespace blink

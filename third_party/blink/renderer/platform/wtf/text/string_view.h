@@ -276,6 +276,9 @@ class WTF_EXPORT StringView {
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
                   wtf_size_t start = 0) const;
 
+  // Returns `true` if this StringView contains the specified character.
+  bool contains(UChar ch) const;
+
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
 
