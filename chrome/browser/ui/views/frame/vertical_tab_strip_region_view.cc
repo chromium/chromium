@@ -172,10 +172,10 @@ bool VerticalTabStripRegionView::IsTabStripEditable() const {
   // TODO(crbug.com/467710547): This needs to consider the drag context. Wait
   // until that is implemented before updating this function.
   NOTIMPLEMENTED();
-  return !tab_strip_not_editable_for_testing_;
+  return tab_strip_editable_for_testing_;
 }
 
-void VerticalTabStripRegionView::SetTabStripNotEditableForTesting() const {
+void VerticalTabStripRegionView::DisableTabStripEditingForTesting() const {
   // TODO(crbug.com/467710617): Implement this in VerticalTabStripView.
   NOTIMPLEMENTED();
 }

@@ -1172,7 +1172,7 @@ bool TabStrip::IsTabStripCloseable() const {
 }
 
 bool TabStrip::IsTabStripEditable() const {
-  return !tab_strip_not_editable_for_testing_ &&
+  return tab_strip_editable_for_testing_ &&
          !drag_context_->IsDragSessionActive() &&
          !drag_context_->IsActiveDropTarget();
 }
@@ -2200,8 +2200,8 @@ views::View* TabStrip::GetViewForDrop() {
   NOTREACHED();
 }
 
-void TabStrip::SetTabStripNotEditableForTesting() {
-  tab_strip_not_editable_for_testing_ = true;
+void TabStrip::DisableTabStripEditingForTesting() {
+  tab_strip_editable_for_testing_ = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

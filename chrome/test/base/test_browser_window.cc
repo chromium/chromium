@@ -245,7 +245,7 @@ bool TestBrowserWindow::IsTabStripEditable() const {
   return is_tab_strip_editable_;
 }
 
-void TestBrowserWindow::SetTabStripNotEditableForTesting() {
+void TestBrowserWindow::DisableTabStripEditingForTesting() {
   is_tab_strip_editable_ = false;
 }
 

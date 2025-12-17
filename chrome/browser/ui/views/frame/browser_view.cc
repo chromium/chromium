@@ -2992,8 +2992,8 @@ bool BrowserView::IsTabStripEditable() const {
   return tab_strip_view()->IsTabStripEditable();
 }
 
-void BrowserView::SetTabStripNotEditableForTesting() {
-  tab_strip_view()->SetTabStripNotEditableForTesting();  // IN-TEST
+void BrowserView::DisableTabStripEditingForTesting() {
+  tab_strip_view()->DisableTabStripEditingForTesting();  // IN-TEST
 }
 
 bool BrowserView::IsToolbarVisible() const {

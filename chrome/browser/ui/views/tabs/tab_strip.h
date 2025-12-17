@@ -350,7 +350,7 @@ class TabStrip : public views::View,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
-  void SetTabStripNotEditableForTesting();
+  void DisableTabStripEditingForTesting();
   TabHoverCardController* hover_card_controller_for_testing() {
     return hover_card_controller_.get();
   }
@@ -496,8 +496,8 @@ class TabStrip : public views::View,
 
   SkColor separator_color_ = gfx::kPlaceholderColor;
 
-  // If true simulates a non-editable tab strip for testing.
-  bool tab_strip_not_editable_for_testing_ = false;
+  // If false simulates a non-editable tab strip for testing.
+  bool tab_strip_editable_for_testing_ = true;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

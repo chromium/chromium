@@ -550,8 +550,8 @@ views::View* HorizontalTabStripRegionView::GetDefaultFocusableChild() {
 bool HorizontalTabStripRegionView::IsTabStripEditable() const {
   return tab_strip_->IsTabStripEditable();
 }
-void HorizontalTabStripRegionView::SetTabStripNotEditableForTesting() const {
-  tab_strip_->SetTabStripNotEditableForTesting();  // IN-TEST
+void HorizontalTabStripRegionView::DisableTabStripEditingForTesting() const {
+  tab_strip_->DisableTabStripEditingForTesting();  // IN-TEST
 }
 
 bool HorizontalTabStripRegionView::IsTabStripCloseable() const {

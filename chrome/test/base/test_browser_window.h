@@ -154,7 +154,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool IsBookmarkBarVisible() const override;
   bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
-  void SetTabStripNotEditableForTesting() override;
+  void DisableTabStripEditingForTesting() override;
   void SetIsTabStripEditable(bool is_editable);
   bool IsToolbarVisible() const override;
   bool IsLocationBarVisible() const override;

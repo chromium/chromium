@@ -389,7 +389,7 @@ class BrowserWindow : public ui::BaseWindow {
   virtual bool IsTabStripEditable() const = 0;
 
   // Forces the tab strip into a not editable state for testing.
-  virtual void SetTabStripNotEditableForTesting() = 0;
+  virtual void DisableTabStripEditingForTesting() = 0;
 
   // Returns whether the toolbar is available or not. It's called "Visible()"
   // to follow the name convention. But it does not indicate the visibility of

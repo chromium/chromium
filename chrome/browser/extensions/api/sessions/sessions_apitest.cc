@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   // of a tab dragging session.
   Browser* non_editable_browser =
       Browser::Create(Browser::CreateParams(GetProfile(), true));
-  non_editable_browser->window()->SetTabStripNotEditableForTesting();
+  non_editable_browser->window()->DisableTabStripEditingForTesting();
 
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(

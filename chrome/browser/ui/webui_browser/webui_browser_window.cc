@@ -787,7 +787,7 @@ bool WebUIBrowserWindow::IsTabStripEditable() const {
   return true;
 }
 
-void WebUIBrowserWindow::SetTabStripNotEditableForTesting() {
+void WebUIBrowserWindow::DisableTabStripEditingForTesting() {
   NOTIMPLEMENTED();
 }
 

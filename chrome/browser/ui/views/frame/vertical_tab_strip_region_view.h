@@ -92,7 +92,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   // TabStripRegionView
   bool IsTabStripEditable() const override;
-  void SetTabStripNotEditableForTesting() const override;
+  void DisableTabStripEditingForTesting() const override;
   bool IsTabStripCloseable() const override;
   bool IsAnimating() const override;
   void StopAnimating() override;
@@ -126,8 +126,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   bool IsFrameActive() const;
 
-  // When true simulates a non-editable tabstrip. For testing only.
-  bool tab_strip_not_editable_for_testing_ = false;
+  // When false simulates a non-editable tabstrip. For testing only.
+  bool tab_strip_editable_for_testing_ = true;
 
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
