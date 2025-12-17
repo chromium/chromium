@@ -452,7 +452,7 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
           kContentsContainerViewElementId,
           views::ElementTrackerViews::GetContextForWidget(widget_.get()));
-  return content_region->GetScreenBounds();
+  return content_region ? content_region->GetScreenBounds() : gfx::Rect();
 }
 
 ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
@@ -671,8 +671,7 @@ void WebUIBrowserWindow::SetForceFullscreen(bool force_fullscreen) {
 }
 
 gfx::Size WebUIBrowserWindow::GetContentsSize() const {
-  NOTIMPLEMENTED();
-  return gfx::Size();
+  return GetContentsBoundsInScreen().size();
 }
 
 void WebUIBrowserWindow::SetContentsSize(const gfx::Size& size) {
