@@ -66,6 +66,9 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
   // implicity attached to the original web state only.
   ChromeIOSTranslateClient::CreateForWebState(
       web_state(), InfoBarManagerImpl::FromWebState(original_web_state));
+  ChromeIOSTranslateClient::FromWebState(web_state())
+      ->GetTranslateManager()
+      ->SetEnableAutoTranslate(false);
 
   web_state_delegate_ = std::make_unique<ReaderModeWebStateDelegate>(
       original_web_state, original_web_state->GetDelegate());

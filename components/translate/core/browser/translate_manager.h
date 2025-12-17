@@ -228,6 +228,11 @@ class TranslateManager {
   void SetPredefinedTargetLanguage(const std::string& language_code,
                                    bool should_auto_translate = false);
 
+  // Sets whether page auto translation is enabled for the translate manager.
+  // If false, pages will not be auto translated otherwise the notranslate
+  // meta tag and determined language will affect page auto translation.
+  void SetEnableAutoTranslate(bool enable_auto_translate);
+
   // Returns a reference to |active_translate_metrics_logger_|. In the event
   // that this value is null, a |NullTranslateMetricsLogger| (a null
   // implementation) will be returned. This guarantees that the returned value
@@ -360,6 +365,9 @@ class TranslateManager {
   std::unique_ptr<NullTranslateMetricsLogger> null_translate_metrics_logger_;
 
   LanguageState language_state_;
+
+  // Whether page auto translation is enabled for the translate manager.
+  bool enable_auto_translate_ = true;
 
   std::unique_ptr<metrics::TranslateEventProto> translate_event_;
 

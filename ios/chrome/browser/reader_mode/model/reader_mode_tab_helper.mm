@@ -274,8 +274,6 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
           source_translation_state_.source_code,
           source_translation_state_.target_code);
     } else if (IsReaderModeBadgeSupportEnabled()) {
-      // TODO(crbug.com/463917509): Do not support auto-translate in Reading
-      // Mode if the user has explicitly disabled the setting.
       language::IOSLanguageDetectionTabHelper::FromWebState(
           reader_mode_web_state_.get())
           ->StartLanguageDetection();

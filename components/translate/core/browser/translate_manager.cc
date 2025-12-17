@@ -895,6 +895,13 @@ void TranslateManager::FilterAutoTranslate(
     TranslateTriggerDecision* decision,
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
+  // If auto translate is not enabled for the translate manager, prevent auto
+  // translation and return early.
+  if (!enable_auto_translate_) {
+    decision->PreventAutoTranslate();
+    return;
+  }
+
   // Determine whether auto-translate is required, and if so for which target
   // language.
   std::string always_translate_target =
@@ -1202,6 +1209,10 @@ void TranslateManager::SetPredefinedTargetLanguage(
     bool should_auto_translate) {
   language_state_.SetPredefinedTargetLanguage(language_code,
                                               should_auto_translate);
+}
+
+void TranslateManager::SetEnableAutoTranslate(bool enable_auto_translate) {
+  enable_auto_translate_ = enable_auto_translate;
 }
 
 TranslateMetricsLogger* TranslateManager::GetActiveTranslateMetricsLogger() {
