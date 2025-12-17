@@ -27,10 +27,10 @@ class AutofillField : public FormFieldData {};
 namespace testing {
 
 template <typename Class, typename FieldType>
-void Field(FieldType Class::*field, int matcher) {}
+void Field(FieldType Class::* field, int matcher) {}
 
 template <typename Class, typename FieldType>
-void Property(FieldType Class::*field(), int matcher) {}
+void Property(FieldType Class::* field(), int matcher) {}
 
 }  // namespace testing
 
@@ -199,7 +199,7 @@ void FunWriteVector() {
 std::u16string FunFieldPointer() {
   using autofill::FormFieldData;
   FormFieldData f;
-  std::u16string FormFieldData::*ptr = &FormFieldData::value;
+  std::u16string FormFieldData::* ptr = &FormFieldData::value;
   return f.*ptr;
 }
 

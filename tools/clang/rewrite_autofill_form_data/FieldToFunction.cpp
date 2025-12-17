@@ -160,7 +160,6 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
       case clang::Language::CIR:
       case clang::Language::OpenCL:
       case clang::Language::CUDA:
-      case clang::Language::RenderScript:
       case clang::Language::HIP:
       case clang::Language::HLSL:
       case clang::Language::C:
