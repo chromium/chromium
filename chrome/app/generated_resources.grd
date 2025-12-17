@@ -620,6 +620,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
            Close
           </message>
+          <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive Glic conversation">
+           Archive
+          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -938,6 +941,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
            Close
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive a Glic conversation">
+           Archive
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload

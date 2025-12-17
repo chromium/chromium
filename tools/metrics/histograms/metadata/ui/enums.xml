@@ -356,6 +356,7 @@ chromium-metrics-reviews@google.com.
   <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
   <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
   <int value="157" label="IDC_CONTENT_CONTEXT_GLICSHAREIMAGE"/>
+  <int value="158" label="IDC_CONTENT_CONTEXT_ARCHIVE_GLIC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

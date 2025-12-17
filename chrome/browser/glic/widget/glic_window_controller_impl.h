@@ -92,6 +92,8 @@ class GlicWindowControllerImpl
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
+  void ArchiveInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;

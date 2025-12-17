@@ -756,6 +756,11 @@ void GlicKeyedService::Close(
   window_controller().CloseInstanceWithFrame(outermost_render_frame_host);
 }
 
+void GlicKeyedService::Archive(
+    content::RenderFrameHost* outermost_render_frame_host) {
+  window_controller().ArchiveInstanceWithFrame(outermost_render_frame_host);
+}
+
 void GlicKeyedService::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
 }

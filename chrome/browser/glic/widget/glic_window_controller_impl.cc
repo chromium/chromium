@@ -962,6 +962,11 @@ void GlicWindowControllerImpl::CloseInstanceWithFrame(
   NOTREACHED();
 }
 
+void GlicWindowControllerImpl::ArchiveInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  NOTREACHED();
+}
+
 void GlicWindowControllerImpl::Close() {
   if (state_ == State::kClosed || state_ == State::kDetaching) {
     return;

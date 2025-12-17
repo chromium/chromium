@@ -560,13 +560,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_CLOSE_GLIC, 155},
        {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 156},
        {IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 157},
+       {IDC_CONTENT_CONTEXT_ARCHIVE_GLIC, 158},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 158}});
+       {0, 159}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -889,6 +890,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicCloseMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicReloadMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kGlicArchiveConversationMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicShareImageMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
@@ -2433,6 +2436,16 @@ void RenderViewContextMenu::AppendGlicItems() {
     menu_model_.SetElementIdentifierAt(
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC).value(),
         kGlicCloseMenuItem);
+    if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
+        base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
+      // Archive  Glic conversation.
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_ARCHIVE_GLIC,
+                                      IDS_CONTENT_CONTEXT_ARCHIVE_GLIC);
+      menu_model_.SetElementIdentifierAt(
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_ARCHIVE_GLIC)
+              .value(),
+          kGlicArchiveConversationMenuItem);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
@@ -3145,6 +3158,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
+    case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:
       return true;
 
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
@@ -3431,6 +3445,19 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           } else {
             glic_service->CloseAndShutdown();
           }
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+      break;
+
+    case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:  // Added for archive conversation
+#if BUILDFLAG(ENABLE_GLIC)
+      if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
+          base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
+        auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
+        if (glic_service) {
+          // Call the Archive method on the Glic service.
+          glic_service->Archive(GetRenderFrameHost()->GetOutermostMainFrame());
         }
       }
 #endif  // BUILDFLAG(ENABLE_GLIC)

@@ -114,7 +114,8 @@ class GlicInstanceCoordinatorImpl
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
-
+  void ArchiveInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void AddGlobalStateObserver(StateObserver* observer) override;
   void RemoveGlobalStateObserver(StateObserver* observer) override;
 

@@ -93,7 +93,8 @@ class GlicWindowController {
   // with resetting webcontents.
   virtual void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) = 0;
-
+  virtual void ArchiveInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) = 0;
   // Returns wehether or not the glic window is currently showing detached.
   // When True |GetGlicWidget| will return a valid ptr.
   virtual bool IsDetached() const = 0;

@@ -275,6 +275,9 @@ class GlicKeyedService : public KeyedService,
   // Close the active embedder for an instance associated with this render frame
   // host.
   void Close(content::RenderFrameHost* outermost_render_frame_host);
+  // Archive the active embedder for an instance associated with this render
+  // frame host.
+  void Archive(content::RenderFrameHost* outermost_render_frame_host);
   Profile* profile() const { return profile_; }
 
   // Used only for testing purposes.

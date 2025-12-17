@@ -259,6 +259,16 @@ void GlicInstanceCoordinatorImpl::CloseInstanceWithFrame(
   }
 }
 
+void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
+    content::RenderFrameHost* render_frame_host) {
+  for (auto& [id, instance] : instances_) {
+    if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
+      RemoveInstance(instance.get());
+      return;
+    }
+  }
+}
+
 void GlicInstanceCoordinatorImpl::CloseFloaty() {
   if (auto* floaty_instance = GetInstanceWithFloaty()) {
     floaty_instance->Close(FloatingEmbedderKey{});
