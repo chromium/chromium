@@ -2222,6 +2222,19 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LetterSpacing) -->
 
+<!-- LINT.IfChange(ReadAnythingLineFocus) -->
+
+<enum name="ReadAnythingLineFocus">
+  <int value="0" label="Off"/>
+  <int value="1" label="One Line Window"/>
+  <int value="2" label="Three Line Window"/>
+  <int value="3" label="Five Line Window"/>
+  <int value="4" label="Static Line"/>
+  <int value="5" label="Cursor Line"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineFocus) -->
+
 <!-- LINT.IfChange(ReadAnythingLineSpacing) -->
 
 <enum name="ReadAnythingLineSpacing">
@@ -2284,6 +2297,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Letter spacing change"/>
   <int value="5" label="Links enabled change"/>
   <int value="6" label="Images enabled change"/>
+  <int value="7" label="Line focus change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->

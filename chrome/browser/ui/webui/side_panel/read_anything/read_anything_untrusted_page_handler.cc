@@ -1150,6 +1150,12 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration("Accessibility.ReadAnything.LetterSpacing",
                                 letter_spacing);
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    auto line_focus = static_cast<read_anything::mojom::LineFocus>(
+        prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
+    base::UmaHistogramEnumeration("Accessibility.ReadAnything.LineFocus",
+                                  line_focus);
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::

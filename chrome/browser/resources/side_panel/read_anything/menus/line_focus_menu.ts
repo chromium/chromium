@@ -9,6 +9,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';
@@ -75,6 +77,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
       data: chrome.readingMode.lineFocusCursorLine,
     },
   ];
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
@@ -85,8 +88,9 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
   }
 
   protected onLineFocusChange_(event: CustomEvent<{data: number}>) {
-    // TODO(crbug.com/447427066): Log this change.
     chrome.readingMode.onLineFocusChanged(event.detail.data);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_CHANGE);
   }
 }
 

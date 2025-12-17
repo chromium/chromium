@@ -5,22 +5,24 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LineFocusMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertHeadersForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LineFocusMenuElement', () => {
   let lineFocusMenu: LineFocusMenuElement;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    mockMetrics();
+    metrics = mockMetrics();
 
     lineFocusMenu = document.createElement('line-focus-menu');
     document.body.appendChild(lineFocusMenu);
@@ -41,7 +43,7 @@ suite('LineFocusMenuElement', () => {
         lineFocusMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 
-  test('line focus change', () => {
+  test('line focus change', async () => {
     const window = chrome.readingMode.lineFocusThreeLineWindow;
     lineFocusMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: window}}));
@@ -56,6 +58,11 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: line}}));
     assertEquals(line, chrome.readingMode.lineFocus);
+
+    assertEquals(
+        ReadAnythingSettingsChange.LINE_FOCUS_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
   });
 
   test('restores saved line focus option', async () => {

@@ -59,9 +59,10 @@ export enum ReadAnythingSettingsChange {
   LETTER_SPACING_CHANGE = 4,
   LINKS_ENABLED_CHANGE = 5,
   IMAGES_ENABLED_CHANGE = 6,
+  LINE_FOCUS_CHANGE = 7,
 
   // Must be last.
-  COUNT = 7,
+  COUNT = 8,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsChange)
 

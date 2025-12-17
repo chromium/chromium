@@ -3076,6 +3076,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.LineFocus"
+    enum="ReadAnythingLineFocus" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the user-chosen line focus mode for Read Anything when the panel is
+    closed.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.LineSpacing"
     enum="ReadAnythingLineSpacing" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

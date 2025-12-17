@@ -125,15 +125,21 @@ enum HighlightGranularity {
 };
 
 [Extensible]
+// LINT.IfChange(LineFocus)
 // Line focus options.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum LineFocus {
   [Default]kOff = 0,
+  // Line focus window modes of different line heights. i.e. a window of size
+  // one line, three lines, or 5 lines.
   kWindow1 = 1,
   kWindow3 = 2,
   kWindow5 = 3,
   kLineStatic = 4,
   kLineCursor = 5,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineFocus)
 
 // LINT.IfChange(DistillationStatus)
 // Distillation status after a page has been opened with reading mode. Used for

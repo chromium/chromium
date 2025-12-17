@@ -515,6 +515,23 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       Destructor_LogsLineFocus) {
+  base::HistogramTester histogram_tester;
+  const read_anything::mojom::LineFocus kLineFocus =
+      read_anything::mojom::LineFocus::kWindow1;
+  handler_ = CreateHandler();
+  handler_->OnLineFocusChanged(kLineFocus);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  extension_wrapper_ptr_ = nullptr;
+#endif
+  handler_.reset();
+
+  histogram_tester.ExpectUniqueSample("Accessibility.ReadAnything.LineFocus",
+                                      kLineFocus, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        OnLineSpaceChange) {
   const read_anything::mojom::LineSpacing kSpacing1 =
       read_anything::mojom::LineSpacing::kLoose;
