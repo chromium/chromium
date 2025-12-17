@@ -1408,6 +1408,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/',
+            'third_party/blink/renderer/core/exported/',
+        ],
+        'allowed': [
+            # In blink-internal code we use blink::PersistentLocation but
+            # we don't expose that in the public API.
+            'cppgc::SourceLocation',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_navigation_params.h',
         ],
         'allowed': [

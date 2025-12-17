@@ -12,6 +12,7 @@ import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
+import("//v8/gni/v8.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -77,6 +78,7 @@ buildflag_header("buildflags") {
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "ENABLE_UNHANDLED_TAP=$enable_unhandled_tap",
+    "VERBOSE_PERSISTENT=$cppgc_enable_object_names",
   ]
 }
 
