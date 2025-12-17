@@ -5168,6 +5168,8 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     return std::get<0>(GetParam());
   }
 
+  bool IsProcessHtmlDataImmediatelyEnabled() { return std::get<1>(GetParam()); }
+
  private:
   void RegisterRequestHandlerForSlowResponsePage(
       net::EmbeddedTestServer* test_server) {
@@ -6266,7 +6268,24 @@ class ServiceWorkerAutoPreloadBrowserTest
   static constexpr char kSwScriptUrl[] = "/service_worker/auto_preload.js";
 
   ServiceWorkerAutoPreloadBrowserTest() {
-    feature_list_.InitWithFeatures({{features::kServiceWorkerAutoPreload}}, {});
+    // We excplitly enable/disable `ProcessHtmlDataImmediately`. Because the
+    // `ProcessHtmlDataImmediately` changes the scheduling of processing HTML
+    // tokenizer in the renderer, and the `ServiceWorkerAutoPreload` should
+    // guarantee that the response data is successfully delivered to the
+    // renderer regardless of it's timing. See crbug.com/468821930 fore more
+    // details.
+    if (IsProcessHtmlDataImmediatelyEnabled()) {
+      feature_list_.InitWithFeatures(
+          {{features::kServiceWorkerAutoPreload},
+           {blink::features::kProcessHtmlDataImmediately}},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {
+              {features::kServiceWorkerAutoPreload},
+          },
+          {{blink::features::kProcessHtmlDataImmediately}});
+    }
     RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
         1024);
   }
@@ -6336,10 +6355,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   // Request count should be 1. RaceNetworkRequest + pass through request from
   // fetch handler but the fetch handler request will reuse the response from
   // RaceNetworkRequest.
-  while (GetRequestCount(relative_url) != 1) {
+  while (GetRequestCount(relative_url) < 1) {
     base::RunLoop().RunUntilIdle();
   }
   EXPECT_EQ(1, GetRequestCount(relative_url));
+  // Check the response body is processed correctly to ensure if the request
+  // initiated by the ServiceWorkerAutoPreload is dispatched, and the response
+  // is delivered to the renderer.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
