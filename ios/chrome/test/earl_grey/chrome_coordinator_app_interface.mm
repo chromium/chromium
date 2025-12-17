@@ -10,6 +10,7 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
@@ -76,7 +77,7 @@
 
 // Dismisses the root view controller, stops the coordinator, and clears the
 // browser.
-- (void)reset;
+- (void)resetWithCompletion:(ProceduralBlock)completion;
 
 @end
 
@@ -95,15 +96,19 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     instance = [[ChromeCoordinatorAppInterfaceHelper alloc] init];
-    [instance reset];
+    [instance resetWithCompletion:nil];
   });
   return instance;
 }
 
-- (void)reset {
+- (void)resetWithCompletion:(ProceduralBlock)completion {
   [_rootViewController.presentingViewController
       dismissViewControllerAnimated:NO
-                         completion:nil];
+                         completion:^{
+                           if (completion) {
+                             completion();
+                           }
+                         }];
   _rootViewController = nil;
   _mockObject = nil;
   _browser.reset();
@@ -211,10 +216,14 @@
   self.helper.coordinator = nil;
 }
 
-+ (void)reset {
++ (void)resetWithCompletion:(ProceduralBlock)completion {
   chrome_test_util::SetMainBrowserOverride(nullptr);
   [self stopCoordinator];
-  [self.helper reset];
+  [self.helper resetWithCompletion:completion];
+}
+
++ (void)reset {
+  [ChromeCoordinatorAppInterface resetWithCompletion:nil];
 }
 
 #pragma mark - Properties
@@ -351,6 +360,15 @@
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
   [self.helper.coordinator start];
+}
+
++ (void)startBookmarksCoordinator {
+  BookmarksCoordinator* coordinator =
+      [[BookmarksCoordinator alloc] initWithBrowser:self.helper.browser];
+  coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+  [coordinator presentBookmarks];
 }
 
 #pragma mark - Private
