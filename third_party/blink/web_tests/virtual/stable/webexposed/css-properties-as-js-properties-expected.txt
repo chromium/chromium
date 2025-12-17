@@ -486,6 +486,7 @@ textEmphasisColor
 textEmphasisPosition
 textEmphasisStyle
 textIndent
+textJustify
 textOrientation
 textOverflow
 textRendering
