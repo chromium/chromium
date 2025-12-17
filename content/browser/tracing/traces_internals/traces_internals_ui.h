@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_UI_H_
 
 #include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
-#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -18,19 +18,19 @@ class TracesInternalsHandler;
 class TracesInternalsUI;
 
 // WebUIConfig for the chrome://traces page.
-class TracesInternalsUIConfig
-    : public DefaultInternalWebUIConfig<TracesInternalsUI> {
+class TracesInternalsUIConfig : public DefaultWebUIConfig<TracesInternalsUI> {
  public:
   TracesInternalsUIConfig()
-      : DefaultInternalWebUIConfig(kChromeUITracesInternalsHost) {}
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUITracesHost) {}
 };
 
 // Temporary WebUIConfig to also register legacy chrome://traces-internals URL.
 class TracesInternalsLegacyUIConfig
-    : public DefaultInternalWebUIConfig<TracesInternalsUI> {
+    : public DefaultWebUIConfig<TracesInternalsUI> {
  public:
   TracesInternalsLegacyUIConfig()
-      : DefaultInternalWebUIConfig("traces-internals") {}
+      : DefaultWebUIConfig(kChromeUIScheme,
+                           kLegacyChromeUITracesInternalsHost) {}
 };
 
 // WebUIController for the chrome://traces page.
