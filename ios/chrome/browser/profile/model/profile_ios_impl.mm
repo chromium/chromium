@@ -52,12 +52,6 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-// TODO(crbug.com/369296278): Remove when MaybeMigrateSyncingUserToSignedIn()
-// is no longer used (i.e. ~one year after kForceMigrateSyncingUserToSignedIn
-// is fully launched).
-#import "base/task/bind_post_task.h"
-#import "components/browser_sync/sync_to_signin_migration.h"
-
 namespace {
 
 // Determine the WebKit storage UUID for profile.
@@ -506,20 +500,6 @@ void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
   // Migrate the preferences, unless the profile has just been created.
   if (!init_info.is_new_profile) {
     MigrateObsoleteProfilePrefs(prefs_.get());
-
-    // TODO(crbug.com/369296278): Remove on 12/2025.
-    //
-    // MaybeMigrateSyncingUserToSignedIn(...) may perform disk IO which is
-    // not permitted if the Profile is loaded asynchronously.
-    if (init_info.creation_mode == CreationMode::kAsynchronous) {
-      browser_sync::MaybeMigrateSyncingUserToSignedInAsync(
-          GetStatePath(), GetPrefs(),
-          base::BindOnce(&ProfileIOSImpl::PrefsInitStage3,
-                         weak_ptr_factory_.GetWeakPtr(), init_info, success));
-      return;
-    }
-
-    browser_sync::MaybeMigrateSyncingUserToSignedIn(GetStatePath(), GetPrefs());
   }
 
   // Either the operation was synchronous or unnecessary, move to the

@@ -63,11 +63,6 @@ source_set("model") {
     "//ios/net",
     "//ios/web/public/thread",
     "//net",
-
-    # TODO(crbug.com/369296278): Remove when MaybeMigrateSyncingUserToSignedIn()
-    # is no longer used (i.e. ~one year after kForceMigrateSyncingUserToSignedIn
-    # is fully launched).
-    "//components/browser_sync",
   ]
 }
 
