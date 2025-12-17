@@ -82,6 +82,10 @@ class TextCodecUtf8 : public TextCodec {
                    base::span<UChar>& destination,
                    bool stop_on_error,
                    bool& saw_error);
+  void FillPartialSequenceBytes(size_t sequence_length,
+                                base::span<const uint8_t>& source);
+  bool NeedMoreData(size_t sequence_length, int character, bool flush) const;
+  void SavePartialSequenceBytes(base::span<const uint8_t>& source);
   void ConsumePartialSequenceBytes(size_t num_bytes);
 
   std::array<uint8_t, U8_MAX_LENGTH> partial_sequence_;

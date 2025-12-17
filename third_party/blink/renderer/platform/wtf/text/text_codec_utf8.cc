@@ -207,14 +207,47 @@ void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("UTF-8", Create);
 }
 
+void TextCodecUtf8::SavePartialSequenceBytes(
+    base::span<const uint8_t>& source) {
+  DCHECK(!partial_sequence_size_);
+  partial_sequence_size_ = source.size();
+  base::span(partial_sequence_)
+      .first(partial_sequence_size_)
+      .copy_from(source.take_first(partial_sequence_size_));
+}
+
 void TextCodecUtf8::ConsumePartialSequenceBytes(size_t num_bytes) {
   DCHECK_GE(partial_sequence_size_, num_bytes);
   partial_sequence_size_ -= num_bytes;
-
   base::span(partial_sequence_)
       .first(partial_sequence_size_)
       .copy_from(base::span(partial_sequence_)
                      .subspan(num_bytes, partial_sequence_size_));
+}
+
+void TextCodecUtf8::FillPartialSequenceBytes(
+    size_t sequence_length,
+    base::span<const uint8_t>& source) {
+  DCHECK_GT(sequence_length, partial_sequence_size_);
+  // Copy from `source` until we have `sequence_length` bytes.
+  if (!source.empty()) {
+    size_t additional_bytes = std::min<size_t>(
+        sequence_length - partial_sequence_size_, source.size());
+    base::span(partial_sequence_)
+        .subspan(partial_sequence_size_, additional_bytes)
+        .copy_from(source.take_first(additional_bytes));
+    partial_sequence_size_ += additional_bytes;
+  }
+  // If we still don't have `sequence_length` bytes, fill the rest with zeros
+  // (any other lead byte would do), so we can run `DecodeNonASCIISequence` to
+  // tell if the chunk that we have is valid. These bytes are not part of the
+  // partial sequence, so don't increment `partial_sequence_size`.
+  if (sequence_length > partial_sequence_size_) {
+    std::ranges::fill(base::span(partial_sequence_)
+                          .first(sequence_length)
+                          .last(sequence_length - partial_sequence_size_),
+                      0);
+  }
 }
 
 void TextCodecUtf8::HandleError(int character,
@@ -233,6 +266,24 @@ void TextCodecUtf8::HandleError(int character,
   ConsumePartialSequenceBytes(num_bytes_consumed);
 }
 
+bool TextCodecUtf8::NeedMoreData(size_t sequence_length,
+                                 int character,
+                                 bool flush) const {
+  if (sequence_length <= partial_sequence_size_) {
+    return false;
+  }
+  // If at the end, there's no more data.
+  if (flush) {
+    return false;
+  }
+  const size_t noncharacter_len = LengthOfNonCharacter(character);
+  DCHECK(IsNonCharacter(character));
+  DCHECK_LE(noncharacter_len, partial_sequence_size_);
+  // The partial sequence that we have is incomplete but otherwise valid, a
+  // non-character is not an error.
+  return noncharacter_len == partial_sequence_size_;
+}
+
 bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
                                           base::span<const uint8_t>& source,
                                           bool flush) {
@@ -247,35 +298,13 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
     if (!count)
       return true;
 
-    // Copy from `source` until we have `count` bytes.
-    if (count > partial_sequence_size_ && !source.empty()) {
-      size_t additional_bytes =
-          std::min<size_t>(count - partial_sequence_size_, source.size());
-      base::span(partial_sequence_)
-          .subspan(partial_sequence_size_, additional_bytes)
-          .copy_from(source.take_first(additional_bytes));
-      partial_sequence_size_ += additional_bytes;
-    }
-
-    // If we still don't have `count` bytes, fill the rest with zeros (any other
-    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
-    // the chunk that we have is valid. These bytes are not part of the partial
-    // sequence, so don't increment `partial_sequence_size`.
-    auto partial_data = base::span(partial_sequence_).first(count);
     if (count > partial_sequence_size_) {
-      std::ranges::fill(partial_data.last(count - partial_sequence_size_), 0);
+      FillPartialSequenceBytes(count, source);
     }
-
-    const int character = DecodeNonASCIISequence(partial_data);
-    if (count > partial_sequence_size_) {
-      size_t noncharacter_len = LengthOfNonCharacter(character);
-      DCHECK(IsNonCharacter(character));
-      DCHECK_LE(noncharacter_len, partial_sequence_size_);
-      // If we're not at the end, and the partial sequence that we have is
-      // incomplete but otherwise valid, a non-character is not an error.
-      if (!flush && noncharacter_len == partial_sequence_size_) {
-        return false;
-      }
+    const int character =
+        DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+    if (NeedMoreData(count, character, flush)) {
+      return false;
     }
 
     if (character & ~0xff)
@@ -315,37 +344,13 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
       continue;
     }
 
-    // Copy from `source` until we have `count` bytes.
-    if (count > partial_sequence_size_ && !source.empty()) {
-      size_t additional_bytes =
-          std::min<size_t>(count - partial_sequence_size_, source.size());
-
-      base::span(partial_sequence_)
-          .subspan(partial_sequence_size_, additional_bytes)
-          .copy_from(source.first(additional_bytes));
-      source = source.subspan(additional_bytes);
-      partial_sequence_size_ += additional_bytes;
-    }
-
-    // If we still don't have `count` bytes, fill the rest with zeros (any other
-    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
-    // the chunk that we have is valid. These bytes are not part of the partial
-    // sequence, so don't increment `partial_sequence_size`.
-    auto partial_data = base::span(partial_sequence_).first(count);
     if (count > partial_sequence_size_) {
-      std::ranges::fill(partial_data.last(count - partial_sequence_size_), 0);
+      FillPartialSequenceBytes(count, source);
     }
-
-    const int character = DecodeNonASCIISequence(partial_data);
-    if (count > partial_sequence_size_) {
-      size_t noncharacter_len = LengthOfNonCharacter(character);
-      DCHECK(IsNonCharacter(character));
-      DCHECK_LE(noncharacter_len, partial_sequence_size_);
-      // If we're not at the end, and the partial sequence that we have is
-      // incomplete but otherwise valid, a non-character is not an error.
-      if (!flush && noncharacter_len == partial_sequence_size_) {
-        return false;
-      }
+    const int character =
+        DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+    if (NeedMoreData(count, character, flush)) {
+      return false;
     }
 
     if (IsNonCharacter(character)) {
@@ -428,11 +433,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
         character = kNonCharacter1;
       } else {
         if (count > source.size()) {
-          DCHECK(!partial_sequence_size_);
-          partial_sequence_size_ = source.size();
-          base::span(partial_sequence_)
-              .first(partial_sequence_size_)
-              .copy_from(source.take_first(partial_sequence_size_));
+          SavePartialSequenceBytes(source);
           break;
         }
         character = DecodeNonASCIISequence(source.first(count));
@@ -516,11 +517,7 @@ upConvertTo16Bit:
         character = kNonCharacter1;
       } else {
         if (count > source.size()) {
-          DCHECK(!partial_sequence_size_);
-          partial_sequence_size_ = source.size();
-          base::span(partial_sequence_)
-              .first(partial_sequence_size_)
-              .copy_from(source.take_first(partial_sequence_size_));
+          SavePartialSequenceBytes(source);
           break;
         }
         character = DecodeNonASCIISequence(source.first(count));
