@@ -202,6 +202,9 @@ upConvertTo16Bit:
         if (source.empty()) {
           break;
         }
+        if (!IsASCII(source[0])) {
+          goto useLookupTable16;
+        }
       }
       destination16.take_first<1u>()[0] = source.take_first_elem();
     } else {
