@@ -968,8 +968,7 @@ public class CompositorViewHolder extends FrameLayout
 
         int keyboardInset =
                 mApplicationBottomInsetSupplier != null
-                        ? assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                                .webContentsHeightInset
+                        ? mApplicationBottomInsetSupplier.getInsets().webContentsHeightInset
                         : 0;
 
         int viewportInsets = controlsInsets + keyboardInset;
@@ -1261,9 +1260,7 @@ public class CompositorViewHolder extends FrameLayout
         getWindowViewport(outRect);
 
         if (mApplicationBottomInsetSupplier != null) {
-            outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                            .viewVisibleHeightInset;
+            outRect.bottom -= mApplicationBottomInsetSupplier.getInsets().viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.
@@ -1280,9 +1277,7 @@ public class CompositorViewHolder extends FrameLayout
         getWindowViewport(outRect);
 
         if (mApplicationBottomInsetSupplier != null) {
-            outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                            .viewVisibleHeightInset;
+            outRect.bottom -= mApplicationBottomInsetSupplier.getInsets().viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.

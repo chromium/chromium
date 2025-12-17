@@ -92,7 +92,8 @@ public class ApplicationViewportInsetTracker implements Destroyable {
     public void destroy() {
         setKeyboardInsetSupplier(null);
         setKeyboardAccessoryInsetSupplier(null);
-        mInsetSupplier.destroy();
+        // TODO(469511221): Stop CompositorViewHolder querying insets after destroy().
+        // mInsetSupplier.destroy();
     }
 
     /**
