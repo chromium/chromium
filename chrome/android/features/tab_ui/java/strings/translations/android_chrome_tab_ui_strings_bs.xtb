@@ -35,7 +35,7 @@
 <translation id="1982637982196732906">Premjesti u odjeljak neaktivnih</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Označavanje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Označavanje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Označavanje <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Označavanje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
 <translation id="2055057176188061528">Odabir grupe kartica ili kreiranje nove grupe kartica</translation>
-<translation id="2074527029802029717">Odvoji karticu</translation>
+<translation id="2074527029802029717">Otkvači karticu</translation>
 <translation id="2118649612461486615">Informacije o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. Anonimna kartica neće biti dostupna.}one{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimna kartica neće biti dostupna.}few{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimne kartice neće biti dostupne.}other{Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica. # anonimnih kartica neće biti dostupno.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Uključivanje obavještenja web lokacije}one{Uključivanje obavještenja web lokacija}few{Uključivanje obavještenja web lokacija}other{Uključivanje obavještenja web lokacija}}</translation>

@@ -506,7 +506,7 @@
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6452138246455930388">کاهش قیمت در زبانه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">وقتی پنجره باریک است، نمای تلفن همراه درخواست شود</translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
+<translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="6530703012083415527">هرگاه روشن باشد، سایت‌ها می‌توانند از بالاپرها و هدایت کردن استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از بالاپرها و هدایت کردن استفاده کنند.</translation>
 <translation id="6540488083026747005">کوکی‌های طرف سوم را برای این سایت مجاز کرده‌اید</translation>
 <translation id="6542770556219257399">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش}}</translation>
@@ -682,7 +682,7 @@
 <translation id="8471525937465764768">‏سایت‌ها معمولاً برای ارائه ویژگی‌هایی مانند چاپ سند یا ذخیره در دستگاه ذخیره‌سازی به دستگاه‌های USB متصل می‌شوند</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» قدیمی است. لطفاً این برنامه را دوباره نصب کنید.</translation>
 <translation id="847433688444405067">پیمایش بین دستگاه‌ها</translation>
-<translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
+<translation id="8487700953926739672">دردسترس در حالت آفلاین</translation>
 <translation id="848952951823693243">همیشه سایت ویژه تلفن همراه درخواست شود</translation>
 <translation id="8492822722330266509">سایت‌ها می‌توانند بالاپر ارسال کنند و از هدایت‌ها استفاده کنند</translation>
 <translation id="8493548450030356203">پنجره بزرگ‌نمایی بالاپر</translation>

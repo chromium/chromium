@@ -858,7 +858,7 @@
 <translation id="3927049937406914450">लोकेसन एक्सेस अफ गरिएकाले Weather उपलब्ध छैन। तपाईं सेटिङमा गई यो कुरा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3934456833412894880">एड्याप्टिभ चार्जिङ अन छ। तपाईंको डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री ८०% चार्ज भएर बस्ने छ र तपाईंलाई आवश्यक पर्दा ब्याट्री फुल चार्ज हुने छ।</translation>
-<translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="394485226368336402">अडियो सम्बन्धी सेटिङहरू</translation>
 <translation id="3945319193631853098">सेटअप गर्ने प्रक्रिया पूरा गर्न ट्याप गर्नुहोस्</translation>
 <translation id="3945867833895287237">हटस्पटमा कनेक्ट गरिँदै छ...</translation>
@@ -2024,7 +2024,7 @@
 <translation id="7721132362314201794">डेस्कको नाम</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7723703419796509666">डेभलपर टुल कन्सोल देखाउनुहोस् वा लुकाउनुहोस्</translation>
-<translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7724603315864178912">कट गर्नुहोस्</translation>
 <translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अफ हुँदै छ।</translation>
 <translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -2375,7 +2375,7 @@
 <translation id="8926951137623668982">सेल्फ सधैँ लुकेको हुन्छ</translation>
 <translation id="8929566928381252430">क्याप्स लक की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="8929623844713377237">कन्ट्याक्ट बनाइएको छ</translation>
-<translation id="8934418770423095813">Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
+<translation id="8934418770423095813">Google Docs प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
@@ -2444,7 +2444,7 @@
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
-<translation id="9183302530794969518">Google कागजात</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
 <translation id="9193626018745640770">कुनै अज्ञात प्रापकमा cast गर्दै</translation>

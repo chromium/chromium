@@ -453,7 +453,7 @@
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
-<translation id="2671423594960767771">समूहमा आदान प्रदान गर्नु</translation>
+<translation id="2671423594960767771">समूहमा सेयर गर्नु</translation>
 <translation id="2673508731173059946">कपी गरिएको लिंकमा जानुहोस्</translation>
 <translation id="2688535388040882469">ब्यानरहरू</translation>
 <translation id="2690858294534178585">क्यामेरा प्रयोग भइरहेको छ</translation>
@@ -1848,7 +1848,7 @@
 <translation id="7911190106180361398">तपाईंको सङ्गठनले तपाईंलाई सबै सामग्री सिंक गर्ने अनुमति दिएको छैन।</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> का विवरणहरू लुकाउनुहोस्</translation>
 <translation id="792357691529995513">कुनै पनि समस्या भेटिएन</translation>
-<translation id="7925108652071887026">स्वतः भरण डेटा</translation>
+<translation id="7925108652071887026">अटोफिल डेटा</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
 <translation id="7927711904086083099">चयन गरिएको छैन</translation>
 <translation id="7927902634113905831">तपाईंले "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILESIZE" />) सेभ गर्ने प्रयोजनका लागि प्रयोग गर्न चाहेको खाता चयन गर्नुहोस्</translation>

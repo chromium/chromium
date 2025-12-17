@@ -8040,7 +8040,7 @@
 <translation id="6521214596282732365">سایت‌ها معمولاً از قلم‌هایتان استفاده می‌کنند تا با ابزارهای گرافیکی و طراحی آنلاین بتوانید محتوای با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="652492607360843641">به یک شبکه <ph name="NETWORK_TYPE" /> متصل شده‌اید.</translation>
 <translation id="6525767484449074555">روی «نصب» کلیک کنید</translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
+<translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="6527574156657772563">‏دستگاهی دردسترس نیست. برای متصل کردن تلفنتان به این <ph name="DEVICE_TYPE" />، «حساب Google» خود را به تلفن اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6530030995840538405">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">این تنظیمات توسط سرپرست سیستم شما اعمال شده است</translation>
@@ -10702,7 +10702,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{نوع فایل پشتیبانی‌شده: <ph name="FILE_TYPE1" />}=2{انواع فایل‌های پشتیبانی‌شده:<ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />}=3{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />}=4{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" />}one{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />و {OVERFLOW_COUNT} نوع دیگر<ph name="END_LINK" />)}other{انواع فایل‌های پشتیبانی‌شده: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />و {OVERFLOW_COUNT} نوع دیگر<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">گروه را نام‌گذاری کنید، رنگی را انتخاب کنید، سپس کلید «گریز» را فشار دهید</translation>
 <translation id="833256022891467078">‏پوشه‌های هم‌رسانی‌شده Crostini</translation>
-<translation id="833262891116910667">برجسته‌سازی</translation>
+<translation id="833262891116910667">برجسته کردن</translation>
 <translation id="8335587457941836791">برداشتن سنجاق از راه‌انداز</translation>
 <translation id="8336407002559723354">به‌روزرسانی‌ها در <ph name="MONTH_AND_YEAR" /> تمام می‌شود</translation>
 <translation id="8336739000755212683">تغییر تصویر حساب دستگاه</translation>

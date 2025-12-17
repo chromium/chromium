@@ -12089,6 +12089,34 @@ Gemini доступен не во всех странах и не на всех 
 <translation id="9088191250434406767">Если правило не настроено или задано значение Enabled, пользователи смогут выполнять поиск в сервисе "<ph name="GOOGLE_LENS_PRODUCT_NAME" />" с помощью камеры. Если указано значение Disabled, кнопка сервиса "<ph name="GOOGLE_LENS_PRODUCT_NAME" />" не будет отображаться в окне, даже если в сервисе "<ph name="GOOGLE_LENS_PRODUCT_NAME" />" поддерживается поиск с помощью камеры.</translation>
 <translation id="9088433379343318874">Открыть доступ к поставщику контента для контролируемых профилей</translation>
 <translation id="9088444059179765143">Определять часовой пояс автоматически</translation>
+<translation id="9089059535778570773">Правило настраивает алгоритмы выбора прокси-сервера в зависимости от целевого URL и других условий. Оно имеет приоритет над настройками прокси-сервера, заданными в правиле <ph name="PROXY_SETTINGS_POLICY_NAME" />, через API расширения <ph name="PROXY_SETTINGS_EXTENSION_API" /> или вручную пользователем.
+
+Если правило не настроено, это не повлияет на другие параметры прокси-сервера и пользовательские настройки.
+
+Когда браузер выбирает прокси-сервер, записи правила <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> оцениваются последовательно, пока не будут удовлетворены все условия ниже:
+  * Найдено совпадение хотя бы с одним из шаблонов URL в правиле <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+  * Не найдено совпадение ни с одним из шаблонов URL в правиле <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
+  * Если указан параметр <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> и его значением является непустой список, выполняются все условия, представленные его записями.
+При совпадении в качестве прокси-сервера будет использоваться значение поля <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />. Если совпадений не найдено, будут применены настройки прокси-сервера, заданные в правиле <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Шаблоны URL, поддерживаемые правилами <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> и <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />, указаны на странице https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Записи в поле <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> соответствуют строковым значениям файлов PAC, например:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+В качестве прокси-сервера можно также использовать спецификаторы прокси, похожие на URL, например:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+В качестве прокси-сервера будет использоваться первая доступная запись в списке. Недопустимые записи в списке игнорируются.
+
+В поле <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> содержится список условий, которые необходимо выполнить, чтобы для выбора прокси-сервера использовалось правило переопределения. Если правило не настроено, но есть совпадение хотя бы с одним хостом в <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />, запись будет использоваться.
+
+Условие <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> проверяет, может ли указанный DNS-сервер (<ph name="PROXY_OVERRIDE_RULES_HOST" />) преобразовать имя хоста в IP-адрес. Оно должно содержать хост (например, example.com) и может включать схему или порт (например, https://example.com, example.com:123, https://example.com:123). Если для параметра <ph name="PROXY_OVERRIDE_RULES_RESULT" /> указано значение <ph name="PROXY_OVERRIDE_RULES_RESOLVED" />, условие считается выполненным. Если вместо этого указано значение <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, условие считается выполненным, когда преобразование невозможно.</translation>
 <translation id="9095599826504830315">Запретить использовать функцию "Сравнение вкладок"</translation>
 <translation id="9096772739225230999">Не передавать данные о конфигурации сети</translation>
 <translation id="9098409326885953506">Обнаруживать перекрытие окон и приостанавливать их отрисовку</translation>

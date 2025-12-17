@@ -1476,7 +1476,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6524082013156754186">ذخیره کردن در حساب</translation>
 <translation id="6524918542306337007">«حالت ناشناس» دردسترس نیست</translation>
 <translation id="6527208859483186860">‏پس‌زمینه {position} از {total}</translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
+<translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="6532106788206463496">ذخیره تغییرات</translation>
 <translation id="6536759809440150308">باز کردن «<ph name="GROUP_TITLE" />»، گروه <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -2002,7 +2002,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="847939250509903814">کتابخانه عکس</translation>
 <translation id="8481184073299279701">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت از همه برگه‌ها، روی دکمه «شروع گزارش‌گیری» تک‌ضرب بزنید. تا وقتی این صفحه باز باشد یا روی «متوقف کردن گزارش‌گیری» تک‌ضرب نزنید، گزارش‌ها جمع‌آوری خواهد شد (و فقط در حافظه ذخیره خواهد شد).</translation>
 <translation id="8487667956631253959">فعال</translation>
-<translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
+<translation id="8487700953926739672">دردسترس در حالت آفلاین</translation>
 <translation id="8488923644885757471">پنجره جدید</translation>
 <translation id="8490629238792920282">پیوند ایجاد نشد</translation>
 <translation id="8501469528283376592">حذف خودکار بارگیری‌ها</translation>

@@ -1815,7 +1815,7 @@
 <translation id="3939773374150895049">CVC को सट्टामा WebAuthn प्रयोग गर्ने हो?</translation>
 <translation id="3941630233824954464">अनिवार्य रूपमा पुनः प्रमाणीकरण गर्नु पर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3942048175062210325">आफ्ना फाइलहरू फेरि खोली हेर्नुहोस्</translation>
-<translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="3945937463338223066"><ph name="READERNAME" /> प्रकारका प्रमाणीकरण डिभाइसहरू र तिनमा एक्सेस गर्न मिल्ने स्मार्ट कार्डहरू नियन्त्रण गर्न</translation>
 <translation id="3946209740501886391">यस साइटमा सधैं सोध्नुहोस्</translation>
 <translation id="3948588869002647271">यो एप उपलब्ध छैन वा बिग्रेको छ</translation>
@@ -1859,7 +1859,7 @@
 <translation id="4000598935132966791">व्यवस्थापन गरिएका ब्राउजरहरूमा साइटमाथि लगाइने प्रतिबन्धका बारेमा थप जान्नुहोस्</translation>
 <translation id="4010758435855888356">भण्डारण प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="401170183602135785">Envelope C6</translation>
-<translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} पृष्ठ भएको PDF कागजात}other{{COUNT} पृष्ठहरू भएको PDF कागजात}}</translation>
+<translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} पृष्ठ भएको PDF डकुमेन्ट}other{{COUNT} पृष्ठहरू भएको PDF डकुमेन्ट}}</translation>
 <translation id="4014895360827978999">व्यापारी सेवा र भुक्तानी प्राणाली</translation>
 <translation id="4018819349042761761">सार्वजनिक की</translation>
 <translation id="4023431997072828269">असुरक्षित इन्टरनेट प्रयोग गरेर यो फारम पेस गरिँदै गरेका हुनाले अरूले तपाईंको जानकारी देख्न सक्ने छन्।</translation>
@@ -3532,7 +3532,7 @@
 <translation id="6698769547327354196">Chrome मा Pix अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="67007264085648978">समय स्क्रबर</translation>
 <translation id="6702851555558236418">अडियो तथा सङ्गीतसम्बन्धी सफ्टवेयर</translation>
-<translation id="6702919718839027939">प्रस्तुति दिनुहोस्</translation>
+<translation id="6702919718839027939">प्रेजेन्ट गर्नुहोस्</translation>
 <translation id="6704458454638854812">प्रोपर्टी "custom_size" सेट गरिएको छ र यसको नाम "कस्टम" राखिएको हुनु पर्छ।</translation>
 <translation id="6706005862292023715">पर्दा तथा झ्याल मर्मत गर्ने सेवा</translation>
 <translation id="6706210727756204531">स्कोप</translation>
@@ -3629,7 +3629,7 @@
 <translation id="6874604403660855544">&amp;रिडु जोड</translation>
 <translation id="6875894866901426843">तपाईंका एड्मिनले <ph name="DATE_TIME" /> मा ट्र्यासमा रहेका सबै फाइललगायतका डिभाइसमा भएका तपाईंका फाइलहरू फाइल मेटाउने छन्।</translation>
 <translation id="6880941331070119097">उच्च मूल्यको विकल्प</translation>
-<translation id="6881240511396774766">Google कागजात प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउनुहोस्</translation>
+<translation id="6881240511396774766">Google Docs प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="6882210908253838664">कुनै साइटले काम गरिरहेको छैन भने तपाईं त्यसलाई केही समयका लागि तेस्रो पक्षीय कुकी प्रयोग गर्ने अनुमति दिन सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना बन्द छ</translation>
 <translation id="6883745783646124431">कार्यस्थलको ठेगाना</translation>
@@ -4189,7 +4189,7 @@
 <translation id="7716424297397655342">यो साइट क्यासबाट लोड गर्न सकिँदैन</translation>
 <translation id="7719791801330803993">फोटो तथा भिडियो सफ्टवेयर</translation>
 <translation id="772128550427553158">CVC तपाईंको कार्डको अघिल्लो भागमा रहेको हुन्छ।</translation>
-<translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7724603315864178912">कट गर्नुहोस्</translation>
 <translation id="7730057435797792985">क्रमबद्ध गर्नुहोस्</translation>
 <translation id="7734285854693414638">Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउनुहोस्</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई सधैँ अनुवाद गर्नुहोस्‌</translation>
@@ -4928,7 +4928,7 @@
 <translation id="9001963517402879850">उफ्रनुहोस्!</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR सत्र जारी छ</translation>
-<translation id="9005998258318286617">PDF कागजात लोड गर्न सकिएन।</translation>
+<translation id="9005998258318286617">PDF डकुमेन्ट लोड गर्न सकिएन।</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{कुनै पनि होइन}=1{एउटा साइटबाट}other{# वटा साइटबाट}}</translation>
 <translation id="9014705027639070815">तपाईंले खोल्ने साइटहरूले आफ्ना विज्ञापनहरूको पर्फर्मेन्स मापन गर्न Chrome सँग जानकारी माग्न सक्छन्। Chrome ले साइटहरूलाई तपाईंले कुनै साइट खोलेपछि सामग्री खरिद गर्नुभयो कि गर्नुभएन भन्नेलगायतका सीमित प्रकारका जानकारी सङ्कलन गर्ने अनुमति दिन्छ।</translation>
@@ -5053,7 +5053,7 @@
 <translation id="9179703756951298733">Chrome ब्राउजरका सेटिङमा गई आफ्ना भुक्तानी र क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9179766227052716237">तपाईंको सङ्गठनबाट प्राप्त म्यासेज: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">कुनै साइटमा मूल्य घटेका खण्डमा इमेलमार्फत अलर्ट प्राप्त गर्नुहोस्</translation>
-<translation id="9183302530794969518">Google कागजात</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ले असमर्थित प्रोटोकल प्रयोग गर्दछ।</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> मा भएको कोड जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="9186203289258525843">Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउने बटन, Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउन यो बटन थिच्नुहोस्</translation>

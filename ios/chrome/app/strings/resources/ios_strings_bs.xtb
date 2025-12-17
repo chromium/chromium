@@ -1450,7 +1450,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6435236283694032571">Dodavanje na Listu za čitanje</translation>
 <translation id="6435307030888827407">Nastavi bez prijave</translation>
 <translation id="6436318499800111867">Dijeljeno je sa mnom <ph name="SHARED_WITH_ME_DATE" /></translation>
-<translation id="6442697326824312960">Odvoji karticu</translation>
+<translation id="6442697326824312960">Otkvači karticu</translation>
 <translation id="6443118737398455446">Datum isteka nije važeći</translation>
 <translation id="6444435711855078002">Više opcija</translation>
 <translation id="6445051938772793705">Zemlja</translation>
@@ -1911,7 +1911,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8114753159095730575">Dostupno je preuzimanje fajla. Opcije koje su dostupne pri dnu ekrana.</translation>
 <translation id="8123502380991596210">Sakrij Šta je novo</translation>
 <translation id="8123953306357309250">Otkazati sinhronizaciju? Možete uključiti sinhronizaciju bilo kada u postavkama.</translation>
-<translation id="8130712116203026166">Daj mi sažetak u jednom redu i korisne uvide izvan ove stranice. Koristi sažet i neformalan ton. Ograniči na 100 riječi.</translation>
+<translation id="8130712116203026166">Daj mi sažetak u jednom redu i korisne uvide izvan ove stranice. Koristi sažet i neformalan ton. Ograniči odgovor na 100 riječi.</translation>
 <translation id="81313319706244542">2. Dodirnite Lozinke</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132598642024322408">Sada je <ph name="PRICE" />, bilo je <ph name="PREVIOUS_PRICE" />.</translation>

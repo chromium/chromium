@@ -12003,6 +12003,34 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9088191250434406767">Als je het beleid toepast of niet instelt, kunnen gebruikers zoeken met hun camera's via <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Als je het beleid niet toepast, zien gebruikers de knop <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet in het zoekvak als door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="9088433379343318874">Contentprovider voor gebruiker met beperkte rechten gebruiken</translation>
 <translation id="9088444059179765143">De methode voor automatische tijdzonedetectie configureren</translation>
+<translation id="9089059535778570773">Als je dit beleid instelt, configureer je regels die selecteren welke proxy de browser gebruikt, afhankelijk van de URL van de bestemming en andere voorwaarden. Dit beleid heeft voorrang op proxyinstellingen die zijn ingesteld via het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />, de extensie-API <ph name="PROXY_SETTINGS_EXTENSION_API" /> of handmatige gebruikersinstellingen (als die zijn ingesteld).
+
+Als je het beleid niet instelt, heeft dit geen effect op andere proxybeleidsregels of gebruikersinstellingen.
+
+Als de browser moet beslissen welke proxy moet worden gebruikt, worden de vermeldingen van het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> in volgorde geëvalueerd totdat een vermelding aan alle volgende punten voldoet:
+* Er is een overeenkomst met minstens één van de URL-patronen in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+  * Geen van de URL-patronen in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> komt overeen.
+  * Als <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> is aangegeven en een niet-lege lijst is, is aan alle voorwaarden voldaan die door de vermeldingen in de lijst worden vertegenwoordigd.
+De waarde in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> wordt gebruikt als proxy voor een dergelijke overeenkomst. Als er geen overeenkomst wordt gevonden, vallen de proxyinstellingen terug op wat is ingesteld in het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+De URL-patronen die worden ondersteund door <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> en <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />, worden beschreven op https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+De vermeldingen in het veld <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> komen overeen met tekenreekswaarden van PAC-bestanden, zoals:
+* DIRECT
+* PROXY host:poort
+* HTTPS host:poort
+* SOCKS4 host:poort
+* SOCKS5 host:poort
+Je kunt ook rechtstreeks proxy-aanduidingen in URL-indeling gebruiken om de proxy aan te geven, bijvoorbeeld:
+* http://host:poort
+* https://host:poort
+* socks4://host:poort
+* socks5://host:poort
+De eerste bereikbare vermelding in de lijst wordt gebruikt als proxy. Ongeldige vermeldingen in de lijst worden genegeerd.
+
+Het veld <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> bevat een lijst met voorwaarden waaraan allemaal moet worden voldaan voordat de overschrijvingsregel wordt gebruikt om te bepalen welke proxy moet worden gebruikt. Als je dit niet instelt, wordt de vermelding gebruikt zolang er minstens één host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> overeenkomt.
+
+De voorwaarde <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> controleert of de verstrekte DNS-naam <ph name="PROXY_OVERRIDE_RULES_HOST" /> kan worden omgezet in een IP-adres. Deze moet een host bevatten (bijv. example.com) en eventueel een schema of poort (bijv. https://example.com, example.com:123, https://example.com:123). Als de waarde van <ph name="PROXY_OVERRIDE_RULES_RESULT" /> is ingesteld op <ph name="PROXY_OVERRIDE_RULES_RESOLVED" />, wordt de voorwaarde als voldaan beschouwd. Als de waarde in plaats daarvan is ingesteld op <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, wordt de voorwaarde als voldaan beschouwd als de omzetting is mislukt.</translation>
 <translation id="9095599826504830315">Sta Tabbladen vergelijken niet toe.</translation>
 <translation id="9096772739225230999">Netwerkconfiguratie niet rapporteren</translation>
 <translation id="9098409326885953506">Afgedekt venster detecteren en de weergave ervan opschorten</translation>

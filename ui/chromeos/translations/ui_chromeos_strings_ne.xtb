@@ -250,7 +250,7 @@
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट गर्नुहोस्</translation>
 <translation id="3003633581067744647">थम्बनेल दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="3016566519832145558">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारणमा ठाउँ खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।</translation>
-<translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google कागजात अफलाइन' अन गर्नुहोस्।</translation>
+<translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google Docs अफलाइन' अन गर्नुहोस्।</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3044404008258011032">तपाईं यी फाइलहरू रिस्टोर गर्न चाहनुहुन्छ भने ती फाइलहरू ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यी फाइलहरूको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
 <translation id="3047197340186497470">चिनियाँ दायी</translation>
@@ -365,7 +365,7 @@
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_INDEX" /> मध्ये <ph name="NETWORK_COUNT" /> औँ नेटवर्क हो।</translation>
 <translation id="3924145049010392604">मेटा</translation>
-<translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3952872973865944257">तेलगू फोनेटिक</translation>
 <translation id="3958548648197196644">कीवी</translation>
@@ -390,7 +390,7 @@
 <translation id="4176286497474237543">अहिले नै ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="4179621117429069925">यो फाइल ट्र्यासमा छ</translation>
 <translation id="4186579485882418952">अफलाइन चलाउने सुविधा अन गर्नुहोस्</translation>
-<translation id="4193154014135846272">Google कागजात</translation>
+<translation id="4193154014135846272">Google Docs</translation>
 <translation id="4202378258276439759">स्पेनी (ल्याटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जर्जियाली</translation>
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -868,7 +868,7 @@
 <translation id="7707941139430559579">यो फाइल सार्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">तपाईं यो नेटवर्क प्रयोग गर्न चाहनुहुन्छ भने तपाईंले सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नु पर्ने हुन्छ।</translation>
 <translation id="7711920809702896782">छविको जानकारी</translation>
-<translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7724603315864178912">कट गर्नुहोस्</translation>
 <translation id="7732111077498238432">नेटवर्क नीतिद्वारा नियन्त्रित छ</translation>
 <translation id="7736003208887389532">यी फाइलहरू सदाका लागि मेटाउने हो?</translation>
 <translation id="7740287852186792672">खोजका परिणाम</translation>
@@ -956,7 +956,7 @@
 <translation id="8297012244086013755">हंगुल 3 सेट (सिफ्ट छैन)</translation>
 <translation id="8299269255470343364">जापानिज</translation>
 <translation id="8300849813060516376">OTASP असफल</translation>
-<translation id="8312871300878166382">फोल्डरमा टाँस्नुहोस्</translation>
+<translation id="8312871300878166382">फोल्डर भित्र पेस्ट गर्नुहोस्</translation>
 <translation id="8329978297633540474">सादा पाठ</translation>
 <translation id="8332007959299458842">हालसालै खोलिएका Microsoft फाइलहरू सारेर Google Drive मा लगिएका छन्</translation>
 <translation id="8335587457941836791">शेल्फबाट अनपिन गर्नुहोस्</translation>
@@ -1075,7 +1075,7 @@
 <translation id="9171921933192916600">किताबी किरो</translation>
 <translation id="9172592259078059678">गुजराती लिपि रूपान्तरण</translation>
 <translation id="9173120999827300720">अन्तर्राष्ट्रिय ढाँचाको अङ्ग्रेजी (सं. रा. अमेरिकी) किबोर्ड</translation>
-<translation id="9183302530794969518">Google कागजात</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
