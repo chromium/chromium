@@ -337,19 +337,15 @@ void AndroidStateTransferHandler::HandleTouchEvent(
   }
 
   if (!state_for_curr_sequence_->rir_support) {
+    ignore_remaining_touch_sequence_ = true;
+  }
+
+  if (ignore_remaining_touch_sequence_) {
     if (action == AMOTION_EVENT_ACTION_CANCEL ||
         action == AMOTION_EVENT_ACTION_UP) {
       state_for_curr_sequence_.reset();
       ignore_remaining_touch_sequence_ = false;
-    } else {
-      ignore_remaining_touch_sequence_ = true;
     }
-    return;
-  }
-
-  // Ignore any already queued events for the touch sequence. This can happen if
-  // we are returning the sequence back to browser.
-  if (ignore_remaining_touch_sequence_) {
     return;
   }
 
