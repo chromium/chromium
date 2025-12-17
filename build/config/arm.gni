@@ -5,7 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
 
-# TODO(thakis): Remove all uses of this, then remove the variable.
+# TODO(thakis): Remove all uses of these, then remove the variables.
+arm_fpu = "neon"
 arm_use_neon = true
 
 # These are primarily relevant in current_cpu == "arm" contexts, where
@@ -22,20 +23,12 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # An empty string means to use the default for the arm_version.
     arm_arch = ""
 
-    # The ARM floating point hardware. This will be a string like "neon" or
-    # "vfpv3". An empty string means to use the default for the arm_version.
-    arm_fpu = ""
-
     # Whether to enable optional NEON code paths.
     arm_optionally_use_neon = false
 
     # Thumb is a reduced instruction set available on some ARM processors that
     # has increased code density.
     arm_use_thumb = true
-  }
-
-  if (arm_fpu == "") {
-    arm_fpu = "neon"
   }
 
   if (current_os == "android" || target_os == "android") {

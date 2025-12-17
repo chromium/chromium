@@ -1870,7 +1870,7 @@ config("rustc_revision") {
 
 config("compiler_arm_fpu") {
   if (current_cpu == "arm" && !is_ios) {
-    cflags = [ "-mfpu=$arm_fpu" ]
+    cflags = [ "-mfpu=neon" ]
     if (!arm_use_thumb) {
       cflags += [ "-marm" ]
     }
