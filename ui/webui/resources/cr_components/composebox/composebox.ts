@@ -277,6 +277,8 @@ export class ComposeboxElement extends I18nMixinLit
           this.onAutocompleteResultChanged_.bind(this)),
       this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
           this.onContextualInputStatusChanged_.bind(this)),
+      this.searchboxCallbackRouter_.onTabStripChanged.addListener(
+          this.refreshTabSuggestions_.bind(this)),
       this.searchboxCallbackRouter_.addFileContext.addListener(
           this.addFileContextFromBrowser_.bind(this)),
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
@@ -311,6 +313,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     this.searchboxHandler_.notifySessionStarted();
+    this.refreshTabSuggestions_();
 
     if (this.ntpRealboxNextEnabled) {
       this.fire('composebox-initialized', {
@@ -695,6 +698,11 @@ export class ComposeboxElement extends I18nMixinLit
       event.preventDefault();
       this.$.context.addPastedFiles(fileList);
     }
+  }
+
+  protected async refreshTabSuggestions_() {
+    const {tabs} = await this.searchboxHandler_.getRecentTabs();
+    this.tabSuggestions = [...tabs];
   }
 
   protected async getTabPreview_(e: CustomEvent<{
