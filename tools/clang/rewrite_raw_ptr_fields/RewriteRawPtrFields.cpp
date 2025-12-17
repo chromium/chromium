@@ -40,6 +40,7 @@
 #include "RawPtrManualPathsToIgnore.h"
 #include "SeparateRepositoryPaths.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/TypeLoc.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchersMacros.h"
@@ -271,7 +272,7 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
       case clang::Language::LLVM_IR:
       case clang::Language::OpenCL:
       case clang::Language::CUDA:
-      case clang::Language::RenderScript:
+      case clang::Language::CIR:
       case clang::Language::HIP:
       case clang::Language::HLSL:
         // Rewriter can't handle rewriting the current input language.
@@ -506,7 +507,6 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
 
     // Convert pointee type to string.
     clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
-    printing_policy.SuppressScope = 1;  // s/blink::Pointee/Pointee/
     std::string pointee_type_as_string =
         pointee_type.getAsString(printing_policy);
     result += llvm::formatv(format_string_, pointee_type_as_string);
@@ -936,9 +936,11 @@ class RawRefRewriter {
             // Exclude memberExpressions appearing inside a constructor
             // initializer of a reference field where we should NOT add
             // operator*.
-            hasParent(cxxConstructorDecl(hasAnyConstructorInitializer(
-                allOf(withInitializer(
-                          memberExpr(equalsBoundNode("affectedMemberExpr"))),
+            hasAncestor(cxxConstructorDecl(hasAnyConstructorInitializer(
+                allOf(withInitializer(anyOf(
+                          memberExpr(equalsBoundNode("affectedMemberExpr")),
+                          parenListExpr(has(expr(ignoringImplicit(
+                              equalsBoundNode("affectedMemberExpr"))))))),
                       forField(fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(
                           field_decl_matcher))))))),
             // Exclude memberExpressions, in initializer lists, that are
@@ -1261,19 +1263,6 @@ class SpanFieldDeclRewriter : public MatchFinder::MatchCallback {
       return specialization;
     }
 
-    // Or an elaboratedTypeLoc, which has a namedTypeLoc (the
-    // TemplateSpecializationTypeLoc)
-    // Example:
-    // base::span<some_type> member;
-    //       ^-------------^ => templateSpecializationTypeLoc
-    // ^-------------------^ => elaboratedTypeLoc
-    if (auto elaborated = loc.getAs<clang::ElaboratedTypeLoc>()) {
-      if (auto specialization =
-              elaborated.getNamedTypeLoc()
-                  .getAs<clang::TemplateSpecializationTypeLoc>()) {
-        return specialization;
-      }
-    }
     return {};
   }
 

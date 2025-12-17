@@ -87,7 +87,7 @@ struct MyStruct {
   // non-pointer T used as a template argument of raw_ptr<>.
   int (*func_ptr)();
   void (SomeClass::*member_func_ptr)(char);  // ~ pointer to SomeClass::Method
-  int SomeClass::*member_data_ptr;  // ~ pointer to SomeClass::data_member
+  int SomeClass::* member_data_ptr;  // ~ pointer to SomeClass::data_member
   typedef void (*func_ptr_typedef)(char);
   func_ptr_typedef func_ptr_typedef_field;
 
