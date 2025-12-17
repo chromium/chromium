@@ -227,7 +227,6 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
-        // TODO(crbug.com/388788969): Decide on a proper state while the module is still loading.
         if (mModuleHelper == null) {
             return ModuleState.UNAVAILABLE;
         }
