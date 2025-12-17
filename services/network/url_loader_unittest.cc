@@ -106,6 +106,7 @@
 #include "services/network/devtools_durable_msg_accounting_delegate.h"
 #include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/file_opener_for_upload.h"
+#include "services/network/multiple_durable_message_writer_impl.h"
 #include "services/network/observer_wrapper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
@@ -716,7 +717,7 @@ struct URLLoaderOptions {
         ObserverWrapper(std::move(devtools_observer)),
         ObserverWrapper(std::move(device_bound_session_observer)),
         std::move(accept_ch_frame_observer), shared_storage_writable_eligible,
-        *shared_resource_checker, std::move(maybe_durable_messages));
+        *shared_resource_checker, std::move(durable_message_writer));
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -744,7 +745,7 @@ struct URLLoaderOptions {
   bool shared_storage_writable_eligible = false;
   CookieSettings cookie_settings;
   std::unique_ptr<SharedResourceChecker> shared_resource_checker;
-  std::vector<base::WeakPtr<DevtoolsDurableMessage>> maybe_durable_messages;
+  std::unique_ptr<DevtoolsDurableMessageWriter> durable_message_writer;
 
  private:
   bool used = false;
@@ -930,7 +931,8 @@ class URLLoaderTest : public testing::Test {
     url_loader_options.accept_ch_frame_observer =
         accept_ch_frame_observer_ ? accept_ch_frame_observer_->Bind()
                                   : mojo::NullRemote();
-    url_loader_options.maybe_durable_messages = std::move(durable_messages_);
+    url_loader_options.durable_message_writer =
+        make_unique<MultipleDurableMessageWriterImpl>(durable_messages_);
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
@@ -2663,7 +2665,7 @@ TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
   EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_TRUE(did_mime_sniff());
-  EXPECT_THAT(durable_message.GetClientDecodingTypesForTesting(),
+  EXPECT_THAT(durable_message.get_client_decoding_types_for_testing(),
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_EQ(encoded_body, ReadTestFile("content-sniffer-test0.html.gz"));
   EXPECT_TRUE(durable_message.is_complete());
@@ -2746,7 +2748,7 @@ TEST_F(URLLoaderTest, DurableMessagePerformsClientSideDecodingGzip) {
             Load(test_server()->GetURL("/hello.html.gz"), &encoded_body));
   EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
               ElementsAre(net::SourceStreamType::kGzip));
-  EXPECT_THAT(durable_message.GetClientDecodingTypesForTesting(),
+  EXPECT_THAT(durable_message.get_client_decoding_types_for_testing(),
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_TRUE(durable_message.is_complete());
   ASSERT_EQ(accounting_delegate.size(),

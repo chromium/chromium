@@ -47,7 +47,6 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
@@ -687,12 +686,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   SharedResourceChecker* GetSharedResourceChecker() {
     return shared_resource_checker_.get();
   }
-
-  // Creates Durable Messages for the request and DevTools Profile ID,
-  // for each collector that is enabled for the profile.
-  std::vector<base::WeakPtr<DevtoolsDurableMessage>> MaybeCreateDurableMessages(
-      const std::optional<base::UnguessableToken>& throttling_profile_id,
-      const std::optional<std::string>& devtools_request_id);
 
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and

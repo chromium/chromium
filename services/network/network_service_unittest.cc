@@ -2158,6 +2158,46 @@ TEST_F(NetworkServiceTest, NetworkAnnotationMonitor) {
   EXPECT_EQ(expected_hash_codes, monitor.reported_hash_codes());
 }
 
+TEST_F(NetworkServiceTest, DurableMessagesMultipleCollectors) {
+  // Tests that multiple durable message collectors can be added and that they
+  // are both called when a message is written.
+  mojo::Remote<mojom::DurableMessageCollector> remote1;
+  service()->AddDurableMessageCollector(remote1.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::DurableMessageCollector> remote2;
+  service()->AddDurableMessageCollector(remote2.BindNewPipeAndPassReceiver());
+  ASSERT_EQ(service()
+                ->GetDurableMessageCollectorManagerForTesting()
+                ->GetCollectorsForTesting()
+                .size(),
+            2u);
+
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  base::RunLoop enable_loop1;
+  remote1->EnableForProfile(profile_id, enable_loop1.QuitClosure());
+  enable_loop1.Run();
+  base::RunLoop enable_loop2;
+  remote2->EnableForProfile(profile_id, enable_loop2.QuitClosure());
+  enable_loop2.Run();
+  ASSERT_EQ(service()
+                ->GetDurableMessageCollectorManagerForTesting()
+                ->GetCollectorsEnabledForProfile(profile_id)
+                .size(),
+            2u);
+
+  const std::string devtools_request_id = "request-id";
+  auto durable_message_writer = service()->MaybeCreateDurableMessageWriter(
+      profile_id, devtools_request_id);
+  durable_message_writer->MarkComplete();
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future1;
+  remote1->Retrieve(devtools_request_id, future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future2;
+  remote2->Retrieve(devtools_request_id, future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
+}
+
 }  // namespace
 
 }  // namespace network

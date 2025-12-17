@@ -1219,19 +1219,34 @@ void NetworkService::AddDurableMessageCollector(
   durable_message_collector_manager_->AddCollector(std::move(receiver));
 }
 
-std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
-NetworkService::GetDurableMessageCollectorsEnabledForProfile(
-    const base::UnguessableToken& devtools_profile) {
-  if (!durable_message_collector_manager_) {
-    return {};
+std::unique_ptr<DevtoolsDurableMessageWriter>
+NetworkService::MaybeCreateDurableMessageWriter(
+    const base::UnguessableToken& throttling_profile_id,
+    const std::string& devtools_request_id) {
+  if (!throttling_profile_id || devtools_request_id.empty()) {
+    return nullptr;
   }
 
-  return base::ToVector(
+  if (!durable_message_collector_manager_) {
+    return nullptr;
+  }
+
+  std::vector<DevtoolsDurableMessageCollector*> collectors =
       durable_message_collector_manager_->GetCollectorsEnabledForProfile(
-          devtools_profile),
-      [](DevtoolsDurableMessageCollector* collector) {
-        return collector->GetWeakPtr();
-      });
+          throttling_profile_id);
+  if (collectors.empty()) {
+    return nullptr;
+  }
+
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> messages;
+  for (auto* collector : collectors) {
+    if (!collector) {
+      continue;
+    }
+    messages.push_back(collector->CreateDurableMessage(devtools_request_id));
+  }
+  return std::make_unique<MultipleDurableMessageWriterImpl>(
+      std::move(messages));
 }
 
 }  // namespace network

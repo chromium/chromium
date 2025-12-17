@@ -109,6 +109,7 @@ class SharedDictionaryManager;
 class SharedResourceChecker;
 class SlopBucket;
 class TrustTokenUrlLoaderInterceptor;
+class DevtoolsDurableMessageWriter;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
@@ -185,8 +186,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       bool shared_storage_writable_eligible,
       SharedResourceChecker& shared_resource_checker,
-      std::vector<base::WeakPtr<DevtoolsDurableMessage>>
-          devtools_durable_messages);
+      std::unique_ptr<DevtoolsDurableMessageWriter>
+          maybe_durable_message_writer);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -785,7 +786,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const std::optional<network::PermissionsPolicy> permissions_policy_;
 
   // DevTools Durable Message instances, if enabled.
-  std::vector<base::WeakPtr<DevtoolsDurableMessage>> devtools_durable_messages_;
+  std::unique_ptr<DevtoolsDurableMessageWriter> durable_message_writer_;
 
   // Keeps track of raw body sizes transmitted to DevTools.
   int64_t devtools_durable_message_raw_size_ = 0;

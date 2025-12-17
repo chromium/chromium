@@ -110,7 +110,6 @@
 #include "services/network/cookie_manager.h"
 #include "services/network/data_remover_util.h"
 #include "services/network/device_bound_session_manager.h"
-#include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/enterprise/encryption/encrypted_backend_file_operations_factory.h"
 #include "services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.h"
@@ -3643,31 +3642,6 @@ void NetworkContext::InitializePrefetchURLLoaderFactory() {
                          CreateURLLoaderFactoryParamsForPrefetch());
 }
 
-std::vector<base::WeakPtr<DevtoolsDurableMessage>>
-NetworkContext::MaybeCreateDurableMessages(
-    const std::optional<base::UnguessableToken>& throttling_profile_id,
-    const std::optional<std::string>& devtools_request_id) {
-  if (!throttling_profile_id.has_value() || !devtools_request_id.has_value()) {
-    return {};
-  }
 
-  auto collectors =
-      network_service_->GetDurableMessageCollectorsEnabledForProfile(
-          throttling_profile_id.value());
-  if (collectors.empty()) {
-    return {};
-  }
-
-  std::vector<base::WeakPtr<DevtoolsDurableMessage>> messages;
-  messages.reserve(collectors.size());
-  for (auto& collector : collectors) {
-    if (!collector) {
-      continue;
-    }
-    messages.push_back(
-        collector->CreateDurableMessage(devtools_request_id.value()));
-  }
-  return messages;
-}
 
 }  // namespace network

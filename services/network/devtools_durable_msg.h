@@ -49,7 +49,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessage {
   }
 
   // Test-only methods
-  const std::vector<net::SourceStreamType>& GetClientDecodingTypesForTesting() {
+  const std::vector<net::SourceStreamType>&
+  get_client_decoding_types_for_testing() {
     return client_decoding_types_;
   }
 

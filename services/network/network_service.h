@@ -44,6 +44,7 @@
 #include "services/network/devtools_durable_msg_collector_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
+#include "services/network/multiple_durable_message_writer_impl.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -387,9 +388,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   static NetworkService* GetNetworkServiceForTesting();
 
-  std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
-  GetDurableMessageCollectorsEnabledForProfile(
-      const base::UnguessableToken& devtools_profile);
+  std::unique_ptr<DevtoolsDurableMessageWriter> MaybeCreateDurableMessageWriter(
+      const base::UnguessableToken& throttling_profile_id,
+      const std::string& devtools_request_id);
   DevtoolsDurableMessageCollectorManager*
   GetDurableMessageCollectorManagerForTesting() {
     return durable_message_collector_manager_.get();
