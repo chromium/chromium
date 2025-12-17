@@ -6,6 +6,8 @@
 // This file contains a generic implementation of large (>32x32) 2d IDCTs.
 // They are not implemented in the same way as smaller 2d IDCTs to reduce code size.
 
+#![allow(clippy::excessive_precision)]
+
 use std::f32::consts::SQRT_2;
 
 use jxl_simd::F32SimdVec;
@@ -292,7 +294,7 @@ fn idct_impl_inner<D: SimdDescriptor>(d: D, data: &mut [D::F32Vec], scratch: &mu
     );
 
     for i in (1..n / 2).rev() {
-        second_half[i] = second_half[i] + second_half[i - 1];
+        second_half[i] += second_half[i - 1];
     }
     second_half[0] *= D::F32Vec::splat(d, SQRT_2);
 

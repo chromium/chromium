@@ -36,22 +36,15 @@ impl SectionState {
     }
 }
 
-// No guarantees on the order of calls to f, or the order of retained elements in vec.
-fn retain_by_value<T>(vec: &mut Vec<T>, mut f: impl FnMut(T) -> Option<T>) {
-    for pos in (0..vec.len()).rev() {
-        let element_to_test = vec.swap_remove(pos);
-        if let Some(v) = f(element_to_test) {
-            vec.push(v);
-        }
-    }
-}
-
 impl CodestreamParser {
     pub(super) fn process_sections(
         &mut self,
         decode_options: &JxlDecoderOptions,
         output_buffers: &mut Option<&mut [JxlOutputBuffer<'_>]>,
     ) -> Result<Option<usize>> {
+        let frame = self.frame.as_mut().unwrap();
+        let frame_header = frame.header();
+
         // Dequeue ready sections.
         while self
             .sections
@@ -60,134 +53,125 @@ impl CodestreamParser {
         {
             let s = self.sections.pop_front().unwrap();
             self.ready_section_data -= s.len;
-            self.available_sections.push(s);
-        }
-        if self.available_sections.is_empty() {
-            return Ok(Some(
-                self.sections.front().unwrap().len - self.ready_section_data,
-            ));
-        }
-        let frame = self.frame.as_mut().unwrap();
-        let frame_header = frame.header();
-        let pixel_format = self.pixel_format.as_ref().unwrap();
-        if frame_header.num_groups() == 1 && frame_header.passes.num_passes == 1 {
-            // Single-group special case.
-            assert_eq!(self.available_sections.len(), 1);
-            assert!(self.sections.is_empty());
-            let mut br = BitReader::new(&self.available_sections[0].data);
-            frame.decode_lf_global(&mut br)?;
-            frame.decode_lf_group(0, &mut br)?;
-            frame.decode_hf_global(&mut br)?;
-            frame.prepare_render_pipeline(
-                self.pixel_format.as_ref().unwrap(),
-                decode_options.cms.as_deref(),
-            )?;
-            frame.finalize_lf()?;
-            frame.decode_and_render_hf_groups(
-                output_buffers,
-                pixel_format,
-                vec![(0, vec![(0, br)])],
-            )?;
-            self.available_sections.clear();
-        } else {
-            let mut lf_global_section = None;
-            let mut lf_sections = vec![];
-            let mut hf_global_section = None;
-            let mut sorted_sections_for_each_group = Vec::with_capacity(frame_header.num_groups());
-            for _ in 0..frame_header.num_groups() {
-                sorted_sections_for_each_group.push(vec![]);
-            }
 
-            loop {
-                let initial_sz = self.available_sections.len();
-                retain_by_value(&mut self.available_sections, |sec| match sec.section {
-                    Section::LfGlobal => {
-                        lf_global_section = Some(sec);
-                        self.section_state.lf_global_done = true;
-                        None
-                    }
-                    Section::Lf { .. } => {
-                        if !self.section_state.lf_global_done {
-                            Some(sec)
-                        } else {
-                            lf_sections.push(sec);
-                            self.section_state.remaining_lf -= 1;
-                            None
-                        }
-                    }
-                    Section::HfGlobal => {
-                        if self.section_state.remaining_lf != 0 {
-                            Some(sec)
-                        } else {
-                            hf_global_section = Some(sec);
-                            self.section_state.hf_global_done = true;
-                            None
-                        }
-                    }
-                    Section::Hf { group, pass } => {
-                        if !self.section_state.hf_global_done
-                            || self.section_state.completed_passes[group] != pass as u8
-                        {
-                            Some(sec)
-                        } else {
-                            sorted_sections_for_each_group[group].push(sec);
-                            self.section_state.completed_passes[group] += 1;
-                            None
-                        }
-                    }
-                });
-                if self.available_sections.len() == initial_sz {
-                    break;
+            match s.section {
+                Section::LfGlobal => {
+                    self.lf_global_section = Some(s);
+                }
+                Section::HfGlobal => {
+                    self.hf_global_section = Some(s);
+                }
+                Section::Lf { .. } => {
+                    self.lf_sections.push(s);
+                }
+                Section::Hf { group, pass } => {
+                    self.hf_sections[group][pass] = Some(s);
                 }
             }
+        }
 
-            if let Some(lf_global) = lf_global_section {
-                frame.decode_lf_global(&mut BitReader::new(&lf_global.data))?;
-            }
-
-            for lf_section in lf_sections {
-                let Section::Lf { group } = lf_section.section else {
-                    unreachable!()
+        let mut processed_section = false;
+        let pixel_format = self.pixel_format.as_ref().unwrap();
+        'process: {
+            if frame_header.num_groups() == 1 && frame_header.passes.num_passes == 1 {
+                // Single-group special case.
+                let Some(sec) = self.lf_global_section.take() else {
+                    break 'process;
                 };
-                frame.decode_lf_group(group, &mut BitReader::new(&lf_section.data))?;
-            }
-
-            if let Some(hf_global) = hf_global_section {
-                frame.decode_hf_global(&mut BitReader::new(&hf_global.data))?;
+                assert!(self.sections.is_empty());
+                let mut br = BitReader::new(&sec.data);
+                frame.decode_lf_global(&mut br)?;
+                frame.decode_lf_group(0, &mut br)?;
+                frame.decode_hf_global(&mut br)?;
                 frame.prepare_render_pipeline(
                     self.pixel_format.as_ref().unwrap(),
                     decode_options.cms.as_deref(),
                 )?;
                 frame.finalize_lf()?;
+                frame.decode_and_render_hf_groups(
+                    output_buffers,
+                    pixel_format,
+                    vec![(0, vec![(0, br)])],
+                )?;
+                processed_section = true;
+            } else {
+                if let Some(lf_global) = self.lf_global_section.take() {
+                    frame.decode_lf_global(&mut BitReader::new(&lf_global.data))?;
+                    self.section_state.lf_global_done = true;
+                    processed_section = true;
+                }
+
+                if !self.section_state.lf_global_done {
+                    break 'process;
+                }
+
+                for lf_section in self.lf_sections.drain(..) {
+                    let Section::Lf { group } = lf_section.section else {
+                        unreachable!()
+                    };
+                    frame.decode_lf_group(group, &mut BitReader::new(&lf_section.data))?;
+                    processed_section = true;
+                    self.section_state.remaining_lf -= 1;
+                }
+
+                if self.section_state.remaining_lf != 0 {
+                    break 'process;
+                }
+
+                if let Some(hf_global) = self.hf_global_section.take() {
+                    frame.decode_hf_global(&mut BitReader::new(&hf_global.data))?;
+                    frame.prepare_render_pipeline(
+                        self.pixel_format.as_ref().unwrap(),
+                        decode_options.cms.as_deref(),
+                    )?;
+                    frame.finalize_lf()?;
+                    self.section_state.hf_global_done = true;
+                    processed_section = true;
+                }
+
+                if !self.section_state.hf_global_done {
+                    break 'process;
+                }
+
+                let mut group_readers = vec![];
+                let mut processed_groups = vec![];
+
+                for (g, grp) in self.hf_sections.iter_mut().enumerate() {
+                    let mut sections = vec![];
+                    for pass in self.section_state.completed_passes[g] as usize..grp.len() {
+                        let Some(s) = &grp[pass] else {
+                            break;
+                        };
+                        self.section_state.completed_passes[g] += 1;
+                        sections.push((pass, BitReader::new(&s.data)));
+                    }
+                    if !sections.is_empty() {
+                        group_readers.push((g, sections));
+                        processed_groups.push(g);
+                    }
+                }
+
+                frame.decode_and_render_hf_groups(output_buffers, pixel_format, group_readers)?;
+
+                for g in processed_groups.into_iter() {
+                    for i in 0..self.section_state.completed_passes[g] {
+                        self.hf_sections[g][i as usize] = None;
+                    }
+                    processed_section = true;
+                }
             }
+        }
 
-            let groups = sorted_sections_for_each_group
-                .iter()
-                .enumerate()
-                .map(|(g, grp)| {
-                    (
-                        g,
-                        grp.iter()
-                            .map(|sec| {
-                                let Section::Hf { group, pass } = sec.section else {
-                                    unreachable!()
-                                };
-                                assert_eq!(group, g);
-                                (pass, BitReader::new(&sec.data))
-                            })
-                            .collect(),
-                    )
-                })
-                .collect();
-
-            frame.decode_and_render_hf_groups(output_buffers, pixel_format, groups)?;
+        if !processed_section {
+            let data_for_next_section =
+                self.sections.front().unwrap().len - self.ready_section_data;
+            return Ok(Some(data_for_next_section));
         }
 
         // Frame is not yet complete.
         if !self.sections.is_empty() {
             return Ok(None);
         }
-        assert!(self.available_sections.is_empty());
 
         #[cfg(test)]
         {

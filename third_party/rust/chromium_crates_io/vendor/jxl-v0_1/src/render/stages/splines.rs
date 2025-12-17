@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::{
-    features::spline::Splines, frame::color_correlation_map::ColorCorrelationParams,
+    error::Result, features::spline::Splines, frame::color_correlation_map::ColorCorrelationParams,
     render::RenderPipelineInPlaceStage,
 };
 
@@ -13,22 +13,19 @@ pub struct SplinesStage {
 }
 
 impl SplinesStage {
-    // TODO(veluca): should this return a Result?
     pub fn new(
         mut splines: Splines,
         frame_size: (usize, usize),
         color_correlation_params: &ColorCorrelationParams,
         high_precision: bool,
-    ) -> Self {
-        splines
-            .initialize_draw_cache(
-                frame_size.0 as u64,
-                frame_size.1 as u64,
-                color_correlation_params,
-                high_precision,
-            )
-            .unwrap();
-        SplinesStage { splines }
+    ) -> Result<Self> {
+        splines.initialize_draw_cache(
+            frame_size.0 as u64,
+            frame_size.1 as u64,
+            color_correlation_params,
+            high_precision,
+        )?;
+        Ok(SplinesStage { splines })
     }
 }
 
@@ -111,7 +108,8 @@ mod test {
                 size,
                 &ColorCorrelationParams::default(),
                 true,
-            ),
+            )
+            .unwrap(),
             &target_images,
             size,
             0,
@@ -167,6 +165,7 @@ mod test {
                     &ColorCorrelationParams::default(),
                     false,
                 )
+                .unwrap()
             },
             (500, 500),
             6,

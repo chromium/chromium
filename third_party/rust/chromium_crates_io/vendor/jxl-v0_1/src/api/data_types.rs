@@ -101,6 +101,45 @@ impl JxlDataFormat {
             JxlDataFormat::F32 { .. } => DataTypeTag::F32,
         }
     }
+
+    /// Returns the byte representation of opaque alpha (1.0) for this format.
+    pub(crate) fn opaque_alpha_bytes(&self) -> Vec<u8> {
+        match self {
+            JxlDataFormat::U8 { bit_depth } => {
+                let val = (1u16 << bit_depth) - 1;
+                vec![val as u8]
+            }
+            JxlDataFormat::U16 {
+                endianness,
+                bit_depth,
+            } => {
+                let val = (1u32 << bit_depth) - 1;
+                let val = val as u16;
+                if *endianness == Endianness::LittleEndian {
+                    val.to_le_bytes().to_vec()
+                } else {
+                    val.to_be_bytes().to_vec()
+                }
+            }
+            JxlDataFormat::F16 { endianness } => {
+                // 1.0 in f16 is 0x3C00
+                let val: u16 = 0x3C00;
+                if *endianness == Endianness::LittleEndian {
+                    val.to_le_bytes().to_vec()
+                } else {
+                    val.to_be_bytes().to_vec()
+                }
+            }
+            JxlDataFormat::F32 { endianness } => {
+                let val: f32 = 1.0;
+                if *endianness == Endianness::LittleEndian {
+                    val.to_le_bytes().to_vec()
+                } else {
+                    val.to_be_bytes().to_vec()
+                }
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -109,6 +148,70 @@ pub struct JxlPixelFormat {
     // None -> ignore
     pub color_data_format: Option<JxlDataFormat>,
     pub extra_channel_format: Vec<Option<JxlDataFormat>>,
+}
+
+impl JxlPixelFormat {
+    /// Creates an RGBA 8-bit pixel format.
+    pub fn rgba8(num_extra_channels: usize) -> Self {
+        Self {
+            color_type: JxlColorType::Rgba,
+            color_data_format: Some(JxlDataFormat::U8 { bit_depth: 8 }),
+            extra_channel_format: vec![
+                Some(JxlDataFormat::U8 { bit_depth: 8 });
+                num_extra_channels
+            ],
+        }
+    }
+
+    /// Creates an RGBA 16-bit pixel format.
+    pub fn rgba16(num_extra_channels: usize) -> Self {
+        Self {
+            color_type: JxlColorType::Rgba,
+            color_data_format: Some(JxlDataFormat::U16 {
+                endianness: Endianness::native(),
+                bit_depth: 16,
+            }),
+            extra_channel_format: vec![
+                Some(JxlDataFormat::U16 {
+                    endianness: Endianness::native(),
+                    bit_depth: 16,
+                });
+                num_extra_channels
+            ],
+        }
+    }
+
+    /// Creates an RGBA f16 pixel format.
+    pub fn rgba_f16(num_extra_channels: usize) -> Self {
+        Self {
+            color_type: JxlColorType::Rgba,
+            color_data_format: Some(JxlDataFormat::F16 {
+                endianness: Endianness::native(),
+            }),
+            extra_channel_format: vec![
+                Some(JxlDataFormat::F16 {
+                    endianness: Endianness::native(),
+                });
+                num_extra_channels
+            ],
+        }
+    }
+
+    /// Creates an RGBA f32 pixel format.
+    pub fn rgba_f32(num_extra_channels: usize) -> Self {
+        Self {
+            color_type: JxlColorType::Rgba,
+            color_data_format: Some(JxlDataFormat::F32 {
+                endianness: Endianness::native(),
+            }),
+            extra_channel_format: vec![
+                Some(JxlDataFormat::F32 {
+                    endianness: Endianness::native(),
+                });
+                num_extra_channels
+            ],
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

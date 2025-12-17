@@ -71,8 +71,12 @@ impl ExtendToImageDimensionsStage {
         let y0 = position.1;
         let source = if c < 3 {
             self.blending_info.source as usize
-        } else {
+        } else if c - 3 < self.ec_blending_info.len() {
             self.ec_blending_info[c - 3].source as usize
+        } else {
+            // This is a synthetic channel such as the noise channels, which can't be extended
+            // and can't be used after extending, so nothing to do.
+            return;
         };
         let bg = if let Some(bg) = self.reference_frames[source].as_ref() {
             bg.frame[c].row(y0)

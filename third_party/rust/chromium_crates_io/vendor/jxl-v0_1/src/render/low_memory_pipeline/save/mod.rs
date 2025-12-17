@@ -99,7 +99,7 @@ impl SaveStage {
         }
 
         for (c, d) in data.iter().enumerate() {
-            let nc = self.channels.len();
+            let nc = self.output_channels();
             let (x0, y0) = self.orientation.display_pixel((0, relative_y), save_size);
             let (x1, y1) = self.orientation.display_pixel((1, relative_y), save_size);
             let x0 = x0 as isize;

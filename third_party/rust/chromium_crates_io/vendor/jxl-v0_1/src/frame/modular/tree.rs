@@ -98,8 +98,8 @@ pub(super) fn predict(
     property_buffer[3] = x as i32;
 
     // Neighbours
-    property_buffer[4] = top.abs();
-    property_buffer[5] = left.abs();
+    property_buffer[4] = top.wrapping_abs();
+    property_buffer[5] = left.wrapping_abs();
     property_buffer[6] = top;
     property_buffer[7] = left;
 

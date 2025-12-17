@@ -464,7 +464,7 @@ pub fn do_hsqueeze_step(
     trace!("hsqueeze step in_avg: {in_avg:?} in_res: {in_res:?} in_next_avg: {in_next_avg:?}");
     let out = buffers.first_mut().unwrap();
     // Shortcut: guarantees that row is at least 1px in the main loop
-    if out.data.size().0 == 0 {
+    if out.data.size().0 == 0 || out.data.size().1 == 0 {
         return;
     }
 
@@ -659,7 +659,7 @@ pub fn do_vsqueeze_step(
     trace!("vsqueeze step in_avg: {in_avg:?} in_res: {in_res:?} in_next_avg: {in_next_avg:?}");
     let out = &mut buffers.first_mut().unwrap().data;
     // Shortcut: guarantees that there at least 1 output row
-    if out.size().1 == 0 {
+    if out.size().1 == 0 || out.size().0 == 0 {
         return;
     }
     // Another shortcut: when there is one output row

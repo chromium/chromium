@@ -162,7 +162,9 @@ impl RleState {
         if let Some(token) = token.checked_sub(self.min_symbol) {
             let lz_length_conf = histograms.lz77_length_uint.as_ref().unwrap();
             let count = lz_length_conf.read(token, br);
-            self.repeat_count = count + self.min_length;
+            // If this calculation overflows, the bitstream is invalid (it would be rejected
+            // on the LZ77 path), but we don't report an error.
+            self.repeat_count = count.wrapping_add(self.min_length);
         } else {
             let sym = histograms.uint_configs[cluster].read(token, br);
             self.last_sym = Some(sym);

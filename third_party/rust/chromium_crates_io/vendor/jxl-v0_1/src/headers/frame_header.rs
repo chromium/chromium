@@ -88,7 +88,7 @@ impl Passes {
                 min_shift = 0;
             }
             if i != pass {
-                max_shift = min_shift - 1;
+                max_shift = min_shift.saturating_sub(1);
             }
         }
         (min_shift as usize, max_shift as usize)
@@ -681,11 +681,35 @@ impl FrameHeader {
             ));
         }
 
+        if self.has_lf_frame() && self.lf_level >= 4 {
+            return Err(Error::InvalidLfLevel(self.lf_level));
+        }
+
         if self.passes.num_ds >= self.passes.num_passes {
             return Err(Error::NumPassesTooLarge(
                 self.passes.num_ds,
                 self.passes.num_passes,
             ));
+        }
+
+        for w in self.passes.downsample.windows(2) {
+            let [last_ds, ds] = w else { unreachable!() };
+            if ds >= last_ds {
+                return Err(Error::PassesDownsampleNonDecreasing);
+            }
+        }
+
+        for w in self.passes.last_pass.windows(2) {
+            let [last_lp, lp] = w else { unreachable!() };
+            if lp >= last_lp {
+                return Err(Error::PassesLastPassNonIncreasing);
+            }
+        }
+
+        for &lp in self.passes.last_pass.iter() {
+            if lp >= self.passes.num_passes {
+                return Err(Error::PassesLastPassTooLarge);
+            }
         }
 
         if !self.save_before_ct && !self.full_frame && self.frame_type == FrameType::ReferenceOnly {

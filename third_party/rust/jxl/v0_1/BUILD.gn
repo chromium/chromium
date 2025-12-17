@@ -162,7 +162,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "High performance Rust implementation of a JPEG XL decoder"
   cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
-  cargo_pkg_version = "0.1.4"
+  cargo_pkg_version = "0.1.5"
 
   allow_unsafe = true
 

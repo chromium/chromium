@@ -10,12 +10,16 @@ use crate::{
     image::DataTypeTag,
 };
 
+#[derive(Debug)]
 pub struct SaveStage {
     pub(super) channels: Vec<usize>,
     pub(super) orientation: Orientation,
     pub(super) output_buffer_index: usize,
     pub(super) color_type: JxlColorType,
     pub(super) data_format: JxlDataFormat,
+    /// When true, fill alpha channel with opaque (1.0) values.
+    /// Used when RGBA output is requested but image has no alpha channel.
+    pub(super) fill_opaque_alpha: bool,
 }
 
 impl SaveStage {
@@ -25,6 +29,7 @@ impl SaveStage {
         output_buffer_index: usize,
         mut color_type: JxlColorType,
         data_format: JxlDataFormat,
+        fill_opaque_alpha: bool,
     ) -> SaveStage {
         let mut channels = channels.to_vec();
         if color_type == JxlColorType::Bgr {
@@ -41,7 +46,13 @@ impl SaveStage {
             output_buffer_index,
             color_type,
             data_format,
+            fill_opaque_alpha,
         }
+    }
+
+    /// Returns the number of output channels (including filled alpha if applicable)
+    pub fn output_channels(&self) -> usize {
+        self.color_type.samples_per_pixel()
     }
 
     pub fn uses_channel(&self, c: usize) -> bool {
@@ -62,7 +73,7 @@ impl SaveStage {
         };
         let osize = self.orientation.map_size(size);
 
-        let expected_w = self.channels.len() * self.data_format.bytes_per_sample() * osize.0;
+        let expected_w = self.output_channels() * self.data_format.bytes_per_sample() * osize.0;
 
         if buf.byte_size() != (expected_w, osize.1) {
             return Err(Error::InvalidOutputBufferSize(

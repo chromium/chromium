@@ -19,7 +19,7 @@ use crate::{
 const MAX_NUM_CONTROL_POINTS: u32 = 1 << 20;
 const MAX_NUM_CONTROL_POINTS_PER_PIXEL_RATIO: u32 = 2;
 const DELTA_LIMIT: i64 = 1 << 30;
-const SPLINE_POS_LIMIT: i32 = 1 << 23;
+const SPLINE_POS_LIMIT: isize = 1 << 23;
 
 const QUANTIZATION_ADJUSTMENT_CONTEXT: usize = 0;
 const STARTING_POSITION_CONTEXT: usize = 1;
@@ -711,7 +711,7 @@ impl Splines {
                 DESIRED_RENDERING_DISTANCE,
                 |p, d| points_to_draw.push((p, d)),
             );
-            let length = (points_to_draw.len() - 2) as f32 * DESIRED_RENDERING_DISTANCE
+            let length = (points_to_draw.len() as isize - 2) as f32 * DESIRED_RENDERING_DISTANCE
                 + points_to_draw[points_to_draw.len() - 1].1;
             if length <= 0.0 {
                 continue;
@@ -755,8 +755,9 @@ impl Splines {
         trace!(pos = br.total_bits_read());
         let splines_histograms = Histograms::decode(NUM_SPLINE_CONTEXTS, br, true)?;
         let mut splines_reader = SymbolReader::new(&splines_histograms, br, None)?;
-        let num_splines =
-            1 + splines_reader.read_unsigned(&splines_histograms, br, NUM_SPLINES_CONTEXT);
+        let num_splines = splines_reader
+            .read_unsigned(&splines_histograms, br, NUM_SPLINES_CONTEXT)
+            .saturating_add(1);
         let max_control_points =
             MAX_NUM_CONTROL_POINTS.min(num_pixels / MAX_NUM_CONTROL_POINTS_PER_PIXEL_RATIO);
         if num_splines > max_control_points {
@@ -774,11 +775,11 @@ impl Splines {
 
             let (x, y) = if i != 0 {
                 (
-                    unpack_signed(unsigned_x) + last_x,
-                    unpack_signed(unsigned_y) + last_y,
+                    unpack_signed(unsigned_x) as isize + last_x,
+                    unpack_signed(unsigned_y) as isize + last_y,
                 )
             } else {
-                (unsigned_x as i32, unsigned_y as i32)
+                (unsigned_x as isize, unsigned_y as isize)
             };
             // It is not in spec, but reasonable limit to avoid overflows.
             let max_coordinate = x.abs().max(y.abs());

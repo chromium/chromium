@@ -28,12 +28,14 @@ impl SaveStage {
 
         self.check_buffer_size(size, Some(buf))?;
 
+        let output_channels = self.output_channels();
+
         for (c, &chan) in self.channels.iter().enumerate() {
             for y in 0..size.1 {
                 let src_row = data[chan].row(y);
                 for (x, &px) in src_row.iter().enumerate() {
                     let (dx, dy) = self.orientation.display_pixel((x, y), size);
-                    let dx = dx * self.channels.len() + c;
+                    let dx = dx * output_channels + c;
                     let bps = self.data_format.bytes_per_sample();
 
                     macro_rules! write_pixel {
@@ -67,6 +69,21 @@ impl SaveStage {
                 }
             }
         }
+
+        // Fill opaque alpha if needed (when RGBA requested but image has no alpha)
+        if self.fill_opaque_alpha {
+            let alpha_channel = self.channels.len(); // alpha is after the source channels
+            let opaque_bytes = self.data_format.opaque_alpha_bytes();
+            for y in 0..size.1 {
+                for x in 0..size.0 {
+                    let (dx, dy) = self.orientation.display_pixel((x, y), size);
+                    let dx = dx * output_channels + alpha_channel;
+                    let bps = self.data_format.bytes_per_sample();
+                    buf.write_bytes(dy, dx * bps, &opaque_bytes);
+                }
+            }
+        }
+
         Ok(())
     }
 }
@@ -89,6 +106,7 @@ mod test {
             0,
             JxlColorType::Grayscale,
             JxlDataFormat::U8 { bit_depth: 8 },
+            false,
         );
         let mut rng = XorShiftRng::seed_from_u64(0);
         let src = [Image::<f64>::new_random((128, 128), &mut rng)?];
@@ -136,6 +154,7 @@ mod test {
             0,
             JxlColorType::Grayscale,
             JxlDataFormat::f32(),
+            false,
         );
 
         let mut rng = XorShiftRng::seed_from_u64(0);

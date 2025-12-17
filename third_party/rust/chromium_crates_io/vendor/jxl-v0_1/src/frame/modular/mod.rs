@@ -75,7 +75,8 @@ impl ChannelInfo {
     }
 
     fn is_shift_in_range(&self, min: usize, max: usize) -> bool {
-        assert!(min <= max);
+        // This might be called with max < min, in which case we just return false.
+        // This matches libjxl behaviour.
         self.shift.is_some_and(|(a, b)| {
             let shift = a.min(b);
             min <= shift && shift <= max
@@ -820,9 +821,9 @@ pub fn decode_hf_metadata(
             }
             let raw_transform = transform_image.row(0)[num];
             let raw_quant = 1 + transform_image.row(1)[num].clamp(0, 255);
-            used_hf_types |= 1 << raw_transform;
             let transform_type = HfTransformType::from_usize(raw_transform as usize)
                 .ok_or(Error::InvalidVarDCTTransform(raw_transform as usize))?;
+            used_hf_types |= 1 << raw_transform;
             let cx = covered_blocks_x(transform_type) as usize;
             let cy = covered_blocks_y(transform_type) as usize;
             if (cx > 1 || cy > 1) && !frame_header.is444() {

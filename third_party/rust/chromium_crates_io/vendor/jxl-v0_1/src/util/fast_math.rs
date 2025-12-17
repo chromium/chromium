@@ -141,8 +141,8 @@ pub fn fast_powf_simd<D: SimdDescriptor>(d: D, base: D::F32Vec, exp: D::F32Vec) 
     fast_pow2f_simd(d, fast_log2f_simd(d, base) * exp)
 }
 
-pub fn floor_log2_nonzero<T: num_traits::Unsigned + num_traits::PrimInt>(x: T) -> u32 {
-    (size_of::<T>() * 8 - 1) as u32 ^ x.leading_zeros()
+pub fn floor_log2_nonzero(x: u64) -> u32 {
+    (size_of::<u64>() * 8 - 1) as u32 ^ x.leading_zeros()
 }
 
 #[cfg(test)]

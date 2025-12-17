@@ -340,6 +340,13 @@ pub(crate) mod tests {
 
     for_each_test_file!(decode_test_file);
 
+    fn decode_test_file_chunks(path: &Path) -> Result<(), Error> {
+        decode(&std::fs::read(path)?, 1, false, None)?;
+        Ok(())
+    }
+
+    for_each_test_file!(decode_test_file_chunks);
+
     fn compare_pipelines(path: &Path) -> Result<(), Error> {
         let file = std::fs::read(path)?;
         let simple_frames = decode(&file, usize::MAX, true, None)?.1;
@@ -523,5 +530,188 @@ pub(crate) mod tests {
         let icc_profile = JxlColorProfile::Icc(vec![0u8; 100]);
         let result = decoder.set_output_color_profile(icc_profile);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_fill_opaque_alpha_both_pipelines() {
+        use crate::api::{JxlColorType, JxlDataFormat, JxlPixelFormat};
+        use crate::image::{Image, Rect};
+
+        // Use basic.jxl which has no alpha channel
+        let file = std::fs::read("resources/test/basic.jxl").unwrap();
+
+        // Request RGBA format even though image has no alpha
+        let rgba_format = JxlPixelFormat {
+            color_type: JxlColorType::Rgba,
+            color_data_format: Some(JxlDataFormat::f32()),
+            extra_channel_format: vec![],
+        };
+
+        // Test both pipelines (simple and low-memory)
+        for use_simple in [true, false] {
+            let options = JxlDecoderOptions::default();
+            let decoder = JxlDecoder::<states::Initialized>::new(options);
+            let mut input = file.as_slice();
+
+            // Advance to image info
+            macro_rules! advance_decoder {
+                ($decoder:expr) => {
+                    loop {
+                        match $decoder.process(&mut input).unwrap() {
+                            ProcessingResult::Complete { result } => break result,
+                            ProcessingResult::NeedsMoreInput { fallback, .. } => {
+                                if input.is_empty() {
+                                    panic!("Unexpected end of input");
+                                }
+                                $decoder = fallback;
+                            }
+                        }
+                    }
+                };
+                ($decoder:expr, $buffers:expr) => {
+                    loop {
+                        match $decoder.process(&mut input, $buffers).unwrap() {
+                            ProcessingResult::Complete { result } => break result,
+                            ProcessingResult::NeedsMoreInput { fallback, .. } => {
+                                if input.is_empty() {
+                                    panic!("Unexpected end of input");
+                                }
+                                $decoder = fallback;
+                            }
+                        }
+                    }
+                };
+            }
+
+            let mut decoder = decoder;
+            let mut decoder = advance_decoder!(decoder);
+            decoder.set_use_simple_pipeline(use_simple);
+
+            // Set RGBA format
+            decoder.set_pixel_format(rgba_format.clone());
+
+            let basic_info = decoder.basic_info().clone();
+            let (width, height) = basic_info.size;
+
+            // Advance to frame info
+            let mut decoder = advance_decoder!(decoder);
+
+            // Prepare buffer for RGBA (4 channels interleaved)
+            let mut color_buffer = Image::<f32>::new((width * 4, height)).unwrap();
+            let mut buffers: Vec<_> = vec![JxlOutputBuffer::from_image_rect_mut(
+                color_buffer
+                    .get_rect_mut(Rect {
+                        origin: (0, 0),
+                        size: (width * 4, height),
+                    })
+                    .into_raw(),
+            )];
+
+            // Decode frame
+            let _decoder = advance_decoder!(decoder, &mut buffers);
+
+            // Verify all alpha values are 1.0 (opaque)
+            for y in 0..height {
+                let row = color_buffer.row(y);
+                for x in 0..width {
+                    let alpha = row[x * 4 + 3];
+                    assert_eq!(
+                        alpha, 1.0,
+                        "Alpha at ({},{}) should be 1.0, got {} (use_simple={})",
+                        x, y, alpha, use_simple
+                    );
+                }
+            }
+        }
+    }
+
+    /// Test that animations with reference frames work correctly.
+    /// This exercises the buffer index calculation fix where reference frame
+    /// save stages use indices beyond the API-provided buffer array.
+    #[test]
+    fn test_animation_with_reference_frames() {
+        use crate::api::{JxlColorType, JxlDataFormat, JxlPixelFormat};
+        use crate::image::{Image, Rect};
+
+        // Use animation_spline.jxl which has multiple frames with references
+        let file =
+            std::fs::read("resources/test/conformance_test_images/animation_spline.jxl").unwrap();
+
+        let options = JxlDecoderOptions::default();
+        let decoder = JxlDecoder::<states::Initialized>::new(options);
+        let mut input = file.as_slice();
+
+        // Advance to image info
+        let mut decoder = decoder;
+        let mut decoder = loop {
+            match decoder.process(&mut input).unwrap() {
+                ProcessingResult::Complete { result } => break result,
+                ProcessingResult::NeedsMoreInput { fallback, .. } => {
+                    decoder = fallback;
+                }
+            }
+        };
+
+        // Set RGB format with no extra channels
+        let rgb_format = JxlPixelFormat {
+            color_type: JxlColorType::Rgb,
+            color_data_format: Some(JxlDataFormat::f32()),
+            extra_channel_format: vec![],
+        };
+        decoder.set_pixel_format(rgb_format);
+
+        let basic_info = decoder.basic_info().clone();
+        let (width, height) = basic_info.size;
+
+        let mut frame_count = 0;
+
+        // Decode all frames
+        loop {
+            // Advance to frame info
+            let mut decoder_frame = loop {
+                match decoder.process(&mut input).unwrap() {
+                    ProcessingResult::Complete { result } => break result,
+                    ProcessingResult::NeedsMoreInput { fallback, .. } => {
+                        decoder = fallback;
+                    }
+                }
+            };
+
+            // Prepare buffer for RGB (3 channels interleaved)
+            let mut color_buffer = Image::<f32>::new((width * 3, height)).unwrap();
+            let mut buffers: Vec<_> = vec![JxlOutputBuffer::from_image_rect_mut(
+                color_buffer
+                    .get_rect_mut(Rect {
+                        origin: (0, 0),
+                        size: (width * 3, height),
+                    })
+                    .into_raw(),
+            )];
+
+            // Decode frame - this should not panic even though reference frame
+            // save stages target buffer indices beyond buffers.len()
+            decoder = loop {
+                match decoder_frame.process(&mut input, &mut buffers).unwrap() {
+                    ProcessingResult::Complete { result } => break result,
+                    ProcessingResult::NeedsMoreInput { fallback, .. } => {
+                        decoder_frame = fallback;
+                    }
+                }
+            };
+
+            frame_count += 1;
+
+            // Check if there are more frames
+            if !decoder.has_more_frames() {
+                break;
+            }
+        }
+
+        // Verify we decoded multiple frames
+        assert!(
+            frame_count > 1,
+            "Expected multiple frames in animation, got {}",
+            frame_count
+        );
     }
 }

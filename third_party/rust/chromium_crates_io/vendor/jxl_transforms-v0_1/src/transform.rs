@@ -3,6 +3,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#![allow(clippy::excessive_precision)]
+#![allow(clippy::approx_constant)]
+
 use crate::{transform_map::HfTransformType, *};
 use jxl_simd::{simd_function, SimdDescriptor};
 

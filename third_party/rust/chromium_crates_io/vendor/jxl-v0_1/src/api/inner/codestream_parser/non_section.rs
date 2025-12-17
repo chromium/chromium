@@ -8,21 +8,39 @@ use std::io::IoSliceMut;
 use crate::{
     api::{
         Endianness, JxlBasicInfo, JxlBitDepth, JxlColorEncoding, JxlColorProfile, JxlColorType,
-        JxlDataFormat, JxlDecoderOptions, JxlExtraChannel, JxlPixelFormat, JxlTransferFunction,
-        inner::codestream_parser::SectionState,
+        JxlDataFormat, JxlDecoderOptions, JxlExtraChannel, JxlPixelFormat, JxlPrimaries,
+        JxlTransferFunction, JxlWhitePoint, inner::codestream_parser::SectionState,
     },
     bit_reader::BitReader,
     error::{Error, Result},
     frame::{DecoderState, Frame, Section},
     headers::{
-        FileHeader, JxlHeader, color_encoding::ColorSpace, encodings::UnconditionalCoder,
-        frame_header::FrameHeader, toc::IncrementalTocReader,
+        FileHeader, JxlHeader,
+        color_encoding::{ColorSpace, RenderingIntent},
+        encodings::UnconditionalCoder,
+        frame_header::FrameHeader,
+        toc::IncrementalTocReader,
     },
     icc::IncrementalIccReader,
 };
 
 use super::{CodestreamParser, SectionBuffer};
 use crate::api::ToneMapping;
+
+fn check_size_limit(
+    pixel_limit: Option<usize>,
+    (xs, ys): (usize, usize),
+    num_ec: usize,
+) -> Result<()> {
+    if let Some(limit) = pixel_limit {
+        let xs = xs.max(16); // xsize is always at least 64 bytes.
+        let total_pixels = xs.saturating_mul(ys).saturating_mul(3 + num_ec);
+        if total_pixels >= limit {
+            return Err(Error::ImageSizeTooLarge(xs, ys));
+        }
+    };
+    Ok(())
+}
 
 impl CodestreamParser {
     #[cold]
@@ -33,6 +51,21 @@ impl CodestreamParser {
             let mut br = BitReader::new(&self.non_section_buf);
             br.skip_bits(self.non_section_bit_offset as usize)?;
             let file_header = FileHeader::read(&mut br)?;
+            check_size_limit(
+                decode_options.pixel_limit,
+                (
+                    file_header.size.xsize() as usize,
+                    file_header.size.ysize() as usize,
+                ),
+                file_header.image_metadata.extra_channel_info.len(),
+            )?;
+            if let Some(preview) = &file_header.image_metadata.preview {
+                check_size_limit(
+                    decode_options.pixel_limit,
+                    (preview.xsize() as usize, preview.ysize() as usize),
+                    file_header.image_metadata.extra_channel_info.len(),
+                )?;
+            }
             let data = &file_header.image_metadata;
             self.animation = data.animation.clone();
             self.basic_info = Some(JxlBasicInfo {
@@ -154,7 +187,12 @@ impl CodestreamParser {
                             transfer_function: JxlTransferFunction::Linear,
                             rendering_intent,
                         },
-                        JxlColorEncoding::XYB { .. } => unreachable!(),
+                        JxlColorEncoding::XYB { .. } => JxlColorEncoding::RgbColorSpace {
+                            transfer_function: JxlTransferFunction::Linear,
+                            white_point: JxlWhitePoint::D65,
+                            primaries: JxlPrimaries::SRGB,
+                            rendering_intent: RenderingIntent::Relative,
+                        },
                     }
                 } else {
                     nonlinear_output_color_profile
@@ -164,24 +202,27 @@ impl CodestreamParser {
             };
             self.embedded_color_profile = Some(embedded_color_profile);
             self.output_color_profile = Some(output_color_profile);
-            self.pixel_format = Some(JxlPixelFormat {
-                color_type: if file_header.image_metadata.color_encoding.color_space
-                    == ColorSpace::Gray
-                {
-                    JxlColorType::Grayscale
-                } else {
-                    JxlColorType::Rgb
-                },
-                color_data_format: Some(JxlDataFormat::F32 {
-                    endianness: Endianness::native(),
-                }),
-                extra_channel_format: vec![
-                    Some(JxlDataFormat::F32 {
-                        endianness: Endianness::native()
-                    });
-                    file_header.image_metadata.extra_channel_info.len()
-                ],
-            });
+            // Only set default pixel_format if not already configured (e.g. via rewind)
+            if self.pixel_format.is_none() {
+                self.pixel_format = Some(JxlPixelFormat {
+                    color_type: if file_header.image_metadata.color_encoding.color_space
+                        == ColorSpace::Gray
+                    {
+                        JxlColorType::Grayscale
+                    } else {
+                        JxlColorType::Rgb
+                    },
+                    color_data_format: Some(JxlDataFormat::F32 {
+                        endianness: Endianness::native(),
+                    }),
+                    extra_channel_format: vec![
+                        Some(JxlDataFormat::F32 {
+                            endianness: Endianness::native()
+                        });
+                        file_header.image_metadata.extra_channel_info.len()
+                    ],
+                });
+            }
 
             let mut br = BitReader::new(&self.non_section_buf);
             br.skip_bits(self.non_section_bit_offset as usize)?;
@@ -219,6 +260,20 @@ impl CodestreamParser {
 
             let mut frame_header = FrameHeader::read_unconditional(&(), &mut br, &nonserialized)?;
             frame_header.postprocess(&nonserialized);
+            check_size_limit(
+                decode_options.pixel_limit,
+                frame_header.size(),
+                frame_header.num_extra_channels as usize,
+            )?;
+
+            // Initialize storage buffers for available sections.
+            self.lf_global_section = None;
+            self.lf_sections.clear();
+            self.hf_global_section = None;
+            self.hf_sections = (0..frame_header.num_groups())
+                .map(|_| (0..frame_header.passes.num_passes).map(|_| None).collect())
+                .collect();
+
             self.frame_header = Some(frame_header);
             let bits = br.total_bits_read();
             self.non_section_buf.consume(bits / 8);
@@ -318,7 +373,6 @@ impl CodestreamParser {
 
         self.section_state =
             SectionState::new(frame.header().num_lf_groups(), frame.header().num_groups());
-        assert!(self.available_sections.is_empty());
 
         self.frame = Some(frame);
 

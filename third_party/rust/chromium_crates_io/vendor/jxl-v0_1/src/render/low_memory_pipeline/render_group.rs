@@ -223,7 +223,7 @@ impl LowMemoryRenderPipeline {
                     }
                     Stage::Save(s) => {
                         // Find buffers for channels that will be saved.
-                        let input_data: Vec<_> = s
+                        let mut input_data: Vec<_> = s
                             .channels
                             .iter()
                             .map(|c| {
@@ -231,6 +231,10 @@ impl LowMemoryRenderPipeline {
                                 &self.row_buffers[si][ci]
                             })
                             .collect();
+                        // Append opaque alpha buffer if fill_opaque_alpha is set
+                        if let Some(ref alpha_buf) = self.opaque_alpha_buffers[i] {
+                            input_data.push(alpha_buf);
+                        }
                         s.save_lowmem(
                             &input_data,
                             &mut *buffers,
@@ -372,7 +376,7 @@ impl LowMemoryRenderPipeline {
                     }
                     Stage::Save(s) => {
                         // Find buffers for channels that will be saved.
-                        let input_data: Vec<_> = s
+                        let mut input_data: Vec<_> = s
                             .channels
                             .iter()
                             .map(|c| {
@@ -380,6 +384,10 @@ impl LowMemoryRenderPipeline {
                                 &self.row_buffers[si][ci]
                             })
                             .collect();
+                        // Append opaque alpha buffer if fill_opaque_alpha is set
+                        if let Some(ref alpha_buf) = self.opaque_alpha_buffers[i] {
+                            input_data.push(alpha_buf);
+                        }
                         s.save_lowmem(
                             &input_data,
                             &mut *buffers,

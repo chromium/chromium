@@ -6,6 +6,7 @@
 use crate::{api::JxlOutputBuffer, headers::Orientation, image::Rect, util::ShiftRightCeil};
 
 // Information for splitting the output buffers.
+#[derive(Debug)]
 pub(super) struct SaveStageBufferInfo {
     pub(super) downsample: (u8, u8),
     pub(super) orientation: Orientation,
@@ -36,6 +37,11 @@ impl<'a, 'b> BufferSplitter<'a, 'b> {
         for _ in 0..buffers.len() {
             local_buffers.push(None::<JxlOutputBuffer>);
         }
+        let rect = if !outside_current_frame {
+            rect.clip(frame_size)
+        } else {
+            rect
+        };
         for (i, (info, buf)) in save_buffer_info.iter().zip(buffers.iter_mut()).enumerate() {
             let Some(bi) = info else {
                 // We never write to this buffer.

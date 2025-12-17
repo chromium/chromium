@@ -239,10 +239,10 @@ impl ModularChannelDecoder for WpOnlyLookup {
         let (wp_pred, property) = self
             .wp_state
             .predict_and_property(pos, xsize, &prediction_data);
-        let ctx =
-            self.lut[(property - LUT_MIN_SPLITVAL).clamp(0, LUT_TABLE_SIZE as i32 - 1) as usize];
+        let ctx = self.lut[(property as i64 - LUT_MIN_SPLITVAL as i64)
+            .clamp(0, LUT_TABLE_SIZE as i64 - 1) as usize];
         let dec = reader.read_signed_clustered(histograms, br, ctx as usize);
-        let val = dec + wp_pred as i32;
+        let val = dec.wrapping_add(wp_pred as i32);
         self.wp_state.update_errors(val, pos, xsize);
         val
     }

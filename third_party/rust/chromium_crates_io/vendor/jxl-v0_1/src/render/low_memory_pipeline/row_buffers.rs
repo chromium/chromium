@@ -50,6 +50,19 @@ impl RowBuffer {
         })
     }
 
+    /// Creates a new row buffer with a single row filled with a repeating pattern.
+    /// Used for constant values like opaque alpha.
+    pub fn new_filled(data_type: DataTypeTag, row_len: usize, fill_pattern: &[u8]) -> Result<Self> {
+        let mut result = Self::new(data_type, 0, 0, row_len)?;
+        let row_bytes: &mut [u8] = result.get_row_mut(0);
+        let start = Self::x0_offset::<u8>();
+        let end = start + row_len * fill_pattern.len();
+        for (i, byte) in row_bytes[start..end].iter_mut().enumerate() {
+            *byte = fill_pattern[i % fill_pattern.len()];
+        }
+        Ok(result)
+    }
+
     pub fn get_row<T: ImageDataType>(&self, row: usize) -> &[T] {
         let row_idx = row % self.num_rows;
         let start = row_idx * self.row_stride;

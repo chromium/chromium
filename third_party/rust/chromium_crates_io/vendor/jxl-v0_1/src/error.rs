@@ -104,8 +104,16 @@ pub enum Error {
     // FrameHeader format errors
     #[error("Invalid extra channel upsampling: upsampling: {0} dim_shift: {1} ec_upsampling: {2}")]
     InvalidEcUpsampling(u32, u32, u32),
+    #[error("Invalid lf level in UseLFFrame frame: {0}")]
+    InvalidLfLevel(u32),
     #[error("Num_ds: {0} should be smaller than num_passes: {1}")]
     NumPassesTooLarge(u32, u32),
+    #[error("Passes::downsample is non-decreasing")]
+    PassesDownsampleNonDecreasing,
+    #[error("Passes::last_pass is non-increasing")]
+    PassesLastPassNonIncreasing,
+    #[error("Passes::last_pass has too large elements")]
+    PassesLastPassTooLarge,
     #[error("Non-patch reference frame with a crop")]
     NonPatchReferenceWithCrop,
     #[error("Non-444 chroma subsampling is not allowed when adaptive DC smoothing is enabled")]
@@ -180,7 +188,7 @@ pub enum Error {
     )]
     SplinesPointOutOfRange(Point, i32, std::ops::Range<i32>),
     #[error("Spline coordinates out of bounds: {0}, limit is {1}")]
-    SplinesCoordinatesLimit(i32, i32),
+    SplinesCoordinatesLimit(isize, isize),
     #[error("Spline delta-delta is out of bounds: {0}, limit is {1}")]
     SplinesDeltaLimit(i64, i64),
     #[error("Modular tree too large: {0}, limit is {1}")]

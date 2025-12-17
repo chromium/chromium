@@ -212,9 +212,9 @@ impl Table {
 
         let mut symbol = 0;
         let mut prev_code_len = DEFAULT_CODE_LENGTH;
-        let mut repeat = 0u16;
+        let mut repeat = 0usize;
         let mut repeat_code_len = 0;
-        let mut space = 1 << 15;
+        let mut space = 1usize << 15;
 
         let mut code_lengths = vec![0u8; al_size];
 
@@ -228,7 +228,9 @@ impl Table {
                 symbol += 1;
                 if code_len != 0 {
                     prev_code_len = code_len;
-                    space -= 32768usize >> code_len;
+                    space = space
+                        .checked_sub(32768usize >> code_len)
+                        .ok_or(Error::InvalidHuffman)?;
                 }
             } else {
                 let extra_bits = code_len - 14;
@@ -247,17 +249,19 @@ impl Table {
                     repeat -= 2;
                     repeat <<= extra_bits;
                 }
-                repeat += br.read(extra_bits as usize)? as u16 + 3;
+                repeat += br.read(extra_bits as usize)? as usize + 3;
                 let repeat_delta = repeat - old_repeat;
-                if symbol + repeat_delta as usize > al_size {
+                if symbol + repeat_delta > al_size {
                     return Err(Error::InvalidHuffman);
                 }
                 for i in 0..repeat_delta {
-                    code_lengths[symbol + i as usize] = repeat_code_len;
+                    code_lengths[symbol + i] = repeat_code_len;
                 }
-                symbol += repeat_delta as usize;
+                symbol += repeat_delta;
                 if repeat_code_len != 0 {
-                    space -= (repeat_delta as usize) << (15 - repeat_code_len);
+                    space = space
+                        .checked_sub(repeat_delta << (15 - repeat_code_len))
+                        .ok_or(Error::InvalidHuffman)?;
                 }
             }
         }
@@ -459,16 +463,16 @@ pub struct HuffmanCodes {
 
 impl HuffmanCodes {
     pub fn decode(num: usize, br: &mut BitReader) -> Result<HuffmanCodes> {
-        let alphabet_sizes: Vec<u16> = (0..num)
-            .map(|_| Ok(decode_varint16(br)? + 1))
+        let alphabet_sizes: Vec<usize> = (0..num)
+            .map(|_| Ok(decode_varint16(br)? as usize + 1))
             .collect::<Result<_>>()?;
         let max = *alphabet_sizes.iter().max().unwrap();
-        if max as usize > (1 << HUFFMAN_MAX_BITS) {
-            return Err(Error::AlphabetTooLargeHuff(max as usize));
+        if max >= (1 << HUFFMAN_MAX_BITS) {
+            return Err(Error::AlphabetTooLargeHuff(max));
         }
         let tables = alphabet_sizes
             .iter()
-            .map(|sz| Table::decode(*sz as usize, br))
+            .map(|sz| Table::decode(*sz, br))
             .collect::<Result<_>>()?;
         Ok(HuffmanCodes { tables })
     }
@@ -559,5 +563,15 @@ mod test {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 10, 7, 9, 9, 11, 12, 12,
         ];
         assert!(Table::build(TABLE_BITS, &CODE).is_ok());
+    }
+
+    #[test]
+    fn test_huffman_code_lengths_underflow() {
+        let mut br = BitReader::new(&[0xff, 0xff, 0x7f, 0x7a]);
+        let _ = Table::decode_huffman_code_lengths(
+            [2, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 4, 4, 4, 0, 0, 4, 3],
+            1791,
+            &mut br,
+        );
     }
 }

@@ -61,7 +61,9 @@ impl HybridUint {
         let bits_in_token = self.lsb_in_token + self.msb_in_token;
         let nbits =
             self.split_exponent - bits_in_token + ((symbol - self.split_token) >> bits_in_token);
-        // TODO(tirr-c): Assert `nbits <= 31`.
+        // The bitstream is invalid if nbits >= 32. We do not report errors, and just pretend we
+        // decoded a number <32.
+        let nbits = nbits & 31;
         let low = symbol & ((1 << self.lsb_in_token) - 1);
         let symbol_nolow = symbol >> self.lsb_in_token;
         let bits = br.read_optimistic(nbits as usize) as u32;
@@ -78,6 +80,19 @@ impl HybridUint {
             split_exponent,
             msb_in_token,
             lsb_in_token,
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn test_hybrid_uint_decode_invalid() {
+        use super::*;
+        let mut br = BitReader::new(&[10, 75, 10, 75, 168, 139, 132, 255, 244]);
+        br.skip_bits(1).unwrap();
+        if let Ok(uint) = HybridUint::decode(15, &mut br) {
+            uint.read(1022, &mut br);
         }
     }
 }

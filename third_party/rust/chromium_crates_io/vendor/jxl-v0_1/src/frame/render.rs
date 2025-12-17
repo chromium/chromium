@@ -330,7 +330,7 @@ impl Frame {
                 frame_header.size(),
                 &lf_global.color_correlation_params.unwrap_or_default(),
                 decoder_state.high_precision,
-            ))?
+            )?)?
         }
 
         if frame_header.upsampling > 1 {
@@ -362,7 +362,13 @@ impl Frame {
                 ))?;
         }
 
-        let num_regular_output_buffers = frame_header.num_extra_channels as usize + 1;
+        // Calculate the actual number of API-provided buffers based on pixel_format.
+        // This is the number of buffers the caller provides, NOT the theoretical max.
+        // When extra_channel_format[i] is None, that channel doesn't get a buffer.
+        let num_api_buffers = std::iter::once(&pixel_format.color_data_format)
+            .chain(pixel_format.extra_channel_format.iter())
+            .filter(|x| x.is_some())
+            .count();
         assert_eq!(
             pixel_format.extra_channel_format.len(),
             frame_header.num_extra_channels as usize
@@ -375,9 +381,10 @@ impl Frame {
                 pipeline = pipeline.add_save_stage(
                     &[i],
                     Orientation::Identity,
-                    num_regular_output_buffers + i,
+                    num_api_buffers + i,
                     JxlColorType::Grayscale,
                     JxlDataFormat::f32(),
+                    false,
                 )?;
             }
         }
@@ -386,9 +393,10 @@ impl Frame {
                 pipeline = pipeline.add_save_stage(
                     &[i],
                     Orientation::Identity,
-                    num_regular_output_buffers + i,
+                    num_api_buffers + i,
                     JxlColorType::Grayscale,
                     JxlDataFormat::f32(),
+                    false,
                 )?;
             }
         }
@@ -437,9 +445,10 @@ impl Frame {
                 pipeline = pipeline.add_save_stage(
                     &[i],
                     Orientation::Identity,
-                    num_regular_output_buffers + i,
+                    num_api_buffers + i,
                     JxlColorType::Grayscale,
                     JxlDataFormat::f32(),
+                    false,
                 )?;
             }
         }
@@ -492,6 +501,11 @@ impl Frame {
                 pipeline = pipeline
                     .add_inplace_stage(ToLinearStage::new(0, output_color_info.tf.clone()))?;
             }
+            // Determine if we need to fill opaque alpha:
+            // - color_type requests alpha (has_alpha() is true)
+            // - but no actual alpha channel exists in the image (alpha_in_color is None)
+            let fill_opaque_alpha = pixel_format.color_type.has_alpha() && alpha_in_color.is_none();
+
             let color_source_channels: &[usize] =
                 match (pixel_format.color_type.is_grayscale(), alpha_in_color) {
                     (true, None) => &[0],
@@ -508,6 +522,7 @@ impl Frame {
                     0,
                     pixel_format.color_type,
                     *df,
+                    fill_opaque_alpha,
                 )?;
             }
             for i in 0..frame_header.num_extra_channels as usize {
@@ -520,6 +535,7 @@ impl Frame {
                         1 + i,
                         JxlColorType::Grayscale,
                         *df,
+                        false,
                     )?;
                 }
             }

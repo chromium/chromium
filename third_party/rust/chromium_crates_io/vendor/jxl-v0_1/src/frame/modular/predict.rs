@@ -331,7 +331,7 @@ fn add_bits(x: i32) -> i64 {
 }
 
 fn error_weight(x: u32, maxweight: u32) -> u32 {
-    let shift = floor_log2_nonzero(x + 1) as i32 - 5;
+    let shift = floor_log2_nonzero(x as u64 + 1) as i32 - 5;
     if shift < 0 {
         4u32 + maxweight * DIVLOOKUP[x as usize & 63]
     } else {
@@ -340,7 +340,7 @@ fn error_weight(x: u32, maxweight: u32) -> u32 {
 }
 
 fn weighted_average(pixels: &[i64; NUM_PREDICTORS], weights: &mut [u32; NUM_PREDICTORS]) -> i64 {
-    let log_weight = floor_log2_nonzero(weights.iter().fold(0u32, |sum, el| sum + *el));
+    let log_weight = floor_log2_nonzero(weights.iter().fold(0u64, |sum, el| sum + *el as u64));
     let weight_sum = weights.iter_mut().fold(0, |sum, el| {
         *el >>= log_weight - 4;
         sum + *el
