@@ -219,6 +219,8 @@ void MostVisitedHandler::UpdateMostVisitedTile(
 void MostVisitedHandler::OnMostVisitedTilesRendered(
     std::vector<most_visited::mojom::MostVisitedTilePtr> tiles,
     double time) {
+  // Update staleness info on tiles rendered.
+  UpdateShortcutsStaleness(profile_);
   for (size_t i = 0; i < tiles.size(); i++) {
     logger_.LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
   }
