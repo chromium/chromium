@@ -14,6 +14,7 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
@@ -635,15 +636,7 @@ TEST_F(PasswordManagerViewControllerTest,
 
 // Tests that opening the PasswordManagerViewController in search mode shows the
 // expected content.
-// TODO(crbug.com/437314312): Deflake the test.
-TEST_F(PasswordManagerViewControllerTest, FLAKY_TestOpenInSearchMode) {
-  // TODO(crbug.com/437314312): Re-enable on device.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    return;
-  }
-#endif
-
+TEST_F(PasswordManagerViewControllerTest, TestOpenInSearchMode) {
   // Call `settingsWillBeDismissed` on the initial view controller so that its
   // observers are reset.
   [GetPasswordManagerViewController() settingsWillBeDismissed];
@@ -674,8 +667,9 @@ TEST_F(PasswordManagerViewControllerTest, FLAKY_TestOpenInSearchMode) {
 
   // Verify that the search controller is active and that the content of table
   // view model is as expected in search mode.
-  RunUntilIdle();
-  EXPECT_TRUE(passwords_controller.navigationItem.searchController.active);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return passwords_controller.navigationItem.searchController.active;
+  }));
   EXPECT_EQ(1, [[passwords_controller tableViewModel] numberOfSections]);
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierSavedPasswords]);
