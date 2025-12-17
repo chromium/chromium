@@ -11,12 +11,13 @@ from contextlib import contextmanager
 from typing import Optional
 
 from chrome.test.variations.drivers import DriverFactory
-from chrome.test.variations.test_utils.helper import timeout
+from chrome.test.variations.test_utils.helper import timeout, retry
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
 
 _DRIVER_CREATION_TIMEOUT_SEC = 30
+_DRIVER_CREATION_RETRY_COUNT = 3
 
 @attr.attrs()
 class DesktopDriverFactory(DriverFactory):
@@ -24,6 +25,7 @@ class DesktopDriverFactory(DriverFactory):
   channel: Optional[str] = attr.attrib()
   crash_dump_dir: Optional[str] = attr.attrib()
 
+  @retry(_DRIVER_CREATION_RETRY_COUNT)
   @timeout(_DRIVER_CREATION_TIMEOUT_SEC)
   def _get_driver(self, options):
     return webdriver.Chrome(service=self.get_driver_service(), options=options)
