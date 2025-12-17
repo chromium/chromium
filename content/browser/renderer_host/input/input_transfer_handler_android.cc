@@ -258,10 +258,29 @@ const viz::VizTouchState* InputTransferHandlerAndroid::GetVizTouchState()
                             : nullptr;
 }
 
+void InputTransferHandlerAndroid::EmitSequenceDroppedReasonTraceEvent(
+    InputOnVizSequenceDroppedReason reason) {
+  TRACE_EVENT_INSTANT(
+      "input,input.scrolling", "SequenceDropped",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* transfer_handler = event->set_input_transfer_handler();
+        int dropped_reason_int = static_cast<int>(reason);
+        // Increment by 1 to convert from histogram to proto enum. The
+        // perfetto's InputOnVizSequenceDroppedReason proto enum values are
+        // incremented by 1 to leave 0 value for unknown/unset field.
+        transfer_handler->set_browser_sequence_dropped_reason(
+            static_cast<perfetto::protos::pbzero::InputTransferHandler::
+                            InputOnVizSequenceDroppedReason>(
+                dropped_reason_int + 1));
+      });
+}
+
 void InputTransferHandlerAndroid::OnStartDroppingSequence(
     const ui::MotionEventAndroid& event,
     InputOnVizSequenceDroppedReason reason) {
   CHECK_EQ(handler_state_, HandlerState::kIdle);
+  EmitSequenceDroppedReasonTraceEvent(reason);
   base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram, reason);
   handler_state_ = HandlerState::kDroppingCurrentSequence;
   DropCurrentSequence(event);
@@ -319,9 +338,10 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
   if (event.GetAction() == ui::MotionEvent::Action::UP) {
     // The touch sequence transferred by system was probably a different one
     // than the one Chrome requested for.
-    base::UmaHistogramEnumeration(
-        kTouchSequenceDroppedReasonHistogram,
-        InputOnVizSequenceDroppedReason::kAndroidOSTransferredANewSequence);
+    constexpr InputOnVizSequenceDroppedReason reason =
+        InputOnVizSequenceDroppedReason::kAndroidOSTransferredANewSequence;
+    EmitSequenceDroppedReasonTraceEvent(reason);
+    base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram, reason);
     base::UmaHistogramCustomCounts(
         kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
         kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);

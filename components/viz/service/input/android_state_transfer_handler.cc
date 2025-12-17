@@ -32,7 +32,9 @@ enum class VizSequenceDroppedReason {
   kMaxValue = kOlderSequenceInQueue,
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason)
+// LINT.ThenChange(
+//     //tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason,
+//     //base/tracing/protos/chrome_track_event.proto:VizSequenceDroppedReason)
 
 // LINT.IfChange(DroppedSequenceEventAndDownTimeDelta)
 
@@ -268,9 +270,25 @@ void AndroidStateTransferHandler::MaybeDropEventsFromEarlierSequences(
         AMotionEvent_getAction(events_buffer_.front().a_input_event()) &
         AMOTION_EVENT_ACTION_MASK;
     if (action == AMOTION_EVENT_ACTION_DOWN) {
+      constexpr VizSequenceDroppedReason reason =
+          VizSequenceDroppedReason::kOlderSequenceInQueue;
+      TRACE_EVENT_INSTANT(
+          "input,input.scrolling", "SequenceDropped",
+          [&](perfetto::EventContext ctx) {
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* transfer_handler = event->set_input_transfer_handler();
+            int dropped_reason_int = static_cast<int>(reason);
+            // Increment by 1 to convert from histogram to proto enum. The
+            // perfetto's VizSequenceDroppedReason proto enum values are
+            // incremented by 1 to leave 0 value for unknown/unset field.
+            transfer_handler->set_viz_sequence_dropped_reason(
+                static_cast<perfetto::protos::pbzero::InputTransferHandler::
+                                VizSequenceDroppedReason>(dropped_reason_int +
+                                                          1));
+          });
       base::UmaHistogramEnumeration(
-          "Android.InputOnViz.Viz.SequenceDroppedReason",
-          VizSequenceDroppedReason::kOlderSequenceInQueue);
+          "Android.InputOnViz.Viz.SequenceDroppedReason", reason);
       const int64_t event_time_nanos =
           AMotionEvent_getEventTime(events_buffer_.front().a_input_event());
       const int64_t down_time_nanos =
