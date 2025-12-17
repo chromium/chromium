@@ -3180,7 +3180,6 @@ crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixe
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-006.html [ Failure ]
 crbug.com/469481567 external/wpt/css/css-text-decor/text-decoration-thickness-length-rounding-002.html [ Failure ]
 crbug.com/469467862 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-002.html [ Pass Timeout ]
-crbug.com/469470528 external/wpt/digital-credentials/get.tentative.https.html [ Pass Timeout ]
 crbug.com/469460898 external/wpt/editing/run/delete.html?7001-last [ Crash Failure Timeout ]
 crbug.com/469467863 [ Win ] external/wpt/resource-timing/idlharness.any.html [ Pass Timeout ]
 crbug.com/469481625 external/wpt/webrtc/RTCPeerConnection-remote-track-properties.https.html [ Failure ]
