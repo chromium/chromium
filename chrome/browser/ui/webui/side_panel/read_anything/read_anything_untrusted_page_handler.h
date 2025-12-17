@@ -156,6 +156,7 @@ class ReadAnythingUntrustedPageHandler :
   bool CheckForPdfContentAfterLoad();
 
   // read_anything::mojom::UntrustedPageHandler:
+  void GetPresentationState() override;
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
@@ -266,6 +267,8 @@ class ReadAnythingUntrustedPageHandler :
   void SetLanguageCode(const std::string& code);
 
   void SetUpPdfObserver();
+
+  void OnGetPresentationState();
 
   void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 

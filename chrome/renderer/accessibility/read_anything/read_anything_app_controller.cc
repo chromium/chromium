@@ -1639,28 +1639,17 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
 
 // TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
 // longer flag-guarded code.
-void ReadAnythingAppController::SendGetPresentationStateRequest() {
+void ReadAnythingAppController::SendGetPresentationStateRequest() const {
   if (features::IsImmersiveReadAnythingEnabled()) {
-    // TODO (crbug.com/460774262): Make mojo call to untrusted page handler
-    // requesting presentation state.
+    page_handler_->GetPresentationState();
   }
 }
 
-// TODO (crbug.com/460774262): Adjust OnGetPresentationState to use
-// ReadAnythingPresentationState from mojom file instead of std::string.
 void ReadAnythingAppController::OnGetPresentationState(
-    std::string presentation_state) {
-  ReadAnythingPresentationState state_enum =
-      ReadAnythingPresentationState::kUndefined;
-  if (presentation_state == "kHidden") {
-    state_enum = ReadAnythingPresentationState::kHidden;
-  } else if (presentation_state == "kInSidePanel") {
-    state_enum = ReadAnythingPresentationState::kInSidePanel;
-  } else if (presentation_state == "kInImmersiveOverlay") {
-    state_enum = ReadAnythingPresentationState::kInImmersiveOverlay;
-  }
+    read_anything::mojom::ReadAnythingPresentationState presentation_state) {
   ExecuteJavaScript("chrome.readingMode.onPresentationStateReceived(" +
-                    base::ToString(static_cast<int>(state_enum)) + ");");
+                    base::ToString(static_cast<int>(presentation_state)) +
+                    ");");
 }
 
 void ReadAnythingAppController::SendGetVoicePackInfoRequest(

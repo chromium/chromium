@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -90,17 +91,7 @@ class ReadAnythingController : public TabStripModelObserver {
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
   ~ReadAnythingController() override;
 
-  // Represents who owns the Reading Mode WebUI
-  enum class PresentationState {
-    kUndefined,  // The WebUI doesn't exist yet.
-    kInactive,  // The WebUI exists but is hosted by the ReadAnythingController,
-                // not by a view.
-    kInSidePanel,  // The WebUI is hosted by the Side Panel. Does not mean that
-                   // it's necessarily showing yet in the Side Panel.
-    kInImmersiveOverlay,  // The WebUI is hosted by the ImmersiveOverlay. Does
-                          // not mean that it's necessarily showing yet in the
-                          // overlay.
-  };
+  using PresentationState = read_anything::mojom::ReadAnythingPresentationState;
 
   ReadAnythingController(tabs::TabInterface* tab,
                          SidePanelRegistry* side_panel_registry);

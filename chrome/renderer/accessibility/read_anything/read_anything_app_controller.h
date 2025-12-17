@@ -156,7 +156,9 @@ class ReadAnythingAppController
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
-  void OnGetPresentationState(std::string presentation_state);
+  void OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState presentation_state)
+      override;
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
   void OnReadingModeHidden(bool tab_active) override;
@@ -259,7 +261,7 @@ class ReadAnythingAppController
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
   // Will only return a state if IsImmersiveReadAnythingEnabled() is true.
   // Returns the presentation through the OnGetPresentationState callback.
-  void SendGetPresentationStateRequest();
+  void SendGetPresentationStateRequest() const;
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
   void SendGetVoicePackInfoRequest(const std::string& language) const;
   void SendInstallVoicePackRequest(const std::string& language) const;

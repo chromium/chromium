@@ -27,6 +27,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -80,6 +81,7 @@ using ash::language_packs::LanguagePackManager;
 using content::TtsController;
 using read_anything::mojom::ErrorCode;
 using read_anything::mojom::InstallationState;
+using read_anything::mojom::ReadAnythingPresentationState;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
@@ -614,6 +616,30 @@ void ReadAnythingUntrustedPageHandler::SendNextLanguageRequest() {
   }
 }
 #endif
+
+// Will only return a valid state if IsImmersiveReadAnythingEnabled() is true,
+// otherwise do nothing.
+// TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
+// longer flag-guarded code.
+void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    content::WebContents* main_web_contents = main_observer_->web_contents();
+    CHECK(main_web_contents);
+
+    tabs::TabInterface* tab =
+        tabs::TabInterface::GetFromContents(main_web_contents);
+    CHECK(tab);
+
+    auto* ra_controller = ReadAnythingController::From(tab);
+    CHECK(ra_controller);
+
+    page_->OnGetPresentationState(ra_controller->GetPresentationState());
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::GetPresentationState() {
+  OnGetPresentationState();
+}
 
 void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
     read_anything::mojom::VoicePackInfoPtr info) {

@@ -117,6 +117,10 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void,
               OnGetVoicePackInfo,
               (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
+  MOCK_METHOD(
+      void,
+      OnGetPresentationState,
+      (read_anything::mojom::ReadAnythingPresentationState presentation_state));
 #if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnDeviceLocked, ());
 #else
@@ -1712,6 +1716,23 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return !HasAudio(); }));
   ASSERT_FALSE(HasAudio());
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       GetPresentationState) {
+  if (IsImmersiveEnabled()) {
+    base::RunLoop run_loop;
+    handler_ = CreateHandler();
+
+    EXPECT_CALL(
+        page_,
+        OnGetPresentationState(
+            read_anything::mojom::ReadAnythingPresentationState::kUndefined))
+        .WillOnce([&]() { run_loop.Quit(); });
+
+    handler_->GetPresentationState();
+    run_loop.Run();
+  }
 }
 
 }  // namespace

@@ -35,6 +35,18 @@ enum ErrorCode {
   [MinVersion=2] kNotReached = 6,
 };
 
+// Represents who owns the Reading Mode WebUI
+enum ReadAnythingPresentationState {
+    kUndefined = 0, // The WebUI doesn't exist yet.
+    kInactive = 1,  // The WebUI exists but is hosted by the
+                    // ReadAnythingController, not by a view.
+    kInSidePanel = 2, // The WebUI is hosted by the Side Panel. Does not mean
+                      // that it's necessarily showing yet in the Side Panel.
+    kInImmersiveOverlay = 3, // The WebUI is hosted by the ImmersiveOverlay.
+                             // Does not mean that it's necessarily showing yet
+                             // in the overlay.
+};
+
 union VoicePackInstallationState {
   InstallationState installation_state;
   ErrorCode error_code;
@@ -140,6 +152,11 @@ interface UntrustedPageHandler {
   // phrase-based highlighting. May be null if the model file could not be
   // loaded.
   GetDependencyParserModel() => (mojo_base.mojom.File? model_file);
+
+  // Called by the renderer to get the current ReadingMode state from
+  // ReadAnythingController. The response for this call comes via
+  // UntrustedPage::OnGetPresentationState.
+  GetPresentationState();
 
   // Called by the renderer to see if a voice is installed, or being installed.
   // The response for this call comes via UntrustedPage::OnGetVoicePackInfo.
@@ -269,6 +286,10 @@ interface UntrustedPage {
   AccessibilityEventReceived(ax.mojom.AXTreeID tree_id,
                              array<ax.mojom.AXTreeUpdate> updates,
                              array<ax.mojom.AXEvent> events);
+
+  // Send ReadAnything Presentation state to the WebUI. We can then adjust the
+  // UI based on received presentation state.
+  OnGetPresentationState(ReadAnythingPresentationState presentation_state);
 
   // Send a voice pack status change notification to the WebUI. The WebUI can
   // then show informational or error messages depending on the status.
