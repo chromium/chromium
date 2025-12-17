@@ -1074,6 +1074,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       std::make_unique<ash::UserLoginPermissionTracker>(
           ash::CrosSettings::Get());
 
+  browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
+
   // NOTE: Calls ChromeBrowserMainParts::PreProfileInit() which calls
   // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which initializes
   // `Shell`.
@@ -1289,9 +1291,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Create cros_healthd data collector.
     cros_healthd_data_collector_ =
         std::make_unique<cros_healthd::internal::DataCollector>();
-
-    // Create the BrowserController instance.
-    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
     // Create the service connection to CrosHealthd platform service instance.
     cros_healthd::ServiceConnection::GetInstance();
