@@ -536,15 +536,10 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable-hdpi/omnibox_https_valid_lock.png",
-      "android/java/res/drawable-hdpi/omnibox_info.png",
       "android/java/res/drawable-mdpi/omnibox_https_valid_lock.png",
-      "android/java/res/drawable-mdpi/omnibox_info.png",
       "android/java/res/drawable-xhdpi/omnibox_https_valid_lock.png",
-      "android/java/res/drawable-xhdpi/omnibox_info.png",
       "android/java/res/drawable-xxhdpi/omnibox_https_valid_lock.png",
-      "android/java/res/drawable-xxhdpi/omnibox_info.png",
       "android/java/res/drawable-xxxhdpi/omnibox_https_valid_lock.png",
-      "android/java/res/drawable-xxxhdpi/omnibox_info.png",
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
       "android/java/res/drawable/action_reviews.xml",

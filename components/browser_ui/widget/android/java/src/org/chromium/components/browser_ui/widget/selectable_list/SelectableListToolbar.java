@@ -50,7 +50,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -830,13 +829,12 @@ public class SelectableListToolbar<E> extends Toolbar
         if (infoMenuItem != null) {
             if (mShowInfoIcon) {
                 Drawable iconDrawable =
-                        TintedDrawable.constructTintedDrawable(
+                        UiUtils.getTintedDrawable(
                                 getContext(),
-                                R.drawable.btn_info,
+                                R.drawable.ic_info_24dp,
                                 infoShowing
                                         ? R.color.default_icon_color_accent1_tint_list
                                         : R.color.default_icon_color_secondary_tint_list);
-
                 infoMenuItem.setIcon(iconDrawable);
             }
 

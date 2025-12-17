@@ -202,6 +202,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_incognito_circle_fill_24dp.xml",
     "java/res/drawable/ic_incognito_fill_18dp.xml",
     "java/res/drawable/ic_incognito_fill_24dp.xml",
+    "java/res/drawable/ic_info_24dp.xml",
     "java/res/drawable/ic_info_outline_grey_24dp.xml",
     "java/res/drawable/ic_keep_24dp.xml",
     "java/res/drawable/ic_keep_off_24dp.xml",

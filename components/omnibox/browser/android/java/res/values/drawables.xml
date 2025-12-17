@@ -10,4 +10,5 @@ found in the LICENSE file.
     <drawable name="omnibox_https_valid_page_info">
         @drawable/ic_settings_tune_24dp
     </drawable>
+    <drawable name="omnibox_info">@drawable/ic_info_24dp</drawable>
 </resources>
