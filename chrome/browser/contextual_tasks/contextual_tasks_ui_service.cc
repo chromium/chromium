@@ -81,6 +81,35 @@ base::Uuid GetTaskIdFromHostURL(const GURL& url) {
   net::GetValueForKeyInQuery(url, kTaskQueryParam, &task_id);
   return base::Uuid::ParseLowercase(task_id);
 }
+
+// LINT.IfChange(EntrypointSource)
+
+enum class EntrypointSource {
+  kFromWeb = 0,
+  kFromOmnibox = 1,
+  kFromNewTabPage = 2,
+
+  kMaxValue = kFromNewTabPage,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:EntrypointSource)
+
+EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
+    contextual_search::ContextualSearchSource source) {
+  switch (source) {
+    case contextual_search::ContextualSearchSource::kOmnibox:
+      return EntrypointSource::kFromOmnibox;
+    case contextual_search::ContextualSearchSource::kNewTabPage:
+      return EntrypointSource::kFromNewTabPage;
+    case contextual_search::ContextualSearchSource::kLens:
+    case contextual_search::ContextualSearchSource::kContextualTasks:
+      // These shouldn't happen but if they do - just fall through to say it's
+      // from web.
+    case contextual_search::ContextualSearchSource::kUnknown:
+      return EntrypointSource::kFromWeb;
+  }
+}
+
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -105,10 +134,14 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // propagate context from the source WebUI.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
+  contextual_search::ContextualSearchSource source =
+      contextual_search::ContextualSearchSource::kUnknown;
   if (source_tab) {
     auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
         source_tab->GetContents());
     if (helper && helper->session_handle()) {
+      source = helper->session_handle()->GetMetricsRecorder()->source();
+
       auto* service =
           ContextualSearchServiceFactory::GetForProfile(profile_.get());
       if (service) {
@@ -121,6 +154,9 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
       }
     }
   }
+  base::UmaHistogramEnumeration(
+      "ContextualTasks.AiPage.NavigationInterceptionSource",
+      ConvertContextualSearchSourceToEntrypointSource(source));
 
   // Create a task for the URL that was just intercepted.
   ContextualTask task = context_controller_->CreateTaskFromUrl(url);

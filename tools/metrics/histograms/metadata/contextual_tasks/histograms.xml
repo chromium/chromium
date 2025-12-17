@@ -44,6 +44,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.AiPage.NavigationInterceptionSource"
+    enum="ContextualTasksEntrypointSource" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a navigation to an AI page is intercepted in the
+    contextual tasks framework. Records the source of the initial entrypoint.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.AiResponse.UserAction.LinkClicked.{ContextualTasksUiSurface}"
     enum="Boolean" expires_after="2026-03-22">

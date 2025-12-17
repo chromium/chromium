@@ -93,6 +93,7 @@ class ContextualSearchMetricsRecorder {
   // Maps contextual search sources to its string version for histogram naming.
   static std::string ContextualSearchSourceToString(
       ContextualSearchSource source);
+  ContextualSearchSource source() const { return source_; }
   // Maps submission types to its string version for histogram naming.
   std::string SubmissionTypeToString(SubmissionType submission_type);
 
@@ -140,6 +141,7 @@ class ContextualSearchMetricsRecorder {
   void FinalizeSessionMetrics();
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
+  ContextualSearchSource source_;
   std::string metrics_suffix_;
   std::unique_ptr<SessionMetrics> session_metrics_;
   SessionState session_state_ = SessionState::kNone;

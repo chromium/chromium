@@ -67,7 +67,8 @@ SessionMetrics::~SessionMetrics() = default;
 
 ContextualSearchMetricsRecorder::ContextualSearchMetricsRecorder(
     ContextualSearchSource source)
-    : metrics_suffix_(ContextualSearchSourceToString(source)),
+    : source_(source),
+      metrics_suffix_(ContextualSearchSourceToString(source)),
       session_metrics_{std::make_unique<SessionMetrics>()} {}
 
 ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
