@@ -1960,40 +1960,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Used to test \"New\" Badge logic.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistanceFileAgent,
-      user_education::Metadata(132, "wolfi@chromium.org, kimanh@chromium.org",
-                               "Shown in the Sources panel in the AI menu item "
-                               "when opening the context menu of a file.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistanceNetworkAgent,
-      user_education::Metadata(
-          132, "wolfi@chromium.org, kimanh@chromium.org",
-          "Shown in the Network panel in the AI menu item "
-          "when opening the context menu of a network request.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistancePerformanceAgent,
-      user_education::Metadata(
-          132, "jacktfranklin@chromium.org, kimanh@chromium.org",
-          "Shown in the Performance panel in the AI menu item "
-          "when opening the context menu of a main thread task.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsFreestyler,
-      user_education::Metadata(
-          131, "wolfi@chromium.org, kimanh@chromium.org",
-          "Shown in the Elements panel in the AI menu item "
-          "when opening the context menu of a DOM element.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiSubmenuPrompts,
-      user_education::Metadata(
-          142, "kprokopenko@chromium.org, kimanh@chromium.org",
-          "Shows AI submenu prompts in the AI menu item.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiDebugWithAi,
-      user_education::Metadata(
-          142, "kprokopenko@chromium.org, kimanh@chromium.org",
-          "Shows Debug with AI menu item for AI assistance.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableCompose,
       user_education::Metadata(124, "dewittj@chromium.org",
                                "Shown in Help Me Write context menu item.", {},
