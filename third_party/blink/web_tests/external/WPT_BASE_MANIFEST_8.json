@@ -416180,6 +416180,12 @@
        "7ce6088e716a8b151f1c835317da0f9ab358f6b1",
        []
       ],
+      "browser-state": {
+       "WEB_FEATURES.yml": [
+        "7af0f2c23d3669c5a5b3cb88c1a9646117b9e1de",
+        []
+       ]
+      },
       "changestonetworkingmodel": {
        "original-id.json": [
         "2f77367c8f9b21fee27e16f53212bdd3e6aa628d",
@@ -435809,7 +435815,7 @@
      []
     ],
     "device-memory.idl": [
-     "e8197e8497d2ec48e1507284b4f823de820204f7",
+     "62297835363575252666acafeae047341929524e",
      []
     ],
     "device-posture.idl": [
@@ -435873,7 +435879,7 @@
      []
     ],
     "fetch.idl": [
-     "ab87c008d225ea5ac9abda83b57bb326644fe1f4",
+     "3d60842c4828ee058384a0db7741ba4e53ab807d",
      []
     ],
     "fido.idl": [
@@ -436609,7 +436615,7 @@
      []
     ],
     "webtransport.idl": [
-     "d14d923661af6a682f20f221c106099836150250",
+     "54806cf150210aa200bc37b60636039c3c0ee3fc",
      []
     ],
     "webusb.idl": [
@@ -447345,6 +447351,14 @@
      ],
      "cache-add.https.any.worker-expected.txt": [
       "3894a36a16db1e73335689ee0e26833507ac1087",
+      []
+     ],
+     "cache-api-nested-worker1.js": [
+      "1a3c7b7c646edd911bcae5b14d5df30ee8403f81",
+      []
+     ],
+     "cache-api-nested-worker2.js": [
+      "0af8c3eebfeffb8eab2b33e1b78083f3fa9f1031",
       []
      ],
      "cache-keys-attributes-for-service-worker.https-expected.txt": [
@@ -459399,6 +459413,16 @@
          []
         ]
        },
+       "set_touch_override": {
+        "__init__.py": [
+         "c383898198e79bdc1375179072b719a75d251f02",
+         []
+        ],
+        "conftest.py": [
+         "f47549a94aa5ce8c628f2f01601c3c548c58b72e",
+         []
+        ]
+       },
        "set_user_agent_override": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -464723,7 +464747,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "84fba9b1e867e488c43f9240bea0a02ae686d9b4",
+     "f7816140212c78385a784d69a2ceb8f2afcb025f",
      []
     ],
     "Worker-creation-happens-in-parallel.https-expected.txt": [
@@ -465284,7 +465308,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "f0bcafaf63139b5478c50b1769315af057c29fc2",
+        "b34fa8a3184091ab48447444ee6d169869b4f432",
         []
        ],
        "language.js": [
@@ -465537,6 +465561,10 @@
      ]
     },
     "non-automated": {
+     "WEB_FEATURES.yml": [
+      "332b4c56f434a2a4fc230be0af948e964753f509",
+      []
+     ],
      "infinite-nested.html": [
       "3ff3edb35348937ad85a7f4fc8f3cbe9f76ef669",
       []
@@ -670148,6 +670176,13 @@
          {}
         ]
        ],
+       "stream-append-has-invalidation.html": [
+        "e31a3b95243df0a1888670d4a73193ac19fa7343",
+        [
+         null,
+         {}
+        ]
+       ],
        "stream-append-html-unsafe.html": [
         "92d7f31519b8ff345bd74340f321aa8d8cad0f40",
         [
@@ -742120,6 +742155,13 @@
         ],
         "timeout": "long"
        }
+      ]
+     ],
+     "cache-api-nested-worker.https.html": [
+      "769200f66aa377840ba9c827d374c9cfaff7ec60",
+      [
+       null,
+       {}
       ]
      ],
      "cache-delete.https.any.js": [
@@ -879275,6 +879317,36 @@
         ],
         "user_contexts.py": [
          "e705c0ff5b870b38cb7496582aebf01cdc6d12e2",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "set_touch_override": {
+        "contexts.py": [
+         "7712cf1e6dbee777591e9d86b3874bf657a188f2",
+         [
+          null,
+          {}
+         ]
+        ],
+        "global.py": [
+         "074de223d574a67f4f39260c452d0274b3e7bd45",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "8ff0a96d4157d4c742e439eba5e5b153af37a3f7",
+         [
+          null,
+          {}
+         ]
+        ],
+        "user_contexts.py": [
+         "877f179a66d04cd0cd8724fd12952ff7767a06cc",
          [
           null,
           {}
