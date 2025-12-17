@@ -23,10 +23,9 @@
   --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
-  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
-  --contextual-entrypoint-and-carousel-context-menu-container-inline-start: 0px;
 
   font-size: var(--omnibox-font-size);
 
@@ -54,8 +53,11 @@
 }
 
 contextual-entrypoint-and-carousel {
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
   --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
   --composebox-lens-search-button-text-color: var(--color-omnibox-text);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
 }
 
@@ -69,15 +71,6 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
  */
 :host([can-show-secondary-side][has-secondary-side]) {
   --cr-searchbox-secondary-side-display: block;
-}
-
-#addContextButton {
-  --cr-button-text-color: var(--color-omnibox-context-entrypoint-text);
-  --cr-hover-background-color: var(--color-omnibox-action-icon-hover);
-  --cr-icon-button-fill-color: var(--cr-button-text-color);
-  margin-inline-start: 6px;
-  margin-bottom: 10px;
-  border: initial;
 }
 
 /**

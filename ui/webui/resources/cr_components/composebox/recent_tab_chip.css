@@ -24,7 +24,7 @@
   padding: 6px 8px;
   --cr-button-border-color:
       var(--color-composebox-recent-tab-chip-outline);
-  --cr-button-text-color: var(--color-composebox-upload-button);
+  --cr-button-text-color: var(--color-composebox-context-entrypoint-text);
   --cr-button-disabled-text-color:
       var(--color-composebox-context-entrypoint-text-disabled);
   --cr-hover-background-color:
