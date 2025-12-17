@@ -79,9 +79,7 @@ import java.util.function.BooleanSupplier;
 public class SettingsSearchCoordinator {
     private static final String TAG = "SettingsSearch";
 
-    // Tag for Fragment backstack entry loading the search results into the display fragment.
-    // Popping the entry means we are transitioning from result -> search state.
-    private static final String FRAGMENT_TAG_RESULT = "enter_result_settings";
+    public static final String FRAGMENT_TAG_RESULT = MainSettings.FRAGMENT_TAG_RESULT;
 
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;

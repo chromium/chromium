@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,16 +98,29 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return new MainSettings();
     }
 
+    // Fragment data passed as extras of Intent via SettingsNavigation.
+    private static class FragmentData {
+        public final Fragment fragment;
+        public final boolean addToBackStack;
+        public final @Nullable String tag;
+
+        FragmentData(Fragment fragment, boolean addToBackStack, @Nullable String tag) {
+            this.fragment = fragment;
+            this.addToBackStack = addToBackStack;
+            this.tag = tag;
+        }
+    }
+
     @Override
     public @Nullable Fragment onCreateInitialDetailFragment() {
         // Look at if there is a pending Intent and use it if it is.
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
-        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
-            if (!(processed.first instanceof MainSettings)) {
+            if (!(processed.fragment instanceof MainSettings)) {
                 getSlidingPaneLayout().openPane();
             }
-            return processed.first;
+            return processed.fragment;
         }
         return super.onCreateInitialDetailFragment();
     }
@@ -129,16 +141,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     @Override
     public void onResume() {
         // Update the detail pane, if the intent is specified.
-        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
             var fragmentManager = getChildFragmentManager();
 
             // Opening a new page. If we already have back stack entries,
             // and the intent does NOT says the fragment transaction should be added
-            // to the back stack (checked by processed.second), clean it up for
+            // to the back stack (checked by processed.addToBackStack), clean it up for
             // - back button behavior
             // - detailed page title
-            if (!processed.second) {
+            if (!processed.addToBackStack) {
                 if (fragmentManager.getBackStackEntryCount() > 0) {
                     var entry = fragmentManager.getBackStackEntryAt(0);
                     fragmentManager.popBackStack(
@@ -150,9 +162,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             var transaction = fragmentManager.beginTransaction();
             transaction
                     .setReorderingAllowed(true)
-                    .replace(R.id.preferences_detail, processed.first);
-            if (processed.second) {
-                transaction.addToBackStack(null);
+                    .replace(R.id.preferences_detail, processed.fragment);
+            if (processed.addToBackStack) {
+                transaction.addToBackStack(processed.tag);
             }
             transaction.commit();
             getSlidingPaneLayout().open();
@@ -182,7 +194,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * @return a pair of processed fragment and whether or not to add the transaction to the back
      *     stack on success. Otherwise, null.
      */
-    private @Nullable Pair<Fragment, Boolean> processPendingFragmentIntent() {
+    private @Nullable FragmentData processPendingFragmentIntent() {
         if (mPendingFragmentIntent == null) {
             return null;
         }
@@ -198,8 +210,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         Bundle arguments = intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
         boolean addToBackStack =
                 intent.getBooleanExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, false);
-        return new Pair<>(
-                Fragment.instantiate(requireActivity(), fragmentName, arguments), addToBackStack);
+        String tag = intent.getStringExtra(SettingsActivity.EXTRA_FRAGMENT_TAG);
+        return new FragmentData(
+                Fragment.instantiate(requireActivity(), fragmentName, arguments),
+                addToBackStack,
+                tag);
     }
 
     @Override

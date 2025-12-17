@@ -121,6 +121,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
     static final String EXTRA_SHOW_FRAGMENT_STANDALONE = "show_fragment_standalone";
     static final String EXTRA_ADD_TO_BACK_STACK = "add_to_back_stack";
+    static final String EXTRA_FRAGMENT_TAG = "fragment_tag";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */
     private static @Nullable SettingsActivity sResumedInstance;

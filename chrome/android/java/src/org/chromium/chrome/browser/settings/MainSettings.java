@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -135,6 +134,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_APPEARANCE = "appearance";
     @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
+
+    // Tag for Fragment backstack entry loading the search results into the display fragment.
+    // Popping the entry means we are transitioning from result -> search state.
+    public static final String FRAGMENT_TAG_RESULT = "enter_result_settings";
 
     public interface Observer {
         /** Called when a preference item is selected. */
@@ -565,15 +568,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     onPreferenceSelected(pref);
                     Context context = getContext();
                     Profile profile = getProfile();
-                    SyncService syncService = SyncServiceFactory.getForProfile(profile);
-                    assumeNonNull(syncService);
-                    if (syncService.isSyncDisabledByEnterprisePolicy()) {
-                        SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
-                    } else {
-                        SettingsNavigation settingsNavigation =
-                                SettingsNavigationFactory.createSettingsNavigation();
-                        settingsNavigation.startSettings(context, ManageSyncSettings.class);
-                    }
+                    openManageSyncPref(context, profile, false, null);
                     return true;
                 });
     }
@@ -583,6 +578,25 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
         return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
+    }
+
+    public static boolean openManageSyncPref(
+            Context context, Profile profile, boolean addToBackStack, @Nullable String tag) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assumeNonNull(syncService);
+        if (syncService.isSyncDisabledByEnterprisePolicy()) {
+            SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
+            return false;
+        } else {
+            var settingsNavigation = SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(
+                    context,
+                    ManageSyncSettings.class,
+                    /* fragmentArgs= */ null,
+                    addToBackStack,
+                    tag);
+            return true;
+        }
     }
 
     private void updateSearchEnginePreference() {
@@ -678,6 +692,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
             MainSettings.showPasswordSettings(context, profile, modalDialogManagerSupplier);
             // Open an external activity. Keep the state as is.
             return false;
+        } else if (key.equals(PREF_MANAGE_SYNC)) {
+            openManageSyncPref(context, profile, true, FRAGMENT_TAG_RESULT);
+            return true;
         }
         // TODO(crbug.com/469676538): Handle the rest of preferences.
         return false;
