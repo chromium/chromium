@@ -92,13 +92,13 @@ class TabStateStorageService : public KeyedService,
   void Remove(const TabInterface* tab);
   void Remove(const TabCollection* collection);
 
-  void LoadAllNodes(const std::string& window_tag,
+  void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     LoadDataCallback callback);
 
   void ClearState();
 
-  void ClearWindow(const std::string& window_tag);
+  void ClearWindow(std::string_view window_tag);
 
   // Returns a Java object of the type TabStateStorageService. This is
   // implemented in tab_state_storage_service_android.cc

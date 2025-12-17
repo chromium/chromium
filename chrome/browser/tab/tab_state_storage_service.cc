@@ -5,6 +5,7 @@
 #include "chrome/browser/tab/tab_state_storage_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -193,7 +194,7 @@ void TabStateStorageService::ApplyUpdate(UpdateOperation operation) {
   }
 }
 
-void TabStateStorageService::LoadAllNodes(const std::string& window_tag,
+void TabStateStorageService::LoadAllNodes(std::string_view window_tag,
                                           bool is_off_the_record,
                                           LoadDataCallback callback) {
   auto on_tab_association = base::BindRepeating(
@@ -218,7 +219,7 @@ void TabStateStorageService::ClearState() {
   tab_backend_.ClearAllNodes();
 }
 
-void TabStateStorageService::ClearWindow(const std::string& window_tag) {
+void TabStateStorageService::ClearWindow(std::string_view window_tag) {
   tab_backend_.ClearWindow(window_tag);
 }
 

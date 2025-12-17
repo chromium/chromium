@@ -5,6 +5,7 @@
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -328,7 +329,7 @@ bool TabStateStorageDatabase::CloseTransaction(
 }
 
 std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
-    const std::string& window_tag,
+    std::string_view window_tag,
     bool is_off_the_record,
     std::unique_ptr<StorageLoadedData::Builder> builder) {
   static constexpr char kSelectAllNodesSql[] =
@@ -357,7 +358,7 @@ void TabStateStorageDatabase::ClearAllNodes() {
   delete_statement.Run();
 }
 
-void TabStateStorageDatabase::ClearWindow(const std::string& window_tag) {
+void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
   static constexpr char kDeleteWindowSql[] =
       "DELETE FROM nodes WHERE window_tag = ?";
   sql::Statement delete_statement(

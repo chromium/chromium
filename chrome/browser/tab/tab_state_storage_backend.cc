@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -84,7 +86,7 @@ void TabStateStorageBackend::Update(
 }
 
 void TabStateStorageBackend::LoadAllNodes(
-    const std::string& window_tag,
+    std::string_view window_tag,
     bool is_off_the_record,
     std::unique_ptr<StorageLoadedData::Builder> builder,
     OnStorageLoadedData on_storage_loaded_data) {
@@ -92,7 +94,7 @@ void TabStateStorageBackend::LoadAllNodes(
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
-                     base::Unretained(database_.get()), window_tag,
+                     base::Unretained(database_.get()), std::string(window_tag),
                      is_off_the_record, std::move(builder)),
       base::BindOnce(&TabStateStorageBackend::OnLoadDone,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -105,10 +107,11 @@ void TabStateStorageBackend::ClearAllNodes() {
                                 base::Unretained(database_.get())));
 }
 
-void TabStateStorageBackend::ClearWindow(const std::string& window_tag) {
+void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
-                                base::Unretained(database_.get()), window_tag));
+                                base::Unretained(database_.get()),
+                                std::string(window_tag)));
 }
 
 void TabStateStorageBackend::OnDBReady(bool success) {}

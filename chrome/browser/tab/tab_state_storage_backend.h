@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_BACKEND_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -41,14 +42,14 @@ class TabStateStorageBackend {
 
   using OnStorageLoadedData =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
-  void LoadAllNodes(const std::string& window_tag,
+  void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     std::unique_ptr<StorageLoadedData::Builder> builder,
                     OnStorageLoadedData on_storage_loaded_data);
 
   void ClearAllNodes();
 
-  void ClearWindow(const std::string& window_tag);
+  void ClearWindow(std::string_view window_tag);
 
  private:
   void OnDBReady(bool success);
