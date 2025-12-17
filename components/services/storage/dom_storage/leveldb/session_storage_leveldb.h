@@ -88,6 +88,8 @@ class SessionStorageLevelDB : public DomStorageDatabase {
 
   // Implement the `DomStorageDatabase` interface:
   DomStorageDatabaseLevelDB& GetLevelDB() override;
+  StatusOr<std::map<Key, Value>> ReadMapKeyValues(
+      MapLocator map_locator) override;
   StatusOr<Metadata> ReadAllMetadata() override;
   DbStatus PutMetadata(Metadata metadata) override;
 

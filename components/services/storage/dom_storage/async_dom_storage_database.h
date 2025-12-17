@@ -111,9 +111,15 @@ class AsyncDomStorageDatabase {
   // The functions below use `RunDatabaseTask()` to read and write `database_`
   // through the `DomStorageDatabase` interface. See function comments in
   // `dom_storage_database.h` for more details.
+  using ReadMapKeyValuesCallback = base::OnceCallback<void(
+      StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>)>;
+  void ReadMapKeyValues(DomStorageDatabase::MapLocator map_locator,
+                        ReadMapKeyValuesCallback callback);
+
   using ReadAllMetadataCallback =
       base::OnceCallback<void(StatusOr<DomStorageDatabase::Metadata>)>;
   void ReadAllMetadata(ReadAllMetadataCallback callback);
+
   void PutMetadata(DomStorageDatabase::Metadata metadata,
                    StatusCallback callback);
   void DeleteStorageKeysFromSession(

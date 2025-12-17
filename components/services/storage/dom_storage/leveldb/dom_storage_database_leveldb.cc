@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -216,6 +217,30 @@ DomStorageDatabaseLevelDB::CreateBatchOperation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<DomStorageBatchOperationLevelDB>(
       weak_factory_.GetWeakPtr());
+}
+
+StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+DomStorageDatabaseLevelDB::GetMapKeyValues(KeyView prefix) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_) {
+    return base::unexpected(DbStatus::IOError(kInvalidDatabaseMessage));
+  }
+
+  std::map<Key, Value> entries;
+  DbStatus status = ForEachWithPrefix(
+      db_.get(), prefix,
+      [&](const leveldb::Slice& key, const leveldb::Slice& value) {
+        Key key_bytes_without_prefix =
+            base::ToVector(base::as_byte_span(key).subspan(prefix.size()));
+
+        Value value_bytes = base::ToVector(base::as_byte_span(value));
+        entries.insert(std::make_pair(std::move(key_bytes_without_prefix),
+                                      std::move(value_bytes)));
+      });
+  if (!status.ok()) {
+    return base::unexpected(std::move(status));
+  }
+  return entries;
 }
 
 DbStatus DomStorageDatabaseLevelDB::RewriteDB() {

@@ -92,6 +92,16 @@ void DomStorageDatabase::MapLocator::RemoveSession(
   std::erase(session_ids_, session_id);
 }
 
+DomStorageDatabase::MapLocator DomStorageDatabase::MapLocator::Clone() const {
+  MapLocator clone;
+  clone.session_ids_ = session_ids_;
+  clone.storage_key_ = storage_key_;
+  clone.map_id_ = map_id_;
+  return clone;
+}
+
+DomStorageDatabase::MapLocator::MapLocator() = default;
+
 DomStorageDatabase::SharedMapLocator::SharedMapLocator(MapLocator source)
     : MapLocator(std::move(source)) {}
 

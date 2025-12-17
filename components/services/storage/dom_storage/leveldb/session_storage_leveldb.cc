@@ -118,6 +118,11 @@ DomStorageDatabaseLevelDB& SessionStorageLevelDB::GetLevelDB() {
   return *leveldb_;
 }
 
+StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+SessionStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
+  return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.map_id().value()));
+}
+
 StatusOr<DomStorageDatabase::Metadata>
 SessionStorageLevelDB::ReadAllMetadata() {
   Metadata metadata;

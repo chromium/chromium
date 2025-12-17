@@ -56,6 +56,18 @@ AsyncDomStorageDatabase::~AsyncDomStorageDatabase() {
   DCHECK(committers_.empty());
 }
 
+void AsyncDomStorageDatabase::ReadMapKeyValues(
+    DomStorageDatabase::MapLocator map_locator,
+    ReadMapKeyValuesCallback callback) {
+  RunDatabaseTask(base::BindOnce(
+                      [](DomStorageDatabase::MapLocator map_locator,
+                         DomStorageDatabase& db) {
+                        return db.ReadMapKeyValues(std::move(map_locator));
+                      },
+                      std::move(map_locator)),
+                  std::move(callback));
+}
+
 void AsyncDomStorageDatabase::ReadAllMetadata(
     ReadAllMetadataCallback callback) {
   RunDatabaseTask(base::BindOnce([](DomStorageDatabase& db) {

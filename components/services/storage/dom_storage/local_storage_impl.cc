@@ -113,6 +113,9 @@ class LocalStorageImpl::StorageAreaHolder final
         storage_key_(storage_key),
         area_(context_->database_.get(),
               LocalStorageLevelDB::GetMapPrefix(storage_key_),
+              base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+                  DomStorageDatabase::MapLocator(kLocalStorageSessionId,
+                                                 storage_key_)),
               this,
               createOptions()) {}
 

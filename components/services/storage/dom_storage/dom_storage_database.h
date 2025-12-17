@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -106,7 +107,11 @@ class DomStorageDatabase {
     void AddSession(std::string session_id);
     void RemoveSession(const std::string& session_id);
 
+    MapLocator Clone() const;
+
    private:
+    MapLocator();
+
     std::vector<std::string> session_ids_;
     blink::StorageKey storage_key_;
     std::optional<int64_t> map_id_;
@@ -164,6 +169,10 @@ class DomStorageDatabase {
   // TODO(crbug.com/377242771): Support both SQLite and LevelDB by adding more
   // shared functions to this interface.
   //
+  // Gets an entire map's key/value pairs.
+  virtual StatusOr<std::map<Key, Value>> ReadMapKeyValues(
+      MapLocator map_locator) = 0;
+
   // Get all map locators along with their size and usage. Also gets the next
   // available map id that the database will assign to a newly created map.
   virtual StatusOr<Metadata> ReadAllMetadata() = 0;

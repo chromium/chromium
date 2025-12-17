@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -61,6 +62,10 @@ class DomStorageDatabaseLevelDB
   DbStatus Put(KeyView key, ValueView value);
   StatusOr<std::vector<KeyValuePair>> GetPrefixed(KeyView prefix) const;
   std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
+
+  // Like `GetPrefixed()` above, but returns a map of entries with `prefix`
+  // removed from each key.
+  StatusOr<std::map<Key, Value>> GetMapKeyValues(KeyView prefix);
 
   DbStatus RewriteDB();
 

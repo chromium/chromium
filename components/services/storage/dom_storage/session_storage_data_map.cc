@@ -53,6 +53,7 @@ SessionStorageDataMap::SessionStorageDataMap(
       storage_area_impl_(std::make_unique<StorageAreaImpl>(
           database,
           SessionStorageLevelDB::GetMapPrefix(map_locator_->map_id().value()),
+          map_locator_,
           this,
           GetOptions())),
       storage_area_ptr_(storage_area_impl_.get()) {
@@ -71,6 +72,7 @@ SessionStorageDataMap::SessionStorageDataMap(
       map_locator_(std::move(map_locator)),
       storage_area_impl_(clone_from_data_map_->storage_area()->ForkToNewPrefix(
           SessionStorageLevelDB::GetMapPrefix(map_locator_->map_id().value()),
+          map_locator_,
           this,
           GetOptions())),
       storage_area_ptr_(storage_area_impl_.get()) {

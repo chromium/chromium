@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -51,20 +50,26 @@ StorageAreaImpl::CommitBatch::CommitBatch() = default;
 
 StorageAreaImpl::CommitBatch::~CommitBatch() = default;
 
-StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
-                                 const std::string& prefix,
-                                 Delegate* delegate,
-                                 const Options& options)
+StorageAreaImpl::StorageAreaImpl(
+    AsyncDomStorageDatabase* database,
+    const std::string& prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+    Delegate* delegate,
+    const Options& options)
     : StorageAreaImpl(database,
                       std::vector<uint8_t>(prefix.begin(), prefix.end()),
+                      map_locator,
                       delegate,
                       options) {}
 
-StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
-                                 std::vector<uint8_t> prefix,
-                                 Delegate* delegate,
-                                 const Options& options)
+StorageAreaImpl::StorageAreaImpl(
+    AsyncDomStorageDatabase* database,
+    std::vector<uint8_t> prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+    Delegate* delegate,
+    const Options& options)
     : prefix_(std::move(prefix)),
+      map_locator_(std::move(map_locator)),
       delegate_(delegate),
       database_(database),
       cache_mode_(database ? options.cache_mode : CacheMode::KEYS_AND_VALUES),
@@ -94,7 +99,7 @@ StorageAreaImpl::~StorageAreaImpl() {
 void StorageAreaImpl::InitializeAsEmpty() {
   DCHECK_EQ(map_state_, MapState::UNLOADED);
   map_state_ = MapState::LOADING_FROM_DATABASE;
-  OnMapLoaded(std::vector<DomStorageDatabase::KeyValuePair>());
+  OnMapLoaded(ValueMap());
 }
 
 void StorageAreaImpl::Bind(
@@ -114,19 +119,22 @@ void StorageAreaImpl::Bind(
 
 std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
     const std::string& new_prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
     Delegate* delegate,
     const Options& options) {
   return ForkToNewPrefix(
-      std::vector<uint8_t>(new_prefix.begin(), new_prefix.end()), delegate,
-      options);
+      std::vector<uint8_t>(new_prefix.begin(), new_prefix.end()),
+      std::move(map_locator), delegate, options);
 }
 
 std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
     std::vector<uint8_t> new_prefix,
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
     Delegate* delegate,
     const Options& options) {
   auto forked_area = std::make_unique<StorageAreaImpl>(
-      database_, std::move(new_prefix), delegate, options);
+      database_, std::move(new_prefix), std::move(map_locator), delegate,
+      options);
   // If the source map is empty, don't bother hitting disk.
   if (IsMapLoadedAndEmpty()) {
     forked_area->InitializeAsEmpty();
@@ -594,29 +602,21 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
     return;
   }
 
-  database_->RunDatabaseTask(
-      base::BindOnce(
-          [](const DomStorageDatabase::Key& prefix,
-             DomStorageDatabaseLevelDB& db) { return db.GetPrefixed(prefix); },
-          prefix_),
-      base::BindOnce(&StorageAreaImpl::OnMapLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+  database_->ReadMapKeyValues(map_locator_->Clone(),
+                              base::BindOnce(&StorageAreaImpl::OnMapLoaded,
+                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StorageAreaImpl::OnMapLoaded(
-    StatusOr<std::vector<DomStorageDatabase::KeyValuePair>> data) {
-  DCHECK(keys_values_map_.empty());
-  DCHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
+void StorageAreaImpl::OnMapLoaded(StatusOr<ValueMap> map_from_database) {
+  CHECK(keys_values_map_.empty());
+  CHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
 
   keys_only_map_.clear();
   map_state_ = MapState::LOADED_KEYS_AND_VALUES;
 
   keys_values_map_.clear();
-  if (data.has_value()) {
-    for (DomStorageDatabase::KeyValuePair& entry : *data) {
-      keys_values_map_[base::ToVector(base::span(entry.key).subspan(
-          prefix_.size()))] = std::move(entry.value);
-    }
+  if (map_from_database.has_value()) {
+    keys_values_map_ = *std::move(map_from_database);
   } else {
     // We proceed without using a backing store, nothing will be persisted but
     // the class is functional for the lifetime of the object.

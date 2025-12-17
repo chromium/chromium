@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -921,6 +922,97 @@ TEST_F(LocalStorageLevelDBTest,
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(LocalStorageLevelDBTest, ReadMapKeyValuesWithEmpty) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // An empty database must have no key/value pairs.
+  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
+                                             kFakeUrlStorageKey};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+  EXPECT_EQ(entries.size(), 0u);
+}
+
+TEST_F(LocalStorageLevelDBTest, ReadMapKeyValues) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Add two key/value pairs to a single map.
+  constexpr const char kScriptKey1[] = "key_1";
+  constexpr const char kScriptKey2[] = "key_2";
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*local_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeUrlStorageKey, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kFakeUrlStorageKey, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the two key/value pairs from the database.
+  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
+                                             kFakeUrlStorageKey};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
+TEST_F(LocalStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Create two maps, adding a key/value pair to each map.
+  constexpr const char kScriptKey1[] = "key_1";
+  constexpr const char kScriptKey2[] = "key_2";
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*local_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeUrlStorageKey, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kSecondStorageKey, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the first map's key/value pair.
+  DomStorageDatabase::MapLocator map_locator{kLocalStorageSessionId,
+                                             kFakeUrlStorageKey};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      local_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+
+  // Read the second map's key/value pair.
+  DomStorageDatabase::MapLocator other_map_locator{kLocalStorageSessionId,
+                                                   kSecondStorageKey};
+  ASSERT_OK_AND_ASSIGN(entries, local_storage_leveldb->ReadMapKeyValues(
+                                    std::move(other_map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
 }
 
 }  // namespace storage

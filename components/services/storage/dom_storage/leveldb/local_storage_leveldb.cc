@@ -187,6 +187,13 @@ DomStorageDatabaseLevelDB& LocalStorageLevelDB::GetLevelDB() {
   return *leveldb_;
 }
 
+StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+LocalStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
+  CHECK_EQ(map_locator.session_ids().size(), 1u);
+  CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+  return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.storage_key()));
+}
+
 StatusOr<DomStorageDatabase::Metadata> LocalStorageLevelDB::ReadAllMetadata() {
   ASSIGN_OR_RETURN(
       std::vector<DomStorageDatabase::KeyValuePair> leveldb_metadata_entries,

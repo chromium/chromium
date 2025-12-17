@@ -1093,4 +1093,95 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   ExpectEqualsMapMetadataSpan(metadata.map_metadata, expected_map_metadata);
 }
 
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithEmpty) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // An empty database must have no key/value pairs.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+  EXPECT_EQ(entries.size(), 0u);
+}
+
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValues) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add two key/value pairs to a single map.
+  constexpr const char kScriptKey1[] = "key_1";
+  constexpr const char kScriptKey2[] = "key_2";
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the two key/value pairs from the database.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create two maps, adding a key/value pair to each map.
+  constexpr const char kScriptKey1[] = "key_1";
+  constexpr const char kScriptKey2[] = "key_2";
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kOtherFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the first map's key/value pair.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+
+  // Read the second map's key/value pair.
+  DomStorageDatabase::MapLocator other_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+  ASSERT_OK_AND_ASSIGN(entries, session_storage_leveldb->ReadMapKeyValues(
+                                    std::move(other_map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
 }  // namespace storage

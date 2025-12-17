@@ -121,6 +121,8 @@ class LocalStorageLevelDB : public DomStorageDatabase {
 
   // Implement the `DomStorageDatabase` interface:
   DomStorageDatabaseLevelDB& GetLevelDB() override;
+  StatusOr<std::map<Key, Value>> ReadMapKeyValues(
+      MapLocator map_locator) override;
 
   // Reads the "META:" and "METACCESS" entries from the LevelDB database
   // described above. Parses the following from each entry to create a

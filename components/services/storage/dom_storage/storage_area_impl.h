@@ -90,14 +90,18 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
 
   // |Delegate::OnNoBindings| will be called when this object has no more
   // bindings and all pending modifications have been processed.
-  StorageAreaImpl(AsyncDomStorageDatabase* database,
-                  const std::string& prefix,
-                  Delegate* delegate,
-                  const Options& options);
-  StorageAreaImpl(AsyncDomStorageDatabase* database,
-                  std::vector<uint8_t> prefix,
-                  Delegate* delegate,
-                  const Options& options);
+  StorageAreaImpl(
+      AsyncDomStorageDatabase* database,
+      const std::string& prefix,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+      Delegate* delegate,
+      const Options& options);
+  StorageAreaImpl(
+      AsyncDomStorageDatabase* database,
+      std::vector<uint8_t> prefix,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
+      Delegate* delegate,
+      const Options& options);
 
   StorageAreaImpl(const StorageAreaImpl&) = delete;
   StorageAreaImpl& operator=(const StorageAreaImpl&) = delete;
@@ -120,10 +124,12 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // has been loaded (see initialized()).
   std::unique_ptr<StorageAreaImpl> ForkToNewPrefix(
       const std::string& new_prefix,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       Delegate* delegate,
       const Options& options);
   std::unique_ptr<StorageAreaImpl> ForkToNewPrefix(
       std::vector<uint8_t> new_prefix,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       Delegate* delegate,
       const Options& options);
 
@@ -289,8 +295,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // Then if the |cache_mode_| is keys-only, it unloads the map to the
   // |keys_only_map_| and sets the |map_state_| to LOADED_KEYS_ONLY
   void LoadMap(base::OnceClosure completion_callback);
-  void OnMapLoaded(
-      StatusOr<std::vector<DomStorageDatabase::KeyValuePair>> data);
+  void OnMapLoaded(StatusOr<ValueMap> map_from_database);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
 
@@ -324,7 +329,17 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
                          const ValueMap& map,
                          const KeysOnlyMap& key_only_map);
 
+  // The prefix of the LevelDB keys for this map's key/value pairs.
+  //
+  // TODO(crbug.com/377242771): Remove after fully adopting the
+  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
+  // swappable.
   std::vector<uint8_t> prefix_;
+
+  // Identifies where to read and write this map's key/value pairs in the
+  // database.
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator_;
+
   mojo::ReceiverSet<blink::mojom::StorageArea> receivers_;
   mojo::RemoteSet<blink::mojom::StorageAreaObserver> observers_;
   raw_ptr<Delegate, DanglingUntriaged> delegate_;
