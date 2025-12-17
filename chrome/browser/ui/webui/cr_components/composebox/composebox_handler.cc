@@ -148,11 +148,9 @@ ComposeboxHandler::ComposeboxHandler(
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
-  if (auto* composebox_client = static_cast<ComposeboxOmniboxClient*>(
-          omnibox_controller()->client())) {
-    composebox_client->SetSuggestInputsCallback(base::BindRepeating(
-        &ComposeboxHandler::GetSuggestInputs, base::Unretained(this)));
-  }
+  static_cast<ContextualOmniboxClient*>(omnibox_controller()->client())
+      ->SetSuggestInputsCallback(base::BindRepeating(
+          &ComposeboxHandler::GetSuggestInputs, base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 

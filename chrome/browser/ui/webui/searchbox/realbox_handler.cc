@@ -87,7 +87,7 @@ RealboxHandler::RealboxHandler(
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
-  static_cast<RealboxOmniboxClient*>(omnibox_controller()->client())
+  static_cast<ContextualOmniboxClient*>(omnibox_controller()->client())
       ->SetSuggestInputsCallback(base::BindRepeating(
           &RealboxHandler::GetSuggestInputs, base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
