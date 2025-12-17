@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -75,8 +74,12 @@ Profile* GetProfile() {
 
 CampaignsManagerClientImpl::CampaignsManagerClientImpl(
     PrefService* local_state,
-    ApplicationLocaleStorage* application_locale_storage)
-    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      component_manager_ash_(std::move(component_manager_ash)) {
+  CHECK(component_manager_ash_);
+
   // `show_nudge_performer_observation_` is used in `campaigns_manager_` ctor,
   // so it needs to be initialized first.
   campaigns_manager_ = std::make_unique<growth::CampaignsManager>(
@@ -99,11 +102,7 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
   }
 
   // Loads campaigns component.
-  auto component_manager_ash =
-      g_browser_process->platform_part()->component_manager_ash();
-  CHECK(component_manager_ash);
-
-  component_manager_ash->Load(
+  component_manager_ash_->Load(
       kCampaignComponentName,
       component_updater::ComponentManagerAsh::MountPolicy::kMount,
       component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,

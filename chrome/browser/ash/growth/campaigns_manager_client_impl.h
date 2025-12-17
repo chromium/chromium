@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/growth/metrics.h"
@@ -24,6 +25,10 @@ namespace base {
 class Version;
 }
 
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
+
 namespace growth {
 class CampaignsManager;
 }  // namespace growth
@@ -33,9 +38,12 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
  public:
   // `local_state` and `application_locale_storage` must be non-null, and must
   // outlive `this`.
+  // `component_manager_ash` must be non-null.
   CampaignsManagerClientImpl(
       PrefService* local_state,
-      ApplicationLocaleStorage* application_locale_storage);
+      ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
   CampaignsManagerClientImpl(const CampaignsManagerClientImpl&) = delete;
   CampaignsManagerClientImpl& operator=(const CampaignsManagerClientImpl&) =
       delete;
@@ -96,6 +104,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
 
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;

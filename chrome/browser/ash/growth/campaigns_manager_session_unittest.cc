@@ -43,11 +43,7 @@ class CampaignsManagerSessionTest : public testing::Test {
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         browser_process_platform_part_test_api_(
-            g_browser_process->platform_part()),
-        client_(TestingBrowserProcess::GetGlobal()->local_state(),
-                TestingBrowserProcess::GetGlobal()
-                    ->GetFeatures()
-                    ->application_locale_storage()) {}
+            g_browser_process->platform_part()) {}
 
   CampaignsManagerSessionTest(const CampaignsManagerSessionTest&) = delete;
   CampaignsManagerSessionTest& operator=(const CampaignsManagerSessionTest&) =
@@ -61,6 +57,14 @@ class CampaignsManagerSessionTest : public testing::Test {
     InitializeComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    client_ = std::make_unique<CampaignsManagerClientImpl>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
   }
 
   void TearDown() override {
@@ -68,6 +72,7 @@ class CampaignsManagerSessionTest : public testing::Test {
 
     component_manager_ash_ = nullptr;
     owner_settings_service_ash_ = nullptr;
+    client_.reset();
     browser_process_platform_part_test_api_.ShutdownComponentManager();
     profile_manager_->DeleteAllTestingProfiles();
   }
@@ -144,7 +149,7 @@ class CampaignsManagerSessionTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
   ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   raw_ptr<ash::OwnerSettingsServiceAsh> owner_settings_service_ash_;
-  CampaignsManagerClientImpl client_;
+  std::unique_ptr<CampaignsManagerClientImpl> client_;
 };
 
 TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponent) {

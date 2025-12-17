@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -81,7 +82,10 @@ class CampaignsManagerClientTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
-            ->application_locale_storage());
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
     metrics_recorder_.Initialize();
   }
 

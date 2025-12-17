@@ -414,7 +414,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
     campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>(
         g_browser_process->local_state(),
-        g_browser_process->GetFeatures()->application_locale_storage());
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        g_browser_process->platform_part()->component_manager_ash());
   }
 
   // Requires UserManager.
