@@ -30,24 +30,6 @@ namespace gfx {
 
 namespace {
 
-void* MapPlane(const NativePixmapPlane& plane) {
-  // The |size_to_map| computation has been determined to be valid in
-  // ClientNativePixmapFactoryDmabuf::ImportFromHandle().
-  const size_t size_to_map =
-      base::CheckAdd(plane.size, plane.offset).ValueOrDie<size_t>();
-  void* data = mmap(nullptr, size_to_map, (PROT_READ | PROT_WRITE), MAP_SHARED,
-                    plane.fd.get(), 0);
-  if (data == MAP_FAILED) {
-    logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
-    if (mmap_error == ENOMEM)
-      base::TerminateBecauseOutOfMemory(size_to_map);
-    LOG(ERROR) << "Failed to mmap dmabuf: "
-               << logging::SystemErrorCodeToString(mmap_error);
-    return nullptr;
-  }
-  return data;
-}
-
 void PrimeSyncStart(int dmabuf_fd) {
   struct dma_buf_sync sync_start;
 
@@ -82,19 +64,41 @@ bool AllowCpuMappableBuffers() {
 
 }  // namespace
 
-ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() = default;
-
-ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo(PlaneInfo&& info)
-    : data(info.data), offset(info.offset), size(info.size) {
-  // Set nullptr to info.data in order not to call munmap in |info| dtor.
-  info.data = nullptr;
-}
-
-ClientNativePixmapDmaBuf::PlaneInfo::~PlaneInfo() {
-  if (data) {
-    int ret = munmap(data, offset + size);
+void ClientNativePixmapDmaBuf::PlaneDeleter::operator()(uint8_t* ptr) const {
+  if (ptr && length > 0) {
+    int ret = munmap(ptr, length);
     DCHECK(!ret);
   }
+}
+
+// static
+base::HeapArray<uint8_t, ClientNativePixmapDmaBuf::PlaneDeleter>
+ClientNativePixmapDmaBuf::MapPlane(const NativePixmapPlane& plane) {
+  // The |size_to_map| computation has been determined to be valid in
+  // ClientNativePixmapFactoryDmabuf::ImportFromHandle().
+  const size_t size_to_map =
+      base::CheckAdd(plane.size, plane.offset).ValueOrDie<size_t>();
+  void* data = mmap(nullptr, size_to_map, (PROT_READ | PROT_WRITE), MAP_SHARED,
+                    plane.fd.get(), 0);
+  if (data == MAP_FAILED) {
+    logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
+    if (mmap_error == ENOMEM) {
+      base::TerminateBecauseOutOfMemory(size_to_map);
+    }
+    LOG(ERROR) << "Failed to mmap dmabuf: "
+               << logging::SystemErrorCodeToString(mmap_error);
+    // SAFETY: The returned `HeapArray` is empty.
+    return UNSAFE_BUFFERS(
+        base::HeapArray<uint8_t, PlaneDeleter>::FromOwningPointer(
+            nullptr, 0, PlaneDeleter{}));
+  }
+
+  // SAFETY: `data` is a valid pointer returned by `mmap` for a region of
+  // `size_to_map` bytes.
+  // See:https://man7.org/linux/man-pages/man2/mmap.2.html
+  return UNSAFE_BUFFERS(
+      base::HeapArray<uint8_t, PlaneDeleter>::FromOwningPointer(
+          static_cast<uint8_t*>(data), size_to_map, PlaneDeleter{size_to_map}));
 }
 
 // static
@@ -199,6 +203,18 @@ ClientNativePixmapDmaBuf::ImportFromDmabuf(gfx::NativePixmapHandle handle,
                                                        std::move(plane_info)));
 }
 
+ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo()
+    // SAFETY: The returned default-initialized `HeapArray` is empty.
+    : data(UNSAFE_BUFFERS(
+          base::HeapArray<uint8_t, PlaneDeleter>::FromOwningPointer(
+              nullptr,
+              0,
+              PlaneDeleter{}))) {}
+ClientNativePixmapDmaBuf::PlaneInfo::~PlaneInfo() = default;
+ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo(PlaneInfo&& other) = default;
+ClientNativePixmapDmaBuf::PlaneInfo&
+ClientNativePixmapDmaBuf::PlaneInfo::operator=(PlaneInfo&& other) = default;
+
 ClientNativePixmapDmaBuf::ClientNativePixmapDmaBuf(
     gfx::NativePixmapHandle handle,
     const gfx::Size& size,
@@ -218,10 +234,11 @@ bool ClientNativePixmapDmaBuf::Map() {
   if (!mapped_) {
     TRACE_EVENT0("drm", "DmaBuf:InitialMap");
     for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i) {
-      void* data = MapPlane(pixmap_handle_.planes[i]);
-      if (!data)
+      auto data = MapPlane(pixmap_handle_.planes[i]);
+      if (data.empty()) {
         return false;
-      plane_info_[i].data = data;
+      }
+      plane_info_[i].data = std::move(data);
     }
     mapped_ = true;
   }
@@ -246,8 +263,10 @@ size_t ClientNativePixmapDmaBuf::GetNumberOfPlanes() const {
 void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
   CHECK(mapped_);
-  return UNSAFE_TODO(static_cast<uint8_t*>(plane_info_[plane].data) +
-                     plane_info_[plane].offset);
+  // The const_cast is necessary because the `ClientNativePixmap` interface
+  // requires returning a non-const pointer from a const method.
+  return const_cast<uint8_t*>(
+      &plane_info_[plane].data[plane_info_[plane].offset]);
 }
 
 int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {

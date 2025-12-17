@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/heap_array.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,15 +51,27 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
  private:
   static constexpr size_t kMaxPlanes = 4;
 
+  struct PlaneDeleter {
+    size_t length = 0;
+    void operator()(uint8_t* ptr) const;
+  };
+
   struct PlaneInfo {
     PlaneInfo();
-    PlaneInfo(PlaneInfo&& plane_info);
     ~PlaneInfo();
+    PlaneInfo(PlaneInfo&& other);
+    PlaneInfo& operator=(PlaneInfo&& other);
 
-    raw_ptr<void> data = nullptr;
+    base::HeapArray<uint8_t, PlaneDeleter> data;
+    // PlaneInfo is constructed initially with only `offset` and `size` set and
+    // then later data is initialized with that information.
     size_t offset = 0;
     size_t size = 0;
   };
+
+  static base::HeapArray<uint8_t, PlaneDeleter> MapPlane(
+      const NativePixmapPlane& plane);
+
   ClientNativePixmapDmaBuf(gfx::NativePixmapHandle handle,
                            const gfx::Size& size,
                            std::array<PlaneInfo, kMaxPlanes> plane_info);
