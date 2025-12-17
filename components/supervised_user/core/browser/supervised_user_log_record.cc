@@ -12,6 +12,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
@@ -104,12 +105,12 @@ bool IsUnsupervisedStatus(
 // than browser content.
 std::optional<WebFilterType> GetWebFilterType(
     std::optional<SupervisedUserLogRecord::Segment> supervision_status,
-    SupervisedUserService* supervised_user_service) {
-  if (!supervised_user_service || IsUnsupervisedStatus(supervision_status)) {
+    SupervisedUserUrlFilteringService* url_filtering_service) {
+  if (!url_filtering_service || IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }
 
-  return supervised_user_service->GetURLFilter()->GetWebFilterType();
+  return url_filtering_service->GetWebFilterType();
 }
 
 std::optional<ToggleState> GetPermissionsToggleState(
@@ -177,13 +178,14 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
-    SupervisedUserService* supervised_user_service) {
+    SupervisedUserService* supervised_user_service,
+    SupervisedUserUrlFilteringService* url_filtering_service) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager, pref_service,
                            supervised_user_service);
   return SupervisedUserLogRecord(
       supervision_status,
-      GetWebFilterType(supervision_status, supervised_user_service),
+      GetWebFilterType(supervision_status, url_filtering_service),
       GetPermissionsToggleState(supervision_status, pref_service,
                                 content_settings_map),
       GetExtensionToggleState(supervision_status, pref_service));

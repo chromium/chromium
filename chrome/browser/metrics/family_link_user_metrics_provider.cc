@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -41,7 +42,9 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
     records.push_back(supervised_user::SupervisedUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *HostContentSettingsMapFactory::GetForProfile(profile),
-        SupervisedUserServiceFactory::GetForProfile(profile)));
+        SupervisedUserServiceFactory::GetForProfile(profile),
+        supervised_user::SupervisedUserUrlFilteringServiceFactory::
+            GetForProfile(profile)));
   }
   return supervised_user::EmitLogRecordHistograms(records);
 }

@@ -19,6 +19,7 @@
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -158,6 +159,7 @@ class SupervisedUserTestEnvironment {
 
   SupervisedUserURLFilter* url_filter() const;
   SupervisedUserService* service() const;
+  SupervisedUserUrlFilteringService* url_filtering_service() const;
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
@@ -198,6 +200,7 @@ class SupervisedUserTestEnvironment {
 
   // Core services under test
   std::unique_ptr<SupervisedUserService> service_;
+  std::unique_ptr<SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
 
   // The objects are actually owned by the service_, but are referenced here for

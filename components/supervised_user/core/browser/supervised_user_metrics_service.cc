@@ -94,12 +94,14 @@ int SupervisedUserMetricsService::GetDayIdForTesting(base::Time time) {
 SupervisedUserMetricsService::SupervisedUserMetricsService(
     PrefService* pref_service,
     SupervisedUserService& supervised_user_service,
+    const SupervisedUserUrlFilteringService& url_filtering_service,
     std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
         extensions_metrics_delegate,
     std::unique_ptr<MetricsServiceAccessorDelegate>
         metrics_service_accessor_delegate)
     : pref_service_(pref_service),
       supervised_user_service_(supervised_user_service),
+      url_filtering_service_(url_filtering_service),
       extensions_metrics_delegate_(std::move(extensions_metrics_delegate)),
       metrics_service_accessor_delegate_(
           std::move(metrics_service_accessor_delegate)) {
@@ -199,8 +201,7 @@ bool SupervisedUserMetricsService::TryEmittingMetricsAndRecordCurrentDay() {
 
 bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
   bool emitted = false;
-  WebFilterType web_filter_type =
-      supervised_user_service_->GetURLFilter()->GetWebFilterType();
+  WebFilterType web_filter_type = url_filtering_service_->GetWebFilterType();
   if (!last_recorded_family_link_web_filter_type_.has_value() ||
       *last_recorded_family_link_web_filter_type_ != web_filter_type) {
     base::UmaHistogramEnumeration(kFamilyUserWebFilterTypeHistogramName,
@@ -231,8 +232,7 @@ bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
 }
 
 bool SupervisedUserMetricsService::TryEmittingSupervisedUserMetrics() {
-  WebFilterType current =
-      supervised_user_service_->GetURLFilter()->GetWebFilterType();
+  WebFilterType current = url_filtering_service_->GetWebFilterType();
   if (last_recorded_supervised_user_web_filter_type_.has_value() &&
       *last_recorded_supervised_user_web_filter_type_ == current) {
     return false;

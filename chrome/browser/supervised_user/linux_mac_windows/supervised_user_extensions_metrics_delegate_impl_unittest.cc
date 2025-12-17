@@ -11,7 +11,9 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -51,6 +53,8 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(),
             *SupervisedUserServiceFactory::GetForProfile(profile()),
+            *supervised_user::SupervisedUserUrlFilteringServiceFactory::
+                GetForProfile(profile()),
             std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
                 extensions::ExtensionRegistry::Get(profile()), profile()),
             /*metrics_service_accessor_delegate=*/nullptr);

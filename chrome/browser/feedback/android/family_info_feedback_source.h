@@ -16,6 +16,7 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
 class Profile;
 
@@ -53,6 +54,8 @@ class FamilyInfoFeedbackSource {
   void OnComplete();
 
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
+  raw_ref<const supervised_user::SupervisedUserUrlFilteringService>
+      url_filtering_service_;
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       list_family_members_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;

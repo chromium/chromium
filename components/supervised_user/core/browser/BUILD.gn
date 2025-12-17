@@ -130,6 +130,8 @@ static_library("browser") {
     "supervised_user_settings_service.h",
     "supervised_user_url_filter.cc",
     "supervised_user_url_filter.h",
+    "supervised_user_url_filtering_service.cc",
+    "supervised_user_url_filtering_service.h",
     "supervised_user_utils.cc",
     "supervised_user_utils.h",
     "web_content_handler.cc",

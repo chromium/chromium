@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -24,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -161,13 +163,6 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
-                       UrlFilterIsOffByDefault) {
-  EXPECT_TRUE(SupervisedUserServiceFactory::GetForProfile(browser()->profile())
-                  ->GetURLFilter()
-                  ->GetWebFilterType() == WebFilterType::kDisabled);
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserServiceForRegularUsersBrowserTest,
@@ -190,14 +185,9 @@ class SupervisedUserServiceForSupervisedUsersBrowserTest
       {.sign_in_mode = SupervisionMixin::SignInMode::kSupervised}};
 };
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
-                       UrlFilterIsOnByDefault) {
-  EXPECT_NE(WebFilterType::kDisabled,
-            SupervisedUserServiceFactory::GetForProfile(browser()->profile())
-                ->GetURLFilter()
-                ->GetWebFilterType());
-}
-
+// TODO(crbug.com/465718386): Remove once migration to
+// `SupervisedUserUrlFilteringService` is complete. This test is redundant with
+// `SupervisedUserUrlFilteringServiceBrowserTest`.
 IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
                        FilterIsNeutralized) {
   Profile* profile = browser()->profile();
@@ -227,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
 
   DisableParentalControls(*pref_service);
   EXPECT_EQ(WebFilterType::kDisabled,
-            SupervisedUserServiceFactory::GetForProfile(browser()->profile())
-                ->GetURLFilter()
+            SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+                browser()->profile())
                 ->GetWebFilterType());
 
   EXPECT_TRUE(pref_service->FindPreference(prefs::kSupervisedUserManualHosts)

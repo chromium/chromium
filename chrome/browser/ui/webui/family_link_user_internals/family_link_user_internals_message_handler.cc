@@ -18,6 +18,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -25,6 +26,7 @@
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/url_formatter/url_fixer.h"
@@ -222,6 +224,13 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
       profile->GetOriginalProfile());
 }
 
+const supervised_user::SupervisedUserUrlFilteringService*
+FamilyLinkUserInternalsMessageHandler::GetSupervisedUserUrlFilteringService() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  return supervised_user::SupervisedUserUrlFilteringServiceFactory::
+      GetForProfile(profile->GetOriginalProfile());
+}
+
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::Value::List& args) {
   CHECK(args.empty()) << "Expected call is (void)";
@@ -283,14 +292,13 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
 
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-
   base::Value::List* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "SafeSites enabled",
                   supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
-  AddSectionEntry(section_filter, "Web filter type",
-                  WebFilterTypeToString(filter->GetWebFilterType()));
+  AddSectionEntry(
+      section_filter, "Web filter type",
+      WebFilterTypeToString(
+          GetSupervisedUserUrlFilteringService()->GetWebFilterType()));
 
   base::Value::List* section_search =
       AddSection(&section_list, "Google search");

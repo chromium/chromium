@@ -1484,6 +1484,8 @@ static_library("browser") {
     "supervised_user/supervised_user_service_factory.h",
     "supervised_user/supervised_user_settings_service_factory.cc",
     "supervised_user/supervised_user_settings_service_factory.h",
+    "supervised_user/supervised_user_url_filtering_service_factory.cc",
+    "supervised_user/supervised_user_url_filtering_service_factory.h",
     "tab_contents/navigation_metrics_recorder.cc",
     "tab_contents/navigation_metrics_recorder.h",
     "tab_contents/tab_util.cc",

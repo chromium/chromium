@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -21,6 +23,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -30,9 +33,7 @@
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -62,10 +63,10 @@ class RegularUserUrlFilteringServiceAndroidBrowserTest
 IN_PROC_BROWSER_TEST_F(RegularUserUrlFilteringServiceAndroidBrowserTest,
                        EnablingAndroidParentalControlsEnablesUrlFiltering) {
   GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
-  EXPECT_EQ(WebFilterType::kTryToBlockMatureSites,
-            SupervisedUserServiceFactory::GetForProfile(GetProfile())
-                ->GetURLFilter()
-                ->GetWebFilterType());
+  EXPECT_EQ(
+      WebFilterType::kTryToBlockMatureSites,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
 }
 
 // A suite for supervised users configured by Family Link.
@@ -85,17 +86,65 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkUrlFilteringServiceAndroidBrowserTest,
   // that the change is ignored.
   supervised_user_test_util::SetWebFilterType(GetProfile(),
                                               WebFilterType::kAllowAllSites);
-  ASSERT_EQ(WebFilterType::kAllowAllSites,
-            SupervisedUserServiceFactory::GetForProfile(GetProfile())
-                ->GetURLFilter()
-                ->GetWebFilterType());
+  ASSERT_EQ(
+      WebFilterType::kAllowAllSites,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
 
   // Setting is ignored.
   GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
-  EXPECT_EQ(WebFilterType::kAllowAllSites,
-            SupervisedUserServiceFactory::GetForProfile(GetProfile())
-                ->GetURLFilter()
-                ->GetWebFilterType());
+  EXPECT_EQ(
+      WebFilterType::kAllowAllSites,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
+}
+
+// A suite for supervised users configured by Android parental controls.
+class AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest
+    : public SupervisedUserBrowserTestBase {
+ public:
+  AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest() {
+    SetInitialSupervisedUserState(
+        InitialSupervisedUserState{.android_parental_controls = {
+                                       .browser_filter = true,
+                                       .search_filter = true,
+                                   }});
+  }
+};
+
+// Family Link will disable Android parental controls (but default setting for
+// both systems is kTryToBlockMatureSites).
+IN_PROC_BROWSER_TEST_F(
+    AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest,
+    FamilyLinkDisablesAndroidParentalControls) {
+  ASSERT_TRUE(GetBrowserContentFiltersObserverWeakPtr()->IsEnabled());
+  ASSERT_TRUE(GetSearchContentFiltersObserverWeakPtr()->IsEnabled());
+  ASSERT_EQ(
+      WebFilterType::kTryToBlockMatureSites,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
+
+  EnableParentalControls(*GetProfile()->GetPrefs());
+
+  EXPECT_FALSE(GetBrowserContentFiltersObserverWeakPtr()->IsEnabled());
+  EXPECT_FALSE(GetSearchContentFiltersObserverWeakPtr()->IsEnabled());
+  EXPECT_EQ(
+      WebFilterType::kTryToBlockMatureSites,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
+}
+
+// Family Link will disable Android parental controls (but default setting for
+// both systems is kTryToBlockMatureSites).
+IN_PROC_BROWSER_TEST_F(
+    AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest,
+    DisablingAndroidParentalControlsSupervisionDisablesUrlFiltering) {
+  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(false);
+  GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(false);
+  EXPECT_EQ(
+      WebFilterType::kDisabled,
+      SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
+          ->GetWebFilterType());
 }
 
 }  // namespace

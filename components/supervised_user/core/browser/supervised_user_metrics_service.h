@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "supervised_user_service.h"
 
 class PrefRegistrySimple;
@@ -59,6 +60,7 @@ class SupervisedUserMetricsService : public KeyedService,
   SupervisedUserMetricsService(
       PrefService* pref_service,
       SupervisedUserService& supervised_user_service,
+      const SupervisedUserUrlFilteringService& url_filtering_service,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
           extensions_metrics_delegate,
       std::unique_ptr<MetricsServiceAccessorDelegate>
@@ -85,8 +87,8 @@ class SupervisedUserMetricsService : public KeyedService,
   bool TryEmittingFamilyLinkMetrics();
   bool TryEmittingSupervisedUserMetrics();
 
-  // Clears cache of last recorded metrics. Subsequent `::TryEmittingMetrics` will emit
-  // all metrics (for eligible users)
+  // Clears cache of last recorded metrics. Subsequent `::TryEmittingMetrics`
+  // will emit all metrics (for eligible users)
   void ClearMetricsCache();
 
   // Records the current day's metrics, to avoid repetitions.
@@ -94,6 +96,7 @@ class SupervisedUserMetricsService : public KeyedService,
 
   const raw_ptr<PrefService> pref_service_;
   raw_ref<SupervisedUserService> supervised_user_service_;
+  raw_ref<const SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
   std::unique_ptr<MetricsServiceAccessorDelegate>

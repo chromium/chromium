@@ -21,6 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
@@ -28,6 +29,7 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -274,9 +276,7 @@ void ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(
 
   // This check is not making logical difference as the throttle would allow
   // this navigation anyway, but in this case no metrics will be recorded.
-  if (SupervisedUserServiceFactory::GetInstance()
-          ->GetForProfile(profile)
-          ->GetURLFilter()
+  if (SupervisedUserUrlFilteringServiceFactory::GetForProfile(profile)
           ->GetWebFilterType() == WebFilterType::kDisabled) {
     return;
   }

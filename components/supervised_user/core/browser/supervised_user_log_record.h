@@ -19,7 +19,9 @@ class IdentityManager;
 }
 
 namespace supervised_user {
+// TODO(crbug.com/465437113): Resolve dependency cycle.
 class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
 
 // Stores information required to log UMA record histograms for supervised
 // profiles (Family Link accounts or locally supervised devices).
@@ -61,7 +63,8 @@ class SupervisedUserLogRecord {
       signin::IdentityManager* identity_manager,
       const PrefService& pref_service,
       const HostContentSettingsMap& content_settings_map,
-      SupervisedUserService* supervised_user_service);
+      SupervisedUserService* supervised_user_service,
+      SupervisedUserUrlFilteringService* url_filtering_service);
 
   // Returns the supervision status of the primary account.
   std::optional<Segment> GetSupervisionStatusForPrimaryAccount() const;

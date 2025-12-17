@@ -8,12 +8,13 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
-#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h"
@@ -45,6 +46,8 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
               .Build()) {
   // Used for tracking web filter metrics.
   DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance());
 }
 
 SupervisedUserMetricsServiceFactory::~SupervisedUserMetricsServiceFactory() =
@@ -73,9 +76,10 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
       *SupervisedUserServiceFactory::GetForProfile(profile),
+      *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          profile),
       std::move(extensions_metrics_delegate),
-      std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>()
-      );
+      std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>());
 }
 
 bool SupervisedUserMetricsServiceFactory::ServiceIsCreatedWithBrowserContext()

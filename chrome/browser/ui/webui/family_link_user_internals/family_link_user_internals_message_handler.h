@@ -14,6 +14,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -65,6 +66,8 @@ class FamilyLinkUserInternalsMessageHandler
   void OnAccountChanged();
 
   supervised_user::SupervisedUserService* GetSupervisedUserService();
+  const supervised_user::SupervisedUserUrlFilteringService*
+  GetSupervisedUserUrlFilteringService();
 
   void HandleRegisterForEvents(const base::Value::List& args);
   void HandleGetBasicInfo(const base::Value::List& args);

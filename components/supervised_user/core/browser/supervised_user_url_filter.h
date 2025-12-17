@@ -229,8 +229,6 @@ class SupervisedUserURLFilter {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  WebFilterType GetWebFilterType() const;
-
   // Substitutes the URL filter for testing. For use where TestingFactory cant's
   // substitute the checker client.
   void SetURLCheckerClientForTesting(
@@ -240,6 +238,13 @@ class SupervisedUserURLFilter {
   bool IsHostInBlocklist(const std::string& host) const;
 
  private:
+  // Allows proxying deprecated calls to the filter for the time of migration.
+  friend class SupervisedUserUrlFilteringService;
+
+  // Deprecated. Use SupervisedUserUrlFilteringService::GetWebFilterType
+  // instead.
+  WebFilterType GetWebFilterType() const;
+
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
   virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback);

@@ -219,8 +219,7 @@ class SupervisedUserServiceWebFilterTypeTransitionsTest
     : public SupervisedUserServiceTest {
  protected:
   WebFilterType GetWebFilterType() {
-    return supervised_user_test_environment_->service()
-        ->GetURLFilter()
+    return supervised_user_test_environment_->url_filtering_service()
         ->GetWebFilterType();
   }
 };

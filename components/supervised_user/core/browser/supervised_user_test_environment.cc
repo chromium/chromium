@@ -17,6 +17,7 @@
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/base/data_type.h"
@@ -239,8 +240,11 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 
+  url_filtering_service_ =
+      std::make_unique<SupervisedUserUrlFilteringService>(*service_.get());
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
+      *url_filtering_service_.get(),
       std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
       std::move(metrics_service_accessor_delegate));
 }
@@ -327,6 +331,10 @@ SupervisedUserURLFilter* SupervisedUserTestEnvironment::url_filter() const {
 }
 SupervisedUserService* SupervisedUserTestEnvironment::service() const {
   return service_.get();
+}
+SupervisedUserUrlFilteringService*
+SupervisedUserTestEnvironment::url_filtering_service() const {
+  return url_filtering_service_.get();
 }
 PrefService* SupervisedUserTestEnvironment::pref_service() {
   return pref_store_environment_.pref_service();

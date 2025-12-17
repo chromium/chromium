@@ -27,6 +27,8 @@ source_set("model") {
     "supervised_user_service_platform_delegate.mm",
     "supervised_user_url_filter_tab_helper.h",
     "supervised_user_url_filter_tab_helper.mm",
+    "supervised_user_url_filtering_service_factory.h",
+    "supervised_user_url_filtering_service_factory.mm",
   ]
 
   deps = [

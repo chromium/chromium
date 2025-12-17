@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 
 IOSFamilyLinkUserMetricsProvider::IOSFamilyLinkUserMetricsProvider() = default;
 IOSFamilyLinkUserMetricsProvider::~IOSFamilyLinkUserMetricsProvider() = default;
@@ -27,7 +28,9 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
     records.push_back(supervised_user::SupervisedUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *ios::HostContentSettingsMapFactory::GetForProfile(profile),
-        SupervisedUserServiceFactory::GetForProfile(profile)));
+        SupervisedUserServiceFactory::GetForProfile(profile),
+        supervised_user::SupervisedUserUrlFilteringServiceFactory::
+            GetForProfile(profile)));
   }
   return supervised_user::EmitLogRecordHistograms(records);
 }
