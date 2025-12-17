@@ -335,7 +335,8 @@ class PasswordAutofillManagerTest : public testing::Test {
     // Add a preferred login.
     fill_data_.preferred_login.username_value = test_username_;
     fill_data_.preferred_login.password_value = test_password_;
-    SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/true);
+    SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(
+        /*move_to_context_menu=*/true);
   }
 
   void InitializePasswordAutofillManager(TestPasswordManagerClient* client,
@@ -404,17 +405,20 @@ class PasswordAutofillManagerTest : public testing::Test {
   }
 
  protected:
-  void SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(bool enable) {
+  void SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(
+      bool move_to_context_menu) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     features_.Reset();
-    if (enable) {
+    if (move_to_context_menu) {
       features_.InitWithFeatures(
           {features::kPasswordManualFallbackAvailable,
+           features::kAutofillReintroduceHybridPasskeyDropdownItem,
            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
           {});
     } else {
       features_.InitWithFeatures(
-          {features::kPasswordManualFallbackAvailable},
+          {features::kPasswordManualFallbackAvailable,
+           features::kAutofillReintroduceHybridPasskeyDropdownItem},
           {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
     }
 #endif
@@ -1482,7 +1486,7 @@ TEST_F(PasswordAutofillManagerTest,
   webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
       webauthn::CredManSupport::DISABLED);
 #endif  // BUILDFLAG(IS_ANDROID)
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/false);
+  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1507,10 +1511,10 @@ TEST_F(PasswordAutofillManagerTest,
               SuggestionVectorIdsAre(
                   autofill::SuggestionType::kWebauthnCredential,
                   autofill::SuggestionType::kPasswordEntry,
+                  autofill::SuggestionType::kSeparator,
 #if !BUILDFLAG(IS_ANDROID)
                   autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
 #endif  // !BUILDFLAG(IS_ANDROID)
-                  autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
             GetPasskeyIdBase64());
@@ -1552,8 +1556,10 @@ TEST_F(PasswordAutofillManagerTest,
   // Check that the button that triggers passkeys from a different devices uses
   // the "Use a *different* passkey" string since passkeys are being offered.
   EXPECT_EQ(
-      open_args.suggestions[2].main_text.value,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
+      open_args.suggestions[3].main_text.value,
+      l10n_util::GetStringUTF16(
+          BUILDFLAG(IS_IOS) ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
+                            : IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi)
@@ -1592,10 +1598,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
               SuggestionVectorIdsAre(
                   autofill::SuggestionType::kWebauthnCredential,
                   autofill::SuggestionType::kPasswordEntry,
-#if BUILDFLAG(IS_IOS)
-                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
-#endif  // BUILDFLAG(IS_IOS)
                   autofill::SuggestionType::kSeparator,
+#if !BUILDFLAG(IS_ANDROID)
+                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
+#endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
             GetPasskeyIdBase64());
@@ -1726,7 +1732,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsIdentitySuggestions) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/false);
+  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1750,13 +1756,16 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::SuggestionType::kPasswordEntry,
-                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
                   autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
 
   // Check that the button shows the correct text.
-  EXPECT_EQ(open_args.suggestions[1].main_text.value,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY));
+  EXPECT_EQ(
+      open_args.suggestions[2].main_text.value,
+      l10n_util::GetStringUTF16(
+          BUILDFLAG(IS_IOS) ? IDS_PASSWORD_MANAGER_USE_PASSKEY
+                            : IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE));
 }
 
 TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
@@ -1789,7 +1798,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
 // Regression test for crbug.com/1370037.
 TEST_F(PasswordAutofillManagerTest,
        WebAuthnFaviconWithoutPasswordsWhenUseAnotherDeviceInAutofill) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/false);
+  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   // Initialize a PasswordAutofillManager with an empty password form.
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
@@ -1823,8 +1832,8 @@ TEST_F(PasswordAutofillManagerTest,
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::SuggestionType::kWebauthnCredential,
-                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
                   autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_TRUE(
       std::holds_alternative<gfx::Image>(open_args.suggestions[0].custom_icon));
@@ -1868,10 +1877,10 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
                   autofill::SuggestionType::kWebauthnCredential,
-#if BUILDFLAG(IS_IOS)
-                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
-#endif  // BUILDFLAG(IS_IOS)
                   autofill::SuggestionType::kSeparator,
+#if !BUILDFLAG(IS_ANDROID)
+                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
+#endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_TRUE(
       std::holds_alternative<gfx::Image>(open_args.suggestions[0].custom_icon));
@@ -1883,7 +1892,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
 // Regression test for crbug.com/1362742.
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
   base::test::ScopedFeatureList features;
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/false);
+  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1909,15 +1918,19 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
   password_autofill_manager_->ShowSuggestions(field);
   ASSERT_THAT(open_args.suggestions,
               SuggestionVectorIdsAre(
-                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice));
+                  autofill::SuggestionType::kWebauthnSignInWithAnotherDevice,
+                  autofill::SuggestionType::kAllSavedPasswordsEntry));
 
   // Check that the button shows the correct text.
-  EXPECT_EQ(open_args.suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY));
+  EXPECT_EQ(
+      open_args.suggestions[0].main_text.value,
+      l10n_util::GetStringUTF16(
+          BUILDFLAG(IS_IOS) ? IDS_PASSWORD_MANAGER_USE_PASSKEY
+                            : IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE));
 }
 
 TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*enable=*/false);
+  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);

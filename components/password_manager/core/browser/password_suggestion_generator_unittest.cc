@@ -1943,6 +1943,47 @@ TEST_F(PasswordSuggestionGeneratorTest,
       generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
   EXPECT_FALSE(suggestion.has_value());
 }
+
+// Test that the webauthn sign in with another device suggestion is positioned
+// correctly in the dropdown, i.e. below a separator and above the manage
+// passwords entry.
+TEST_F(PasswordSuggestionGeneratorTest, WebAuthnSuggestionPosition) {
+#if !BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
+       features::kAutofillReintroduceHybridPasskeyDropdownItem},
+      {});
+#endif  // !BUILDFLAG(IS_IOS)
+
+  const std::vector<PasskeyCredential> kEmptyPasskeyVector;
+  ON_CALL(credentials_delegate(), GetPasskeys)
+      .WillByDefault(Return(base::ok(&kEmptyPasskeyVector)));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(true));
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      undo_controller(), password_form_fill_data(), favicon(),
+      /*username_filter=*/u"", OffersGeneration(false),
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
+                                         u"username", password_label(8u),
+                                         /*realm_label=*/u"", favicon()),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kWebauthnSignInWithAnotherDevice,
+              l10n_util::GetStringUTF16(
+                  BUILDFLAG(IS_IOS)
+                      ? IDS_PASSWORD_MANAGER_USE_PASSKEY
+                      : IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
+              Suggestion::Icon::kDevice),
+          EqualsManagePasswordsSuggestion()));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager
