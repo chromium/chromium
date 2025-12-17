@@ -47,15 +47,6 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
-    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
-      "exists": "required",
-      "values": {
-        "URL Protocol": {
-          "type": "SZ",
-          "data": ""
-        }
-      }
-    },
     "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY": {
       "exists": "required",
       "values": {
@@ -257,6 +248,9 @@
           "data": "LocalSystem"
         }
       }
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_SHORT_NAME": {
+      "exists": "forbidden"
     },
     "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\$CHROME_SHORT_NAME": {
       "exists": "required",

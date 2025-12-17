@@ -1582,9 +1582,8 @@ const wchar_t* ShellUtil::kPotentialFileAssociations[] = {
 const wchar_t* ShellUtil::kBrowserProtocolAssociations[] = {L"http", L"https",
                                                             nullptr};
 const wchar_t* ShellUtil::kPotentialProtocolAssociations[] = {
-    L"http",   L"https",    L"irc",           L"mailto", L"mms", L"news",
-    L"nntp",   L"sms",      L"smsto",         L"snews",  L"tel", L"urn",
-    L"webcal", L"chromium", L"google-chrome", nullptr};
+    L"http", L"https", L"irc",   L"mailto", L"mms", L"news",   L"nntp",
+    L"sms",  L"smsto", L"snews", L"tel",    L"urn", L"webcal", nullptr};
 const wchar_t* ShellUtil::kRegUrlProtocol = L"URL Protocol";
 const wchar_t* ShellUtil::kRegApplication = L"\\Application";
 const wchar_t* ShellUtil::kRegAppUserModelId = L"AppUserModelId";
@@ -2611,24 +2610,4 @@ bool ShellUtil::AddRegistryEntries(
     return false;
   }
   return true;
-}
-
-void ShellUtil::AddChromeUriSchemeWorkItems(const base::FilePath& chrome_exe,
-                                            const std::wstring& suffix,
-                                            WorkItemList* list) {
-  const char* scheme = install_static::GetDirectLaunchUrlScheme();
-  if (!scheme || *scheme == '\0') {
-    return;
-  }
-  const HKEY root = install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
-                                                      : HKEY_CURRENT_USER;
-  const std::wstring chrome_open = GetChromeShellOpenCmd(chrome_exe);
-  const std::wstring chrome_icon =
-      FormatIconLocation(chrome_exe, install_static::GetAppIconResourceIndex());
-  std::vector<std::unique_ptr<RegistryEntry>> entries;
-  GetXPStyleUserProtocolEntries(base::ASCIIToWide(scheme), chrome_icon,
-                                chrome_open, &entries);
-  for (const auto& entry : entries) {
-    entry->AddToWorkItemList(root, list);
-  }
 }

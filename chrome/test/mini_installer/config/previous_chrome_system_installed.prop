@@ -241,6 +241,9 @@
         }
       }
     },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_SHORT_NAME": {
+      "exists": "forbidden"
+    },
     "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\$CHROME_SHORT_NAME": {
       "exists": "required",
       "values": {

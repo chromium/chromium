@@ -109,8 +109,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .browser_prog_id_prefix = L"ChromeBHTML",  // Browser ProgID prefix.
         .browser_prog_id_description =
             L"Chrome Beta HTML Document",  // Browser ProgID description.
-        // Empty URL scheme for secondary modes.
-        .direct_launch_url_scheme = "",
+        .direct_launch_url_scheme = "google-chrome-beta",
         .pdf_prog_id_prefix = L"ChromeBPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Beta PDF Document",  // PDF ProgID description.
@@ -183,8 +182,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .browser_prog_id_prefix = L"ChromeDHTML",  // ProgID prefix.
         .browser_prog_id_description =
             L"Chrome Dev HTML Document",  // Browser ProgID description.
-        // Empty URL scheme for secondary modes.
-        .direct_launch_url_scheme = "",
+        .direct_launch_url_scheme = "google-chrome-dev",
         .pdf_prog_id_prefix = L"ChromeDPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Dev PDF Document",  // PDF ProgID description.
@@ -256,8 +254,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .browser_prog_id_prefix = L"ChromeSSHTM",  // ProgID prefix.
         .browser_prog_id_description =
             L"Chrome Canary HTML Document",  // Browser ProgID description.
-        // Empty URL scheme for secondary modes.
-        .direct_launch_url_scheme = "",
+        .direct_launch_url_scheme = "google-chrome-canary",
         .pdf_prog_id_prefix = L"ChromeSSPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chrome Canary PDF Document",  // PDF ProgID description.

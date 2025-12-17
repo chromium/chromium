@@ -20,23 +20,16 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/registry.h"
 #include "base/win/shortcut.h"
-#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/install_static/google_chrome_install_modes.h"
-#include "chrome/install_static/test/scoped_install_details.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -1444,73 +1437,3 @@ TEST(ShellUtilTest, GetOldUserSpecificRegistrySuffix) {
   ASSERT_GE(size, 1U);
   ASSERT_STREQ(user_name, suffix.substr(1).c_str());
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// A test WorkItemList that exposes the emptiness of the underlying list.
-class TestWorkItemList : public WorkItemList {
- public:
-  TestWorkItemList() = default;
-  bool IsEmpty() const { return list_.empty(); }
-};
-
-// Tests that the google-chrome:// scheme is registered on stable.
-TEST_F(ShellUtilRegistryTest, RegisterChromeUriSchemeForStable) {
-  std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
-  ShellUtil::AddChromeUriSchemeWorkItems(chrome_exe(), std::wstring(),
-                                         work_item_list.get());
-
-  ASSERT_TRUE(work_item_list->Do());
-
-  // Verify that registry entries were added for the stable channel.
-  base::win::RegKey key;
-  std::wstring value;
-  const std::wstring expected_open_command =
-      base::StrCat({L"\"", chrome_exe().value(), L"\" --single-argument %1"});
-  const std::wstring scheme_path = base::StrCat(
-      {L"Software\\Classes\\",
-       base::ASCIIToWide(
-           install_static::kInstallModes[install_static::STABLE_INDEX]
-               .direct_launch_url_scheme),
-       L"\\shell\\open\\command"});
-
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_CURRENT_USER, scheme_path.c_str(), KEY_READ));
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-  EXPECT_EQ(expected_open_command, value);
-}
-
-// Tests that the google-chrome:// scheme is not registered on non-stable.
-TEST_F(ShellUtilRegistryTest, DoNotRegisterChromeUriSchemeForNonStable) {
-  install_static::ScopedInstallDetails install_details(
-      false, install_static::BETA_INDEX);
-  TestWorkItemList work_item_list;
-  ShellUtil::AddChromeUriSchemeWorkItems(chrome_exe(), std::wstring(),
-                                         &work_item_list);
-
-  // For non-stable channels, no work items should be added.
-  EXPECT_TRUE(work_item_list.IsEmpty());
-}
-#else
-// Tests that the chromium:// scheme is registered on Chromium builds.
-TEST_F(ShellUtilRegistryTest, RegisterChromeUriSchemeForChromium) {
-  std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
-  ShellUtil::AddChromeUriSchemeWorkItems(chrome_exe(), std::wstring(),
-                                         work_item_list.get());
-
-  ASSERT_TRUE(work_item_list->Do());
-
-  // Verify that registry entries were added for the chromium channel.
-  base::win::RegKey key;
-  std::wstring value;
-  const std::wstring expected_open_command =
-      base::StrCat({L"\"", chrome_exe().value(), L"\" --single-argument %1"});
-  const std::wstring scheme_path =
-      L"Software\\Classes\\chromium\\shell\\open\\command";
-
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_CURRENT_USER, scheme_path.c_str(), KEY_READ));
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-  EXPECT_EQ(expected_open_command, value);
-}
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
