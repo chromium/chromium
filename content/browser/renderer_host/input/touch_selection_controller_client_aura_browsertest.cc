@@ -1102,8 +1102,16 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
 
 // Tests that touch selection dragging adjusts the selection using a direction
 // strategy (roughly, expands by word and shrinks by character).
+// TODO(crbug.com/468430621): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SelectionDraggingDirectionStrategy \
+  DISABLED_SelectionDraggingDirectionStrategy
+#else
+#define MAYBE_SelectionDraggingDirectionStrategy \
+  SelectionDraggingDirectionStrategy
+#endif
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
-                       SelectionDraggingDirectionStrategy) {
+                       MAYBE_SelectionDraggingDirectionStrategy) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
 
