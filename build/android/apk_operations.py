@@ -58,6 +58,9 @@ with devil_env.SysPath(os.path.join(_DIR_SOURCE_ROOT, 'build', 'util')):
 
 BASE_MODULE = 'base'
 
+# These need to be in order of low to high.
+LOGCAT_LEVELS = "VDIWEF"
+
 
 def _IsTrichrome():
   calling_script_name = os.path.basename(sys.argv[0])
@@ -789,6 +792,8 @@ class _LogcatProcessor:
                deobfuscate=None,
                verbose=False,
                exit_on_match=None,
+               filter_regex=None,
+               log_level="V",
                extra_package_names=None):
     self._device = device
     self._package_name = package_name
@@ -800,6 +805,8 @@ class _LogcatProcessor:
     else:
       self._exit_on_match = None
     self._found_exit_match = False
+    self._filter = re.compile(filter_regex) if filter_regex else None
+    self._log_level_idx = LOGCAT_LEVELS.find(log_level)
     if stack_script_context:
       self._print_func = _LogcatProcessor.NativeStackSymbolizer(
           stack_script_context, self._PrintParsedLine).AddLine
@@ -875,7 +882,7 @@ class _LogcatProcessor:
     return style
 
   def _ParseLine(self, line):
-    tokens = line.split(None, 6)
+    tokens = line.split(None, 5)
 
     def consume_token_or_default(default):
       return tokens.pop(0) if len(tokens) > 0 else default
@@ -894,22 +901,30 @@ class _LogcatProcessor:
     pid = consume_integer_token_or_default(-1)
     tid = consume_integer_token_or_default(-1)
     priority = consume_token_or_default('')
-    tag = consume_token_or_default('')
-    original_message = consume_token_or_default('')
+    tag_and_message = consume_token_or_default('')
 
     # Example:
     #   09-19 06:35:51.113  9060  9154 W GCoreFlp: No location...
     #   09-19 06:01:26.174  9060 10617 I Auth    : [ReflectiveChannelBinder]...
     # Parsing "GCoreFlp:" vs "Auth    :", we only want tag to contain the word,
     # and we don't want to keep the colon for the message.
-    if tag and tag[-1] == ':':
-      tag = tag[:-1]
-    elif len(original_message) > 2:
-      original_message = original_message[2:]
+    colon_index = tag_and_message.find(':')
+    if colon_index != -1:
+      tag = tag_and_message[:colon_index].strip()
+      original_message = tag_and_message[colon_index + 1:].strip()
+    else:
+      tag = tag_and_message.strip()
+      original_message = ''
+
     return self.ParsedLine(
         date, invokation_time, pid, tid, priority, tag, original_message)
 
   def _PrintParsedLine(self, parsed_line, dim=False):
+    if LOGCAT_LEVELS.find(parsed_line.priority) < self._log_level_idx:
+      return
+    if self._filter and not (self._filter.search(parsed_line.tag)
+                             or self._filter.search(parsed_line.message)):
+      return
     if self._exit_on_match and self._exit_on_match.search(parsed_line.message):
       self._found_exit_match = True
 
@@ -1006,12 +1021,16 @@ def _RunLogcat(device,
                deobfuscate,
                verbose,
                exit_on_match=None,
+               filter_regex=None,
+               log_level="V",
                extra_package_names=None):
   logcat_processor = _LogcatProcessor(device,
                                       package_name,
                                       stack_script_context,
                                       deobfuscate,
                                       verbose,
+                                      filter_regex=filter_regex,
+                                      log_level=log_level,
                                       exit_on_match=exit_on_match,
                                       extra_package_names=extra_package_names)
   device.RunShellCommand(['log', logcat_processor.nonce])
@@ -1876,6 +1895,8 @@ To disable filtering, (but keep coloring), use --verbose.
                  deobfuscate,
                  bool(self.args.verbose_count),
                  self.args.exit_on_match,
+                 filter_regex=self.args.filter,
+                 log_level=self.args.log_level,
                  extra_package_names=extra_package_names)
     except KeyboardInterrupt:
       pass  # Don't show stack trace upon Ctrl-C
@@ -1897,6 +1918,11 @@ To disable filtering, (but keep coloring), use --verbose.
                        help='Exits logcat when a message matches this regex.')
 
 
+    group.add_argument("--log-level",
+                       choices=list(LOGCAT_LEVELS),
+                       default="V",
+                       help="Minimum log level.")
+    group.add_argument("--filter", help="Regex to filter logcat output.")
 class _PsCommand(_Command):
   name = 'ps'
   description = 'Show PIDs of any APK processes currently running.'
