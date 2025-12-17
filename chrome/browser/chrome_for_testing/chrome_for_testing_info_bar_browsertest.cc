@@ -24,6 +24,9 @@ namespace infobars {
 
 namespace {
 
+// TODO (crbug.com/469533286): fix ChromeForTestingInfoBarTest for win-cft
+// and remove it from the exception from
+// //testing/buildbot/filters/win.win-rel-cft.browser_tests.filter
 class ChromeForTestingInfoBarTest : public InProcessBrowserTest {
  public:
   ChromeForTestingInfoBarTest() = default;
