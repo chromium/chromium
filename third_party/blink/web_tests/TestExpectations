@@ -3170,6 +3170,7 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/sanitizer-api/sanitizer-parseHTML.tentative.html [ Crash ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-001.html [ Failure ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-002.html [ Failure ]
