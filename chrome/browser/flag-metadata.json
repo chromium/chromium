@@ -6359,8 +6359,8 @@
   },
   {
     "name": "ios-skip-fre-default-browser-promo-in-eea",
-    "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 143
+    "owners": ["gujen@google.com", "bmcclure@google.com", "bling-mony-pod@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "ios-soft-lock",
