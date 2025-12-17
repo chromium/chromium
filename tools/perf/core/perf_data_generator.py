@@ -112,6 +112,8 @@ _STRUCTURED_TEST_ID_SUITES = {
         'flat'),
     'performance_test_suite':
     _ModuleArgs('//chrome/test:performance_test_suite', 'flat'),
+    'performance_web_engine_test_suite':
+    _ModuleArgs('//chrome/test:performance_web_engine_test_suite', 'flat'),
     'performance_webview_test_suite':
     _ModuleArgs('//chrome/test:performance_webview_test_suite', 'flat'),
 }

@@ -104,6 +104,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_web_engine_test_suite",
+        "module_scheme": "flat",
         "name": "performance_web_engine_test_suite",
         "resultdb": {
           "enable": true
@@ -150,6 +152,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_web_engine_test_suite",
+        "module_scheme": "flat",
         "name": "performance_web_engine_test_suite",
         "resultdb": {
           "enable": true
@@ -196,6 +200,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_web_engine_test_suite",
+        "module_scheme": "flat",
         "name": "performance_web_engine_test_suite",
         "resultdb": {
           "enable": true
@@ -242,6 +248,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_web_engine_test_suite",
+        "module_scheme": "flat",
         "name": "performance_web_engine_test_suite",
         "resultdb": {
           "enable": true
