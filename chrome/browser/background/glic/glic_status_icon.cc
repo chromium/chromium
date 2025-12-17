@@ -26,7 +26,7 @@
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -150,7 +150,8 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   context_menu_ = menu.get();
   status_icon_->SetContextMenu(std::move(menu));
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   UpdateVisibilityOfExitInContextMenu();
   UpdateVisibilityOfShowAndCloseInContextMenu();
 
@@ -162,7 +163,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
 }
 
 GlicStatusIcon::~GlicStatusIcon() {
-  BrowserList::RemoveObserver(this);
 
   context_menu_ = nullptr;
   if (status_icon_) {
@@ -242,11 +242,11 @@ void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 #endif
 
-void GlicStatusIcon::OnBrowserAdded(Browser* browser) {
+void GlicStatusIcon::OnBrowserCreated(BrowserWindowInterface* browser) {
   UpdateVisibilityOfExitInContextMenu();
 }
 
-void GlicStatusIcon::OnBrowserRemoved(Browser* browser) {
+void GlicStatusIcon::OnBrowserClosed(BrowserWindowInterface* browser) {
   UpdateVisibilityOfExitInContextMenu();
 }
 
@@ -306,7 +306,7 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
 void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (context_menu_) {
-    const bool is_visible = BrowserList::GetInstance()->empty();
+    const bool is_visible = GlobalBrowserCollection::GetInstance()->IsEmpty();
     const std::optional<size_t> index =
         context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_EXIT);
     CHECK(index.has_value() && index.value() > 0);

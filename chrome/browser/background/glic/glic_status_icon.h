@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
@@ -23,7 +23,8 @@
 class StatusIcon;
 class StatusIconMenuModel;
 class StatusTray;
-class Browser;
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 
 namespace glic {
 
@@ -38,7 +39,7 @@ class GlicStatusIcon : public StatusIconObserver,
 #if BUILDFLAG(IS_WIN)
                        public ui::NativeThemeObserver,
 #endif
-                       public BrowserListObserver,
+                       public BrowserCollectionObserver,
                        public GlicProfileManager::Observer,
                        public GlicWindowController::StateObserver {
  public:
@@ -55,9 +56,9 @@ class GlicStatusIcon : public StatusIconObserver,
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 #endif
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // GlicProfileManager::Observer
   void OnLastActiveGlicProfileChanged(Profile* profile) override;
@@ -104,6 +105,8 @@ class GlicStatusIcon : public StatusIconObserver,
   base::ScopedObservation<GlicWindowController,
                           GlicWindowController::StateObserver>
       panel_state_observer_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   raw_ptr<StatusTray> status_tray_;
   raw_ptr<StatusIcon> status_icon_;
