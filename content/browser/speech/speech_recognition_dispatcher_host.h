@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
@@ -52,6 +53,11 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   // media::mojom::SpeechRecognizer implementation
   void Start(
       media::mojom::StartSpeechRecognitionRequestParamsPtr params) override;
+
+  // Visible for testing.
+  static CONTENT_EXPORT std::string GetAcceptedLanguages(
+      const std::string& language,
+      const std::string& accept_language);
 
  private:
   static void StartRequestOnUI(

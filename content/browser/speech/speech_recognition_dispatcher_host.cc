@@ -36,9 +36,12 @@
 #include "components/soda/soda_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-namespace {
-std::string GetAcceptedLanguages(const std::string& language,
-                                 const std::string& accept_language) {
+namespace content {
+
+// static
+std::string SpeechRecognitionDispatcherHost::GetAcceptedLanguages(
+    const std::string& language,
+    const std::string& accept_language) {
   std::string langs = language;
   if (langs.empty() && !accept_language.empty()) {
     // If no language is provided then we use the first from the accepted
@@ -47,6 +50,8 @@ std::string GetAcceptedLanguages(const std::string& language,
     size_t separator = accept_language.find_first_of(",;");
     if (separator != std::string::npos) {
       langs = accept_language.substr(0, separator);
+    } else {
+      langs = accept_language;
     }
   }
   if (langs.empty()) {
@@ -54,9 +59,6 @@ std::string GetAcceptedLanguages(const std::string& language,
   }
   return langs;
 }
-}  // namespace
-
-namespace content {
 
 SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
     int render_process_id,
@@ -175,9 +177,10 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
       storage_partition == browser_context->GetDefaultStoragePartition()
           ? true
           : !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
-  const std::string& language = GetAcceptedLanguages(
-      params->language,
-      GetContentClient()->browser()->GetAcceptLangs(browser_context));
+  const std::string& language =
+      SpeechRecognitionDispatcherHost::GetAcceptedLanguages(
+          params->language,
+          GetContentClient()->browser()->GetAcceptLangs(browser_context));
 
 #if !BUILDFLAG(IS_ANDROID)
   bool on_device_available =
