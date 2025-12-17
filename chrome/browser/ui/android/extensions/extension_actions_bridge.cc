@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/extensions/extension_actions_bridge_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "content/public/browser/web_contents.h"
@@ -57,27 +56,22 @@ void ExtensionActionsBridge::IconObserver::OnIconUpdated() {
   bridge_->OnToolbarIconUpdated(action_id_);
 }
 
-ExtensionActionsBridge::ExtensionActionsBridge(Profile* profile)
-    : profile_(profile),
-      model_(ToolbarActionsModel::Get(profile)),
+ExtensionActionsBridge::ExtensionActionsBridge(
+    BrowserWindowInterface* browser,
+    const base::android::JavaRef<jobject>& java_object)
+    : browser_(browser),
+      profile_(browser->GetProfile()),
+      java_object_(java_object),
+      model_(ToolbarActionsModel::Get(profile_)),
       keybinding_registry_(
-          std::make_unique<ExtensionKeybindingRegistryAndroid>(profile)) {
-  java_object_ = Java_ExtensionActionsBridge_Constructor(
-      AttachCurrentThread(), reinterpret_cast<jlong>(this));
+          std::make_unique<ExtensionKeybindingRegistryAndroid>(profile_)) {
   model_observation_.Observe(model_);
 }
 
-ExtensionActionsBridge::~ExtensionActionsBridge() {
-  Java_ExtensionActionsBridge_destroy(AttachCurrentThread(), java_object_);
-}
+ExtensionActionsBridge::~ExtensionActionsBridge() = default;
 
-// static
-ExtensionActionsBridge* ExtensionActionsBridge::Get(Profile* profile) {
-  return ExtensionActionsBridgeFactory::GetForProfile(profile);
-}
-
-ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetJavaObject() {
-  return java_object_.AsLocalRef(AttachCurrentThread());
+void ExtensionActionsBridge::Destroy(JNIEnv* env) {
+  delete this;
 }
 
 bool ExtensionActionsBridge::AreActionsInitialized(JNIEnv* env) {
@@ -289,15 +283,14 @@ void ExtensionActionsBridge::OnToolbarIconUpdated(
                                                   java_object_, action_id);
 }
 
-static ScopedJavaLocalRef<jobject> JNI_ExtensionActionsBridge_Get(
+static jlong JNI_ExtensionActionsBridge_Init(
     JNIEnv* env,
+    const base::android::JavaRef<jobject>& java_object,
     jlong j_browser_window_interface) {
   BrowserWindowInterface* browser =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
-  ExtensionActionsBridge* bridge =
-      ExtensionActionsBridge::Get(browser->GetProfile());
-  DCHECK(bridge);
-  return bridge->GetJavaObject();
+  return reinterpret_cast<jlong>(
+      new ExtensionActionsBridge(browser, java_object));
 }
 
 static jboolean JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,

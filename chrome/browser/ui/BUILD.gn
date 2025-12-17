@@ -1015,8 +1015,6 @@ static_library("ui") {
         "android/extensions/extension_action_popup_contents.h",
         "android/extensions/extension_actions_bridge.cc",
         "android/extensions/extension_actions_bridge.h",
-        "android/extensions/extension_actions_bridge_factory.cc",
-        "android/extensions/extension_actions_bridge_factory.h",
         "android/extensions/extension_developer_private_bridge.cc",
         "android/extensions/extension_developer_private_bridge.h",
         "android/extensions/extension_install_dialog_view_android.cc",

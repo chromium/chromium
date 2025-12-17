@@ -28,7 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
-    private ChromeAndroidTask mTask;
+    private ExtensionActionsBridge mBridge;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
@@ -41,7 +41,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
-        mTask = task;
+        mBridge = new ExtensionActionsBridge(task);
+
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
         mExtensionActionListCoordinator =
@@ -65,6 +66,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     public void destroy() {
         mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
+        mBridge.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -75,12 +77,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask);
-        if (bridge == null) {
-            return false;
-        }
-
-        ExtensionActionsBridge.HandleKeyEventResult result = bridge.handleKeyDownEvent(event);
+        ExtensionActionsBridge.HandleKeyEventResult result = mBridge.handleKeyDownEvent(event);
         if (result.handled) {
             return true;
         }
