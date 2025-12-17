@@ -224,7 +224,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // To write a test where the renderer itself blocks or cancels the navigation,
 // use `ExecJs()` or `EvalJs()`, e.g.:
 //
-//   EXPECT_THAT(ExecJs("try { location = ''; } catch (e) { e.message; }")
+//   EXPECT_THAT(EvalJs("try { location = ''; } catch (e) { e.message; }")
 //                   .ExtractString(),
 //               HasSubStr("..."));
 //
