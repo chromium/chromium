@@ -5255,6 +5255,7 @@ chromium-metrics-reviews@google.com.
   <owner>amistry@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time taken to fully write a channel message to the underlying
     channel.
@@ -5306,6 +5307,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-05-31">
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time taken between an IPCz message serialization until it is
     deserialized on the other side of the Channel. This metric is downsampled to
@@ -5362,6 +5364,7 @@ chromium-metrics-reviews@google.com.
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <owner>mthiesse@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time taken from the sender calling a mojo interface function to
     the receiver's implementation getting invoked.
