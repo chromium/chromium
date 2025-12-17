@@ -458,6 +458,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "src/org/chromium/chrome/browser/ActivityResultTrackerIntegrationTest.java",
     "src/org/chromium/chrome/browser/ActivityTabProviderTest.java",
     "src/org/chromium/chrome/browser/AutofillOptionsLauncherTest.java",
     "src/org/chromium/chrome/browser/ChromeActionModeHandlerTest.java",
