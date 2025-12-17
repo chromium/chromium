@@ -320,9 +320,7 @@ bool CertBuilder::SignData(bssl::SignatureAlgorithm signature_algorithm,
       digest = EVP_sha512();
       break;
 
-    case bssl::SignatureAlgorithm::kRsaPssSha256:
-    case bssl::SignatureAlgorithm::kRsaPssSha384:
-    case bssl::SignatureAlgorithm::kRsaPssSha512:
+    default:
       // Unsupported algorithms.
       return false;
   }
