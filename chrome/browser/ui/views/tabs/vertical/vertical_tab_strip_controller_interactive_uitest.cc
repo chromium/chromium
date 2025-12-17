@@ -61,6 +61,11 @@ class VerticalTabStripControllerInteractiveUiTest
                                gfx::Point(), base::TimeTicks::Now(), flags,
                                ui::EF_LEFT_MOUSE_BUTTON);
           view->OnMousePressed(event);
+          ui::MouseEvent release_event(ui::EventType::kMouseReleased,
+                                       gfx::Point(), gfx::Point(),
+                                       base::TimeTicks::Now(), flags,
+                                       ui::EF_LEFT_MOUSE_BUTTON);
+          view->OnMouseReleased(event);
         },
         flags);
   }
