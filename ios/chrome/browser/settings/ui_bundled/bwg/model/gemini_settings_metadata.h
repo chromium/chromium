@@ -7,16 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, GeminiSettingsContext) {
-  // Settings for managing Gemini apps activity.
-  GeminiSettingsContextGeminiAppsActivity = 0,
-  // Settings for managing personal data and customization.
-  GeminiSettingsContextPersonalization,
-  // Settings for managing plugins and extensions.
-  GeminiSettingsContextExtensions,
-  // Unknown settings context.
-  GeminiSettingsContextUnknown,
-};
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 
 // Metadata about a Gemini setting item.
 @interface GeminiSettingsMetadata : NSObject

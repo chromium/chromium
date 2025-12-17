@@ -4,6 +4,7 @@
 
 source_set("model") {
   sources = [
+    "gemini_settings_context.h",
     "gemini_settings_metadata.h",
     "gemini_settings_metadata.mm",
   ]
