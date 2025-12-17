@@ -5284,6 +5284,228 @@ TEST_F(ManifestParserTest, ParsePreferRelatedApplicationsParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, MigrateToParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
+
+  // If no migrate_to, null.
+  {
+    auto& manifest = ParseManifest(R"({})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // If non-object, null and error.
+  {
+    auto& manifest = ParseManifest(R"({"migrate_to": "not-an-object"})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'migrate_to' ignored, type object expected.",
+              errors()[0]);
+  }
+
+  // Missing id, null and error.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_to": {"install_url": "http://foo.com/install"}})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'id' is missing or not a valid URL.",
+        errors()[0]);
+  }
+
+  // Empty id, null and error.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_to": {"id": "", "install_url": "http://foo.com/install"}})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'id' is missing or not a valid URL.",
+        errors()[0]);
+  }
+
+  // Missing install_url, null and error.
+  {
+    auto& manifest =
+        ParseManifest(R"({"migrate_to": {"id": "http://new.example.com/"}})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'install_url' is missing or invalid.",
+        errors()[0]);
+  }
+
+  // Invalid install_url, null and error.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://www.foo.com:co&uk"}})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("property 'install_url' ignored, URL is invalid.", errors()[0]);
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'install_url' is missing or invalid.",
+        errors()[1]);
+  }
+
+  // Cross-origin install_url, null and error.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://other.example.com/install"}})");
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'install_url' must be same origin as "
+        "'id'.",
+        errors()[0]);
+  }
+
+  // Valid migrate_to object.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://new.example.com/install"}})");
+    EXPECT_FALSE(manifest->migrate_to.is_null());
+    EXPECT_EQ(manifest->migrate_to->id, "http://new.example.com/");
+    EXPECT_FALSE(manifest->migrate_to->install_url.IsEmpty());
+    EXPECT_EQ(manifest->migrate_to->install_url.GetString(),
+              "http://new.example.com/install");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+TEST_F(ManifestParserTest, MigrateFromParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
+
+  // If no migrate_from, empty.
+  {
+    auto& manifest = ParseManifest(R"({})");
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // If non-array, empty and error.
+  {
+    auto& manifest = ParseManifest(R"({"migrate_from": "not-an-array"})");
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'migrate_from' ignored, type array expected.",
+              errors()[0]);
+  }
+
+  // Array with non-strings and non-objects, ignore invalid types.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_from": ["app_id_1", 123, {"id": "app_id_2"}]})");
+    EXPECT_EQ(2u, manifest->migrate_from.size());
+    EXPECT_EQ("http://foo.com/app_id_1",
+              manifest->migrate_from[0]->id.GetString());
+    EXPECT_FALSE(manifest->migrate_from[0]->install_url.has_value());
+    EXPECT_EQ("http://foo.com/app_id_2",
+              manifest->migrate_from[1]->id.GetString());
+    EXPECT_FALSE(manifest->migrate_from[1]->install_url.has_value());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("migrate_from entry ignored, type string or object expected.",
+              errors()[0]);
+  }
+
+  // Valid array with mixed string and object with install_url.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_from": ["app_id_1", {"id": "app_id_2", "install_url": "http://foo.com/install"}]})");
+    EXPECT_EQ(2u, manifest->migrate_from.size());
+    EXPECT_EQ("http://foo.com/app_id_1",
+              manifest->migrate_from[0]->id.GetString());
+    EXPECT_FALSE(manifest->migrate_from[0]->install_url.has_value());
+    EXPECT_EQ("http://foo.com/app_id_2",
+              manifest->migrate_from[1]->id.GetString());
+    ASSERT_TRUE(manifest->migrate_from[1]->install_url.has_value());
+    EXPECT_EQ("http://foo.com/install",
+              manifest->migrate_from[1]->install_url->GetString());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Object with missing id.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_from": [{"install_url": "http://example.com/install"}]})");
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("migrate_from entry ignored, 'id' is missing or not a valid URL.",
+              errors()[0]);
+  }
+
+  // Object with cross-origin install_url.
+  {
+    auto& manifest = ParseManifest(
+        R"({"migrate_from": [{"id": "http://foo.com/app", "install_url": "http://example.com/install"}]})");
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "migrate_from entry ignored, 'install_url' must be same origin as "
+        "'id'.",
+        errors()[0]);
+  }
+
+  // Mixed object with install_url and object without install_url.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "migrate_from": [
+            {
+              "id": "app_id_1",
+              "install_url": "http://foo.com/install"
+            }, {
+              "id": "app_id_2"
+            }
+          ]
+        })");
+    EXPECT_EQ(2u, manifest->migrate_from.size());
+    EXPECT_EQ("http://foo.com/app_id_1",
+              manifest->migrate_from[0]->id.GetString());
+    ASSERT_TRUE(manifest->migrate_from[0]->install_url.has_value());
+    EXPECT_EQ("http://foo.com/install",
+              manifest->migrate_from[0]->install_url->GetString());
+    EXPECT_EQ("http://foo.com/app_id_2",
+              manifest->migrate_from[1]->id.GetString());
+    EXPECT_FALSE(manifest->migrate_from[1]->install_url.has_value());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Object with behavior.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "migrate_from": [
+            {
+              "id": "app_id_1",
+              "behavior": "force"
+            }, {
+              "id": "app_id_2",
+              "behavior": "suggest"
+            }, {
+              "id": "app_id_3"
+            }, {
+              "id": "app_id_4",
+              "behavior": "invalid"
+            }
+          ]
+        })");
+    EXPECT_EQ(4u, manifest->migrate_from.size());
+    EXPECT_EQ(manifest->migrate_from[0]->behavior,
+              mojom::blink::ManifestMigrationBehavior::kForce);
+    EXPECT_EQ(manifest->migrate_from[1]->behavior,
+              mojom::blink::ManifestMigrationBehavior::kSuggest);
+    EXPECT_EQ(manifest->migrate_from[2]->behavior,
+              mojom::blink::ManifestMigrationBehavior::kSuggest);
+    EXPECT_EQ(manifest->migrate_from[3]->behavior,
+              mojom::blink::ManifestMigrationBehavior::kSuggest);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("behavior value 'invalid' ignored, unknown value.", errors()[0]);
+  }
+}
+
 TEST_F(ManifestParserTest, ThemeColorParserRules) {
   // Smoke test.
   {

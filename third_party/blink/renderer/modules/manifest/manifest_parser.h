@@ -521,6 +521,18 @@ class MODULES_EXPORT ManifestParser {
   // returns true iff the field could be parsed as the boolean true.
   bool ParsePreferRelatedApplications(const JSONObject* object);
 
+  // Parses the 'migrate_from' field of the manifest, as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/pwa-migration-explainer.md
+  // Returns a vector of ManifestMigrateFromPtr.
+  Vector<mojom::blink::ManifestMigrateFromPtr> ParseMigrateFrom(
+      const JSONObject* object);
+
+  // Parses the 'migrate_to' field of the manifest, as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/pwa-migration-explainer.md
+  // Returns a ManifestMigrateToPtr, or nullptr if not present or parsing
+  // failed.
+  mojom::blink::ManifestMigrateToPtr ParseMigrateTo(const JSONObject* object);
+
   // Parses the 'theme_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-theme_color-member
   // Returns the parsed theme color if any, or a null optional otherwise.

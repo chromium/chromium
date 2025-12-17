@@ -104,6 +104,13 @@ struct Manifest {
   // or there is a parsing failure.
   bool prefer_related_applications;
 
+  // A list of web apps that this web app intends to replace, with optional
+  // install URLs.
+  array<ManifestMigrateFrom> migrate_from;
+
+  // The app that this PWA intends to migrate to.
+  ManifestMigrateTo? migrate_to;
+
   // TODO(https://crbug.com/657632): Numeric types are not nullable. =(
   bool has_theme_color;
   uint32 theme_color;
@@ -373,6 +380,35 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
+};
+
+// Enumeration of possible behaviors for the migration.
+enum ManifestMigrationBehavior {
+  // The migration is suggested (default).
+  kSuggest,
+  // The migration is forced.
+  kForce,
+};
+
+// Structure representing a migration source for a PWA (migrate_from).
+struct ManifestMigrateFrom {
+  // The manifest ID of the app from which to migrate.
+  url.mojom.Url id;
+
+  // A URL for a page that should link to a manifest with the given ID.
+  url.mojom.Url? install_url;
+
+  // The behavior of the migration.
+  ManifestMigrationBehavior behavior;
+};
+
+// Structure representing a migration target for a PWA (migrate_to).
+struct ManifestMigrateTo {
+  // The manifest ID of the app to which to migrate.
+  url.mojom.Url id;
+
+  // A URL for a page that should link to a manifest with the given ID.
+  url.mojom.Url install_url;
 };
 
 // Structure representing customizations to the tab strip.
