@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1150,10 +1151,6 @@ TEST_F(SSLConnectJobTest, NoAdditionalDnsAliases) {
 // Test that `SSLConnectJob` selects Trust Anchor IDs from DNS and passes them
 // to `SSLClientSocket`.
 TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
-  SSLContextConfig config;
-  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
-  ssl_config_service_->UpdateSSLConfigAndNotify(config);
-
   HostResolverEndpointResult endpoint;
   endpoint.metadata.trust_anchor_ids = {
       {0x01, 0x02, 0x03}, {0x04, 0x04}, {0x05, 0x05, 0x05}};
@@ -1162,42 +1159,67 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
       "host",
       MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
 
-  for (bool trust_anchor_ids_enabled : {true, false}) {
-    SCOPED_TRACE(trust_anchor_ids_enabled);
-    base::test::ScopedFeatureList feature_list;
-    if (trust_anchor_ids_enabled) {
-      feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
-    } else {
-      feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
-    }
+  for (bool set_normal_trust_anchor_id : {false, true}) {
+    SCOPED_TRACE(set_normal_trust_anchor_id);
+    for (bool set_mtc_trust_anchor_id : {false, true}) {
+      SCOPED_TRACE(set_mtc_trust_anchor_id);
+      SSLContextConfig config;
+      if (set_normal_trust_anchor_id) {
+        config.trust_anchor_ids = {
+            {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
+      }
+      if (set_mtc_trust_anchor_id) {
+        config.mtc_trust_anchor_ids = {{0x07, 0x08, 0x09}, {0x06, 0x06}};
+      }
+      ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
-    StaticSocketDataProvider data;
-    data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
-    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
-    socket_factory_.AddSocketDataProvider(&data);
-    SSLSocketDataProvider ssl(ASYNC, OK);
-    // Trust Anchor IDs should be passed if and only if the feature is enabled.
-    if (trust_anchor_ids_enabled) {
-      ssl.expected_trust_anchor_ids =
-          std::vector<uint8_t>{0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
-    } else {
-      ssl.expect_no_trust_anchor_ids = true;
-    }
-    socket_factory_.AddSSLSocketDataProvider(&ssl);
+      for (bool trust_anchor_ids_enabled : {true, false}) {
+        SCOPED_TRACE(trust_anchor_ids_enabled);
+        base::test::ScopedFeatureList feature_list;
+        if (trust_anchor_ids_enabled) {
+          feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+        } else {
+          feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
+        }
 
-    base::HistogramTester histogram_tester;
-    TestConnectJobDelegate test_delegate;
-    std::unique_ptr<ConnectJob> ssl_connect_job =
-        CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
-    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
-    histogram_tester.ExpectUniqueSample(
-        "Net.SSL_Connection_Error_TrustAnchorIDs", OK, 1);
-    histogram_tester.ExpectTotalCount(
-        "Net.SSL_Connection_Latency_TrustAnchorIDs", 1);
-    histogram_tester.ExpectUniqueSample(
-        "Net.SSL.TrustAnchorIDsResult",
-        SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
+        StaticSocketDataProvider data;
+        data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+        data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+        socket_factory_.AddSocketDataProvider(&data);
+        SSLSocketDataProvider ssl(ASYNC, OK);
+        // Trust Anchor IDs should be passed if and only if the feature is
+        // enabled and some are set in the configuration.
+        if (trust_anchor_ids_enabled &&
+            (set_normal_trust_anchor_id || set_mtc_trust_anchor_id)) {
+          ssl.expected_trust_anchor_ids = std::vector<uint8_t>();
+          if (set_normal_trust_anchor_id) {
+            base::Extend(*ssl.expected_trust_anchor_ids,
+                         {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04});
+          }
+          if (set_mtc_trust_anchor_id) {
+            base::Extend(*ssl.expected_trust_anchor_ids,
+                         {0x03, 0x07, 0x08, 0x09, 0x02, 0x06, 0x06});
+          }
+        } else {
+          ssl.expect_no_trust_anchor_ids = true;
+        }
+        socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+        base::HistogramTester histogram_tester;
+        TestConnectJobDelegate test_delegate;
+        std::unique_ptr<ConnectJob> ssl_connect_job =
+            CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+        EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+        EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+        histogram_tester.ExpectUniqueSample(
+            "Net.SSL_Connection_Error_TrustAnchorIDs", OK, 1);
+        histogram_tester.ExpectTotalCount(
+            "Net.SSL_Connection_Latency_TrustAnchorIDs", 1);
+        histogram_tester.ExpectUniqueSample(
+            "Net.SSL.TrustAnchorIDsResult",
+            SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
+      }
+    }
   }
 }
 

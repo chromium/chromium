@@ -385,8 +385,7 @@ int SSLConnectJob::DoSSLConnect() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
-      !ssl_client_context()->config().trust_anchor_ids.empty()) {
+  if (ssl_client_context()->config().ShouldAdvertiseTrustAnchorIDs()) {
     if (!trust_anchor_ids_for_retry_.empty()) {
       ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
     } else if (endpoint_result_) {

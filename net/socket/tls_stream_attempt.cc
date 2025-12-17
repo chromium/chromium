@@ -201,8 +201,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     const SSLContextConfig& ssl_context_config =
         params().ssl_client_context->config();
     ssl_config_ = base_ssl_config_;
-    if (!ssl_context_config.trust_anchor_ids.empty() &&
-        base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
       ssl_config_->trust_anchor_ids = ssl_context_config.SelectTrustAnchorIDs(
           endpoint->metadata.trust_anchor_ids);
     }

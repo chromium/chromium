@@ -1704,8 +1704,7 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
     config.ech_config_list.assign(ech_config_list_.begin(),
                                   ech_config_list_.end());
   }
-  if (!ssl_context_config.trust_anchor_ids.empty() &&
-      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+  if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
     config.trust_anchor_ids = base::as_string_view(
         ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
   }

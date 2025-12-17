@@ -50,6 +50,11 @@ struct NET_EXPORT SSLContextConfig {
   // key_share extension.
   std::vector<uint16_t> GetSupportedGroups(bool key_shares_only = false) const;
 
+  // Returns true if Trust Anchor IDs should be advertised in the TLS
+  // handshake. This will be false if the feature is disabled or no Trust
+  // Anchor IDs are configured.
+  bool ShouldAdvertiseTrustAnchorIDs() const;
+
   // Helper function to select TLS Trust Anchor IDs to advertise in the TLS
   // handshake, so that the server can serve a certificate that the client
   // trusts. `server_advertised_trust_anchor_ids` is a list of Trust Anchor IDs,

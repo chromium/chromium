@@ -74,6 +74,11 @@ std::vector<uint16_t> SSLContextConfig::GetSupportedGroups(
   return groups_out;
 }
 
+bool SSLContextConfig::ShouldAdvertiseTrustAnchorIDs() const {
+  return (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
+          (!trust_anchor_ids.empty() || !mtc_trust_anchor_ids.empty()));
+}
+
 std::vector<uint8_t> SSLContextConfig::SelectTrustAnchorIDs(
     const std::vector<std::vector<uint8_t>>& server_advertised_trust_anchor_ids)
     const {
