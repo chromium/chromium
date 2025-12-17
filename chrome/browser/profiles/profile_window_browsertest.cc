@@ -132,7 +132,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
     return is_incognito() ? static_cast<int>(
                                 chrome::GetOffTheRecordBrowsersActiveForProfile(
                                     browser()->profile()))
-                          : BrowserList::GetGuestBrowserCount();
+                          : static_cast<int>(chrome::GetGuestBrowserCount());
   }
 
   Browser* CreateGuestOrIncognitoBrowser() {

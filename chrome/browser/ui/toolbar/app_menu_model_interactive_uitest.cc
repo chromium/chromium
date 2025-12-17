@@ -141,7 +141,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   auto CheckGuestWindowOpened(const Browser* default_browser) {
     return Check(base::BindLambdaForTesting([default_browser]() {
       BrowserWindowInterface* new_browser = nullptr;
-      if (BrowserList::GetGuestBrowserCount() == 1) {
+      if (chrome::GetGuestBrowserCount() == 1) {
         EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
         ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
             [default_browser, &new_browser](BrowserWindowInterface* browser) {

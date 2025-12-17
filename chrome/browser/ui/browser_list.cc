@@ -96,7 +96,7 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   if (browser->profile()->IsGuestSession()) {
     base::UmaHistogramCounts100("Browser.WindowCount.Guest",
-                                GetGuestBrowserCount());
+                                chrome::GetGuestBrowserCount());
   } else if (browser->profile()->IsIncognitoProfile()) {
     base::UmaHistogramCounts100(
         "Browser.WindowCount.Incognito",
