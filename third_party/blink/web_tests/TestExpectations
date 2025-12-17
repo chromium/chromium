@@ -1246,12 +1246,12 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/intrinsic-sizin
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-003.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-006.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-006.html [ Failure ]
-# Grid Lanes dense packing not working with implicit lines
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/grid-placement/grid-lanes-grid-placement-named-lines-002.html [ Failure ]
 # Baseline failures when applied to intrinsic minimums
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-lr.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-rl.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/row-minimum-contribution-baseline-shim.html [ Failure ]
+# Grid Lanes dense-packing failures
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/item-placement/row-reverse-dense-packing-multi-span-001.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]

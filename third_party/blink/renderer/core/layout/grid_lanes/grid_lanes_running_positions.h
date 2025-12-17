@@ -26,34 +26,6 @@ class GridLayoutTrackCollection;
 // used to calculate the next position that an item should be placed.
 class CORE_EXPORT GridLanesRunningPositions {
  public:
-  GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
-                            const ComputedStyle& style,
-                            LayoutUnit tie_threshold,
-                            const Vector<wtf_size_t>& collapsed_track_indexes)
-      : running_positions_(/*size=*/track_collection.EndLineOfImplicitGrid(),
-                           LayoutUnit()),
-        auto_placement_cursor_(style.IsReverseGridLanesDirection()
-                                   ? track_collection.EndLineOfImplicitGrid()
-                                   : 0),
-        tie_threshold_(tie_threshold),
-        is_dense_packing_(style.IsGridAutoFlowAlgorithmDense()),
-        is_reverse_direction_(style.IsReverseGridLanesDirection()) {
-    // To avoid placing items in collapsed tracks, set such tracks to the max
-    // size.
-    for (wtf_size_t index : collapsed_track_indexes) {
-      running_positions_[index] = LayoutUnit::Max();
-    }
-
-    if (is_dense_packing_) {
-      track_collection_openings_.resize(
-          track_collection.EndLineOfImplicitGrid());
-      // If dense packing is enabled, we need to keep track of the track sizes
-      // and initialize the data structure that will be used to keep track of
-      // any openings.
-      CalculateAndCacheTrackSizes(track_collection);
-    }
-  }
-
   // Struct used to represent openings that occur in the tracks as a result of
   // layouts with items of varying span sizes.
   struct TrackOpening {
@@ -68,6 +40,33 @@ class CORE_EXPORT GridLanesRunningPositions {
     LayoutUnit start_position;
     LayoutUnit end_position;
   };
+
+  GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
+                            const ComputedStyle& style,
+                            LayoutUnit tie_threshold,
+                            const Vector<wtf_size_t>& collapsed_track_indexes)
+      : track_collection_openings_(
+            /*size=*/track_collection.EndLineOfImplicitGrid(),
+            Vector<TrackOpening>(
+                /*size=*/1,
+                TrackOpening{LayoutUnit(), LayoutUnit::Max()})),
+        auto_placement_cursor_(style.IsReverseGridLanesDirection()
+                                   ? track_collection.EndLineOfImplicitGrid()
+                                   : 0),
+        tie_threshold_(tie_threshold),
+        is_dense_packing_(style.IsGridAutoFlowAlgorithmDense()),
+        is_reverse_direction_(style.IsReverseGridLanesDirection()) {
+    // To avoid placing items in collapsed tracks, set such tracks to the max
+    // size.
+    for (wtf_size_t index : collapsed_track_indexes) {
+      track_collection_openings_[index].back().start_position =
+          LayoutUnit::Max();
+    }
+
+    if (is_dense_packing_) {
+      CalculateAndCacheTrackSizes(track_collection);
+    }
+  }
 
   // Return the first span within `tie_threshold_` of the minimum max-position
   // that comes after the auto-placement cursor in grid-lanes' flow.
@@ -115,16 +114,21 @@ class CORE_EXPORT GridLanesRunningPositions {
       const GridArea& resolved_position,
       const GridTrackSizingDirection grid_axis_direction);
 
-  // If we can find an eligible track opening to fit the item, set
-  // `grid_lanes_item` to have the updated span location, adjust the track
-  // opening as needed (either erasing it or reducing the size), and return the
-  // running position at which the item will be placed. This method is only used
-  // when dense-packing is set.
+  // If we can find an eligible track opening to fit the item that is higher
+  // than `auto_placement_stacking_axis_offset`, set `grid_lanes_item` to have
+  // the updated span location, adjust the track opening as needed (either
+  // erasing it or reducing the size), and return the running position at which
+  // the item will be placed. This method is only used when dense-packing is
+  // set. In the case where a multi-span item is densely-packed across the open
+  // ending of a track after the current running position, the running position
+  // of that track will be updated in this method. For an example, see the
+  // comment for `AccumulateTrackOpeningsToAccommodateItem`.
   LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
-      GridItemData& grid_lanes_item,
-      const LayoutUnit item_height,
-      const GridLayoutTrackCollection& track_collection);
+      const LayoutUnit item_stacking_axis_contribution,
+      const LayoutUnit auto_placement_stacking_axis_offset,
+      const GridLayoutTrackCollection& track_collection,
+      GridItemData& grid_lanes_item);
 
   // If the span of `grid_lanes_item` is indefinite this method will find and
   // set the span where the item should be placed. Then, this method will return
@@ -159,7 +163,7 @@ class CORE_EXPORT GridLanesRunningPositions {
   // position that an item can be placed; this would be the lowest running
   // position of all the openings in the path.
   struct EligibleTrackOpeningPath {
-    bool IsValid() const { return start_position != LayoutUnit::Max(); }
+    bool IsValid() const { return !track_opening_indices.empty(); }
 
     wtf_size_t starting_track_index{0};
     Vector<wtf_size_t> track_opening_indices;
@@ -170,11 +174,17 @@ class CORE_EXPORT GridLanesRunningPositions {
   GridLanesRunningPositions(const Vector<LayoutUnit>& running_positions,
                             LayoutUnit tie_threshold,
                             const Vector<wtf_size_t>& collapsed_track_indexes)
-      : running_positions_(running_positions), tie_threshold_(tie_threshold) {
+      : tie_threshold_(tie_threshold) {
+    track_collection_openings_.resize(running_positions.size());
+    for (wtf_size_t index = 0; index < running_positions.size(); ++index) {
+      track_collection_openings_[index].emplace_back(
+          TrackOpening(running_positions[index], LayoutUnit::Max()));
+    }
     // To avoid placing items in collapsed tracks, set such tracks to the max
     // size.
     for (wtf_size_t index : collapsed_track_indexes) {
-      running_positions_[index] = LayoutUnit::Max();
+      track_collection_openings_[index].back().start_position =
+          LayoutUnit::Max();
     }
   }
 
@@ -187,9 +197,9 @@ class CORE_EXPORT GridLanesRunningPositions {
   void CalculateAndCacheTrackSizes(
       const GridLayoutTrackCollection& track_collection);
 
-  // For each track span of size `span_size` in `running_positions_`, compute
-  // its max-position and return a vector where the index corresponds to the
-  // track number and the value corresponds to the max-position for that track.
+  // For each track span of size `span_size`, compute its max-position and
+  // return a vector where the index corresponds to the track number and the
+  // value corresponds to the max-position for that track.
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(wtf_size_t span_size) const;
 
   // Calculate the total size of the tracks across the given span.
@@ -201,6 +211,21 @@ class CORE_EXPORT GridLanesRunningPositions {
   // returns whether or not a path of eligible track openings were found.
   // Because of the recursive nature of this method, the `track_opening_indices`
   // in `eligible_track_opening_result` will be in reverse order.
+  //
+  // This method accounts for laying multi-span items out into the open ending
+  // of each track, which spans from the track's running position to infinity.
+  // Example case, where the numbers represent the running positions of items
+  // within the tracks and "--" represents occupied tracks:
+  //
+  // | Track 1       | Track 2       | Track 3       |
+  // | <---0px---->  | <---0px---->  |               |
+  // | <---50px--->  | <---50px--->  | <---50px--->  |
+  // |               |               | <---------->  |
+  // |               | <---80px--->  | <---------->  |
+  //
+  // If we are placing a 2-span item with a block size of 30px and an inline
+  // size of 50px, then we should be able to lay the item out across Track 1 and
+  // Track 2, ending at the track opening in Track 2.
   bool AccumulateTrackOpeningsToAccommodateItem(
       LayoutUnit item_stacking_axis_contribution,
       LayoutUnit previous_track_opening_start_position,
@@ -209,15 +234,24 @@ class CORE_EXPORT GridLanesRunningPositions {
       wtf_size_t track_to_check_for_openings,
       EligibleTrackOpeningPath& eligible_track_opening_result);
 
-  // The index of the `running_positions_` vector corresponds to the track
-  // number, while the value of the vector item corresponds to the current
-  // running position of the track. Note that the tracks are 0-indexed.
-  Vector<LayoutUnit> running_positions_;
+  // The current running position for a given track is the start position of the
+  // final opening.
+  LayoutUnit GetRunningPositionForTrack(wtf_size_t track_index) const {
+    return track_collection_openings_[track_index].back().start_position;
+  }
+
+  TrackOpening& GetLastTrackOpening(wtf_size_t track_index) {
+    return track_collection_openings_[track_index].back();
+  }
 
   // The indices in the first dimension of vectors corresponds to the track
   // number, while each corresponding vector contains the openings for that
   // track. This is used for determining possible alternative placement
-  // locations for dense packing. It will only be populated in such cases.
+  // locations for dense packing. Within each vector of the 2nd dimension, the
+  // last `TrackOpening` represents the open space at the end of the track; the
+  // `start_position` of this `TrackOpening` is equivalent to the current
+  // running position of the track, and the `end_position` is unbounded
+  // (LayoutUnit::Max()).
   Vector<Vector<TrackOpening>> track_collection_openings_;
 
   // The index of `track_collection_sizes_` corresponds to the track number, and

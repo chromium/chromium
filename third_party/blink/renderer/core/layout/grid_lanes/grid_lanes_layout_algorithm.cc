@@ -389,9 +389,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
-              start_offset, grid_lanes_item,
-              /*item_height=*/fragment_size + stacking_axis_gap,
-              track_collection);
+              start_offset,
+              /*item_stacking_axis_contribution=*/fragment_size +
+                  stacking_axis_gap,
+              /*auto_placement_stacking_axis_offset=*/
+              start_offset_in_stacking_axis, track_collection, grid_lanes_item);
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.

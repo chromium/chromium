@@ -95,11 +95,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return VirtualItemData(index).resolved_span;
   }
 
-  const Vector<LayoutUnit>& GetRunningPositions(
-      const GridLanesRunningPositions& running_positions) {
-    return running_positions.running_positions_;
-  }
-
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(
       const GridLanesRunningPositions& running_positions,
       wtf_size_t span_size) {
@@ -1231,32 +1226,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
                           LayoutUnit(100)}));
-}
-
-TEST_F(GridLanesLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
-  Vector<wtf_size_t> collapsed_track_indexes;
-  GridLanesRunningPositions running_positions =
-      InitializeGridLanesRunningPositions(
-          {LayoutUnit(), LayoutUnit(), LayoutUnit(), LayoutUnit()},
-          /*tie_threshold=*/LayoutUnit());
-
-  Vector<LayoutUnit> expected_running_positions = {
-      LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(1, 3), LayoutUnit(3));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
-
-  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(4),
-                                LayoutUnit(4)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(0, 4), LayoutUnit(4));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
-
-  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(5),
-                                LayoutUnit(5)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(2, 4), LayoutUnit(5));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GetFirstEligibleLine) {
