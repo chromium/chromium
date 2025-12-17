@@ -632,6 +632,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="History"/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxAutofocusOutcome) -->
+
+<enum name="OmniboxAutofocusOutcome">
+  <int value="0" label="Not triggered"/>
+  <int value="1" label="Always on"/>
+  <int value="2" label="On not first tab"/>
+  <int value="3" label="With prediction"/>
+  <int value="4" label="With hardware keyboard"/>
+  <int value="5" label="On not first tab and with prediction"/>
+  <int value="6" label="On not first tab and with hardware keyboard"/>
+  <int value="7" label="With prediction and with hardware keyboard"/>
+  <int value="8"
+      label="On not first tab, with prediction, and with hardware keyboard"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ntp/IncognitoNtpOmniboxAutofocusTracker.java:OmniboxAutofocusOutcome) -->
+
 <enum name="OutlookCalendarRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>

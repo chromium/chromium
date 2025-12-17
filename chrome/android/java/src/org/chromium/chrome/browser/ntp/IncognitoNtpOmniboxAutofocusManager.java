@@ -439,6 +439,14 @@ public class IncognitoNtpOmniboxAutofocusManager {
                                     || isAutofocusAllowedWithPrediction
                                     || isAutofocusAllowedWithHardwareKeyboard) {
                                 autofocus(tab);
+
+                                IncognitoNtpOmniboxAutofocusTracker.recordAutofocusTriggered(
+                                        noConditionsConfigured,
+                                        isAutofocusAllowedNotFirstTab,
+                                        isAutofocusAllowedWithPrediction,
+                                        isAutofocusAllowedWithHardwareKeyboard);
+                            } else {
+                                IncognitoNtpOmniboxAutofocusTracker.recordAutofocusNotTriggered();
                             }
                         });
     }
@@ -521,9 +529,13 @@ public class IncognitoNtpOmniboxAutofocusManager {
         }
     }
 
+    public static void setAutofocusAllowedWithPredictionForTesting(Boolean allowed) {
+        sAutofocusAllowedWithPredictionForTesting = allowed;
+        ResettersForTesting.register(() -> sAutofocusAllowedWithPredictionForTesting = null);
+    }
+
     public static void setIsHardwareKeyboardAttachedForTesting(Boolean isAttached) {
-        Boolean oldValue = sIsHardwareKeyboardAttachedForTesting;
         sIsHardwareKeyboardAttachedForTesting = isAttached;
-        ResettersForTesting.register(() -> sIsHardwareKeyboardAttachedForTesting = oldValue);
+        ResettersForTesting.register(() -> sIsHardwareKeyboardAttachedForTesting = null);
     }
 }
