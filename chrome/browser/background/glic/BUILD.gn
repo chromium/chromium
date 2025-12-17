@@ -11,10 +11,12 @@ source_set("glic") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/startup",
     "//components/prefs",
+    "//components/version_info:channel",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
   ]

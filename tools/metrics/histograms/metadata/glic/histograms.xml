@@ -209,6 +209,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetMaximumNumberOfPinnedTabs"/>
     <variant name="SetMicrophonePermissionState"/>
     <variant name="SetMinimumWidgetSize"/>
+    <variant name="SetOnboardingCompleted"/>
     <variant name="SetSyntheticExperimentState"/>
     <variant name="SetTabContextPermissionState"/>
     <variant name="SetWindowDraggableAreas"/>

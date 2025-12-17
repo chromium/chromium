@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -78,6 +79,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -681,6 +683,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicUserEnabledActuationOnWeb,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicCompletedFre,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     host().AddPanelStateObserver(this);
 
     if (base::FeatureList::IsEnabled(
@@ -869,6 +875,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->enable_open_password_manager_settings_page =
         base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi);
+    state->enable_trust_first_onboarding =
+        base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
+    state->onboarding_completed =
+        GlicEnabling::HasConsentedForProfile(profile_);
 
     std::move(callback).Run(std::move(state));
   }
@@ -1570,6 +1580,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().OnViewChanged(this, notification->current_view);
   }
 
+  void SetOnboardingCompleted() override {
+    // TODO(crbug.com/466005378): Record metrics.
+    pref_service_->SetInteger(prefs::kGlicCompletedFre,
+                              static_cast<int>(prefs::FreStatus::kCompleted));
+
+    GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(
       const glic::mojom::PanelState& panel_state,
@@ -1781,19 +1799,28 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void WebClientDisconnected() { Uninstall(); }
 
   void OnPrefChanged(const std::string& pref_name) {
-    bool is_enabled = pref_service_->GetBoolean(pref_name);
     if (pref_name == prefs::kGlicMicrophoneEnabled) {
-      web_client_->NotifyMicrophonePermissionStateChanged(is_enabled);
+      web_client_->NotifyMicrophonePermissionStateChanged(
+          pref_service_->GetBoolean(pref_name));
     } else if (pref_name == prefs::kGlicGeolocationEnabled) {
-      web_client_->NotifyLocationPermissionStateChanged(is_enabled);
+      web_client_->NotifyLocationPermissionStateChanged(
+          pref_service_->GetBoolean(pref_name));
     } else if (pref_name == prefs::kGlicTabContextEnabled) {
-      web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
+      web_client_->NotifyTabContextPermissionStateChanged(
+          pref_service_->GetBoolean(pref_name));
     } else if (pref_name == prefs::kGlicClosedCaptioningEnabled) {
-      web_client_->NotifyClosedCaptioningSettingChanged(is_enabled);
+      web_client_->NotifyClosedCaptioningSettingChanged(
+          pref_service_->GetBoolean(pref_name));
     } else if (pref_name == prefs::kGlicDefaultTabContextEnabled) {
-      web_client_->NotifyDefaultTabContextPermissionStateChanged(is_enabled);
+      web_client_->NotifyDefaultTabContextPermissionStateChanged(
+          pref_service_->GetBoolean(pref_name));
     } else if (pref_name == prefs::kGlicUserEnabledActuationOnWeb) {
-      web_client_->NotifyActuationOnWebSettingChanged(is_enabled);
+      web_client_->NotifyActuationOnWebSettingChanged(
+          pref_service_->GetBoolean(pref_name));
+    } else if (pref_name == prefs::kGlicCompletedFre) {
+      web_client_->NotifyOnboardingCompletedChanged(
+          pref_service_->GetInteger(prefs::kGlicCompletedFre) ==
+          static_cast<int>(prefs::FreStatus::kCompleted));
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }

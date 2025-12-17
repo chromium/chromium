@@ -193,13 +193,8 @@ class GlicFreController {
   void MarkSidepanelFreShown();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
-                           UpdateLauncherOnFreCompletion);
   void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
                                    mojom::InvocationSource source);
-  static void OnCheckIsDefaultBrowserFinished(
-      version_info::Channel channel,
-      shell_integration::DefaultWebClientState state);
 
   // Called when the tab showing the FRE dialog is detached.
   void OnTabShowingModalWillDetach(tabs::TabInterface* tab,

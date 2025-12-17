@@ -559,6 +559,9 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSetOnboardingCompleted: {
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -761,6 +764,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientOnboardingCompletedChanged: {
+    request: {
+      completed: boolean,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -855,6 +864,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         CreateActorTab: 77,
         OpenPasswordManagerSettingsPage: 78,
         LoadAndExtractContent: 79,
+        SetOnboardingCompleted: 80,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

@@ -406,6 +406,10 @@ struct WebClientInitialState {
   bool enable_open_password_manager_settings_page;
   // Whether kGlicLoadAndExtractContent is enabled.
   bool enable_load_and_extract_content;
+  // Whether kGlicTrustFirstOnboarding is enabled.
+  bool enable_trust_first_onboarding;
+  // Whether the user has completed the onboarding flow.
+  bool onboarding_completed;
 };
 
 // Options for getting tab context.
@@ -1025,6 +1029,9 @@ interface WebClientHandler {
   // Registers a conversation in the web client.
   RegisterConversation(ConversationInfo info)
       => (RegisterConversationErrorReason? error_reason);
+
+  // Called when the user has completed the onboarding flow.
+  SetOnboardingCompleted();
 };
 
 // Information about a conversation.
@@ -1374,6 +1381,9 @@ interface WebClient {
 
   // Informs the client that the capability to act on web pages has changed.
   NotifyActOnWebCapabilityChanged(bool can_act_on_web);
+
+  // The onboarding completed state has changed.
+  NotifyOnboardingCompletedChanged(bool completed);
 };
 
 // Information extracted from a tab.

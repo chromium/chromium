@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_BACKGROUND_GLIC_GLIC_LAUNCHER_CONFIGURATION_H_
 #define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_LAUNCHER_CONFIGURATION_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/shell_integration.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/version_info/channel.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace glic {
@@ -37,7 +40,21 @@ class GlicLauncherConfiguration {
   // Returns the default hotkey for the glic launcher.
   static ui::Accelerator GetDefaultHotkey();
 
+  // Checks if the browser is the default browser and enables the launcher if it
+  // is.
+  static void CheckDefaultBrowserToEnableLauncher();
+
+  // Callback for checking if the browser is the default browser.
+  static void OnCheckIsDefaultBrowserFinished(
+      version_info::Channel channel,
+      shell_integration::DefaultWebClientState state);
+
+  static void SetCheckDefaultBrowserCallbackForTesting(
+      base::RepeatingClosure callback);
+
  private:
+  friend class GlicFreControllerTest;
+
   void OnEnabledPrefChanged();
   void OnGlobalHotkeyPrefChanged();
 

@@ -36,6 +36,7 @@
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -171,6 +172,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
+      "GlicOnboardingApiTest",
   };
 }
 
@@ -220,7 +222,10 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
 
 class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
  public:
-  GlicApiTest() : NonInteractiveGlicApiTest("./glic_api_browsertest.js") {
+  template <typename... Args>
+  explicit GlicApiTest(Args&&... args)
+      : NonInteractiveGlicApiTest("./glic_api_browsertest.js",
+                                  std::forward<Args>(args)...) {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
@@ -307,7 +312,8 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
 
 class GlicApiTestWithOneTab : public GlicApiTest {
  public:
-  GlicApiTestWithOneTab() {
+  explicit GlicApiTestWithOneTab(const GlicTestEnvironmentConfig& config = {})
+      : GlicApiTest(base::FieldTrialParams(), config) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kGlicClosedCaptioning},
@@ -1599,6 +1605,60 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
       .Times(1);
 
   ExecuteJsTest();
+}
+
+class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
+ public:
+  GlicOnboardingApiTest()
+      : GlicApiTestWithOneTab({.fre_status = prefs::FreStatus::kNotStarted}) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicTrustFirstOnboarding, {}}}, {/*disabled_features=*/});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicApiTest::SetUpOnMainThread();
+    NavigateTabAndOpenGlic();
+  }
+
+  void TearDownOnMainThread() override {
+    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+    GlicApiTestWithOneTab::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testIsOnboardingCompleted) {
+  ExecuteJsTest();
+
+  SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
+  ExecuteJsTest();
+
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(browser()->profile()));
+
+  base::RunLoop run_loop;
+  // Ensure that CheckDefaultBrowserToEnableLauncher was called.
+  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
+      run_loop.QuitClosure());
+
+  ContinueJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GlicEnabling::HasConsentedForProfile(browser()->profile());
+  }));
+
+  // Wait for the default browser check to be called.
+  run_loop.Run();
+  GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
+      base::RepeatingClosure());
+
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -3611,6 +3671,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestHibernateAllOnMemoryPressure,
                          DefaultTestParamSet(),
                          WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicOnboardingApiTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 
 }  // namespace
 }  // namespace glic

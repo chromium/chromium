@@ -397,6 +397,31 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(false, suggestions.isPending);
   }
 
+  async testIsOnboardingCompleted() {
+    assertDefined(this.host.isOnboardingCompleted);
+    const completedSequence =
+        observeSequence(this.host.isOnboardingCompleted());
+    assertFalse(await completedSequence.next());
+
+    // Mark onboarding as completed.
+    await this.advanceToNextStep();
+
+    assertTrue(await completedSequence.next());
+  }
+
+  async testSetOnboardingCompleted() {
+    assertDefined(this.host.setOnboardingCompleted);
+
+    // Check that onboarding is not completed yet.
+    await this.advanceToNextStep();
+
+    // Call mojo to set onboarding completed.
+    await this.host.setOnboardingCompleted();
+
+    // Check that onboarding is completed.
+    await this.advanceToNextStep();
+  }
+
   async testGetZeroStateSuggestionsMultipleNavigations() {
     // Initial state.
     assertDefined(this.host.getZeroStateSuggestions);
