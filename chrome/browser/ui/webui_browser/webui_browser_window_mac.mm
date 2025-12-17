@@ -163,6 +163,12 @@ class WebUIBrowserNativeWidgetMac : public views::NativeWidgetMac {
     params->animation_enabled = true;
   }
 
+  void GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
+                                    float* titlebar_height) override {
+    *override_titlebar_height = true;
+    *titlebar_height = 40;
+  }
+
   raw_ptr<Browser> browser_;
 };
 
