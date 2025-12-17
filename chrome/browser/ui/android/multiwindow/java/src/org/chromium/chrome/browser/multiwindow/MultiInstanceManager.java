@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -471,6 +472,35 @@ public abstract class MultiInstanceManager {
 
     public abstract void setTabModelObserverForTesting(
             TabModelSelectorTabModelObserver tabModelObserver);
+
+    protected ObserverList<InstanceStateObserver> mInstanceStateObservers = new ObserverList<>();
+
+    /** Observer interface to notify about instance closure events. */
+    public interface InstanceStateObserver {
+        /**
+         * Notifies when an instance is closed due to activity destruction and / or an explicit user
+         * request.
+         */
+        void onInstanceClosed();
+    }
+
+    /**
+     * Registers an observer to receive notifications about changes to the instance state.
+     *
+     * @param instanceStateObserver The observer to be added.
+     */
+    public void addInstanceStateObserver(InstanceStateObserver instanceStateObserver) {
+        mInstanceStateObservers.addObserver(instanceStateObserver);
+    }
+
+    /**
+     * Unregisters an observer, stopping notifications about changes to the instance state.
+     *
+     * @param instanceStateObserver The observer to be removed.
+     */
+    public void removeInstanceStateObserver(InstanceStateObserver instanceStateObserver) {
+        mInstanceStateObservers.removeObserver(instanceStateObserver);
+    }
 
     // The instance types are defined as bit flags, so they can be or-ed to reflect
     // more than one value. Or-ed values should be validated at points of access.
