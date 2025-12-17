@@ -352,19 +352,19 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
 
   // If we don't have the namespace loaded, then we can delete it all using the
   // metadata.
-  scoped_refptr<SessionStorageMetadata::MapData> map_data =
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
       metadata_.TakeExistingMap(namespace_id, storage_key);
-  if (!map_data || !database_) {
+  if (!map_locator || !database_) {
     // Nothing to delete.
     std::move(callback).Run();
     return;
   }
 
   // Delete `storage_key` from `namespace_id` in the database.  Also delete
-  // `map_data` when not referenced by a cloned session.
+  // `map_locator` when not referenced by a cloned session.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  if (map_data->ReferenceCount() == 0) {
-    maps_to_delete.emplace_back(namespace_id, storage_key, map_data->map_id());
+  if (map_locator->session_ids().empty()) {
+    maps_to_delete.emplace_back(std::move(*map_locator));
   }
   database_->DeleteStorageKeysFromSession(
       namespace_id, /*metadata_to_delete=*/{storage_key},
@@ -538,7 +538,7 @@ bool SessionStorageImpl::OnMemoryDump(
     return true;
   }
   for (const auto& it : data_maps_) {
-    const auto& storage_key = it.second->map_data()->storage_key();
+    const auto& storage_key = it.second->map_locator().storage_key();
     std::string storage_key_str =
         storage_key.GetMemoryDumpString(/*max_length=*/50);
     std::string area_dump_name = base::StringPrintf(
@@ -569,21 +569,20 @@ void SessionStorageImpl::SetDatabaseOpenCallbackForTesting(
   RunWhenConnected(std::move(callback));
 }
 
-scoped_refptr<SessionStorageMetadata::MapData>
+scoped_refptr<DomStorageDatabase::SharedMapLocator>
 SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
                                        const blink::StorageKey& storage_key) {
-  scoped_refptr<SessionStorageMetadata::MapData> map_entry =
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_entry =
       metadata_.RegisterNewMap(namespace_id, storage_key);
-
   if (database_) {
     // Save the new map in the database.
     DomStorageDatabase::Metadata metadata;
-    metadata.next_map_id = map_entry->map_id() + 1;
+    metadata.next_map_id = map_entry->map_id().value() + 1;
     metadata.map_metadata.push_back({
         .map_locator{
             /*session_id=*/namespace_id,
             map_entry->storage_key(),
-            map_entry->map_id(),
+            map_entry->map_id().value(),
         },
     });
     database_->PutMetadata(std::move(metadata),
@@ -593,18 +592,18 @@ SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
   return map_entry;
 }
 
-void SessionStorageImpl::OnDataMapCreation(
-    const std::vector<uint8_t>& map_prefix,
-    SessionStorageDataMap* map) {
-  DCHECK(data_maps_.find(map_prefix) == data_maps_.end());
-  data_maps_.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(map_prefix),
-                     std::forward_as_tuple(map));
+void SessionStorageImpl::OnDataMapCreation(int64_t map_id,
+                                           SessionStorageDataMap* map) {
+  auto result = data_maps_.emplace(std::piecewise_construct,
+                                   std::forward_as_tuple(map_id),
+                                   std::forward_as_tuple(map));
+
+  // `map_id` must identify a unique new map that did not exist in `data_maps_`.
+  CHECK(result.second);
 }
 
-void SessionStorageImpl::OnDataMapDestruction(
-    const std::vector<uint8_t>& map_prefix) {
-  data_maps_.erase(map_prefix);
+void SessionStorageImpl::OnDataMapDestruction(int64_t map_id) {
+  data_maps_.erase(map_id);
 }
 
 void SessionStorageImpl::OnCommitResult(DbStatus status) {
@@ -631,9 +630,8 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
 }
 
 scoped_refptr<SessionStorageDataMap>
-SessionStorageImpl::MaybeGetExistingDataMapForId(
-    const std::vector<uint8_t>& map_number_as_bytes) {
-  auto it = data_maps_.find(map_number_as_bytes);
+SessionStorageImpl::MaybeGetExistingDataMapForId(int64_t map_id) {
+  auto it = data_maps_.find(map_id);
   if (it == data_maps_.end())
     return nullptr;
   return base::WrapRefCounted(it->second);
@@ -701,14 +699,14 @@ void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
   // Remove each namespace from `metadata_`.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   for (const std::string& namespace_id : namespace_ids) {
-    std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+    std::map<blink::StorageKey,
+             scoped_refptr<DomStorageDatabase::SharedMapLocator>>
         namespace_to_delete = metadata_.TakeNamespace(namespace_id);
 
     // Find unreferenced map key/value pairs to delete from `database_`.
-    for (const auto& [storage_key, map_data] : namespace_to_delete) {
-      if (map_data->ReferenceCount() == 0) {
-        maps_to_delete.emplace_back(namespace_id, storage_key,
-                                    map_data->map_id());
+    for (auto& [storage_key, map_locator] : namespace_to_delete) {
+      if (map_locator->session_ids().empty()) {
+        maps_to_delete.emplace_back(std::move(*map_locator));
       }
     }
   }

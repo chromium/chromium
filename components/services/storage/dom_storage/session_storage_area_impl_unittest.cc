@@ -49,9 +49,8 @@ class MockListener : public SessionStorageDataMap::Listener {
   MockListener() = default;
   ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
-               void(const std::vector<uint8_t>& map_id,
-                    SessionStorageDataMap* map));
-  MOCK_METHOD1(OnDataMapDestruction, void(const std::vector<uint8_t>& map_id));
+               void(int64_t map_id, SessionStorageDataMap* map));
+  MOCK_METHOD1(OnDataMapDestruction, void(int64_t map_id));
   MOCK_METHOD1(OnCommitResult, void(DbStatus));
 };
 
@@ -73,21 +72,17 @@ class SessionStorageAreaImplTest : public testing::Test {
         }),
         base::DoNothing());
 
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks =
-        metadata_.SetupNewDatabaseForTesting();
-    auto map_id =
+    auto map_locator =
         metadata_.RegisterNewMap(test_namespace_id1_, test_storage_key1_);
-    DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
-    leveldb_database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
+    CHECK_EQ(map_locator->map_id().value(), 0);
   }
+
   ~SessionStorageAreaImplTest() override = default;
 
-  scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> RegisterNewAreaMap(
       const std::string& namespace_id,
       const blink::StorageKey& storage_key) {
-    auto map_data = metadata_.RegisterNewMap(namespace_id, storage_key);
-    return map_data;
+    return metadata_.RegisterNewMap(namespace_id, storage_key);
   }
 
   SessionStorageAreaImpl::RegisterNewAreaMap GetRegisterNewAreaMapCallback() {
@@ -111,9 +106,7 @@ class SessionStorageAreaImplTest : public testing::Test {
 }  // namespace
 
 TEST_F(SessionStorageAreaImplTest, BasicUsage) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -134,14 +127,11 @@ TEST_F(SessionStorageAreaImplTest, BasicUsage) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
                                         StdStringToUint8Vector("data1"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 }
 
 TEST_F(SessionStorageAreaImplTest, ExplicitlyEmptyMap) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -159,14 +149,11 @@ TEST_F(SessionStorageAreaImplTest, ExplicitlyEmptyMap) {
   EXPECT_TRUE(test::GetAllSync(ss_leveldb.get(), &data));
   ASSERT_EQ(0ul, data.size());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 }
 
 TEST_F(SessionStorageAreaImplTest, DoubleBind) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -198,14 +185,11 @@ TEST_F(SessionStorageAreaImplTest, DoubleBind) {
   EXPECT_TRUE(test::GetAllSync(ss_leveldb1.get(), &data3));
   ASSERT_EQ(1ul, data3.size());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 }
 
 TEST_F(SessionStorageAreaImplTest, Cloning) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -235,9 +219,7 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
   EXPECT_EQ(ss_leveldb_impl1->data_map(), ss_leveldb_impl2->data_map());
 
   // The |Put| call will fork the maps.
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(testing::AnyNumber());
   EXPECT_TRUE(test::PutSync(ss_leveldb2.get(), StdStringToUint8Vector("key2"),
@@ -265,19 +247,15 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key2"),
                                         StdStringToUint8Vector("data2"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   ss_leveldb_impl1 = nullptr;
   ss_leveldb_impl2 = nullptr;
 }
 
 TEST_F(SessionStorageAreaImplTest, NotifyAllDeleted) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -301,14 +279,11 @@ TEST_F(SessionStorageAreaImplTest, NotifyAllDeleted) {
   ss_leveldb_impl1->NotifyObserversAllDeleted();
   loop.Run();
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 }
 
 TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -345,9 +320,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
 
   // The |DeleteAll| call will fork the maps, and the observer should see a
   // DeleteAll.
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
   // There should be no commits, as we don't actually have to change any data.
   // |ss_leveldb_impl1| should just switch to a new, empty map.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(0);
@@ -356,19 +329,15 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
   // The maps were forked on the above call.
   EXPECT_NE(ss_leveldb_impl1->data_map(), ss_leveldb_impl2->data_map());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   ss_leveldb_impl1 = nullptr;
   ss_leveldb_impl2 = nullptr;
 }
 
 TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBinding) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -386,16 +355,13 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBinding) {
   ss_leveldb_impl1->data_map()->storage_area()->ScheduleImmediateCommit();
   loop.Run();
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 
   ss_leveldb_impl1 = nullptr;
 }
 
 TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
       test_namespace_id1_, test_storage_key1_,
@@ -421,9 +387,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
 
   // The |DeleteAll| call will fork the maps, and the observer should see a
   // DeleteAll.
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
   // There should be no commits, as we don't actually have to change any data.
   // |ss_leveldb_impl1| should just switch to a new, empty map.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(0);
@@ -432,10 +396,8 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
   // The maps were forked on the above call.
   EXPECT_NE(ss_leveldb_impl1->data_map(), ss_leveldb_impl2->data_map());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   ss_leveldb_impl1 = nullptr;
   ss_leveldb_impl2 = nullptr;

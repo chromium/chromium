@@ -84,7 +84,7 @@ class SessionStorageNamespaceImpl final
     // as a clone, used by another namespace.
     // Returns nullptr if a data map was not found.
     virtual scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
-        const std::vector<uint8_t>& map_number_as_bytes) = 0;
+        int64_t map_id) = 0;
   };
 
   // Constructs a namespace with the given |namespace_id|, expecting to be

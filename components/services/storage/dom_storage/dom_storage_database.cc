@@ -52,14 +52,16 @@ bool DomStorageDatabase::KeyValuePair::operator==(
 
 DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
                                            blink::StorageKey source_storage_key)
-    : session_id_(source_session_id), storage_key_(source_storage_key) {}
+    : storage_key_(source_storage_key) {
+  session_ids_.push_back(std::move(source_session_id));
+}
 
 DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
                                            blink::StorageKey source_storage_key,
                                            int64_t source_map_id)
-    : session_id_(source_session_id),
-      storage_key_(source_storage_key),
-      map_id_(source_map_id) {}
+    : storage_key_(source_storage_key), map_id_(source_map_id) {
+  session_ids_.push_back(std::move(source_session_id));
+}
 
 DomStorageDatabase::MapLocator::~MapLocator() = default;
 
@@ -72,13 +74,28 @@ const blink::StorageKey& DomStorageDatabase::MapLocator::storage_key() const {
   return storage_key_;
 }
 
-const std::string& DomStorageDatabase::MapLocator::session_id() const {
-  return session_id_;
+const std::vector<std::string>& DomStorageDatabase::MapLocator::session_ids()
+    const {
+  return session_ids_;
 }
 
 std::optional<int64_t> DomStorageDatabase::MapLocator::map_id() const {
   return map_id_;
 }
+
+void DomStorageDatabase::MapLocator::AddSession(std::string session_id) {
+  session_ids_.push_back(std::move(session_id));
+}
+
+void DomStorageDatabase::MapLocator::RemoveSession(
+    const std::string& session_id) {
+  std::erase(session_ids_, session_id);
+}
+
+DomStorageDatabase::SharedMapLocator::SharedMapLocator(MapLocator source)
+    : MapLocator(std::move(source)) {}
+
+DomStorageDatabase::SharedMapLocator::~SharedMapLocator() = default;
 
 DomStorageDatabase::Metadata::Metadata() = default;
 

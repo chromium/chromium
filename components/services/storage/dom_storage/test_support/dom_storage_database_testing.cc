@@ -4,12 +4,15 @@
 
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "storage/common/database/db_status.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
@@ -19,17 +22,21 @@ namespace {
 // Sort by the map's session ID and storage key.
 bool CompareMapMetadata(const DomStorageDatabase::MapMetadata& left,
                         const DomStorageDatabase::MapMetadata& right) {
-  if (left.map_locator.session_id() == right.map_locator.session_id()) {
-    return left.map_locator.storage_key() > right.map_locator.storage_key();
+  if (left.map_locator.storage_key() != right.map_locator.storage_key()) {
+    return left.map_locator.storage_key() < right.map_locator.storage_key();
   }
-  return left.map_locator.session_id() > right.map_locator.session_id();
+  return std::lexicographical_compare(left.map_locator.session_ids().begin(),
+                                      left.map_locator.session_ids().end(),
+                                      right.map_locator.session_ids().begin(),
+                                      right.map_locator.session_ids().end());
 }
 
 }  // namespace
 
 void ExpectEqualsMapLocator(const DomStorageDatabase::MapLocator& left,
                             const DomStorageDatabase::MapLocator& right) {
-  EXPECT_EQ(left.session_id(), right.session_id());
+  EXPECT_THAT(left.session_ids(),
+              testing::UnorderedElementsAreArray(right.session_ids()));
   EXPECT_EQ(left.storage_key(), right.storage_key());
   EXPECT_EQ(left.map_id(), right.map_id());
 }
@@ -64,29 +71,27 @@ void ExpectEqualsMapMetadataSpan(
 
 DomStorageDatabase::MapMetadata CloneMapMetadata(
     const DomStorageDatabase::MapMetadata& source) {
-  if (source.map_locator.map_id()) {
-    return {
-        .map_locator{
-            source.map_locator.session_id(),
-            source.map_locator.storage_key(),
-            source.map_locator.map_id().value(),
-        },
-        .last_accessed{source.last_accessed},
-        .last_modified{source.last_modified},
-        .total_size{source.total_size},
-    };
-  }
+  const std::vector<std::string>& source_session_ids =
+      source.map_locator.session_ids();
+  CHECK_GT(source_session_ids.size(), 0u);
 
-  // `source` does not have a map ID.
-  return {
-      .map_locator{
-          source.map_locator.session_id(),
-          source.map_locator.storage_key(),
-      },
+  DomStorageDatabase::MapMetadata clone{
+      .map_locator =
+          source.map_locator.map_id().has_value()
+              ? DomStorageDatabase::MapLocator(source_session_ids[0],
+                                               source.map_locator.storage_key(),
+                                               *source.map_locator.map_id())
+              : DomStorageDatabase::MapLocator(
+                    source_session_ids[0], source.map_locator.storage_key()),
       .last_accessed{source.last_accessed},
       .last_modified{source.last_modified},
       .total_size{source.total_size},
   };
+
+  for (size_t i = 1u; i < source_session_ids.size(); ++i) {
+    clone.map_locator.AddSession(source_session_ids[i]);
+  }
+  return clone;
 }
 
 std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(

@@ -40,10 +40,6 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-void ErrorCallback(DbStatus* status_out, DbStatus status) {
-  *status_out = status;
-}
-
 class SessionStorageMetadataTest : public testing::Test {
  public:
   SessionStorageMetadataTest()
@@ -164,21 +160,6 @@ class SessionStorageMetadataTest : public testing::Test {
   std::vector<uint8_t> namespaces_prefix_key_;
 };
 
-TEST_F(SessionStorageMetadataTest, SaveNewMetadata) {
-  SessionStorageMetadata metadata;
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks =
-      metadata.SetupNewDatabaseForTesting();
-
-  DbStatus status;
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
-
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(StdStringToUint8Vector("1"),
-            contents[StdStringToUint8Vector("version")]);
-  EXPECT_EQ(StdStringToUint8Vector("0"), contents[next_map_id_key_]);
-}
-
 TEST_F(SessionStorageMetadataTest, LoadingData) {
   SetupTestData();
   SessionStorageMetadata metadata;
@@ -192,23 +173,19 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   auto entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
   EXPECT_EQ(test_namespace1_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
-  EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            entry->second[test_storage_key1_]->KeyPrefix());
-  EXPECT_EQ(2, entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(StdStringToUint8Vector("map-3-"),
-            entry->second[test_storage_key2_]->KeyPrefix());
-  EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1, entry->second[test_storage_key1_]->map_id().value());
+  EXPECT_EQ(2u, entry->second[test_storage_key1_]->session_ids().size());
+  EXPECT_EQ(3, entry->second[test_storage_key2_]->map_id().value());
+  EXPECT_EQ(1u, entry->second[test_storage_key2_]->session_ids().size());
 
   // Namespace 2 is the same, except the second StorageKey references map 4.
   entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
   EXPECT_EQ(test_namespace2_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
-  EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            entry->second[test_storage_key1_]->KeyPrefix());
-  EXPECT_EQ(2, entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(StdStringToUint8Vector("map-4-"),
-            entry->second[test_storage_key2_]->KeyPrefix());
-  EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1, entry->second[test_storage_key1_]->map_id().value());
+  EXPECT_EQ(2u, entry->second[test_storage_key1_]->session_ids().size());
+  EXPECT_EQ(4, entry->second[test_storage_key2_]->map_id().value());
+  EXPECT_EQ(1u, entry->second[test_storage_key2_]->session_ids().size());
 }
 
 TEST_F(SessionStorageMetadataTest, ShallowCopies) {
@@ -225,16 +202,14 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
       *database_, SessionStorageMetadata::ToDomStorageMetadata(ns3_entry)));
 
   // Verify in-memory metadata is correct.
-  EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            ns3_entry->second[test_storage_key1_]->KeyPrefix());
-  EXPECT_EQ(StdStringToUint8Vector("map-3-"),
-            ns3_entry->second[test_storage_key2_]->KeyPrefix());
+  EXPECT_EQ(1, ns3_entry->second[test_storage_key1_]->map_id().value());
+  EXPECT_EQ(3, ns3_entry->second[test_storage_key2_]->map_id().value());
   EXPECT_EQ(ns1_entry->second[test_storage_key1_].get(),
             ns3_entry->second[test_storage_key1_].get());
   EXPECT_EQ(ns1_entry->second[test_storage_key2_].get(),
             ns3_entry->second[test_storage_key2_].get());
-  EXPECT_EQ(3, ns3_entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(2, ns3_entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(3u, ns3_entry->second[test_storage_key1_]->session_ids().size());
+  EXPECT_EQ(2u, ns3_entry->second[test_storage_key2_]->session_ids().size());
 
   // Verify metadata was written to disk.
   auto contents = GetDatabaseContents();
@@ -253,14 +228,14 @@ TEST_F(SessionStorageMetadataTest, TakeNamespace) {
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
 
-  std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+  std::map<blink::StorageKey,
+           scoped_refptr<DomStorageDatabase::SharedMapLocator>>
       namespace_to_delete = metadata.TakeNamespace(test_namespace1_id_);
 
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  for (const auto& [storage_key, map_data] : namespace_to_delete) {
-    if (map_data->ReferenceCount() == 0) {
-      maps_to_delete.emplace_back(test_namespace1_id_, storage_key,
-                                  map_data->map_id());
+  for (auto& [storage_key, map_locator] : namespace_to_delete) {
+    if (map_locator->session_ids().empty()) {
+      maps_to_delete.push_back(std::move(*map_locator));
     }
   }
   DeleteSessionsSync(*database_, {test_namespace1_id_},
@@ -271,8 +246,8 @@ TEST_F(SessionStorageMetadataTest, TakeNamespace) {
 
   // Verify in-memory metadata is correct.
   auto ns2_entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
-  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1u, ns2_entry->second[test_storage_key1_]->session_ids().size());
+  EXPECT_EQ(1u, ns2_entry->second[test_storage_key2_]->session_ids().size());
 
   // Verify metadata and data was deleted from disk.
   auto contents = GetDatabaseContents();
@@ -294,9 +269,10 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   ReadMetadataFromDatabase(&metadata);
 
   // First delete an area with a shared map.
-  scoped_refptr<SessionStorageMetadata::MapData> map_data =
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
       metadata.TakeExistingMap(test_namespace1_id_, test_storage_key1_);
-  EXPECT_EQ(map_data->ReferenceCount(), 1);
+  EXPECT_EQ(map_locator->session_ids().size(), 1u);
+  EXPECT_EQ(map_locator->session_ids()[0], test_namespace2_id_);
 
   DeleteStorageKeysFromSessionSync(*database_, test_namespace1_id_,
                                    {test_storage_key1_}, /*maps_to_delete=*/{});
@@ -305,9 +281,9 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
   auto ns2_entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
   EXPECT_FALSE(base::Contains(ns1_entry->second, test_storage_key1_));
-  EXPECT_EQ(1, ns1_entry->second[test_storage_key2_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1u, ns1_entry->second[test_storage_key2_]->session_ids().size());
+  EXPECT_EQ(1u, ns2_entry->second[test_storage_key1_]->session_ids().size());
+  EXPECT_EQ(1u, ns2_entry->second[test_storage_key2_]->session_ids().size());
 
   // Verify only the applicable data was deleted.
   auto contents = GetDatabaseContents();
@@ -323,12 +299,12 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
 
   // Now delete an area with a unique map.
-  map_data = metadata.TakeExistingMap(test_namespace2_id_, test_storage_key2_);
-  EXPECT_EQ(map_data->ReferenceCount(), 0);
+  map_locator =
+      metadata.TakeExistingMap(test_namespace2_id_, test_storage_key2_);
+  EXPECT_EQ(map_locator->session_ids().size(), 0u);
 
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  maps_to_delete.emplace_back(test_namespace2_id_, test_storage_key2_,
-                              map_data->map_id());
+  maps_to_delete.emplace_back(std::move(*map_locator));
 
   DeleteStorageKeysFromSessionSync(*database_, test_namespace2_id_,
                                    {test_storage_key2_},
@@ -336,8 +312,8 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
 
   // Verify in-memory metadata is correct.
   EXPECT_FALSE(base::Contains(ns1_entry->second, test_storage_key1_));
-  EXPECT_EQ(1, ns1_entry->second[test_storage_key2_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
+  EXPECT_EQ(1u, ns1_entry->second[test_storage_key2_]->session_ids().size());
+  EXPECT_EQ(1u, ns2_entry->second[test_storage_key1_]->session_ids().size());
   EXPECT_FALSE(base::Contains(ns2_entry->second, test_storage_key2_));
 
   // Verify only the applicable data was deleted.

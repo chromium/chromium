@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
@@ -19,36 +20,19 @@ namespace storage {
 // For a description of the session storage LevelDB schema, see comments in
 // `leveldb/session_storage_leveldb.h
 
-namespace {
-
-std::vector<uint8_t> NumberToValue(int64_t map_number) {
-  auto str = base::NumberToString(map_number);
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
-}  // namespace
-
-SessionStorageMetadata::MapData::MapData(int64_t map_number,
-                                         blink::StorageKey storage_key)
-    : number_as_bytes_(NumberToValue(map_number)),
-      map_id_(map_number),
-      key_prefix_(SessionStorageLevelDB::GetMapPrefix(map_number)),
-      storage_key_(std::move(storage_key)) {}
-SessionStorageMetadata::MapData::~MapData() = default;
-
 DomStorageDatabase::Metadata SessionStorageMetadata::ToDomStorageMetadata(
     NamespaceEntry session) {
   const std::map<blink::StorageKey,
-                 scoped_refptr<SessionStorageMetadata::MapData>>& session_maps =
-      session->second;
+                 scoped_refptr<DomStorageDatabase::SharedMapLocator>>&
+      session_maps = session->second;
 
   DomStorageDatabase::Metadata metadata;
-  for (const auto& [storage_key, map_data] : session_maps) {
+  for (const auto& [storage_key, map_locator] : session_maps) {
     metadata.map_metadata.push_back({
         .map_locator{
             /*session_id=*/session->first,
             storage_key,
-            map_data->map_id(),
+            map_locator->map_id().value(),
         },
     });
   }
@@ -59,95 +43,77 @@ SessionStorageMetadata::SessionStorageMetadata() = default;
 
 SessionStorageMetadata::~SessionStorageMetadata() = default;
 
-std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
-SessionStorageMetadata::SetupNewDatabaseForTesting() {
-  next_map_id_ = 0;
-  namespace_storage_key_map_.clear();
-
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  tasks.push_back(base::BindOnce(
-      [](int64_t next_map_id, DomStorageBatchOperationLevelDB& batch,
-         const DomStorageDatabaseLevelDB& db) {
-        batch.Put(base::span(kNextMapIdKey), NumberToValue(next_map_id));
-      },
-      next_map_id_));
-  return tasks;
-}
-
 void SessionStorageMetadata::Initialize(DomStorageDatabase::Metadata source) {
   namespace_storage_key_map_.clear();
   next_map_id_ = source.next_map_id.value();
 
-  // Since the data is ordered, all namespace data is in one spot. This keeps a
-  // reference to the last namespace data map to be more efficient.
-  std::string last_namespace_id;
-  std::map<blink::StorageKey, scoped_refptr<MapData>>* last_namespace = nullptr;
-  std::map<int64_t, scoped_refptr<MapData>> maps;
-
-  for (const DomStorageDatabase::MapMetadata& source_map :
-       source.map_metadata) {
-    const std::string& namespace_id = source_map.map_locator.session_id();
-    const blink::StorageKey& storage_key = source_map.map_locator.storage_key();
-    int64_t map_number = source_map.map_locator.map_id().value();
-
-    if (map_number >= next_map_id_) {
-      next_map_id_ = map_number + 1;
+  for (DomStorageDatabase::MapMetadata& source_map : source.map_metadata) {
+    int64_t map_id = source_map.map_locator.map_id().value();
+    if (map_id >= next_map_id_) {
+      next_map_id_ = map_id + 1;
     }
 
-    if (namespace_id != last_namespace_id) {
-      last_namespace_id = namespace_id;
-      DCHECK(namespace_storage_key_map_.find(last_namespace_id) ==
-             namespace_storage_key_map_.end());
-      last_namespace = &(namespace_storage_key_map_[last_namespace_id]);
-    }
-    auto map_it = maps.find(map_number);
-    if (map_it == maps.end()) {
-      map_it =
-          maps.emplace(
-                  std::piecewise_construct, std::forward_as_tuple(map_number),
-                  std::forward_as_tuple(new MapData(map_number, storage_key)))
-              .first;
-    }
-    map_it->second->IncReferenceCount();
+    scoped_refptr<DomStorageDatabase::SharedMapLocator> shared_map_locator =
+        base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+            std::move(source_map.map_locator));
 
-    last_namespace->emplace(std::make_pair(storage_key, map_it->second));
+    // Create an entry for each map in the namespace/session.  Entries for
+    // cloned maps use the same `shared_map_locator`.
+    for (const std::string& namespace_id : shared_map_locator->session_ids()) {
+      namespace_storage_key_map_[namespace_id].emplace(std::make_pair(
+          shared_map_locator->storage_key(), shared_map_locator));
+    }
   }
 }
 
-scoped_refptr<SessionStorageMetadata::MapData>
+scoped_refptr<DomStorageDatabase::SharedMapLocator>
 SessionStorageMetadata::RegisterNewMap(const std::string& namespace_id,
                                        const blink::StorageKey& storage_key) {
-  auto new_map_data = base::MakeRefCounted<MapData>(next_map_id_, storage_key);
+  auto new_map_locator =
+      base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+          DomStorageDatabase::MapLocator(namespace_id, storage_key,
+                                         next_map_id_));
   ++next_map_id_;
 
   NamespaceEntry namespace_entry = GetOrCreateNamespaceEntry(namespace_id);
-  std::map<blink::StorageKey, scoped_refptr<MapData>>& namespace_storage_keys =
-      namespace_entry->second;
+  std::map<blink::StorageKey,
+           scoped_refptr<DomStorageDatabase::SharedMapLocator>>&
+      namespace_storage_keys = namespace_entry->second;
 
   auto namespace_it = namespace_storage_keys.find(storage_key);
   if (namespace_it != namespace_storage_keys.end()) {
-    // Check the old map doesn't have the same number as the new map.
-    DCHECK(namespace_it->second->MapNumberAsBytes() !=
-           new_map_data->MapNumberAsBytes());
-    DCHECK_GT(namespace_it->second->ReferenceCount(), 1)
-        << "A new map should never be registered for an area that has a "
-           "single-refcount map.";
-    // There was already an area key here, so decrement that map reference.
-    namespace_it->second->DecReferenceCount();
-    namespace_it->second = new_map_data;
+    // Create a new map to fork a clone.
+    DomStorageDatabase::SharedMapLocator& old_map_locator =
+        *namespace_it->second;
+
+    // The new map must have a unique ID.
+    CHECK_NE(old_map_locator.map_id().value(),
+             new_map_locator->map_id().value());
+
+    // Verify that forking was necessary because multiple clones shared the map,
+    // making it read-only.
+    CHECK_GT(old_map_locator.session_ids().size(), 1u);
+
+    // Remove `namespace_id` from the source clone's sessions.
+    DCHECK(base::Contains(old_map_locator.session_ids(), namespace_id));
+    old_map_locator.RemoveSession(namespace_id);
+
+    namespace_it->second = new_map_locator;
   } else {
-    namespace_storage_keys.emplace(std::make_pair(storage_key, new_map_data));
+    // Create a new empty map.
+    namespace_storage_keys.insert(std::make_pair(storage_key, new_map_locator));
   }
-  new_map_data->IncReferenceCount();
-  return new_map_data;
+  return new_map_locator;
 }
 
 void SessionStorageMetadata::RegisterShallowClonedNamespace(
     NamespaceEntry source_namespace,
     NamespaceEntry destination_namespace) {
-  std::map<blink::StorageKey, scoped_refptr<MapData>>& source_storage_keys =
-      source_namespace->second;
-  std::map<blink::StorageKey, scoped_refptr<MapData>>&
+  std::map<blink::StorageKey,
+           scoped_refptr<DomStorageDatabase::SharedMapLocator>>&
+      source_storage_keys = source_namespace->second;
+  std::map<blink::StorageKey,
+           scoped_refptr<DomStorageDatabase::SharedMapLocator>>&
       destination_storage_keys = destination_namespace->second;
   DCHECK_EQ(0ul, destination_storage_keys.size())
       << "The destination already has data.";
@@ -157,11 +123,11 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
         std::piecewise_construct,
         std::forward_as_tuple(storage_key_map_pair.first),
         std::forward_as_tuple(storage_key_map_pair.second));
-    storage_key_map_pair.second->IncReferenceCount();
+    storage_key_map_pair.second->AddSession(destination_namespace->first);
   }
 }
 
-std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+std::map<blink::StorageKey, scoped_refptr<DomStorageDatabase::SharedMapLocator>>
 SessionStorageMetadata::TakeNamespace(const std::string& namespace_id) {
   std::vector<DomStorageDatabase::Key> prefixes_to_delete;
   auto it = namespace_storage_key_map_.find(namespace_id);
@@ -169,19 +135,21 @@ SessionStorageMetadata::TakeNamespace(const std::string& namespace_id) {
     return {};
   }
 
-  std::map<blink::StorageKey, scoped_refptr<MapData>> storage_keys =
-      std::move(it->second);
+  std::map<blink::StorageKey,
+           scoped_refptr<DomStorageDatabase::SharedMapLocator>>
+      storage_keys = std::move(it->second);
 
   for (const auto& storage_key_map_pair : storage_keys) {
-    MapData* map_data = storage_key_map_pair.second.get();
-    DCHECK_GT(map_data->ReferenceCount(), 0);
-    map_data->DecReferenceCount();
+    DomStorageDatabase::SharedMapLocator* map_locator =
+        storage_key_map_pair.second.get();
+    DCHECK(base::Contains(map_locator->session_ids(), namespace_id));
+    map_locator->RemoveSession(namespace_id);
   }
   namespace_storage_key_map_.erase(it);
   return storage_keys;
 }
 
-scoped_refptr<SessionStorageMetadata::MapData>
+scoped_refptr<DomStorageDatabase::SharedMapLocator>
 SessionStorageMetadata::TakeExistingMap(const std::string& namespace_id,
                                         const blink::StorageKey& storage_key) {
   auto ns_entry = namespace_storage_key_map_.find(namespace_id);
@@ -194,12 +162,13 @@ SessionStorageMetadata::TakeExistingMap(const std::string& namespace_id,
     return nullptr;
   }
 
-  scoped_refptr<MapData> map_data = storage_key_map_it->second.get();
-  DCHECK_GT(map_data->ReferenceCount(), 0);
-  map_data->DecReferenceCount();
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
+      storage_key_map_it->second.get();
+  DCHECK(base::Contains(map_locator->session_ids(), namespace_id));
+  map_locator->RemoveSession(namespace_id);
 
   ns_entry->second.erase(storage_key_map_it);
-  return map_data;
+  return map_locator;
 }
 
 SessionStorageMetadata::NamespaceEntry

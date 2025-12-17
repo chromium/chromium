@@ -68,8 +68,7 @@ void SessionStorageNamespaceImpl::PopulateFromMetadata(
   pending_population_from_parent_namespace_.clear();
   for (const auto& pair : namespace_metadata->second) {
     scoped_refptr<SessionStorageDataMap> data_map =
-        delegate_->MaybeGetExistingDataMapForId(
-            pair.second->MapNumberAsBytes());
+        delegate_->MaybeGetExistingDataMapForId(pair.second->map_id().value());
     if (!data_map) {
       data_map = SessionStorageDataMap::CreateFromDisk(data_map_listener_,
                                                        pair.second, database_);
@@ -190,17 +189,17 @@ void SessionStorageNamespaceImpl::OpenArea(
     // The area may have been purged due to lack of bindings, so check the
     // metadata for the map.
     scoped_refptr<SessionStorageDataMap> data_map;
-    auto map_data_it = namespace_metadata->second.find(storage_key);
-    if (map_data_it != namespace_metadata->second.end()) {
+    auto map_locator_it = namespace_metadata->second.find(storage_key);
+    if (map_locator_it != namespace_metadata->second.end()) {
       // The map exists already, either on disk or being used by another
       // namespace.
-      scoped_refptr<SessionStorageMetadata::MapData> map_data =
-          map_data_it->second;
-      data_map =
-          delegate_->MaybeGetExistingDataMapForId(map_data->MapNumberAsBytes());
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
+          map_locator_it->second;
+      data_map = delegate_->MaybeGetExistingDataMapForId(
+          map_locator->map_id().value());
       if (!data_map) {
-        data_map = SessionStorageDataMap::CreateFromDisk(data_map_listener_,
-                                                         map_data, database_);
+        data_map = SessionStorageDataMap::CreateFromDisk(
+            data_map_listener_, map_locator, database_);
       }
     } else {
       // The map doesn't exist yet.

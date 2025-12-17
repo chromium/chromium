@@ -306,7 +306,8 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
   // Erase all map key/value pairs.
   for (const MapLocator& map : maps_to_delete) {
     // A valid `map` must be in `storage_keys` and `kLocalStorageSessionId`.
-    CHECK_EQ(map.session_id(), kLocalStorageSessionId);
+    CHECK_EQ(map.session_ids().size(), 1u);
+    CHECK_EQ(map.session_ids()[0], kLocalStorageSessionId);
     DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
 
     DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.storage_key()));

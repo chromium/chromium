@@ -138,19 +138,18 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
  private:
   friend class DOMStorageBrowserTest;
 
-  scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> RegisterNewAreaMap(
       const std::string& namespace_id,
       const blink::StorageKey& storage_key);
 
   // SessionStorageAreaImpl::Listener implementation:
-  void OnDataMapCreation(const std::vector<uint8_t>& map_prefix,
-                         SessionStorageDataMap* map) override;
-  void OnDataMapDestruction(const std::vector<uint8_t>& map_prefix) override;
+  void OnDataMapCreation(int64_t map_id, SessionStorageDataMap* map) override;
+  void OnDataMapDestruction(int64_t map_id) override;
   void OnCommitResult(DbStatus status) override;
 
   // SessionStorageNamespaceImpl::Delegate implementation:
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
-      const std::vector<uint8_t>& map_number_as_bytes) override;
+      int64_t map_id) override;
   void RegisterShallowClonedNamespace(
       const std::string& source_namespace_id,
       const std::string& new_namespace_id,
@@ -222,8 +221,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // The removal of items from this map is managed by the refcounting in
   // SessionStorageDataMap.
   // Populated after the database is connected.
-  std::map<std::vector<uint8_t>,
-           raw_ptr<SessionStorageDataMap, CtnExperimental>>
+  std::map</*map_id=*/int64_t, raw_ptr<SessionStorageDataMap, CtnExperimental>>
       data_maps_;
   // Populated in CreateNamespace, CloneNamespace, and sometimes
   // RegisterShallowClonedNamespace. Items are removed in

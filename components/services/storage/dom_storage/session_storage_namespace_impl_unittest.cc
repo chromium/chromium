@@ -48,9 +48,8 @@ class MockListener : public SessionStorageDataMap::Listener {
   MockListener() = default;
   ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
-               void(const std::vector<uint8_t>& map_id,
-                    SessionStorageDataMap* map));
-  MOCK_METHOD1(OnDataMapDestruction, void(const std::vector<uint8_t>& map_id));
+               void(int64_t map_id, SessionStorageDataMap* map));
+  MOCK_METHOD1(OnDataMapDestruction, void(int64_t map_id));
   MOCK_METHOD1(OnCommitResult, void(DbStatus));
 };
 
@@ -74,10 +73,9 @@ class SessionStorageNamespaceImplTest
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
 
-    metadata_.SetupNewDatabaseForTesting();
-    auto map_id =
+    auto map_locator =
         metadata_.RegisterNewMap(test_namespace_id1_, test_storage_key1_);
-    DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
+    EXPECT_EQ(map_locator->map_id().value(), 0);
 
     // Put some data in one of the maps.
     base::RunLoop put_loop;
@@ -109,7 +107,7 @@ class SessionStorageNamespaceImplTest
     return namespace_impl_ptr;
   }
 
-  scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> RegisterNewAreaMap(
       const std::string& namespace_id,
       const blink::StorageKey& storage_key) {
     return metadata_.RegisterNewMap(namespace_id, storage_key);
@@ -144,8 +142,8 @@ class SessionStorageNamespaceImplTest
   }
 
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
-      const std::vector<uint8_t>& map_number_as_bytes) override {
-    auto it = data_maps_.find(map_number_as_bytes);
+      int64_t map_id) override {
+    auto it = data_maps_.find(map_id);
     if (it == data_maps_.end())
       return nullptr;
     return it->second;
@@ -163,8 +161,7 @@ class SessionStorageNamespaceImplTest
 
   std::map<std::string, std::unique_ptr<SessionStorageNamespaceImpl>>
       namespaces_;
-  std::map<std::vector<uint8_t>, scoped_refptr<SessionStorageDataMap>>
-      data_maps_;
+  std::map</*map_id=*/int64_t, scoped_refptr<SessionStorageDataMap>> data_maps_;
 
   testing::StrictMock<MockListener> listener_;
   std::unique_ptr<AsyncDomStorageDatabase> database_;
@@ -175,9 +172,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoad) {
   SessionStorageNamespaceImpl* namespace_impl =
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
@@ -196,8 +191,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoad) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
                                         StdStringToUint8Vector("data1"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   namespaces_.clear();
 }
 
@@ -207,9 +201,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
   SessionStorageNamespaceImpl* namespace_impl =
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
@@ -239,8 +231,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key2"),
                                         StdStringToUint8Vector("data2"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 
   namespaces_.clear();
 }
@@ -252,9 +243,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneBeforeBind) {
   SessionStorageNamespaceImpl* namespace_impl2 =
       CreateSessionStorageNamespaceImpl(test_namespace_id2_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
@@ -282,9 +271,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneBeforeBind) {
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(2)
       .WillRepeatedly([&](auto error) { commit_callback.Run(); });
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
   test::PutSync(leveldb_2.get(), StdStringToUint8Vector("key2"),
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
@@ -299,10 +286,8 @@ TEST_F(SessionStorageNamespaceImplTest, CloneBeforeBind) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key2"),
                                         StdStringToUint8Vector("data2"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
   namespaces_.clear();
 }
 
@@ -315,9 +300,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneAfterBind) {
   SessionStorageNamespaceImpl* namespace_impl2 =
       CreateSessionStorageNamespaceImpl(test_namespace_id2_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   namespace_impl1->PopulateFromMetadata(
       database_.get(),
@@ -329,9 +312,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneAfterBind) {
   // Set that we are waiting for clone, so binding is possible.
   namespace_impl2->SetPendingPopulationFromParentNamespace(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry2 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
@@ -375,10 +356,8 @@ TEST_F(SessionStorageNamespaceImplTest, CloneAfterBind) {
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key2"),
                                         StdStringToUint8Vector("data2"))));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
   namespaces_.clear();
 }
 
@@ -386,9 +365,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
   SessionStorageNamespaceImpl* namespace_impl =
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
@@ -423,8 +400,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
   // Check that the observer was notified.
   loop.Run();
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   namespaces_.clear();
 }
 
@@ -432,9 +408,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyDataWithoutBinding) {
   SessionStorageNamespaceImpl* namespace_impl =
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   namespace_impl->PopulateFromMetadata(
       database_.get(),
@@ -446,8 +420,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyDataWithoutBinding) {
   namespace_impl->RemoveStorageKeyData(test_storage_key1_, base::DoNothing());
   loop.Run();
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   namespaces_.clear();
 }
 
@@ -457,9 +430,7 @@ TEST_F(SessionStorageNamespaceImplTest, PurgeUnused) {
   SessionStorageNamespaceImpl* namespace_impl =
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
@@ -473,8 +444,7 @@ TEST_F(SessionStorageNamespaceImplTest, PurgeUnused) {
   EXPECT_TRUE(
       namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   leveldb_1.reset();
   EXPECT_TRUE(
       namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
@@ -496,8 +466,7 @@ TEST_F(SessionStorageNamespaceImplTest, ReopenClonedAreaAfterPurge) {
       CreateSessionStorageNamespaceImpl(test_namespace_id1_);
 
   SessionStorageDataMap* data_map;
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("0"), testing::_))
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_))
       .WillOnce(testing::SaveArg<1>(&data_map));
 
   SessionStorageMetadata::NamespaceEntry namespace_entry1 =
@@ -511,7 +480,7 @@ TEST_F(SessionStorageNamespaceImplTest, ReopenClonedAreaAfterPurge) {
                            namespace_entry1);
 
   // Save the data map, as if we did a clone:
-  data_maps_[data_map->map_data()->MapNumberAsBytes()] = data_map;
+  data_maps_[data_map->map_locator().map_id().value()] = data_map;
 
   leveldb_1.reset();
   namespace_impl->FlushAreasForTesting();
@@ -529,8 +498,7 @@ TEST_F(SessionStorageNamespaceImplTest, ReopenClonedAreaAfterPurge) {
 
   data_maps_.clear();
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
 
   namespaces_.clear();
 }

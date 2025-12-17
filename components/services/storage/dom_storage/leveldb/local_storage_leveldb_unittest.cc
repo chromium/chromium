@@ -61,8 +61,8 @@ void VerifyDatabaseVersionEntry(
 }
 
 // Return "_<storage key>\x00<script key>".
-DomStorageDatabase::Key CreateMapDataKey(const blink::StorageKey& storage_key,
-                                         std::string script_key) {
+DomStorageDatabase::Key CreateMapEntryKey(const blink::StorageKey& storage_key,
+                                          std::string script_key) {
   DomStorageDatabase::Key map_data_key =
       LocalStorageLevelDB::GetMapPrefix(storage_key);
 
@@ -764,11 +764,11 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapKeyValues) {
       WriteEntries(*local_storage_leveldb,
                    {
                        {
-                           CreateMapDataKey(kFakeUrlStorageKey, "key_1"),
+                           CreateMapEntryKey(kFakeUrlStorageKey, "key_1"),
                            ToBytes("value_1"),
                        },
                        {
-                           CreateMapDataKey(kFakeUrlStorageKey, "key_2"),
+                           CreateMapEntryKey(kFakeUrlStorageKey, "key_2"),
                            ToBytes("value_2"),
                        },
                    }));
@@ -802,27 +802,27 @@ TEST_F(LocalStorageLevelDBTest,
       {
           // Add map key value pairs.
           {
-              CreateMapDataKey(kFakeUrlStorageKey, "key_1"),
+              CreateMapEntryKey(kFakeUrlStorageKey, "key_1"),
               ToBytes("value_1"),
           },
           {
-              CreateMapDataKey(kFakeUrlStorageKey, "key_2"),
+              CreateMapEntryKey(kFakeUrlStorageKey, "key_2"),
               ToBytes("value_2"),
           },
           {
-              CreateMapDataKey(kSecondStorageKey, "key_3"),
+              CreateMapEntryKey(kSecondStorageKey, "key_3"),
               ToBytes("value_3"),
           },
           {
-              CreateMapDataKey(kThirdStorageKey, "key_1"),
+              CreateMapEntryKey(kThirdStorageKey, "key_1"),
               ToBytes("value_4"),
           },
           {
-              CreateMapDataKey(kThirdStorageKey, "key_2"),
+              CreateMapEntryKey(kThirdStorageKey, "key_2"),
               ToBytes("value_5"),
           },
           {
-              CreateMapDataKey(kThirdStorageKey, "key_3"),
+              CreateMapEntryKey(kThirdStorageKey, "key_3"),
               ToBytes("value_5"),
           },
           // Add "METAACCESS:" entries.
@@ -892,7 +892,7 @@ TEST_F(LocalStorageLevelDBTest,
   VerifyDatabaseVersionEntry(all_entries[2]);
 
   // Verify the map key/value paris for the second storage key.
-  EXPECT_EQ(all_entries[3].key, CreateMapDataKey(kSecondStorageKey, "key_3"));
+  EXPECT_EQ(all_entries[3].key, CreateMapEntryKey(kSecondStorageKey, "key_3"));
   EXPECT_EQ(all_entries[3].value, ToBytes("value_3"));
 
   // Erase all the storage keys.

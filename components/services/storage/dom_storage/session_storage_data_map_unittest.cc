@@ -30,6 +30,9 @@ namespace storage {
 
 namespace {
 
+constexpr const char kFakeNamespaceId[] =
+    "ce8c7dc5_73b4_4320_a506_ce1f4fd3356f";
+
 std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
@@ -53,9 +56,8 @@ class MockListener : public SessionStorageDataMap::Listener {
   MockListener() = default;
   ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
-               void(const std::vector<uint8_t>& map_id,
-                    SessionStorageDataMap* map));
-  MOCK_METHOD1(OnDataMapDestruction, void(const std::vector<uint8_t>& map_id));
+               void(int64_t map_id, SessionStorageDataMap* map));
+  MOCK_METHOD1(OnDataMapDestruction, void(int64_t map_id));
   MOCK_METHOD1(OnCommitResult, void(DbStatus status));
 };
 
@@ -134,15 +136,14 @@ class SessionStorageDataMapTest : public testing::Test {
 }  // namespace
 
 TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              1, test_storage_key_),
+          base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+              DomStorageDatabase::MapLocator(kFakeNamespaceId,
+                                             test_storage_key_, /*map_id=*/1)),
           database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -155,8 +156,7 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
   EXPECT_EQ(StdStringToUint8Vector("key1"), data[0]->key);
   EXPECT_EQ(StdStringToUint8Vector("data1"), data[0]->value);
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   // Test data is not cleared on deletion.
   map = nullptr;
@@ -169,14 +169,13 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
 }
 
 TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map = SessionStorageDataMap::CreateEmpty(
       &listener_,
-      base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                            test_storage_key_),
+      base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+          DomStorageDatabase::MapLocator(kFakeNamespaceId, test_storage_key_,
+                                         /*map_id=*/1)),
       database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -187,8 +186,7 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   ASSERT_EQ(0u, data.size());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   // Test data is not cleared on deletion.
   map = nullptr;
@@ -201,28 +199,26 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 }
 
 TEST_F(SessionStorageDataMapTest, Clone) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map1 =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              1, test_storage_key_),
+          base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+              DomStorageDatabase::MapLocator(kFakeNamespaceId,
+                                             test_storage_key_, /*map_id=*/1)),
           database_.get());
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("2"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/2, testing::_)).Times(1);
   // One call on fork.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map2 =
       SessionStorageDataMap::CreateClone(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              2, test_storage_key_),
+          base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+              DomStorageDatabase::MapLocator(kFakeNamespaceId,
+                                             test_storage_key_, /*map_id=*/2)),
           map1);
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -237,10 +233,8 @@ TEST_F(SessionStorageDataMapTest, Clone) {
 
   // Test that the data was copied.
   EXPECT_EQ("data1", GetDatabaseContents()["map-2-key1"]);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("2")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/2)).Times(1);
 
   // Test data is not cleared on deletion.
   map1 = nullptr;

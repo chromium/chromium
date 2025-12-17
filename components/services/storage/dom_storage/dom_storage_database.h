@@ -15,6 +15,7 @@
 #include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -70,6 +71,18 @@ class DomStorageDatabase {
   // to find the map data. Use `session_id` and `storage_key` to find the
   // `map_id`. Some maps are loaded on demand where `map_id` remains unknown
   // until the first read or write.
+  //
+  // The number of sessions consuming a map can increase or decrease. A session
+  // can clone a map, which then shares the same map across multiple sessions.
+  // Cloned maps have at least 2 IDs in `session_ids_`. A session may also stop
+  // using a map by deleting it or forking it, which then removes an ID from
+  // `session_ids_`. `session_ids_` is empty for an unused map.
+  //
+  // Maps are read-only when used by multiple sessions. To modify a cloned
+  // map, a session must first create a new forked copy, which avoids
+  // modifying the clone's key/value pairs in other sessions.
+  //
+  // Maps without sessions are not in use. They can be deleted.
   class MapLocator {
    public:
     MapLocator(std::string source_session_id,
@@ -86,14 +99,31 @@ class DomStorageDatabase {
     MapLocator(const MapLocator&) = delete;
     MapLocator& operator=(const MapLocator&) = delete;
 
-    const std::string& session_id() const;
+    const std::vector<std::string>& session_ids() const;
     const blink::StorageKey& storage_key() const;
     std::optional<int64_t> map_id() const;
 
+    void AddSession(std::string session_id);
+    void RemoveSession(const std::string& session_id);
+
    private:
-    std::string session_id_;
+    std::vector<std::string> session_ids_;
     blink::StorageKey storage_key_;
     std::optional<int64_t> map_id_;
+  };
+
+  // Cloned sessions share the same underlying map.
+  //
+  // TODO(crbug.com/469468099): Refactor to remove `SharedMapLocator` and
+  // reference counting.
+  class SharedMapLocator : public MapLocator,
+                           public base::RefCounted<SharedMapLocator> {
+   public:
+    explicit SharedMapLocator(MapLocator source);
+
+   private:
+    friend class base::RefCounted<SharedMapLocator>;
+    ~SharedMapLocator();
   };
 
   // Describes a consumer of a persisted map's data and its size and usage. Some
