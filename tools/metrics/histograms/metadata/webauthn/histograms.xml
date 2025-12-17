@@ -407,6 +407,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GpmPinStatus" enum="GpmPinAvailability"
+    expires_after="2026-03-22">
+  <owner>izuzic@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the GPM PIN status on Chrome startup. Recorded on desktop, on Chrome
+    startup when enclave manager is loaded. See GpmPinAvailability enum for
+    details.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IOS.ContentAreaEvent"
     enum="WebAuthenticationIOSContentAreaEvent" expires_after="2026-05-10">
   <owner>rgod@google.com</owner>

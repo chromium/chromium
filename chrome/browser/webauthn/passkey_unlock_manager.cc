@@ -201,6 +201,7 @@ void PasskeyUnlockManager::OnHaveGpmPinAvailability(
   has_gpm_pin_ = gpm_pin_availability ==
                  EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable;
   ComputeShouldDisplayErrorUiAndNotifyObservers();
+  MaybeRecordDelayedGpmPinStatusHistogram(gpm_pin_availability);
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
@@ -306,6 +307,25 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasskeyReadinessHistogram() {
 void PasskeyUnlockManager::RecordPasskeyReadinessHistogram() {
   base::UmaHistogramBoolean(kPasskeyReadinessHistogram,
                             enclave_manager()->is_ready());
+}
+
+void PasskeyUnlockManager::MaybeRecordDelayedGpmPinStatusHistogram(
+    EnclaveManager::GpmPinAvailability gpm_pin_availability) {
+  if (gpm_pin_status_recorded_on_startup_) {
+    return;
+  }
+  gpm_pin_status_recorded_on_startup_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasskeyUnlockManager::RecordGpmPinStatusHistogram,
+                     weak_ptr_factory_.GetWeakPtr(), gpm_pin_availability),
+      base::Seconds(30));
+}
+
+void PasskeyUnlockManager::RecordGpmPinStatusHistogram(
+    EnclaveManager::GpmPinAvailability gpm_pin_availability) {
+  base::UmaHistogramEnumeration("WebAuthentication.GpmPinStatus",
+                                gpm_pin_availability);
 }
 
 }  // namespace webauthn

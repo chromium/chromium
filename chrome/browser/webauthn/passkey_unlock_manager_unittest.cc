@@ -468,6 +468,17 @@ TEST_F(PasskeyUnlockManagerTest,
   passkey_unlock_manager()->RemoveObserver(&observer);
 }
 
+TEST_F(PasskeyUnlockManagerTest,
+       LogsGpmPinStatusHistogramWhenGpmPinStatusUnset) {
+  ConfigureProfileAndSyncService(kEnclaveNotReady, kPasskeyModelNotReady,
+                                 GpmPinStatus::kGpmPinUnset);
+  base::HistogramTester histogram_tester;
+
+  AdvanceClock(base::Seconds(31));
+  histogram_tester.ExpectUniqueSample("WebAuthentication.GpmPinStatus",
+                                      GpmPinStatus::kGpmPinUnset, 1);
+}
+
 }  // namespace
 
 }  // namespace webauthn
