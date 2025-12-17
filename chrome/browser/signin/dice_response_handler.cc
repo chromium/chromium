@@ -371,7 +371,7 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
       return;  // There is already a request in flight with the same parameters.
     }
   }
-  delegate->EnableSync(
+  delegate->CompleteChromeSignInAfterGaiaSignin(
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id));
 }
 
@@ -474,7 +474,7 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,
                                                         is_new_account);
   if (should_enable_sync) {
-    token_fetcher->delegate()->EnableSync(
+    token_fetcher->delegate()->CompleteChromeSignInAfterGaiaSignin(
         identity_manager_->FindExtendedAccountInfoByAccountId(account_id));
   }
 

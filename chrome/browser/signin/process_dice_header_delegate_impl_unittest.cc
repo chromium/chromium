@@ -272,7 +272,8 @@ class ProcessDiceHeaderDelegateImplTest
 };
 
 // Check that sync is enabled if the tab is closed during signin.
-TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileStartingSync) {
+TEST_F(ProcessDiceHeaderDelegateImplTest,
+       CloseTabWhileCompletingProfileSignIn) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
@@ -281,7 +282,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileStartingSync) {
   DeleteContents();
 
   // Check expectations.
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_NE(
       enable_sync_called_,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
@@ -303,7 +304,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest,
           signin_metrics::AccessPoint::kBookmarkBubble);
 
   // Check expectations.
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
 
   // History sync opt-in is not started because the access point is not
   // supported.
@@ -332,7 +333,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_NE(
       enable_sync_called_,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
@@ -357,7 +358,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_NE(
       enable_sync_called_,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
@@ -371,7 +372,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
   history_sync_optin_started_ = false;
   ProcessDiceHeaderDelegateImpl::Create(web_contents());
   // Calling `EnableSync()` does nothing because the tab has already been used.
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_FALSE(enable_sync_called_);
   EXPECT_FALSE(history_sync_optin_started_);
   EXPECT_FALSE(show_error_called_);
@@ -451,7 +452,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
                                         /*redirect_url=*/kNtpUrl);
-  delegate->EnableSync(account_info_);
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
 
   EXPECT_EQ(GetParam().callback_called, history_sync_optin_started_);
   EXPECT_FALSE(enable_sync_called_);

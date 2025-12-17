@@ -242,7 +242,7 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
 // `kWebSignin` access point, and only if the user has enabled the "Remember
 // sign-in choice" setting or if the `kBrowserSigninAutoAccept` command line
 // flag is set. Other access points are signed in to Chrome through the
-// `EnableSync()` method.
+// `CompleteChromeSignInAfterGaiaSignin()` method.
 // TODO(crbug.com/425645725): Rename using a more appropriate name once the
 // signin to browser is cleaned-up.
 void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
@@ -324,7 +324,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   }
 }
 
-void ProcessDiceHeaderDelegateImpl::EnableSync(
+void ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin(
     const CoreAccountInfo& account_info) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile_.get());

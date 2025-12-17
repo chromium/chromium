@@ -58,10 +58,12 @@ class ProcessDiceHeaderDelegate {
   virtual void HandleTokenExchangeSuccess(CoreAccountId account_id,
                                           bool is_new_account) = 0;
 
-  // Asks the delegate to enable sync for the |account_info|.
-  // Called after the account was seeded in the account tracker service and
-  // after the refresh token was fetched and updated in the token service.
-  virtual void EnableSync(const CoreAccountInfo& account_info) = 0;
+  // Completes the profile sign-in process for the |account_info|.
+  // This is called after the account has been seeded in the account tracker
+  // service and the refresh token has been fetched and updated in the token
+  // service. It may trigger a history sync enablement flow if configured.
+  virtual void CompleteChromeSignInAfterGaiaSignin(
+      const CoreAccountInfo& account_info) = 0;
 
   // Called when a Dice signin header is received. This is received before
   // navigating to the `continue_url`. Chrome has received the authorization

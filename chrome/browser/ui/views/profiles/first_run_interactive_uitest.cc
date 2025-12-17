@@ -367,7 +367,8 @@ class FirstRunInteractiveUiTest
     {
       auto process_dice_header_delegate_impl =
           ProcessDiceHeaderDelegateImpl::Create(web_contents());
-      process_dice_header_delegate_impl->EnableSync(account_info);
+      process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
+          account_info);
     }
   }
 
