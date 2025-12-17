@@ -31,6 +31,9 @@ public class ContentFeatureList {
 
     public static final String ACCESSIBILITY_EXTENDED_SELECTION = "AccessibilityExtendedSelection";
 
+    public static final String ACCESSIBILITY_IME_GET_FORMATTED_TEXT =
+            "AccessibilityImeGetFormattedText";
+
     public static final String ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE =
             "AccessibilityImproveLiveRegionAnnounce";
 

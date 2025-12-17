@@ -6,15 +6,17 @@ package org.chromium.content.browser.input;
 
 import android.os.Build;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.util.Locale;
 
@@ -89,29 +91,38 @@ public class TextInputState {
         return mReplyToRequest;
     }
 
-    public @Nullable CharSequence getSelectedText() {
-        if (mSelection.start() == mSelection.end()) return null;
-        return TextUtils.substring(mText, mSelection.start(), mSelection.end());
+    private static CharSequence subsequence(CharSequence source, int start, int end, int flags) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_IME_GET_FORMATTED_TEXT)
+                && flags == InputConnection.GET_TEXT_WITH_STYLES) {
+            return new SpannableStringBuilder(source, start, end);
+        }
+        return TextUtils.substring(source, start, end);
     }
 
-    public CharSequence getTextAfterSelection(int maxChars) {
+    public @Nullable CharSequence getSelectedText(int flags) {
+        if (mSelection.start() == mSelection.end()) return null;
+        return subsequence(mText, mSelection.start(), mSelection.end(), flags);
+    }
+
+    public CharSequence getTextAfterSelection(int maxChars, int flags) {
         // Clamp the maxChars to avoid integer overflow or negative value.
         maxChars = Math.max(0, Math.min(maxChars, mText.length() - mSelection.end()));
-        return TextUtils.substring(
-                mText, mSelection.end(), Math.min(mText.length(), mSelection.end() + maxChars));
+        int afterSelectionEnd = Math.min(mText.length(), mSelection.end() + maxChars);
+        return subsequence(mText, mSelection.end(), afterSelectionEnd, flags);
     }
 
-    public CharSequence getTextBeforeSelection(int maxChars) {
+    public CharSequence getTextBeforeSelection(int maxChars, int flags) {
         // Clamp the maxChars to the valid value.
         maxChars = Math.max(0, Math.min(maxChars, mSelection.start()));
-        return TextUtils.substring(
-                mText, Math.max(0, mSelection.start() - maxChars), mSelection.start());
+        int beforeSelectionStart = Math.max(0, mSelection.start() - maxChars);
+        return subsequence(mText, beforeSelectionStart, mSelection.start(), flags);
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    public SurroundingText getSurroundingText(int beforeLength, int afterLength) {
+    public SurroundingText getSurroundingText(int beforeLength, int afterLength, int flags) {
         SurroundingTextInternal surroundingText =
-                getSurroundingTextInternal(beforeLength, afterLength);
+                getSurroundingTextInternal(beforeLength, afterLength, flags);
+
         return new SurroundingText(
                 surroundingText.mText,
                 surroundingText.mSelectionStart,
@@ -121,26 +132,13 @@ public class TextInputState {
 
     @VisibleForTesting
     /* package */ SurroundingTextInternal getSurroundingTextInternal(
-            int beforeLength, int afterLength) {
+            int beforeLength, int afterLength, int flags) {
         beforeLength = Math.max(0, Math.min(beforeLength, mSelection.start()));
         afterLength = Math.max(0, Math.min(afterLength, mText.length() - mSelection.end()));
-        CharSequence text;
-        if (mText instanceof Spanned) {
-            text =
-                    new SpannableStringBuilder(
-                            mText,
-                            mSelection.start() - beforeLength,
-                            mSelection.end() + afterLength);
-        } else {
-            text =
-                    TextUtils.substring(
-                            mText,
-                            mSelection.start() - beforeLength,
-                            mSelection.end() + afterLength);
-        }
-
-        return new SurroundingTextInternal(
-                text, /* selectionStart= */ beforeLength,
+        CharSequence text = subsequence(mText, mSelection.start() - beforeLength,
+                mSelection.end() + afterLength, flags);
+        return new SurroundingTextInternal(text,
+                /* selectionStart= */ beforeLength,
                 /* selectionEnd= */ beforeLength + mSelection.end() - mSelection.start(),
                 /* offset= */ mSelection.start() - beforeLength);
     }

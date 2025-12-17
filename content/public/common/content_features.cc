@@ -1246,6 +1246,12 @@ BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
 BASE_FEATURE(kAccessibilityExtendedSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, the InputConnection will request
+// formatted text from the TextInputState.
+BASE_FEATURE(kAccessibilityImeGetFormattedText,
+             "AccessibilityImeGetFormattedText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, WINDOW_CONTENT_CHANGED events will be sent for each
 // LIVE_REGION_NODE_CHANGED rather than TYPE_ANNOUNCEMENT.
 // kAccessibilityDeprecateTypeAnnounce also encompasses ariaNotify, whereas this
