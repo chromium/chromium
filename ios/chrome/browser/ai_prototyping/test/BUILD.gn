@@ -8,6 +8,8 @@ source_set("eg_app_support+eg2") {
   sources = [
     "page_context_app_interface.h",
     "page_context_app_interface.mm",
+    "page_context_extraction_data.h",
+    "page_context_extraction_data.mm",
   ]
   deps = [
     "//base",
@@ -27,6 +29,10 @@ source_set("eg_test_support+eg2") {
   sources = [
     "page_context_app_interface.h",
     "page_context_app_interface_stub.mm",
+    "page_context_extraction_data.h",
+    "page_context_extraction_data.mm",
+    "test_args.h",
+    "test_args.mm",
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
