@@ -48,12 +48,8 @@ class CORE_EXPORT Navigator final : public NavigatorBase,
   String platform() const override;
 
   String GetAcceptLanguages() override;
-  void SetUserAgentMetadataForTesting(UserAgentMetadata);
 
   void Trace(Visitor*) const override;
-
- private:
-  UserAgentMetadata metadata_;
 };
 
 }  // namespace blink
