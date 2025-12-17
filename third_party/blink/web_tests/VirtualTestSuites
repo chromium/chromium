@@ -4683,7 +4683,8 @@
   {
     "prefix": "threaded-preload-scanner",
     "owners": [
-      "cduvall@chromium.org"
+      "nhiroki@chromium.org",
+      "chrome-loading@google.com"
     ],
     "platforms": [
       "Linux",
@@ -4698,7 +4699,7 @@
     "args": [
       "--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"
     ],
-    "expires": "Dec 5, 2025"
+    "expires": "Jun 5, 2026"
   },
   {
     "prefix": "trust-tokens",
