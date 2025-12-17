@@ -11,8 +11,11 @@
 class KeyedService;
 class Profile;
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 class BinaryUploadService;
+}
+
+namespace safe_browsing {
 
 // Singleton that owns CloudBinaryUploadService objects, one for each active
 // Profile. It listens to profile destroy events and destroy its associated
@@ -22,7 +25,8 @@ class CloudBinaryUploadServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
-  static BinaryUploadService* GetForProfile(Profile* profile);
+  static enterprise_connectors::BinaryUploadService* GetForProfile(
+      Profile* profile);
 
   // Get the singleton instance.
   static CloudBinaryUploadServiceFactory* GetInstance();

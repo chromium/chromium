@@ -15,12 +15,9 @@
 
 class Profile;
 
-namespace safe_browsing {
-class BinaryUploadService;
-}  // namespace safe_browsing
-
 namespace enterprise_connectors {
 
+class BinaryUploadService;
 class BinaryUploadRequest;
 class ContentAnalysisInfo;
 

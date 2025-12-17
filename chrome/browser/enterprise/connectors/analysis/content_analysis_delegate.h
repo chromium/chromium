@@ -30,12 +30,12 @@ struct ClipboardPasteData;
 }  // namespace content
 
 namespace safe_browsing {
-class BinaryUploadService;
 class SafeBrowsingNavigationObserverManager;
 }  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
+class BinaryUploadService;
 class ClipboardRequestHandler;
 class ContentAnalysisDialogController;
 class FilesRequestHandler;
@@ -387,7 +387,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
-  virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
+  virtual BinaryUploadService* GetBinaryUploadService();
 
   safe_browsing::SafeBrowsingNavigationObserverManager*
   GetNavigationObserverManager() const;

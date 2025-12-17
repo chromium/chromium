@@ -5,43 +5,16 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 
-#include "base/functional/callback.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/core/analysis_settings.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_ack.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_cancel_requests.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 
 namespace safe_browsing {
 
-// This class encapsulates the process of getting data scanned through a generic
-// interface.
-class BinaryUploadService : public KeyedService {
- public:
-  // The maximum size of data that can be uploaded via this service.
-  constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
-
-  // Upload the given file contents for deep scanning if the browser is
-  // authorized to upload data, otherwise queue the request.
-  virtual void MaybeUploadForDeepScanning(
-      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) = 0;
-
-  // Send an acknowledgement for the request with the given token.
-  virtual void MaybeAcknowledge(
-      std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) = 0;
-
-  // Cancel any requests that match the given criteria .  This is a best effort
-  // approach only, since it is possible that requests have been started in a
-  // way that they are no longer cancelable.
-  virtual void MaybeCancelRequests(
-      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests>
-          cancel) = 0;
-
-  // Get a WeakPtr to the instance.
-  virtual base::WeakPtr<BinaryUploadService> AsWeakPtr() = 0;
-};
+// Forwarding alias to allow existing code to compile without changes.
+using BinaryUploadService = ::enterprise_connectors::BinaryUploadService;
+using BinaryUploadAck = ::enterprise_connectors::BinaryUploadAck;
+using BinaryUploadCancelRequests =
+    ::enterprise_connectors::BinaryUploadCancelRequests;
+using BinaryUploadRequest = ::enterprise_connectors::BinaryUploadRequest;
 
 }  // namespace safe_browsing
 

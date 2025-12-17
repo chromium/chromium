@@ -105,6 +105,7 @@ source_set("cloud_content_scanning") {
     "cloud_content_scanning/binary_upload_cancel_requests.h",
     "cloud_content_scanning/binary_upload_request.cc",
     "cloud_content_scanning/binary_upload_request.h",
+    "cloud_content_scanning/binary_upload_service.h",
     "cloud_content_scanning/common.cc",
     "cloud_content_scanning/common.h",
     "cloud_content_scanning/connector_data_pipe_getter.cc",
