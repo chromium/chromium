@@ -620,6 +620,7 @@ void BrowserTestBase::SetUp() {
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
   // follows.
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry;
 
   // Unlike other platforms, android_browsertests can reuse the same process for

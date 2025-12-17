@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -63,6 +64,8 @@ class BFCachePolicyTest : public GraphTestHarness {
   }
 
  protected:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
   performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>

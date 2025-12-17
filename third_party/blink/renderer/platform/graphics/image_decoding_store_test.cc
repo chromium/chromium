@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 
 #include <memory>
+
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"

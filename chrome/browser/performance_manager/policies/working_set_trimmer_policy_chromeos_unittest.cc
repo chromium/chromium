@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -381,6 +382,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   std::unique_ptr<base::RunLoop> run_loop_;
   raw_ptr<MockWorkingSetTrimmerPolicyChromeOS,
           DanglingUntriaged>

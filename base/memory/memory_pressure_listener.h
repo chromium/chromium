@@ -24,6 +24,7 @@
 
 namespace base {
 
+class MemoryPressureListenerRegistry;
 class SingleThreadTaskRunner;
 
 enum class MemoryPressureListenerTag {
@@ -177,6 +178,9 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
 
   ~MemoryPressureListenerRegistration();
 
+  // Called by the registry to notify its impending destruction.
+  void OnBeforeMemoryPressureListenerRegistryDestroyed();
+
   void Notify(MemoryPressureLevel memory_pressure_level);
 
   MemoryPressureListenerTag tag() { return tag_; }
@@ -185,6 +189,9 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
   MemoryPressureListenerTag tag_;
 
   raw_ptr<MemoryPressureListener> memory_pressure_listener_
+      GUARDED_BY_CONTEXT(thread_checker_);
+
+  raw_ptr<MemoryPressureListenerRegistry> registry_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);

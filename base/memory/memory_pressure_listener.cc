@@ -7,8 +7,10 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -58,8 +60,16 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
     MemoryPressureListener* memory_pressure_listener)
-    : tag_(tag), memory_pressure_listener_(memory_pressure_listener) {
-  MemoryPressureListenerRegistry::Get().AddObserver(this);
+    : tag_(tag),
+      memory_pressure_listener_(memory_pressure_listener),
+      registry_(MemoryPressureListenerRegistry::MaybeGet()) {
+  if (!registry_) {
+    DLOG(WARNING) << "Registration of a MemoryPressureListener failed. The "
+                     "MemoryPressureListenerRegistry doesn't exist.";
+    return;
+  }
+
+  registry_->AddObserver(this);
 }
 
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
@@ -69,7 +79,19 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     : MemoryPressureListenerRegistration(tag, memory_pressure_listener) {}
 
 MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() {
-  MemoryPressureListenerRegistry::Get().RemoveObserver(this);
+  if (!registry_) {
+    return;
+  }
+
+  CHECK_EQ(registry_, MemoryPressureListenerRegistry::MaybeGet());
+  registry_->RemoveObserver(this);
+}
+
+void MemoryPressureListenerRegistration::
+    OnBeforeMemoryPressureListenerRegistryDestroyed() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  registry_->RemoveObserver(this);
+  registry_ = nullptr;
 }
 
 void MemoryPressureListenerRegistration::Notify(

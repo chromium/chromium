@@ -20,6 +20,8 @@ namespace base {
 
 namespace {
 
+MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
+
 std::atomic<bool> g_notifications_suppressed = false;
 
 BASE_FEATURE(kSuppressMemoryListeners, FEATURE_DISABLED_BY_DEFAULT);
@@ -31,12 +33,35 @@ BASE_FEATURE_PARAM(std::string,
                    "");
 }  // namespace
 
-MemoryPressureListenerRegistry::MemoryPressureListenerRegistry() = default;
+MemoryPressureListenerRegistry::MemoryPressureListenerRegistry() {
+  CHECK(!g_memory_pressure_listener_registry);
+  g_memory_pressure_listener_registry = this;
+}
+
+MemoryPressureListenerRegistry::~MemoryPressureListenerRegistry() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  listeners_.Notify(&MemoryPressureListenerRegistration::
+                        OnBeforeMemoryPressureListenerRegistryDestroyed);
+  CHECK(listeners_.empty());
+
+  CHECK_EQ(g_memory_pressure_listener_registry, this);
+  g_memory_pressure_listener_registry = nullptr;
+}
+
+// static
+bool MemoryPressureListenerRegistry::Exists() {
+  return g_memory_pressure_listener_registry;
+}
 
 // static
 MemoryPressureListenerRegistry& MemoryPressureListenerRegistry::Get() {
-  static auto* const registry = new MemoryPressureListenerRegistry();
-  return *registry;
+  CHECK(g_memory_pressure_listener_registry);
+  return *g_memory_pressure_listener_registry;
+}
+
+// static
+MemoryPressureListenerRegistry* MemoryPressureListenerRegistry::MaybeGet() {
+  return g_memory_pressure_listener_registry;
 }
 
 // static
@@ -57,6 +82,11 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
   if (AreNotificationsSuppressed()) {
     return;
   }
+
+  if (!Exists()) {
+    return;
+  }
+
   Get().DoNotifyMemoryPressure(memory_pressure_level);
 }
 
@@ -80,6 +110,7 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
 
 void MemoryPressureListenerRegistry::AddObserver(
     MemoryPressureListenerRegistration* listener) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
@@ -88,11 +119,13 @@ void MemoryPressureListenerRegistry::AddObserver(
 
 void MemoryPressureListenerRegistry::RemoveObserver(
     MemoryPressureListenerRegistration* listener) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   listeners_.RemoveObserver(listener);
 }
 
 void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -103,6 +104,7 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
   WebUIContentsPreloadManagerTestAPI& test_api() { return test_api_; }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   memory_pressure::test::FakeMemoryPressureMonitor fake_memory_monitor_;
   base::test::ScopedFeatureList enabled_feature_{
       features::kPreloadTopChromeWebUI};

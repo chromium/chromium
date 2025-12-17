@@ -726,6 +726,10 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
       {switches::kGpuProcess, GpuMain},
   });
 
+  // TODO(406578344): Remove `memory_pressure_listener_registry` when the
+  // base::MemoryPressureListener API is deleted in favor of
+  // base::MemoryConsumer.
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   // Create the memory consumer registry as early as possible.
   base::ScopedMemoryConsumerRegistry<ChildMemoryConsumerRegistry>
       child_memory_consumer_registry;
@@ -1162,6 +1166,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       InitializeMojoCore();
     }
 
+    memory_pressure_listener_registry_.emplace();
     browser_memory_consumer_registry_ = std::make_unique<
         base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry>>();
 

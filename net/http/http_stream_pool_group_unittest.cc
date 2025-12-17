@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -84,6 +85,7 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
   void DestroyHttpNetworkSession() { http_network_session_.reset(); }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList feature_list_;
   const HttpStreamKey default_test_key_;
   // For creating HttpNetworkSession.

@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -306,6 +307,10 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   // unittest -> [input] -> It2MeNativeMessagingHost -> [output] -> unittest
   base::File input_write_file_;
   base::File output_read_file_;
+
+  // Without a MemoryPressureListenerRegistry, a debug logging message is
+  // emitted, which affects this test suite.
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<base::RunLoop> test_run_loop_;

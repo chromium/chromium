@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
@@ -12459,6 +12460,8 @@ TEST_P(LayerTreeHostImplTest, ExternalTransformSetNeedsRedraw) {
 // TODO(crbug.com/458776836): Review memory limit related cc_unittests for
 // TreesInViz Service mode
 TEST_P(ClientModeLayerTreeHostImplTest, OnMemoryPressure) {
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
+
   gfx::Size size(200, 200);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();

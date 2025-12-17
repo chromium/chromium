@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -155,6 +156,7 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   SystemNodeImpl* system_node() { return system_node_.get()->get(); }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   std::unique_ptr<
       performance_manager::TestNodeWrapper<performance_manager::SystemNodeImpl>>
       system_node_;

@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -81,6 +82,7 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
     return service_->tail_model_executor_->IsReady();
   }
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<OnDeviceTailModelService> service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>

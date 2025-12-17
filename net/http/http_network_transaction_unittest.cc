@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -653,6 +654,8 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
   const NetworkIsolationKey kNetworkIsolationKey =
       NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
                           SchemefulSite(GURL("https://bar.test/")));
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   // These clocks are defined here, even though they're only used in the
   // Reporting tests below, since they need to be destroyed after

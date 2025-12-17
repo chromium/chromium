@@ -10,6 +10,7 @@
 
 #include "base/byte_count.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -174,6 +175,8 @@ class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
     EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
               evaluator->CalculateCurrentPressureLevel());
   }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};

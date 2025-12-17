@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -210,6 +211,9 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
   void Test2GiBLimit(net::CacheType type,
                      net::BackendType backend_type,
                      bool expect_limit);
+
+ private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 };
 
 class DiskCacheGenericBackendTest

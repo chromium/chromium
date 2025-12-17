@@ -9,6 +9,7 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -68,6 +69,8 @@ class SystemMemoryPressureEvaluatorFuchsiaTest
   void NotImplemented_(const std::string& name) override {
     ADD_FAILURE() << "Unexpected call to method: " << name;
   }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 

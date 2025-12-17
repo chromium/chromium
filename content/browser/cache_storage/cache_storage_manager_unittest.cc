@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -857,6 +858,7 @@ class CacheStorageManagerTest : public testing::Test {
   // Temporary directory must be allocated first so as to be destroyed last.
   base::ScopedTempDir temp_dir_;
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;

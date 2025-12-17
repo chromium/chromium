@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
@@ -183,6 +184,8 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
 }
 
 TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
+
   g_browser_process->local_state()->SetBoolean(prefs::kHoverCardImagesEnabled,
                                                true);
 

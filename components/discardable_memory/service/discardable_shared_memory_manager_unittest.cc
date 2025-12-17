@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -81,6 +82,7 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
     manager_ = std::make_unique<TestDiscardableSharedMemoryManager>();
   }
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   // DiscardableSharedMemoryManager requires a message loop and a worker thread.
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestDiscardableSharedMemoryManager> manager_;

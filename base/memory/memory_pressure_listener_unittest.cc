@@ -29,6 +29,7 @@ class MemoryPressureListenerTest : public testing::Test {
   }
 
  private:
+  MemoryPressureListenerRegistry registry_;
   RegisteredMockMemoryPressureListener listener_;
 };
 

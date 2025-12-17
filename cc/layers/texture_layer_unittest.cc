@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1605,6 +1606,7 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
     SoftwareTextureLayerTest::AfterTest();
   }
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   int step_ = 0;
   int verified_frames_ = 0;
 };

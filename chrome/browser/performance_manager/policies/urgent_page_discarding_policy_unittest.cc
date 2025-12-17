@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -48,6 +49,7 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<UrgentPageDiscardingPolicy> policy_ = nullptr;

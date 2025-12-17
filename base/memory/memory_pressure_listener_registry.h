@@ -10,19 +10,18 @@
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list.h"
+#include "base/threading/thread_checker.h"
 
 namespace base {
 
-// This class is thread safe and internally synchronized.
 class BASE_EXPORT MemoryPressureListenerRegistry {
  public:
-  MemoryPressureListenerRegistry();
-  // There is at most one MemoryPressureListenerRegistry and it is never
-  // deleted.
-  ~MemoryPressureListenerRegistry() = delete;
-
-  // Gets the shared MemoryPressureListenerRegistry singleton instance.
+  static bool Exists();
   static MemoryPressureListenerRegistry& Get();
+  static MemoryPressureListenerRegistry* MaybeGet();
+
+  MemoryPressureListenerRegistry();
+  ~MemoryPressureListenerRegistry();
 
   // Intended for use by the platform specific implementation.
   static void NotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
@@ -58,6 +57,8 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   MemoryPressureLevel last_memory_pressure_level_ = MEMORY_PRESSURE_LEVEL_NONE;
 
   ObserverList<MemoryPressureListenerRegistration>::Unchecked listeners_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace base

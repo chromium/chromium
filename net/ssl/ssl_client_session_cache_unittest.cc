@@ -4,6 +4,7 @@
 
 #include "net/ssl/ssl_client_session_cache.h"
 
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -77,6 +78,7 @@ class SSLClientSessionCacheTest : public testing::Test {
   }
 
  private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   bssl::UniquePtr<SSL_CTX> ssl_ctx_;
 };
 

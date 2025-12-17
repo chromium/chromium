@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -55,6 +56,7 @@ class UserLevelMemoryPressureSignalGeneratorTest
   }
 
  protected:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   blink::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::MemoryPressureListenerRegistration>

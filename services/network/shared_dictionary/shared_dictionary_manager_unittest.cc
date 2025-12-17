@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/callback.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -243,6 +244,8 @@ class SharedDictionaryManagerTest
     manager->GetOriginsBetween(start_time, end_time, result.GetCallback());
     return result.Get();
   }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
