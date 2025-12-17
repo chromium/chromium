@@ -1570,6 +1570,17 @@ void RecordNavigationTraceEventsAndMetrics(
   // Actual navigation events are logged below in contiguous (or nested)
   // intervals.
 
+  // Record a trace event to visualize the duration between a) the OS-level
+  // timestamp of the user input event that started a navigation to b) the
+  // actual navigation start (timeline.start). This duration is not included in
+  // the NavigationTotal intentionally.
+  if (!timeline.user_interaction.is_null() &&
+      timeline.user_interaction <= timeline.start) {
+    TRACE_EVENT_BEGIN("navigation", "InteractionToActualNavigationStart",
+                      track1, timeline.user_interaction);
+    TRACE_EVENT_END("navigation", track1, timeline.start);
+  }
+
   // Record a top-level "Navigation" trace event with the duration of the
   // full navigation, and then break it down into nested intervals which will
   // show up under it. Note that `url` is the committing URL, which might differ

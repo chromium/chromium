@@ -1517,6 +1517,14 @@ class CONTENT_EXPORT NavigationRequest
     // timestamps except for `start`, `finish`, and the DidCommit IPC
     // timestamps).
 
+    // The OS-level timestamp of the user input event leading to the navigation.
+    // This timestamp can be empty if the navigation is started without user
+    // input.
+    // Note that this might be null if the navigation started and synchronously
+    // committed in the navigation, such as for renderer-initiated same-document
+    // navigations or synchronous about:blank navigations.
+    base::TimeTicks user_interaction;
+
     // The time at which the navigation starts, as accurately as we can
     // determine. Note that for renderer-initiated navigations, this will be the
     // time when the navigation starts in the renderer.

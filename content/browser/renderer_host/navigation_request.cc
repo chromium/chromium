@@ -11845,6 +11845,15 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
     const base::TimeTicks& did_commit_ipc_received_time) {
   NavigationRequest::Timeline timeline;
 
+  // Similar to how `actual_navigation_start` is handled for `timeline.start` in
+  // synchronous renderer commits below, the input start time is not implemented
+  // for all navigations. For example, synchronous about:blank commits and
+  // same-document navigations do not currently set `input_start`, but it's
+  // possible to send the actual input start later in the future if it's useful.
+  if (!common_params().input_start.is_null()) {
+    timeline.user_interaction = common_params().input_start;
+  }
+
   if (is_synchronous_renderer_commit()) {
     // For synchronous renderer commits, the start time in the renderer process
     // should be provided in `actual_navigation_start`.
