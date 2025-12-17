@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -316,10 +317,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     private @Nullable Intent createNewWindowIntent(AndroidBrowserWindowCreateParams createParams) {
+        var profile = createParams.getProfile();
+        boolean isIncognito = profile.isIncognitoBranded();
+        // If incognito mode is disabled, it is disallowed to create an incognito window.
+        if (isIncognito && !IncognitoUtils.isIncognitoModeEnabled(profile)) {
+            return null;
+        }
         switch (createParams.getWindowType()) {
             case BrowserWindowType.NORMAL:
                 for (ChromeAndroidTask task : mTasks.values()) {
-                    boolean isIncognito = createParams.getProfile().isIncognitoBranded();
                     var intent = task.createIntentForNormalBrowserWindow(isIncognito);
                     if (intent != null) {
                         return intent;
@@ -334,9 +340,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 // WindowFeatures features =
                 //         new WindowFeatures(
                 //                 bounds.left, bounds.top, bounds.width(), bounds.height());
-                Intent intent =
-                        popupIntentCreator.createPopupIntent(
-                                null, createParams.getProfile().isIncognitoBranded());
+                Intent intent = popupIntentCreator.createPopupIntent(null, isIncognito);
                 IntentUtils.addTrustedIntentExtras(intent);
                 return intent;
             default:
