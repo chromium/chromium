@@ -121,6 +121,13 @@ class ContextualSearchboxHandler
       std::optional<lens::ImageEncodingOptions> image_encoding_options,
       AddFileContextCallback callback);
 
+  using RecontextualizeTabCallback = base::OnceCallback<void(bool success)>;
+  virtual void UploadTabContextWithData(
+      int32_t tab_id,
+      std::optional<int64_t> context_id,
+      std::unique_ptr<lens::ContextualInputData> data,
+      RecontextualizeTabCallback callback);
+
   // contextual_search::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
@@ -168,6 +175,10 @@ class ContextualSearchboxHandler
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder();
 
   // Helper function that uploads the cached tab context if it exists.
+  void UploadTabContext(
+      const base::UnguessableToken& context_token,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
+
   void UploadSnapshotTabContextIfPresent();
 
   // Returns suggest inputs from the contextual search session, or nullopt if
@@ -193,14 +204,15 @@ class ContextualSearchboxHandler
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
+  void OnUploadTabContextWithDataTokenCreated(
+      std::optional<int64_t> context_id,
+      std::unique_ptr<lens::ContextualInputData> data,
+      RecontextualizeTabCallback callback,
+      const base::UnguessableToken& context_token);
+
   // Helper function that handles the caching of the tab context. Once it's
   // successfully cached, we notify the page that the file is uploaded.
   void SnapshotTabContext(
-      const base::UnguessableToken& context_token,
-      std::unique_ptr<lens::ContextualInputData> page_content_data);
-
-  // Helper Function that does the actual uploading of the tab context.
-  void UploadTabContext(
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 

@@ -9,7 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,6 +22,15 @@
 
 class Profile;
 class ContextualTasksUI;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
+namespace contextual_tasks {
+struct ContextualTaskContext;
+class ContextualTasksContextController;
+}  // namespace contextual_tasks
 
 // Struct to store file data and mime type.
 struct FileData {
@@ -32,6 +43,7 @@ struct FileData {
 class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                                          public ui::SelectFileDialog::Listener {
  public:
+  friend class ContextualTasksComposeboxHandlerTest;
   ContextualTasksComposeboxHandler(
       ContextualTasksUI* ui_controller,
       Profile* profile,
@@ -66,12 +78,59 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void FileSelectionCanceled() override;
   void OnFileRead(std::unique_ptr<FileData> file_data);
 
+ protected:
+  virtual contextual_tasks::ContextualTasksContextController*
+  GetContextController();
+
  private:
   void OnFileAddedToSession(searchbox::mojom::SelectedFileInfoPtr file_info,
                             AddFileContextCallback callback,
                             const base::UnguessableToken& token);
 
+  // Called when the context is retrieved from the context service, for
+  // determining which tabs need to be re-uploaded before query submission via
+  // CreateAndSendQueryMessage.
+  void OnContextRetrieved(
+      std::string query,
+      tabs::TabHandle active_tab_handle,
+      std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
+
+  // Called when a tab context has been re-uploaded, to continue query
+  // submission.
+  void OnTabContextReuploaded(std::string query,
+                              base::RepeatingClosure barrier_closure,
+                              bool success);
+
+  // Called when all tabs have been re-uploaded, to continue query
+  // submission.
+  void ContinueCreateAndSendQueryMessage(std::string query);
+
+  // Returns the tabs that need to be re-uploaded before query submission based
+  // on the tabs present in the context.
+  std::vector<tabs::TabInterface*> GetTabsToUpdate(
+      const contextual_tasks::ContextualTaskContext& context,
+      tabs::TabInterface* active_tab);
+
+  // Returns a context id for the given tab from the query controller, or
+  // std::nullopt if not found.
+  std::optional<int64_t> GetContextIdForTab(
+      const contextual_tasks::ContextualTaskContext& context,
+      SessionID tab_session_id);
+
+  // Called when a tab contextualization has been fetched, to re-upload the
+  // tab context.
+  void OnTabContextualizationFetched(
+      std::string query,
+      std::unique_ptr<contextual_tasks::ContextualTaskContext> context,
+      base::RepeatingClosure barrier_closure,
+      int32_t tab_id,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
+
   raw_ptr<ContextualTasksUI> web_ui_controller_;
+  // The context controller for the current profile. The profile will outlive
+  // this class.
+  raw_ptr<contextual_tasks::ContextualTasksContextController>
+      context_controller_;
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
 
   base::WeakPtrFactory<ContextualTasksComposeboxHandler> weak_factory_{this};
