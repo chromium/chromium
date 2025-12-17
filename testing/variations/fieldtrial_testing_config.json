@@ -13028,27 +13028,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithEditStateFollowSteadyState",
-                    "params": {
-                        "kBottomOmniboxEvolutionParam": "kBottomOmniboxEvolutionParamEditStateFollowSteadyState"
-                    },
-                    "enable_features": [
-                        "BottomOmniboxEvolution",
-                        "MultilineBrowserOmnibox"
-                    ]
-                },
-                {
-                    "name": "EnabledWithForceBottomOmniboxEditState",
-                    "params": {
-                        "kBottomOmniboxEvolutionParam": "kBottomOmniboxEvolutionParamForceBottomOmniboxEditState"
-                    },
-                    "enable_features": [
-                        "BottomOmniboxEvolution",
-                        "MultilineBrowserOmnibox"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutBottomOmniboxOnFocus",
+                    "name": "EnabledMultilineTop",
                     "enable_features": [
                         "MultilineBrowserOmnibox"
                     ]
