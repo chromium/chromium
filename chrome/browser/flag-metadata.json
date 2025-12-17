@@ -5567,7 +5567,7 @@
       "birnie@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 144
+    "expiry_milestone": 150
   },
   {
     "name": "glic-actor",
@@ -5660,7 +5660,7 @@
   {
     "name": "glic-fre-pre-warming",
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "glic-live-mode-only-glow",
@@ -5710,7 +5710,7 @@
   {
     "name": "glic-pre-warming",
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
     {
     "name": "glic-print-menu-item",
@@ -5718,7 +5718,7 @@
       "basiaz@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 149
+    "expiry_milestone": 150
   },
   {
     "name": "glic-side-panel",
