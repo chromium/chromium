@@ -14,7 +14,7 @@ extensions_api_schema_files_ = [
   "dns.webidl",
   "events.json",
   "extension_types.json",
-  "file_handlers.idl",
+  "file_handlers.webidl",
   "icon_variants.idl",
   "i18n.json",
   "idle.json",
