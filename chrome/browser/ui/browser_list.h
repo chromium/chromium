@@ -49,7 +49,6 @@ class BrowserList {
   const_iterator end() const { return browsers_.end(); }
 
   bool empty() const { return browsers_.empty(); }
-  size_t size() const { return browsers_.size(); }
 
   static BrowserList* GetInstance();
 
