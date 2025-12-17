@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.UiUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
@@ -124,9 +125,14 @@ public class RecentlyClosedEntriesManager {
      *
      * @param entry The entry (window, bulk event, or group) to be restored.
      */
+    // TODO(crbug.com/469132710): Confirm with UX whether we should pull the next entry during
+    // restore when the UI does not display all stored entries.
     public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
-        assert entry instanceof SessionRecentlyClosedEntry;
-        mRecentlyClosedTabManager.openRecentlyClosedEntry(mRegularTabModel, entry);
+        if (entry instanceof SessionRecentlyClosedEntry) {
+            mRecentlyClosedTabManager.openRecentlyClosedEntry(mRegularTabModel, entry);
+        } else if (entry instanceof RecentlyClosedWindow closedWindow) {
+            openRecentlyClosedWindow(closedWindow.getInstanceId(), NewWindowAppSource.RECENT_TABS);
+        }
     }
 
     /**
@@ -150,6 +156,20 @@ public class RecentlyClosedEntriesManager {
         return UiUtils.isRecentlyClosedTabsAndWindowsEnabled()
                 ? RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW
                 : RECENTLY_CLOSED_MAX_ENTRY_COUNT;
+    }
+
+    private void openRecentlyClosedWindow(int instanceId, @NewWindowAppSource int source) {
+        mMultiInstanceManager.openWindow(instanceId, source);
+        for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
+            if (entry instanceof RecentlyClosedWindow window
+                    && window.getInstanceId() == instanceId) {
+                mRecentlyClosedEntries.remove(entry);
+                if (mEntriesUpdatedCallback != null) {
+                    mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
+                }
+                return;
+            }
+        }
     }
 
     /**
