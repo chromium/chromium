@@ -155,10 +155,10 @@ struct Manifest {
 
   // Localized fields map locales with localized value.
   // See: https://www.w3.org/TR/appmanifest/#x_localized-members
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
-  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+  map<Locale, ManifestLocalizedTextObject>? name_localized;
+  map<Locale, ManifestLocalizedTextObject>? short_name_localized;
+  map<Locale, ManifestLocalizedTextObject>? description_localized;
+  map<Locale, array<ManifestImageResource>>? icons_localized;
 };
 
 struct ManifestLocalizedTextObject {
@@ -168,6 +168,13 @@ struct ManifestLocalizedTextObject {
   Manifest.TextDirection? dir;
 
   mojo_base.mojom.String16? lang;
+};
+
+// Wrapper struct for BCP 47 locale tags. This is used as a map key for
+// localized manifest fields and will be converted to icu::Locale on the C++
+// side via StructTraits.
+struct Locale {
+  string tag;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -187,10 +194,10 @@ struct ManifestShortcutItem {
 
   array<ManifestImageResource> icons;
 
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
-  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+  map<Locale, ManifestLocalizedTextObject>? name_localized;
+  map<Locale, ManifestLocalizedTextObject>? short_name_localized;
+  map<Locale, ManifestLocalizedTextObject>? description_localized;
+  map<Locale, array<ManifestImageResource>>? icons_localized;
 };
 
 // Structure representing an icon as per the Manifest specification, see:

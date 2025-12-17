@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/manifest/icu_locale_hash_traits.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace gfx {
 class Size;
@@ -157,6 +159,11 @@ class MODULES_EXPORT ManifestParser {
   // present or is not a valid color.
   std::optional<RGBA32> ParseColor(const JSONObject* object, const String& key);
 
+  // Helper function to validate a BCP 47 locale string and return the parsed
+  // icu::Locale. Returns a null optional if the locale string is invalid or
+  // represents the root/undetermined locale.
+  std::optional<icu::Locale> ParseLocaleKey(const String& locale_str);
+
   // Helper function to parse URLs present on a given |dictionary| in a given
   // field identified by its |key|. The URL is first parsed as a string then
   // resolved using |base_url|. |enforce_document_origin| specified whether to
@@ -281,10 +288,10 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'icons_localized' field of a Manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-process-a-_localized-image-resource-member
-  // Returns a map of locale strings to vectors of ManifestImageResourcePtr with
+  // Returns a map of Locale to vectors of ManifestImageResourcePtr with
   // the successfully parsed localized icons, if any. An empty map is returned
   // if the field was not present or empty.
-  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
   ParseIconsLocalized(const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
@@ -569,16 +576,16 @@ class MODULES_EXPORT ManifestParser {
                                                 const PatternInit& init,
                                                 const KURL& base_url);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseLocalizedField(const JSONObject* object, const String& field_name);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseNameLocalized(const JSONObject* object);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseShortNameLocalized(const JSONObject* object);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(

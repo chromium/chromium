@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("manifest") {
   sources = [
+    "icu_locale_hash_traits.h",
     "image_resource_type_converters.cc",
     "image_resource_type_converters.h",
     "manifest_change_notifier.cc",
@@ -21,6 +22,7 @@ blink_modules_sources("manifest") {
   deps = [
     "//net",
     "//third_party/blink/renderer/modules/navigatorcontentutils",
+    "//third_party/icu",
     "//url",
   ]
 }

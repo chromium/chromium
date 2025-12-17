@@ -410,6 +410,7 @@ source_set("common_unittests_sources") {
     "loader/referrer_utils_unittest.cc",
     "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",
+    "manifest/manifest_mojom_traits_unittest.cc",
     "manifest/manifest_util_unittest.cc",
     "mediastream/media_devices_mojom_traits_unittest.cc",
     "mediastream/media_devices_unittest.cc",

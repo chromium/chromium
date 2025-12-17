@@ -410,6 +410,30 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/manifest/',
+            'third_party/blink/public/common/manifest/',
+        ],
+        'allowed': [
+            # ICU types for locale handling in manifest localization maps.
+            'icu::Locale',
+
+            # Abseil containers for locale-keyed maps.
+            'absl::flat_hash_map',
+
+            # Base types for string conversions and error handling.
+            'base::UTF16ToUTF8',
+            'base::UTF8ToUTF16',
+
+            # Mojo types for serialization traits.
+            'mojo_base::mojom::String16DataView',
+
+            # Internal helpers for string truncation in traits.
+            'internal::TruncateString16',
+            'internal::TruncateOptionalString16',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/interest_group/',
             'third_party/blink/public/common/interest_group/',
         ],

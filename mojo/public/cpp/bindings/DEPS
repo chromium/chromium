@@ -8,6 +8,9 @@ specific_include_rules = {
   "array_traits_protobuf.h": [
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],
+  "map_traits_absl.h": [
+    "+third_party/abseil-cpp/absl/container/flat_hash_map.h",
+  ],
   "map_traits_protobuf.h": [
     "+third_party/protobuf/src/google/protobuf/map.h",
   ],

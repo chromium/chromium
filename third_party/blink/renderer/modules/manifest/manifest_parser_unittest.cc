@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/liburlpattern/part.h"
 
 namespace blink {
@@ -6495,13 +6496,14 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         "es": "Nombre en Español"
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 2u);
-    EXPECT_TRUE(manifest->name_localized.Contains("en"));
-    EXPECT_TRUE(manifest->name_localized.Contains("es"));
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value,
+    EXPECT_FALSE(!manifest->name_localized ||
+                 manifest->name_localized->empty());
+    EXPECT_EQ(manifest->name_localized->size(), 2u);
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
               "English Name");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
               "Nombre en Español");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -6522,16 +6524,20 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 2u);
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value,
+    EXPECT_FALSE(!manifest->name_localized ||
+                 manifest->name_localized->empty());
+    EXPECT_EQ(manifest->name_localized->size(), 2u);
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
               "English Name");
-    EXPECT_EQ(manifest->name_localized.find("en")->value->lang, "en-US");
-    EXPECT_EQ(manifest->name_localized.find("en")->value->dir,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->lang,
+              "en-US");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->dir,
               mojom::blink::Manifest::TextDirection::kLTR);
-    EXPECT_EQ(manifest->name_localized.find("ar")->value->value, "اسم عربي");
-    EXPECT_EQ(manifest->name_localized.find("ar")->value->lang, "ar");
-    EXPECT_EQ(manifest->name_localized.find("ar")->value->dir,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("ar"))->value->value,
+              "اسم عربي");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("ar"))->value->lang,
+              "ar");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("ar"))->value->dir,
               mojom::blink::Manifest::TextDirection::kRTL);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -6547,12 +6553,14 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value,
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
               "English Name");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
               "Nombre en Español");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->lang, "es-ES");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->lang,
+              "es-ES");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6567,12 +6575,14 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value,
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
               "English Name");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
               "Nombre en Español");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->lang, "es-ES");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->lang,
+              "es-ES");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6588,10 +6598,12 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 1u);
-    EXPECT_TRUE(manifest->name_localized.Contains("es"));
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value, "Valid Name");
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 1u);
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
+              "Valid Name");
     EXPECT_EQ(1u, GetErrorCount());
   }
 
@@ -6605,10 +6617,12 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         "de": ["array", "value"]
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 1u);
-    EXPECT_TRUE(manifest->name_localized.Contains("en"));
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value, "Valid Name");
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 1u);
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("en")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
+              "Valid Name");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6626,10 +6640,12 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 1u);
-    EXPECT_TRUE(manifest->name_localized.Contains("es"));
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value, "Valid Name");
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 1u);
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
+              "Valid Name");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6655,16 +6671,21 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 2u);
-    EXPECT_TRUE(manifest->name_localized.Contains("en"));
-    EXPECT_TRUE(manifest->name_localized.Contains("de"));
-    EXPECT_FALSE(manifest->name_localized.Contains("es"));
-    EXPECT_FALSE(manifest->name_localized.Contains("fr"));
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value, "Valid Name");
-    EXPECT_EQ(manifest->name_localized.find("en")->value->lang, "en-US");
-    EXPECT_EQ(manifest->name_localized.find("de")->value->value, "German Name");
-    EXPECT_EQ(manifest->name_localized.find("de")->value->lang, "de-DE");
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 2u);
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("de")));
+    EXPECT_FALSE(manifest->name_localized->Contains(icu::Locale("es")));
+    EXPECT_FALSE(manifest->name_localized->Contains(icu::Locale("fr")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
+              "Valid Name");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->lang,
+              "en-US");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("de"))->value->value,
+              "German Name");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("de"))->value->lang,
+              "de-DE");
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ(
         errors()[0],
@@ -6690,17 +6711,21 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 3u);
-    EXPECT_EQ(manifest->name_localized.find("en")->value->value,
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 3u);
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->value,
               "Uses Manifest Lang");
-    EXPECT_EQ(manifest->name_localized.find("en")->value->lang, "en-US");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("en"))->value->lang,
+              "en-US");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
               "Uses Own Lang");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->lang, "es-ES");
-    EXPECT_EQ(manifest->name_localized.find("fr")->value->value,
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->lang,
+              "es-ES");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("fr"))->value->value,
               "Also Uses Manifest Lang");
-    EXPECT_EQ(manifest->name_localized.find("fr")->value->lang, "en-US");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("fr"))->value->lang,
+              "en-US");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6716,13 +6741,15 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->name_localized.empty());
-    EXPECT_EQ(manifest->name_localized.size(), 1u);
-    EXPECT_FALSE(manifest->name_localized.Contains("en"));
-    EXPECT_TRUE(manifest->name_localized.Contains("es"));
-    EXPECT_EQ(manifest->name_localized.find("es")->value->value,
+    EXPECT_FALSE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
+    EXPECT_EQ(manifest->name_localized->size(), 1u);
+    EXPECT_FALSE(manifest->name_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->value,
               "Uses Valid Lang");
-    EXPECT_EQ(manifest->name_localized.find("es")->value->lang, "es-ES");
+    EXPECT_EQ(manifest->name_localized->find(icu::Locale("es"))->value->lang,
+              "es-ES");
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
         errors()[0],
@@ -6733,7 +6760,8 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
   // Don't parse if name_localized isn't an object.
   {
     auto& manifest = ParseManifest(R"({ "name_localized": "not an object" })");
-    EXPECT_TRUE(manifest->name_localized.empty());
+    EXPECT_TRUE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6741,7 +6769,8 @@ TEST_F(ManifestParserTest, NameLocalizedParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "name_localized": ["array", "value"] })");
-    EXPECT_TRUE(manifest->name_localized.empty());
+    EXPECT_TRUE(
+        (!manifest->name_localized || manifest->name_localized->empty()));
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -6755,12 +6784,17 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
         "es": "Corto"
       }
     })");
-    EXPECT_FALSE(manifest->short_name_localized.empty());
-    EXPECT_EQ(manifest->short_name_localized.size(), 2u);
-    EXPECT_TRUE(manifest->short_name_localized.Contains("en"));
-    EXPECT_TRUE(manifest->short_name_localized.Contains("es"));
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->value, "Short");
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->value, "Corto");
+    EXPECT_FALSE((!manifest->short_name_localized ||
+                  manifest->short_name_localized->empty()));
+    EXPECT_EQ(manifest->short_name_localized->size(), 2u);
+    EXPECT_TRUE(manifest->short_name_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->short_name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->value,
+        "Short");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->value,
+        "Corto");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6780,16 +6814,27 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->short_name_localized.empty());
-    EXPECT_EQ(manifest->short_name_localized.size(), 2u);
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->value, "Short");
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->lang, "en-US");
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->dir,
-              mojom::blink::Manifest::TextDirection::kLTR);
-    EXPECT_EQ(manifest->short_name_localized.find("ar")->value->value, "قصير");
-    EXPECT_EQ(manifest->short_name_localized.find("ar")->value->lang, "ar");
-    EXPECT_EQ(manifest->short_name_localized.find("ar")->value->dir,
-              mojom::blink::Manifest::TextDirection::kRTL);
+    EXPECT_FALSE((!manifest->short_name_localized ||
+                  manifest->short_name_localized->empty()));
+    EXPECT_EQ(manifest->short_name_localized->size(), 2u);
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->value,
+        "Short");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->lang,
+        "en-US");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->dir,
+        mojom::blink::Manifest::TextDirection::kLTR);
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("ar"))->value->value,
+        "قصير");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("ar"))->value->lang,
+        "ar");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("ar"))->value->dir,
+        mojom::blink::Manifest::TextDirection::kRTL);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6804,10 +6849,17 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->short_name_localized.empty());
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->value, "Short");
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->value, "Corto");
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->lang, "es-ES");
+    EXPECT_FALSE((!manifest->short_name_localized ||
+                  manifest->short_name_localized->empty()));
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->value,
+        "Short");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->value,
+        "Corto");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->lang,
+        "es-ES");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6822,10 +6874,17 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->short_name_localized.empty());
-    EXPECT_EQ(manifest->short_name_localized.find("en")->value->value, "Short");
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->value, "Corto");
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->lang, "es-ES");
+    EXPECT_FALSE((!manifest->short_name_localized ||
+                  manifest->short_name_localized->empty()));
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("en"))->value->value,
+        "Short");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->value,
+        "Corto");
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->lang,
+        "es-ES");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6841,10 +6900,13 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->short_name_localized.empty());
-    EXPECT_EQ(manifest->short_name_localized.size(), 1u);
-    EXPECT_TRUE(manifest->short_name_localized.Contains("es"));
-    EXPECT_EQ(manifest->short_name_localized.find("es")->value->value, "Valid");
+    EXPECT_FALSE((!manifest->short_name_localized ||
+                  manifest->short_name_localized->empty()));
+    EXPECT_EQ(manifest->short_name_localized->size(), 1u);
+    EXPECT_TRUE(manifest->short_name_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(
+        manifest->short_name_localized->find(icu::Locale("es"))->value->value,
+        "Valid");
     EXPECT_EQ(1u, GetErrorCount());
   }
 
@@ -6852,7 +6914,8 @@ TEST_F(ManifestParserTest, ShortNameLocalizedParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "short_name_localized": "not an object" })");
-    EXPECT_TRUE(manifest->short_name_localized.empty());
+    EXPECT_TRUE((!manifest->short_name_localized ||
+                 manifest->short_name_localized->empty()));
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -6866,14 +6929,17 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
         "es": "Descripción en español"
       }
     })");
-    EXPECT_FALSE(manifest->description_localized.empty());
-    EXPECT_EQ(manifest->description_localized.size(), 2u);
-    EXPECT_TRUE(manifest->description_localized.Contains("en"));
-    EXPECT_TRUE(manifest->description_localized.Contains("es"));
-    EXPECT_EQ(manifest->description_localized.find("en")->value->value,
-              "English description");
-    EXPECT_EQ(manifest->description_localized.find("es")->value->value,
-              "Descripción en español");
+    EXPECT_FALSE((!manifest->description_localized ||
+                  manifest->description_localized->empty()));
+    EXPECT_EQ(manifest->description_localized->size(), 2u);
+    EXPECT_TRUE(manifest->description_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->description_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("en"))->value->value,
+        "English description");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("es"))->value->value,
+        "Descripción en español");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6893,18 +6959,27 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->description_localized.empty());
-    EXPECT_EQ(manifest->description_localized.size(), 2u);
-    EXPECT_EQ(manifest->description_localized.find("en")->value->value,
-              "English description");
-    EXPECT_EQ(manifest->description_localized.find("en")->value->lang, "en-US");
-    EXPECT_EQ(manifest->description_localized.find("en")->value->dir,
-              mojom::blink::Manifest::TextDirection::kLTR);
-    EXPECT_EQ(manifest->description_localized.find("ar")->value->value,
-              "وصف عربي");
-    EXPECT_EQ(manifest->description_localized.find("ar")->value->lang, "ar");
-    EXPECT_EQ(manifest->description_localized.find("ar")->value->dir,
-              mojom::blink::Manifest::TextDirection::kRTL);
+    EXPECT_FALSE((!manifest->description_localized ||
+                  manifest->description_localized->empty()));
+    EXPECT_EQ(manifest->description_localized->size(), 2u);
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("en"))->value->value,
+        "English description");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("en"))->value->lang,
+        "en-US");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("en"))->value->dir,
+        mojom::blink::Manifest::TextDirection::kLTR);
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("ar"))->value->value,
+        "وصف عربي");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("ar"))->value->lang,
+        "ar");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("ar"))->value->dir,
+        mojom::blink::Manifest::TextDirection::kRTL);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6919,12 +6994,17 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->description_localized.empty());
-    EXPECT_EQ(manifest->description_localized.find("en")->value->value,
-              "English description");
-    EXPECT_EQ(manifest->description_localized.find("es")->value->value,
-              "Descripción en español");
-    EXPECT_EQ(manifest->description_localized.find("es")->value->lang, "es-ES");
+    EXPECT_FALSE((!manifest->description_localized ||
+                  manifest->description_localized->empty()));
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("en"))->value->value,
+        "English description");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("es"))->value->value,
+        "Descripción en español");
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("es"))->value->lang,
+        "es-ES");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -6940,11 +7020,13 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
         }
       }
     })");
-    EXPECT_FALSE(manifest->description_localized.empty());
-    EXPECT_EQ(manifest->description_localized.size(), 1u);
-    EXPECT_TRUE(manifest->description_localized.Contains("es"));
-    EXPECT_EQ(manifest->description_localized.find("es")->value->value,
-              "Valid description");
+    EXPECT_FALSE((!manifest->description_localized ||
+                  manifest->description_localized->empty()));
+    EXPECT_EQ(manifest->description_localized->size(), 1u);
+    EXPECT_TRUE(manifest->description_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(
+        manifest->description_localized->find(icu::Locale("es"))->value->value,
+        "Valid description");
     EXPECT_EQ(1u, GetErrorCount());
   }
 
@@ -6952,7 +7034,8 @@ TEST_F(ManifestParserTest, DescriptionLocalizedParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "description_localized": "not an object" })");
-    EXPECT_TRUE(manifest->description_localized.empty());
+    EXPECT_TRUE((!manifest->description_localized ||
+                 manifest->description_localized->empty()));
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -6970,15 +7053,22 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 2u);
-    EXPECT_TRUE(manifest->icons_localized.Contains("en"));
-    EXPECT_TRUE(manifest->icons_localized.Contains("es"));
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("es")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 2u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("en")));
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("es")));
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/icon-en.png");
-    EXPECT_EQ(manifest->icons_localized.find("es")->value[0]->src.GetString(),
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/icon-es.png");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -6996,15 +7086,24 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 2u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 2u);
-    EXPECT_EQ(manifest->icons_localized.find("es")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 2u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              2u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/icon-en-32.png");
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->src.GetString(),
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[1]
+                  ->src.GetString(),
               "http://foo.com/icon-en-64.png");
-    EXPECT_EQ(manifest->icons_localized.find("es")->value[0]->src.GetString(),
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/icon-es-32.png");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -7019,11 +7118,13 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_TRUE(manifest->icons_localized.Contains("es"));
-    EXPECT_FALSE(manifest->icons_localized.Contains("en"));
-    EXPECT_EQ(manifest->icons_localized.find("es")->value.size(), 1u);
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("es")));
+    EXPECT_FALSE(manifest->icons_localized->Contains(icu::Locale("en")));
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))->value.size(),
+              1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -7037,11 +7138,13 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_TRUE(manifest->icons_localized.Contains("es"));
-    EXPECT_FALSE(manifest->icons_localized.Contains("en"));
-    EXPECT_EQ(manifest->icons_localized.find("es")->value.size(), 1u);
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("es")));
+    EXPECT_FALSE(manifest->icons_localized->Contains(icu::Locale("en")));
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("es"))->value.size(),
+              1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -7055,10 +7158,14 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/valid-icon.png");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -7070,10 +7177,14 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         "en": [ { "src": "" } ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/manifest.json");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -7089,10 +7200,14 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/valid-icon.png");
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'src' ignored, type string expected.", errors()[0]);
@@ -7118,26 +7233,48 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
           }
         }
       )");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 2u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src,
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              2u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value[0]->src,
               KURL(DefaultDocumentUrl(), "foo.webp"));
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->type,
-              "image/webp");
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->sizes.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->sizes[0].width(),
+    EXPECT_EQ(
+        manifest->icons_localized->find(icu::Locale("en"))->value[0]->type,
+        "image/webp");
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->sizes.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->sizes[0]
+                  .width(),
               192);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->sizes[0].height(),
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->sizes[0]
+                  .height(),
               192);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->src,
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value[1]->src,
               KURL(DefaultDocumentUrl(), "foo.svg"));
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->type,
-              "image/svg+xml");
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->sizes.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->sizes[0].width(),
+    EXPECT_EQ(
+        manifest->icons_localized->find(icu::Locale("en"))->value[1]->type,
+        "image/svg+xml");
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[1]
+                  ->sizes.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[1]
+                  ->sizes[0]
+                  .width(),
               144);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[1]->sizes[0].height(),
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[1]
+                  ->sizes[0]
+                  .height(),
               144);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -7152,10 +7289,14 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value.size(), 1u);
-    EXPECT_EQ(manifest->icons_localized.find("en")->value[0]->src.GetString(),
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))->value.size(),
+              1u);
+    EXPECT_EQ(manifest->icons_localized->find(icu::Locale("en"))
+                  ->value[0]
+                  ->src.GetString(),
               "http://foo.com/valid-icon.png");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -7163,7 +7304,8 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
   // Don't parse if icons_localized isn't an object
   {
     auto& manifest = ParseManifest(R"({ "icons_localized": "not an object" })");
-    EXPECT_TRUE(manifest->icons_localized.empty());
+    EXPECT_TRUE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'icons_localized' ignored, type object expected.",
               errors()[0]);
@@ -7173,7 +7315,8 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons_localized": ["array", "value"] })");
-    EXPECT_TRUE(manifest->icons_localized.empty());
+    EXPECT_TRUE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'icons_localized' ignored, type object expected.",
               errors()[0]);
@@ -7189,11 +7332,82 @@ TEST_F(ManifestParserTest, IconsLocalizedParseRules) {
         ]
       }
     })");
-    EXPECT_FALSE(manifest->icons_localized.empty());
-    EXPECT_EQ(manifest->icons_localized.size(), 1u);
-    EXPECT_TRUE(manifest->icons_localized.Contains("es"));
-    EXPECT_FALSE(manifest->icons_localized.Contains("en"));
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("es")));
+    EXPECT_FALSE(manifest->icons_localized->Contains(icu::Locale("en")));
     EXPECT_EQ(1u, GetErrorCount());
+  }
+
+  // Test that invalid locale keys are ignored
+  {
+    auto& manifest = ParseManifest(R"({
+      "icons_localized": {
+        "invalid@locale": [
+          { "src": "icon-invalid.png", "sizes": "32x32", "type": "image/png" }
+        ],
+        "en": [
+          { "src": "icon-en.png", "sizes": "32x32", "type": "image/png" }
+        ]
+      }
+    })");
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("en")));
+    EXPECT_FALSE(
+        manifest->icons_localized->Contains(icu::Locale("invalid@locale")));
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'icons_localized' entry for 'invalid@locale' ignored, "
+        "invalid locale key.",
+        errors()[0]);
+  }
+
+  // Test that root locale ("") is treated as invalid
+  {
+    auto& manifest = ParseManifest(R"({
+      "icons_localized": {
+        "": [
+          { "src": "icon-root.png", "sizes": "32x32", "type": "image/png" }
+        ],
+        "fr": [
+          { "src": "icon-fr.png", "sizes": "32x32", "type": "image/png" }
+        ]
+      }
+    })");
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("fr")));
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'icons_localized' entry for '' ignored, invalid locale key.",
+        errors()[0]);
+  }
+
+  // Test that bogus locale tags are ignored
+  {
+    auto& manifest = ParseManifest(R"({
+      "icons_localized": {
+        "!!!": [
+          { "src": "icon-bogus.png", "sizes": "32x32", "type": "image/png" }
+        ],
+        "de": [
+          { "src": "icon-de.png", "sizes": "32x32", "type": "image/png" }
+        ]
+      }
+    })");
+    EXPECT_FALSE(
+        (!manifest->icons_localized || manifest->icons_localized->empty()));
+    EXPECT_EQ(manifest->icons_localized->size(), 1u);
+    EXPECT_TRUE(manifest->icons_localized->Contains(icu::Locale("de")));
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'icons_localized' entry for '!!!' ignored, invalid locale "
+        "key.",
+        errors()[0]);
   }
 }
 

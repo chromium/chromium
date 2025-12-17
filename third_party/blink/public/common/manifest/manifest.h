@@ -15,14 +15,35 @@
 #include <vector>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-forward.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Abseil hash support for icu::Locale.
+// Allows Locale to be used as a key in absl::flat_hash_map.
+// Uses getName() which returns ICU's internal canonical form with underscores
+// ("en_US"). icu namespace defined with U_NAMESPACE_BEGIN.
+U_NAMESPACE_BEGIN
+template <typename H>
+H AbslHashValue(H h, const icu::Locale& locale) {
+  return H::combine(std::move(h), std::string_view(locale.getName()));
+}
+
+// Comparison operator for icu::Locale.
+// Required for icu::Locale to be used as a key in base::flat_map.
+// The mojo code generator uses base::flat_map for browser-side mojom types,
+// which requires operator< for ordered map operations.
+inline bool operator<(const icu::Locale& lhs, const icu::Locale& rhs) {
+  return std::string_view(lhs.getName()) < std::string_view(rhs.getName());
+}
+U_NAMESPACE_END
 
 namespace blink {
 
@@ -67,7 +88,7 @@ class BLINK_COMMON_EXPORT Manifest {
       return value == other.value && lang == other.lang && dir == other.dir;
     }
 
-    std::optional<std::u16string> value;
+    std::u16string value;
     std::optional<std::u16string> lang;
     std::optional<blink::mojom::Manifest_TextDirection> dir;
   };
@@ -85,10 +106,14 @@ class BLINK_COMMON_EXPORT Manifest {
     std::optional<std::u16string> description;
     GURL url;
     std::vector<ImageResource> icons;
-    std::map<std::u16string, std::vector<ImageResource>> icons_localized;
-    std::map<std::u16string, ManifestLocalizedTextObject> name_localized;
-    std::map<std::u16string, ManifestLocalizedTextObject> short_name_localized;
-    std::map<std::u16string, ManifestLocalizedTextObject> description_localized;
+    std::optional<absl::flat_hash_map<icu::Locale, std::vector<ImageResource>>>
+        icons_localized;
+    std::optional<absl::flat_hash_map<icu::Locale, ManifestLocalizedTextObject>>
+        name_localized;
+    std::optional<absl::flat_hash_map<icu::Locale, ManifestLocalizedTextObject>>
+        short_name_localized;
+    std::optional<absl::flat_hash_map<icu::Locale, ManifestLocalizedTextObject>>
+        description_localized;
   };
 
   struct BLINK_COMMON_EXPORT FileFilter {

@@ -393,8 +393,9 @@ bool ManifestParser::Parse() {
   if (!manifest_->icons.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestIcons);
   }
-  manifest_->icons_localized = ParseIconsLocalized(root_object.get());
-  if (!manifest_->icons_localized.empty()) {
+  auto icons_localized = ParseIconsLocalized(root_object.get());
+  if (!icons_localized.empty()) {
+    manifest_->icons_localized = std::move(icons_localized);
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestIconsLocalized);
   }
@@ -510,21 +511,23 @@ bool ManifestParser::Parse() {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestVersion);
   }
 
-  manifest_->name_localized = ParseNameLocalized(root_object.get());
-  if (!manifest_->name_localized.empty()) {
+  auto name_localized = ParseNameLocalized(root_object.get());
+  if (!name_localized.empty()) {
+    manifest_->name_localized = std::move(name_localized);
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestNameLocalized);
   }
 
-  manifest_->short_name_localized = ParseShortNameLocalized(root_object.get());
-  if (!manifest_->short_name_localized.empty()) {
+  auto short_name_localized = ParseShortNameLocalized(root_object.get());
+  if (!short_name_localized.empty()) {
+    manifest_->short_name_localized = std::move(short_name_localized);
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestShortNameLocalized);
   }
 
-  manifest_->description_localized =
-      ParseDescriptionLocalized(root_object.get());
-  if (!manifest_->description_localized.empty()) {
+  auto description_localized = ParseDescriptionLocalized(root_object.get());
+  if (!description_localized.empty()) {
+    manifest_->description_localized = std::move(description_localized);
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestDescriptionLocalized);
   }
@@ -667,6 +670,19 @@ std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
   }
 
   return color.Rgb();
+}
+
+std::optional<icu::Locale> ManifestParser::ParseLocaleKey(
+    const String& locale_str) {
+  UErrorCode status = U_ZERO_ERROR;
+  StringUtf8Adaptor locale_utf8(locale_str);
+  icu::Locale locale =
+      icu::Locale::forLanguageTag(locale_utf8.AsStringView(), status);
+  if (U_FAILURE(status) || locale.isBogus() ||
+      locale == icu::Locale::getRoot()) {
+    return std::nullopt;
+  }
+  return locale;
 }
 
 KURL ManifestParser::ParseURL(const JSONObject* object,
@@ -1081,9 +1097,9 @@ Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
   return ParseImageResourceArray("icons", object);
 }
 
-HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
 ManifestParser::ParseIconsLocalized(const JSONObject* object) {
-  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
       localized_icons;
   JSONValue* json_value = object->Get("icons_localized");
   if (!json_value) {
@@ -1098,12 +1114,20 @@ ManifestParser::ParseIconsLocalized(const JSONObject* object) {
 
   for (wtf_size_t i = 0; i < icons_localized_object->size(); ++i) {
     const JSONObject::Entry& entry = icons_localized_object->at(i);
-    const String& locale = entry.first;
+    const String& locale_str = entry.first;
+
+    std::optional<icu::Locale> locale = ParseLocaleKey(locale_str);
+    if (!locale.has_value()) {
+      AddErrorInfo(StrCat({"property 'icons_localized' entry for '", locale_str,
+                           "' ignored, invalid locale key."}));
+      continue;
+    }
+
     Vector<mojom::blink::ManifestImageResourcePtr> icons =
-        ParseImageResourceArray(locale, icons_localized_object);
+        ParseImageResourceArray(locale_str, icons_localized_object);
 
     if (!icons.empty()) {
-      localized_icons.Set(locale, std::move(icons));
+      localized_icons.Set(*locale, std::move(icons));
     }
   }
 
@@ -1270,17 +1294,28 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
     shortcut->description = ParseShortcutDescription(shortcut_object);
 
     // Parse localized text fields
-    shortcut->name_localized = ParseNameLocalized(shortcut_object);
-    shortcut->short_name_localized = ParseShortNameLocalized(shortcut_object);
-    shortcut->description_localized =
-        ParseDescriptionLocalized(shortcut_object);
+    auto name_localized = ParseNameLocalized(shortcut_object);
+    if (!name_localized.empty()) {
+      shortcut->name_localized = std::move(name_localized);
+    }
+    auto short_name_localized = ParseShortNameLocalized(shortcut_object);
+    if (!short_name_localized.empty()) {
+      shortcut->short_name_localized = std::move(short_name_localized);
+    }
+    auto description_localized = ParseDescriptionLocalized(shortcut_object);
+    if (!description_localized.empty()) {
+      shortcut->description_localized = std::move(description_localized);
+    }
 
     auto icons = ParseIcons(shortcut_object);
     if (!icons.empty()) {
       shortcut->icons = std::move(icons);
     }
 
-    shortcut->icons_localized = ParseIconsLocalized(shortcut_object);
+    auto icons_localized = ParseIconsLocalized(shortcut_object);
+    if (!icons_localized.empty()) {
+      shortcut->icons_localized = std::move(icons_localized);
+    }
 
     shortcuts.push_back(std::move(shortcut));
   }
@@ -2616,11 +2651,11 @@ void ManifestParser::AddErrorInfo(const String& error_msg,
   errors_.push_back(std::move(error));
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseLocalizedField(const JSONObject* object,
                                     const String& field_name) {
   JSONObject* localized_value = object->GetJSONObject(field_name);
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr> result;
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr> result;
   if (!localized_value) {
     return result;
   }
@@ -2632,6 +2667,13 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
 
     // Parse individual localized text object
     if (!json_value) {
+      continue;
+    }
+
+    std::optional<icu::Locale> locale = ParseLocaleKey(key);
+    if (!locale.has_value()) {
+      AddErrorInfo(StrCat({"property '", field_name, "' entry for '", key,
+                           "' ignored, invalid locale key."}));
       continue;
     }
 
@@ -2697,22 +2739,22 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
     localized_text->value = std::move(value);
     localized_text->lang = std::move(lang);
     localized_text->dir = dir;
-    result.Set(key, std::move(localized_text));
+    result.Set(*locale, std::move(localized_text));
   }
   return result;
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "name_localized");
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseShortNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "short_name_localized");
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseDescriptionLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "description_localized");
 }
