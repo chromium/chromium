@@ -1146,6 +1146,10 @@ inline constexpr char kAndroidSettingsContainmentName[] =
 inline constexpr char kAndroidSettingsContainmentDescription[] =
     "Enables the Android Settings Containment feature.";
 
+inline constexpr char kAndroidSetupListName[] = "Android Setup List";
+inline constexpr char kAndroidSetupListDescription[] =
+    "Enables the Android Setup List feature.";
+
 inline constexpr char kCCTNavigationMetricsName[] = "CCT Navigation Metrics";
 inline constexpr char kCCTNavigationMetricsDescription[] =
     "Enables detailed navigation-related metrics in CustomTabsCallback.";

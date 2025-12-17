@@ -17518,6 +17518,7 @@ from previous Chrome versions.
   <int value="1102309668" label="EnableKeyboardUsedPalmSuppression:disabled"/>
   <int value="1102780374" label="ClickToCallDetectionV2:disabled"/>
   <int value="1103037724" label="AiSettingsPageEnterpriseDisabledUi:enabled"/>
+  <int value="1103990762" label="AndroidSetupList:disabled"/>
   <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
   <int value="1105058168" label="CrosSafetyService:enabled"/>
@@ -19394,6 +19395,7 @@ from previous Chrome versions.
   <int value="1746757451"
       label="WebAuthnUsePasskeyFromAnotherDeviceInContextMenu:disabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
+  <int value="1747360514" label="AndroidSetupList:enabled"/>
   <int value="1747979127"
       label="AccessibilityReducedAnimationsInKiosk:enabled"/>
   <int value="1748481830" label="AppManagement:enabled"/>

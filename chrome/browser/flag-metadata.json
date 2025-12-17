@@ -347,6 +347,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-setup-list",
+    "owners": [ "agazal@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-sms-otp-filling",
     "owners": ["kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 145
