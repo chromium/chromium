@@ -182,9 +182,14 @@ webview:not([hidden]) {
 }
 
 .panel .close-button {
+  -webkit-app-region: no-drag;
   --cr-icon-button-size: 24px;
   --cr-icon-button-icon-size: 20px;
   color: var(--color--on-surface-variant);
+}
+
+.panel .header {
+  -webkit-app-region: drag;
 }
 
 .dialog .notice {
