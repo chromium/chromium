@@ -321,6 +321,7 @@ src/webgpu/api/validation/encoding/cmds/debug.spec.ts
 src/webgpu/api/validation/encoding/cmds/index_access.spec.ts
 src/webgpu/api/validation/encoding/cmds/render_pass.spec.ts
 src/webgpu/api/validation/encoding/cmds/setBindGroup.spec.ts
+src/webgpu/api/validation/encoding/cmds/setImmediates.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/render.ts
