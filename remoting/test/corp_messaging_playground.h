@@ -45,6 +45,7 @@ class CorpMessagingPlayground {
 
   void OnStreamOpened();
   void OnStreamClosed(const HttpStatus& status);
+  void OnSignalingAddressChanged(const SignalingAddress& local_address);
   void OnPeerMessageReceived(const SignalingAddress& sender_address,
                              const SignalingMessage& message);
   void OnCharacterInput(char c);

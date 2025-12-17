@@ -107,7 +107,9 @@ CorpMessagingPlayground::CorpMessagingPlayground(const std::string& username) {
   client_ = std::make_unique<CorpMessagingClient>(
       username, key_pair_->GetPublicKey(),
       url_loader_factory_owner_->GetURLLoaderFactory(),
-      CreateClientCertStoreInstance());
+      CreateClientCertStoreInstance(),
+      base::BindRepeating(&CorpMessagingPlayground::OnSignalingAddressChanged,
+                          weak_factory_.GetWeakPtr()));
   core_ = std::make_unique<Core>(base::BindPostTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&CorpMessagingPlayground::OnCharacterInput,
@@ -146,6 +148,11 @@ void CorpMessagingPlayground::OnStreamClosed(const HttpStatus& status) {
             << static_cast<int>(status.error_code()) << ", "
             << status.error_message();
   run_loop_->Quit();
+}
+
+void CorpMessagingPlayground::OnSignalingAddressChanged(
+    const SignalingAddress& local_address) {
+  LOG(INFO) << "Local signaling address is: " << local_address.id();
 }
 
 void CorpMessagingPlayground::OnPeerMessageReceived(

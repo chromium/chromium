@@ -36,7 +36,6 @@ using testing::ByMove;
 using testing::Mock;
 using testing::Return;
 
-constexpr char kFakeLocalUsername[] = "fake_local_user@domain.com";
 constexpr char kFakeLocalCorpId[] = "fake_local_user@domain.com";
 constexpr char kFakeRemoteCorpId[] = "fake_remote_user@domain.com";
 
@@ -110,7 +109,7 @@ class CorpSignalStrategyTest : public testing::Test,
 
     signal_strategy_ =
         std::unique_ptr<CorpSignalStrategy>(new CorpSignalStrategy(
-            std::move(messaging_client), kFakeLocalUsername));
+            std::move(messaging_client), SignalingAddress(kFakeLocalCorpId)));
     signal_strategy_->AddListener(this);
 
     ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))

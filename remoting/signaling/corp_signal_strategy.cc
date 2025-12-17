@@ -29,10 +29,17 @@ namespace remoting {
 
 class CorpSignalStrategy::Core {
  public:
-  explicit Core(std::unique_ptr<MessagingClient> messaging_client,
-                const std::string& username);
+  Core(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+       CreateClientCertStoreCallback client_cert_store_callback,
+       const std::string& username,
+       scoped_refptr<RsaKeyPair> key_pair);
+  // CorpSignalStrategyTest uses a private c'tor w/ a fake messaging client.
+  Core(std::unique_ptr<MessagingClient> messaging_client,
+       const SignalingAddress& local_address);
+
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void Connect();
@@ -52,6 +59,7 @@ class CorpSignalStrategy::Core {
   void OnIncomingMessage(const SignalingAddress& sender_address,
                          const SignalingMessage& message);
   void OnChannelReady();
+  void OnSignalingAddressChanged(const SignalingAddress& address);
   void OnChannelClosed(const HttpStatus& status);
   void SetState(State state);
   void OnStanza(const SignalingAddress& sender_address,
@@ -62,7 +70,6 @@ class CorpSignalStrategy::Core {
 
   State state_ = DISCONNECTED;
   Error error_ = OK;
-  std::string username_;
   SignalingAddress local_address_;
   std::string messaging_authz_token_;
   int next_id_ = 0;
@@ -76,9 +83,25 @@ class CorpSignalStrategy::Core {
 };
 
 CorpSignalStrategy::Core::Core(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    CreateClientCertStoreCallback client_cert_store_callback,
+    const std::string& username,
+    scoped_refptr<RsaKeyPair> key_pair) {
+  messaging_client_ = std::make_unique<CorpMessagingClient>(
+      username, key_pair->GetPublicKey(), url_loader_factory,
+      std::move(client_cert_store_callback).Run(),
+      base::BindRepeating(&Core::OnSignalingAddressChanged,
+                          weak_factory_.GetWeakPtr()));
+  incoming_message_subscription_ =
+      messaging_client_->RegisterMessageCallback(base::BindRepeating(
+          &Core::OnIncomingMessage, weak_factory_.GetWeakPtr()));
+}
+
+CorpSignalStrategy::Core::Core(
     std::unique_ptr<MessagingClient> messaging_client,
-    const std::string& username)
-    : messaging_client_(std::move(messaging_client)), username_(username) {
+    const SignalingAddress& local_address)
+    : messaging_client_(std::move(messaging_client)),
+      local_address_(local_address) {
   incoming_message_subscription_ =
       messaging_client_->RegisterMessageCallback(base::BindRepeating(
           &Core::OnIncomingMessage, weak_factory_.GetWeakPtr()));
@@ -246,20 +269,20 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
   // it is associated with the sender JID.
   messaging_authz_token_ = iq_stanza_struct->messaging_authz_token;
 
-  if (local_address_.empty()) {
-    local_address_ = SignalingAddress(stanza->Attr(kQNameTo));
-  }
-
   OnStanza(sender, std::move(stanza));
 }
 
 void CorpSignalStrategy::Core::OnChannelReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO: joedow - We receive the local JID when we open a channel so plumb
-  // that value up through CorpMessageChannelStrategy::OnReceiveMessagesResponse
-  // and set it here instead of just accepting the first value in the stanza.
   SetState(CONNECTED);
+}
+
+void CorpSignalStrategy::Core::OnSignalingAddressChanged(
+    const SignalingAddress& address) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HOST_LOG << "Corp signaling address is: " << address.id();
+  local_address_ = address;
 }
 
 void CorpSignalStrategy::Core::OnChannelClosed(const HttpStatus& status) {
@@ -325,17 +348,15 @@ CorpSignalStrategy::CorpSignalStrategy(
     CreateClientCertStoreCallback client_cert_store_callback,
     const std::string& username,
     scoped_refptr<RsaKeyPair> key_pair) {
-  // TODO: joedow - Store `client_cert_store_callback` in CorpMessagingClient.
-  auto messaging_client = std::make_unique<CorpMessagingClient>(
-      username, key_pair->GetPublicKey(), url_loader_factory,
-      std::move(client_cert_store_callback).Run());
-  core_ = std::make_unique<Core>(std::move(messaging_client), username);
+  core_ = std::make_unique<Core>(url_loader_factory,
+                                 std::move(client_cert_store_callback),
+                                 username, key_pair);
 }
 
 CorpSignalStrategy::CorpSignalStrategy(
     std::unique_ptr<MessagingClient> messaging_client,
-    const std::string& username) {
-  core_ = std::make_unique<Core>(std::move(messaging_client), username);
+    const SignalingAddress& local_address) {
+  core_ = std::make_unique<Core>(std::move(messaging_client), local_address);
 }
 
 CorpSignalStrategy::~CorpSignalStrategy() {

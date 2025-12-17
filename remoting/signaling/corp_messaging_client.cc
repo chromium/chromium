@@ -100,7 +100,8 @@ CorpMessagingClient::CorpMessagingClient(
     const std::string& username,
     const std::string& public_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
+    const SignalingAddressChangedCallback& on_signaling_address_changed)
     : username_(username),
       public_key_(public_key),
       client_(std::make_unique<ProtobufHttpClient>(
@@ -113,7 +114,8 @@ CorpMessagingClient::CorpMessagingClient(
       base::BindRepeating(&CorpMessagingClient::OpenReceiveMessagesStream,
                           base::Unretained(this)),
       base::BindRepeating(&CorpMessagingClient::OnMessageReceived,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      on_signaling_address_changed);
   message_channel_ = std::make_unique<MessageChannel>(
       std::move(channel_strategy), /*signaling_tracker=*/nullptr);
 }

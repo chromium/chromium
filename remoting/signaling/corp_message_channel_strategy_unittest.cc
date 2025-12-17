@@ -69,6 +69,10 @@ MATCHER_P(PeerMessagePayloadIs, value, "") {
   return simple->payload == value;
 }
 
+MATCHER_P(SignalingAddressJidIs, jid, "") {
+  return arg.id() == jid;
+}
+
 std::unique_ptr<HostOpenChannelResponseStruct> CreateChannelActiveMessage() {
   auto response = std::make_unique<HostOpenChannelResponseStruct>();
   response->message.emplace<ChannelActiveStruct>();
@@ -79,7 +83,20 @@ std::unique_ptr<HostOpenChannelResponseStruct> CreateChannelOpenMessage() {
   auto response = std::make_unique<HostOpenChannelResponseStruct>();
   response->message.emplace<ChannelOpenStruct>(
       ChannelOpenStruct{.channel_lifetime = base::Minutes(15),
-                        .inactivity_timeout = kInactivityTimeout});
+                        .inactivity_timeout = kInactivityTimeout,
+                        .signaling_address = {.jid = "fake_jid"}});
+  return response;
+}
+
+std::unique_ptr<HostOpenChannelResponseStruct>
+CreateChannelOpenMessageWithAddress(std::string jid) {
+  auto response = std::make_unique<HostOpenChannelResponseStruct>();
+  remoting::internal::SignalingAddress address_internal;
+  address_internal.jid = std::move(jid);
+  response->message.emplace<ChannelOpenStruct>(
+      ChannelOpenStruct{.channel_lifetime = base::Minutes(15),
+                        .inactivity_timeout = kInactivityTimeout,
+                        .signaling_address = address_internal});
   return response;
 }
 
@@ -192,6 +209,9 @@ class CorpMessageChannelStrategyTest : public testing::Test {
       mock_stream_opener_;
   base::MockCallback<base::RepeatingCallback<void(const PeerMessageStruct&)>>
       mock_on_incoming_msg_;
+  base::MockCallback<
+      base::RepeatingCallback<void(const remoting::SignalingAddress&)>>
+      mock_on_signaling_address_changed_;
   MockSignalingTracker mock_signaling_tracker_;
   raw_ptr<CorpMessageChannelStrategy> raw_strategy_;
 };
@@ -199,7 +219,8 @@ class CorpMessageChannelStrategyTest : public testing::Test {
 void CorpMessageChannelStrategyTest::SetUp() {
   auto strategy = std::make_unique<CorpMessageChannelStrategy>();
   raw_strategy_ = strategy.get();
-  strategy->Initialize(mock_stream_opener_.Get(), mock_on_incoming_msg_.Get());
+  strategy->Initialize(mock_stream_opener_.Get(), mock_on_incoming_msg_.Get(),
+                       mock_on_signaling_address_changed_.Get());
   channel_ = std::make_unique<MessageChannel>(std::move(strategy),
                                               &mock_signaling_tracker_);
 }
@@ -604,6 +625,71 @@ TEST_F(CorpMessageChannelStrategyTest,
         channel_->StartReceivingMessages(run_loop.QuitClosure(),
                                          NotReachedStatusCallback(FROM_HERE));
       }));
+
+  run_loop.Run();
+}
+
+TEST_F(CorpMessageChannelStrategyTest,
+       SignalingAddressChanged_CalledOnceForSameAddress) {
+  base::RunLoop run_loop;
+
+  constexpr char kSignalingAddress[] = "user@corp.google.com/chromoting_123";
+
+  EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress));
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress));
+        std::move(on_channel_ready).Run();
+      }));
+
+  EXPECT_CALL(mock_on_signaling_address_changed_,
+              Run(SignalingAddressJidIs(kSignalingAddress)))
+      .Times(1);
+
+  channel_->StartReceivingMessages(run_loop.QuitClosure(),
+                                   NotReachedStatusCallback(FROM_HERE));
+
+  run_loop.Run();
+}
+
+TEST_F(CorpMessageChannelStrategyTest,
+       SignalingAddressChanged_CalledWhenAddressChanges) {
+  base::RunLoop run_loop;
+
+  constexpr char kSignalingAddress1[] = "user@corp.google.com/chromoting_123";
+  constexpr char kSignalingAddress2[] = "user@corp.google.com/chromoting_456";
+
+  EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress1));
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress2));
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress2));
+        on_incoming_msg.Run(
+            CreateChannelOpenMessageWithAddress(kSignalingAddress1));
+        std::move(on_channel_ready).Run();
+      }));
+
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(mock_on_signaling_address_changed_,
+                Run(SignalingAddressJidIs(kSignalingAddress1)));
+    EXPECT_CALL(mock_on_signaling_address_changed_,
+                Run(SignalingAddressJidIs(kSignalingAddress2)));
+    EXPECT_CALL(mock_on_signaling_address_changed_,
+                Run(SignalingAddressJidIs(kSignalingAddress1)));
+  }
+
+  channel_->StartReceivingMessages(run_loop.QuitClosure(),
+                                   NotReachedStatusCallback(FROM_HERE));
 
   run_loop.Run();
 }

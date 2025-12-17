@@ -60,7 +60,7 @@ SignalingAddress::Channel GetChannelType(std::string address) {
     return SignalingAddress::Channel::CORP;
   }
 
-  if (has_resource && resource.find(kFtlResourcePrefix) == 0) {
+  if (has_resource && resource.starts_with(kFtlResourcePrefix)) {
     return SignalingAddress::Channel::FTL;
   }
   return SignalingAddress::Channel::XMPP;

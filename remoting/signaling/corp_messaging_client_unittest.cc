@@ -59,9 +59,12 @@ class CorpMessagingClientTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  CorpMessagingClient messaging_client_{kFakeUsername, kFakePublicKey,
-                                        test_responder_.GetUrlLoaderFactory(),
-                                        CreateClientCertStoreInstance()};
+  base::MockCallback<CorpMessagingClient::SignalingAddressChangedCallback>
+      mock_on_signaling_address_changed_;
+  CorpMessagingClient messaging_client_{
+      kFakeUsername, kFakePublicKey, test_responder_.GetUrlLoaderFactory(),
+      CreateClientCertStoreInstance(),
+      mock_on_signaling_address_changed_.Get()};
 };
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
