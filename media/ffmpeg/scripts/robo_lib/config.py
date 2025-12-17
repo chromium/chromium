@@ -36,7 +36,7 @@ def GetLinuxFlavor():
 
 class RoboConfiguration:
     __slots__ = ('_sushi_branch_prefix', '_gn_commit_title',
-                 '_patches_commit_title', '_readme_chromium_commit_title',
+                 '_readme_chromium_commit_title',
                  '_origin_merge_base', '_llvm_path', '_autorename_git_file',
                  '_chrome_src', '_host_operating_system', '_host_architecture',
                  '_ffmpeg_home', '_relative_asan_directory', '_branch_name',
@@ -60,8 +60,6 @@ class RoboConfiguration:
         self._sushi_branch_prefix = "sushi-"
         # This is the title that we use for the commit with GN configs.
         self._gn_commit_title = "GN Configuration"
-        # Title of the commit with chromium/patches/README.
-        self._patches_commit_title = "Chromium patches file"
         # Title of the commit with README.chromium
         self._readme_chromium_commit_title = "README.chromium file"
 
@@ -173,9 +171,6 @@ class RoboConfiguration:
 
     def gn_commit_title(self):
         return self._gn_commit_title
-
-    def patches_commit_title(self):
-        return self._patches_commit_title
 
     def readme_chromium_commit_title(self):
         return self._readme_chromium_commit_title

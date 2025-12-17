@@ -174,10 +174,6 @@ LoadTargets(
                      desc="Build gn configs, and commit the results locally.",
                      skip=AreGnConfigsDone,
                      func=BuildGnConfigsUnconditionally),
-              Target(name="update_patches_file",
-                     desc="Rewrite chromium/patches/README and commit locally.",
-                     skip=robo_branch.IsPatchesFileDone,
-                     func=robo_branch.UpdatePatchesFileUnconditionally),
               Target(name="update_chromium_readme",
                      desc="Rewrite README.chromium to reflect upstream SHA-1.",
                      skip=robo_branch.IsChromiumReadmeDone,
@@ -233,9 +229,6 @@ def main(argv):
         '--build-gn',
         action='store_true',
         help='Unconditionally build all the configs and import them.')
-    parser.add_argument('--patches',
-                        action='store_true',
-                        help='Update patches file only')
     parser.add_argument('--auto-merge',
                         action='store_true',
                         help='Run auto-merge. (Usually what you want)')
@@ -281,12 +274,6 @@ def main(argv):
     if options.build_gn:
         # Unconditionally build all the configs and import them.
         robo_build.BuildAndImportAllFFmpegConfigs(robo_configuration)
-    if options.patches:
-        # To be run after committing a local change to fix the tests.
-        if not robo_branch.IsWorkingDirectoryClean():
-            raise errors.UserInstructions(
-                "Working directory must be clean to generate patches file")
-        robo_branch.UpdatePatchesFileUnconditionally(robo_configuration)
     if options.auto_merge:
         exec_steps += ["auto-merge"]
     if options.step:
