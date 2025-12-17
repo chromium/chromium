@@ -674,10 +674,18 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_composebox::kEnableModalComposebox.Get());
 
   // Action Chips LoadTimeData
+  bool action_chips_eligible =
+      ntp_features::kNtpNextShowSimplificationUIParam.Get()
+          ? aim_eligibility_service &&
+                (aim_eligibility_service->IsDeepSearchEligible() ||
+                 aim_eligibility_service->IsCreateImagesEligible())
+          : aim_eligibility_service &&
+                aim_eligibility_service->IsDeepSearchEligible() &&
+                aim_eligibility_service->IsCreateImagesEligible();
   bool show_action_chips =
-      aim_eligibility_service &&
-      aim_eligibility_service->IsDeepSearchEligible() &&
-      aim_eligibility_service->IsCreateImagesEligible() &&
+      action_chips_eligible &&
+      contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs()) &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
   source->AddBoolean("addTabUploadDelayOnActionChipClick",
