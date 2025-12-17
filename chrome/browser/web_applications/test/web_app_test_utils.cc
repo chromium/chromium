@@ -695,6 +695,42 @@ std::vector<apps::IconInfo> CreateRandomIconMetadata(RandomHelper& random,
   return icons;
 }
 
+std::vector<proto::WebAppMigrationSource> CreateRandomMigrationSources(
+    RandomHelper& random) {
+  std::vector<proto::WebAppMigrationSource> sources;
+  int num_sources = random.next_uint(3);
+  for (int i = 0; i < num_sources; ++i) {
+    proto::WebAppMigrationSource source;
+    source.set_manifest_id("https://example.com/manifest_id_" +
+                           base::NumberToString(random.next_uint()));
+    source.set_behavior(random.next_bool()
+                            ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                            : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    if (random.next_bool()) {
+      source.set_install_url("https://example.com/install_url_" +
+                             base::NumberToString(random.next_uint()));
+    }
+    sources.push_back(std::move(source));
+  }
+  return sources;
+}
+
+std::vector<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
+    RandomHelper& random) {
+  std::vector<proto::PendingMigrationInfo> infos;
+  int num_infos = random.next_uint(3);
+  for (int i = 0; i < num_infos; ++i) {
+    proto::PendingMigrationInfo info;
+    info.set_manifest_id("https://example.com/manifest_id_" +
+                         base::NumberToString(random.next_uint()));
+    info.set_behavior(random.next_bool()
+                          ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                          : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    infos.push_back(std::move(info));
+  }
+  return infos;
+}
+
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
@@ -1347,6 +1383,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
         second_install_time,
         params.base_url.Resolve("installed_by2_" + seed_str + "/")));
   }
+
+  app->SetUnvalidatedMigrationSources(CreateRandomMigrationSources(random));
+  std::vector<proto::WebAppMigrationSource> validated_sources;
+  std::ranges::copy_if(app->unvalidated_migration_sources(),
+                       std::back_inserter(validated_sources),
+                       [&random](const proto::WebAppMigrationSource&) {
+                         return random.next_bool();
+                       });
+  app->SetValidatedMigrationSources(std::move(validated_sources));
+  app->SetPendingMigrationInfo(CreateRandomPendingMigrationInfos(random));
 
   return app;
 }

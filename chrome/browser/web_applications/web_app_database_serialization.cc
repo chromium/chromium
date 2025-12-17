@@ -1545,6 +1545,42 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetInstalledBy(InstalledByPassKey(), std::move(installed_by_data));
 
+  std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources;
+  for (const auto& source_proto : proto.unvalidated_migration_sources()) {
+    if (!source_proto.has_manifest_id() || !source_proto.has_behavior()) {
+      RecordProtoParseResult(
+          ProtoParseResult::kInvalidWebAppUnvalidatedMigrationSource);
+      DLOG(ERROR) << "WebApp proto Unvalidated MigrationSource parse error";
+      return nullptr;
+    }
+    unvalidated_migration_sources.push_back(source_proto);
+  }
+  web_app->SetUnvalidatedMigrationSources(
+      std::move(unvalidated_migration_sources));
+
+  std::vector<proto::WebAppMigrationSource> validated_migration_sources;
+  for (const auto& source_proto : proto.validated_migration_sources()) {
+    if (!source_proto.has_manifest_id() || !source_proto.has_behavior()) {
+      RecordProtoParseResult(
+          ProtoParseResult::kInvalidWebAppValidatedMigrationSource);
+      DLOG(ERROR) << "WebApp proto Validated MigrationSource parse error";
+      return nullptr;
+    }
+    validated_migration_sources.push_back(source_proto);
+  }
+  web_app->SetValidatedMigrationSources(std::move(validated_migration_sources));
+
+  std::vector<proto::PendingMigrationInfo> pending_migration_info;
+  for (const auto& info_proto : proto.pending_migration_info()) {
+    if (!info_proto.has_manifest_id() || !info_proto.has_behavior()) {
+      RecordProtoParseResult(ProtoParseResult::kInvalidPendingMigrationInfo);
+      DLOG(ERROR) << "WebApp proto PendingMigrationInfo parse error";
+      return nullptr;
+    }
+    pending_migration_info.push_back(info_proto);
+  }
+  web_app->SetPendingMigrationInfo(std::move(pending_migration_info));
+
   RecordProtoParseResult(ProtoParseResult::kSuccess);
   return web_app;
 }
@@ -2103,6 +2139,18 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   for (const auto& installed_by_data : web_app.installed_by()) {
     *(local_data->add_installed_by()) = installed_by_data.ToProto();
+  }
+
+  for (const auto& source : web_app.unvalidated_migration_sources()) {
+    *local_data->add_unvalidated_migration_sources() = source;
+  }
+
+  for (const auto& source : web_app.validated_migration_sources()) {
+    *local_data->add_validated_migration_sources() = source;
+  }
+
+  for (const auto& info : web_app.pending_migration_info()) {
+    *local_data->add_pending_migration_info() = info;
   }
 
   return local_data;

@@ -561,6 +561,25 @@ class WebApp {
 
   void SetStoredTrustedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
 
+  const std::vector<proto::WebAppMigrationSource>&
+  unvalidated_migration_sources() const {
+    return unvalidated_migration_sources_;
+  }
+  const std::vector<proto::WebAppMigrationSource>& validated_migration_sources()
+      const {
+    return validated_migration_sources_;
+  }
+  const std::vector<proto::PendingMigrationInfo>& pending_migration_info()
+      const {
+    return pending_migration_info_;
+  }
+
+  void SetUnvalidatedMigrationSources(
+      std::vector<proto::WebAppMigrationSource> sources);
+  void SetValidatedMigrationSources(
+      std::vector<proto::WebAppMigrationSource> sources);
+  void SetPendingMigrationInfo(std::vector<proto::PendingMigrationInfo> info);
+
   void SetInstalledBy(InstalledByPassKey,
                       std::deque<AppInstalledBy> installed_by);
 
@@ -692,6 +711,10 @@ class WebApp {
   SortedSizesPx stored_trusted_icon_sizes_maskable_;
 
   std::deque<AppInstalledBy> installed_by_;
+
+  std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
+  std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
+  std::vector<proto::PendingMigrationInfo> pending_migration_info_;
 
   // New fields must be added to:
   //  - |operator==|

@@ -48,6 +48,7 @@
    "manifest_url": "",
    "note_taking_new_note_url": "",
    "parent_app_id": null,
+   "pending_migration_info": [  ],
    "protocol_handlers": [  ],
    "related_applications": [  ],
    "run_on_os_login_mode": "not run",
@@ -67,7 +68,9 @@
    "tab_strip": null,
    "theme_color": "none",
    "trusted_icons": [  ],
+   "unvalidated_migration_sources": [  ],
    "user_link_capturing_preference": "0",
+   "validated_migration_sources": [  ],
    "was_shortcut_app": false,
    "window_controls_overlay_enabled": false
 }

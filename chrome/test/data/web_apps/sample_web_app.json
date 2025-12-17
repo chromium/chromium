@@ -263,6 +263,10 @@
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
    "parent_app_id": null,
+   "pending_migration_info": [ {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "manifest_id": "https://example.com/manifest_id_2892618850"
+   } ],
    "pending_update_info": {
       "downloaded_manifest_icons": [ {
          "icon_sizes": [ 512 ],
@@ -540,7 +544,25 @@
       "square_size_px": 48,
       "url": "https://example.com/icons798475713"
    } ],
+   "unvalidated_migration_sources": [ {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_343454109",
+      "manifest_id": "https://example.com/manifest_id_1788065845"
+   }, {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_2200790091",
+      "manifest_id": "https://example.com/manifest_id_3915964839"
+   } ],
    "user_link_capturing_preference": "1",
+   "validated_migration_sources": [ {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_343454109",
+      "manifest_id": "https://example.com/manifest_id_1788065845"
+   }, {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_2200790091",
+      "manifest_id": "https://example.com/manifest_id_3915964839"
+   } ],
    "was_shortcut_app": true,
    "window_controls_overlay_enabled": false
 }

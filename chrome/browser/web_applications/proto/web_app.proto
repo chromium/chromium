@@ -216,6 +216,32 @@ message InstalledBy {
   optional string requesting_url = 2;        // Required.
 }
 
+// Used to specify the behavior of a migration.
+enum WebAppMigrationBehavior {
+  WEB_APP_MIGRATION_BEHAVIOR_UNSPECIFIED = 0;
+  // The migration should be performed via a blocking dialog that the user must
+  // accept (or uninstall the app).
+  WEB_APP_MIGRATION_BEHAVIOR_FORCE = 1;
+  // The migration should be suggested to the user, who can choose to ignore it.
+  WEB_APP_MIGRATION_BEHAVIOR_SUGGEST = 2;
+}
+
+// Represents a possible source for migration, extracted from the manifest of
+// the new version of the app.
+message WebAppMigrationSource {
+  optional string manifest_id = 1;                // Required.
+  optional WebAppMigrationBehavior behavior = 2;  // Required.
+  optional string install_url = 3;
+}
+
+// Represents a migration that has been identified for this app, where this app
+// is the source of the migration.
+message PendingMigrationInfo {
+  // The manifest_id of the app that this app should migrate to.
+  optional string manifest_id = 1;                // Required.
+  optional WebAppMigrationBehavior behavior = 2;  // Required.
+}
+
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
@@ -519,4 +545,16 @@ message WebApp {
   // install the app via the Web Install API. The order is that the front is
   // the oldest entry and the back is the newest.
   repeated InstalledBy installed_by = 78;
+
+  // Migration sources as specified in the manifest 'migrate_from' field. These
+  // are the apps that this app claims to be a migration from.
+  repeated WebAppMigrationSource unvalidated_migration_sources = 79;
+
+  // Subset of unvalidated_migration_sources that have been validated against
+  // the old origin (via .well-known).
+  repeated WebAppMigrationSource validated_migration_sources = 80;
+
+  // List of apps that this app can migrate to. This is populated by checking
+  // the validated_migration_sources of other installed apps.
+  repeated PendingMigrationInfo pending_migration_info = 81;
 }

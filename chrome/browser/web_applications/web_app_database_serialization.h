@@ -88,7 +88,10 @@ enum class ProtoParseResult {
   kInvalidParsedTrustedIcons = 63,
   kInvalidBorderlessUrlPatterns = 64,
   kInvalidInstalledBy = 65,
-  kMaxValue = kInvalidInstalledBy,
+  kInvalidWebAppUnvalidatedMigrationSource = 66,
+  kInvalidPendingMigrationInfo = 67,
+  kInvalidWebAppValidatedMigrationSource = 68,
+  kMaxValue = kInvalidWebAppValidatedMigrationSource,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppProtoParseResult)
 

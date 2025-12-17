@@ -692,6 +692,9 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="InvalidParsedTrustedIcons"/>
   <int value="64" label="InvalidBorderlessUrlPatterns"/>
   <int value="65" label="InvalidInstalledBy"/>
+  <int value="66" label="InvalidWebAppUnvalidatedMigrationSource"/>
+  <int value="67" label="InvalidPendingMigrationInfo"/>
+  <int value="68" label="InvalidWebAppValidatedMigrationSource"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->
