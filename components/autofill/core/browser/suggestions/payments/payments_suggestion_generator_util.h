@@ -64,61 +64,6 @@ struct BnplSuggestionUpdateResult {
 std::vector<const CreditCard*> GetCreditCardsToSuggest(
     const PaymentsDataManager& payments_data_manager);
 
-// Generates suggestions for all available credit cards based on the
-// `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
-// `summary` contains metadata about the returned suggestions.
-// `is_complete_form` indicates whether a credit card form is considered
-// complete for the purposes of "Save and Fill".
-// `autofilled_last_four_digits_in_form_for_filtering` are the last four digits
-// of a card number that will be used for suggestion filtering. This is used to
-// avoid showing suggestions that is unrelated to the cards that have already
-// been autofilled in the form. Can be empty if no filtering should happen.
-// `is_card_number_field_empty` indicates whether the card number field is empty
-// after the value inside of it is sanitized. This is used to decide whether the
-// BNPL suggestion should be appended together with the credit card suggestions.
-// TODO(crbug.com/448688721): Consolidate the input parameters.
-std::vector<Suggestion> GetSuggestionsForCreditCards(
-    AutofillClient& client,
-    const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
-    CreditCardSuggestionSummary& summary,
-    bool is_complete_form,
-    bool should_show_scan_credit_card,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    bool is_card_number_field_empty);
-
-// Generates suggestions for all available credit cards based on the
-// `trigger_field_type` and `trigger_field`. `summary` contains metadata about
-// the returned suggestions. `last_four_set_for_cvc_suggestion_filtering` is a
-// set of card number last four that will be used for suggestion filtering. This
-// is used to avoid showing suggestions that is unrelated to the cards that have
-// already been autofilled in the form.
-// `is_card_number_field_empty` indicates whether the card number field is empty
-// after the value inside of it is sanitized. This is used to decide whether the
-// BNPL suggestion should be appended together with the credit card suggestions.
-// TODO(crbug.com/40916587): Implement last four extraction from the DOM.
-// TODO(crbug.com/448688721): Consolidate the input parameters.
-std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    FieldType trigger_field_type,
-    bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary,
-    bool is_card_number_field_empty);
-
-// Generates suggestions for standalone CVC fields. These only apply to
-// virtual cards that are saved on file to a merchant. In these cases,
-// we only display the virtual card option and do not show FPAN option.
-std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
-    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
-        virtual_card_guid_to_last_four_map);
-
 // Returns the credit cards to be shown in touch to fill suggestions.
 std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const AutofillClient& client,

@@ -726,6 +726,8 @@ static_library("browser") {
     "suggestions/payments/iban_suggestion_generator.h",
     "suggestions/payments/merchant_promo_code_suggestion_generator.cc",
     "suggestions/payments/merchant_promo_code_suggestion_generator.h",
+    "suggestions/payments/payments_suggestion_generator.cc",
+    "suggestions/payments/payments_suggestion_generator.h",
     "suggestions/payments/payments_suggestion_generator_util.cc",
     "suggestions/payments/payments_suggestion_generator_util.h",
     "suggestions/payments/save_and_fill_suggestion.h",
