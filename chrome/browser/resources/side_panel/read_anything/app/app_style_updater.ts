@@ -94,7 +94,9 @@ export class AppStyleUpdater {
     }
 
     const isWindow = type === LineFocusType.WINDOW;
-    this.setLineFocusHeight();
+    if (!isWindow) {
+      this.setLineFocusHeight();
+    }
     this.setStyle_(
         '--line-focus-shadow',
         isWindow ? LINE_FOCUS_BOX_SHADOW_WINDOW : LINE_FOCUS_BOX_SHADOW_LINE);

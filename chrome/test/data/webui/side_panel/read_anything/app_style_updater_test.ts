@@ -104,7 +104,12 @@ suite('AppStyleUpdater', () => {
     assertNotEquals('none', app.style.getPropertyValue('--line-focus-display'));
     assertNotEquals('', app.style.getPropertyValue('--line-focus-shadow'));
     assertNotEquals('', app.style.getPropertyValue('--line-focus-bg'));
-    assertNotEquals('', app.style.getPropertyValue('--line-focus-height'));
+  });
+
+  test('setLineFocusStyle with line focus window does not set height', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    updater.setLineFocusStyle(LineFocusType.WINDOW);
+    assertEquals('', app.style.getPropertyValue('--line-focus-height'));
   });
 
   test(
