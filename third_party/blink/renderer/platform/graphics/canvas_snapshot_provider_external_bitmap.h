@@ -34,7 +34,6 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
   bool IsValid() const override;
   bool IsAccelerated() const override { return false; }
   bool IsExternalBitmapProvider() const override { return true; }
-
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override;
