@@ -1,6 +1,6 @@
 {
-  "version": "78.5",
-  "log_list_timestamp": "2025-12-16T12:54:23Z",
+  "version": "79.1",
+  "log_list_timestamp": "2025-12-17T12:53:23Z",
   "operators": [
     {
       "name": "Google",
@@ -1176,8 +1176,8 @@
           "monitoring_url": "https://halloumi2025h2.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-07T18:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-17T18:30:00Z"
             }
           },
           "temporal_interval": {
@@ -1193,8 +1193,8 @@
           "monitoring_url": "https://halloumi2026h1.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-07T18:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-17T18:30:00Z"
             }
           },
           "temporal_interval": {
@@ -1227,8 +1227,8 @@
           "monitoring_url": "https://halloumi2027h1.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-07T18:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-17T18:30:00Z"
             }
           },
           "temporal_interval": {
@@ -1244,8 +1244,8 @@
           "monitoring_url": "https://halloumi2027h2.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-10-07T18:30:00Z"
+            "usable": {
+              "timestamp": "2025-12-17T18:30:00Z"
             }
           },
           "temporal_interval": {
