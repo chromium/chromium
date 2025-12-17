@@ -30,6 +30,8 @@ class MockLensSearchController : public LensSearchController {
               lens_search_contextualization_controller,
               (),
               (override));
+
+  MOCK_METHOD(LensOverlayController*, lens_overlay_controller, (), (override));
 };
 
 class TestLensSearchController : public LensSearchController {

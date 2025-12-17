@@ -207,8 +207,8 @@ class LensSearchController {
   base::WeakPtr<LensSearchController> GetWeakPtr();
 
   // Returns the LensOverlayController.
-  LensOverlayController* lens_overlay_controller();
-  const LensOverlayController* lens_overlay_controller() const;
+  virtual LensOverlayController* lens_overlay_controller();
+  virtual const LensOverlayController* lens_overlay_controller() const;
 
   // Returns the LensOverlayQueryController.
   virtual lens::LensOverlayQueryController* lens_overlay_query_controller();
