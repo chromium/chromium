@@ -48,6 +48,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo_mac.h"
+#include "ui/display/display_features.h"
+#include "ui/display/mac/vsync_provider_mac.h"
 #endif
 
 namespace viz {
@@ -111,6 +113,13 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   if (input::InputUtils::IsTransferInputToVizSupported()) {
     input_manager_ = std::make_unique<InputManager>(this);
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(
+          display::features::kCADisplayLinkInBrowser)) {
+    ui::VSyncProviderMac::GetInstance();
+  }
+#endif
 }
 
 FrameSinkManagerImpl::~FrameSinkManagerImpl() {
@@ -276,11 +285,25 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
 #if BUILDFLAG(IS_MAC)
 void FrameSinkManagerImpl::CreateCompositorDisplayLink(
     mojom::CompositorDisplayLinkParamsPtr params) {
+  auto update_vsync_displays_cb = base::BindRepeating(
+      &FrameSinkManagerImpl::UpdateVSyncDisplays, weak_factory_.GetWeakPtr());
+
   external_begin_frame_source_ =
       std::make_unique<ExternalBeginFrameSourceMojoMac>(
           std::move(params->external_begin_frame_controller),
-          std::move(params->external_begin_frame_controller_client));
+          std::move(params->external_begin_frame_controller_client),
+          update_vsync_displays_cb);
 }
+
+void FrameSinkManagerImpl::UpdateVSyncDisplays() {
+  for (auto& root_frame_sink : root_sink_map_) {
+    if (root_frame_sink.second->external_begin_frame_source()) {
+      root_frame_sink.second->external_begin_frame_source()
+          ->UpdateVSyncDisplay();
+    }
+  }
+}
+
 #endif
 
 void FrameSinkManagerImpl::CreateFrameSinkBundle(

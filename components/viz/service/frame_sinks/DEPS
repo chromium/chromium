@@ -24,6 +24,7 @@ include_rules = [
   "+media/video",
   "+media/filters",
   "+ui/display/mac/vsync_provider_mac.h",
+  "+ui/display/display_features.h",
   "+ui/gl/gl_features.h",
 ]
 

@@ -72,6 +72,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   // only be accessed on the thread on which it was retrieved.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
+  static bool IsDisplayLinkAllowed(int64_t display_id);
+
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the
   //   returned VSyncCallbackMac object is destroyed.

@@ -19,6 +19,25 @@ BASE_FEATURE(kCADisplayLinkinGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac
 
+// Static
+bool DisplayLinkMac::IsDisplayLinkAllowed(int64_t display_id) {
+  // For CADisplayLink and CVDisplayLink in GPU, always return true;
+  // For ExternalDisplayLinkMac, check the configuration set by
+  // DisplayLinkMacMojo in the browser process.
+  if (@available(macos 14.0, *)) {
+    if (base::FeatureList::IsEnabled(kCADisplayLinkinGpu)) {
+      return true;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            display::features::kCADisplayLinkInBrowser)) {
+      return ExternalDisplayLinkMac::IsDisplayLinkSupported(display_id);
+    }
+  }
+
+  return true;
+}
+
 // static
 scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     int64_t vsync_display_id) {

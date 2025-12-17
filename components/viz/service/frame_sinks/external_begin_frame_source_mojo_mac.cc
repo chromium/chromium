@@ -17,9 +17,11 @@ ExternalBeginFrameSourceMojoMac::ExternalBeginFrameSourceMojoMac(
     mojo::PendingReceiver<mojom::ExternalBeginFrameController>
         controller_receiver,
     mojo::PendingRemote<mojom::ExternalBeginFrameControllerClient>
-        controller_remote_client)
+        controller_remote_client,
+    base::RepeatingClosure update_vsync_displays_cb)
     : receiver_(std::in_place_type<Receiver>, this),
-      remote_client_(std::move(controller_remote_client)) {
+      remote_client_(std::move(controller_remote_client)),
+      update_vsync_displays_cb_(std::move(update_vsync_displays_cb)) {
   CHECK(remote_client_);
 
   if (mojo::IsDirectReceiverSupported() &&
@@ -55,6 +57,8 @@ void ExternalBeginFrameSourceMojoMac::SetSupportedDisplayLinkId(
     bool is_supported) {
   ui::VSyncProviderMac::GetInstance()->SetSupportedDisplayLinkId(display_id,
                                                                  is_supported);
+  // Update DisplayLinkMac in every ExternalBeginFrameSourceMac if needed.
+  update_vsync_displays_cb_.Run();
 }
 
 void ExternalBeginFrameSourceMojoMac::IssueExternalBeginFrame(

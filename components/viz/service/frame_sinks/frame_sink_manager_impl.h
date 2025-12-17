@@ -414,6 +414,14 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   GpuServiceImpl* GetGpuService();
 
+#if BUILDFLAG(IS_MAC)
+  // This is called after SetSupportedDisplayLinkId() in the browser process.
+  // This function will force ExternalDisplayLinkMac in every
+  // RootCompositorFrameSink to check whether we need to get a new
+  // DisplayLinkMac when a display is added or removed.
+  void UpdateVSyncDisplays();
+#endif
+
  private:
   void OnViewTransitionResourcesCaptured(
       const blink::ViewTransitionToken& transition_token);

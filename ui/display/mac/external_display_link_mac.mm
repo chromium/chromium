@@ -14,11 +14,16 @@ namespace ui {
 // static
 scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
     int64_t display_id) {
-  if (!VSyncProviderMac::GetInstance()->IsDisplayLinkSupported(display_id)) {
+  if (!IsDisplayLinkSupported(display_id)) {
     return nullptr;
   }
 
   return (new ExternalDisplayLinkMac(display_id));
+}
+
+// static
+bool ExternalDisplayLinkMac::IsDisplayLinkSupported(int64_t display_id) {
+  return VSyncProviderMac::GetInstance()->IsDisplayLinkSupported(display_id);
 }
 
 ExternalDisplayLinkMac::ExternalDisplayLinkMac(int64_t display_id)
@@ -63,7 +68,7 @@ std::unique_ptr<VSyncCallbackMac> ExternalDisplayLinkMac::RegisterCallback(
     callback_for_providers_thread_ = std::move(callback_for_current_thread);
   }
 
-  vsync_provider_->RegisterCallback(std::move(callback_for_providers_thread_),
+  vsync_provider_->RegisterCallback(callback_for_providers_thread_,
                                     display_id_);
 
   return new_callback;
@@ -71,7 +76,6 @@ std::unique_ptr<VSyncCallbackMac> ExternalDisplayLinkMac::RegisterCallback(
 
 void ExternalDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   CHECK(callback_for_providers_thread_);
-
   vsync_provider_->UnregisterCallback(std::move(callback_for_providers_thread_),
                                       display_id_);
 }

@@ -23,6 +23,8 @@ class ExternalDisplayLinkMac : public DisplayLinkMac {
   // Return a new ExternalDisplayLinkMac for each call.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
+  static bool IsDisplayLinkSupported(int64_t display_id);
+
   // DisplayLinkMac implementation
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) override;

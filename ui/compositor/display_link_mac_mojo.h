@@ -67,7 +67,6 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
   static bool SupportsDisplayLinkMacInBrowser();
 
   // base::Thread implementation.
-  void Init() override;
   void CleanUp() override;
 
   // viz::mojom::ExternalBeginFrameControllerClient implementation.
@@ -86,6 +85,8 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
   // VSyncIpc is connected when DisplayLinkMacMojo is created, and it's
   // reconnected after the GPU process is lost.
   void ConnectVSyncIpc(viz::HostFrameSinkManager* host_frame_sink_manager);
+
+  void InitDisplaysOnVSyncThread();
 
   void OnDisplayLinkVSyncCallback(int64_t display_id, VSyncParamsMac params);
 

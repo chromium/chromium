@@ -224,6 +224,13 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // moves across displays.
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
+#if BUILDFLAG(IS_MAC)
+  // Connect to a new DisplayLinkMac, the VSync source, if needed.
+  // The browser initiates this call whenever a display is either added or
+  // removed.
+  virtual void UpdateVSyncDisplay() {}
+#endif
+
   virtual void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) {}
 

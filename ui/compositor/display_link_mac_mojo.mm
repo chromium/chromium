@@ -48,6 +48,12 @@ DisplayLinkMacMojo::DisplayLinkMacMojo(
   // Display AddObserver can only be called on the browser main thread.
   DCHECK(display::Screen::HasScreen());
   display::Screen::Get()->AddObserver(this);
+
+  // Now |external_begin_frame_controller_| is valid after ConnectVSyncIpc(). We
+  // can start getting DisplayLinks for all displays.
+  task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DisplayLinkMacMojo::InitDisplaysOnVSyncThread,
+                                base::Unretained(this)));
 }
 
 DisplayLinkMacMojo::~DisplayLinkMacMojo() {
@@ -59,7 +65,7 @@ DisplayLinkMacMojo::~DisplayLinkMacMojo() {
   Stop();
 }
 
-void DisplayLinkMacMojo::Init() {
+void DisplayLinkMacMojo::InitDisplaysOnVSyncThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
 
   // Create CADisplayLink for all displays.
@@ -84,29 +90,44 @@ void DisplayLinkMacMojo::CleanUp() {
   client_receiver_.reset();
 }
 
+// Called on the browser main thread.
 void DisplayLinkMacMojo::OnGpuProcessLost(
     viz::HostFrameSinkManager* host_frame_sink_manager) {
-  // TODO: Stop (or Destroy all DisplayLink) on VSyncThread..
+  // Destroy all DisplayLinks on the VSyncThread.
+  DCHECK(display::Screen::HasScreen());
+  display::Screen::Get()->RemoveObserver(this);
+
+  if (!vsync_callbacks_.empty()) {
+    task_runner()->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(vsync_callbacks_)));
+  }
+  if (!display_links_.empty()) {
+    task_runner()->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(display_links_)));
+  }
+
+  // Reconnect IPC. Destory the old controller and the old receiver on the
+  // VSyncThread first.
+  if (external_begin_frame_controller_) {
+    task_runner()->PostTask(FROM_HERE, base::DoNothingWithBoundArgs(std::move(
+                                           external_begin_frame_controller_)));
+  }
+  if (client_receiver_) {
+    task_runner()->DeleteSoon(FROM_HERE, std::move(client_receiver_));
+  }
 
   ConnectVSyncIpc(host_frame_sink_manager);
 
-  // TODO: Re-initialize all displays on VSyncThread.
+  display::Screen::Get()->AddObserver(this);
+  task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DisplayLinkMacMojo::InitDisplaysOnVSyncThread,
+                                base::Unretained(this)));
 }
 
 // Called on the browser main thread
 void DisplayLinkMacMojo::ConnectVSyncIpc(
     viz::HostFrameSinkManager* host_frame_sink_manager) {
   CHECK(host_frame_sink_manager);
-
-  // Reset the old controller and the old receiver first.
-  if (external_begin_frame_controller_) {
-    task_runner()->PostTask(FROM_HERE, base::DoNothingWithBoundArgs(std::move(
-                                           external_begin_frame_controller_)));
-  }
-
-  if (client_receiver_) {
-    task_runner()->DeleteSoon(FROM_HERE, std::move(client_receiver_));
-  }
 
   // Params to connect with Viz
   auto params = viz::mojom::CompositorDisplayLinkParams::New();
