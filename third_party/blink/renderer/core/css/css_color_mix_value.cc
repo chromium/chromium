@@ -120,14 +120,25 @@ CSSColorMixValue::PercentageValuesForSerialization(
 
 String CSSColorMixValue::CustomCSSText() const {
   StringBuilder result;
-  result.Append("color-mix(in ");
-  result.Append(Color::SerializeInterpolationSpace(color_interpolation_space_,
-                                                   hue_interpolation_method_));
+  result.Append("color-mix(");
+
+  // Per CSS Color 5, the default interpolation space is oklab with shorter hue.
+  // Default values are omitted from serialization.
+  // https://drafts.csswg.org/css-color-5/#color-mix-space
+  const bool is_default_interpolation =
+      color_interpolation_space_ == Color::ColorSpace::kOklab &&
+      hue_interpolation_method_ == Color::HueInterpolationMethod::kShorter;
+
+  if (!is_default_interpolation) {
+    result.Append("in ");
+    result.Append(Color::SerializeInterpolationSpace(
+        color_interpolation_space_, hue_interpolation_method_));
+    result.Append(", ");
+  }
 
   auto [percentage1_value, percentage2_value] =
       PercentageValuesForSerialization(percentage1_, percentage2_);
 
-  result.Append(", ");
   result.Append(color1_->CssText());
   if (percentage1_value) {
     result.Append(' ');

@@ -1835,7 +1835,9 @@ CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream& stream,
 }
 
 struct ColorInterpolationSpace {
-  Color::ColorSpace color_space = Color::ColorSpace::kNone;
+  // Per CSS Color 5, the default interpolation space is oklab with shorter hue.
+  // https://drafts.csswg.org/css-color-5/#color-mix-space
+  Color::ColorSpace color_space = Color::ColorSpace::kOklab;
   Color::HueInterpolationMethod hue_interpolation =
       Color::HueInterpolationMethod::kShorter;
   // For web feature counting purpose and to distinguish between explicit and
@@ -2009,9 +2011,10 @@ static CSSValue* ConsumeColorMixFunction(
     }
     auto& [color_space, hue_interpolation_method, user_specified] =
         *consume_color_interpolation_space_result;
-    (void)user_specified;  // unused
 
-    if (!ConsumeCommaIncludingWhitespace(stream)) {
+    // Only expect comma if user explicitly specified "in <colorspace>".
+    // When omitted, the default oklab is used and no comma follows.
+    if (user_specified && !ConsumeCommaIncludingWhitespace(stream)) {
       return nullptr;
     }
 
