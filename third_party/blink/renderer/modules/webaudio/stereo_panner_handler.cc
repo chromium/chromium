@@ -30,8 +30,7 @@ StereoPannerHandler::StereoPannerHandler(AudioNode& node,
                                          AudioParamHandler& pan)
     : AudioHandler(NodeType::kNodeTypeStereoPanner, node, sample_rate),
       pan_(&pan),
-      sample_accurate_pan_values_(
-          GetDeferredTaskHandler().RenderQuantumFrames()) {
+      sample_accurate_pan_values_(node.context()->renderQuantumSize()) {
   AddInput();
   AddOutput(kMaximumOutputChannels);
 
@@ -92,18 +91,10 @@ void StereoPannerHandler::Process(uint32_t frames_to_process) {
 }
 
 void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
-  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
-           render_quantum_frames_expected);
-
-  float values[render_quantum_frames_expected];
-  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
+  DCHECK_LE(frames_to_process, sample_accurate_pan_values_.size());
 
   pan_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      sample_accurate_pan_values_.as_span().first(frames_to_process));
 }
 
 void StereoPannerHandler::Initialize() {
