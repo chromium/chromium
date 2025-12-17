@@ -260,6 +260,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.mixins = None
     self.gn_isolate_map = None
     self.variants = None
+    self.exclude_test_id_prefix = set()
 
   class _ArgsNamespace(argparse.Namespace):
 
@@ -408,6 +409,16 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                         default=[],
                         action='append',
                         dest='isolate_map_files')
+    # TODO(crbug.com/465167917): Remove this field and usage after 90 days,
+    # which is approximately around March 20, 2026.
+    parser.add_argument('--test-id-prefix-excluded-map-file',
+                        metavar='PATH',
+                        help=('Path to isolate maps with entries for test id '
+                              'prefixes that should be excluded.'),
+                        type=os.path.abspath,
+                        default=[],
+                        action='append',
+                        dest='prefix_exclude_map_files')
     parser.add_argument(
         '--infra-config-dir',
         help='Path to the LUCI services configuration directory',
@@ -983,7 +994,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     # Populate test_id_prefix.
     gn_entry = self.gn_isolate_map[result['test']]
-    result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
+    if result['test'] not in self.exclude_test_id_prefix:
+      result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
     result['module_name'] = gn_entry['label']
     module_scheme = test_config.get('module_scheme') or gn_entry.get(
         'module_scheme')
@@ -1161,7 +1173,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               ' label "%s" see http://crbug.com/1071091 for details.' %
               (isolate_name, label))
 
-          test['test_id_prefix'] = 'ninja:%s/' % label
+          if isolate_name not in self.exclude_test_id_prefix:
+            test['test_id_prefix'] = 'ninja:%s/' % label
           test['module_name'] = label
           # Allow module_scheme in the test config to override the gn label.
           # This is useful when a test suite uses a different module scheme
@@ -1317,6 +1330,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         raise BBGenErr('Duplicate targets in isolate map files: %s.' %
                        ', '.join(duplicates))
       self.gn_isolate_map.update(isolate_map)
+    for exclude_map in self.args.prefix_exclude_map_files:
+      exclude_map = self.load_pyl_file(exclude_map)
+      for suite in exclude_map:
+        self.exclude_test_id_prefix.add(suite)
 
     self.variants = self.load_pyl_file(self.args.variants_pyl.actual_path)
 
