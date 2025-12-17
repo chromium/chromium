@@ -9,7 +9,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../content/read_anything_types.js';
-import {LineFocus} from '../content/read_anything_types.js';
 
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';
@@ -48,32 +47,32 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     lineFocus: 0,
   };
 
-  protected options_: Array<MenuStateItem<LineFocus>> = [
+  protected options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('lineFocusOffTitle'),
-      data: LineFocus.OFF,
+      data: chrome.readingMode.lineFocusOff,
     },
     {
       title: loadTimeData.getString('lineFocusOneLineTitle'),
-      data: LineFocus.ONE_LINE_WINDOW,
+      data: chrome.readingMode.lineFocusOneLineWindow,
       header: loadTimeData.getString('lineFocusWindowHeading'),
     },
     {
       title: loadTimeData.getString('lineFocusThreeLineTitle'),
-      data: LineFocus.THREE_LINE_WINDOW,
+      data: chrome.readingMode.lineFocusThreeLineWindow,
     },
     {
       title: loadTimeData.getString('lineFocusFiveLineTitle'),
-      data: LineFocus.FIVE_LINE_WINDOW,
+      data: chrome.readingMode.lineFocusFiveLineWindow,
     },
     {
       title: loadTimeData.getString('lineFocusStaticLineTitle'),
-      data: LineFocus.STATIC_LINE,
+      data: chrome.readingMode.lineFocusStaticLine,
       header: loadTimeData.getString('lineFocusLineHeading'),
     },
     {
       title: loadTimeData.getString('lineFocusCursorLineTitle'),
-      data: LineFocus.CURSOR_LINE,
+      data: chrome.readingMode.lineFocusCursorLine,
     },
   ];
 
@@ -85,9 +84,9 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     return getIndexOfSetting(this.options_, this.settingsPrefs['lineFocus']);
   }
 
-  protected onLineFocusChange_(_event: CustomEvent<{data: LineFocus}>) {
-    // TODO(crbug.com/447427066): Implement this to log the change and store
-    // it in prefs.
+  protected onLineFocusChange_(event: CustomEvent<{data: number}>) {
+    // TODO(crbug.com/447427066): Log this change.
+    chrome.readingMode.onLineFocusChanged(event.detail.data);
   }
 }
 

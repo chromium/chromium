@@ -112,6 +112,17 @@ enum HighlightGranularity {
   [MinVersion=1] kSentence = 4
 };
 
+[Extensible]
+// Line focus options.
+enum LineFocus {
+  [Default]kOff = 0,
+  kWindow1 = 1,
+  kWindow3 = 2,
+  kWindow5 = 3,
+  kLineStatic = 4,
+  kLineCursor = 5,
+};
+
 // LINT.IfChange(DistillationStatus)
 // Distillation status after a page has been opened with reading mode. Used for
 // metrics logging.
@@ -197,6 +208,10 @@ interface UntrustedPageHandler {
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
+
+  // Informs the browser controller that the user updated the granularity of
+  // the highlight that follows along with speech via the webui toolbar.
+  OnLineFocusChanged(read_anything.mojom.LineFocus granularity);
 
   // Informs the browser controller whether audio for read aloud is currently
   // playing.
@@ -310,7 +325,8 @@ interface UntrustedPage {
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,
                            mojo_base.mojom.ListValue languages_enabled_in_pref,
-                           read_anything.mojom.HighlightGranularity granularity);
+                           read_anything.mojom.HighlightGranularity granularity,
+                           read_anything.mojom.LineFocus line_focus);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   ScreenAIServiceReady();

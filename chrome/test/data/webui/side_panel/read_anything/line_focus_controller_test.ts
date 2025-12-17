@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, LineFocus, LineFocusController, LineFocusType, PARENT_OF_HIGHLIGHT_CLASS, previousReadHighlightClass, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {currentReadHighlightClass, LineFocusController, LineFocusType, PARENT_OF_HIGHLIGHT_CLASS, previousReadHighlightClass, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -83,24 +83,27 @@ suite('LineFocusController', () => {
   test('isEnabled is true for line', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     assertTrue(lineFocusController.isEnabled());
   });
 
   test('isEnabled is true for window', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     assertTrue(lineFocusController.isEnabled());
   });
 
   test('isEnabled is false for off', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
 
     lineFocusController.onLineFocusChange(
-        LineFocus.OFF, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusOff, defaultContainer, defaultHeight);
 
     assertFalse(lineFocusController.isEnabled());
   });
@@ -108,30 +111,34 @@ suite('LineFocusController', () => {
   test('isEnabled is false with flag disabled', () => {
     chrome.readingMode.isLineFocusEnabled = false;
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     assertFalse(lineFocusController.isEnabled());
   });
 
   test('onLineFocusChange updates current line focus', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     assertEquals(
         LineFocusType.LINE, lineFocusController.getCurrentLineFocusType());
 
     lineFocusController.onLineFocusChange(
-        LineFocus.ONE_LINE_WINDOW, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusOneLineWindow, defaultContainer,
+        defaultHeight);
     assertEquals(
         LineFocusType.WINDOW, lineFocusController.getCurrentLineFocusType());
 
     lineFocusController.onLineFocusChange(
-        {type: LineFocusType.NONE, lines: 1}, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusOff, defaultContainer, defaultHeight);
     assertEquals(
         LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
   });
 
   test('onLineFocusChange to cursor line updates position', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
 
     assertEquals(0, lineFocusController.getTop());
     assertFalse(!!lineFocusController.getHeight());
@@ -139,7 +146,8 @@ suite('LineFocusController', () => {
 
   test('onLineFocusChange to static line sets it in the middle', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.STATIC_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusStaticLine, defaultContainer,
+        defaultHeight);
 
     assertEquals(defaultHeight / 2, lineFocusController.getTop());
     assertFalse(!!lineFocusController.getHeight());
@@ -149,7 +157,7 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
 
     assertEquals(container.offsetTop, lineFocusController.getTop());
     assertLT(0, lineFocusController.getHeight()!);
@@ -159,13 +167,13 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
     const height1 = lineFocusController.getHeight();
     lineFocusController.onLineFocusChange(
-        LineFocus.ONE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusOneLineWindow, container, defaultHeight);
     const height2 = lineFocusController.getHeight();
     lineFocusController.onLineFocusChange(
-        LineFocus.FIVE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusFiveLineWindow, container, defaultHeight);
     const height3 = lineFocusController.getHeight();
 
     assertTrue(!!height1);
@@ -179,9 +187,9 @@ suite('LineFocusController', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
     lineFocusController.onLineFocusChange(
-        {type: LineFocusType.NONE, lines: 3}, container, defaultHeight);
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
 
     assertEquals(0, lineFocusController.getTop());
     assertFalse(!!lineFocusController.getHeight());
@@ -189,7 +197,8 @@ suite('LineFocusController', () => {
 
   test('onMouseMove does nothing if flag disabled', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = false;
 
     lineFocusController.onMouseMove(101);
@@ -199,7 +208,8 @@ suite('LineFocusController', () => {
 
   test('onMouseMove notifies listeners', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusMoved = false;
 
@@ -212,7 +222,7 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     speechController.onPlayPauseToggle(container);
     lineFocusMoved = false;
@@ -225,7 +235,7 @@ suite('LineFocusController', () => {
   test('onMouseMove does nothing when line is static', () => {
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.STATIC_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusStaticLine, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusMoved = false;
 
@@ -236,7 +246,8 @@ suite('LineFocusController', () => {
 
   test('onMouseMove sets new line position', () => {
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     const newPos = 102;
 
@@ -249,7 +260,7 @@ suite('LineFocusController', () => {
   test('onMouseMove honors container top with line', () => {
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
 
     lineFocusController.onMouseMove(0);
@@ -262,7 +273,7 @@ suite('LineFocusController', () => {
   test('onMouseMove sets new window position and height', () => {
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     const newPos = container.offsetTop + 100;
 
@@ -277,7 +288,7 @@ suite('LineFocusController', () => {
   test('onMouseMove honors container top with height', () => {
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.FIVE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusFiveLineWindow, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
 
     lineFocusController.onMouseMove(0);
@@ -293,7 +304,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
     const oldTop = lineFocusController.getTop();
     const oldHeight = lineFocusController.getHeight();
     const heading = document.createElement('h1');
@@ -328,7 +339,7 @@ suite('LineFocusController', () => {
     container.appendChild(text);
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, 100);
+        chrome.readingMode.lineFocusThreeLineWindow, container, 100);
     lineFocusController.onMouseMove(100);
     const oldTop = lineFocusController.getTop();
     const oldHeight = lineFocusController.getHeight();
@@ -356,7 +367,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     lineFocusController.onMouseMove(100);
     const oldTop = lineFocusController.getTop();
     const heading = document.createElement('h1');
@@ -380,7 +391,7 @@ suite('LineFocusController', () => {
     container.appendChild(text);
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     const oldTop = lineFocusController.getTop();
     setupBasicSpeech(speech);
     speechController.onPlayPauseToggle(container);
@@ -402,7 +413,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     lineFocusMoved = false;
 
     const parentHighlight = document.createElement('span');
@@ -424,7 +435,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     lineFocusMoved = false;
 
     const parentHighlight = document.createElement('span');
@@ -443,7 +454,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.STATIC_LINE, container, 100);
+        chrome.readingMode.lineFocusStaticLine, container, 100);
     lineFocusMoved = false;
 
     const parentHighlight = document.createElement('span');
@@ -466,7 +477,7 @@ suite('LineFocusController', () => {
         'Like a siege rocked by a sky bird\nin a distant wood';
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     let oldTop = lineFocusController.getTop();
 
     // Snap to the first line.
@@ -504,7 +515,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.STATIC_LINE, container, 100);
+        chrome.readingMode.lineFocusStaticLine, container, 100);
     let oldTop = lineFocusController.getTop();
     let oldScrollDiff = scrollDiffReceived;
 
@@ -548,7 +559,7 @@ suite('LineFocusController', () => {
     scroller.appendChild(container);
     document.body.appendChild(scroller);
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, height);
+        chrome.readingMode.lineFocusCursorLine, container, height);
     let oldTop = lineFocusController.getTop();
 
     // Snap to the first line.
@@ -580,7 +591,7 @@ suite('LineFocusController', () => {
     document.body.appendChild(scroller);
     scroller.scrollTop = 10000;
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, height);
+        chrome.readingMode.lineFocusCursorLine, container, height);
     let oldTop = lineFocusController.getTop();
 
     // Snap to the first line.
@@ -606,7 +617,7 @@ suite('LineFocusController', () => {
         'for the things I\'ve done you blame before';
     document.body.appendChild(container);
     lineFocusController.onLineFocusChange(
-        LineFocus.THREE_LINE_WINDOW, container, defaultHeight);
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
     let oldTop = lineFocusController.getTop();
 
     // Snap to the third line.
@@ -644,7 +655,7 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     lineFocusController.onLineFocusChange(
-        LineFocus.CURSOR_LINE, container, defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     speechController.onPlayPauseToggle(container);
     lineFocusMoved = false;

@@ -125,7 +125,11 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void,
               OnHighlightGranularityChanged,
-              (read_anything::mojom::HighlightGranularity color),
+              (read_anything::mojom::HighlightGranularity granularity),
+              (override));
+  MOCK_METHOD(void,
+              OnLineFocusChanged,
+              (read_anything::mojom::LineFocus line_focus),
               (override));
   MOCK_METHOD(void,
               OnImageDataRequested,
@@ -304,6 +308,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         features::kReadAnythingDocsIntegration);
+  }
+
+  void EnableLineFocus() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
   }
 
   void DisableReadAloud() {
@@ -865,6 +874,36 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(controller().GetStoredVoice(), "");
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnSettingsRestoredFromPrefs_WithLineFocusFlag) {
+  EnableLineFocus();
+  auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
+  std::string font_name = "Roboto";
+  double font_size = 3.0;
+  bool links_enabled = false;
+  bool images_enabled = true;
+  auto color = read_anything::mojom::Colors::kDefaultValue;
+  double speech_rate = 1.5;
+  std::string voice_value = "Italian voice 3";
+  std::string language_value = "it";
+  base::Value::Dict voices = base::Value::Dict();
+  voices.Set(language_value, voice_value);
+  base::Value::List languages_enabled_in_pref = base::Value::List();
+  languages_enabled_in_pref.Append(language_value);
+  auto highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kDefaultValue;
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  controller().SetLanguageForTesting(language_value);
+
+  controller().OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font_name, font_size, links_enabled,
+      images_enabled, color, speech_rate, std::move(voices),
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
+
+  EXPECT_EQ(static_cast<int>(line_focus), controller().LineFocus());
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
@@ -884,13 +923,14 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   int highlight_granularity_value = 0;
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
 
   controller().SetLanguageForTesting(language_value);
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity);
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
 
   EXPECT_EQ(base::to_underlying(line_spacing), controller().LineSpacing());
   EXPECT_EQ(base::to_underlying(letter_spacing), controller().LetterSpacing());
@@ -904,6 +944,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(language_value, controller().GetLanguagesEnabledInPref()[0]);
   EXPECT_EQ(highlight_granularity_value,
             read_aloud_model().highlight_granularity());
+  EXPECT_EQ(static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
+            controller().LineFocus());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -2149,11 +2191,12 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
+  auto line_focus = read_anything::mojom::LineFocus::kDefaultValue;
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity);
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
   controller().RequestImageData(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
@@ -2562,6 +2605,14 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
       base::to_underlying(read_anything::mojom::HighlightGranularity::kOff));
 
   EXPECT_FALSE(controller().IsHighlightOn());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
+  EnableLineFocus();
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus)).Times(1);
+  controller().OnLineFocusChanged(static_cast<int>(line_focus));
+  ASSERT_EQ(line_focus, model().line_focus());
 }
 
 TEST_F(ReadAnythingAppControllerTest, SetLanguageCode_UpdatesModelLanguage) {

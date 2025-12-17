@@ -44,6 +44,9 @@ declare namespace chrome {
     let speechRate: number;
     let highlightGranularity: number;
 
+    // Current line focus value.
+    let lineFocus: number;
+
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;
     let looseLineSpacing: number;
@@ -77,6 +80,14 @@ declare namespace chrome {
     let engineErrorStopSource: number;
     let contentFinishedStopSource: number;
     let unexpectedUpdateContentStopSource: number;
+
+    // Enum values for line focus modes.
+    let lineFocusOff: number;
+    let lineFocusOneLineWindow: number;
+    let lineFocusThreeLineWindow: number;
+    let lineFocusFiveLineWindow: number;
+    let lineFocusStaticLine: number;
+    let lineFocusCursorLine: number;
 
     // Whether the Immersive Read Anything feature flag is enabled.
     let isImmersiveEnabled: boolean;
@@ -238,6 +249,9 @@ declare namespace chrome {
 
     // Called when the highlight granularity is changed via the webui toolbar.
     function onHighlightGranularityChanged(value: number): void;
+
+    // Called when the line focus mode is changed via the webui toolbar.
+    function onLineFocusChanged(value: number): void;
 
     // Called when a language is enabled/disabled for Read Aloud
     // via the webui language menu.

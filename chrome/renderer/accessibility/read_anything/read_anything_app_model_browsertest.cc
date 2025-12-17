@@ -169,10 +169,11 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   bool links_enabled = false;
   bool images_enabled = true;
   auto color = read_anything::mojom::Colors::kDark;
+  auto line_focus = read_anything::mojom::LineFocus::kWindow3;
 
   model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                                       font_size, links_enabled, images_enabled,
-                                      color);
+                                      color, line_focus);
 
   EXPECT_EQ(line_spacing, model().line_spacing());
   EXPECT_EQ(letter_spacing, model().letter_spacing());

@@ -63,10 +63,17 @@ export class LineFocusController {
 
   onTextLocationsChange(container: HTMLElement, height: number) {
     if (this.isEnabled()) {
+      const previousMaxY = this.model_.getMaxY();
+      const previousMinY = this.model_.getMinY();
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
+        if (previousMaxY !== this.model_.getMaxY() ||
+            previousMinY !== this.model_.getMinY()) {
+          this.setCenterY_();
+        }
         return;
       }
+
       if (this.speechController_.isSpeechActive()) {
         const highlights = container.querySelectorAll<HTMLElement>(
             `.${currentReadHighlightClass}`);
@@ -78,7 +85,8 @@ export class LineFocusController {
   }
 
   onLineFocusChange(
-      lineFocus: LineFocus, container: HTMLElement, height: number) {
+      lineFocusEnumValue: number, container: HTMLElement, height: number) {
+    const lineFocus = this.getLineFocusFromEnumValue_(lineFocusEnumValue);
     this.model_.setCurrentLineFocus(lineFocus);
     if (lineFocus.type === LineFocusType.NONE) {
       this.model_.setMinY(0);
@@ -93,8 +101,7 @@ export class LineFocusController {
     } else {
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
-        // Set the static line in the center of the visible area.
-        this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
+        this.setCenterY_();
       } else {
         this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
       }
@@ -348,6 +355,27 @@ export class LineFocusController {
     }
 
     return 0;
+  }
+
+  private setCenterY_() {
+    this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
+  }
+
+  private getLineFocusFromEnumValue_(enumValue: number): LineFocus {
+    switch (enumValue) {
+      case chrome.readingMode.lineFocusCursorLine:
+        return LineFocus.CURSOR_LINE;
+      case chrome.readingMode.lineFocusStaticLine:
+        return LineFocus.STATIC_LINE;
+      case chrome.readingMode.lineFocusOneLineWindow:
+        return LineFocus.ONE_LINE_WINDOW;
+      case chrome.readingMode.lineFocusThreeLineWindow:
+        return LineFocus.THREE_LINE_WINDOW;
+      case chrome.readingMode.lineFocusFiveLineWindow:
+        return LineFocus.FIVE_LINE_WINDOW;
+      default:
+        return LineFocus.OFF;
+    }
   }
 
   static getInstance(): LineFocusController {

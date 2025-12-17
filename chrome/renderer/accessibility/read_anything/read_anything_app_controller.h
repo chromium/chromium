@@ -151,7 +151,8 @@ class ReadAnythingAppController
       double speech_rate,
       base::Value::Dict voices,
       base::Value::List languages_enabled_in_pref,
-      read_anything::mojom::HighlightGranularity granularity) override;
+      read_anything::mojom::HighlightGranularity granularity,
+      read_anything::mojom::LineFocus line_focus) override;
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
@@ -206,6 +207,7 @@ class ReadAnythingAppController
   int LineSpacing() const;
   int ColorTheme() const;
   int HighlightGranularity() const;
+  int LineFocus() const;
   bool IsHighlightOn();
   int StandardLineSpacing() const;
   int LooseLineSpacing() const;
@@ -233,6 +235,12 @@ class ReadAnythingAppController
   int EngineErrorStopSource() const;
   int ContentFinishedStopSource() const;
   int UnexpectedUpdateContentStopSource() const;
+  int LineFocusOff() const;
+  int LineFocusOneLineWindow() const;
+  int LineFocusThreeLineWindow() const;
+  int LineFocusFiveLineWindow() const;
+  int LineFocusStaticLine() const;
+  int LineFocusCursorLine() const;
   int MaxLineWidth() const;
   int UndefinedPresentationState() const;
   int HiddenPresentationState() const;
@@ -289,6 +297,7 @@ class ReadAnythingAppController
   void OnLanguagePrefChange(const std::string& lang, bool enabled);
   bool RequiresDistillation();
   void OnHighlightGranularityChanged(int granularity);
+  void OnLineFocusChanged(int line_focus);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts();

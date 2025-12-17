@@ -28,6 +28,9 @@ export class FakeReadingMode {
   speechRate: number = 1;
   highlightGranularity: number = 0;
 
+  // Current line focus value.
+  lineFocus: number = 0;
+
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
   looseLineSpacing: number = 1;
@@ -59,6 +62,14 @@ export class FakeReadingMode {
   engineErrorStopSource: number = 33;
   contentFinishedStopSource: number = 34;
   unexpectedUpdateContentStopSource: number = 35;
+
+  // Enum values for line focus modes.
+  lineFocusOff: number = 50;
+  lineFocusOneLineWindow: number = 51;
+  lineFocusThreeLineWindow: number = 52;
+  lineFocusFiveLineWindow: number = 53;
+  lineFocusStaticLine: number = 54;
+  lineFocusCursorLine: number = 55;
 
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
@@ -214,6 +225,11 @@ export class FakeReadingMode {
 
   onHighlightGranularityChanged(value: number) {
     this.highlightGranularity = value;
+  }
+
+  // Called when the line focus mode is changed via the webui toolbar.
+  onLineFocusChanged(value: number) {
+    this.lineFocus = value;
   }
 
   // Called when a user toggles a switch in the language menu

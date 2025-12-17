@@ -198,6 +198,11 @@ class ReadAnythingAppModel {
     color_theme_ = color_theme;
   }
 
+  read_anything::mojom::LineFocus line_focus() const { return line_focus_; }
+  void set_line_focus(read_anything::mojom::LineFocus line_focus) {
+    line_focus_ = line_focus;
+  }
+
   // Sometimes iframes can return selection objects that have a valid id but
   // aren't in the tree.
   bool has_selection() const {
@@ -287,7 +292,8 @@ class ReadAnythingAppModel {
       double font_size,
       bool links_enabled,
       bool images_enabled,
-      read_anything::mojom::Colors color);
+      read_anything::mojom::Colors color,
+      read_anything::mojom::LineFocus line_focus);
 
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
@@ -478,6 +484,9 @@ class ReadAnythingAppModel {
       read_anything::mojom::LineSpacing::kDefaultValue;
   read_anything::mojom::Colors color_theme_ =
       read_anything::mojom::Colors::kDefaultValue;
+
+  read_anything::mojom::LineFocus line_focus_ =
+      read_anything::mojom::LineFocus::kDefaultValue;
 
   // Invariant: Either both endpoints are `!is_valid()`, or they are both valid
   // and non-equal.

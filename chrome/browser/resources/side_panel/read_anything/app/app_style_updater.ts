@@ -86,8 +86,9 @@ export class AppStyleUpdater {
     }
   }
 
-  setLineFocusStyle(type: LineFocusType) {
-    if (type === LineFocusType.NONE) {
+  setLineFocusStyle(type?: LineFocusType) {
+    if (type === undefined || !chrome.readingMode.isLineFocusEnabled ||
+        type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
       return;
     }

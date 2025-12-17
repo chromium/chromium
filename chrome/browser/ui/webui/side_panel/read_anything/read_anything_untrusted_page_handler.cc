@@ -299,6 +299,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   if (features::IsReadAnythingReadAloudEnabled()) {
     voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
+  read_anything::mojom::LineFocus line_focus =
+      read_anything::mojom::LineFocus::kDefaultValue;
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(
@@ -316,7 +318,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
                 .Clone()
           : base::Value::List(),
-      highlight_granularity);
+      highlight_granularity, line_focus);
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -735,6 +737,11 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
   profile_->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingHighlightGranularity,
       static_cast<size_t>(granularity));
+}
+
+void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
+    read_anything::mojom::LineFocus line_focus) {
+  // TODO(crbug.com/447427066): Store this value in prefs.
 }
 
 void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(

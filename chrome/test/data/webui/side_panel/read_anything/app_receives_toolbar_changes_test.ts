@@ -205,13 +205,13 @@ suite('AppReceivesToolbarChanges', () => {
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: {type: LineFocusType.LINE, lines: 1}}});
+        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
     await microtasksFinished();
     assertEquals('block', window.getComputedStyle(lineFocus).display);
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: {type: LineFocusType.NONE, lines: 1}}});
+        {detail: {data: chrome.readingMode.lineFocusOff}});
     await microtasksFinished();
     assertEquals('none', window.getComputedStyle(lineFocus).display);
   });
@@ -224,7 +224,7 @@ suite('AppReceivesToolbarChanges', () => {
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: {type: LineFocusType.LINE, lines: 1}}});
+        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
     await microtasksFinished();
     assertEquals(
         '',
@@ -236,7 +236,7 @@ suite('AppReceivesToolbarChanges', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS,
-        {detail: {data: {type: LineFocusType.LINE, lines: 1}}});
+        {detail: {data: chrome.readingMode.lineFocusCursorLine}});
     await microtasksFinished();
     const startingHeight = app.style.getPropertyValue('--line-focus-height');
 

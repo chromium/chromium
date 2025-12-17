@@ -98,7 +98,8 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                double speech_rate,
                base::Value::Dict voices,
                base::Value::List languages_enabled_in_pref,
-               read_anything::mojom::HighlightGranularity granularity));
+               read_anything::mojom::HighlightGranularity granularity,
+               read_anything::mojom::LineFocus line_focus));
   MOCK_METHOD(void,
               OnImageDataDownloaded,
               (const ui::AXTreeID&, int, const SkBitmap&));
@@ -235,7 +236,7 @@ class ReadAnythingUntrustedPageHandlerTest
  public:
   ReadAnythingUntrustedPageHandlerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingReadAloud};
+        features::kReadAnythingReadAloud, features::kReadAnythingLineFocus};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsImmersiveEnabled()) {
       enabled_features.push_back(features::kImmersiveReadAnything);
@@ -483,6 +484,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   double expected_speech_rate = 1.0;
   read_anything::mojom::HighlightGranularity expected_highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
+  auto expected_line_focus = read_anything::mojom::LineFocus::kDefaultValue;
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(prefs::kAccessibilityReadAnythingLineSpacing, 3);
   prefs->SetInteger(prefs::kAccessibilityReadAnythingLetterSpacing, 2);
@@ -496,13 +498,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                     expected_images_enabled);
   prefs->SetInteger(prefs::kAccessibilityReadAnythingColorInfo, 4);
 
-  EXPECT_CALL(
-      page_,
-      OnSettingsRestoredFromPrefs(
-          expected_line_spacing, expected_letter_spacing, expected_font_name,
-          expected_font_scale, expected_links_enabled, expected_images_enabled,
-          expected_color, expected_speech_rate, testing::IsEmpty(),
-          testing::IsEmpty(), expected_highlight_granularity))
+  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
+                         expected_line_spacing, expected_letter_spacing,
+                         expected_font_name, expected_font_scale,
+                         expected_links_enabled, expected_images_enabled,
+                         expected_color, expected_speech_rate,
+                         testing::IsEmpty(), testing::IsEmpty(),
+                         expected_highlight_granularity, expected_line_focus))
       .Times(1);
 
   handler_ = CreateHandler();
@@ -752,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(
   // Verify the values passed to the page are correct.
   EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
                          _, _, _, _, _, _, _, expected_speech_rate, _, _,
-                         expected_highlight_granularity))
+                         expected_highlight_granularity, _))
       .Times(1)
       .WillOnce(testing::WithArgs<8, 9>(
           [&](base::Value::Dict voices, base::Value::List langs) {

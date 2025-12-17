@@ -59,7 +59,19 @@ suite('AppStyleUpdater', () => {
     assertEquals('4px', app.style.getPropertyValue('--line-focus-height'));
   });
 
+  test('setLineFocusStyle with no line focus hides view', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    updater.setLineFocusStyle();
+
+    assertEquals('none', app.style.getPropertyValue('--line-focus-display'));
+    assertEquals('', app.style.getPropertyValue('--line-focus-shadow'));
+    assertEquals('', app.style.getPropertyValue('--line-focus-bg'));
+    assertEquals('', app.style.getPropertyValue('--line-focus-height'));
+  });
+
   test('setLineFocusStyle with line focus off hides view', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
     chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.NONE);
@@ -71,6 +83,7 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus line shows view', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
     chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.LINE);
@@ -84,6 +97,8 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus window shows view', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
     updater.setLineFocusStyle(LineFocusType.WINDOW);
 
     assertNotEquals('none', app.style.getPropertyValue('--line-focus-display'));
@@ -95,6 +110,7 @@ suite('AppStyleUpdater', () => {
   test(
       'setLineFocusStyle sets different background and shadow for different types',
       () => {
+        chrome.readingMode.isLineFocusEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         const windowShadow = app.style.getPropertyValue('--line-focus-shadow');
         const windowBg = app.style.getPropertyValue('--line-focus-bg');

@@ -5,6 +5,9 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LineFocusMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertHeadersForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -36,5 +39,58 @@ suite('LineFocusMenuElement', () => {
     chrome.readingMode.isLineFocusEnabled = false;
     assertHeadersForDropdown(
         lineFocusMenu.$.menu, /*shouldHaveHeaders=*/ false);
+  });
+
+  test('line focus change', () => {
+    const window = chrome.readingMode.lineFocusThreeLineWindow;
+    lineFocusMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: window}}));
+    assertEquals(window, chrome.readingMode.lineFocus);
+
+    const off = chrome.readingMode.lineFocusOff;
+    lineFocusMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: off}}));
+    assertEquals(off, chrome.readingMode.lineFocus);
+
+    const line = chrome.readingMode.lineFocusCursorLine;
+    lineFocusMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: line}}));
+    assertEquals(line, chrome.readingMode.lineFocus);
+  });
+
+  test('restores saved line focus option', async () => {
+    const lineFocus = chrome.readingMode.lineFocusOneLineWindow;
+    const startingIndex = lineFocusMenu.$.menu.currentSelectedIndex;
+    assertNotEquals(lineFocus, startingIndex);
+
+    lineFocusMenu.settingsPrefs = {
+      letterSpacing: 0,
+      lineSpacing: 0,
+      theme: 0,
+      speechRate: 0,
+      font: '',
+      highlightGranularity: 0,
+      lineFocus,
+    };
+    await microtasksFinished();
+
+    assertNotEquals(startingIndex, lineFocusMenu.$.menu.currentSelectedIndex);
+  });
+
+  test('does nothing if saved spacing is the same', async () => {
+    const startingIndex = lineFocusMenu.$.menu.currentSelectedIndex;
+
+    lineFocusMenu.settingsPrefs = {
+      letterSpacing: 101,
+      lineSpacing: 104,
+      theme: 102,
+      speechRate: 103,
+      font: 'font',
+      highlightGranularity: 103,
+      lineFocus: 0,
+    };
+    await microtasksFinished();
+
+    assertEquals(startingIndex, lineFocusMenu.$.menu.currentSelectedIndex);
   });
 });

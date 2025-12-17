@@ -1047,13 +1047,14 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     double speech_rate,
     base::Value::Dict voices,
     base::Value::List languages_enabled_in_pref,
-    read_anything::mojom::HighlightGranularity granularity) {
+    read_anything::mojom::HighlightGranularity granularity,
+    read_anything::mojom::LineFocus line_focus) {
   read_aloud_model_.OnSettingsRestoredFromPrefs(
       speech_rate, &languages_enabled_in_pref, &voices, granularity);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
                                      font_size, links_enabled, images_enabled,
-                                     color);
+                                     color, line_focus);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -1105,6 +1106,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
       .SetProperty("highlightGranularity",
                    &ReadAnythingAppController::HighlightGranularity)
+      .SetProperty("lineFocus", &ReadAnythingAppController::LineFocus)
       .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
       .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
@@ -1141,6 +1143,17 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty(
           "unexpectedUpdateContentStopSource",
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
+      .SetProperty("lineFocusOff", &ReadAnythingAppController::LineFocusOff)
+      .SetProperty("lineFocusOneLineWindow",
+                   &ReadAnythingAppController::LineFocusOneLineWindow)
+      .SetProperty("lineFocusThreeLineWindow",
+                   &ReadAnythingAppController::LineFocusThreeLineWindow)
+      .SetProperty("lineFocusFiveLineWindow",
+                   &ReadAnythingAppController::LineFocusFiveLineWindow)
+      .SetProperty("lineFocusStaticLine",
+                   &ReadAnythingAppController::LineFocusStaticLine)
+      .SetProperty("lineFocusCursorLine",
+                   &ReadAnythingAppController::LineFocusCursorLine)
       .SetProperty("maxLineWidth", &ReadAnythingAppController::MaxLineWidth)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
@@ -1219,6 +1232,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetLanguagesEnabledInPref)
       .SetMethod("onHighlightGranularityChanged",
                  &ReadAnythingAppController::OnHighlightGranularityChanged)
+      .SetMethod("onLineFocusChanged",
+                 &ReadAnythingAppController::OnLineFocusChanged)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
       .SetMethod("getLetterSpacingValue",
@@ -1367,6 +1382,12 @@ int ReadAnythingAppController::HighlightGranularity() const {
   return read_aloud_model_.highlight_granularity();
 }
 
+int ReadAnythingAppController::LineFocus() const {
+  return IsLineFocusEnabled()
+             ? base::to_underlying(model_.line_focus())
+             : base::to_underlying(read_anything::mojom::LineFocus::kOff);
+}
+
 int ReadAnythingAppController::StandardLineSpacing() const {
   return base::to_underlying(read_anything::mojom::LineSpacing::kStandard);
 }
@@ -1479,6 +1500,30 @@ int ReadAnythingAppController::ContentFinishedStopSource() const {
 int ReadAnythingAppController::UnexpectedUpdateContentStopSource() const {
   return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kUnexpectedUpdateContent);
+}
+
+int ReadAnythingAppController::LineFocusOff() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kOff);
+}
+
+int ReadAnythingAppController::LineFocusOneLineWindow() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow1);
+}
+
+int ReadAnythingAppController::LineFocusThreeLineWindow() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow3);
+}
+
+int ReadAnythingAppController::LineFocusFiveLineWindow() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kWindow5);
+}
+
+int ReadAnythingAppController::LineFocusStaticLine() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kLineStatic);
+}
+
+int ReadAnythingAppController::LineFocusCursorLine() const {
+  return base::to_underlying(read_anything::mojom::LineFocus::kLineCursor);
 }
 
 int ReadAnythingAppController::MaxLineWidth() const {
@@ -2002,6 +2047,18 @@ void ReadAnythingAppController::OnHighlightGranularityChanged(
   page_handler_->OnHighlightGranularityChanged(
       static_cast<read_anything::mojom::HighlightGranularity>(granularity));
   read_aloud_model_.set_highlight_granularity(granularity);
+}
+
+void ReadAnythingAppController::OnLineFocusChanged(int line_focus) {
+  if (!IsLineFocusEnabled()) {
+    return;
+  }
+
+  if (const auto maybe_enum =
+          ToEnum<read_anything::mojom::LineFocus>(line_focus)) {
+    page_handler_->OnLineFocusChanged(maybe_enum.value());
+    model_.set_line_focus(maybe_enum.value());
+  }
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {

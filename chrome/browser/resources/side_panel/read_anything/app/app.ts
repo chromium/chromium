@@ -19,7 +19,7 @@ import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
 import {LineFocusController, type LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import {type LineFocus, LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
+import {LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
@@ -206,7 +206,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus: 0,
+      lineFocus: chrome.readingMode.lineFocus,
     };
 
     document.onselectionchange = () => {
@@ -516,10 +516,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus: 0,
+      lineFocus: chrome.readingMode.lineFocus,
     };
     this.styleUpdater_.setAllTextStyles();
-    this.onTextLocationsChange_();
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.setLineFocus_(this.settingsPrefs_.lineFocus);
+    }
     // TODO: crbug.com/40927698 - Remove this call. Using this.settingsPrefs_
     // should replace this direct call to the toolbar.
     this.$.toolbar.restoreSettingsFromPrefs();
@@ -570,15 +572,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.styleUpdater_.setHighlight();
   }
 
-  protected onLineFocusChange_(event: CustomEvent<{data: LineFocus}>) {
+  protected onLineFocusChange_(event: CustomEvent<{data: number}>) {
     this.setLineFocus_(event.detail.data);
   }
 
-  private setLineFocus_(lineFocus: LineFocus) {
+  private setLineFocus_(lineFocus: number) {
     if (chrome.readingMode.isLineFocusEnabled) {
-      this.styleUpdater_.setLineFocusStyle(lineFocus.type);
       this.lineFocusController_.onLineFocusChange(
           lineFocus, this.$.container, this.$.containerParent.clientHeight);
+      this.styleUpdater_.setLineFocusStyle(
+          this.lineFocusController_.getCurrentLineFocusType());
     }
   }
 
