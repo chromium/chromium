@@ -31,7 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -84,8 +85,8 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private StripLayoutGroupTitle mExpandedTitle;
 
     // Dependencies
-    private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mInReorderModeSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // Target
     private TabReorderStrategy mStrategy;
@@ -97,7 +98,6 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         mockTabGroup(GROUP_ID1, TAB_ID1, mModel.getTabById(TAB_ID1));
         mockTabGroup(GROUP_ID2, TAB_ID4, mModel.getTabById(TAB_ID4), mModel.getTabById(TAB_ID5));
 
-        mInReorderModeSupplier.set(false);
         mStrategy =
                 new TabReorderStrategy(
                         mReorderDelegate,

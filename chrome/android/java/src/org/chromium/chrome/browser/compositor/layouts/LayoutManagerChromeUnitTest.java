@@ -20,7 +20,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -44,14 +46,14 @@ public class LayoutManagerChromeUnitTest {
     private @Mock ViewGroup mContentContainer;
     private @Mock HubLayoutDependencyHolder mHubLayoutDependencyHolder;
 
-    private final ObservableSupplierImpl<TabSwitcher> mTabSwitcherSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TopUiThemeColorProvider> mTopUiThemeColorProvider =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<TabSwitcher> mTabSwitcherSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableObservableSupplier<TabContentManager> mTabContentManagerSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<TopUiThemeColorProvider>
+            mTopUiThemeColorProvider = ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {

@@ -56,7 +56,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Contract;
@@ -519,11 +521,11 @@ public class StripLayoutHelper
      * The {@link Supplier} for the width of a tab based on the number of tabs and the available
      * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
      */
-    private final ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
-            new ObservableSupplierImpl<>(0f);
+    private final SettableNonNullObservableSupplier<Float> mCachedTabWidthSupplier =
+            ObservableSuppliers.createNonNull(0f);
 
-    private final ObservableSupplierImpl<Float> mPinnedTabsBoundarySupplier =
-            new ObservableSupplierImpl<>(0f);
+    private final SettableNonNullObservableSupplier<Float> mPinnedTabsBoundarySupplier =
+            ObservableSuppliers.createNonNull(0f);
 
     // Reorder State
     private boolean mMovingGroup;
@@ -618,8 +620,8 @@ public class StripLayoutHelper
     private final Supplier<Boolean> mTabStripVisibleSupplier;
 
     // Tab group delete dialog.
-    private final ObservableSupplierImpl<@Nullable Token> mGroupIdToHideSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier =
+            ObservableSuppliers.createNullable();
 
     // Tab group context menu.
     // Set when showTabGroupContextMenu is called for the first time.
@@ -2544,7 +2546,7 @@ public class StripLayoutHelper
                     new TabBubbler(
                             assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile()),
                             this,
-                            new ObservableSupplierImpl<>(groupTitle.getTabGroupId()));
+                            mGroupIdToHideSupplier);
             groupTitle.setTabBubbler(tabBubbler);
         }
 
@@ -5426,7 +5428,7 @@ public class StripLayoutHelper
         return mPendingMouseTabClosure;
     }
 
-    ObservableSupplierImpl<@Nullable Token> getGroupIdToHideSupplierForTesting() {
+    SettableNullableObservableSupplier<Token> getGroupIdToHideSupplierForTesting() {
         return mGroupIdToHideSupplier;
     }
 

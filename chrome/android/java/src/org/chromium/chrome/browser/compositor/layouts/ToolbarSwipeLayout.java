@@ -20,7 +20,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -145,7 +144,7 @@ public class ToolbarSwipeLayout extends Layout {
         mMoveToolbar = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         // No new captures should be taken mid swipe, so this shouldn't matter.
-        ObservableSupplier<Long> captureResourceIdSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplier<Long> captureResourceIdSupplier = ObservableSuppliers.alwaysNull();
 
         if (mMoveToolbar) {
             mLeftToolbarOverlay =
@@ -158,7 +157,7 @@ public class ToolbarSwipeLayout extends Layout {
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
                             bottomControlsOffsetSupplier,
-                            new ObservableSupplierImpl<>(false),
+                            ObservableSuppliers.alwaysFalse(),
                             LayoutType.TOOLBAR_SWIPE,
                             /* isVisibilityManuallyControlled= */ true,
                             captureResourceIdSupplier,
@@ -176,7 +175,7 @@ public class ToolbarSwipeLayout extends Layout {
                             () -> mRenderHost.getResourceManager(),
                             topUiColorProvider,
                             bottomControlsOffsetSupplier,
-                            new ObservableSupplierImpl<>(false),
+                            ObservableSuppliers.alwaysFalse(),
                             LayoutType.TOOLBAR_SWIPE,
                             /* isVisibilityManuallyControlled= */ true,
                             captureResourceIdSupplier,

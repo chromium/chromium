@@ -11,7 +11,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -43,7 +43,7 @@ public class StripTabModelActionListener implements TabModelActionListener {
     private final Token mTabGroupId;
     private final @ActionType int mActionType;
     private final @Nullable View mToolbarContainerView;
-    private final ObservableSupplierImpl<@Nullable Token> mGroupIdToHideSupplier;
+    private final SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier;
     private final @Nullable Runnable mBeforeSyncDialogRunnable;
     private final @Nullable Runnable mOnSuccess;
 
@@ -61,7 +61,7 @@ public class StripTabModelActionListener implements TabModelActionListener {
     public StripTabModelActionListener(
             Token tabGroupId,
             @ActionType int actionType,
-            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
+            SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             @Nullable View toolbarContainerView,
             @Nullable Runnable beforeSyncDialogRunnable,
             @Nullable Runnable onSuccess) {

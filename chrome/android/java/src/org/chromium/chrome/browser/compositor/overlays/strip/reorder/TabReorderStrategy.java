@@ -13,7 +13,7 @@ import android.view.View;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -55,7 +55,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
+            SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
             Supplier<Boolean> inReorderModeSupplier) {
@@ -130,7 +130,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             // 3.a. We may have exited reorder mode to display the confirmation dialog. If so,
             // we should not set the new offset here, and instead let the tab slide back to its
             // idealX.
-            if (!Boolean.TRUE.equals(mInReorderModeSupplier.get())) return;
+            if (!mInReorderModeSupplier.get()) return;
 
             // 3.b. Update the edge margins, since we may have merged/removed an edge tab
             // to/from a group.

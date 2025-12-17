@@ -8,7 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -64,7 +65,7 @@ class AnimationInterruptor implements Destroyable {
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final Tab mAnimationTab;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
-    private final ObservableSupplier<Boolean> mContextMenuVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mContextMenuVisibilitySupplier;
     private final ObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier;
 
     private @Nullable Runnable mInterruptAnimationRunnable;
@@ -95,7 +96,7 @@ class AnimationInterruptor implements Destroyable {
         mNtpSearchBoxTransitionPercentageSupplier = ntpSearchBoxTransitionPercentageSupplier;
         TabContextMenuData data = TabContextMenuData.getForTab(animationTab);
         if (data == null) {
-            mContextMenuVisibilitySupplier = new ObservableSupplierImpl<>(false);
+            mContextMenuVisibilitySupplier = ObservableSuppliers.createNonNull(false);
         } else {
             mContextMenuVisibilitySupplier = data.getTabContextMenuVisibilitySupplier();
         }

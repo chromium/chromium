@@ -22,7 +22,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -178,8 +177,6 @@ public class LayoutManagerImpl
     /** The animation handler responsible for updating all the browser compositor's animations. */
     private final CompositorAnimationHandler mAnimationHandler;
 
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
             ObservableSuppliers.createNonNull(0L);
@@ -684,7 +681,6 @@ public class LayoutManagerImpl
     @Initializer
     public void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
-        mTabModelSelectorSupplier.set(selector);
         mTabModelSelectorTabObserver =
                 new TabModelSelectorTabObserver(mTabModelSelector) {
                     @Override

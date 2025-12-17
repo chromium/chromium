@@ -1034,7 +1034,10 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+    @DisableFeatures({
+        ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX,
+        ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END
+    })
     public void testInMotionOrdering() {
         // With the 'defer in motion' experiment enabled, touch events are routed to android UI
         // after being sent to native/web content.

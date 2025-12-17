@@ -23,7 +23,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
@@ -75,7 +76,6 @@ public abstract class ReorderStrategyTestBase {
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
-    @Mock protected ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
     @Mock protected TabGroupModelFilter mTabGroupModelFilter;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
@@ -84,6 +84,8 @@ public abstract class ReorderStrategyTestBase {
     @Spy protected AnimationHost mAnimationHost = new TestAnimationHost();
 
     // Data
+    protected SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier =
+            ObservableSuppliers.createNullable();
     protected StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     protected StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];

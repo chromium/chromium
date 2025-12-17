@@ -48,8 +48,10 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -157,8 +159,8 @@ public class CompositorViewHolder extends FrameLayout
 
     // Tracks current aggregated state of if the compositor is in motion. This could be an ongoing
     // touch by the user, or a scroll that's in progress.
-    private final ObservableSupplierImpl<Boolean> mInMotionSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mInMotionSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mIsKeyboardShowing;
     private boolean mNativeInitialized;
@@ -805,7 +807,7 @@ public class CompositorViewHolder extends FrameLayout
      * and clients that have expensive operations may consider deferring until after the motion is
      * over.
      */
-    public ObservableSupplier<Boolean> getInMotionSupplier() {
+    public NonNullObservableSupplier<Boolean> getInMotionSupplier() {
         return mInMotionSupplier;
     }
 

@@ -10,7 +10,8 @@ import android.view.ViewStub;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -58,8 +59,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // visible. See https://crbug.com/1329293.
     protected @Nullable LayerTitleCache mLayerTitleCache;
 
-    protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
-            new ObservableSupplierImpl<>();
+    protected SettableObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =
+            ObservableSuppliers.createMonotonic();
     private final Supplier<Integer> mTabStripHeightSupplier;
     private final @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
 

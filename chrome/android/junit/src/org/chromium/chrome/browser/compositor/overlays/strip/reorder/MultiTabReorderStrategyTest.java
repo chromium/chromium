@@ -29,7 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -80,8 +81,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     private StripLayoutGroupTitle mCollapsedGroupTitle;
 
     // Dependencies
-    private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mInReorderModeSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final List<StripLayoutTab> mSelectedTabs = new ArrayList<>();
     private final List<Integer> mSelectedTabsIds = new ArrayList<>();
     private final List<StripLayoutTab> mUnpinnedTabs = new ArrayList<>();
