@@ -478,7 +478,7 @@ TEST_F(ThemeColorPickerHandlerTest, SetDefaultColor) {
 
   handler().SetDefaultColor();
 
-  EXPECT_EQ(SK_ColorTRANSPARENT, color.value_or(SK_ColorWHITE));
+  EXPECT_FALSE(color.has_value());
 }
 
 TEST_F(ThemeColorPickerHandlerTest, SetGreyDefaultColor) {

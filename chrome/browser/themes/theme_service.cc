@@ -618,7 +618,10 @@ void ThemeService::SetUserColor(std::optional<SkColor> user_color) {
     ClearThemeData(/*clear_ntp_background=*/false);
     profile_->GetPrefs()->SetInteger(prefs::kUserColor,
                                      user_color.value_or(SK_ColorTRANSPARENT));
-    profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, kUserColorThemeID);
+    if (user_color.has_value()) {
+      profile_->GetPrefs()->SetString(prefs::kCurrentThemeID,
+                                      kUserColorThemeID);
+    }
   }
   NotifyThemeChanged();
 }
