@@ -917,7 +917,7 @@ std::optional<InferredLabel> InferLabelFromTableRow(const WebNode& cell) {
       }
       prev_row_it = prev_row_it.NextSibling();
     }
-    if ((cell_count == prev_row_count) && matching_cell) {
+    if (cell_count == prev_row_count && matching_cell) {
       if (auto r = InferredLabel::BuildIfValid(FindChildText(matching_cell),
                                                LabelSource::kTdTag)) {
         return r;
@@ -2647,8 +2647,8 @@ std::vector<std::pair<FieldRendererId, WebAutofillState>> ApplyFieldsAction(
     if (!element) {
       continue;
     }
-    if ((action_type == mojom::FormActionType::kFill &&
-         ShouldSkipFillField(field, element))) {
+    if (action_type == mojom::FormActionType::kFill &&
+        ShouldSkipFillField(field, element)) {
       continue;
     }
     if (element.Focused()) {
