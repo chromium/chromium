@@ -812,7 +812,9 @@ void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
             active_web_contents->GetWebUI()
                 ->GetController()
                 ->GetAs<ContextualTasksUI>();
-        session_handle = contextual_tasks_ui->GetContextualSessionHandle();
+        if (contextual_tasks_ui) {
+          session_handle = contextual_tasks_ui->GetContextualSessionHandle();
+        }
       }
     }
   }

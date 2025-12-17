@@ -214,6 +214,14 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_));
   content::WebContents* new_contents_ptr = new_contents.get();
+
+  // Copy navigation entries from the current tab to the new tab to support back
+  // button navigation. See crbug.com/467042329 for detail.
+  if (tab) {
+    new_contents->GetController().CopyStateFrom(
+        &tab->GetContents()->GetController(), /*needs_reload=*/false);
+  }
+
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
 
