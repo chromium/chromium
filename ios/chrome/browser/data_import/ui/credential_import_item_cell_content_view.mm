@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_view.h"
+#import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_view.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -16,7 +16,7 @@ const CGFloat kURLAndUsernameSpace = 8.0;
 const CGFloat kUsernameAndDetailSpace = 5.0;
 }  // namespace
 
-@implementation PasswordImportItemCellContentView {
+@implementation CredentialImportItemCellContentView {
   /// Container for the favicon.
   FaviconContainerView* _faviconContainerView;
   /// Main label, displaying the URL.
@@ -28,7 +28,7 @@ const CGFloat kUsernameAndDetailSpace = 5.0;
 }
 
 - (instancetype)initWithConfiguration:
-    (PasswordImportItemCellContentConfiguration*)configuration {
+    (CredentialImportItemCellContentConfiguration*)configuration {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.backgroundColor = [UIColor clearColor];
@@ -126,7 +126,7 @@ const CGFloat kUsernameAndDetailSpace = 5.0;
 }
 
 - (void)setConfiguration:
-    (PasswordImportItemCellContentConfiguration*)configuration {
+    (CredentialImportItemCellContentConfiguration*)configuration {
   _configuration = [configuration copy];
   _URLLabel.text = configuration.URL;
   _usernameLabel.text = configuration.username;

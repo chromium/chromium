@@ -7,7 +7,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
+#import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -104,8 +104,8 @@ NSString* const kDataImportInvalidPasswordSection =
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(NSNumber*)identifier {
   PasswordImportItem* item = _invalidPasswords[identifier.intValue];
-  PasswordImportItemCellContentConfiguration* config =
-      [PasswordImportItemCellContentConfiguration
+  CredentialImportItemCellContentConfiguration* config =
+      [CredentialImportItemCellContentConfiguration
           cellConfigurationForErrorMessage:item];
   if (item.faviconAttributes) {
     config.faviconAttributes = item.faviconAttributes;

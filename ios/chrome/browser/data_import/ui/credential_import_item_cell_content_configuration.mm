@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
+#import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_view.h"
+#import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_view.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -56,12 +56,12 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 
 }  // namespace
 
-#pragma mark - PasswordImportItemCellContentConfiguration
+#pragma mark - CredentialImportItemCellContentConfiguration
 
-@implementation PasswordImportItemCellContentConfiguration
+@implementation CredentialImportItemCellContentConfiguration
 
 + (instancetype)cellConfigurationForMaskPassword:(PasswordImportItem*)item {
-  return [[PasswordImportItemCellContentConfiguration alloc]
+  return [[CredentialImportItemCellContentConfiguration alloc]
           initPrivateWithURL:item.url.title
                     username:item.username
                      message:kMaskedPassword
@@ -69,7 +69,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 }
 
 + (instancetype)cellConfigurationForUnmaskPassword:(PasswordImportItem*)item {
-  return [[PasswordImportItemCellContentConfiguration alloc]
+  return [[CredentialImportItemCellContentConfiguration alloc]
           initPrivateWithURL:item.url.title
                     username:item.username
                      message:item.password
@@ -77,7 +77,7 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 }
 
 + (instancetype)cellConfigurationForErrorMessage:(PasswordImportItem*)item {
-  return [[PasswordImportItemCellContentConfiguration alloc]
+  return [[CredentialImportItemCellContentConfiguration alloc]
           initPrivateWithURL:item.url.title
                     username:item.username
                      message:GetErrorMessageForPasswordImportStatus(item.status)
@@ -104,19 +104,20 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 #pragma mark - UIContentConfiguration
 
 - (id<UIContentView>)makeContentView {
-  return [[PasswordImportItemCellContentView alloc] initWithConfiguration:self];
+  return
+      [[CredentialImportItemCellContentView alloc] initWithConfiguration:self];
 }
 
 - (instancetype)updatedConfigurationForState:(id<UIConfigurationState>)state {
-  /// Password import cell looks the same across different states.
+  /// Credential import cell looks the same across different states.
   return self;
 }
 
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone*)zone {
-  PasswordImportItemCellContentConfiguration* newCopy =
-      [[PasswordImportItemCellContentConfiguration alloc]
+  CredentialImportItemCellContentConfiguration* newCopy =
+      [[CredentialImportItemCellContentConfiguration alloc]
               initPrivateWithURL:self.URL
                         username:self.username
                          message:self.message

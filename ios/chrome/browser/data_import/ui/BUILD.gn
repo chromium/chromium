@@ -15,7 +15,7 @@ source_set("ui") {
     "import_data_item_table_view.mm",
   ]
   deps = [
-    ":password_import_cell_configuration",
+    ":credential_import_cell_configuration",
     ":ui_utils",
     "//base",
     "//components/strings",
@@ -38,12 +38,12 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("password_import_cell_configuration") {
+source_set("credential_import_cell_configuration") {
   sources = [
-    "password_import_item_cell_content_configuration.h",
-    "password_import_item_cell_content_configuration.mm",
-    "password_import_item_cell_content_view.h",
-    "password_import_item_cell_content_view.mm",
+    "credential_import_item_cell_content_configuration.h",
+    "credential_import_item_cell_content_configuration.mm",
+    "credential_import_item_cell_content_view.h",
+    "credential_import_item_cell_content_view.mm",
   ]
   deps = [
     "//base",

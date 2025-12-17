@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/data_import/public/metrics.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
+#import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller_delegate.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
-#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -223,12 +223,12 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   cell.accessibilityIdentifier =
       GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
           identifier.index);
-  PasswordImportItemCellContentConfiguration* config;
+  CredentialImportItemCellContentConfiguration* config;
   if (_shouldUnmaskPasswordAtIndex[identifier.index].boolValue) {
-    config = [PasswordImportItemCellContentConfiguration
+    config = [CredentialImportItemCellContentConfiguration
         cellConfigurationForUnmaskPassword:item];
   } else {
-    config = [PasswordImportItemCellContentConfiguration
+    config = [CredentialImportItemCellContentConfiguration
         cellConfigurationForMaskPassword:item];
   }
   if (item.faviconAttributes) {
