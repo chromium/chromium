@@ -216,7 +216,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_auto_delete_24dp.xml",
     "java/res/drawable/ic_background_replace_24dp.xml",
     "java/res/drawable/ic_checklist_24dp.xml",
-    "java/res/drawable/ic_delete_24dp.xml",
     "java/res/drawable/ic_devices_24dp.xml",
     "java/res/drawable/ic_filter_list_24dp.xml",
     "java/res/drawable/ic_interests_24dp.xml",

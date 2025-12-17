@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-ldrtl/text_icon.xml",
-    "java/res/drawable/delete_icon.xml",
     "java/res/drawable/generic_file.xml",
     "java/res/drawable/ink_highlighter.xml",
     "java/res/drawable/link.xml",
@@ -21,6 +20,7 @@ android_resources("java_resources") {
     "java/res/layout/qrcode_share_layout.xml",
     "java/res/layout/screenshot_share_sheet.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/drawables.xml",
   ]
 }
 

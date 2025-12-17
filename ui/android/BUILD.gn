@@ -275,6 +275,7 @@ android_resources("ui_java_resources") {
     "java/res/drawable/focused_outline_overlay_corners_16dp.xml",
     "java/res/drawable/ic_apps_blue_24dp.xml",
     "java/res/drawable/ic_arrow_back_24dp.xml",
+    "java/res/drawable/ic_delete_fill_24dp.xml",
     "java/res/drawable/ic_expand_more_horizontal_black_24dp.xml",
     "java/res/drawable/ic_globe_24dp.xml",
     "java/res/drawable/ic_globe_48dp.xml",

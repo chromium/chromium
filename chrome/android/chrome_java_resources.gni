@@ -385,7 +385,6 @@ chrome_java_resources = [
   "java/res/drawable/material_ic_check_24dp.xml",
   "java/res/drawable/material_ic_check_circle_filled_24dp.xml",
   "java/res/drawable/material_ic_create_new_folder_24dp.xml",
-  "java/res/drawable/material_ic_delete_24dp.xml",
   "java/res/drawable/material_ic_drive_file_move_24dp.xml",
   "java/res/drawable/material_tooltip_background.xml",
   "java/res/drawable/menu_button_background.xml",

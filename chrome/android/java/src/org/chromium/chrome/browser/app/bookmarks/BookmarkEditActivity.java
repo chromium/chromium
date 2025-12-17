@@ -42,10 +42,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -184,8 +184,10 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mDeleteButton =
                 menu.add(R.string.bookmark_toolbar_delete)
                         .setIcon(
-                                TintedDrawable.constructTintedDrawable(
-                                        this, R.drawable.ic_delete_white_24dp))
+                                UiUtils.getTintedDrawable(
+                                        this,
+                                        R.drawable.ic_delete_fill_24dp,
+                                        R.color.default_icon_color_tint_list))
                         .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return super.onCreateOptionsMenu(menu);
