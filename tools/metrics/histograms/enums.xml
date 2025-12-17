@@ -22664,6 +22664,8 @@ Called by update_net_error_codes.py.-->
   <int value="39" label="MULTIPLE_KEYBOARD_AND_POINTER_LOCK"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionType) -->
+
 <enum name="PermissionType">
   <int value="0" label="PERMISSION_UNKNOWN"/>
   <int value="1" label="PERMISSION_MIDI_SYSEX"/>
@@ -22698,11 +22700,21 @@ Called by update_net_error_codes.py.-->
   <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
   <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
-  <int value="34" label="PERMISSION_WEB_APP_INSTALLATION"/>
-  <int value="35" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
-  <int value="36" label="PERMISSION_LOCAL_NETWORK"/>
-  <int value="37" label="PERMISSION_LOOPBACK_NETWORK"/>
+  <int value="34" label="PERMISSION_CAPTURED_SURFACE_CONTROL"/>
+  <int value="35" label="PERMISSION_SMART_CARD"/>
+  <int value="36" label="PERMISSION_WEB_PRINTING"/>
+  <int value="37" label="PERMISSION_SPEAKER_SELECTION"/>
+  <int value="38" label="PERMISSION_KEYBOARD_LOCK"/>
+  <int value="39" label="PERMISSION_POINTER_LOCK"/>
+  <int value="40" label="PERMISSION_AUTOMATIC_FULLSCREEN"/>
+  <int value="41" label="PERMISSION_HAND_TRACKING"/>
+  <int value="42" label="PERMISSION_WEB_APP_INSTALLATION"/>
+  <int value="43" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
+  <int value="44" label="PERMISSION_LOCAL_NETWORK"/>
+  <int value="45" label="PERMISSION_LOOPBACK_NETWORK"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/permissions/permission_utils.h:PermissionType) -->
 
 <enum name="PIIType">
   <summary>

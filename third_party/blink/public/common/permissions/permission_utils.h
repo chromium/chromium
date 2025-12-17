@@ -21,6 +21,7 @@ namespace blink {
 // or deprecate permission types.
 // Never delete or reorder an entry; only add new entries
 // immediately before PermissionType::NUM
+// LINT.IfChange(PermissionType)
 enum class PermissionType {
   MIDI_SYSEX = 1,
   // PUSH_MESSAGING = 2,
@@ -73,6 +74,7 @@ enum class PermissionType {
   NUM,
   MIN_VALUE = MIDI_SYSEX,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionType)
 
 // Converts a permission string ("granted", "denied", "prompt") into a
 // PermissionStatus.
