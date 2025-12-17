@@ -245,6 +245,28 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Valid_ClearMimeTypes) {
                                       1);
 }
 
+TEST_F(OmniboxNextFeaturesTest, CreateQueryControllerConfigParams) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        internal::kWebUIOmniboxAimPopup,
+        {{"AttachPageTitleAndUrlToSuggestRequest", "true"}});
+
+    auto config_params = CreateQueryControllerConfigParams();
+    EXPECT_TRUE(config_params->attach_page_title_and_url_to_suggest_requests);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        internal::kWebUIOmniboxAimPopup,
+        {{"AttachPageTitleAndUrlToSuggestRequest", "false"}});
+
+    auto config_params = CreateQueryControllerConfigParams();
+    EXPECT_FALSE(config_params->attach_page_title_and_url_to_suggest_requests);
+  }
+}
+
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
   TestingAimEligibilityService(Profile* profile, bool is_aim_eligible)
