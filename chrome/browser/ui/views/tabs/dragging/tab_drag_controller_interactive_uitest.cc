@@ -63,13 +63,11 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -782,6 +780,19 @@ class DetachToBrowserTabDragControllerTest
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features_with_params;
 
+    // The SxS drop targets interfere with the "drop" portion of tests because
+    // the dropped tabs end up creating a split instead of keeping the detached
+    // window.
+    // TODO(crbug.com/394369035): For now, we minimize the drop target size, but
+    // this will need to be updated once the params are finalized. Potential
+    // workarounds include updating the drop destination of the tests, or
+    // swapping out the `TabDragPointResolver` with a fake (see
+    // `TabDragDelegateTest` for example).
+    enabled_features_with_params.push_back(
+        {features::kSideBySide,
+         {{features::kSideBySideDropTargetMaxWidth.name, "1"},
+          {features::kSideBySideDropTargetMinWidth.name, "1"}}});
+
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kWebUITabStrip};
 
@@ -817,9 +828,6 @@ class DetachToBrowserTabDragControllerTest
     // order to be consistent with other platforms.
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 #endif  // BUILDFLAG(IS_MAC)
-        // Disable Split View drag and drop to avoid creating Split Views.
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kSplitViewDragAndDropEnabled, false);
   }
 
   InputSource input_source() override {

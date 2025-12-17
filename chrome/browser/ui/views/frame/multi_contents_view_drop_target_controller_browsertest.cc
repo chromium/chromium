@@ -61,6 +61,12 @@ class MultiContentsViewDropTargetControllerBrowserTest
     delegate_.reset();
   }
 
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{features::kSideBySide,
+             {{features::kSideBySideDropTargetHideForOSWidth.name, "50"}}}};
+  }
+
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   TabStrip* tabstrip() { return browser()->GetBrowserView().tabstrip(); }
 
