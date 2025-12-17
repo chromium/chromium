@@ -11,6 +11,7 @@ from crate_utils import (
     CHROMIUM_DIR,
     ConvertCrateIdToCrateEpoch,
     ConvertCrateIdToCrateName,
+    ConvertCrateIdToCrateNameWithEpoch,
     ConvertCrateIdToCrateVersion,
     ConvertCrateIdToBuildDir,
     ConvertCrateIdToGnLabel,
@@ -71,6 +72,10 @@ class CrateUtilsTests(unittest.TestCase):
 
     def testConvertCrateIdToCrateVersion(self):
         self.assertEqual(ConvertCrateIdToCrateVersion("foo-bar@1.2.3"), "1.2.3")
+
+    def testConvertCrateIdToCrateNameWithEpoch(self):
+        self.assertEqual(ConvertCrateIdToCrateNameWithEpoch("foo-bar@1.2.3"),
+                         "foo-bar-v1")
 
 
 class IsPlaceholderCrateTests(unittest.TestCase):

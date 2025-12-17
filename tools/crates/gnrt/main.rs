@@ -82,8 +82,10 @@ struct VendorCommandArgs {
         num_args = 0..,
         help = "\
         Don't apply patches from the chromium_crates_io/patches directory \
-        to newly vendored crates. If a crate name is given as a value for the \
-        flag, patches will only not be applied for that crate."
+        to newly vendored crates. If directory names are passed as a value \
+        of the flag, only patches from those directories will be ignored.  \
+        For example, `--no-patches=temporal_rs-v0_1` can be used to skip \
+        patches for this single crate."
     )]
     no_patches: Option<Vec<String>>,
     #[arg(
