@@ -40,7 +40,6 @@ class MemoryImageRepresentationImpl : public MemoryImageRepresentation {
 
  protected:
   SkPixmap BeginReadAccess() override {
-    DCHECK(format().is_single_plane());
     return shared_image_shared_memory()->pixmaps()[0];
   }
 
@@ -178,8 +177,9 @@ SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
 std::unique_ptr<MemoryImageRepresentation>
 SharedMemoryImageBacking::ProduceMemory(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {
-  if (!shared_memory_wrapper_.IsValid())
+  if (!format().is_single_plane() || !shared_memory_wrapper_.IsValid()) {
     return nullptr;
+  }
 
   return std::make_unique<MemoryImageRepresentationImpl>(manager, this,
                                                          tracker);
