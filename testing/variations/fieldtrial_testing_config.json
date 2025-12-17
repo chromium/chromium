@@ -21058,8 +21058,7 @@
                 {
                     "name": "EnabledAllFrames_SkipThrottle_20251216",
                     "params": {
-                        "level": "all-frames",
-                        "queueing_level": "full"
+                        "level": "all-frames"
                     },
                     "enable_features": [
                         "RenderDocument",
