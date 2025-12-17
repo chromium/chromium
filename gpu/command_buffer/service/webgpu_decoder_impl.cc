@@ -403,6 +403,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   class SharedImageRepresentationAndAccess;
 
+  bool ValidateAssociateMailboxAndSetSharedImageClearState(
+      SharedImageRepresentation* shared_image,
+      MailboxFlags flags,
+      wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage);
+
   std::unique_ptr<SharedImageRepresentationAndAccess> AssociateMailboxDawn(
       const Mailbox& mailbox,
       MailboxFlags flags,
@@ -1984,6 +1990,65 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
   return error::kNoError;
 }
 
+bool WebGPUDecoderImpl::ValidateAssociateMailboxAndSetSharedImageClearState(
+    SharedImageRepresentation* shared_image,
+    MailboxFlags flags,
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
+  if (!shared_image) {
+    DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
+    return false;
+  }
+
+  if ((usage & kAllowedWritableMailboxTextureUsages) &&
+      (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
+    LOG(ERROR) << "AssociateMailbox: Passing writable usages requires "
+                  "WebGPU write access to the SharedImage";
+    return false;
+  }
+
+  if ((internal_usage & kAllowedWritableMailboxTextureUsages) &&
+      (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
+    LOG(ERROR) << "AssociateMailbox: Passing writable internal usages requires "
+                  "WebGPU write access to the SharedImage";
+    return false;
+  }
+
+  if (flags & WEBGPU_MAILBOX_DISCARD) {
+    if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR)
+          << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear the "
+             "texture requires WebGPU write access to the SharedImage";
+      return false;
+    }
+    // Set contents to uncleared.
+    shared_image->SetClearedRect(gfx::Rect());
+
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                    "the texture requires passing a usage that supports lazy "
+                    "clearing";
+      return false;
+    }
+  } else if (!shared_image->IsCleared()) {
+    if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
+                    "WebGPU write access to the SharedImage";
+      return false;
+    }
+
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture "
+                    "requires passing a usage that supports lazy clearing";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 std::unique_ptr<WebGPUDecoderImpl::SharedImageRepresentationAndAccess>
 WebGPUDecoderImpl::AssociateMailboxDawn(
     const Mailbox& mailbox,
@@ -1998,8 +2063,8 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
           mailbox, device, backendType, std::move(view_formats),
           shared_context_state_);
 
-  if (!shared_image) {
-    DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
+  if (!ValidateAssociateMailboxAndSetSharedImageClearState(
+          shared_image.get(), flags, usage, internal_usage)) {
     return nullptr;
   }
 
@@ -2011,52 +2076,6 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     return nullptr;
   }
 #endif
-
-  if ((usage & kAllowedWritableMailboxTextureUsages) &&
-      (!(shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)))) {
-    LOG(ERROR) << "AssociateMailbox: Passing writable usages requires "
-                  "WebGPU write access to the SharedImage";
-    return nullptr;
-  }
-
-  if ((internal_usage & kAllowedWritableMailboxTextureUsages) &&
-      (!(shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)))) {
-    LOG(ERROR) << "AssociateMailbox: Passing writable internal usages requires "
-                  "WebGPU write access to the SharedImage";
-    return nullptr;
-  }
-
-  if (flags & WEBGPU_MAILBOX_DISCARD) {
-    if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-      LOG(ERROR)
-          << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear the "
-             "texture requires WebGPU write access to the SharedImage";
-      return nullptr;
-    }
-    // Set contents to uncleared.
-    shared_image->SetClearedRect(gfx::Rect());
-
-    if (!(usage & kWritableUsagesSupportingLazyClear) &&
-        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                    "the texture requires passing a usage that supports lazy "
-                    "clearing";
-      return nullptr;
-    }
-  } else if (!shared_image->IsCleared()) {
-    if (!(shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
-      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
-                    "WebGPU write access to the SharedImage";
-      return nullptr;
-    }
-
-    if (!(usage & kWritableUsagesSupportingLazyClear) &&
-        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture "
-                    "requires passing a usage that supports lazy clearing";
-      return nullptr;
-    }
-  }
 
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> scoped_access =
       shared_image->BeginScopedAccess(
@@ -2089,55 +2108,9 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
       shared_image_representation_factory_->ProduceSkia(
           mailbox, shared_context_state_.get());
 
-  if (!shared_image) {
-    DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
+  if (!ValidateAssociateMailboxAndSetSharedImageClearState(
+          shared_image.get(), flags, usage, internal_usage)) {
     return nullptr;
-  }
-
-  if ((usage & kAllowedWritableMailboxTextureUsages) &&
-      (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
-    LOG(ERROR) << "AssociateMailbox: Passing writable usages requires "
-                  "WebGPU write access to the SharedImage";
-    return nullptr;
-  }
-
-  if ((internal_usage & kAllowedWritableMailboxTextureUsages) &&
-      (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
-    LOG(ERROR) << "AssociateMailbox: Passing writable internal usages requires "
-                  "WebGPU write access to the SharedImage";
-    return nullptr;
-  }
-
-  if (flags & WEBGPU_MAILBOX_DISCARD) {
-    if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-      LOG(ERROR)
-          << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear the "
-             "texture requires WebGPU write access to the SharedImage";
-      return nullptr;
-    }
-    // Set contents to uncleared.
-    shared_image->SetClearedRect(gfx::Rect());
-
-    if (!(usage & kWritableUsagesSupportingLazyClear) &&
-        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                    "the texture requires passing a usage that supports lazy "
-                    "clearing";
-      return nullptr;
-    }
-  } else if (!shared_image->IsCleared()) {
-    if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
-                    "WebGPU write access to the SharedImage";
-      return nullptr;
-    }
-
-    if (!(usage & kWritableUsagesSupportingLazyClear) &&
-        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-      LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture "
-                    "requires passing a usage that supports lazy clearing";
-      return nullptr;
-    }
   }
 
   return SharedImageRepresentationAndAccessSkiaFallback::Create(
