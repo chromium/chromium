@@ -23,6 +23,7 @@ include_rules = [
   "+mojo/public",
   "+media/video",
   "+media/filters",
+  "+ui/display/mac/vsync_provider_mac.h",
   "+ui/gl/gl_features.h",
 ]
 

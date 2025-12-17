@@ -67,6 +67,9 @@ class InputManager;
 class OutputSurfaceProvider;
 class SharedImageInterfaceProvider;
 struct VideoCaptureTarget;
+#if BUILDFLAG(IS_MAC)
+class ExternalBeginFrameSourceMojoMac;
+#endif
 
 // FrameSinkManagerImpl manages BeginFrame hierarchy. This is the implementation
 // detail for FrameSinkManagerImpl.
@@ -628,6 +631,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   mojo::Receiver<mojom::FrameSinkManagerTestApi> test_api_receiver_{this};
 
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
+
+#if BUILDFLAG(IS_MAC)
+  // Only one ExternalBeginFrameSourceMojoMac object is created and is
+  // shared by all RootCompositorFrameSinks.
+  std::unique_ptr<ExternalBeginFrameSourceMojoMac> external_begin_frame_source_;
+#endif
 
   // Counts frames for test.
   std::optional<FrameCounter> frame_counter_;

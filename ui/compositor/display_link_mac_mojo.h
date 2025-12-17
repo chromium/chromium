@@ -72,7 +72,8 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
 
   // viz::mojom::ExternalBeginFrameControllerClient implementation.
   void SetNeedsBeginFrame(bool needs_begin_frames) override {}
-  void NeedsBeginFrameWithId(int64_t display_id, bool needs_begin_frames);
+  void NeedsBeginFrameWithId(int64_t display_id,
+                             bool needs_begin_frames) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
 
   // display::DisplayObserver implementation.

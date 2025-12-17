@@ -86,7 +86,11 @@ void DisplayLinkMacMojo::CleanUp() {
 
 void DisplayLinkMacMojo::OnGpuProcessLost(
     viz::HostFrameSinkManager* host_frame_sink_manager) {
+  // TODO: Stop (or Destroy all DisplayLink) on VSyncThread..
+
   ConnectVSyncIpc(host_frame_sink_manager);
+
+  // TODO: Re-initialize all displays on VSyncThread.
 }
 
 // Called on the browser main thread
@@ -159,7 +163,9 @@ void DisplayLinkMacMojo::NeedsBeginFrameWithId(int64_t display_id,
       DLOG(ERROR) << "CADisplayLink RegisterCallback failed!";
       DisplaysRemovedOnVSyncThread({display_id});
 
-      // TODO: Notify the GPU process of the DisplayLink failure.
+      // Notify the GPU process of the DisplayLink failure.
+      external_begin_frame_controller_->SetSupportedDisplayLinkId(
+          display_id, /*supported=*/false);
       return;
     }
 
@@ -180,6 +186,10 @@ void DisplayLinkMacMojo::OnDisplayLinkVSyncCallback(int64_t display_id,
   // can still forward this extra VSync to Viz/GPU because `VSyncCallbackMac`
   // uses weak_ptr. If the frame_sink or BeginFrameSource for this display is
   // destroyed, it's handled.
+  viz::CADisplayLinkParams viz_params(display_id, params.callback_timebase,
+                                      params.display_timebase,
+                                      params.callback_interval);
+  external_begin_frame_controller_->IssueExternalVSync(viz_params);
 }
 
 void DisplayLinkMacMojo::OnDisplayAdded(const display::Display& new_display) {
@@ -211,7 +221,9 @@ void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t display_id) {
 
   vsync_callbacks_.insert(std::make_pair(display_id, nullptr));
 
-  // TODO: Notify the GPU process of the new DisplayLink.
+  // Notify the GPU process of the new DisplayLink.
+  external_begin_frame_controller_->SetSupportedDisplayLinkId(
+      display_id, /*supported=*/true);
 }
 
 void DisplayLinkMacMojo::OnDisplaysRemoved(
@@ -241,7 +253,9 @@ void DisplayLinkMacMojo::DisplaysRemovedOnVSyncThread(
     vsync_callbacks_.erase(display_id);
     display_links_.erase(display_id);
 
-    // TODO: Notify the GPU process of the DisplayLink failure.
+    // Notify the GPU process of the DisplayLink failure.
+    external_begin_frame_controller_->SetSupportedDisplayLinkId(
+        display_id, /*supported=*/false);
   }
 }
 

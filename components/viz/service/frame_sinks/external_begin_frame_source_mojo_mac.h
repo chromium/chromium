@@ -29,11 +29,22 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
           controller_remote_client);
   ~ExternalBeginFrameSourceMojoMac() override;
 
+  // mojom::ExternalBeginFrameController implementation.
+  // Originated from the browser process and propagated to DisplayLinkMac in the
+  // Viz thread.
+  void IssueExternalVSync(const CADisplayLinkParams& params) override;
+  void SetSupportedDisplayLinkId(int64_t display_id,
+                                 bool is_supported) override;
+
   // For headless only. This should not be called.
   void IssueExternalBeginFrame(
       const BeginFrameArgs& args,
       bool force,
       IssueExternalBeginFrameCallback callback) override;
+
+  // This function forwards NeedsBeginFrame on/off from DisplayLinkMac in the
+  // GPU process to DisplayLinkMacMojo in the browser process.
+  void NeedsBeginFrameWithId(int64_t display_id, bool needs_begin_frames);
 
  private:
   using Receiver = mojo::Receiver<mojom::ExternalBeginFrameController>;

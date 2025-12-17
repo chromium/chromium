@@ -46,6 +46,10 @@
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_mojo_mac.h"
+#endif
+
 namespace viz {
 
 FrameSinkManagerImpl::InitParams::InitParams(
@@ -271,7 +275,12 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
 
 #if BUILDFLAG(IS_MAC)
 void FrameSinkManagerImpl::CreateCompositorDisplayLink(
-    mojom::CompositorDisplayLinkParamsPtr params) {}
+    mojom::CompositorDisplayLinkParamsPtr params) {
+  external_begin_frame_source_ =
+      std::make_unique<ExternalBeginFrameSourceMojoMac>(
+          std::move(params->external_begin_frame_controller),
+          std::move(params->external_begin_frame_controller_client));
+}
 #endif
 
 void FrameSinkManagerImpl::CreateFrameSinkBundle(
