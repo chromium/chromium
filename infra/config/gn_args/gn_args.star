@@ -180,16 +180,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "arm_no_neon",
-    args = {
-        "arm_use_neon": False,
-    },
-    configs = [
-        "arm",
-    ],
-)
-
-gn_args.config(
     name = "asan",
     args = {
         "is_asan": True,

@@ -385,7 +385,7 @@
     'codesearch_gen_chromium_cronet_bot_remoteexec': [
       # Set is_cronet_build to true in order to build cronet.
       'codesearch_cronet_remoteexec', 'android_without_codecs', 'static', 'is_cronet_build',
-      'cronet_android', 'arm_no_neon', 'android_fastbuild'
+      'cronet_android', 'arm', 'android_fastbuild'
     ],
 
     'codesearch_gen_chromium_fuchsia_bot_remoteexec': [
@@ -746,11 +746,6 @@
 
     'arm64_host': {
       'gn_args': 'test_host_cpu="arm64"',
-    },
-
-    'arm_no_neon': {
-      'mixins': ['arm'],
-      'gn_args': 'arm_use_neon=false',
     },
 
     'asan': {

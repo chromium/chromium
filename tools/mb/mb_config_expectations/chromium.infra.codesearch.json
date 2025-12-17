@@ -34,7 +34,6 @@
   "codesearch-gen-chromium-cronet": {
     "gn_args": {
       "android_static_analysis": "off",
-      "arm_use_neon": false,
       "clang_use_chrome_plugins": false,
       "debuggable_apks": false,
       "enable_kythe_annotations": true,
