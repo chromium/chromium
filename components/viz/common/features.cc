@@ -283,6 +283,14 @@ const base::FeatureParam<AdpfEfficiencyMode> kAdpfEfficiencyModeParam{
 // Supported only on Android >= 16.
 BASE_FEATURE(kEnableADPFWorkloadReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome excludes Renderer Main threads from the
+// ADPF(Android Dynamic Performance Framework) hint session during scrolls.
+// TODO(https://crbug.com/466116123): If this causes scroll regressions,
+// experiment with keeping CrRendererMain in the session for main thread
+// scrolls.
+BASE_FEATURE(kEnableADPFScrollNoRendererMain,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.

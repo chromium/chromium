@@ -1157,6 +1157,13 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       }
     }
 
+    if (IsScroll(frame.latency_info) &&
+        base::FeatureList::IsEnabled(
+            features::kEnableADPFScrollNoRendererMain)) {
+      // Exclude renderer main thread(s) from the session during a scroll.
+      renderer_main_thread_ids.clear();
+    }
+
     presentation_group_timing.OnDraw(
         params.frame_time, draw_timer->start_time(),
         std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
