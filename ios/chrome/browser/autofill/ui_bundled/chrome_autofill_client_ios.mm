@@ -99,6 +99,11 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
+      form_data_importer_(std::make_unique<FormDataImporter>(
+          this,
+          ios::HistoryServiceFactory::GetForProfile(
+              profile_,
+              ServiceAccessType::EXPLICIT_ACCESS))),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
       ablation_study_(GetApplicationContext()->GetLocalState()) {
@@ -232,12 +237,6 @@ const signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager()
 }
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
-  if (!form_data_importer_) {
-    form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, ios::HistoryServiceFactory::GetForProfile(
-                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
-  }
-
   return form_data_importer_.get();
 }
 

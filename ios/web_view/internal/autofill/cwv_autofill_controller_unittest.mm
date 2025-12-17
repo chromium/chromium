@@ -102,6 +102,7 @@ class MockOtpUnmaskDelegate : public autofill::OtpUnmaskDelegate {
 class CWVAutofillControllerTest : public web::WebTest {
  protected:
   CWVAutofillControllerTest() {
+    l10n_util::OverrideLocaleWithCocoaLocale();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     pref_service_.registry()->RegisterBooleanPref(
