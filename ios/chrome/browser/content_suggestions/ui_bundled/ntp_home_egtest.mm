@@ -344,8 +344,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Navigate
-  // TODO(crbug.com/41483080): The FET is not ready upon app launch in the NTP.
-  // Consequently, close NTP and reopen the NTP where the FET becomes ready.
+  // The FET is not ready upon app launch in the NTP. Consequently, close NTP
+  // and reopen the NTP where the FET becomes ready.
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
