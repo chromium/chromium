@@ -58,8 +58,6 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
       return "NotInRegionalScope";
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
       return "ControlledByPolicy";
-    case SearchEngineChoiceScreenConditions::kProfileOutOfScope:
-      return "ProfileOutOfScope";
     case SearchEngineChoiceScreenConditions::kExtensionControlled:
       return "ExtensionControlled";
     case SearchEngineChoiceScreenConditions::kEligible:
@@ -97,6 +95,10 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
       return "Managed";
   }
   NOTREACHED();
+}
+
+bool IsEligible(SearchEngineChoiceScreenConditions condition) {
+  return condition == SearchEngineChoiceScreenConditions::kEligible;
 }
 
 void RecordLoadedCountrySource(LoadedCountrySource source) {

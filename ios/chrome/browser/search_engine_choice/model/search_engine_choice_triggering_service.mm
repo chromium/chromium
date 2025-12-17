@@ -39,19 +39,16 @@ SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
         kIneligibleSurface;
   }
 
-  if (auto conditions =
-          search_engine_choice_service_->GetStaticChoiceScreenConditions(
-              policy_service_.get(), template_url_service_.get());
-      conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+  search_engines::SearchEngineChoiceScreenConditions conditions =
+      search_engine_choice_service_->GetStaticChoiceScreenConditions(
+          policy_service_.get(), template_url_service_.get());
+  if (!regional_capabilities::IsEligible(conditions)) {
     return conditions;
   }
 
-  if (auto conditions =
-          search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-              template_url_service_.get());
-      conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+  conditions = search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+      template_url_service_.get());
+  if (!regional_capabilities::IsEligible(conditions)) {
     return conditions;
   }
 
@@ -70,7 +67,7 @@ SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
     }
   }
 
-  return search_engines::SearchEngineChoiceScreenConditions::kEligible;
+  return conditions;
 }
 
 }  // namespace ios

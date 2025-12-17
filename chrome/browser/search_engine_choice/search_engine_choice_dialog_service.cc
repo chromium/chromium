@@ -262,8 +262,7 @@ bool SearchEngineChoiceDialogService::RegisterDialog(
                           static_cast<int>(condition));
   // We expect the caller to have verified that the dialog can actually be
   // shown before attempting to register it.
-  CHECK_EQ(condition,
-           search_engines::SearchEngineChoiceScreenConditions::kEligible);
+  CHECK(regional_capabilities::IsEligible(condition));
 
   return browser_registry_.RegisterBrowser(browser,
                                            std::move(close_dialog_callback));
@@ -404,8 +403,7 @@ bool SearchEngineChoiceDialogService::IsShowingDialog(Browser& browser) const {
 
 bool SearchEngineChoiceDialogService::HasPendingDialog(Browser& browser) const {
   return browser_registry_.HasOpenDialog(browser) ||
-         ComputeDialogConditions(browser) ==
-             search_engines::SearchEngineChoiceScreenConditions::kEligible;
+         regional_capabilities::IsEligible(ComputeDialogConditions(browser));
 }
 
 bool SearchEngineChoiceDialogService::IsUrlSuitableForDialog(GURL url) {

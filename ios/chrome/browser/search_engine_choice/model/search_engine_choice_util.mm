@@ -68,8 +68,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
         ios::TemplateURLServiceFactory::GetForProfile(original_profile);
     condition = search_engine_choice_service->GetStaticChoiceScreenConditions(
         policy_service, CHECK_DEREF(template_url_service));
-    if (condition ==
-        search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+    if (regional_capabilities::IsEligible(condition)) {
       // If we didn't get a `triggering_service`, the search engine should not
       // be eligible for choice screens either.
       condition = search_engines::SearchEngineChoiceScreenConditions::
@@ -81,6 +80,5 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   // eligibilities.
   // TODO(crbug.com/468249096): Remove the explicit legacy histogram recording.
   search_engine_choice_service->RecordLegacyStaticEligibility(condition);
-  return condition ==
-         search_engines::SearchEngineChoiceScreenConditions::kEligible;
+  return regional_capabilities::IsEligible(condition);
 }

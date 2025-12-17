@@ -426,37 +426,71 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SearchEngineChoiceScreenConditions) -->
 
 <enum name="SearchEngineChoiceScreenConditions">
-  <int value="0" label="Has custom search engine set"/>
-  <int value="1" label="Has search provider override"/>
-  <int value="2" label="Not in regional scope"/>
-  <int value="3" label="Is controlled by policy"/>
-  <int value="4" label="The profile is out of scope"/>
-  <int value="5" label="An extension controls the default search engine"/>
+  <int value="0" label="HasCustomSearchEngine">
+    Ineligible due to having a custom search engine set as DSE.
+  </int>
+  <int value="1" label="SearchProviderOverride">
+    Ineligible due to having search provider overrides defined on the device.
+  </int>
+  <int value="2" label="NotInRegionalScope">
+    Ineligible due to the profile not being considered in scope for a choice
+    program.
+  </int>
+  <int value="3" label="ControlledByPolicy">
+    A policy sets the default search engine or disables search altogether.
+  </int>
+  <int value="4" label="ProfileOutOfScope">
+    Deprecated, used to refer to profiles excluded by the experiment set up.
+  </int>
+  <int value="5" label="ExtensionControlled">
+    An extension controls the default search engine.
+  </int>
   <int value="6" label="Eligible"/>
-  <int value="7" label="Already completed"/>
-  <int value="8" label="Unsupported browser type"/>
-  <int value="9" label="Choice Screen feature suppressed or disabled"/>
-  <int value="10" label="Is suppressed by another already triggered dialog"/>
-  <int value="11" label="Browser window is too small to fit the dialog"/>
-  <int value="12" label="Has a distribution custom search engine as default"/>
-  <int value="13" label="Has a removed prepopulated search engine as default"/>
-  <int value="14" label="Does not have Google as the default search engine"/>
-  <int value="15"
-      label="Choice Screen dialog skipped as app stared by external intent"/>
-  <int value="16" label="Dialog is already shown in the same browser"/>
-  <int value="17"
-      label="Skipped by using a choice persisted across guest sessions"/>
-  <int value="18"
-      label="Skipped because the current location does not match the active
-             program's requirement to be in one of the associated countries"/>
-  <int value="19" label="Account not eligible">
+  <int value="7" label="AlreadyCompleted"/>
+  <int value="8" label="UnsupportedBrowserType">
+    The browser type is unsupported: PWA, Kiosk, unsupported platform, etc.
+  </int>
+  <int value="9" label="FeatureSuppressed">
+    Choice Screen feature suppressed or disabled.
+  </int>
+  <int value="10" label="SuppressedByOtherDialog">
+    Is suppressed by another already triggered dialog.
+  </int>
+  <int value="11" label="BrowserWindowTooSmall">
+    Browser window is too small to fit the dialog.
+  </int>
+  <int value="12" label="HasDistributionCustomSearchEngine">
+    Has a distribution custom search engine as default.
+  </int>
+  <int value="13" label="HasRemovedPrepopulatedSearchEngine">
+    Has a removed prepopulated search engine as default.
+  </int>
+  <int value="14" label="HasNonGoogleSearchEngine">
+    Does not have Google as the default search engine.
+  </int>
+  <int value="15" label="AppStartedByExternalIntent">
+    Choice Screen dialog skipped as app stared by external intent.
+  </int>
+  <int value="16" label="AlreadyBeingShown">
+    Dialog is already shown in the same browser.
+  </int>
+  <int value="17" label="UsingPersistedGuestSessionChoice">
+    Skipped by using a choice persisted across guest sessions.
+  </int>
+  <int value="18" label="IncompatibleCurrentLocation">
+    Skipped because the current location does not match the active program's
+    requirement to be in one of the associated countries.
+  </int>
+  <int value="19" label="AccountNotEligible">
     The account is not eligible based on its account capabilities. See
     go/capability-registry/chrome/canmakechromesearchenginechoicescreenchoice.
   </int>
-  <int value="20" label="Non-FRE trigger">
-    The choice screen could not be presented because this is not an FRE entry
-    point. Recorded on iOS only, for programs where the choice screen is
-    currently enabled only in the First Run Experience.
+  <int value="20" label="IneligibleSurface">
+    The choice screen could not be presented because program settings require it
+    to not be shown on the UI surface that triggered it. Currently recorded on
+    iOS only, when triggering the Dialog version of the choice screen is skipped
+    for programs where the choice screen is enabled only in the First Run
+    Experience.
   </int>
   <int value="21" label="Managed">
     There is device-level management, and the regional program does not treat

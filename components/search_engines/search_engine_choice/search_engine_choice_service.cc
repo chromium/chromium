@@ -261,7 +261,6 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
     case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
-    case SearchEngineChoiceScreenConditions::kProfileOutOfScope:
     case SearchEngineChoiceScreenConditions::kExtensionControlled:
     case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
     case SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall:
@@ -657,7 +656,7 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
 #endif  // !BUILDFLAG(IS_IOS)
 
   regional_capabilities::RecordEligibilityFunnelStageDetails(condition);
-  if (condition != SearchEngineChoiceScreenConditions::kEligible) {
+  if (!regional_capabilities::IsEligible(condition)) {
     // Being eligible at profile load is not a conclusive funnel state. We don't
     // record it here, we instead rely on trigger-time eligibility, which is
     // expected to be recorded shortly after, to record a funnel stage.

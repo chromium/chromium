@@ -23,8 +23,7 @@ enum class SearchEngineChoiceScreenConditions {
   kNotInRegionalScope = 2,
   // A policy sets the default search engine or disables search altogether.
   kControlledByPolicy = 3,
-  // The profile is out of scope.
-  kProfileOutOfScope = 4,
+  // kProfileOutOfScope = 4, // Deprecated
   // An extension controls the default search engine.
   kExtensionControlled = 5,
   // The user is eligible to see the screen at the next opportunity.
@@ -78,6 +77,10 @@ namespace regional_capabilities {
 using search_engines::SearchEngineChoiceScreenConditions;
 
 std::string ToString(SearchEngineChoiceScreenConditions condition);
+
+// Return whether `condition` describes the profile as being eligible or not to
+// proceed with showing choice screens.
+bool IsEligible(SearchEngineChoiceScreenConditions condition);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

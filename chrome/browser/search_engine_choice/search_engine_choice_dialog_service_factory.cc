@@ -54,8 +54,7 @@ bool IsSupportedProfileType(Profile& profile) {
 SearchEngineChoiceScreenConditions ComputeProfileEligibility(Profile& profile) {
   if (!IsSupportedProfileType(profile)) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
-    // kiosk, etc. are not supported and belongs in this bucked more than in
-    // `kProfileOutOfScope` for example.
+    // kiosk, etc. are not supported.
     return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
   }
 
@@ -151,7 +150,7 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
   search_engine_choice_service.RecordProfileLoadEligibility(
       eligibility_conditions);
 
-  if (eligibility_conditions != SearchEngineChoiceScreenConditions::kEligible) {
+  if (!regional_capabilities::IsEligible(eligibility_conditions)) {
     return nullptr;
   }
 

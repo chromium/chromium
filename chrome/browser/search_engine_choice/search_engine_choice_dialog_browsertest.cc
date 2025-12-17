@@ -473,11 +473,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // So far, no dialog check should have been failed based on a profile having
   // claimed the dialog.
-  EXPECT_EQ(0, histogram_tester().GetBucketCount(
-                   search_engines::
-                       kSearchEngineChoiceScreenNavigationConditionsHistogram,
-                   search_engines::SearchEngineChoiceScreenConditions::
-                       kProfileOutOfScope));
+  EXPECT_EQ(1,
+            histogram_tester().GetBucketCount(
+                search_engines::
+                    kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                search_engines::SearchEngineChoiceScreenConditions::kEligible));
 
   // Open a browser with the second profile, it should open a dialog too.
   Browser* browser_with_second_profile = CreateBrowser(second_profile);
@@ -491,11 +491,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       2);
 
   // Still expect no profile-based rejection.
-  EXPECT_EQ(0, histogram_tester().GetBucketCount(
-                   search_engines::
-                       kSearchEngineChoiceScreenNavigationConditionsHistogram,
-                   search_engines::SearchEngineChoiceScreenConditions::
-                       kProfileOutOfScope));
+  EXPECT_EQ(2,
+            histogram_tester().GetBucketCount(
+                search_engines::
+                    kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                search_engines::SearchEngineChoiceScreenConditions::kEligible));
 }
 #endif
 
