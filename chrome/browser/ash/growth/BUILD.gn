@@ -53,6 +53,7 @@ static_library("growth") {
     "//chromeos/dbus/power",
     "//components/account_id",
     "//components/app_constants",
+    "//components/application_locale_storage",
     "//components/component_updater/ash",
     "//components/feature_engagement/public",
     "//components/language/core/browser",

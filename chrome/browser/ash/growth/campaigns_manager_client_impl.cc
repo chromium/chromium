@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -47,6 +48,7 @@
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -71,11 +73,14 @@ Profile* GetProfile() {
 
 }  // namespace
 
-CampaignsManagerClientImpl::CampaignsManagerClientImpl() {
+CampaignsManagerClientImpl::CampaignsManagerClientImpl(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   // `show_nudge_performer_observation_` is used in `campaigns_manager_` ctor,
   // so it needs to be initialized first.
   campaigns_manager_ = std::make_unique<growth::CampaignsManager>(
-      /*client=*/this, g_browser_process->local_state());
+      /*client=*/this, local_state);
 }
 
 CampaignsManagerClientImpl::~CampaignsManagerClientImpl() = default;
@@ -188,7 +193,7 @@ const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
   // User selected locale, then resolved using
   // `l10n_util::CheckAndResolveLocale` to a platform locale.
   // For example: `en-IN` will be resolved to `en-GB`.
-  return g_browser_process->GetApplicationLocale();
+  return application_locale_storage_->Get();
 }
 
 const std::string& CampaignsManagerClientImpl::GetUserLocale() const {

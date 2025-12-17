@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -76,7 +77,11 @@ class CampaignsManagerClientTest : public testing::Test {
         ash::features::kGrowthCampaignsCrOSEvents);
     SetupProfileManager();
     InitializeComponentManager();
-    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
+    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage());
     metrics_recorder_.Initialize();
   }
 

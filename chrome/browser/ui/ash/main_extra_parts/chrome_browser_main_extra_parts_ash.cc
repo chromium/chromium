@@ -412,7 +412,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   if (ash::features::IsGrowthCampaignsInDemoModeEnabled() ||
       ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
-    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
+    campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>(
+        g_browser_process->local_state(),
+        g_browser_process->GetFeatures()->application_locale_storage());
   }
 
   // Requires UserManager.

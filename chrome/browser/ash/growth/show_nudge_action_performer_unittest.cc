@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,7 +44,11 @@ constexpr char kNudgePayloadTemplate[] = R"(
 class ShowNudgeActionPerformerTest : public testing::Test {
  public:
   ShowNudgeActionPerformerTest()
-      : profile_manager_(std::make_unique<TestingProfileManager>(
+      : client_(TestingBrowserProcess::GetGlobal()->local_state(),
+                TestingBrowserProcess::GetGlobal()
+                    ->GetFeatures()
+                    ->application_locale_storage()),
+        profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())) {}
   ShowNudgeActionPerformerTest(const ShowNudgeActionPerformerTest&) = delete;
   ShowNudgeActionPerformerTest& operator=(const ShowNudgeActionPerformerTest&) =

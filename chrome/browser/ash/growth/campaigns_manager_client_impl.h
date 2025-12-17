@@ -17,6 +17,9 @@
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+
 namespace base {
 class Version;
 }
@@ -28,7 +31,11 @@ class CampaignsManager;
 class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                                    public UiActionPerformer::Observer {
  public:
-  CampaignsManagerClientImpl();
+  // `local_state` and `application_locale_storage` must be non-null, and must
+  // outlive `this`.
+  CampaignsManagerClientImpl(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage);
   CampaignsManagerClientImpl(const CampaignsManagerClientImpl&) = delete;
   CampaignsManagerClientImpl& operator=(const CampaignsManagerClientImpl&) =
       delete;
@@ -87,6 +94,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                             bool init_success);
   void UpdateConfig(const std::map<std::string, std::string>& params);
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
+
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;

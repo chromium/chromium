@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -42,7 +43,11 @@ class CampaignsManagerSessionTest : public testing::Test {
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         browser_process_platform_part_test_api_(
-            g_browser_process->platform_part()) {}
+            g_browser_process->platform_part()),
+        client_(TestingBrowserProcess::GetGlobal()->local_state(),
+                TestingBrowserProcess::GetGlobal()
+                    ->GetFeatures()
+                    ->application_locale_storage()) {}
 
   CampaignsManagerSessionTest(const CampaignsManagerSessionTest&) = delete;
   CampaignsManagerSessionTest& operator=(const CampaignsManagerSessionTest&) =
