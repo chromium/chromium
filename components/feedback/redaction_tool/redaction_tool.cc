@@ -35,10 +35,6 @@ using redaction_internal::IPAddress;
 
 namespace redaction {
 
-namespace features {
-BASE_FEATURE(kEnableIbanRedaction, base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 namespace {
 
 // Helper macro: Non capturing group
@@ -571,11 +567,6 @@ const char* const kUnredactedMacAddresses[] = {
 };
 constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
-bool IsFeatureEnabled(const base::Feature& feature) {
-  return base::FeatureList::GetInstance()
-             ? base::FeatureList::IsEnabled(feature)
-             : feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
-}
 }  // namespace
 
 RedactionTool::RedactionTool(const char* const* first_party_extension_ids)
@@ -615,9 +606,7 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
   // Do hashes last since they may appear in URLs and they also prevent us from
   // properly recognizing the Android storage paths.
   RedactHashes(input, &detected);
-  if (IsFeatureEnabled(features::kEnableIbanRedaction)) {
     RedactIbans(input, &detected);
-  }
   return detected;
 }
 
@@ -668,8 +657,7 @@ std::string RedactionTool::RedactAndKeepSelected(
     // PIIType::kAndroidAppStoragePath and not PIIType::kStableIdentifier.
     redacted = RedactHashes(std::move(redacted), nullptr);
   }
-  if (IsFeatureEnabled(features::kEnableIbanRedaction) &&
-      pii_types_to_keep.find(PIIType::kIBAN) == pii_types_to_keep.end()) {
+  if (pii_types_to_keep.find(PIIType::kIBAN) == pii_types_to_keep.end()) {
     redacted = RedactIbans(std::move(redacted), nullptr);
   }
 

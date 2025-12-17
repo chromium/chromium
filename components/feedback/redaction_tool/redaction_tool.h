@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -25,10 +24,6 @@ class RE2;
 }
 
 namespace redaction {
-namespace features {
-COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_DECLARE_FEATURE(kEnableIbanRedaction);
-}  // namespace features
 
 struct CustomPatternWithAlias {
   // A string literal used in redaction tests. Matches to the |pattern| are
