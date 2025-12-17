@@ -310,7 +310,7 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
   AssertionRequestParams params = BuildAssertionRequestParams({});
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
-  // Verify that the delegate has recevied the passkey.
+  // Verify that the delegate has received the passkey.
   auto passkeys_after = client_->delegate()->GetPasskeys();
   ASSERT_TRUE(passkeys_after.has_value());
   EXPECT_EQ(passkeys_after.value()->size(), 1u);

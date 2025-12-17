@@ -64,8 +64,10 @@ IOSWebAuthnCredentialsDelegate::AsWeakPtr() {
 }
 
 void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
-    std::vector<password_manager::PasskeyCredential> credentials) {
+    std::vector<password_manager::PasskeyCredential> credentials,
+    const std::string& passkey_request_id) {
   passkeys_ = std::move(credentials);
+  passkey_request_id_ = passkey_request_id;
 }
 
 }  // namespace webauthn

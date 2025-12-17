@@ -164,7 +164,8 @@ void PasskeyTabHelper::LogEvent(
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   // If the request is invalid, the request can't be processed.
-  if (params.RequestId().empty()) {
+  const std::string& passkey_request_id = params.RequestId();
+  if (passkey_request_id.empty()) {
     return;
   }
 
@@ -195,13 +196,13 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
   CHECK(delegate);
 
   // Send available passkeys to the WebAuthnCredentialsDelegate.
-  delegate->OnCredentialsReceived(std::move(filtered_passkeys));
+  delegate->OnCredentialsReceived(std::move(filtered_passkeys),
+                                  passkey_request_id);
 
   // Open the suggestion bottom sheet. The delegate's suggestions will be
   // presented in it and will be selectable by the user.
-  std::string request_id = params.RequestId();
-  assertion_requests_.emplace(request_id, std::move(params));
-  client_->ShowSuggestionBottomSheet({params.FrameId(), std::move(request_id)});
+  assertion_requests_.emplace(passkey_request_id, std::move(params));
+  client_->ShowSuggestionBottomSheet({params.FrameId(), passkey_request_id});
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
