@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -36,6 +37,7 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
 
 VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 
   pinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
