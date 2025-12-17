@@ -1549,17 +1549,16 @@ TEST_F(MainThreadEventQueueTest,
         }
         // Simulates two new blocking touchmove events enqueued while the
         // first touchmove is being dispatched.
-        test.HandleEvent(UNSAFE_TODO(touch_moves[1]),
+        test.HandleEvent(touch_moves[1],
                          blink::mojom::InputEventResultState::kNotConsumed);
-        test.HandleEvent(UNSAFE_TODO(touch_moves[2]),
+        test.HandleEvent(touch_moves[2],
                          blink::mojom::InputEventResultState::kNotConsumed);
-      } else if (touch_id ==
-                 UNSAFE_TODO(touch_moves[1]).unique_touch_event_id) {
+      } else if (touch_id == touch_moves[1].unique_touch_event_id) {
         // Simulates two new blocking touchmove events enqueued while the
         // second touchmove is being dispatched.
-        test.HandleEvent(UNSAFE_TODO(touch_moves[3]),
+        test.HandleEvent(touch_moves[3],
                          blink::mojom::InputEventResultState::kNotConsumed);
-        test.HandleEvent(UNSAFE_TODO(touch_moves[4]),
+        test.HandleEvent(touch_moves[4],
                          blink::mojom::InputEventResultState::kNotConsumed);
       }
     }
