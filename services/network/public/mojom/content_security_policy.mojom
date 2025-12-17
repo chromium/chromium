@@ -88,6 +88,7 @@ struct CSPSourceList {
   bool allow_dynamic_url = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;
+  bool allow_trusted_types_eval = false;
   IntegrityAlgorithm? report_hash_algorithm;
 };
 

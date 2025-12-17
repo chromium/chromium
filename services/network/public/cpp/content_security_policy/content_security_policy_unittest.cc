@@ -1644,6 +1644,28 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'script-src' contains an invalid source: ''wrong''. It will be "
           "ignored.",
       },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'trusted-types-eval'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_trusted_types_eval = true;
+            return csp;
+          }),
+          "",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'wrong' 'trusted-types-eval'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_trusted_types_eval = true;
+            return csp;
+          }),
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
+      },
   };
 
   for (auto& test : cases) {

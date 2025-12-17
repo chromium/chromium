@@ -781,6 +781,11 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
+    if (base::EqualsCaseInsensitiveASCII(expression, "'trusted-types-eval'")) {
+      directive->allow_trusted_types_eval = true;
+      continue;
+    }
+
     std::string nonce;
     if (ParseNonce(expression, &nonce)) {
       directive->nonces.push_back(std::move(nonce));

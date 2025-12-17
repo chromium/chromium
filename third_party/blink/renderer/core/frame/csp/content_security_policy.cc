@@ -705,6 +705,30 @@ bool ContentSecurityPolicy::AllowWasmCodeGeneration(
   return is_allowed;
 }
 
+bool ContentSecurityPolicy::AllowTrustedTypesEval(
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status) {
+  // https://www.w3.org/TR/CSP3/#can-compile-strings, step 5.3.3
+  // "If source-list contains a source expression which is [...] "'unsafe-eval'"
+
+  // The spec wants 'trusted-types-eval' to apply _only_ when Trusted Types is
+  // enforced. Note that in most other contexts, we only check whether TT is
+  // required -- report only or not -- because even in report-only we need to
+  // run the checks in order to generate the reports. This, however, requires
+  // TT to enabled in an enforcing directive. Because that is a global
+  // property, we need to check it here.
+  bool trusted_types_is_enforced =
+      std::ranges::any_of(policies_, [&](const auto& policy) {
+        return CSPDirectiveListRequiresTrustedTypesEnforcing(*policy);
+      });
+  bool trusted_types_eval_applies =
+      std::ranges::any_of(policies_, [&](const auto& policy) {
+        return CSPDirectiveListAllowTrustedTypesEval(
+            *policy, this, reporting_disposition, exception_status);
+      });
+  return trusted_types_is_enforced && trusted_types_eval_applies;
+}
+
 HashSet<HashAlgorithm> ContentSecurityPolicy::HashesToReport() const {
   HashSet<HashAlgorithm> algorithms;
   for (const auto& policy : policies_) {

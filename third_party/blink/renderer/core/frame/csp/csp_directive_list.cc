@@ -279,6 +279,14 @@ bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
          directive->allow_wasm_unsafe_eval;
 }
 
+bool CheckTrustedTypesEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const ContentSecurityPolicy* policy) {
+  const network::mojom::blink::CSPSourceList* directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list;
+  return directive && directive->allow_trusted_types_eval;
+}
+
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
                const network::IntegrityMetadata& hash_value) {
   return !directive || CSPSourceListAllowHash(*directive, hash_value);
@@ -878,6 +886,16 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
   return CSPDirectiveListIsReportOnly(csp) || CheckWasmEval(csp, policy);
 }
 
+CORE_EXPORT
+bool CSPDirectiveListAllowTrustedTypesEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status) {
+  return !CSPDirectiveListIsReportOnly(csp) &&
+         CheckTrustedTypesEval(csp, policy);
+}
+
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     String& error_message,
@@ -1155,8 +1173,16 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
 
 bool CSPDirectiveListRequiresTrustedTypes(
     const network::mojom::blink::ContentSecurityPolicy& csp) {
+  // Do we have "require-trusted-types-for 'script'", enforcing or not?
   return csp.require_trusted_types_for ==
          network::mojom::blink::CSPRequireTrustedTypesFor::Script;
+}
+
+bool CSPDirectiveListRequiresTrustedTypesEnforcing(
+    const network::mojom::blink::ContentSecurityPolicy& csp) {
+  // Do we have "require-trusted-types-for 'script'" in an enforcing policy?
+  return CSPDirectiveListRequiresTrustedTypes(csp) &&
+         !CSPDirectiveListIsReportOnly(csp);
 }
 
 std::optional<HashAlgorithm> CSPDirectiveListHashToReport(
