@@ -44,6 +44,10 @@
 #include <unistd.h>
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/system/sys_info.h"
+#endif
+
 namespace base {
 
 // Trivial tests that thread runs and doesn't crash on create, join, or detach -
@@ -690,5 +694,97 @@ TEST(PlatformThreadTidCacheTest, MainThreadSecond) {
 }  // namespace
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+
+namespace {
+// Helper function to put all the UNSAFE_BUFFERS() in a single place.
+int NumberOfAllowedProcessors() {
+  cpu_set_t cpuset;
+  // SAFETY: Here and below, these macros are part of system headers, and we
+  // cannot assume their content, however it checks the bounds.
+  UNSAFE_BUFFERS(CPU_ZERO(&cpuset));
+  EXPECT_EQ(0, sched_getaffinity(0, sizeof(cpu_set_t), &cpuset));
+  return UNSAFE_BUFFERS(CPU_COUNT(&cpuset));
+}
+}  // namespace
+
+TEST(PlatformThreadCpuAffinity, DefaultToAllCores) {
+  // Need at least three distinct classes to test affinity, skip if there are
+  // fewer CPUs than that.
+  if (SysInfo::NumberOfProcessors() < 3) {
+    GTEST_SKIP();
+  }
+
+  test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+}
+
+TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
+  // Need at least three distinct classes to test affinity, skip if there are
+  // fewer CPUs than that.
+  if (SysInfo::NumberOfProcessors() < 3) {
+    GTEST_SKIP();
+  }
+
+  std::vector<uint64_t> fake_frequencies = SysInfo::MaxFrequencyPerProcessor();
+  if (fake_frequencies.empty()) {
+    GTEST_SKIP() << "Cannot determine frequencies. This can happen in VMs for "
+                 << "instance";
+  }
+
+  for (size_t i = 0; i < fake_frequencies.size(); i++) {
+    fake_frequencies[i] = static_cast<uint64_t>(1000000000) + (i * 100000000);
+  }
+  SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+
+  {
+    test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+    PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+    EXPECT_EQ(SysInfo::NumberOfProcessors() - 1, NumberOfAllowedProcessors());
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    EXPECT_EQ(SysInfo::NumberOfProcessors() - 1, NumberOfAllowedProcessors());
+
+    // Make sure that affinity is reset to everything, as when the feature is
+    // disabled, the affinity will stay to the value it had previously.
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  }
+
+  {
+    test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kRestrictBigCoreThreadAffinity);
+
+    PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+    EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  }
+
+  SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+}
+
+TEST(PlatformThreadCpuAffinity, RestrictAffinityNoopWithTwoCoreTypes) {
+  // Only two core types.
+  std::vector<uint64_t> fake_frequencies = SysInfo::MaxFrequencyPerProcessor();
+  for (size_t i = 0; i < fake_frequencies.size(); i++) {
+    fake_frequencies[i] = i % 2 ? 1000000000 : 1500000000;
+  }
+  SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+
+  test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
+
+  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+  PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
+  EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+
+  SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base

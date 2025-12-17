@@ -101,7 +101,8 @@ bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
 namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity) {
   switch (thread_type) {
     case ThreadType::kDefault:
       SetThreadRole("chromium.base.threading.default");

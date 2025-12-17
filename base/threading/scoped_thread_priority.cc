@@ -48,13 +48,18 @@ ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
                                 target_thread_type, original_thread_type);
   if (should_boost) {
     original_thread_type_.emplace(original_thread_type);
-    PlatformThread::SetCurrentThreadType(target_thread_type);
+    // Do not change the affinity, this is meant to make sure the thread runs,
+    // not that it changes which core can it can run on.
+    PlatformThread::SetCurrentThreadType(target_thread_type,
+                                         /* may_change_affinity = */ false);
   }
 }
 
 ScopedBoostPriority::~ScopedBoostPriority() {
   if (original_thread_type_.has_value()) {
-    PlatformThread::SetCurrentThreadType(original_thread_type_.value());
+    // See above, do not change the affinity.
+    PlatformThread::SetCurrentThreadType(original_thread_type_.value(),
+                                         /* may_change_affinity = */ false);
   }
 }
 

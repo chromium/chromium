@@ -71,7 +71,26 @@ class BASE_EXPORT SysInfo {
   // LITTLE cores on ARM bit.LITTLE architecture.
   // Returns 0 on symmetric architecture or when it failed to recognize.
   // This function will cache the result value in its implementation.
+  //
+  // Note that due to caching, this is not expected to be accurate in case of
+  // CPU unplug, which can happen, in particular in VMs. More specifically, the
+  // returned value is only expected to be valid at the time where this was
+  // first called. Subsequent calls may return a stable value, which can be an
+  // under/overestimate in case of CPU hotplug.
   static int NumberOfEfficientProcessors();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // Returns the maximum frequency of all the processors in Hz, if
+  // available. The data may not be available in virtual machines for
+  // instance. In this case, the returned value is empty.
+  //
+  // Also note that due to caching, this is not expected to be accurate in case
+  // of CPU unplug, which can happen, in particular in VMs. More specifically,
+  // the returned value is only expected to be valid at the time where this was
+  // first called. Subsequent calls may return a stable value, which can be an
+  // under/overestimate in case of CPU hotplug.
+  static const std::vector<uint64_t>& MaxFrequencyPerProcessor();
+#endif
 
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this

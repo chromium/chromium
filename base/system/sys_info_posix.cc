@@ -14,6 +14,7 @@
 #include <sys/utsname.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <type_traits>
 
@@ -21,6 +22,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/memory/page_size.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -296,41 +298,68 @@ size_t SysInfo::VMAllocationGranularity() {
   return GetPageSize();
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+
+namespace {
+std::vector<uint64_t> MaxFrequencyPerProcessorImpl() {
+  int num_cpus = base::SysInfo::NumberOfProcessors();
+  std::vector<uint64_t> max_core_frequencies(static_cast<size_t>(num_cpus), 0);
+
+  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+    std::string content;
+    auto path = StringPrintf(
+        "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", core_index);
+    // The file may not exist, depending on whether there is a cpufreq
+    // driver. For instance, this is not present on virtual machines.
+    if (!ReadFileToStringNonBlocking(base::FilePath(path), &content)) {
+      return {};
+    }
+    uint32_t frequency_khz = 0;
+    if (!StringToUint(base::TrimWhitespaceASCII(content, TRIM_ALL),
+                      &frequency_khz)) {
+      return {};
+    }
+    max_core_frequencies[static_cast<size_t>(core_index)] =
+        static_cast<uint64_t>(frequency_khz) * 1000;
+  }
+
+  return max_core_frequencies;
+}
+}  // namespace
+
+// static
+const std::vector<uint64_t>& SysInfo::MaxFrequencyPerProcessor() {
+  static base::NoDestructor<std::vector<uint64_t>> result(
+      MaxFrequencyPerProcessorImpl());
+  return *result;
+}
+
+#endif
+
 #if !BUILDFLAG(IS_APPLE)
 // static
 int SysInfo::NumberOfEfficientProcessorsImpl() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Try to guess the CPU architecture and cores of each cluster by comparing
   // the maximum frequencies of the available (online and offline) cores.
-  int num_cpus = SysInfo::NumberOfProcessors();
-  DCHECK_GE(num_cpus, 0);
-  std::vector<uint32_t> max_core_frequencies_khz(static_cast<size_t>(num_cpus),
-                                                 0);
-  for (int core_index = 0; core_index < num_cpus; ++core_index) {
-    std::string content;
-    auto path = StringPrintf(
-        "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", core_index);
-    if (!ReadFileToStringNonBlocking(FilePath(path), &content)) {
-      return 0;
-    }
-    if (!StringToUint(
-            base::TrimWhitespaceASCII(content, TRIM_ALL),
-            &max_core_frequencies_khz[static_cast<size_t>(core_index)])) {
-      return 0;
-    }
-  }
+  const std::vector<uint64_t>& max_core_frequencies =
+      MaxFrequencyPerProcessor();
 
-  auto [min_max_core_frequencies_khz_it, max_max_core_frequencies_khz_it] =
-      std::minmax_element(max_core_frequencies_khz.begin(),
-                          max_core_frequencies_khz.end());
-
-  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it) {
+  if (max_core_frequencies.empty()) {
     return 0;
   }
 
-  return static_cast<int>(std::count(max_core_frequencies_khz.begin(),
-                                     max_core_frequencies_khz.end(),
-                                     *min_max_core_frequencies_khz_it));
+  auto [min_max_core_frequencies_it, max_max_core_frequencies_it] =
+      std::minmax_element(max_core_frequencies.begin(),
+                          max_core_frequencies.end());
+
+  if (*min_max_core_frequencies_it == *max_max_core_frequencies_it) {
+    return 0;
+  }
+
+  return static_cast<int>(std::count(max_core_frequencies.begin(),
+                                     max_core_frequencies.end(),
+                                     *min_max_core_frequencies_it));
 #else
   NOTIMPLEMENTED();
   return 0;

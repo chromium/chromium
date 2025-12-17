@@ -25,7 +25,8 @@ void PlatformThreadId::WriteIntoTrace(perfetto::TracedValue&& context) const {
 }
 
 // static
-void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {
+void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type,
+                                              bool may_change_affinity) {
   MessagePumpType message_pump_type = MessagePumpType::DEFAULT;
   if (CurrentIOThread::IsSet()) {
     message_pump_type = MessagePumpType::IO;
@@ -33,7 +34,8 @@ void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {
     message_pump_type = MessagePumpType::UI;
   }
   CHECK_LE(thread_type, ThreadType::kMaxValue);
-  internal::SetCurrentThreadTypeImpl(thread_type, message_pump_type);
+  internal::SetCurrentThreadTypeImpl(thread_type, message_pump_type,
+                                     may_change_affinity);
   current_thread_type = thread_type;
 }
 

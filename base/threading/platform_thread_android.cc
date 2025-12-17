@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/trace_event/trace_event.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/tasks_jni/ThreadUtils_jni.h"
@@ -31,6 +32,21 @@ namespace base {
 BASE_FEATURE(kIncreaseDisplayCriticalThreadPriority,
              "RaiseDisplayCriticalThreadPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, do not run threads with a less important ThreadType than
+// kDisplayCritical on the big core cluster, for configurations with at least 3
+// clusters. This is based on observations that this cluster is both
+// power-hungry and contended.
+BASE_FEATURE(kRestrictBigCoreThreadAffinity, base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+std::vector<uint64_t>* g_max_frequency_per_processor_override = nullptr;
+}
+
+void SetMaxFrequencyPerProcessorOverrideForTesting(
+    std::vector<uint64_t>* value) {
+  g_max_frequency_per_processor_override = value;
+}
 
 namespace internal {
 
@@ -88,8 +104,61 @@ bool CanSetThreadTypeToRealtimeAudio() {
   return true;
 }
 
+void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
+  TRACE_EVENT("base", __PRETTY_FUNCTION__, "thread_id", thread_id, "can_run",
+              can_run);
+  // Efficiency note: most of the computation here could be done only once using
+  // static local variables, but this makes the code harder to test, and is not
+  // expected to be called often. If it becomes a problem, make it not repeat
+  // mask creation at every call.
+  const std::vector<uint64_t>& max_frequencies =
+      g_max_frequency_per_processor_override
+          ? *g_max_frequency_per_processor_override
+          : SysInfo::MaxFrequencyPerProcessor();
+  if (max_frequencies.empty()) {
+    return;
+  }
+
+  auto sorted = max_frequencies;
+  std::sort(sorted.begin(), sorted.end());
+  uint64_t max_frequency = sorted[sorted.size() - 1];
+  auto last = std::unique(sorted.begin(), sorted.end());
+  ssize_t distinct_count = std::distance(sorted.begin(), last);
+
+  // Don't want to move entirely from big cores on big.LITTLE, only on
+  // little-mid-big designs.
+  if (distinct_count < 3) {
+    return;
+  }
+
+  bool all_cores = can_run;
+  int allowed_cpus_count = 0;
+  cpu_set_t cpu_set;
+  // SAFETY: Here and below, these are macros that we don't control, and hence
+  // we cannot safely replace. However, CPU_ZERO() is safe, and CPU_SET() has a
+  // check internally to not overflow the bitset, which we repeat in the loop to
+  // be clearer.
+  UNSAFE_BUFFERS(CPU_ZERO(&cpu_set));
+  for (size_t i = 0; i < max_frequencies.size(); i++) {
+    if (i < CPU_SETSIZE) {
+      if (all_cores || (max_frequencies[i] < max_frequency)) {
+        allowed_cpus_count++;
+        UNSAFE_BUFFERS(CPU_SET(i, &cpu_set));
+      }
+    }
+  }
+
+  TRACE_EVENT("base", "SetAffinity", "count", max_frequencies.size(), "allowed",
+              allowed_cpus_count);
+  // If the call fails, it's not a correctness issue. However we want to catch
+  // the sandbox returning EPERM.
+  int retval = sched_setaffinity(thread_id.raw(), sizeof(cpu_set), &cpu_set);
+  DPCHECK(!retval);
+}
+
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity) {
   // We set the Audio priority through JNI as the Java setThreadPriority will
   // put it into a preferable cgroup, whereas the "normal" C++ call wouldn't.
   // However, with
@@ -101,17 +170,21 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ThreadUtils_setThreadPriorityAudio(env,
                                             PlatformThread::CurrentId().raw());
-    return;
+  } else if (thread_type == ThreadType::kDisplayCritical &&
+             pump_type_hint == MessagePumpType::UI &&
+             GetCurrentThreadNiceValue() <=
+                 ThreadTypeToNiceValue(ThreadType::kDisplayCritical)) {
+    // Recent versions of Android (O+) up the priority of the UI thread
+    // automatically.
+  } else {
+    SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
   }
-  // Recent versions of Android (O+) up the priority of the UI thread
-  // automatically.
-  if (thread_type == ThreadType::kDisplayCritical &&
-      pump_type_hint == MessagePumpType::UI &&
-      GetCurrentThreadNiceValue() <=
-          ThreadTypeToNiceValue(ThreadType::kDisplayCritical)) {
-    return;
+
+  if (may_change_affinity &&
+      base::FeatureList::IsEnabled(kRestrictBigCoreThreadAffinity)) {
+    SetCanRunOnBigCore(PlatformThread::CurrentId(),
+                       thread_type >= ThreadType::kDisplayCritical);
   }
-  SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
 }
 
 std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
@@ -141,6 +214,7 @@ void RemoveThreadTypeOverride(
   if (!priority_override_handle) {
     return;
   }
+
   PlatformThreadId thread_id(
       pthread_gettid_np(thread_handle.platform_handle()));
   SetThreadNiceFromType(thread_id, initial_thread_type);
