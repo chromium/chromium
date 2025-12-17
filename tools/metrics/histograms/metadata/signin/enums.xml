@@ -1370,6 +1370,9 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="SSO identity cache is not populated, the identity list is
              synchronously fetched and then returned."/>
+  <int value="3"
+      label="The ios_internal identity list cache is not populated."/>
+  <int value="4" label="The ios_internal identity list cache is valid."/>
 </enum>
 
 <enum name="SigninSSOWKWebViewGetAllCookiesRequest">

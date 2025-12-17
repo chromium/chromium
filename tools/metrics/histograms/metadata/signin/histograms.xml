@@ -3546,15 +3546,18 @@ kept as long as profile signout is possible -->
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Tracks the time it takes to call -[GCRSSOService identitiesWithError:] or
-    -[GCRSSOService identitiesForDisplay]. See: https://crbug.com/897470.
-    {SigninSSOIdentityListRequestDurationCacheState}
+    Tracks the time it takes to call `GetSSOIdentities()`. See:
+    https://crbug.com/897470. {SigninSSOIdentityListRequestDurationCacheState}
   </summary>
   <token key="SigninSSOIdentityListRequestDurationCacheState">
+    <variant name=".LocalCacheNotPopulated"
+        summary="The ios_internal identity list cache is not populated."/>
+    <variant name=".LocalCachePopulated"
+        summary="The ios_internal identity list cache is valid."/>
     <variant name=".NotPopulated"
-        summary="The SSOAuth identity list is not populated."/>
-    <variant name=".Stale" summary="The SSOAuth identity list is stale."/>
-    <variant name=".Valid" summary="The SSOAuth identity list is valid."/>
+        summary="The SSOAuth identity list cache is not populated."/>
+    <variant name=".Stale" summary="The SSOAuth identity list cache is stale."/>
+    <variant name=".Valid" summary="The SSOAuth identity list cache is valid."/>
   </token>
 </histogram>
 
