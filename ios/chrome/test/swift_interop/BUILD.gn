@@ -26,6 +26,7 @@ source_set("objc_interop_tests") {
 
   sources = [ "objc_xctest.mm" ]
   deps = [
+    ":swift_api",
     ":swift_interop_tests",
     "//base",
   ]
@@ -59,6 +60,12 @@ source_set("swift_interop_tests_support_files") {
     "string/string_helper.cc",
   ]
   deps = [ "//base" ]
+}
+
+swift_source_set("swift_api") {
+  testonly = true
+  configs += [ "//build/config/ios:enable_swift_cxx_interop" ]
+  sources = [ "swift_api.swift" ]
 }
 
 swift_source_set("swift_interop_tests") {
