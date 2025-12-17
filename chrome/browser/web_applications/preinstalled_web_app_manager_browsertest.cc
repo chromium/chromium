@@ -35,7 +35,9 @@
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -1846,7 +1848,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
   static constexpr std::string_view kStartUrl = "/web_apps/simple/index.html";
   static constexpr std::string_view kScope = "/web_apps/simple/";
   static constexpr std::string_view kInstallUrl =
-      "web_apps/simple/install_url.html";
+      "/web_apps/simple/install_url.html";
   static constexpr std::string_view kManifestId = "/web_app/simple/index.html";
   static constexpr std::string_view kManifestUrl =
       "/web_app/simple/manifest.json";
@@ -1893,7 +1895,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
   }
 
   GURL GetInstallUrl() {
-    return embedded_https_test_server().GetURL(kHostname, kStartUrl);
+    return embedded_https_test_server().GetURL(kHostname, kInstallUrl);
   }
 
   GURL GetScope() {
@@ -1942,7 +1944,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
 
     options.app_info_factory = base::BindRepeating(
         [](webapps::ManifestId manifest_id, GURL start_url, GURL scope,
-           GURL install_url, IconBitmaps icons) {
+           GURL install_url, GURL manifest_url, IconBitmaps icons) {
           auto info =
               std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
           info->title = kWrongName;
@@ -1950,16 +1952,20 @@ class PreinstalledWebAppManagerSimpleBrowserTest
           info->display_mode = DisplayMode::kStandalone;
           info->install_url = install_url;
           info->icon_bitmaps = std::move(icons);
+          info->manifest_url = manifest_url;
           return info;
         },
         GetManifestId(), GetStartUrl(), GetScope(), GetInstallUrl(),
-        std::move(icons));
+        GetManifestUrl(), std::move(icons));
     options.only_use_app_info_factory = true;
 
     return options;
   }
 
   void SetUp() override {
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &PreinstalledWebAppManagerSimpleBrowserTest::SetRedirectHandler,
+        base::Unretained(this)));
     ASSERT_TRUE(embedded_https_test_server().Start());
     preinstalled_app_override_ =
         std::make_unique<ScopedTestingPreinstalledAppData>();
@@ -1980,7 +1986,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
     if (!is_redirection_on_) {
       return nullptr;
     }
-    if (request.relative_url != GetStartUrl()) {
+    if (request.relative_url != GetStartUrl().PathForRequest()) {
       return nullptr;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -2030,7 +2036,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
-                       UpdateOnFirstLaunchRedirect) {
+                       NoUpdateOnRedirectedBrowserDisplayModeLaunch) {
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       GetAppId(), WebAppFilter::InstalledInChrome()));
 
@@ -2048,6 +2054,37 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
   ASSERT_TRUE(web_contents);
   content::WaitForLoadStop(web_contents.get());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(GetAppId()),
+            "Wrong App Name");
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
+                       UpdateOnFirstLaunchRedirect) {
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GetAppId(), WebAppFilter::InstalledInChrome()));
+
+  provider().scheduler().SetUserDisplayMode(
+      GetAppId(), mojom::UserDisplayMode::kStandalone, base::DoNothing());
+
+  StartRedirecting();
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch;
+  provider().scheduler().LaunchApp(GetAppId(), /*url=*/std::nullopt,
+                                   launch.GetCallback());
+  ASSERT_TRUE(launch.Wait());
+  base::WeakPtr<content::WebContents> web_contents =
+      launch.Get<base::WeakPtr<content::WebContents>>();
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents.get());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  histogram_tester.ExpectUniqueSample("WebApp.FetchManifestAndUpdate.Result",
+                                      FetchManifestAndUpdateResult::kSuccess,
+                                      1);
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(GetAppId()),
             "Simple web app");

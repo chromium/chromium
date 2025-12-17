@@ -750,6 +750,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.FetchManifestAndUpdate.Result"
+    enum="FetchManifestAndUpdateResult" expires_after="2026-07-01">
+  <owner>dmurph@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of the FetchManifestAndUpdateCommand, which is used to
+    force-update an installed web app. This is triggered weekly on startup for
+    every user, as well as when launching
+  </summary>
+</histogram>
+
 <histogram name="WebApp.FileHandlersRegistration.Result" enum="BooleanSuccess"
     expires_after="2026-05-17">
   <owner>dibyapal@chromium.org</owner>

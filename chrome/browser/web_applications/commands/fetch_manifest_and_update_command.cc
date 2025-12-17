@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
@@ -42,8 +43,12 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
     : WebAppCommand<SharedWebContentsLock, FetchManifestAndUpdateResult>(
           "FetchManifestAndUpdateCommand",
           SharedWebContentsLockDescription(),
-          std::move(callback),
-          FetchManifestAndUpdateResult::kShutdown),
+          base::BindOnce([](FetchManifestAndUpdateResult result) {
+            base::UmaHistogramEnumeration(
+                "WebApp.FetchManifestAndUpdate.Result", result);
+            return result;
+          }).Then(std::move(callback)),
+          /*args_for_shutdown=*/FetchManifestAndUpdateResult::kShutdown),
       install_url_(install_url),
       expected_manifest_id_(expected_manifest_id) {
   GetMutableDebugValue().Set("install_url",
@@ -113,7 +118,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   }
 
   if (manifest.id != expected_manifest_id_) {
-    GetMutableDebugValue().Set("manifest_id",
+    GetMutableDebugValue().Set("foundmanifest_id",
                                manifest.id.possibly_invalid_spec());
     GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");
     CompleteAndSelfDestruct(CommandResult::kSuccess,

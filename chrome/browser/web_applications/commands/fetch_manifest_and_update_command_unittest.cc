@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
@@ -85,6 +86,9 @@ class FetchManifestAndUpdateTest : public WebAppTest {
     }
     return future.Get();
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(FetchManifestAndUpdateTest, NameUpdate) {
@@ -159,6 +163,9 @@ TEST_F(FetchManifestAndUpdateTest, NoUpdate_IconFetchCallbackNotCalled) {
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccessNoUpdateDetected);
   EXPECT_FALSE(icon_fetched_callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kSuccessNoUpdateDetected, 1);
 }
 
 TEST_F(FetchManifestAndUpdateTest, IconUpdate) {
@@ -192,6 +199,9 @@ TEST_F(FetchManifestAndUpdateTest, UrlLoadFailure) {
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kUrlLoadingError);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kUrlLoadingError, 1);
 }
 
 TEST_F(FetchManifestAndUpdateTest, PrimaryPageChangedDuringIconFetch) {
@@ -205,6 +215,9 @@ TEST_F(FetchManifestAndUpdateTest, PrimaryPageChangedDuringIconFetch) {
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kPrimaryPageChanged);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kPrimaryPageChanged, 1);
 }
 
 TEST_F(FetchManifestAndUpdateTest, IconDownloadError) {
@@ -216,6 +229,9 @@ TEST_F(FetchManifestAndUpdateTest, IconDownloadError) {
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kIconDownloadError);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kIconDownloadError, 1);
 }
 
 TEST_F(FetchManifestAndUpdateTest, InstallationError) {
@@ -227,6 +243,9 @@ TEST_F(FetchManifestAndUpdateTest, InstallationError) {
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kInstallationError);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kInstallationError, 1);
 }
 
 }  // namespace

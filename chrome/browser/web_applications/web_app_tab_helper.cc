@@ -435,8 +435,8 @@ void WebAppTabHelper::MaybeSchedulePreinstallUpdate() {
   if (in_scope_app == window_app_id()) {
     return;
   }
-  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->manifest_id,
-                                                app_for_updating->install_url,
+  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->install_url,
+                                                app_for_updating->manifest_id,
                                                 base::DoNothing());
 }
 
