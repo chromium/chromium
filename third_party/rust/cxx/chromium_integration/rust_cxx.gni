@@ -158,7 +158,11 @@ template("rust_cxx") {
   }
 
   static_library(target_name) {
-    forward_variables_from(invoker, [ "deps" ])
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "allow_circular_includes_from",
+                           ])
 
     testonly = _testonly
     if (defined(invoker.visibility)) {

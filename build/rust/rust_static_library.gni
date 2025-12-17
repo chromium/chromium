@@ -110,6 +110,15 @@ import("//build/rust/gni_impl/rust_target.gni")
 #     This will automatically add appropriate dependencies: there's no
 #     need to depend on the cxx crate or any generated bindings.
 #
+#   allow_circular_includes_from (optional)
+#     If cxx_bindings is present, this will allow the generated cxx bindings to
+#     include headers from the listed targets. Generally, this should only be
+#     used to include headers from C++ shim libraries that are logically part
+#     of the cxx bindings.
+#
+#     TODO(crbug.com/469057512): this option may be replaced with an equivalent
+#     formulation in the future, which moves the circularity under the hood.
+#
 #   data, testonly, visibility (optional)
 #     Same meaning as in other GN targets.
 #

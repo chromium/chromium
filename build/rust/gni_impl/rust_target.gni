@@ -507,6 +507,8 @@ template("rust_target") {
         deps = _cxx_deps + _public_deps
         configs = _configs
 
+        forward_variables_from(invoker, [ "allow_circular_includes_from" ])
+
         # In a component_build the cxx bindings may be linked into a shared
         # library at any point up the dependency tree, so always export.
         export_symbols = is_component_build
