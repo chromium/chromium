@@ -19,6 +19,7 @@ source_set("internal") {
   deps = [
     "..:public",
     "//base",
+    "//components/contextual_tasks/public",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/lens",
@@ -72,6 +73,7 @@ source_set("unit_tests") {
     ":test_support",
     "..:impl",
     "//base/test:test_support",
+    "//components/contextual_tasks/public",
     "//components/lens",
     "//components/omnibox/composebox:mojo_bindings",
     "//components/search_engines:test_support",

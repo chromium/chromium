@@ -45,6 +45,8 @@ namespace contextual_search {
 class ContextualSearchContextController {
  public:
   // Struct containing configuration params for the context controller.
+  // Note: When the ContextualTasks feature is enabled, some of these parameters
+  // are overridden by the ComposeboxQueryController.
   struct ConfigParams {
    public:
     // Whether to send the `lns_surface` parameter in search URLs.

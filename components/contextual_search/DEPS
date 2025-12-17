@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/contextual_tasks",
   "+components/endpoint_fetcher",
   "+components/keyed_service/core",
   "+components/lens",

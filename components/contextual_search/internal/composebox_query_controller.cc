@@ -20,6 +20,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -282,6 +283,19 @@ ComposeboxQueryController::ComposeboxQueryController(
   prioritize_suggestions_for_the_first_attached_document_ =
       feature_params->prioritize_suggestions_for_the_first_attached_document;
   enable_context_id_migration_ = feature_params->enable_context_id_migration;
+  attach_page_title_and_url_to_suggest_requests_ =
+      feature_params->attach_page_title_and_url_to_suggest_requests;
+
+  // Enable multi-context input with the context id migration if the contextual
+  // tasks feature is enabled. This allows the query controller to behave
+  // consistently for co-browsing enabled users, even if the NTP or
+  // Omnibox entrypoints have different configurations.
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    enable_multi_context_input_flow_ = true;
+    use_separate_request_ids_for_multi_context_viewport_images_ = true;
+    enable_context_id_migration_ = true;
+  }
+
   // The context id migration requires that viewport images use a separate
   // request id, so this flag should be enabled if the context id migration is
   // enabled.
