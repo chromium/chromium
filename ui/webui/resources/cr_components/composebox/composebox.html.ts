@@ -78,7 +78,9 @@ export function getHtml(this: ComposeboxElement) {
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
-          exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon, carousel-divider, carousel-container"
+          exportparts="context-menu-entrypoint-icon,
+              cr-composebox-file-carousel, upload-container, voice-icon,
+              carousel-divider, carousel-container, thumbnail"
           .tabSuggestions="${this.tabSuggestions}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"

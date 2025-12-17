@@ -103,6 +103,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
     ${this.showFileCarousel_ ? html`
       <cr-composebox-file-carousel
         part="cr-composebox-file-carousel"
+        exportparts="thumbnail"
         id="carousel"
         class="${this.carouselOnTop_ ? 'top' : ''}"
         .files="${Array.from(this.files_.values())}"

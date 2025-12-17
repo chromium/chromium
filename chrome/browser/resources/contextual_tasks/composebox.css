@@ -38,6 +38,13 @@
   --icon-menu-spacing: 6px;
   --icon-menu-icon-size: 24px;
   --icon-menu-button-size: 40px;
+  /* TODO(crbug.com/467758241): Change
+   * pdf icon to one without outline just for contextual tasks.
+   * Border-radius is temporary fix to hide
+   * most of outline.
+   */
+  --pdf-icon-border-radius: 12px;
+  --pdf-icon-size: 16px;
 }
 
 /* Composebox default colors are for light mode on AIM results. */
@@ -78,7 +85,7 @@
 }
 
 #composebox {
-  --composebox-thumbnail-img-chip-size: 52px;
+  --composebox-thumbnail-img-chip-size: 44px;
   --composebox-width: calc(100% - 30px); /* 15px on each side */
   --expanded-border-radius: 24px;
   --input-bottom-spacing: 16px;
@@ -139,6 +146,13 @@
   #composebox {
     max-width: var(--composebox-max-width);
   }
+}
+
+#composebox::part(thumbnail) {
+  --thumbnail-size_: 28px;
+  height: var(--thumbnail-size_);
+  padding: 0;
+  width: var(--thumbnail-size_);
 }
 
 #composebox::part(error-scrim) {
