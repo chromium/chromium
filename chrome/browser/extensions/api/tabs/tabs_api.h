@@ -328,9 +328,35 @@ class TabsQueryFunction : public ExtensionFunction {
   api::tabs::Query::Params::QueryInfo query_info_;
 };
 class TabsCreateFunction : public ExtensionFunction {
-  ~TabsCreateFunction() override = default;
+ public:
+  TabsCreateFunction();
+
+ private:
+  ~TabsCreateFunction() override;
+
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.create", TABS_CREATE)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Called after a new browser window has been created.
+  void OnBrowserWindowCreated(BrowserWindowInterface* browser);
+
+  // Opens a new tab in the given `browser`. If non-null, sets its opener to
+  // `opener_tab`.
+  void OpenTabInBrowser(BrowserWindowInterface& browser,
+                        content::WebContents* opener_tab);
+
+  // Stashed properties, since the browser window to use may be created
+  // asynchronously.
+  std::optional<int> opener_tab_id_;
+  std::optional<std::string> original_url_;
+  std::optional<bool> active_;
+  std::optional<bool> pinned_;
+  std::optional<int> index_;
+
+  // The validated URL to open.
+  GURL validated_url_;
+#endif
 };
 class TabsDuplicateFunction : public ExtensionFunction {
   ~TabsDuplicateFunction() override = default;

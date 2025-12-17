@@ -1750,6 +1750,9 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   return true;
 }
 
+TabsCreateFunction::TabsCreateFunction() = default;
+TabsCreateFunction::~TabsCreateFunction() = default;
+
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   std::optional<tabs::Duplicate::Params> params =
       tabs::Duplicate::Params::Create(args());
