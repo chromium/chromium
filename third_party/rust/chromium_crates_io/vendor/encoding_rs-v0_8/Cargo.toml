@@ -36,7 +36,6 @@ categories = [
     "web-programming",
     "internationalization",
 ]
-exclude = ["src/test_data/"]
 license = "(Apache-2.0 OR MIT) AND BSD-3-Clause"
 repository = "https://github.com/hsivonen/encoding_rs"
 

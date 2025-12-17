@@ -67,6 +67,8 @@ There are also other, non-crate-specific files such as:
     - Somewhat obsolete `cargo vet`-support items - we keep
       `supply-chain/audits.toml` to preserve Chromium audits that are imported
       into https://github.com/google/rust-crate-audits/blob/main/sources.list)
+    - Various infrastructure pieces to disable auto-formatting of the vendored
+      files (e.g. `.gitattributes`, `.rustfmt.toml`, `.style.yapf`, etc.)
 
 # Importing new third-party crates
 
