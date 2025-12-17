@@ -4,10 +4,13 @@
 
 source_set("model") {
   sources = [
+    "gemini_settings_action.h",
+    "gemini_settings_action.mm",
+    "gemini_settings_action_type.h",
     "gemini_settings_context.h",
     "gemini_settings_metadata.h",
     "gemini_settings_metadata.mm",
   ]
   frameworks = [ "UIKit.framework" ]
-  deps = []
+  deps = [ "//ui/base" ]
 }
