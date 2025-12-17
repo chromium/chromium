@@ -56,13 +56,11 @@ enum ScannerTransition { PRESENT, DISMISS };
 
   ProceduralBlock animations;
 
-  // Set the frame for the presented view.
-  presentedView.frame = finalFrame;
-  [presentedView layoutIfNeeded];
-
   switch (_transition) {
     case PRESENT: {
       [containerView insertSubview:presentedView belowSubview:presentingView];
+      presentedView.frame = finalFrame;
+      [presentedView layoutIfNeeded];
       animations = ^void {
         presentingView.transform =
             CGAffineTransformMakeTranslation(0, -finalFrame.size.height);
@@ -71,6 +69,8 @@ enum ScannerTransition { PRESENT, DISMISS };
     }
     case DISMISS: {
       [containerView insertSubview:presentedView aboveSubview:presentingView];
+      presentedView.frame = finalFrame;
+      [presentedView layoutIfNeeded];
       presentedView.transform =
           CGAffineTransformMakeTranslation(0, -finalFrame.size.height);
       animations = ^void {
