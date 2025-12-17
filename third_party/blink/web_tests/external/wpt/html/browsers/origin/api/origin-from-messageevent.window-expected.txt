@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Constructed `MessageEvent` objects have no real origins.
-  assert_throws_js: function "_ => Origin.from(e)" did not throw
-Harness: the test ran to completion.
-

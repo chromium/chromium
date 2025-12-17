@@ -75,10 +75,17 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
 }
 
 DOMOrigin* MessageEvent::GetDOMOrigin(LocalDOMWindow*) const {
+  // We only create `DOMOrigin` objects for `MessageEvent` objects that were not
+  // constructed from JavaScript, as the JavaScript constructor accepts an
+  // untrusted string serialization of an origin.
+  if (!potentially_invalid_origin_serialization_.IsNull() ||
+      !GetSecurityOrigin()) {
+    return nullptr;
+  }
+
   // No access check is required, as this object intentionally reveals its
   // sender's origin cross-origin.
-  return GetSecurityOrigin() ? DOMOrigin::Create(GetSecurityOrigin())
-                             : DOMOrigin::Create();
+  return DOMOrigin::Create(GetSecurityOrigin());
 }
 
 MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {}
