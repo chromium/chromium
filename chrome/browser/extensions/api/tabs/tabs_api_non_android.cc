@@ -181,7 +181,6 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     OpenTabHelper::Params options;
     const tabs::Create::Params::CreateProperties& create_properties =
         params->create_properties;
-    options.window_id = create_properties.window_id;
     options.active = create_properties.selected;
     // The 'active' property has replaced the 'selected' property.
     options.active = create_properties.active;
@@ -210,11 +209,18 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
             ExtensionTabUtil::kTabNotFoundError,
             base::NumberToString(*create_properties.opener_tab_id)));
       }
-      options.opener_tab = opener;
     }
 
-    auto result =
-        OpenTabHelper::OpenTab(validated_url, this, options, user_gesture());
+    base::expected<BrowserWindowInterface*, std::string> maybe_browser =
+        OpenTabHelper::FindOrCreateBrowser(create_properties.window_id,
+                                           validated_url, *this, opener,
+                                           /*create_if_needed=*/false);
+    if (!maybe_browser.has_value()) {
+      return Error(std::move(maybe_browser.error()));
+    }
+
+    auto result = OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(),
+                                         this, options, user_gesture());
     if (!result.has_value()) {
       return Error(result.error());
     }

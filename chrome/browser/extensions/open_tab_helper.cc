@@ -58,36 +58,23 @@ OpenTabHelper::Params::Params() = default;
 OpenTabHelper::Params::~Params() = default;
 
 // static
-base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
-    const GURL& validated_url,
-    ExtensionFunction* function,
-    const Params& params,
-    bool user_gesture) {
-  // First, do as much validation as we can. This helps limit the user-visible
-  // side effects (like opening a new tab or browser) that might happen in a
-  // case that the API call fails.
-
-  auto* const extension = function->extension();
-  Profile* profile = Profile::FromBrowserContext(function->browser_context());
-
-  // DCHECK because the input should already have been validated, and this is
-  // a somewhat costly function.
-  DCHECK(ExtensionTabUtil::PrepareURLForNavigation(validated_url.spec(),
-                                                   extension, profile)
-             .has_value())
-      << "Invalid URL: " << validated_url;
-
+base::expected<BrowserWindowInterface*, std::string>
+OpenTabHelper::FindOrCreateBrowser(std::optional<int> window_id,
+                                   const GURL& validated_url,
+                                   ExtensionFunction& function,
+                                   content::WebContents* opener_tab,
+                                   bool create_if_needed) {
   // Try to find a suitable browser.
   // TODO(https://crbug.com/468223125): This is a wild set of tangled
   // conditions, most of which are inconsistent.
 
-  // windowId defaults to "current" window.
-  int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
   BrowserWindowInterface* browser = nullptr;
   std::string error;
+  // windowId defaults to "current" window.
   if (WindowController* controller =
           ExtensionTabUtil::GetControllerFromWindowID(
-              ChromeExtensionFunctionDetails(function), window_id, &error)) {
+              ChromeExtensionFunctionDetails(&function),
+              window_id.value_or(extension_misc::kCurrentWindowId), &error)) {
     browser = controller->GetBrowserWindowInterface();
   }
 
@@ -96,7 +83,7 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   //
   // TODO(https://crbug.com/468223125): This isn't consistent, since sometimes
   // we *will* create a new browser below.
-  if (!browser && !params.create_browser_if_needed) {
+  if (!browser && !create_if_needed) {
     return base::unexpected(error);
   }
 
@@ -105,14 +92,10 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // needed, create one.
   bool needs_original_profile =
       validated_url.SchemeIs(kExtensionScheme) &&
-      (!extension || !IncognitoInfo::IsSplitMode(extension));
+      (!function.extension() ||
+       !IncognitoInfo::IsSplitMode(function.extension()));
 
   bool fallback_to_tabbed_browser = false;
-  bool create_new_if_none_found = false;
-
-  if (params.create_browser_if_needed) {
-    create_new_if_none_found = true;
-  }
 
   // Check if the browser is valid. If it isn't, reset `browser` and possibly
   // find a replacement.
@@ -131,21 +114,22 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
       browser->GetProfile()->IsOffTheRecord()) {
     browser = nullptr;
     fallback_to_tabbed_browser = true;
-    create_new_if_none_found = true;
+    create_if_needed = true;
   }
 
   // This check (for the opener) comes last. It will fail (by design) if
   // we're intending to create a new browser; that's good, because the new
   // browser would never match the one with the opener.
-  if (params.opener_tab) {
+  if (opener_tab) {
     BrowserWindowInterface* opener_browser =
-        browser_window_util::GetBrowserForTabContents(*params.opener_tab);
+        browser_window_util::GetBrowserForTabContents(*opener_tab);
     if (!opener_browser || opener_browser != browser) {
       return base::unexpected(
           "Tab opener must be in the same window as the updated tab.");
     }
   }
 
+  Profile* profile = Profile::FromBrowserContext(function.browser_context());
   Profile* profile_to_use =
       needs_original_profile ? profile->GetOriginalProfile() : profile;
 
@@ -153,18 +137,39 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     // Don't include incognito information if we need the original profile,
     // since the goal is to find a non-incognito browser.
     bool include_incognito_information =
-        function->include_incognito_information() && !needs_original_profile;
+        function.include_incognito_information() && !needs_original_profile;
     browser = chrome::FindTabbedBrowser(profile_to_use,
                                         include_incognito_information);
   }
 
-  if (!browser && create_new_if_none_found) {
-    browser = CreateAndShowBrowser(profile_to_use, user_gesture, &error);
+  if (!browser && create_if_needed) {
+    browser =
+        CreateAndShowBrowser(profile_to_use, function.user_gesture(), &error);
   }
 
   if (!browser || !browser->GetWindow()) {
     return base::unexpected(ExtensionTabUtil::kNoCurrentWindowError);
   }
+
+  return browser;
+}
+
+// static
+base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
+    const GURL& validated_url,
+    BrowserWindowInterface& browser,
+    ExtensionFunction* function,
+    const Params& params,
+    bool user_gesture) {
+  auto* const extension = function->extension();
+
+  // DCHECK because the input should already have been validated, and this is
+  // a somewhat costly function.
+  DCHECK(ExtensionTabUtil::PrepareURLForNavigation(
+             validated_url.spec(), extension,
+             Profile::FromBrowserContext(function->browser_context()))
+             .has_value())
+      << "Invalid URL: " << validated_url;
 
   // TODO(rafaelw): handle setting remaining tab properties:
   // -title
@@ -183,14 +188,14 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   int index = params.index.value_or(-1);
   index = std::clamp(
       index, -1,
-      browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
+      browser.GetBrowserForMigrationOnly()->tab_strip_model()->count());
 
   int add_types = active ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
   add_types |= AddTabTypes::ADD_FORCE_INDEX;
   if (pinned) {
     add_types |= AddTabTypes::ADD_PINNED;
   }
-  NavigateParams navigate_params(browser, validated_url,
+  NavigateParams navigate_params(&browser, validated_url,
                                  ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = active
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB

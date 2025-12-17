@@ -20,9 +20,6 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
       browser::OpenTab::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  extensions::OpenTabHelper::Params options;
-  options.create_browser_if_needed = true;
-
   base::expected<GURL, std::string> maybe_url =
       extensions::ExtensionTabUtil::PrepareURLForNavigation(
           params->options.url, extension(), browser_context());
@@ -31,8 +28,18 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
   }
   GURL validated_url = std::move(maybe_url.value());
 
+  base::expected<BrowserWindowInterface*, std::string> maybe_browser =
+      extensions::OpenTabHelper::FindOrCreateBrowser(/*window_id=*/std::nullopt,
+                                                     validated_url, *this,
+                                                     /*opener_tab=*/nullptr,
+                                                     /*create_if_needed=*/true);
+  if (!maybe_browser.has_value()) {
+    return RespondNow(Error(std::move(maybe_browser.error())));
+  }
+
   const auto result = extensions::OpenTabHelper::OpenTab(
-      validated_url, this, options, user_gesture());
+      validated_url, *maybe_browser.value(), this,
+      extensions::OpenTabHelper::Params(), user_gesture());
   return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 

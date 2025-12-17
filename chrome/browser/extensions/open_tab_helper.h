@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 
+class BrowserWindowInterface;
 class ExtensionFunction;
 class GURL;
 
@@ -26,15 +27,21 @@ class OpenTabHelper {
     Params();
     ~Params();
 
-    bool create_browser_if_needed = false;
-    std::optional<int> window_id;
     std::optional<bool> active;
     std::optional<bool> pinned;
     std::optional<int> index;
     std::optional<int> bookmark_id;
-
-    raw_ptr<content::WebContents> opener_tab = nullptr;
   };
+
+  // Finds or creates a new browser that's appropriate to show the given
+  // `validated_url`. If `opener_tab` is non-null, enforces that the returned
+  // browser contains the `opener_tab`. Returns an error on failure.
+  static base::expected<BrowserWindowInterface*, std::string>
+  FindOrCreateBrowser(std::optional<int> window_id,
+                      const GURL& url,
+                      ExtensionFunction& function,
+                      content::WebContents* opener_tab,
+                      bool create_if_needed);
 
   // Opens a new tab given an extension function `function` and creation
   // parameters `params`. If a tab can be produced, it will return the newly-
@@ -44,6 +51,7 @@ class OpenTabHelper {
   // ExtensionTabUtil::PrepareURLForNavigation().
   static base::expected<content::WebContents*, std::string> OpenTab(
       const GURL& validated_url,
+      BrowserWindowInterface& browser,
       ExtensionFunction* function,
       const Params& params,
       bool user_gesture);
