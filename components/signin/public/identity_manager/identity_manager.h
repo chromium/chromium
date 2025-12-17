@@ -247,17 +247,6 @@ class IdentityManager : public KeyedService,
       AccessTokenFetcher::Source token_source =
           AccessTokenFetcher::Source::kProfile);
 
-  // Creates an AccessTokenFetcher given the passed-in information, allowing
-  // to specify a custom |url_loader_factory| as well.
-  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
-  CreateAccessTokenFetcherForAccount(
-      const CoreAccountId& account_id,
-      const std::string& oauth_consumer_name,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode);
-
   // Creates an AccessTokenFetcher for the |oauth_consumer_id| feature.
   [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
   CreateAccessTokenFetcherForAccount(const CoreAccountId& account_id,
@@ -279,16 +268,10 @@ class IdentityManager : public KeyedService,
 
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token
-  // request for |account_id| and |scopes| will fetch a new token from the
-  // network. Otherwise, is a no-op.
-  void RemoveAccessTokenFromCache(const CoreAccountId& account_id,
-                                  const ScopeSet& scopes,
-                                  const std::string& access_token);
-
-  // If an entry exists in the cache of access tokens corresponding to the
-  // given information, removes that entry; in this case, the next access token
   // request for |account_id| and |oauth_consumer_id| will fetch a new token
   // from the network. Otherwise, is a no-op.
+  //
+  // This method doesn't support `OAuthConsumerId` using dynamic scopes.
   void RemoveAccessTokenFromCache(const CoreAccountId& account_id,
                                   OAuthConsumerId oauth_consumer_id,
                                   const std::string& access_token);

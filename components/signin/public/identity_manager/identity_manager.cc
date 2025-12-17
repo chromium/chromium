@@ -183,20 +183,6 @@ IdentityManager::CreateAccessTokenFetcherWithDynamicScopesForAccount(
 std::unique_ptr<AccessTokenFetcher>
 IdentityManager::CreateAccessTokenFetcherForAccount(
     const CoreAccountId& account_id,
-    const std::string& oauth_consumer_name,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const ScopeSet& scopes,
-    AccessTokenFetcher::TokenCallback callback,
-    AccessTokenFetcher::Mode mode) {
-  return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_name, token_service_.get(),
-      primary_account_manager_.get(), url_loader_factory, scopes,
-      std::move(callback), mode, require_sync_consent_for_scope_verification_);
-}
-
-std::unique_ptr<AccessTokenFetcher>
-IdentityManager::CreateAccessTokenFetcherForAccount(
-    const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode,
@@ -222,17 +208,6 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
       account_id, oauth_consumer_id, oauth_consumer, token_service_.get(),
       primary_account_manager_.get(), url_loader_factory, std::move(callback),
       mode, require_sync_consent_for_scope_verification_);
-}
-
-void IdentityManager::RemoveAccessTokenFromCache(
-    const CoreAccountId& account_id,
-    const ScopeSet& scopes,
-    const std::string& access_token) {
-  if (account_id.empty() || access_token.empty()) {
-    return;
-  }
-
-  token_service_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
 void IdentityManager::RemoveAccessTokenFromCache(
