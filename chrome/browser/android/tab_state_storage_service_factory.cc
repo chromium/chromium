@@ -86,7 +86,11 @@ TabStateStorageServiceFactory::TabStateStorageServiceFactory()
     : ProfileKeyedServiceFactory(
           "TabStateStorageService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              // The incognito model does not have a profile until after the
+              // first incognito tab is created. If no incognito tabs were
+              // restored then incognito operations need to be deferred until
+              // the incognito model is created.
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 TabStateStorageServiceFactory::~TabStateStorageServiceFactory() = default;

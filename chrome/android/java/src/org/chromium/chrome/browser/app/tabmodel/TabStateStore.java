@@ -121,12 +121,9 @@ public class TabStateStore implements TabPersistentStore {
                     TabStripCollection collection = filter.getTabModel().getTabStripCollection();
                     if (collection == null) return;
 
-                    // See comment on getProfileAndCollection for why we use the original profile.
                     CollectionSaveForwarder forwarder =
                             CollectionSaveForwarder.createForTabGroup(
-                                    destinationTab.getProfile().getOriginalProfile(),
-                                    groupId,
-                                    collection);
+                                    destinationTab.getProfile(), groupId, collection);
                     mGroupForwarderMap.put(groupId, forwarder);
                 }
 
@@ -663,10 +660,7 @@ public class TabStateStore implements TabPersistentStore {
 
     private ProfileAndCollection getProfileAndCollection(boolean incognito) {
         TabModel tabModel = mTabModelSelector.getModel(incognito);
-        // All tabs are scoped to the original profile, regardless of the OTR status. The OTR tabs
-        // are encrypted, but to persist across sessions (if the key is returned by the OS) the data
-        // is stored in the original profile's directory.
-        Profile profile = assumeNonNull(tabModel.getProfile()).getOriginalProfile();
+        Profile profile = tabModel.getProfile();
         assert profile != null;
         TabStripCollection tabStripCollection = tabModel.getTabStripCollection();
         assert tabStripCollection != null;
