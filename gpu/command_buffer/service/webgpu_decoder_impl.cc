@@ -2000,6 +2000,18 @@ bool WebGPUDecoderImpl::ValidateAssociateMailboxAndSetSharedImageClearState(
     return false;
   }
 
+  // Note this usage could come from the webpage. It's important to handle
+  // this gracefully without losing the command buffer or WebGPU device.
+  if (usage & ~kAllowedMailboxTextureUsages) {
+    DLOG(ERROR) << "AssociateMailbox: Invalid usage";
+    return false;
+  }
+
+  if (internal_usage & ~kAllowedMailboxTextureUsages) {
+    LOG(ERROR) << "AssociateMailbox: Invalid internal usage";
+    return false;
+  }
+
   if ((usage & kAllowedWritableMailboxTextureUsages) &&
       (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
     LOG(ERROR) << "AssociateMailbox: Passing writable usages requires "
@@ -2172,16 +2184,6 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   UNSAFE_TODO(memcpy(view_formats.data(),
                      const_cast<const uint32_t*>(packed_data),
                      view_format_count * sizeof(wgpu::TextureFormat)));
-
-  if (usage & ~kAllowedMailboxTextureUsages) {
-    DLOG(ERROR) << "AssociateMailbox: Invalid usage";
-    return error::kInvalidArguments;
-  }
-
-  if (internal_usage & ~kAllowedMailboxTextureUsages) {
-    DLOG(ERROR) << "AssociateMailbox: Invalid usage";
-    return error::kInvalidArguments;
-  }
 
   wgpu::Device device = wire_server_->GetDevice(device_id, device_generation);
   if (device == nullptr) {

@@ -311,8 +311,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
          scoped_refptr<gpu::ClientSharedImage> shared_image) {
         const gpu::Mailbox& mailbox = shared_image->mailbox();
 
-        // Error case: device client id doesn't exist.
         {
+          SCOPED_TRACE("Error case: device client id doesn't exist.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId + 1, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
@@ -325,8 +325,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
         }
 
-        // Error case: device generation is invalid.
         {
+          SCOPED_TRACE("Error case: device generation is invalid.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration + 1,
                        reservation.id, reservation.generation,
@@ -339,42 +339,14 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
         }
 
-        // Error case: texture ID invalid for the wire server.
         {
+          SCOPED_TRACE("Error case: texture ID invalid for the wire server.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id + 1, reservation.generation,
                        WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
-                       reinterpret_cast<const GLuint*>(&mailbox.name));
-          EXPECT_EQ(
-              error::kInvalidArguments,
-              ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
-        }
-
-        // Error case: invalid texture usage.
-        {
-          AssociateMailboxCmdStorage cmd;
-          cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
-                       reservation.id, reservation.generation,
-                       UINT64_MAX, 0u,
-                       webgpu::WEBGPU_MAILBOX_NONE, 0u,
-                       ComputeNumEntries(sizeof(mailbox.name)),
-                       reinterpret_cast<const GLuint*>(&mailbox.name));
-          EXPECT_EQ(
-              error::kInvalidArguments,
-              ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
-        }
-
-        // Error case: invalid internal texture usage.
-        {
-          AssociateMailboxCmdStorage cmd;
-          cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
-                       reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
-                       UINT64_MAX, webgpu::WEBGPU_MAILBOX_NONE,
-                       0u, ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
           EXPECT_EQ(
               error::kInvalidArguments,
@@ -403,8 +375,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
           NOTREACHED();
         }
 
-        // Error case: packed data empty.
         {
+          SCOPED_TRACE("Error case: packed data empty.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation, UINT64_MAX, 0u,
@@ -413,8 +385,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
                     ExecuteImmediateCmd(decoder, cmd.cmd, 0u));
         }
 
-        // Error case: packed data smaller than mailbox.
         {
+          SCOPED_TRACE("Error case: packed data smaller than mailbox.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation, UINT64_MAX, 0u,
@@ -426,8 +398,10 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
                                         sizeof(uint32_t) * packed_data.size()));
         }
 
-        // Error case: packed data size incorrect.
         for (int adjustment : {-1, -2}) {
+          SCOPED_TRACE(std::format(
+              "Error case: packed data size incorrect. adjustment={}",
+              adjustment));
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
@@ -439,8 +413,10 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
                                         sizeof(uint32_t) * packed_data.size()));
         }
 
-        // Error case: view_format_count incorrect.
         for (int adjustment : {-1, 1}) {
+          SCOPED_TRACE(std::format(
+              "Error case: view_format_count incorrect. adjustment={}",
+              adjustment));
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
@@ -453,11 +429,13 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
                                         sizeof(uint32_t) * packed_data.size()));
         }
 
-        // Control case: test a successful call to AssociateMailbox.
-        // The control case is not put first because it modifies the internal
-        // state of the Dawn wire server and would make calls with the same
-        // texture ID and generation invalid.
         {
+          SCOPED_TRACE(
+              "Control case: test a successful call to AssociateMailbox.");
+          // The control case is not put first because it modifies the internal
+          // state of the Dawn wire server and would make calls with the same
+          // texture ID and generation invalid.
+
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
@@ -469,8 +447,9 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
                                         sizeof(uint32_t) * packed_data.size()));
         }
 
-        // Error case: associated to an already associated texture.
         {
+          SCOPED_TRACE(
+              "Error case: associated to an already associated texture.");
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
@@ -483,8 +462,10 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
         }
 
-        // Dissociate the image from the control case to remove its reference.
         {
+          SCOPED_TRACE(
+              "Dissociate the image from the control case to remove its "
+              "reference.");
           webgpu::cmds::DissociateMailbox cmd;
           cmd.Init(reservation.id, reservation.generation);
           EXPECT_EQ(error::kNoError, ExecuteCmd(decoder, cmd));
@@ -495,6 +476,78 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
   GetGpuServiceHolder()
       ->gpu_main_thread_task_runner()
       ->RunsTasksInCurrentSequence();
+}
+
+// Invalid texture usage is handled by making an error Texture. It shouldn't
+// fail decoding, or even produce a Dawn validation error. (The WebGPU CTS makes
+// sure the Web API sees a validation error, but it comes from elsewhere.)
+TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmdInvalidUsage) {
+  struct UsageAndInternalUsage {
+    uint64_t usage = 0, internal_usage = 0;
+  };
+  constexpr uint64_t kInvalidUsage = 0x4000'0000;
+
+  for (auto usage : {
+           UsageAndInternalUsage{},
+           UsageAndInternalUsage{.usage = kInvalidUsage},
+           UsageAndInternalUsage{.internal_usage = kInvalidUsage},
+       }) {
+    SCOPED_TRACE(std::format("usage={} internal_usage={}", usage.usage,
+                             usage.internal_usage));
+    // Create the shared image
+    SharedImageInterface* sii = GetSharedImageInterface();
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        sii->CreateSharedImage({GetParam().format,
+                                {1, 1},
+                                gfx::ColorSpace::CreateSRGB(),
+                                GetSharedImageUsage(AccessType::Write),
+                                "TestLabel"},
+                               kNullSurfaceHandle);
+
+    webgpu::ReservedTexture reservation =
+        webgpu()->ReserveTexture(device_.Get());
+
+    GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
+        [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
+           scoped_refptr<gpu::ClientSharedImage> shared_image,
+           UsageAndInternalUsage usage) {
+          SCOPED_TRACE(std::format("usage={} internal_usage={}", usage.usage,
+                                   usage.internal_usage));
+          const gpu::Mailbox& mailbox = shared_image->mailbox();
+
+          {
+            AssociateMailboxCmdStorage cmd;
+            // Always include CopyDst to avoid triggering "uncleared texture"
+            // checks.
+            cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
+                         reservation.id, reservation.generation,
+                         usage.usage | WGPUTextureUsage_CopyDst,
+                         usage.internal_usage | WGPUTextureUsage_CopyDst,
+                         webgpu::WEBGPU_MAILBOX_NONE, 0u,
+                         ComputeNumEntries(sizeof(mailbox.name)),
+                         reinterpret_cast<const GLuint*>(&mailbox.name));
+
+            // Note in addition to no command buffer error, there should also
+            // be no Dawn validation error as the error is caught before that.
+            // If there is one, the test will fail cleanup.
+            EXPECT_EQ(
+                error::kNoError,
+                ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
+          }
+
+          // Dissociate the image from the control case to remove its reference.
+          {
+            webgpu::cmds::DissociateMailbox cmd;
+            cmd.Init(reservation.id, reservation.generation);
+            EXPECT_EQ(error::kNoError, ExecuteCmd(decoder, cmd));
+          }
+        },
+        GetDecoder(), reservation, std::move(shared_image), usage));
+
+    GetGpuServiceHolder()
+        ->gpu_main_thread_task_runner()
+        ->RunsTasksInCurrentSequence();
+  }
 }
 
 // Test that AssociateMailbox with a bad mailbox produces an error texture.
