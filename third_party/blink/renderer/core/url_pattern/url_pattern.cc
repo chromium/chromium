@@ -694,6 +694,15 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
   NOTREACHED();
 }
 
+bool URLPattern::Match(const KURL& url, MatchResult* result) const {
+  if (!url.IsValid() || url.IsEmpty()) {
+    return false;
+  }
+  MatchInput input;
+  URLToMatchInput(url, input);
+  return Match(input, result);
+}
+
 std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
     ExceptionState& exception_state) const {
   String components_with_regexp;
@@ -759,14 +768,7 @@ bool URLPattern::Match(v8::Isolate* isolate,
                        ExceptionState& exception_state) const {
   // By default each URL component value starts with an empty string.  The
   // given input is then layered on top of these defaults.
-  String protocol(g_empty_string);
-  String username(g_empty_string);
-  String password(g_empty_string);
-  String hostname(g_empty_string);
-  String port(g_empty_string);
-  String pathname(g_empty_string);
-  String search(g_empty_string);
-  String hash(g_empty_string);
+  MatchInput match_input;
 
   HeapVector<Member<V8URLPatternInput>> inputs;
 
@@ -786,8 +788,11 @@ bool URLPattern::Match(v8::Isolate* isolate,
 
       v8::TryCatch try_catch(isolate);
       // Layer the URLPatternInit values on top of the default empty strings.
-      ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
-                port, pathname, search, hash, PassThroughException(isolate));
+      ApplyInit(init, ValueType::kURL, match_input.protocol,
+                match_input.username, match_input.password,
+                match_input.hostname, match_input.port, match_input.pathname,
+                match_input.search, match_input.hash,
+                PassThroughException(isolate));
       if (try_catch.HasCaught()) {
         // Treat exceptions simply as a failure to match.
         return false;
@@ -815,55 +820,72 @@ bool URLPattern::Match(v8::Isolate* isolate,
       }
 
       // Apply the parsed URL components on top of our defaults.
-      if (url.Protocol())
-        protocol = url.Protocol();
-      if (!url.User().empty()) {
-        username = url.User().ToString();
-      }
-      if (!url.Pass().empty()) {
-        password = url.Pass().ToString();
-      }
-      if (!url.Host().empty()) {
-        hostname = url.Host().ToString();
-      }
-      if (url.Port() > 0) {
-        port = String::Number(url.Port());
-      }
-      if (!url.GetPath().empty()) {
-        pathname = url.GetPath().ToString();
-      }
-      if (!url.Query().empty()) {
-        search = url.Query().ToString();
-      }
-      if (url.HasFragmentIdentifier()) {
-        hash = url.FragmentIdentifier().ToString();
-      }
+      URLToMatchInput(url, match_input);
       break;
     }
   }
 
-  // Declare vectors to hold matched group name/value pairs produced by the
-  // matching algorithm.
-  Vector<std::pair<String, String>> protocol_group_list;
-  Vector<std::pair<String, String>> username_group_list;
-  Vector<std::pair<String, String>> password_group_list;
-  Vector<std::pair<String, String>> hostname_group_list;
-  Vector<std::pair<String, String>> port_group_list;
-  Vector<std::pair<String, String>> pathname_group_list;
-  Vector<std::pair<String, String>> search_group_list;
-  Vector<std::pair<String, String>> hash_group_list;
+  if (!result) {
+    // If we are not generating a full result then we don't need to populate
+    // group lists.
+    return Match(match_input);
+  }
 
-  // If we are not generating a full result then we don't need to populate
-  // group lists.
-  auto* protocol_group_list_ref = result ? &protocol_group_list : nullptr;
-  auto* username_group_list_ref = result ? &username_group_list : nullptr;
-  auto* password_group_list_ref = result ? &password_group_list : nullptr;
-  auto* hostname_group_list_ref = result ? &hostname_group_list : nullptr;
-  auto* port_group_list_ref = result ? &port_group_list : nullptr;
-  auto* pathname_group_list_ref = result ? &pathname_group_list : nullptr;
-  auto* search_group_list_ref = result ? &search_group_list : nullptr;
-  auto* hash_group_list_ref = result ? &hash_group_list : nullptr;
+  MatchResult match_result;
+  if (!Match(match_input, &match_result)) {
+    return false;
+  }
 
+  result->setInputs(std::move(inputs));
+
+  result->setProtocol(MakeURLPatternComponentResult(
+      isolate, match_input.protocol, match_result.protocol));
+  result->setUsername(MakeURLPatternComponentResult(
+      isolate, match_input.username, match_result.username));
+  result->setPassword(MakeURLPatternComponentResult(
+      isolate, match_input.password, match_result.password));
+  result->setHostname(MakeURLPatternComponentResult(
+      isolate, match_input.hostname, match_result.hostname));
+  result->setPort(MakeURLPatternComponentResult(isolate, match_input.port,
+                                                match_result.port));
+  result->setPathname(MakeURLPatternComponentResult(
+      isolate, match_input.pathname, match_result.pathname));
+  result->setSearch(MakeURLPatternComponentResult(isolate, match_input.search,
+                                                  match_result.search));
+  result->setHash(MakeURLPatternComponentResult(isolate, match_input.hash,
+                                                match_result.hash));
+
+  return true;
+}
+
+void URLPattern::URLToMatchInput(const KURL& url, MatchInput& input) {
+  if (url.Protocol()) {
+    input.protocol = url.Protocol();
+  }
+  if (!url.User().empty()) {
+    input.username = url.User().ToString();
+  }
+  if (!url.Pass().empty()) {
+    input.password = url.Pass().ToString();
+  }
+  if (!url.Host().empty()) {
+    input.hostname = url.Host().ToString();
+  }
+  if (url.Port() > 0) {
+    input.port = String::Number(url.Port());
+  }
+  if (!url.GetPath().empty()) {
+    input.pathname = url.GetPath().ToString();
+  }
+  if (!url.Query().empty()) {
+    input.search = url.Query().ToString();
+  }
+  if (url.HasFragmentIdentifier()) {
+    input.hash = url.FragmentIdentifier().ToString();
+  }
+}
+
+bool URLPattern::Match(const MatchInput& input, MatchResult* result) const {
   CHECK(protocol_);
   CHECK(username_);
   CHECK(password_);
@@ -873,42 +895,25 @@ bool URLPattern::Match(v8::Isolate* isolate,
   CHECK(search_);
   CHECK(hash_);
 
-  // Each component of the pattern must match the corresponding component of
-  // the input.
-  bool matched = protocol_->Match(protocol, protocol_group_list_ref) &&
-                 username_->Match(username, username_group_list_ref) &&
-                 password_->Match(password, password_group_list_ref) &&
-                 hostname_->Match(hostname, hostname_group_list_ref) &&
-                 port_->Match(port, port_group_list_ref) &&
-                 pathname_->Match(pathname, pathname_group_list_ref) &&
-                 search_->Match(search, search_group_list_ref) &&
-                 hash_->Match(hash, hash_group_list_ref);
-
-  if (!matched || !result)
-    return matched;
-
-  result->setInputs(std::move(inputs));
-
-  result->setProtocol(
-      MakeURLPatternComponentResult(isolate, protocol, protocol_group_list));
-  result->setUsername(
-      MakeURLPatternComponentResult(isolate, username, username_group_list));
-  result->setPassword(
-      MakeURLPatternComponentResult(isolate, password, password_group_list));
-  result->setHostname(
-      MakeURLPatternComponentResult(isolate, hostname, hostname_group_list));
-  result->setPort(
-      MakeURLPatternComponentResult(isolate, port, port_group_list));
-  result->setPathname(
-      MakeURLPatternComponentResult(isolate, pathname, pathname_group_list));
-  result->setSearch(
-      MakeURLPatternComponentResult(isolate, search, search_group_list));
-  result->setHash(
-      MakeURLPatternComponentResult(isolate, hash, hash_group_list));
-
-  return true;
+  // Each component of the pattern must match the corresponding component of the
+  // input. If we are not generating a full result, we don't need to populate
+  // group lists. Then just pass nullptr.
+  auto* protocol_result = result ? &result->protocol : nullptr;
+  auto* username_result = result ? &result->username : nullptr;
+  auto* password_result = result ? &result->password : nullptr;
+  auto* hostname_result = result ? &result->hostname : nullptr;
+  auto* port_result = result ? &result->port : nullptr;
+  auto* pathname_result = result ? &result->pathname : nullptr;
+  auto* search_result = result ? &result->search : nullptr;
+  auto* hash_result = result ? &result->hash : nullptr;
+  return protocol_->Match(input.protocol, protocol_result) &&
+         username_->Match(input.username, username_result) &&
+         password_->Match(input.password, password_result) &&
+         hostname_->Match(input.hostname, hostname_result) &&
+         port_->Match(input.port, port_result) &&
+         pathname_->Match(input.pathname, pathname_result) &&
+         search_->Match(input.search, search_result) &&
+         hash_->Match(input.hash, hash_result);
 }
-
-// static
 
 }  // namespace blink
