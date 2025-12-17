@@ -631,8 +631,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             // the settings UI.
             int positionAndSource = computeToolbarPositionAndSource();
             boolean animate =
-                    positionAndSource == ToolbarPositionAndSource.TOP_LONG_PRESS
-                            || positionAndSource == ToolbarPositionAndSource.BOTTOM_LONG_PRESS;
+                    !isOmniboxFocused
+                            && !ntpShowing
+                            && (positionAndSource == ToolbarPositionAndSource.TOP_LONG_PRESS
+                                    || positionAndSource
+                                            == ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
             if (animate) {
                 return switchingToBottom
                         ? StateTransition.ANIMATE_TO_BOTTOM
