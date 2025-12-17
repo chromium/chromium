@@ -417,7 +417,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
     // corresponds to billing and shipping sections within the same form.
-    for (size_t i = 0; i < num_complete_address_profiles; i++) {
+    for (size_t i = 0; i < num_complete_address_profiles; ++i) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }

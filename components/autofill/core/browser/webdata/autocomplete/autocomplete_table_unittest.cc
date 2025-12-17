@@ -546,7 +546,7 @@ TEST_F(AutocompleteTableTest,
   FormFieldData field;
   field.set_name(u"Name");
   field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; ++i) {
     EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
     AdvanceClock(base::Seconds(10));
   }
@@ -567,7 +567,7 @@ TEST_F(AutocompleteTableTest,
   FormFieldData field;
   field.set_name(u"Name");
   field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; ++i) {
     AdvanceClock(base::Seconds(10));
     EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
   }
@@ -589,7 +589,7 @@ TEST_F(AutocompleteTableTest,
   FormFieldData field;
   field.set_name(u"Name");
   field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; ++i) {
     EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
     AdvanceClock(base::Seconds(10));
   }
@@ -614,7 +614,7 @@ TEST_F(AutocompleteTableTest,
   FormFieldData field;
   field.set_name(u"Name");
   field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; ++i) {
     AdvanceClock(base::Seconds(10));
     EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
   }
@@ -645,7 +645,7 @@ TEST_F(AutocompleteTableTest,
   FormFieldData field;
   field.set_name(u"Name");
   field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; ++i) {
     AdvanceClock(base::Seconds(10));
     EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
   }

@@ -22,7 +22,7 @@ TEST(AutofillStructuredAddressRegExProvider, IsRegExCached) {
 
 // Builds all expressions and verifes that the result is not a nullptr.
 TEST(AutofillStructuredAddressRegExProvider, BuildAllRegExs) {
-  for (int i = 0; i <= static_cast<int>(RegEx::kLastRegEx); i++) {
+  for (int i = 0; i <= static_cast<int>(RegEx::kLastRegEx); ++i) {
     auto* g_pattern_provider = StructuredAddressesRegExProvider::Instance();
     EXPECT_NE(g_pattern_provider->GetRegEx(static_cast<RegEx>(i)), nullptr);
   }

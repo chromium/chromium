@@ -345,7 +345,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
 
 void LogAutocompletePredictionCollisionTypeMetrics(
     const FormStructure& form_structure) {
-  for (size_t i = 0; i < form_structure.field_count(); i++) {
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
     const AutofillField* field = form_structure.field(i);
     auto heuristic_type = field->heuristic_type();
     auto server_type = field->server_type();

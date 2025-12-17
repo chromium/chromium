@@ -126,7 +126,7 @@ class BaseAutofillAiTest : public testing::Test {
     form_data.set_main_frame_origin(
         url::Origin::Create(GURL("https://myform_root.com/form.html")));
     auto form_structure = std::make_unique<FormStructure>(form_data);
-    for (size_t i = 0; i < form_structure->field_count(); i++) {
+    for (size_t i = 0; i < form_structure->field_count(); ++i) {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction;
       prediction.set_type(form_description.fields[i].role);

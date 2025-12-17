@@ -84,7 +84,7 @@ TEST_F(AlternativeStateNameMapUpdaterTest, EntryAddedToStateMap) {
   AlternativeStateNameMap* alternative_state_name_map =
       AlternativeStateNameMap::GetInstance();
   DCHECK(!alternative_state_name_map->IsLocalisedStateNamesMapEmpty());
-  for (size_t i = 0; i < test_strings.size(); i++) {
+  for (size_t i = 0; i < test_strings.size(); ++i) {
     SCOPED_TRACE(test_strings[i]);
     EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
                   "DE", test_strings[i].value()) != std::nullopt,

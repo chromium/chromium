@@ -1540,7 +1540,7 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
                  << Tag{"td"} << "Decision Metrics:" << CTag{"td"} << Tag{"td"}
                  << Tag{"table"};
 
-  for (int i = 0; i < autofill_metrics::kNumCardUploadDecisionMetrics; i++) {
+  for (int i = 0; i < autofill_metrics::kNumCardUploadDecisionMetrics; ++i) {
     autofill_metrics::CardUploadDecision current_bitmask_value =
         static_cast<autofill_metrics::CardUploadDecision>(1 << i);
     if (!(upload_decision_metrics & current_bitmask_value)) {

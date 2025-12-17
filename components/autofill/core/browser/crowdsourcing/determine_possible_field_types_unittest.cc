@@ -142,7 +142,7 @@ void CheckThatOnlyFieldByIndexHasThisPossibleType(
     size_t field_index,
     FieldType type) {
   EXPECT_LT(field_index, possible_types.size());
-  for (size_t i = 0; i < possible_types.size(); i++) {
+  for (size_t i = 0; i < possible_types.size(); ++i) {
     if (i == field_index) {
       EXPECT_THAT(possible_types[i].types, ElementsAre(type)) << "i=" << i;
     } else {

@@ -29,7 +29,7 @@ std::unique_ptr<FormStructure> CreateFormStructure(
   }
   auto form_structure =
       std::make_unique<FormStructure>(test::GetFormData(form_description));
-  for (size_t i = 0; i < form_structure->field_count(); i++) {
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->SetTypeTo(
         AutofillType(form_description.fields[i].role),
         AutofillPredictionSource::kHeuristics);

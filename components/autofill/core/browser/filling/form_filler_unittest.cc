@@ -695,7 +695,7 @@ TEST_F(FormFillerTest, FillOnlyFirstNineteenCreditCardNumberFields) {
       AutofillForm(form, form.fields().front(), &credit_card).fields();
 
   // Verify that the first 19 credit card number fields are filled.
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     EXPECT_THAT(filled_fields[i], AutofilledWith(credit_card.GetInfo(
                                       CREDIT_CARD_NUMBER, kAppLocale)))
         << i;
@@ -711,7 +711,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
       test::GetFormData({.fields = std::vector<test::FieldDescription>(
                              20, {.autocomplete_attribute = "cc-number"})});
   // Set the size limit of the first nineteen fields to 1.
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     test_api(form).field(i).set_max_length(1);
   }
   FormsSeen({form});
@@ -723,7 +723,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
   // Verify that the first 19 card number fields are filled.
   std::u16string card_number =
       credit_card.GetInfo(CREDIT_CARD_NUMBER, kAppLocale);
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     EXPECT_THAT(filled_fields[i], AutofilledWith(i < card_number.length()
                                                      ? card_number.substr(i, 1)
                                                      : card_number))
@@ -770,7 +770,7 @@ TEST_F(FormFillerTest, OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   // Add 20 selection boxes that should be fillable since the correct
   // entry is present.
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; ++i) {
     test_api(form).Append(
         test::CreateTestSelectField("State", "state", "", "address-level1",
                                     {"AA", "BB", "CA"}, {"AA", "BB", "CA"}));

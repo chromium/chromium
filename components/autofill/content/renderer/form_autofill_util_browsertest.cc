@@ -629,7 +629,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
 
 TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   std::string kFormHtml = "<form id='target'>";
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; ++i) {
     std::string kFieldHtml = "<input type='button' value='" +
                              base::NumberToString(i) + std::string(300, 'a') +
                              "'>";

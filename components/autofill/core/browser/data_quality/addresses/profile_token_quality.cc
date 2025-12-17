@@ -130,7 +130,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
 
   const FieldTypeSet supported_types = profile_->GetSupportedTypes();
   std::vector<std::pair<FieldType, Observation>> possible_observations;
-  for (size_t i = 0; i < form_structure.field_count(); i++) {
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
     const AutofillField& field = *form_structure.field(i);
     if (field.autofill_source_profile_guid() != profile_->guid()) {
       // The field was not autofilled or autofilled with a different profile.

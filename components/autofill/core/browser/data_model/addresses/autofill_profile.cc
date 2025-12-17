@@ -302,7 +302,7 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   usage_history_information_.set_use_count(
       profile.usage_history_information_.use_count());
   for (size_t i = 1; i <= usage_history_information_.usage_history_size();
-       i++) {
+       ++i) {
     usage_history_information_.set_use_date(
         profile.usage_history_information_.use_date(i), i);
   }

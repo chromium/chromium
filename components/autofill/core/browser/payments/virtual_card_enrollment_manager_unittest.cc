@@ -523,7 +523,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
   for (int i = 0; i < virtual_card_enrollment_manager_
                           ->GetVirtualCardEnrollmentStrikeDatabase()
                           ->GetMaxStrikesLimit();
-       i++) {
+       ++i) {
     virtual_card_enrollment_manager_
         ->AddStrikeToBlockOfferingVirtualCardEnrollment(
             base::NumberToString(card_->instrument_id()));
@@ -584,7 +584,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
               kClientSideTimeout,
       };
 
-  for (int i = 0; i < static_cast<int>(failure_results.size()); i++) {
+  for (int i = 0; i < static_cast<int>(failure_results.size()); ++i) {
     SetUpStrikeDatabaseTest();
     virtual_card_enrollment_manager_
         ->OnDidGetUpdateVirtualCardEnrollmentResponse(
@@ -616,7 +616,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
   for (int i = 0; i < virtual_card_enrollment_manager_
                           ->GetVirtualCardEnrollmentStrikeDatabase()
                           ->GetMaxStrikesLimit();
-       i++) {
+       ++i) {
     virtual_card_enrollment_manager_
         ->AddStrikeToBlockOfferingVirtualCardEnrollment(
             base::NumberToString(card_->instrument_id()));
@@ -658,7 +658,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
                               ->GetVirtualCardEnrollmentStrikeDatabase()
                               ->GetMaxStrikesLimit() -
                           1;
-       i++) {
+       ++i) {
     // Start enrollment and ensures VirtualCardEnrollmentFields is set
     // correctly.
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(

@@ -31,7 +31,7 @@ TEST(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
             specifics.loyalty_card().loyalty_card_number());
   ASSERT_EQ(card.merchant_domains().size(),
             (size_t)specifics.loyalty_card().merchant_domains().size());
-  for (size_t i = 0; i < card.merchant_domains().size(); i++) {
+  for (size_t i = 0; i < card.merchant_domains().size(); ++i) {
     EXPECT_EQ(card.merchant_domains()[i],
               specifics.loyalty_card().merchant_domains(i));
   }

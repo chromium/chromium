@@ -160,7 +160,7 @@ TEST_P(DomLabelTest, DataDrivenLabels) {
   const base::Value::List& expected_field_infos =
       expected_output_json->GetList();
   ASSERT_EQ(field_infos.size(), expected_field_infos.size());
-  for (size_t i = 0; i < field_infos.size(); i++) {
+  for (size_t i = 0; i < field_infos.size(); ++i) {
     EXPECT_EQ(field_infos[i], expected_field_infos[i]);
   }
 }

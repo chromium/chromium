@@ -399,7 +399,7 @@ std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
   std::u16string dots;
   dots.reserve(sizeof(kMidlineEllipsisDot) * num_dots);
 
-  for (size_t i = 0; i < num_dots; i++) {
+  for (size_t i = 0; i < num_dots; ++i) {
     dots.append(kMidlineEllipsisDot);
   }
   return dots;

@@ -3540,7 +3540,7 @@ TEST_F(
 
   base::HistogramTester histogram_tester;
   for (int i = 0; i < prefs::kMaxValueForMandatoryReauthPromoShownCounter;
-       i++) {
+       ++i) {
     // This also verifies that ShouldShowPaymentMethodsMandatoryReauthPromo()
     // works as expected when below the max cap.
     EXPECT_TRUE(

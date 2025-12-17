@@ -136,7 +136,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
        TestData{@"data:abc", @"data:abc"},
        TestData{@"javascript:login()", @"javascript:login()"}});
 
-  for (size_t i = 0; i < test_data.size(); i++) {
+  for (size_t i = 0; i < test_data.size(); ++i) {
     const TestData& data = test_data[i];
     NSString* html_action =
         data.html_action == nil

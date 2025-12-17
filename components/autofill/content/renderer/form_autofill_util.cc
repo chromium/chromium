@@ -1479,7 +1479,7 @@ void MatchLabelsAndFields(const WebDocument& root,
                  CompareByRendererId>
       field_set = [&] {
         std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
-        for (size_t i = 0; i < fields.size(); i++) {
+        for (size_t i = 0; i < fields.size(); ++i) {
           items.emplace_back(&fields[i], std::move(shadow_fields[i]));
         }
         return items;

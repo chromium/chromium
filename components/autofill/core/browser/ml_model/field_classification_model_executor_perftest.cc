@@ -74,7 +74,7 @@ void FieldClassificationModelExecutorPerfTest::RunTestInternal(
                     executor->GetWeakPtrForExecutionThread(), model_path));
   {
     base::ElapsedTimer inference_timer;
-    for (size_t i = 0; i < num_inferences; i++) {
+    for (size_t i = 0; i < num_inferences; ++i) {
       // Execute the test in exactly the same way as model_executor_unittest.
       FieldClassificationModelEncoder::ModelInput input = {{
                                                                TokenId(14),

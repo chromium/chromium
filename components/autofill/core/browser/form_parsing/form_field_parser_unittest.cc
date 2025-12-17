@@ -324,7 +324,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   std::vector<FormFieldData> fields;
   // Creates n fields and encodes their ids in `max_length`, as `id_attribute`
   // is a string.
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     FormFieldData form_field_data;
     form_field_data.set_max_length(i);
     fields.push_back(form_field_data);
@@ -360,7 +360,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   std::vector<
       std::pair<raw_ptr<const FormFieldData>*, base::FunctionRef<bool()>>>
       fields_and_parsers;
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     fields_and_parsers.emplace_back(&matched_fields[i], callbacks[i]);
   }
 
@@ -371,7 +371,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   if (expect_success) {
     EXPECT_TRUE(scanner.IsEnd());
     ASSERT_EQ(testcase.expected_permutation.size(), n);
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; ++i) {
       EXPECT_EQ(matched_fields[i], &fields[testcase.expected_permutation[i]]);
     }
   } else {

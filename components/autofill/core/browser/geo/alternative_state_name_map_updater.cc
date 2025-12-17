@@ -210,7 +210,7 @@ void AlternativeStateNameMapUpdater::ProcessLoadedStateFileContent(
       AlternativeStateNameMap::CanonicalStateName
           normalized_canonical_state_name(state_names[0].value());
 
-      for (size_t i = 0; i < stripped_state_values_from_profiles.size(); i++) {
+      for (size_t i = 0; i < stripped_state_values_from_profiles.size(); ++i) {
         if (match_found[i]) {
           continue;
         }

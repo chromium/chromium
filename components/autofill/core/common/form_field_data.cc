@@ -63,7 +63,7 @@ bool ReadSelectOptionVector(base::PickleIterator* iter,
   if (!iter->ReadInt(&size))
     return false;
 
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; ++i) {
     SelectOption pickle_data;
     if (!ReadSelectOption(iter, &pickle_data))
       return false;
@@ -79,7 +79,7 @@ bool ReadStringVector(base::PickleIterator* iter,
     return false;
 
   std::u16string pickle_data;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; ++i) {
     if (!iter->ReadString16(&pickle_data))
       return false;
     strings->push_back(pickle_data);

@@ -302,18 +302,18 @@ void FormStructureTest::CheckFormStructureTestData(
     }
 
     for (size_t i = 0;
-         i < test_case.expected_field_types.expected_html_type.size(); i++) {
+         i < test_case.expected_field_types.expected_html_type.size(); ++i) {
       EXPECT_EQ(test_case.expected_field_types.expected_html_type[i],
                 form_structure->field(i)->html_type());
     }
     for (size_t i = 0;
          i < test_case.expected_field_types.expected_heuristic_type.size();
-         i++) {
+         ++i) {
       EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],
                 form_structure->field(i)->heuristic_type());
     }
     for (size_t i = 0;
-         i < test_case.expected_field_types.expected_overall_type.size(); i++) {
+         i < test_case.expected_field_types.expected_overall_type.size(); ++i) {
       EXPECT_THAT(
           form_structure->field(i)->Type().GetTypes(),
           ElementsAre(test_case.expected_field_types.expected_overall_type[i]));

@@ -139,7 +139,7 @@ TEST_F(AddressOnTypingManagerTest, StrikeLimitReached_MetricEmitted) {
 
   // Show and decline suggestions enough times.
   for (int i = 0;
-       i < *test_api(manager()).GetAddressOnTypingMaxStrikesLimit() - 1; i++) {
+       i < *test_api(manager()).GetAddressOnTypingMaxStrikesLimit() - 1; ++i) {
     // Show a suggestion for EMAIL_ADDRESS, but don't accept it.
     manager().OnDidShowAddressOnTyping(field_id, &autofill_field);
     KillAndRecreateManager();

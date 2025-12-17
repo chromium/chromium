@@ -5665,7 +5665,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Once the form is cached, fill the values.
   EXPECT_EQ(form.fields().size(), expected_values.size());
-  for (size_t i = 0; i < expected_values.size(); i++) {
+  for (size_t i = 0; i < expected_values.size(); ++i) {
     test_api(form).field(i).set_value(expected_values[i]);
   }
 
@@ -7198,7 +7198,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   histogram_tester.ExpectTotalCount(
       "Autofill.Autocomplete.PredictionCollisionState",
       form.fields().size() - 1);
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 15; ++i) {
     histogram_tester.ExpectBucketCount(
         "Autofill.Autocomplete.PredictionCollisionState", i, 1);
   }

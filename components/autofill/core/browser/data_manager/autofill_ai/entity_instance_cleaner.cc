@@ -96,12 +96,12 @@ void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
                  to_be_removed.insert(entity_a.guid()).second;
         };
 
-    for (size_t i = 0; i < entities.size(); i++) {
+    for (size_t i = 0; i < entities.size(); ++i) {
       const EntityInstance& entity_a = entities[i];
       if (entity_a.record_type() == EntityInstance::RecordType::kLocal) {
         ++n_local_entities_per_type[entity_a.type()];
       }
-      for (size_t j = i + 1; j < entities.size(); j++) {
+      for (size_t j = i + 1; j < entities.size(); ++j) {
         const EntityInstance& entity_b = entities[j];
         if (maybe_add_duplicate_entity_to_to_be_removed(entity_a, entity_b)) {
           ++n_local_entities_removed_per_type[entity_a.type()];

@@ -63,7 +63,7 @@ bool AllFieldsClassifiedWithConfidence(
     const FieldClassificationModelEncoder::ModelOutput& output,
     size_t num_fields,
     float confidence_threshold) {
-  for (size_t i = 0; i < num_fields; i++) {
+  for (size_t i = 0; i < num_fields; ++i) {
     if (std::ranges::max(output[i]) < confidence_threshold) {
       return false;
     }
@@ -433,7 +433,7 @@ std::vector<FieldType> FieldClassificationModelHandler::GetMostLikelyTypes(
   std::map<FieldType, std::pair<size_t, float>> unique_types_assignment;
   std::vector<FieldType> predicted_types;
 
-  for (size_t i = 0; i < relevant_fields; i++) {
+  for (size_t i = 0; i < relevant_fields; ++i) {
     auto [most_likely_type, current_confidence] = GetMostLikelyType(output[i]);
 
     if (state_->metadata.postprocessing_parameters()

@@ -98,7 +98,7 @@ TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
 
   // Test that if more than `kMaxObservationsPerToken` observations are added,
   // only the first `kMaxObservationsPerToken` are returned.
-  for (size_t i = 0; i < ProfileTokenQuality::kMaxObservationsPerToken; i++) {
+  for (size_t i = 0; i < ProfileTokenQuality::kMaxObservationsPerToken; ++i) {
     test_api(quality).AddObservation(NAME_FIRST,
                                      ObservationType::kEditedToSimilarValue);
   }

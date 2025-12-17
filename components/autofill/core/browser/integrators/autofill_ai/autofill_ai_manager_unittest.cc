@@ -193,7 +193,7 @@ class AutofillAiManagerTest : public testing::Test {
       FormStructure& form_structure,
       const std::vector<std::vector<FieldType>>& field_types_predictions) {
     CHECK_EQ(form_structure.field_count(), field_types_predictions.size());
-    for (size_t i = 0; i < form_structure.field_count(); i++) {
+    for (size_t i = 0; i < form_structure.field_count(); ++i) {
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction>
           predictions_for_field;
@@ -504,7 +504,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     }
     auto form_structure =
         std::make_unique<FormStructure>(test::GetFormData(form_description));
-    for (size_t i = 0; i < form_structure->field_count(); i++) {
+    for (size_t i = 0; i < form_structure->field_count(); ++i) {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction;
       prediction.set_type(form_description.fields[i].role);

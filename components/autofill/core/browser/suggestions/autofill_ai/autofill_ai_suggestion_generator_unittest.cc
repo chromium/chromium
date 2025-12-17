@@ -130,7 +130,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     }
     form_structure_.emplace(test::GetFormData(form_description));
     CHECK_EQ(field_types.size(), form_structure_->field_count());
-    for (size_t i = 0; i < form_structure_->field_count(); i++) {
+    for (size_t i = 0; i < form_structure_->field_count(); ++i) {
       form_structure_->field(i)->set_server_predictions({[&] {
         FieldPrediction prediction;
         prediction.set_type(field_types[i]);
