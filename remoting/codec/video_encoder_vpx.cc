@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
@@ -39,98 +40,97 @@ const int kVp9I444ProfileNumber = 1;
 // Magic encoder constant for adaptive quantization strategy.
 const int kVp9AqModeCyclicRefresh = 3;
 
-void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
+void SetCommonCodecParameters(vpx_codec_enc_cfg_t& config,
                               const webrtc::DesktopSize& size) {
   // Use millisecond granularity time base.
-  config->g_timebase.num = 1;
-  config->g_timebase.den = 1000;
+  config.g_timebase.num = 1;
+  config.g_timebase.den = 1000;
 
-  config->g_w = size.width();
-  config->g_h = size.height();
-  config->g_pass = VPX_RC_ONE_PASS;
+  config.g_w = size.width();
+  config.g_h = size.height();
+  config.g_pass = VPX_RC_ONE_PASS;
 
   // Start emitting packets immediately.
-  config->g_lag_in_frames = 0;
+  config.g_lag_in_frames = 0;
 
   // Since the transport layer is reliable, keyframes should not be necessary.
   // However, due to crbug.com/440223, decoding fails after 30,000 non-key
   // frames, so take the hit of an "unnecessary" key-frame every 10,000 frames.
-  config->kf_min_dist = 10000;
-  config->kf_max_dist = 10000;
+  config.kf_min_dist = 10000;
+  config.kf_max_dist = 10000;
 
   // Using 2 threads gives a great boost in performance for most systems with
   // adequate processing power. NB: Going to multiple threads on low end
   // windows systems can really hurt performance.
   // http://crbug.com/99179
-  config->g_threads = (base::SysInfo::NumberOfProcessors() > 2) ? 2 : 1;
+  config.g_threads = (base::SysInfo::NumberOfProcessors() > 2) ? 2 : 1;
 }
 
-void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
+void SetVp8CodecParameters(vpx_codec_enc_cfg_t& config,
                            const webrtc::DesktopSize& size) {
   // Adjust default target bit-rate to account for actual desktop size.
-  config->rc_target_bitrate = size.width() * size.height() *
-                              config->rc_target_bitrate / config->g_w /
-                              config->g_h;
+  config.rc_target_bitrate = size.width() * size.height() *
+                             config.rc_target_bitrate / config.g_w / config.g_h;
 
   SetCommonCodecParameters(config, size);
 
   // Value of 2 means using the real time profile. This is basically a
   // redundant option since we explicitly select real time mode when doing
   // encoding.
-  config->g_profile = 2;
+  config.g_profile = 2;
 
   // Clamping the quantizer constrains the worst-case quality and CPU usage.
-  config->rc_min_quantizer = 20;
-  config->rc_max_quantizer = 30;
+  config.rc_min_quantizer = 20;
+  config.rc_max_quantizer = 30;
 }
 
-void SetVp9CodecParameters(vpx_codec_enc_cfg_t* config,
+void SetVp9CodecParameters(vpx_codec_enc_cfg_t& config,
                            const webrtc::DesktopSize& size,
                            bool lossless_color) {
   SetCommonCodecParameters(config, size);
 
   // Configure VP9 for I420 or I444 source frames.
-  config->g_profile =
+  config.g_profile =
       lossless_color ? kVp9I444ProfileNumber : kVp9I420ProfileNumber;
 
   // TODO(wez): Set quantization range to 4-40, once the libvpx encoder is
   // updated not to output any bits if nothing needs topping-off.
-  config->rc_min_quantizer = 20;
-  config->rc_max_quantizer = 30;
-  config->rc_end_usage = VPX_CBR;
+  config.rc_min_quantizer = 20;
+  config.rc_max_quantizer = 30;
+  config.rc_end_usage = VPX_CBR;
   // In the absence of a good bandwidth estimator set the target bitrate to a
   // conservative default.
-  config->rc_target_bitrate = 500;
+  config.rc_target_bitrate = 500;
 }
 
-void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
+void SetVp8CodecOptions(vpx_codec_ctx_t& codec) {
   // CPUUSED of 16 will have the smallest CPU load. This turns off sub-pixel
   // motion search.
-  vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, 16);
+  vpx_codec_err_t ret = vpx_codec_control(&codec, VP8E_SET_CPUUSED, 16);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
-  ret = vpx_codec_control(codec, VP8E_SET_NOISE_SENSITIVITY, 0);
+  ret = vpx_codec_control(&codec, VP8E_SET_NOISE_SENSITIVITY, 0);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 }
 
-void SetVp9CodecOptions(vpx_codec_ctx_t* codec) {
+void SetVp9CodecOptions(vpx_codec_ctx_t& codec) {
   // Note that this is configured via the same parameter as for VP8.
-  vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, 6);
+  vpx_codec_err_t ret = vpx_codec_control(&codec, VP8E_SET_CPUUSED, 6);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
-  ret = vpx_codec_control(codec, VP9E_SET_NOISE_SENSITIVITY, 0);
+  ret = vpx_codec_control(&codec, VP9E_SET_NOISE_SENSITIVITY, 0);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 
   // Configure the codec to tune it for screen media.
-  ret = vpx_codec_control(codec, VP9E_SET_TUNE_CONTENT, VP9E_CONTENT_SCREEN);
+  ret = vpx_codec_control(&codec, VP9E_SET_TUNE_CONTENT, VP9E_CONTENT_SCREEN);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set screen content mode";
 
   // Set cyclic refresh (aka "top-off") for lossy encoding.
-  ret = vpx_codec_control(codec, VP9E_SET_AQ_MODE, kVp9AqModeCyclicRefresh);
+  ret = vpx_codec_control(&codec, VP9E_SET_AQ_MODE, kVp9AqModeCyclicRefresh);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set aq mode";
 }
 
@@ -157,8 +157,7 @@ void CreateImage(bool use_i444,
   DCHECK(out_image_buffer->empty());
   DCHECK(!*out_image);
 
-  std::unique_ptr<vpx_image_t> image(new vpx_image_t());
-  UNSAFE_TODO(memset(image.get(), 0, sizeof(vpx_image_t)));
+  auto image = std::make_unique<vpx_image_t>();
 
   // libvpx seems to require both to be assigned.
   image->d_w = size.width();
@@ -199,15 +198,18 @@ void CreateImage(bool use_i444,
   auto image_buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   // Reset image value to 128 so we just need to fill in the y plane.
-  UNSAFE_TODO(memset(image_buffer.data(), 128, buffer_size));
+  std::ranges::fill(image_buffer, 128);
 
   // Fill in the information for |image_|.
-  unsigned char* uchar_buffer =
-      reinterpret_cast<unsigned char*>(image_buffer.data());
+  base::span<uint8_t> uchar_buffer = image_buffer;
 
-  image->planes[0] = uchar_buffer;
-  image->planes[1] = UNSAFE_TODO(image->planes[0] + y_stride * y_rows);
-  image->planes[2] = UNSAFE_TODO(image->planes[1] + uv_stride * uv_rows);
+  size_t y_plane_size = static_cast<size_t>(y_stride) * y_rows;
+  size_t uv_plane_size = static_cast<size_t>(uv_stride) * uv_rows;
+
+  image->planes[0] = uchar_buffer.data();
+  image->planes[1] = uchar_buffer.subspan(y_plane_size).data();
+  image->planes[2] = uchar_buffer.subspan(y_plane_size + uv_plane_size).data();
+
   image->stride[0] = y_stride;
   image->stride[1] = uv_stride;
   image->stride[2] = uv_stride;
@@ -372,9 +374,9 @@ void VideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Customize the default configuration to our needs.
   if (use_vp9_) {
-    SetVp9CodecParameters(&config, size, lossless_color_);
+    SetVp9CodecParameters(config, size, lossless_color_);
   } else {
-    SetVp8CodecParameters(&config, size);
+    SetVp8CodecParameters(config, size);
   }
 
   // Initialize or re-configure the codec with the custom configuration.
@@ -389,9 +391,9 @@ void VideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Apply further customizations to the codec now it's initialized.
   if (use_vp9_) {
-    SetVp9CodecOptions(codec_.get());
+    SetVp9CodecOptions(*codec_);
   } else {
-    SetVp8CodecOptions(codec_.get());
+    SetVp8CodecOptions(*codec_);
   }
 }
 
@@ -434,14 +436,16 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
 
   // Convert the updated region to YUV ready for encoding.
   CHECK_EQ(frame.pixel_format(), webrtc::FOURCC_ARGB);
-  const uint8_t* rgb_data = frame.data();
+
+  const uint8_t* const rgb_data = frame.data();
+  uint8_t* const y_data = image_->planes[0];
+  uint8_t* const u_data = image_->planes[1];
+  uint8_t* const v_data = image_->planes[2];
+
   const int rgb_stride = frame.stride();
   const int y_stride = image_->stride[0];
   DCHECK_EQ(image_->stride[1], image_->stride[2]);
   const int uv_stride = image_->stride[1];
-  uint8_t* y_data = image_->planes[0];
-  uint8_t* u_data = image_->planes[1];
-  uint8_t* v_data = image_->planes[2];
 
   switch (image_->fmt) {
     case VPX_IMG_FMT_I444:
@@ -481,8 +485,9 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
 void VideoEncoderVpx::SetActiveMapFromRegion(
     const webrtc::DesktopRegion& updated_region) {
   // Clear active map first.
-  UNSAFE_TODO(memset(active_map_.data(), 0,
-                     active_map_size_.width() * active_map_size_.height()));
+  std::ranges::fill(active_map_, 0);
+
+  const size_t map_width = base::checked_cast<size_t>(active_map_size_.width());
 
   // Mark updated areas active.
   for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
@@ -495,13 +500,14 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
     DCHECK_LT(right, active_map_size_.width());
     DCHECK_LT(bottom, active_map_size_.height());
 
-    uint8_t* map =
-        UNSAFE_TODO(active_map_.data() + top * active_map_size_.width());
+    const size_t width = base::checked_cast<size_t>(right - left + 1);
+    size_t offset = base::checked_cast<size_t>(top) * map_width +
+                    base::checked_cast<size_t>(left);
+
+    // Mark the [left, right] x [top, bottom] rectangular region as active (1).
     for (int y = top; y <= bottom; ++y) {
-      for (int x = left; x <= right; ++x) {
-        UNSAFE_TODO(map[x]) = 1;
-      }
-      UNSAFE_TODO(map += active_map_size_.width());
+      std::ranges::fill(active_map_.subspan(offset, width), 1);
+      offset += map_width;
     }
   }
 }
