@@ -130,7 +130,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
             features::kAutofillEnableSupportForParsingWithSharedLabels)) {
       label_map.emplace_back(get(field).global_id(), std::u16string(*it));
     }
-    it++;
+    ++it;
   }
   return label_map;
 }

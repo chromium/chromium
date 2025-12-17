@@ -126,7 +126,7 @@ void MultiStepImportMerger::OnAddressDataChanged(
     AddressDataManager& address_data_manager) {
   auto it = multistep_candidates_.begin();
   while (it != multistep_candidates_.end()) {
-    // `it` might get erased, so `it++` at the end of the loop doesn't suffice.
+    // `it` might get erased, so `++it` at the end of the loop doesn't suffice.
     auto next = std::next(it);
     // Incomplete profiles are not imported yet, so they cannot have changed.
     if (it->is_imported) {
