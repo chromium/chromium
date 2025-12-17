@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -56,8 +57,6 @@
 #include "ui/gfx/animation/slide_animation.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
-#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"

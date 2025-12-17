@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Actor specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <message name="IDS_HANDOFF_TAKE_OVER_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
+    Take over task
+  </message>
+  <message name="IDS_HANDOFF_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
+    Give task back
+  </message>
+  <message name="IDS_HANDOFF_TAKE_OVER_TASK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
+    Take over task, Gemini is currently in control
+  </message>
+  <message name="IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
+    Give task back
+  </message>
+  <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="false">
+    Your task is still in progress
+  </message>
+  <message name="IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL" desc="Text show in a tab strip nudge informing the user that their task needs attention before it can procede." translateable="true">
+    {NUM_TASKS, plural,
+      =1 {Check your task}
+      other {Check your tasks}}
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." translateable="true">
+    Needs your attention
+  </message>
+</grit-part>

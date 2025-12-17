@@ -7,7 +7,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "components/tabs/public/tab_interface.h"
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonVisibleInBothStatesInteractiveUiTest,
       InAnyContext(CheckViewProperty(
           HandoffButtonController::kHandoffButtonElementId,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL))),
+          l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_LABEL))),
       // Start polling the button's text property so WaitForState can see
       // changes.
       InAnyContext(PollViewProperty(
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonVisibleInBothStatesInteractiveUiTest,
       InAnyContext(
           PressButton(HandoffButtonController::kHandoffButtonElementId)),
       // Verify the text change on the button.
-      WaitForState(kButtonTextState,
-                   l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL)));
+      WaitForState(kButtonTextState, l10n_util::GetStringUTF16(
+                                         IDS_HANDOFF_GIVE_TASK_BACK_LABEL)));
 }
 }  // namespace
 }  // namespace actor::ui

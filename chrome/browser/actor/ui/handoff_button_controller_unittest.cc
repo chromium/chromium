@@ -8,12 +8,11 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
-#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -195,9 +194,9 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   controller_->UpdateState(state, /*is_visible=*/true, future1.GetCallback());
   EXPECT_TRUE(future1.Wait());
   EXPECT_EQ(button_->GetText(),
-            l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL));
+            l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_LABEL));
   EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
-            l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_A11Y_LABEL));
+            l10n_util::GetStringUTF16(IDS_HANDOFF_TAKE_OVER_TASK_A11Y_LABEL));
   EXPECT_EQ(1, controller_->update_bounds_call_count());
 
   state.controller = kClient;
@@ -205,9 +204,9 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   controller_->UpdateState(state, /*is_visible=*/true, future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
   EXPECT_EQ(button_->GetText(),
-            l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL));
+            l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_LABEL));
   EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
-            l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_A11Y_LABEL));
+            l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL));
   EXPECT_EQ(2, controller_->update_bounds_call_count());
 }
 

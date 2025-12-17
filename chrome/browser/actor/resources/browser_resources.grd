@@ -12,30 +12,6 @@
       <structure name="IDR_ACTOR_AUTO_BROWSE_SPINNER" file="auto_browse_spinner.json" type="lottie" compress="brotli" />
     </structures>
 
-    <!-- NOTE: file is currently marked as untranslatable in
-      translation_expectations.pyl, so changing the translateable attribute on
-      the following messages will have no effect until that .pyl file is
-      updated.
-    -->
-
-    <messages>
-      <message name="IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
-        Task complete
-      </message>
-      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE" desc="[Placeholder Description]" translateable="false">
-        Needs your attention
-      </message>
-      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_TASK_COMPLETE_SUBTITLE" desc="[Placeholder Description]" translateable="false">
-        Task complete
-      </message>
-      <message name="IDS_TAKE_OVER_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
-        Take over task
-      </message>
-      <message name="IDS_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
-        Give task back
-      </message>
-    </messages>
-
     <includes>
       <include name="IDR_ACTOR_OVERLAY_MAGIC_CURSOR" file="magic_cursor.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_ACTOR_AUTO_BROWSE_ICON" file="../../../app/vector_icons/screensaver_auto.icon" type="BINDATA" compress="brotli" />

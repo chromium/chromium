@@ -7,28 +7,5 @@
     <output filename="actor_common_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
-
-    <!-- NOTE: file is currently marked as untranslatable in
-      translation_expectations.pyl, so changing the translateable attribute on
-      the following messages will have no effect until that .pyl file is
-      updated.
-    -->
-
-    <messages>
-      <message name="IDS_TAKE_OVER_TASK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
-        Take over task, Gemini is currently in control
-      </message>
-      <message name="IDS_GIVE_TASK_BACK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
-        Give task back
-      </message>
-      <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="false">
-        Your task is still in progress
-      </message>
-      <message name="IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
-        {NUM_TASKS, plural,
-          =1 {Check your task}
-          other {Check your tasks}}
-      </message>
-    </messages>
   </release>
 </grit>

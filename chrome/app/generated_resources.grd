@@ -280,6 +280,9 @@ are declared in tools/grit/grit_args.gni.
       <!-- Access Code Cast specific strings -->
       <part file="access_code_cast_strings.grdp" />
 
+      <!-- Actor specific strings -->
+      <part file="actor_strings.grdp" />
+
       <!-- App Management specific strings -->
       <part file="app_management_strings.grdp" />
 

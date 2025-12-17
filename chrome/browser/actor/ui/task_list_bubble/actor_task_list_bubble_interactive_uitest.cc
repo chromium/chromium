@@ -7,7 +7,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       CheckViewProperty(kFirstTaskItem, &RichHoverButton::GetSubtitleText,
                         l10n_util::GetStringUTF16(
-                            IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE)),
+                            IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       CheckViewProperty(kFirstTaskItem, &RichHoverButton::GetSubtitleText,
                         l10n_util::GetStringUTF16(
-                            IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE)),
+                            IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 
