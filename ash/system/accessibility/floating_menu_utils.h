@@ -22,10 +22,11 @@ enum class FloatingMenuPosition;
 FloatingMenuPosition DefaultSystemFloatingMenuPosition();
 
 // Determines bounds for the floating menu depending on the desired menu
-// position.
+// position for the given window.
 gfx::Rect GetOnScreenBoundsForFloatingMenuPosition(
     const gfx::Size& menu_size,
-    FloatingMenuPosition position);
+    FloatingMenuPosition position,
+    const aura::Window* root_window);
 
 // Determines the position for the view anchored to the floating menu.
 views::BubbleBorder::Arrow GetAnchorAlignmentForFloatingMenuPosition(

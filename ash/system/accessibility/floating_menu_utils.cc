@@ -19,11 +19,11 @@ FloatingMenuPosition DefaultSystemFloatingMenuPosition() {
 
 gfx::Rect GetOnScreenBoundsForFloatingMenuPosition(
     const gfx::Size& menu_bounds,
-    FloatingMenuPosition position) {
+    FloatingMenuPosition position,
+    const aura::Window* root_window) {
   // Calculates the ideal bounds.
-  aura::Window* window = Shell::GetPrimaryRootWindow();
   gfx::Rect work_area =
-      WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
+      WorkAreaInsets::ForWindow(root_window)->user_work_area_bounds();
 
   switch (position) {
     case FloatingMenuPosition::kBottomRight:

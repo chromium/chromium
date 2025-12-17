@@ -692,12 +692,24 @@ void AutoclickController::OnWindowDestroying(aura::Window* window) {
   CancelAutoclickAction();
 }
 
+void AutoclickController::OnCursorDisplayChanged(
+    const display::Display& display) {
+  if (!menu_bubble_controller_) {
+    return;
+  }
+
+  // Re-create the menu if it's destroyed as part of the display destruction
+  // process.
+  if (!menu_bubble_controller_->bubble_widget()) {
+    menu_bubble_controller_->ShowBubble(event_type_, menu_position_);
+  }
+
+  menu_bubble_controller_->SetDisplay(display);
+}
+
 void AutoclickController::OnCursorVisibilityChanged(bool is_visible) {
   if (!menu_bubble_controller_)
     return;
-  // TODO(katie): Check that the display which is fullscreen is the same as the
-  // one containing the bubble, to determine whether to hide the bubble.
-  // Currently just checking if the display under the mouse is fullscreen.
   aura::Window* window = GetWindowForFullscreenModeInRoot(
       window_util::GetRootWindowAt(last_mouse_location_));
   bool is_fullscreen = window != nullptr;
