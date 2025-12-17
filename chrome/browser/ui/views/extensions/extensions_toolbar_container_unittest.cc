@@ -65,10 +65,11 @@ class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
+  void TearDown() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsToolbarContainerUnitTest::ExtensionsToolbarContainerUnitTest()
@@ -102,6 +103,11 @@ bool ExtensionsToolbarContainerUnitTest::IsRequestAccessButtonVisible() {
 void ExtensionsToolbarContainerUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
   web_contents_tester_ = AddWebContentsAndGetTester();
+}
+
+void ExtensionsToolbarContainerUnitTest::TearDown() {
+  web_contents_tester_ = nullptr;
+  ExtensionsToolbarUnitTest::TearDown();
 }
 
 TEST_F(ExtensionsToolbarContainerUnitTest, ReorderPinnedExtensions) {

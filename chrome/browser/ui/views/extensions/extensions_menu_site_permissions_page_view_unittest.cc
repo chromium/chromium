@@ -70,10 +70,11 @@ class ExtensionsSitePermissionsPageViewUnitTest
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
+  void TearDown() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsSitePermissionsPageViewUnitTest::
@@ -138,6 +139,11 @@ void ExtensionsSitePermissionsPageViewUnitTest::SetUp() {
   // Menu needs web contents at construction, so we need to add them to every
   // test.
   web_contents_tester_ = AddWebContentsAndGetTester();
+}
+
+void ExtensionsSitePermissionsPageViewUnitTest::TearDown() {
+  web_contents_tester_ = nullptr;
+  ExtensionsToolbarUnitTest::TearDown();
 }
 
 TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
