@@ -171,8 +171,6 @@ class MEDIA_EXPORT AudioBus {
   // Returns a raw pointer to the requested channel.  Pointer is guaranteed to
   // have a 16-byte alignment.  Warning: Do not rely on having sane (i.e. not
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
-  // TODO(crbug.com/373960632): Replace all `channel_span()` calls with
-  // `channel()` and delete `channel_span()`.
   Channel channel(int channel) {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
@@ -180,10 +178,6 @@ class MEDIA_EXPORT AudioBus {
   ConstChannel channel(int channel) const {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
-  }
-  Channel channel_span(int channel_number) { return channel(channel_number); }
-  ConstChannel channel_span(int channel_number) const {
-    return channel(channel_number);
   }
 
   // Convenience function to allow range-based for-loops.
