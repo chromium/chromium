@@ -8,12 +8,12 @@
 namespace prerender {
 
 // Origin indicates what caused the NoStatePrefetch.
-// NOTE: New values need to be appended, since they are used in histograms.
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. The values should remain
-// synchronized with the enum PrerenderOrigin in
-// //tools/metrics/histograms/enums.xml.
+//
+// Previously these values persisted to logs. Now their string representations
+// (see `NoStatePrefetchHistograms::GetHistogramPrefix()`) are used for logging
+// instead. Consequently, new values no longer strictly need to be sequentially
+// numbered or synchronized with the histogram enum, though existing numeric
+// values are retained for historical context.
 enum Origin {
   // Obsolete: ORIGIN_LINK_REL_PRERENDER = 0,
   // Obsolete: ORIGIN_OMNIBOX_ORIGINAL = 1,
@@ -32,7 +32,7 @@ enum Origin {
   // Obsolete: ORIGIN_OFFLINE = 14,
   ORIGIN_NAVIGATION_PREDICTOR = 15,
   // Obsolete: ORIGIN_ISOLATED_PRERENDER = 16,
-  ORIGIN_SAME_ORIGIN_SPECULATION = 17,
+  // Obsolete: ORIGIN_SAME_ORIGIN_SPECULATION = 17,
   ORIGIN_MAX = 18,
 };
 

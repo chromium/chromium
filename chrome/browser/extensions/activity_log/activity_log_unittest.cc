@@ -338,11 +338,11 @@ TEST_F(ActivityLogTest, LogPrerender) {
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
 
   const gfx::Size kSize(640, 480);
-  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager->AddSameOriginSpeculation(
-          url,
-          web_contents()->GetController().GetDefaultSessionStorageNamespace(),
-          kSize, url::Origin::Create(url)));
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
+      no_state_prefetch_manager->StartPrefetchingFromLinkRelPrerender(
+          /*process_id=*/-1, /*route_id=*/-1, url,
+          blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+          content::Referrer(), url::Origin::Create(url), kSize);
 
   const std::vector<content::WebContents*> contentses =
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();

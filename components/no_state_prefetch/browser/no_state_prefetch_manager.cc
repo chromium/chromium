@@ -264,18 +264,6 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
       session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
 }
 
-std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddSameOriginSpeculation(
-    const GURL& url,
-    content::SessionStorageNamespace* session_storage_namespace,
-    const gfx::Size& size,
-    const url::Origin& initiator_origin) {
-  // The preconnect fallback won't happen.
-  return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_SAME_ORIGIN_SPECULATION, url, content::Referrer(),
-      initiator_origin, gfx::Rect(size), session_storage_namespace);
-}
-
 void NoStatePrefetchManager::CancelAllPrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   while (!active_prefetches_.empty()) {
@@ -1000,13 +988,6 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
                                       base::Time::Now());
   prefetch_history_->AddEntry(entry);
   histograms_->RecordFinalStatus(origin, final_status);
-
-  if (origin == ORIGIN_SAME_ORIGIN_SPECULATION) {
-    // Prefetch Proxy should not preconnect since that can't be done in a fully
-    // isolated way. Same origin speculation should already have an open
-    // connection.
-    return;
-  }
 
   if (origin == ORIGIN_LINK_REL_NEXT) {
     return;

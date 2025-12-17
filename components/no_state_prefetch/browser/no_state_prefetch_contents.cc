@@ -186,7 +186,6 @@ NoStatePrefetchContents::NoStatePrefetchContents(
     case ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN:
     case ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN:
     case ORIGIN_LINK_REL_NEXT:
-    case ORIGIN_SAME_ORIGIN_SPECULATION:
       DCHECK(initiator_origin_.has_value());
       break;
     case ORIGIN_NONE:

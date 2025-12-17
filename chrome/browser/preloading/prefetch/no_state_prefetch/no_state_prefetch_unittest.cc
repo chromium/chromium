@@ -614,27 +614,35 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
 
   // Prefetch the url once.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
-      kUrl, nullptr, gfx::Size(), kOrigin));
+      kUrl, kOrigin, ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN,
+      FINAL_STATUS_CANCELLED);
+  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
+      /*process_id=*/-1, /*route_id=*/-1, kUrl,
+      blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+      content::Referrer(), kOrigin, gfx::Size()));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION,
+      kUrl, kOrigin, ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN,
       FINAL_STATUS_PROFILE_DESTROYED);
 
   // Prefetch again before time_to_live aborts, because it is a duplicate.
   tick_clock()->Advance(base::Seconds(1));
-  EXPECT_FALSE(no_state_prefetch_manager()->AddSameOriginSpeculation(
-      kUrl, nullptr, gfx::Size(), kOrigin));
+  EXPECT_FALSE(
+      no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
+          /*process_id=*/-1, /*route_id=*/-1, kUrl,
+          blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+          content::Referrer(), kOrigin, gfx::Size()));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
   // Prefetch after time_to_live succeeds.
   tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
-  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
-      kUrl, nullptr, gfx::Size(), kOrigin));
+  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromLinkRelPrerender(
+      /*process_id=*/-1, /*route_id=*/-1, kUrl,
+      blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+      content::Referrer(), kOrigin, gfx::Size()));
 }
 
 // Make sure that if we prerender more requests than we support, that we launch
