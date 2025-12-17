@@ -22,6 +22,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -49,6 +50,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/hats_service.h"          // nogncheck
+#include "chrome/browser/ui/hats/hats_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #endif
 
@@ -210,6 +213,29 @@ std::string GetGooglePasswordManagerSubPageURLStr() {
 
 // Navigation is handled differently on Android.
 #if !BUILDFLAG(IS_ANDROID)
+void TriggerManagePasswordsPerceptionSurvey(Browser* browser,
+                                            ManagePasswordsReferrer referrer) {
+  Profile* profile = browser->profile();
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kManagePasswordsPerceptionSurvey) ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage) ||
+      profile->IsOffTheRecord()) {
+    return;
+  }
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/false);
+  if (!hats_service) {
+    return;
+  }
+  const SurveyBitsData product_specific_bits_data = {
+      {"Visit from Your saved info",
+       referrer == ManagePasswordsReferrer::kChromeSettings},
+  };
+  hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerManagePasswordsPerception,
+                                    10000, product_specific_bits_data);
+}
+
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
   if (!browser) {
@@ -217,6 +243,7 @@ void NavigateToManagePasswordsPage(Browser* browser,
   }
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
                                 referrer);
+  TriggerManagePasswordsPerceptionSurvey(browser, referrer);
   chrome::ShowPasswordManager(browser);
 }
 
