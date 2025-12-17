@@ -911,6 +911,7 @@ def main():
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
+      '-DLLVM_ENABLE_IO_SANDBOX=OFF',
       f'-DLLVM_ENABLE_PROJECTS={projects}',
       f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
       f'-DLLVM_TARGETS_TO_BUILD={targets}',
