@@ -290,12 +290,12 @@ class SafeBrowsingServiceTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
-  std::unique_ptr<FakeSafeBrowsingClient> safe_browsing_client_;
   safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
       apply_branding_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
   std::unique_ptr<TestRealtimeUrlLookupService> lookup_service_;
+  std::unique_ptr<FakeSafeBrowsingClient> safe_browsing_client_;
 
  private:
   void MarkUrlAsMalwareOnUIThread(const GURL& bad_url) {
