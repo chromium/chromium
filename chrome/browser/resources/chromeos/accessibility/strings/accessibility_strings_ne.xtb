@@ -365,7 +365,7 @@
 <translation id="3206698050650195442">ट्युटोरियलबाट बाहिरिनुहोस्</translation>
 <translation id="3208346789712025453">अर्को कुनै पनि नियन्त्रण छैन</translation>
 <translation id="321072937702597574">अर्किड</translation>
-<translation id="3218691001991391708"><ph name="TEXT" />टाँस्नुहोस्।</translation>
+<translation id="3218691001991391708"><ph name="TEXT" />पेस्ट गर्नुहोस्।</translation>
 <translation id="3223701887221307104"><ph name="NAME" />, ट्याब</translation>
 <translation id="3223779237381380437">रेखाले वारपार काटिएको पाठ होइन</translation>
 <translation id="3226035351387556942">chk</translation>
@@ -419,7 +419,7 @@
 <translation id="3505359110822747654">ChromeVox का मेनुहरू कोल्याप्स गर्नुहोस्</translation>
 <translation id="352577523970648069">एउटा सम्पादन गर्न मिल्ने पाठ क्षेत्र</translation>
 <translation id="3538907380453898475">dscrplst</translation>
-<translation id="3549141990712742152"><ph name="TEXT" />काट्नुहोस्।</translation>
+<translation id="3549141990712742152"><ph name="TEXT" />कट गर्नुहोस्।</translation>
 <translation id="3564729643041517261">हालको प्रदर्शनको प्रकार पाठहरूलाई सँगसँगै राखिएको छ</translation>
 <translation id="3570904478351465021">जाडो</translation>
 <translation id="3573145950452451508">पेज फुटर</translation>
@@ -476,7 +476,7 @@
 <translation id="3930498801443296724">उद्धरण</translation>
 <translation id="3935615366277838204">ठूला अक्षर <ph name="LETTER" /></translation>
 <translation id="3936394396199829062">लाभेन्डर ब्लस</translation>
-<translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="3962990492275676168">हालको स्थानबाट पढ्न सुरु गर्नुहोस्</translation>
 <translation id="397094149579293440">टेक्स्ट चयन गरिएको छैन</translation>
 <translation id="3970951409746498040">बालुवा जस्तो खैरो</translation>
@@ -1005,7 +1005,7 @@
 <translation id="7592060599656252486">केही</translation>
 <translation id="7595446402663080101">अघिल्लो कुनै पनि तालिका छैन</translation>
 <translation id="7596131838331109045">हल्का साल्मन</translation>
-<translation id="7604026522577407655">हालको स्तम्भको सुरुवातमा जाँदै</translation>
+<translation id="7604026522577407655">हालको कोलमको सुरुवातमा जाँदै</translation>
 <translation id="7604451927827590395">hdng</translation>
 <translation id="7609342235116740824">हालको पृष्ठको युआरएल घोषणा गर्नुहोस्</translation>
 <translation id="7609363189280667021">ब्रेल क्याप्सनहरू स्विच गर्नुहोस्</translation>
@@ -1029,7 +1029,7 @@
 <translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{ड्यास}} *{{{$$COUNT} वटा ड्यास}}</translation>
 <translation id="7714340021005120797">अर्को कुनै पनि कम्बो बक्स छैन</translation>
 <translation id="7715455358521357192">दायाँ आँखा आधा चिम्लनुहोस्</translation>
-<translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7724603315864178912">कट गर्नुहोस्</translation>
 <translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{ब्याकटिक}} *{{{$$COUNT} वटा ब्याकटिक}}</translation>
 <translation id="7731785449856576010">अर्को कुनै पनि मिडिया विजेट छैन</translation>
 <translation id="7735498529470878067">तपाईंले छोएर अन्वेषण गर्नुभयो भने तपाईं स्क्रिनमा भएका कुराबारे तुरुन्तै थाहा पाउन सक्नुहुन्छ।</translation>
@@ -1220,7 +1220,7 @@
 <translation id="9150735707954472829">ट्याब</translation>
 <translation id="9151249085738989067">भाषाका आधारमा ChromeVox को आवाज स्वतः बदल्नुहोस्</translation>
 <translation id="9153606228985488238">पिच <ph name="PERCENT" /> प्रतिशत</translation>
-<translation id="9160096769946561184">वर्तमान स्तम्भको अन्तिममा जानुहोस्</translation>
+<translation id="9160096769946561184">वर्तमान कोलमको अन्तिममा जानुहोस्</translation>
 <translation id="916022049788356777">.input {$$COUNT :number} .match $$COUNT 1{{स्ल्यास}} *{{{$$COUNT} वटा स्ल्यास}}</translation>
 <translation id="9173115498289768110">भोल्यूम <ph name="PERCENT" /> प्रतिशत</translation>
 <translation id="9185200690645120087">ChromeVox मा प्रयोग गर्न सकिने टच जेस्चरसम्बन्धी ट्युटोरियल</translation>
