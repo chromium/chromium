@@ -299,6 +299,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/password_protection:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync_preferences:test_support",
+    "//components/test/ios",
     "//components/ukm:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",

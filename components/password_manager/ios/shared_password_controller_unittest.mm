@@ -6,9 +6,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
+#import "base/types/expected.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -37,6 +40,7 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/mock_password_form_cache.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -156,6 +160,14 @@ class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
       : PasswordGenerationFrameHelper(nullptr, nullptr) {}
 };
 
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegateForDriver,
+              (PasswordManagerDriver*),
+              (override));
+};
+
 class SharedPasswordControllerTest : public PlatformTest {
  public:
   SharedPasswordControllerTest() : PlatformTest() {
@@ -263,11 +275,13 @@ class SharedPasswordControllerTest : public PlatformTest {
   testing::StrictMock<MockPasswordManager> password_manager_;
   testing::StrictMock<MockPasswordGenerationFrameHelper>
       password_generation_helper_;
+  testing::StrictMock<password_manager::MockWebAuthnCredentialsDelegate>
+      webauthn_credentials_delegate_;
+  testing::NiceMock<MockPasswordManagerClient> password_manager_client_;
   id form_helper_;
   id suggestion_helper_;
   id driver_helper_;
   scoped_refptr<IOSPasswordManagerDriver> dummy_driver_;
-  password_manager::StubPasswordManagerClient password_manager_client_;
   id delegate_;
   SharedPasswordController* controller_;
 };
@@ -668,6 +682,87 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
                  completion_was_called = YES;
                }];
   EXPECT_TRUE(completion_was_called);
+}
+
+// Tests that both passkey and password suggestions can be retrieved at once.
+TEST_F(SharedPasswordControllerTest,
+       ReturnsPasskeyAndPasswordSuggestionsWhenAvailable) {
+  EXPECT_CALL(password_manager_client_, GetWebAuthnCredentialsDelegateForDriver)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate_));
+
+  // Set up the `webauthn_credentials_delegate_` with a passkey.
+  std::vector<PasskeyCredential> passkeys;
+  passkeys.emplace_back(
+      PasskeyCredential(PasskeyCredential::Source::kGooglePasswordManager,
+                        PasskeyCredential::RpId("example.com"),
+                        PasskeyCredential::CredentialId({1, 2, 3, 4}),
+                        PasskeyCredential::UserId(),
+                        PasskeyCredential::Username("passkey_username")));
+  EXPECT_CALL(webauthn_credentials_delegate_, GetPasskeys)
+      .WillOnce(Return(base::ok(&passkeys)));
+
+  // Set up the `suggestion_helper_` with a password suggestion.
+  FormSuggestion* suggestion = [FormSuggestion
+             suggestionWithValue:@"password_username"
+              displayDescription:@"description"
+                            icon:nil
+                            type:autofill::SuggestionType::kPasswordEntry
+                         payload:autofill::Suggestion::Payload()
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:nil
+                        metadata:{.is_single_username_form = true}];
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:autofill::FormRendererId(1)
+       fieldIdentifier:@"field"
+       fieldRendererID:autofill::FieldRendererId(2)
+             fieldType:kObfuscatedFieldType
+                  type:@"focus"
+            typedValue:@""
+               frameID:kTestFrameID
+          onlyPassword:NO];
+
+  const std::string web_frame_id = SysNSStringToUTF8(kTestFrameID);
+  auto web_frame =
+      web::FakeWebFrame::Create(web_frame_id,
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[ suggestion ]);
+  OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
+
+  // Set up the `password_generation_helper_`.
+  EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
+      .WillOnce(Return(false));
+
+  // Retrieve the suggestions and verify that they are as expected.
+  base::test::TestFuture<NSArray<FormSuggestion*>*, id<FormSuggestionProvider>>
+      future;
+  [controller_
+      retrieveSuggestionsForForm:form_query
+                        webState:&web_state_
+               completionHandler:base::CallbackToBlock(future.GetCallback())];
+  NSArray<FormSuggestion*>* suggestions = future.Get<0>();
+
+  ASSERT_EQ(2UL, suggestions.count);
+
+  // Verify the passkey suggestion.
+  FormSuggestion* passkeySuggestion = suggestions[0];
+  EXPECT_EQ(autofill::SuggestionType::kWebauthnCredential,
+            passkeySuggestion.type);
+  EXPECT_NSEQ(passkeySuggestion.value,
+              base::SysUTF8ToNSString("passkey_username"));
+
+  // Verify the password suggestion.
+  FormSuggestion* passwordSuggestion = suggestions[1];
+  EXPECT_EQ(autofill::SuggestionType::kPasswordEntry, passwordSuggestion.type);
+  EXPECT_NSEQ(passwordSuggestion.value,
+              base::SysUTF8ToNSString("password_username"));
 }
 
 // Tests that the "Suggest a password" suggestion is returned if the form is

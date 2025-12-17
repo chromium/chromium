@@ -64,15 +64,29 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("utils") {
+  sources = [
+    "passkey_suggestion_utils.h",
+    "passkey_suggestion_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser:passkey_credential",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_webauthn_credentials_delegate_factory_unittest.mm",
+    "passkey_suggestion_utils_unittest.mm",
     "passkey_tab_helper_unittest.mm",
   ]
   deps = [
     ":ios",
     ":js_tests",
+    ":utils",
     "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//components/password_manager/core/browser:test_support",

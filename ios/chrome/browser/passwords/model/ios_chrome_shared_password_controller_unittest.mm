@@ -7,9 +7,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
+#import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -110,12 +113,14 @@ class IOSChromeSharedPasswordControllerTest : public PlatformTest {
 
     suggestion_helper_ = OCMClassMock([PasswordSuggestionHelper class]);
 
+    driver_helper_ = OCMStrictClassMock([PasswordControllerDriverHelper class]);
+
     controller_ = [[IOSChromeSharedPasswordController alloc]
         initWithWebState:&fake_web_state_
-                 manager:nil
+                 manager:&password_manager_
               formHelper:nil
         suggestionHelper:suggestion_helper_
-            driverHelper:nil];
+            driverHelper:driver_helper_];
 
     delegate_ = OCMProtocolMock(@protocol(SharedPasswordControllerDelegate));
     password_manager::PasswordManagerClient* client_ptr =
@@ -123,6 +128,17 @@ class IOSChromeSharedPasswordControllerTest : public PlatformTest {
     [[[delegate_ stub] andReturnValue:OCMOCK_VALUE(client_ptr)]
         passwordManagerClient];
     controller_.delegate = delegate_;
+
+    EXPECT_CALL(password_manager_, GetClient)
+        .WillRepeatedly(testing::Return(&password_manager_client_));
+
+    IOSPasswordManagerDriverFactory::CreateForWebState(
+        &fake_web_state_, controller_, &password_manager_);
+    driver_ = IOSPasswordManagerDriverFactory::GetRetainableDriver(
+        &fake_web_state_, frame_.get());
+    OCMStub([driver_helper_
+                PasswordManagerDriver:ios::OCM::AnyPointer<web::WebFrame>()])
+        .andReturn(driver_.get());
   }
 
  protected:
@@ -131,7 +147,10 @@ class IOSChromeSharedPasswordControllerTest : public PlatformTest {
   raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> web_frames_manager_;
   web::FakeWebState fake_web_state_;
   raw_ptr<web::WebFrame> frame_;
+  testing::StrictMock<password_manager::MockPasswordManager> password_manager_;
   id suggestion_helper_;
+  id driver_helper_;
+  scoped_refptr<IOSPasswordManagerDriver> driver_;
   id delegate_;
   password_manager::StubPasswordManagerClient password_manager_client_;
   SharedPasswordController* controller_;
