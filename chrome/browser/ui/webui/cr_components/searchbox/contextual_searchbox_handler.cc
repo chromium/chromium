@@ -11,8 +11,11 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -26,11 +29,14 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -675,18 +681,42 @@ void ContextualSearchboxHandler::UploadTabContext(
 void ContextualSearchboxHandler::OpenUrl(
     GURL url,
     const WindowOpenDisposition disposition) {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+
+  auto* contextual_session_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_);
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      new_contextual_session_handle = contextual_session_service->GetSession(
+          contextual_session_handle->session_id());
+
+  auto navigation_handle_callback = base::BindOnce(
+      [](std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+             handle,
+         content::NavigationHandle& navigation_handle) {
+        content::WebContents* new_web_contents =
+            navigation_handle.GetWebContents();
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+            new_web_contents)
+            ->set_session_handle(std::move(handle));
+      },
+      std::move(new_contextual_session_handle));
+  // TODO(crbug.com/469137247): Consider moving this logic to the specific
+  // subclasses that have aim navigation.
   if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
+    // For the omnibox navigation case, the active tab's web contents differs
+    // from the omnibox one. We transfer the session by creating a new handle
+    // (copied from the omnibox handle) and assigning it to the active tab.
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
     browser_window_interface->GetTabStripModel()
         ->GetActiveWebContents()
-        ->OpenURL(params, base::DoNothing());
+        ->OpenURL(params, std::move(navigation_handle_callback));
   } else {
     content::OpenURLParams params(url, content::Referrer(), disposition,
                                   ui::PAGE_TRANSITION_LINK, false);
-    web_contents_->OpenURL(params, base::DoNothing());
+    web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
 }
 
