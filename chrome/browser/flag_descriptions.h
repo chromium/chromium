@@ -4094,12 +4094,6 @@ inline constexpr char kTabFreezingUsesDiscardName[] =
 inline constexpr char kTabFreezingUsesDiscardDescription[] =
     "When enabled, tab freezing will use discarding instead of freezing.";
 
-inline constexpr char kTabGroupAndroidVisualDataCleanupName[] =
-    "Tab Group Visual Data Cleanup";
-inline constexpr char kTabGroupAndroidVisualDataCleanupDescription[] =
-    "Cleanup tab group visual data that is no longer associated with an "
-    "existing tab group.";
-
 inline constexpr char kTabModelInitFixesName[] = "Tab Model Init Fixes";
 inline constexpr char kTabModelInitFixesDescription[] =
     "A grab bag of simple and miscellaneous improvements for tab model "

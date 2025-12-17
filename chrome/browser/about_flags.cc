@@ -10348,12 +10348,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-    {"tab-group-android-visual-data-cleanup",
-     flag_descriptions::kTabGroupAndroidVisualDataCleanupName,
-     flag_descriptions::kTabGroupAndroidVisualDataCleanupDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupAndroidVisualDataCleanup)},
-
     {"tab-strip-density-change-android",
      flag_descriptions::kTabStripDensityChangeAndroidName,
      flag_descriptions::kTabStripDensityChangeAndroidDescription, kOsAndroid,

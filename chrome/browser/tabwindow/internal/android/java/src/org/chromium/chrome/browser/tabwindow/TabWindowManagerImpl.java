@@ -656,8 +656,6 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {
-        if (!ChromeFeatureList.sTabGroupAndroidVisualDataCleanup.isEnabled()) return;
-
         Set<String> tabGroupIdTokenStrings = new HashSet<>();
         for (TabModelSelector selector : tabModelSelectors) {
             var filterProvider = selector.getTabGroupModelFilterProvider();

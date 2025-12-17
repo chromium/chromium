@@ -9779,11 +9779,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tab-group-android-visual-data-cleanup",
-    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "tab-group-color-on-surface",
     "owners": [ "bling-meridian@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 147
