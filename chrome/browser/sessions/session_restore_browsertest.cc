@@ -4841,3 +4841,40 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
   EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
             local_group2->visual_data()->color());
 }
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, PinnedAndSplitTabsRestored) {
+  // Open two tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl2(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Pin them.
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+  ASSERT_TRUE(browser()->tab_strip_model()->IsTabPinned(0));
+  ASSERT_TRUE(browser()->tab_strip_model()->IsTabPinned(1));
+
+  // Split them.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  ASSERT_TRUE(browser()->tab_strip_model()->GetSplitForTab(0).has_value());
+  ASSERT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
+
+  // Restore.
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+
+  // Verify state.
+  ASSERT_EQ(2, new_browser->tab_strip_model()->count());
+  EXPECT_TRUE(new_browser->tab_strip_model()->IsTabPinned(0));
+  EXPECT_TRUE(new_browser->tab_strip_model()->IsTabPinned(1));
+  EXPECT_TRUE(new_browser->tab_strip_model()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(new_browser->tab_strip_model()->GetSplitForTab(1).has_value());
+  EXPECT_EQ(new_browser->tab_strip_model()->GetSplitForTab(0),
+            new_browser->tab_strip_model()->GetSplitForTab(1));
+}
