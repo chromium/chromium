@@ -235,6 +235,15 @@
   <methods>;
 }
 
+# Allow R8 to optimize away proto lite functionality that is not used.
+-assumenosideeffects class com.google.protobuf.ManifestSchemaFactory {
+    com.google.protobuf.MessageInfoFactory getDescriptorMessageInfoFactory();
+}
+-assumenosideeffects class com.google.protobuf.SchemaUtil {
+    java.lang.Class getGeneratedMessageClass();
+    java.lang.Class getUnknownFieldSetSchemaClass();
+}
+
 # File: ../../build/android/dcheck_is_off.flags
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
