@@ -11,9 +11,12 @@ build_webui("build") {
   grd_prefix = "glic"
 
   static_files = [
+    "internals/glic_internals.html",
     "glic.css",
     "glic.html",
   ]
+
+  css_files = [ "internals/glic_internals_app.css" ]
 
   ts_files = [
     "app_router.ts",
@@ -33,6 +36,8 @@ build_webui("build") {
     "glic_api/glic_api.ts",
     "glic_app_controller.ts",
     "icons.html.ts",
+    "internals/glic_internals_app.html.ts",
+    "internals/glic_internals_app.ts",
     "main.ts",
     "observable.ts",
     "timer.ts",
@@ -43,6 +48,7 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/glic/fre:build_ts",
     "//chrome/browser/resources/glic/shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

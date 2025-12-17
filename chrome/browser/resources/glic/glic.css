@@ -40,14 +40,14 @@ webview:not([hidden]) {
 }
 
 .dialog {
-  position: absolute;
-  left: 0;
-  right: 0;
+  color: var(--color--on-surface);
   font-family: Roboto, sans-serif;
   font-size: 13px;
   font-weight: 400;
+  left: 0;
   line-height: 20px;
-  color: var(--color--on-surface);
+  position: absolute;
+  right: 0;
 }
 
 #localPanels {

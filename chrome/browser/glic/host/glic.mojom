@@ -24,6 +24,35 @@ import "url/mojom/url.mojom";
 // Run this script to update them, and read it for details.
 // chrome/browser/resources/glic/glic_api_impl/generate.py
 
+// Struct containing data about eligibility for GLIC.
+struct ProfileEnablement {
+  // Whether the GLIC feature is disabled.
+  bool feature_disabled;
+
+  // Whether the profile is not regular (e.g. incognito)
+  bool not_regular_profile;
+
+  // Whether the profile is not rolled out. Rollout can happen by the
+  // `GlicRollout` flag, or by the `GlicTieredRollout` flag and synced pref.
+  bool not_rolled_out;
+
+  // Whether the primary account is not capable, by failing to have the
+  // can_use_model_execution_features accountcapability.
+  bool primary_account_not_capable;
+
+  // Whether the profile is disallowed by chrome policy.
+  bool disallowed_by_chrome_policy;
+
+  // Whether the profile is disallowed by remote admin.
+  bool disallowed_by_remote_admin;
+
+  // Whether the profile is disallowed by remote for other reasons.
+  bool disallowed_by_remote_other;
+
+  // Whether the user has passed the FRE.
+  bool not_consented;
+};
+
 // The ready state of the profile.
 enum ProfileReadyState {
   // The profile is not ready for Glic.
@@ -178,6 +207,9 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
+
+  // Called by the internals WebUI page to get the GlicEnabling state.
+  GetProfileEnablement() => (ProfileEnablement enablement);
 };
 
 // @generate glic_api

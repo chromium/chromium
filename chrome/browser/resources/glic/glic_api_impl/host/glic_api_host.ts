@@ -203,7 +203,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
       }
     });
     this.handler.$.close();
-    this.browserProxy.handler.createWebClient(
+    this.browserProxy.pageHandler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =
         new HostMessageHandler(this.handler, this.sender, embedder, this);

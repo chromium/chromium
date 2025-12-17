@@ -2120,6 +2120,25 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }
 
+void GlicPageHandler::GetProfileEnablement(
+    GetProfileEnablementCallback callback) {
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(
+          Profile::FromBrowserContext(browser_context_));
+
+  auto result = mojom::ProfileEnablement::New();
+  result->feature_disabled = enablement.feature_disabled;
+  result->not_regular_profile = enablement.not_regular_profile;
+  result->not_rolled_out = enablement.not_rolled_out;
+  result->primary_account_not_capable = enablement.primary_account_not_capable;
+  result->disallowed_by_chrome_policy = enablement.disallowed_by_chrome_policy;
+  result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
+  result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
+  result->not_consented = enablement.not_consented;
+
+  std::move(callback).Run(std::move(result));
+}
+
 void GlicPageHandler::PanelStateChanged(
     const glic::mojom::PanelState& panel_state,
     const PanelStateContext& context) {

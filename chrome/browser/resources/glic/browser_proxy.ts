@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {GlicPreloadHandlerFactory, GlicPreloadHandlerRemote, PageHandlerFactory, PageHandlerRemote, PageReceiver, PreloadPageReceiver} from './glic.mojom-webui.js';
-import type {GlicPreloadHandlerInterface, PageHandlerInterface, PageInterface, PreloadPageInterface} from './glic.mojom-webui.js';
+import {GlicPreloadHandlerFactory, GlicPreloadHandlerRemote, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PreloadPageCallbackRouter} from './glic.mojom-webui.js';
+import type {GlicPreloadHandlerInterface, PageHandlerInterface} from './glic.mojom-webui.js';
 
 export interface BrowserProxy {
-  handler: PageHandlerInterface;
-  preloadHandler?: GlicPreloadHandlerInterface;
+  pageHandler: PageHandlerInterface;
+  glicPreloadHandler?: GlicPreloadHandlerInterface;
 }
 
 // Whether to enable PageHandler debug logging. Can be enabled with the
@@ -19,15 +21,21 @@ const kGlicWebContentsWarming =
     loadTimeData.getBoolean('glicWebContentsWarming');
 
 export class BrowserProxyImpl implements BrowserProxy {
-  handler: PageHandlerInterface;
-  preloadHandler?: GlicPreloadHandlerInterface;
+  pageHandler: PageHandlerRemote;
+  pageCallbackRouter: PageCallbackRouter;
 
-  constructor(pageInterface: PageInterface&PreloadPageInterface) {
-    const pageReceiver = new PageReceiver(pageInterface);
+  glicPreloadHandler?: GlicPreloadHandlerRemote;
+  preloadPageCallbackRouter: PreloadPageCallbackRouter;
+
+  constructor() {
+    this.pageCallbackRouter = new PageCallbackRouter();
+    this.preloadPageCallbackRouter = new PreloadPageCallbackRouter();
+
     const pageHandlerRemote = new PageHandlerRemote();
-    this.handler = pageHandlerRemote;
-    if (kEnableDebug) {
-      this.handler = new Proxy(pageHandlerRemote, {
+    if (!kEnableDebug) {
+      this.pageHandler = pageHandlerRemote;
+    } else {
+      this.pageHandler = new Proxy(pageHandlerRemote, {
         get(target: PageHandlerRemote, name: keyof PageHandlerRemote,
             receiver) {
           const prop = Reflect.get(target, name, receiver);
@@ -45,16 +53,15 @@ export class BrowserProxyImpl implements BrowserProxy {
       });
     }
     PageHandlerFactory.getRemote().createPageHandler(
-        pageHandlerRemote.$.bindNewPipeAndPassReceiver(),
-        pageReceiver.$.bindNewPipeAndPassRemote());
+        this.pageHandler.$.bindNewPipeAndPassReceiver(),
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
 
     if (kGlicWebContentsWarming) {
-      const preloadPageReceiver = new PreloadPageReceiver(pageInterface);
       const preloadHandlerRemote = new GlicPreloadHandlerRemote();
-      this.preloadHandler = preloadHandlerRemote;
+      this.glicPreloadHandler = preloadHandlerRemote;
       GlicPreloadHandlerFactory.getRemote().createPreloadHandler(
-          preloadHandlerRemote.$.bindNewPipeAndPassReceiver(),
-          preloadPageReceiver.$.bindNewPipeAndPassRemote());
+          this.glicPreloadHandler.$.bindNewPipeAndPassReceiver(),
+          this.preloadPageCallbackRouter.$.bindNewPipeAndPassRemote());
     }
   }
 }
