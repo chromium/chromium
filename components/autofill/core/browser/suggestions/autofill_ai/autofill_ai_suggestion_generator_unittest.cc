@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -68,6 +69,34 @@ auto SuggestionsAre(auto&&... matchers) {
   return ElementsAre(std::forward<decltype(matchers)>(matchers)...,
                      HasType(SuggestionType::kSeparator),
                      HasType(SuggestionType::kManageAutofillAi));
+}
+
+std::u16string GetFlightReservationName(const EntityInstance& entity) {
+  return entity
+      .attribute(
+          AttributeType(AttributeTypeName::kFlightReservationPassengerName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetPassportName(const EntityInstance& entity) {
+  return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetPassportNumber(const EntityInstance& entity) {
+  return entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetDriversLicenseName(const EntityInstance& entity) {
+  return entity
+      .attribute(AttributeType(AttributeTypeName::kDriversLicenseName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetVehicleVIN(const EntityInstance& entity) {
+  return entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+      ->GetCompleteInfo(kAppLocaleUS);
 }
 
 class AutofillAiSuggestionGeneratorTest : public testing::Test {
@@ -177,27 +206,18 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   std::optional<FormStructure> form_structure_;
 };
 
-std::u16string GetFlightReservationName(const EntityInstance& entity) {
-  return entity
-      .attribute(
-          AttributeType(AttributeTypeName::kFlightReservationPassengerName))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
+// Tests that the suggestions's main text is obfuscated when the triggering
+// field is from an attribute type that should be obfuscated.
+TEST_F(AutofillAiSuggestionGeneratorTest, SuggestionMainTextIsObfuscated) {
+  base::test::ScopedFeatureList feature(features::kAutofillAiReauthRequired);
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.plate = u"123", .number = u"VIN123"});
+  SetEntities({vehicle_entity});
+  SetForm({VEHICLE_VIN});
 
-std::u16string GetPassportName(const EntityInstance& entity) {
-  return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
-
-std::u16string GetPassportNumber(const EntityInstance& entity) {
-  return entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
-
-std::u16string GetDriversLicenseName(const EntityInstance& entity) {
-  return entity
-      .attribute(AttributeType(AttributeTypeName::kDriversLicenseName))
-      ->GetCompleteInfo(kAppLocaleUS);
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              SuggestionsAre(HasMainText(
+                  GetObfuscatedValue(GetVehicleVIN(vehicle_entity)))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
