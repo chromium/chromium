@@ -251,9 +251,18 @@ class SyncServiceFactoryTest : public testing::Test {
 #endif
 };
 
+// Test fixture for testing the kDisableSync flag.
+class SyncServiceFactoryTestDisableSync : public SyncServiceFactoryTest {
+ public:
+  void SetUp() override {
+    // Append the switch *before* the profile is built.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
+    SyncServiceFactoryTest::SetUp();
+  }
+};
+
 // Verify that the disable sync flag disables creation of the sync service.
-TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
+TEST_F(SyncServiceFactoryTestDisableSync, DisableSyncFlag) {
   EXPECT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 }
 
