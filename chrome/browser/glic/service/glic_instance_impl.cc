@@ -799,8 +799,7 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   NotifyPanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
-void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
-                                           const InstanceId& instance_id) {
+void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
   instance_metrics_.OnBoundTabDestroyed();
   // This call may delete `this`.
   UnbindEmbedder(tab);

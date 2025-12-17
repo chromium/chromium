@@ -299,8 +299,7 @@ class GlicInstanceImpl : public GlicInstance,
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
-  void OnBoundTabDestroyed(tabs::TabInterface* tab,
-                           const InstanceId& instance_id);
+  void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
   bool ShouldDoAutomaticActivation() const;
   void OnZeroStateSuggestionsFetched(

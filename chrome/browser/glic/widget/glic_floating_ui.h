@@ -122,8 +122,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void CreateAndSetupWidget(gfx::Rect initial_bounds);
   void MaybeSetWidgetCanResize();
   void SetGlicWindowToFloatingMode(bool floating);
-  void OnSourceTabDestroyed(tabs::TabInterface* tab,
-                            const InstanceId& instance_id);
+  void OnSourceTabDestroyed(tabs::TabInterface* tab);
   void FloatingPanelCanAttachChanged(bool can_attach);
 
   // Whether the widget should be user resizable, kept here in case it's

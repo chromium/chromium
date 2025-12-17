@@ -242,8 +242,7 @@ void GlicFloatingUi::MaybeSetWidgetCanResize() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void GlicFloatingUi::OnSourceTabDestroyed(tabs::TabInterface* tab,
-                                          const InstanceId& instance_id) {
+void GlicFloatingUi::OnSourceTabDestroyed(tabs::TabInterface* tab) {
   FloatingPanelCanAttachChanged(false);
 }
 

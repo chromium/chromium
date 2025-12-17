@@ -106,10 +106,7 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManager {
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
               (override));
-  MOCK_METHOD(bool,
-              IsValidForSharing,
-              (content::WebContents*),
-              (override));
+  MOCK_METHOD(bool, IsValidForSharing, (content::WebContents*), (override));
   MOCK_METHOD(bool, IsGlicWindowShowing, (), (override));
 };
 
@@ -131,7 +128,8 @@ class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
         browser()->profile(), /*window_controller=*/nullptr, metrics);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
-    // TODO(mcrouse): Add tests for invalid candidates once testing harness for sharing manager is enabled.
+    // TODO(mcrouse): Add tests for invalid candidates once testing harness for
+    // sharing manager is enabled.
     ON_CALL(*pinned_tab_manager_, IsValidForSharing(_))
         .WillByDefault(Return(true));
 
@@ -249,7 +247,6 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
 
-
   // Check that the callback was called with pinned=true.
   {
     auto [result_interface, result_pinned] = pin_status_future.Get();
@@ -293,7 +290,6 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
   EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
 
-
   base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
   auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
       pin_status_future.GetRepeatingCallback());
@@ -309,6 +305,40 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
     EXPECT_EQ(tab_interface, result_interface);
     EXPECT_FALSE(result_pinned);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       UnpinTabOnTabDestroyed) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  // Pin a tab and verify it was pinned.
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
+
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
+  auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
+      pin_status_future.GetRepeatingCallback());
+
+  // Close the browser, which should destroy the tab.
+  browser()->tab_strip_model()->CloseAllTabs();
+
+  // Check that the callback was called with pinned=false.
+  {
+    auto [result_interface, result_pinned] = pin_status_future.Get();
+    EXPECT_EQ(tab_interface, result_interface);
+    EXPECT_FALSE(result_pinned);
+  }
+
+  // Verify the tab was unpinned.
+  EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(0u, pinned_tab_manager_->GetNumPinnedTabs());
 }
 
 }  // namespace glic

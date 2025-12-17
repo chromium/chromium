@@ -35,15 +35,14 @@ class GlicInstanceHelper {
   void OnDaisyChainAction(DaisyChainFirstAction action);
 
   base::CallbackListSubscription SubscribeToDestruction(
-      base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
-          callback);
+      base::RepeatingCallback<void(tabs::TabInterface*)> callback);
 
  private:
   std::optional<InstanceId> instance_id_;
   GlicInstanceHelperMetrics metrics_;
   raw_ptr<tabs::TabInterface> tab_;
   ui::ScopedUnownedUserData<GlicInstanceHelper> scoped_unowned_user_data_;
-  base::RepeatingCallbackList<void(tabs::TabInterface*, const InstanceId&)>
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
       on_destroy_callback_list_;
 };
 

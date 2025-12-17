@@ -20,11 +20,8 @@ GlicInstanceHelper::GlicInstanceHelper(tabs::TabInterface* tab)
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
 
 GlicInstanceHelper::~GlicInstanceHelper() {
-  if (!instance_id_.has_value()) {
-    return;
-  }
   CHECK(tab_);
-  on_destroy_callback_list_.Notify(tab_, instance_id_.value());
+  on_destroy_callback_list_.Notify(tab_);
 }
 
 void GlicInstanceHelper::SetInstanceId(const InstanceId& instance_id) {
@@ -45,8 +42,7 @@ void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {
 }
 
 base::CallbackListSubscription GlicInstanceHelper::SubscribeToDestruction(
-    base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
-        callback) {
+    base::RepeatingCallback<void(tabs::TabInterface*)> callback) {
   return on_destroy_callback_list_.Add(std::move(callback));
 }
 
