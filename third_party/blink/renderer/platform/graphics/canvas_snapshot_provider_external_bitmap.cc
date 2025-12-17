@@ -10,65 +10,35 @@
 
 namespace blink {
 
-class CanvasSnapshotProviderExternalBitmap::SoftwareImageProvider
-    : public cc::ImageProvider {
- public:
-  SoftwareImageProvider(cc::ImageDecodeCache* cache_n32,
-                        cc::ImageDecodeCache* cache_f16,
-                        const gfx::ColorSpace& target_color_space,
-                        viz::SharedImageFormat canvas_format) {
-    cc::TargetColorParams target_color_params;
-    target_color_params.color_space = target_color_space;
-    playback_image_provider_n32_.emplace(cache_n32, target_color_params,
-                                         cc::PlaybackImageProvider::Settings());
-
-    // If the image provider may require to decode to half float instead of
-    // uint8, create a f16 PlaybackImageProvider with the passed cache.
-    if (canvas_format == viz::SinglePlaneFormat::kRGBA_F16) {
-      DCHECK(cache_f16);
-      playback_image_provider_f16_.emplace(
-          cache_f16, target_color_params,
-          cc::PlaybackImageProvider::Settings());
-    }
-  }
-  SoftwareImageProvider(const SoftwareImageProvider&) = delete;
-  SoftwareImageProvider& operator=(const SoftwareImageProvider&) = delete;
-  ~SoftwareImageProvider() override = default;
-
-  // cc::ImageProvider implementation.
-  cc::ImageProvider::ScopedResult GetRasterContent(
-      const cc::DrawImage& draw_image) override {
-    cc::PaintImage paint_image = draw_image.paint_image();
-    if (paint_image.IsDeferredPaintRecord()) {
-      CHECK(!paint_image.IsPaintWorklet());
-      scoped_refptr<CanvasDeferredPaintRecord> canvas_deferred_paint_record(
-          static_cast<CanvasDeferredPaintRecord*>(
-              paint_image.deferred_paint_record().get()));
-      return cc::ImageProvider::ScopedResult(
-          canvas_deferred_paint_record->GetPaintRecord());
-    }
-
-    // TODO(xidachen): Ensure this function works for paint worklet generated
-    // images.
-    // If we like to decode high bit depth image source to half float backed
-    // image, we need to sniff the image bit depth here to avoid double
-    // decoding.
-    ImageProvider::ScopedResult scoped_decoded_image;
-    if (playback_image_provider_f16_ &&
-        draw_image.paint_image().is_high_bit_depth()) {
-      scoped_decoded_image =
-          playback_image_provider_f16_->GetRasterContent(draw_image);
-    } else {
-      scoped_decoded_image =
-          playback_image_provider_n32_->GetRasterContent(draw_image);
-    }
-    return scoped_decoded_image;
+cc::ImageProvider::ScopedResult
+CanvasSnapshotProviderExternalBitmap::GetRasterContent(
+    const cc::DrawImage& draw_image) {
+  cc::PaintImage paint_image = draw_image.paint_image();
+  if (paint_image.IsDeferredPaintRecord()) {
+    CHECK(!paint_image.IsPaintWorklet());
+    scoped_refptr<CanvasDeferredPaintRecord> canvas_deferred_paint_record(
+        static_cast<CanvasDeferredPaintRecord*>(
+            paint_image.deferred_paint_record().get()));
+    return cc::ImageProvider::ScopedResult(
+        canvas_deferred_paint_record->GetPaintRecord());
   }
 
- private:
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
-};
+  // TODO(xidachen): Ensure this function works for paint worklet generated
+  // images.
+  // If we like to decode high bit depth image source to half float backed
+  // image, we need to sniff the image bit depth here to avoid double
+  // decoding.
+  ImageProvider::ScopedResult scoped_decoded_image;
+  if (playback_image_provider_f16_ &&
+      draw_image.paint_image().is_high_bit_depth()) {
+    scoped_decoded_image =
+        playback_image_provider_f16_->GetRasterContent(draw_image);
+  } else {
+    scoped_decoded_image =
+        playback_image_provider_n32_->GetRasterContent(draw_image);
+  }
+  return scoped_decoded_image;
+}
 
 std::unique_ptr<CanvasSnapshotProviderExternalBitmap>
 CanvasSnapshotProviderExternalBitmap::Create(
@@ -132,7 +102,7 @@ CanvasSnapshotProviderExternalBitmap::DoExternalDrawAndSnapshot(
 
   if (recorder_->HasReleasableDrawOps()) {
     if (!skia_canvas_) {
-      if (!image_provider_) {
+      if (!playback_image_provider_n32_) {
         // Create an ImageDecodeCache for half float images only if the canvas
         // is using half float back storage.
         cc::ImageDecodeCache* cache_f16 = nullptr;
@@ -143,12 +113,24 @@ CanvasSnapshotProviderExternalBitmap::DoExternalDrawAndSnapshot(
         cc::ImageDecodeCache* cache_rgba8 =
             &Image::SharedCCDecodeCache(kN32_SkColorType);
 
-        image_provider_ = std::make_unique<SoftwareImageProvider>(
-            cache_rgba8, cache_f16, color_space_, format_);
+        cc::TargetColorParams target_color_params;
+        target_color_params.color_space = color_space_;
+        playback_image_provider_n32_.emplace(
+            cache_rgba8, target_color_params,
+            cc::PlaybackImageProvider::Settings());
+
+        // If the image provider may require to decode to half float instead of
+        // uint8, create a f16 PlaybackImageProvider with the passed cache.
+        if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
+          DCHECK(cache_f16);
+          playback_image_provider_f16_.emplace(
+              cache_f16, target_color_params,
+              cc::PlaybackImageProvider::Settings());
+        }
       }
 
-      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-          surface_->getCanvas(), image_provider_.get());
+      skia_canvas_ =
+          std::make_unique<cc::SkiaPaintCanvas>(surface_->getCanvas(), this);
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());

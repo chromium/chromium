@@ -18,7 +18,8 @@ namespace blink {
 
 // Renders to a RAM-backed bitmap via an external (client-supplied) draw.
 class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
-    : public CanvasSnapshotProvider {
+    : public CanvasSnapshotProvider,
+      public cc::ImageProvider {
  public:
   static std::unique_ptr<CanvasSnapshotProviderExternalBitmap> Create(
       gfx::Size size,
@@ -28,6 +29,7 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
 
   ~CanvasSnapshotProviderExternalBitmap() override;
 
+  // CanvasSnapshotProvider:
   bool IsGpuContextLost() const override;
   bool IsValid() const override;
   bool IsAccelerated() const override { return false; }
@@ -43,14 +45,18 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
 
+  // cc::ImageProvider:
+  cc::ImageProvider::ScopedResult GetRasterContent(
+      const cc::DrawImage& draw_image) override;
+
  private:
   CanvasSnapshotProviderExternalBitmap(gfx::Size size,
                                        viz::SharedImageFormat format,
                                        SkAlphaType alpha_type,
                                        const gfx::ColorSpace& color_space);
 
-  class SoftwareImageProvider;
-  std::unique_ptr<SoftwareImageProvider> image_provider_;
+  std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
+  std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
   sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
