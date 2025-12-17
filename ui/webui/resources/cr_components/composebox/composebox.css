@@ -246,7 +246,6 @@ search-animated-glow {
 }
 
 #input {
-  animation: color-change 5s infinite;
   background-color: inherit;
   border: none;
   caret-color: var(--google-blue-500);
@@ -257,6 +256,10 @@ search-animated-glow {
   outline: none;
   position: relative;
   resize: none;
+}
+
+#input:focus {
+  animation: color-change 5s infinite;
 }
 
 #input::placeholder {
