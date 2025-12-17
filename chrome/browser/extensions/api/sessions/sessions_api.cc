@@ -662,7 +662,7 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Only restore one window at a time.
-  std::vector<Browser*> browsers =
+  std::vector<BrowserWindowInterface*> browsers =
       SessionRestore::RestoreForeignSessionWindows(profile, window, window + 1);
   // Will always create one browser because we only restore one window per call.
   DCHECK_EQ(1u, browsers.size());

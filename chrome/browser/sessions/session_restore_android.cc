@@ -77,7 +77,8 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
 }
 
 // static
-std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
+std::vector<BrowserWindowInterface*>
+SessionRestore::RestoreForeignSessionWindows(
     Profile* profile,
     std::vector<const sessions::SessionWindow*>::const_iterator begin,
     std::vector<const sessions::SessionWindow*>::const_iterator end) {

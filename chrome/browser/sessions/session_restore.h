@@ -18,6 +18,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 class SessionRestoreImpl;
 
@@ -31,6 +32,8 @@ using StartupTabs = std::vector<StartupTab>;
 // SessionRestore handles restoring either the last or saved session. Session
 // restore come in two variants, asynchronous or synchronous. The synchronous
 // variety is meant for startup and blocks until restore is complete.
+// TODO(crbug.com/469787848): Plumb BrowserWindowInterface through the
+// SessionRestore code.
 class SessionRestore {
  public:
   // Bitmask representing behaviors available when restoring a session. Populate
@@ -82,8 +85,8 @@ class SessionRestore {
 
   // Specifically used in the restoration of a foreign session.  This function
   // restores the given session windows to multiple browsers. Returns the
-  // created Browsers.
-  static std::vector<Browser*> RestoreForeignSessionWindows(
+  // created BrowserWindowInterfaces.
+  static std::vector<BrowserWindowInterface*> RestoreForeignSessionWindows(
       Profile* profile,
       std::vector<const sessions::SessionWindow*>::const_iterator begin,
       std::vector<const sessions::SessionWindow*>::const_iterator end);

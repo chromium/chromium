@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -180,18 +181,22 @@ GURL GetUrl3() {
       base::FilePath().AppendASCII("bot3.html"));
 }
 
-bool WaitForTabToLoad(Browser* browser, int index) {
-  if (index >= browser->tab_strip_model()->count())
+bool WaitForTabToLoad(BrowserWindowInterface* browser, int index) {
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (index >= tab_list->GetTabCount()) {
     return false;
-  content::WebContents* contents =
-      browser->tab_strip_model()->GetWebContentsAt(index);
+  }
+  content::WebContents* contents = tab_list->GetTab(index)->GetContents();
   contents->GetController().LoadIfNecessary();
   return content::WaitForLoadStop(contents);
 }
 
-void WaitForTabsToLoad(Browser* browser) {
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i)
+void WaitForTabsToLoad(BrowserWindowInterface* browser) {
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  ASSERT_TRUE(tab_list);
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
     EXPECT_TRUE(WaitForTabToLoad(browser, i));
+  }
 }
 
 // Verifies that the given NavigationController has exactly two
@@ -927,20 +932,21 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
   window.tabs.push_back(std::make_unique<sessions::SessionTab>());
 
   session.push_back(static_cast<const sessions::SessionWindow*>(&window));
-  std::vector<Browser*> browsers = SessionRestore::RestoreForeignSessionWindows(
-      profile, session.begin(), session.end());
+  std::vector<BrowserWindowInterface*> browsers =
+      SessionRestore::RestoreForeignSessionWindows(profile, session.begin(),
+                                                   session.end());
   ASSERT_EQ(1u, browsers.size());
-  Browser* new_browser = browsers[0];
+  BrowserWindowInterface* new_browser = browsers[0];
   ASSERT_TRUE(new_browser);
   EXPECT_NE(new_browser, browser());
-  EXPECT_EQ(new_browser->profile(), browser()->profile());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->profile());
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(2, new_browser->tab_strip_model()->count());
+  TabListInterface* tab_list = TabListInterface::From(new_browser);
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(2, tab_list->GetTabCount());
 
-  content::WebContents* web_contents_1 =
-      new_browser->tab_strip_model()->GetWebContentsAt(0);
-  content::WebContents* web_contents_2 =
-      new_browser->tab_strip_model()->GetWebContentsAt(1);
+  content::WebContents* web_contents_1 = tab_list->GetTab(0)->GetContents();
+  content::WebContents* web_contents_2 = tab_list->GetTab(1)->GetContents();
   ASSERT_EQ(url1, web_contents_1->GetURL());
   ASSERT_EQ(url2, web_contents_2->GetURL());
 
@@ -987,21 +993,23 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreInvalidPageState) {
 
   // Restore the session in a new window.
   session.push_back(static_cast<const sessions::SessionWindow*>(&window));
-  std::vector<Browser*> browsers = SessionRestore::RestoreForeignSessionWindows(
-      profile, session.begin(), session.end());
+  std::vector<BrowserWindowInterface*> browsers =
+      SessionRestore::RestoreForeignSessionWindows(profile, session.begin(),
+                                                   session.end());
   ASSERT_EQ(1u, browsers.size());
-  Browser* new_browser = browsers[0];
+  BrowserWindowInterface* new_browser = browsers[0];
   ASSERT_TRUE(new_browser);
   WaitForTabsToLoad(new_browser);
   EXPECT_NE(new_browser, browser());
-  EXPECT_EQ(new_browser->profile(), browser()->profile());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->profile());
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(1, new_browser->tab_strip_model()->count());
+  TabListInterface* tab_list = TabListInterface::From(new_browser);
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(1, tab_list->GetTabCount());
 
   // The URL should still successfully commit, even though the rest of the
   // previous PageState was lost.
-  content::WebContents* web_contents_1 =
-      new_browser->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* web_contents_1 = tab_list->GetTab(0)->GetContents();
   EXPECT_EQ(GetUrl1(), web_contents_1->GetLastCommittedURL());
   EXPECT_EQ(GetUrl1(),
             web_contents_1->GetPrimaryMainFrame()->GetLastCommittedURL());

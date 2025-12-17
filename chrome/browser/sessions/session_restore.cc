@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -1427,7 +1428,8 @@ void SessionRestore::OpenStartupPagesAfterCrash(Browser* browser) {
 }
 
 // static
-std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
+std::vector<BrowserWindowInterface*>
+SessionRestore::RestoreForeignSessionWindows(
     Profile* profile,
     std::vector<const sessions::SessionWindow*>::const_iterator begin,
     std::vector<const sessions::SessionWindow*>::const_iterator end) {
@@ -1436,7 +1438,12 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
       profile, static_cast<Browser*>(nullptr), true, false, true,
       /* restore_apps */ false, /* restore_browser */ true,
       /* log_event */ false, startup_tabs);
-  return restorer.RestoreForeignSession(begin, end);
+  std::vector<Browser*> browsers = restorer.RestoreForeignSession(begin, end);
+  std::vector<BrowserWindowInterface*> windows;
+  for (Browser* browser : browsers) {
+    windows.push_back(browser);
+  }
+  return windows;
 }
 
 // static
