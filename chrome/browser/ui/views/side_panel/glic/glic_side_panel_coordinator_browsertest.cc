@@ -315,5 +315,33 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, Replaced) {
   EXPECT_FALSE(coordinator().IsShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest,
+                       CloseFromBackgroundedResetsActiveEntry) {
+  GlicSidePanelCoordinator& initial_tab_coordinator = coordinator();
+  // Show the panel.
+  initial_tab_coordinator.Show();
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
+
+  tabs::TabInterface* first_tab = browser()->GetActiveTabInterface();
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
+
+  // Add a new tab and switch to it.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+
+  // The first tab's coordinator should transition to kBackgrounded.
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kBackgrounded);
+  EXPECT_EQ(initial_tab_coordinator.state(),
+            GlicSidePanelCoordinator::State::kBackgrounded);
+
+  // Close the panel from the backgrounded state.
+  initial_tab_coordinator.Close();
+
+  // Verify the active entry is reset and the state is kClosed.
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
+  EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kClosed);
+  EXPECT_EQ(initial_tab_coordinator.state(),
+            GlicSidePanelCoordinator::State::kClosed);
+}
+
 }  // namespace
 }  // namespace glic

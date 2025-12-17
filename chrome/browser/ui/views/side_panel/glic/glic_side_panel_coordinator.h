@@ -103,7 +103,8 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // Gets the Glic WebView from the Glic service.
   std::unique_ptr<views::View> CreateView(SidePanelEntryScope& scope);
 
-  void NotifyStateChanged();
+  // Sets a new state and notifies about a state change.
+  void SetState(State new_state);
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;

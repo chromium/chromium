@@ -242,7 +242,7 @@ void GlicSidePanelUi::Close() {
     screenshot_capturer_->CloseScreenPicker();
   }
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (!glic_side_panel_coordinator || !IsShowing()) {
+  if (!glic_side_panel_coordinator) {
     return;
   }
   // NOTE: `this` will be destroyed after this call.

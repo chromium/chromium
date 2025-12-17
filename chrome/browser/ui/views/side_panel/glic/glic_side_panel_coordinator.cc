@@ -140,10 +140,18 @@ void GlicSidePanelCoordinator::Show(bool suppress_animations) {
 
 void GlicSidePanelCoordinator::Close() {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
-  if (!window_side_panel_coordinator || !IsShowing() || !entry_) {
+  if (!window_side_panel_coordinator || !entry_) {
     return;
   }
-  window_side_panel_coordinator->Close(entry_->type());
+  if (IsShowing()) {
+    window_side_panel_coordinator->Close(entry_->type());
+    return;
+  }
+  if (state_ == State::kBackgrounded) {
+    CHECK(IsGlicSidePanelActive(tab_));
+    side_panel_registry_->ResetActiveEntryFor(entry_->type());
+    SetState(State::kClosed);
+  }
 }
 
 bool GlicSidePanelCoordinator::IsShowing() const {
@@ -166,18 +174,15 @@ void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   CHECK(pending_hide_reason_.has_value());
   if (pending_hide_reason_ == SidePanelEntryHideReason::kBackgrounded) {
-    state_ = State::kBackgrounded;
+    SetState(State::kBackgrounded);
   } else {
-    state_ = State::kClosed;
+    SetState(State::kClosed);
   }
-
-  NotifyStateChanged();
 }
 
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_ = State::kShown;
-  NotifyStateChanged();
+  SetState(State::kShown);
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
@@ -244,7 +249,8 @@ SidePanelCoordinator* GlicSidePanelCoordinator::GetWindowSidePanelCoordinator()
   return nullptr;
 }
 
-void GlicSidePanelCoordinator::NotifyStateChanged() {
+void GlicSidePanelCoordinator::SetState(State new_state) {
+  state_ = new_state;
   state_changed_callbacks_.Notify(state_);
 }
 
