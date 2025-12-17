@@ -196,9 +196,15 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 "Tabs.RecentlyClosed.HistoricalSaverCloseType",
                 HistoricalSaverCloseType.TAB,
                 HistoricalSaverCloseType.COUNT);
+        // Index will be available for non-undoable closures as the tab is removed from the model
+        // after. Undoable closures are removed from the model earlier so the index will be -1.
+        int index = mTabModel.indexOf(tab);
         HistoricalTabSaverImplJni.get()
                 .createHistoricalTab(
-                        tab, getWebContentsState(tab).buffer(), getWebContentsState(tab).version());
+                        tab,
+                        index,
+                        getWebContentsState(tab).buffer(),
+                        getWebContentsState(tab).version());
     }
 
     /**
@@ -294,7 +300,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
     @NativeMethods
     interface Natives {
-        void createHistoricalTab(Tab tab, ByteBuffer state, int savedStateVersion);
+        void createHistoricalTab(Tab tab, int index, ByteBuffer state, int savedStateVersion);
 
         void createHistoricalGroup(
                 TabModel model,

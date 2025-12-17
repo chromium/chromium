@@ -119,7 +119,7 @@ public class HistoricalTabSaverImplUnitTest {
                 Collections.singletonList(new HistoricalEntry(tab)));
 
         ByteBuffer buf = ByteBuffer.allocateDirect(0);
-        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, -1);
+        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, 0, buf, -1);
     }
 
     /**
@@ -137,7 +137,7 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));
 
-        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, buf, 1);
+        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, 0, buf, 1);
     }
 
     /** Tests a bulk closure is collapsed to a group if there is just a group. */

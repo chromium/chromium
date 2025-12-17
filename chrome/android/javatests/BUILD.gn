@@ -1338,6 +1338,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTestUtils.java",
     "src/org/chromium/chrome/browser/tab/state/TabStateFlatBufferTest.java",
     "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplTest.java",
+    "src/org/chromium/chrome/browser/tab/tab_restore/TabRestoreIndicesTest.java",
   ]
 
   data = [

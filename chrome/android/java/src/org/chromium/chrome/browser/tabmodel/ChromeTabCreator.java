@@ -479,6 +479,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
+            int position,
             boolean addTabToModel) {
         assert webContents != null;
 
@@ -489,10 +490,11 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         // Measure tab creation duration for different launch types to understand tab creation
         // performance using an existing WebContents.
         try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents")) {
-            // If parent is in the same tab model, place the new tab next to it.
-            int position = TabModel.INVALID_TAB_INDEX;
-            int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
-            if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+            if (position == TabModel.INVALID_TAB_INDEX) {
+                int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
+                // If parent is in the same tab model, place the new tab next to it.
+                if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+            }
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
             TabDelegateFactory delegateFactory =

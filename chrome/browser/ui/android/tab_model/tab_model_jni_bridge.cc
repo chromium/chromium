@@ -302,7 +302,8 @@ void TabModelJniBridge::CreateTab(TabAndroid* parent,
 
   Java_TabModelJniBridge_createTabWithWebContents(
       env, java_object_.get(env), (parent ? parent->GetJavaObject() : nullptr),
-      profile->GetJavaObject(), web_contents->GetJavaWebContents(), select);
+      profile->GetJavaObject(), web_contents->GetJavaWebContents(), index,
+      select, should_pin);
 }
 
 void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,

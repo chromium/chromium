@@ -106,15 +106,16 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public Tab createTabWithWebContents(
+    public @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
+            int index,
             boolean addTabToModel) {
         assert false : "Not reached.";
-        return assumeNonNull(null);
+        return null;
     }
 
     @Override

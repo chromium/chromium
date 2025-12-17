@@ -103,12 +103,45 @@ public interface TabCreator {
      *     the user in a new window).
      * @return The new Tab or null if a Tab was not created successfully.
      */
+    default @Nullable Tab createTabWithWebContents(
+            @Nullable Tab parent,
+            boolean shouldPin,
+            WebContents webContents,
+            @TabLaunchType int type,
+            GURL url,
+            boolean addTabToModel) {
+        return createTabWithWebContents(
+                parent,
+                shouldPin,
+                webContents,
+                type,
+                url,
+                TabList.INVALID_TAB_INDEX,
+                addTabToModel);
+    }
+
+    /**
+     * Creates a Tab to host the given WebContents.
+     *
+     * @param parent The parent Tab, if present.
+     * @param shouldPin Whether the newly created tab should be pinned.
+     * @param webContents The web contents to create a Tab around.
+     * @param type The TabLaunchType describing how this Tab was created.
+     * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
+     * @param index The index to insert the tab at.
+     * @param addTabToModel Whether the newly created Tab should be added to the tab model.
+     *     Typically this should be true, however, sometimes it is beneficial to create a Tab
+     *     without adding it to the current TabModel (e.g. if the Tab will ultimately be shown to
+     *     the user in a new window).
+     * @return The new Tab or null if a Tab was not created successfully.
+     */
     @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
+            int index,
             boolean addTabToModel);
 
     /**

@@ -272,22 +272,30 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * @param parent The parent tab that creates the new tab.
      * @param profile The profile for which to create the new tab.
      * @param webContents A {@link WebContents} object.
+     * @param index The index to create the tab at.
      * @param select Select the created tab.
+     * @param shouldPin Whether the tab should be pinned.
      * @return Whether or not the Tab was successfully created.
      */
     @CalledByNative
     private boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents, boolean select) {
+            Tab parent,
+            Profile profile,
+            WebContents webContents,
+            int index,
+            boolean select,
+            boolean shouldPin) {
         @TabLaunchType
         int type =
                 select ? TabLaunchType.FROM_RECENT_TABS_FOREGROUND : TabLaunchType.FROM_RECENT_TABS;
         return getTabCreator(profile.isOffTheRecord())
                         .createTabWithWebContents(
                                 parent,
-                                /* shouldPin= */ false,
+                                shouldPin,
                                 webContents,
                                 type,
                                 webContents.getVisibleUrl(),
+                                index,
                                 /* addTabToModel= */ true)
                 != null;
     }

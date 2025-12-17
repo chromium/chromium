@@ -92,12 +92,13 @@ public class MockTabCreator implements TabCreator {
     }
 
     @Override
-    public Tab createTabWithWebContents(
-            Tab parent,
+    public @Nullable Tab createTabWithWebContents(
+            @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
+            int index,
             boolean addTabToModel) {
         return null;
     }

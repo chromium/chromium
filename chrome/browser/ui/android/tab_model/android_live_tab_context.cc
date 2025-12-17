@@ -112,8 +112,8 @@ AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
 }
 
 bool AndroidLiveTabContext::IsTabPinned(int index) const {
-  // Not applicable to android.
-  return false;
+  TabAndroid* tab_android = tab_model_->GetTabAt(index);
+  return tab_android && tab_android->IsPinned();
 }
 
 void AndroidLiveTabContext::SetVisualDataForGroup(
@@ -171,10 +171,15 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   // Create new tab. Ownership is passed into java, which in turn creates a new
   // TabAndroid instance to own the WebContents. Only select the restored tab
   // when restoring a single tab from a TAB session.
+
+  // `tab_index` is ignored because TabRestoreServiceHelper resets it to the tab
+  // count when the disposition is not `UNKNOWN`. We want to restore the tab to
+  // its original index, so we use `tab.tabstrip_index` instead. The tab model
+  // will handle the case where the index is out of bounds.
   tab_model_->CreateTab(
-      nullptr, web_contents.release(), TabModel::kInvalidIndex,
+      nullptr, web_contents.release(), tab.tabstrip_index,
       original_session_type == sessions::tab_restore::TAB ? true : false,
-      /*should_pin=*/false);
+      tab.pinned);
   // Don't load the tab yet. This prevents a renderer from starting which keeps
   // the tab restore lightweight as the tab is opened in the background only.
   // The tab will be in a "renderer was lost" state. This is recovered from when

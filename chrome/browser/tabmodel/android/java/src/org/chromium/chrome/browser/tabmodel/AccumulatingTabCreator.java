@@ -107,6 +107,7 @@ public class AccumulatingTabCreator implements TabCreator {
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
+            int index,
             boolean addTabToModel) {
         // Should never be called.
         assert false;
