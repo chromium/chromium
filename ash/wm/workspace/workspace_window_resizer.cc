@@ -538,7 +538,11 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     }
   }
 
-  if (display::Screen::Get()->InTabletMode()) {
+  // For windows in always-top-container, allow for default resizing/dragging in
+  // tablet-mode.
+  const auto* parent = window->parent();
+  if (display::Screen::Get()->InTabletMode() && parent &&
+      parent->GetId() != kShellWindowId_AlwaysOnTopContainer) {
     return CreateWindowResizerForTabletMode(window, point_in_parent,
                                             window_component, source);
   }
@@ -582,7 +586,6 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   // layout manager that a drag has started or stopped. It may be possible to
   // refactor and eliminate chaining.
   std::unique_ptr<WindowResizer> window_resizer;
-  const auto* parent = window->parent();
   if (parent &&
       // TODO(afakhry): Maybe use switchable containers?
       (desks_util::IsDeskContainer(parent) ||

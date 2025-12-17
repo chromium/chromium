@@ -17,7 +17,11 @@ class Point;
 
 namespace views {
 class FrameView;
-}
+}  // namespace views
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace chromeos {
 
@@ -33,6 +37,9 @@ void ResolveInferredOpacity(views::Widget::InitParams* params);
 // Checks whether we should draw the restored window frame on |widget|.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 bool ShouldUseRestoreFrame(const views::Widget* widget);
+
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+bool ShouldShowResizeBorder(const aura::Window* window);
 
 // Gets the snap direction given a button associated with left/top or
 // right/bottom. Takes into account the orientation of the display.

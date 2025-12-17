@@ -228,27 +228,7 @@ bool ResizeShadowController::ShouldShowShadowForWindow(
     return false;
   }
 
-  static std::array<chromeos::WindowStateType, 3> blocklist_clamshell_states{
-      chromeos::WindowStateType::kFullscreen,
-      chromeos::WindowStateType::kMaximized,
-      chromeos::WindowStateType::kMinimized};
-  static std::array<chromeos::WindowStateType, 2>
-      additional_blocklist_tablet_states{
-          chromeos::WindowStateType::kPrimarySnapped,
-          chromeos::WindowStateType::kSecondarySnapped};
-
-  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
-  const auto window_state_type =
-      window->GetProperty(chromeos::kWindowStateTypeKey);
-
-  if (in_tablet_mode) {
-    return !base::Contains(blocklist_clamshell_states, window_state_type) &&
-           !base::Contains(additional_blocklist_tablet_states,
-                           window_state_type);
-
-  } else {
-    return !base::Contains(blocklist_clamshell_states, window_state_type);
-  }
+  return chromeos::ShouldShowResizeBorder(window);
 }
 
 }  // namespace ash
