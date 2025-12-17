@@ -69,7 +69,7 @@ public final class CronetStatsLog {
      * time_to_establish_dns_millis, long time_to_establish_ssl_millis, long time_to_connect_millis,
      * long time_to_send_first_byte_millis, long time_to_establish_dns_micros, long
      * time_to_establish_ssl_micros, long time_to_connect_micros, long
-     * time_to_send_first_byte_micros);<br>
+     * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -617,7 +617,8 @@ public final class CronetStatsLog {
             long arg33,
             long arg34,
             long arg35,
-            long arg36) {
+            long arg36,
+            long arg37) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -659,6 +660,7 @@ public final class CronetStatsLog {
         builder.writeLong(arg34);
         builder.writeLong(arg35);
         builder.writeLong(arg36);
+        builder.writeLong(arg37);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

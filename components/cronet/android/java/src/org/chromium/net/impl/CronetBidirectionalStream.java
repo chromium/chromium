@@ -994,16 +994,6 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
         }
 
-        final Duration headersLatency;
-        if (mMetrics.getRequestStart() != null && mMetrics.getResponseStart() != null) {
-            headersLatency =
-                    Duration.ofMillis(
-                            mMetrics.getResponseStart().getTime()
-                                    - mMetrics.getRequestStart().getTime());
-        } else {
-            headersLatency = Duration.ofSeconds(0);
-        }
-
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {
             totalLatency =
@@ -1044,7 +1034,6 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 responseHeaderSizeInBytes,
                 responseBodySizeInBytes,
                 httpStatusCode,
-                headersLatency,
                 totalLatency,
                 negotiatedProtocol,
                 quicConnectionMigrationAttempted,
@@ -1067,7 +1056,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mMetrics.getDnsDurationInMicroseconds(),
                 mMetrics.getSSLDurationInMicroseconds(),
                 mMetrics.getConnectDurationInMicroseconds(),
-                mMetrics.getTimeToWriteFirstByteInMicroseconds());
+                mMetrics.getTimeToWriteFirstByteInMicroseconds(),
+                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds());
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

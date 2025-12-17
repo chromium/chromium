@@ -1053,16 +1053,6 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
         }
 
-        final Duration headersLatency;
-        if (mMetrics.getRequestStart() != null && mMetrics.getResponseStart() != null) {
-            headersLatency =
-                    Duration.ofMillis(
-                            mMetrics.getResponseStart().getTime()
-                                    - mMetrics.getRequestStart().getTime());
-        } else {
-            headersLatency = Duration.ofSeconds(0);
-        }
-
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {
             totalLatency =
@@ -1103,7 +1093,6 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 responseHeaderSizeInBytes,
                 responseBodySizeInBytes,
                 httpStatusCode,
-                headersLatency,
                 totalLatency,
                 negotiatedProtocol,
                 mQuicConnectionMigrationAttempted,
@@ -1126,7 +1115,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mMetrics.getDnsDurationInMicroseconds(),
                 mMetrics.getSSLDurationInMicroseconds(),
                 mMetrics.getConnectDurationInMicroseconds(),
-                mMetrics.getTimeToWriteFirstByteInMicroseconds());
+                mMetrics.getTimeToWriteFirstByteInMicroseconds(),
+                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

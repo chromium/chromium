@@ -459,7 +459,7 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getResponseHeaderSizeInBytes()).isNotEqualTo(0);
         assertThat(trafficInfo.getResponseBodySizeInBytes()).isNotEqualTo(0);
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(200);
-        assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));
+        assertThat(trafficInfo.getTimeToReceiveHeaderLastByteMicros()).isGreaterThan(0);
         assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));
         assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
         assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
@@ -677,7 +677,7 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getResponseHeaderSizeInBytes()).isNotEqualTo(0);
             assertThat(trafficInfo.getResponseBodySizeInBytes()).isNotEqualTo(0);
             assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(200);
-            assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));
+            assertThat(trafficInfo.getTimeToReceiveHeaderLastByteMicros()).isGreaterThan(0);
             assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));
             assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
             assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();

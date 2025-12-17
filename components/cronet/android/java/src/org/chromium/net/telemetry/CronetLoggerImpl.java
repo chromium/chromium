@@ -205,7 +205,11 @@ public class CronetLoggerImpl extends CronetLogger {
                             trafficInfo.getResponseBodySizeInBytes()),
                     trafficInfo.getResponseStatusCode(),
                     Hash.hash(trafficInfo.getNegotiatedProtocol()),
-                    (int) trafficInfo.getHeadersLatency().toMillis(),
+                    trafficInfo.getTimeToReceiveHeaderLastByteMicros() == -1
+                            ? -1
+                            : (int)
+                                    TimeUnit.MICROSECONDS.toMillis(
+                                            trafficInfo.getTimeToReceiveHeaderLastByteMicros()),
                     (int) trafficInfo.getTotalLatency().toMillis(),
                     trafficInfo.wasConnectionMigrationAttempted(),
                     trafficInfo.didConnectionMigrationSucceed(),
@@ -245,7 +249,8 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getTimeToEstablishDNSMicros(),
                     trafficInfo.getTimeToEstablishSSLMicros(),
                     trafficInfo.getTimeToConnectMicros(),
-                    trafficInfo.getTimeToSendFirstByteMicros());
+                    trafficInfo.getTimeToSendFirstByteMicros(),
+                    trafficInfo.getTimeToReceiveHeaderLastByteMicros());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

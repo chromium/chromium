@@ -213,7 +213,6 @@ public abstract class CronetLogger {
         private final long mResponseHeaderSizeInBytes;
         private final long mResponseBodySizeInBytes;
         private final int mResponseStatusCode;
-        private final Duration mHeadersLatency;
         private final Duration mTotalLatency;
         private final String mNegotiatedProtocol;
         private final boolean mWasConnectionMigrationAttempted;
@@ -236,6 +235,7 @@ public abstract class CronetLogger {
         private final long mTimeToEstablishSSLMicros;
         private final long mTimeToConnectMicros;
         private final long mTimeToSendFirstByteMicros;
+        private final long mTimeToReceiveHeaderLastByteMicros;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -243,7 +243,6 @@ public abstract class CronetLogger {
                 long responseHeaderSizeInBytes,
                 long responseBodySizeInBytes,
                 int responseStatusCode,
-                Duration headersLatency,
                 Duration totalLatency,
                 String negotiatedProtocol,
                 boolean wasConnectionMigrationAttempted,
@@ -265,13 +264,13 @@ public abstract class CronetLogger {
                 long timeToEstablishDnsMicros,
                 long timeToEstablishSSLMicros,
                 long timeToConnectMicros,
-                long timeToSendFirstByteMicros) {
+                long timeToSendFirstByteMicros,
+                long timeToReceiveHeaderLastByteMicros) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
             mResponseBodySizeInBytes = responseBodySizeInBytes;
             mResponseStatusCode = responseStatusCode;
-            mHeadersLatency = headersLatency;
             mTotalLatency = totalLatency;
             mNegotiatedProtocol = negotiatedProtocol;
             mWasConnectionMigrationAttempted = wasConnectionMigrationAttempted;
@@ -294,6 +293,7 @@ public abstract class CronetLogger {
             mTimeToEstablishSSLMicros = timeToEstablishSSLMicros;
             mTimeToConnectMicros = timeToConnectMicros;
             mTimeToSendFirstByteMicros = timeToSendFirstByteMicros;
+            mTimeToReceiveHeaderLastByteMicros = timeToReceiveHeaderLastByteMicros;
         }
 
         /**
@@ -324,18 +324,7 @@ public abstract class CronetLogger {
         }
 
         /**
-         * The time it took from starting the request to receiving the full set of
-         * response headers.
-         *
-         * @return The time to get response headers
-         */
-        public Duration getHeadersLatency() {
-            return mHeadersLatency;
-        }
-
-        /**
-         * The time it took from starting the request to receiving the entire
-         * response.
+         * The time it took from starting the request to receiving the entire response.
          *
          * @return The time to get total response
          */
@@ -428,6 +417,10 @@ public abstract class CronetLogger {
 
         public long getTimeToSendFirstByteMicros() {
             return mTimeToSendFirstByteMicros;
+        }
+
+        public long getTimeToReceiveHeaderLastByteMicros() {
+            return mTimeToReceiveHeaderLastByteMicros;
         }
     }
 
