@@ -33,14 +33,11 @@ class OpenTabHelper {
     std::optional<int> bookmark_id;
   };
 
-  // Finds or creates a new browser that's appropriate to show the given
-  // `validated_url`. If `opener_tab` is non-null, enforces that the returned
-  // browser contains the `opener_tab`. Returns an error on failure.
+  // Finds the current browser or creates a new browser that's appropriate to
+  // show the given `validated_url`. Returns an error on failure.
   static base::expected<BrowserWindowInterface*, std::string>
-  FindOrCreateBrowser(std::optional<int> window_id,
-                      const GURL& url,
+  FindOrCreateBrowser(const GURL& validated_url,
                       ExtensionFunction& function,
-                      content::WebContents* opener_tab,
                       bool create_if_needed);
 
   // Opens a new tab given an extension function `function` and creation
@@ -53,8 +50,7 @@ class OpenTabHelper {
       const GURL& validated_url,
       BrowserWindowInterface& browser,
       ExtensionFunction* function,
-      const Params& params,
-      bool user_gesture);
+      const Params& params);
 };
 
 }  // namespace extensions

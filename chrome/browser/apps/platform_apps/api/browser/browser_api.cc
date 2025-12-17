@@ -29,17 +29,16 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
   GURL validated_url = std::move(maybe_url.value());
 
   base::expected<BrowserWindowInterface*, std::string> maybe_browser =
-      extensions::OpenTabHelper::FindOrCreateBrowser(/*window_id=*/std::nullopt,
-                                                     validated_url, *this,
-                                                     /*opener_tab=*/nullptr,
+      extensions::OpenTabHelper::FindOrCreateBrowser(validated_url, *this,
                                                      /*create_if_needed=*/true);
   if (!maybe_browser.has_value()) {
     return RespondNow(Error(std::move(maybe_browser.error())));
   }
 
-  const auto result = extensions::OpenTabHelper::OpenTab(
-      validated_url, *maybe_browser.value(), this,
-      extensions::OpenTabHelper::Params(), user_gesture());
+  base::expected<content::WebContents*, std::string> result =
+      extensions::OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(),
+                                         this,
+                                         extensions::OpenTabHelper::Params());
   return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 

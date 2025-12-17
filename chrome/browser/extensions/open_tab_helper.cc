@@ -29,11 +29,9 @@ namespace extensions {
 namespace {
 
 BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
-                                             bool user_gesture,
-                                             std::string* error) {
+                                             bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
       Browser::CreationStatus::kOk) {
-    *error = ExtensionTabUtil::kBrowserWindowNotAllowed;
     return nullptr;
   }
 
@@ -44,7 +42,6 @@ BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
   // platforms, this window isn't guaranteed to be fully initialized.
   BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   if (!browser) {
-    *error = ExtensionTabUtil::kBrowserWindowNotAllowed;
     return nullptr;
   }
 
@@ -59,33 +56,26 @@ OpenTabHelper::Params::~Params() = default;
 
 // static
 base::expected<BrowserWindowInterface*, std::string>
-OpenTabHelper::FindOrCreateBrowser(std::optional<int> window_id,
-                                   const GURL& validated_url,
+OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
                                    ExtensionFunction& function,
-                                   content::WebContents* opener_tab,
                                    bool create_if_needed) {
   // Try to find a suitable browser.
   // TODO(https://crbug.com/468223125): This is a wild set of tangled
   // conditions, most of which are inconsistent.
 
-  BrowserWindowInterface* browser = nullptr;
-  std::string error;
-  // windowId defaults to "current" window.
-  if (WindowController* controller =
-          ExtensionTabUtil::GetControllerFromWindowID(
-              ChromeExtensionFunctionDetails(&function),
-              window_id.value_or(extension_misc::kCurrentWindowId), &error)) {
-    browser = controller->GetBrowserWindowInterface();
-  }
+  WindowController* controller =
+      ChromeExtensionFunctionDetails(&function).GetCurrentWindowController();
 
   // We didn't find a browser and shouldn't create a new one, according to the
   // params. Bail.
   //
   // TODO(https://crbug.com/468223125): This isn't consistent, since sometimes
   // we *will* create a new browser below.
-  if (!browser && !create_if_needed) {
-    return base::unexpected(error);
+  if (!controller && !create_if_needed) {
+    return base::unexpected(ExtensionTabUtil::kNoCurrentWindowError);
   }
+
+  BrowserWindowInterface* browser = controller->GetBrowserWindowInterface();
 
   // We can't load extension URLs into incognito windows unless the extension
   // uses split mode. Special case to fall back to a tabbed window or, if
@@ -117,18 +107,6 @@ OpenTabHelper::FindOrCreateBrowser(std::optional<int> window_id,
     create_if_needed = true;
   }
 
-  // This check (for the opener) comes last. It will fail (by design) if
-  // we're intending to create a new browser; that's good, because the new
-  // browser would never match the one with the opener.
-  if (opener_tab) {
-    BrowserWindowInterface* opener_browser =
-        browser_window_util::GetBrowserForTabContents(*opener_tab);
-    if (!opener_browser || opener_browser != browser) {
-      return base::unexpected(
-          "Tab opener must be in the same window as the updated tab.");
-    }
-  }
-
   Profile* profile = Profile::FromBrowserContext(function.browser_context());
   Profile* profile_to_use =
       needs_original_profile ? profile->GetOriginalProfile() : profile;
@@ -143,8 +121,7 @@ OpenTabHelper::FindOrCreateBrowser(std::optional<int> window_id,
   }
 
   if (!browser && create_if_needed) {
-    browser =
-        CreateAndShowBrowser(profile_to_use, function.user_gesture(), &error);
+    browser = CreateAndShowBrowser(profile_to_use, function.user_gesture());
   }
 
   if (!browser || !browser->GetWindow()) {
@@ -159,8 +136,7 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     const GURL& validated_url,
     BrowserWindowInterface& browser,
     ExtensionFunction* function,
-    const Params& params,
-    bool user_gesture) {
+    const Params& params) {
   auto* const extension = function->extension();
 
   // DCHECK because the input should already have been validated, and this is

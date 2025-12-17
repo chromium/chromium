@@ -694,16 +694,15 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   GURL validated_url = std::move(maybe_url.value());
 
   base::expected<BrowserWindowInterface*, std::string> maybe_browser =
-      OpenTabHelper::FindOrCreateBrowser(/*window_id=*/std::nullopt,
-                                         validated_url, *this,
-                                         /*opener_tab=*/nullptr,
+      OpenTabHelper::FindOrCreateBrowser(validated_url, *this,
                                          /*create_if_needed=*/false);
   if (!maybe_browser.has_value()) {
     return Error(std::move(maybe_browser.error()));
   }
 
-  auto result = OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(),
-                                       this, options, user_gesture());
+  base::expected<content::WebContents*, std::string> result =
+      OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(), this,
+                             options);
   if (!result.has_value())
     return Error(result.error());
 
