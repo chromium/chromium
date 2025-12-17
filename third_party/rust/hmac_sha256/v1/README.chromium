@@ -1,0 +1,11 @@
+Name: hmac-sha256
+URL: https://crates.io/crates/hmac-sha256
+Version: 1.1.12
+Revision: 718a8a8cdafa783a2a7b501f990ed7af23e52dfd
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: ISC
+License File: //third_party/rust/chromium_crates_io/vendor/hmac-sha256-v1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A small, self-contained SHA256, HMAC-SHA256, and HKDF-SHA256 implementation

@@ -272,6 +272,18 @@ allow_unsafe = false
 group = 'test'
 extra_kv = { allow_unsafe = false }
 
+[crate.hmac-sha256.extra_kv]
+allow_unsafe = true
+# Limit visibility of the `hmac-sha256` crate, because in general Boring SSL
+# should be preferred for cryptographic algorithms.
+visibility = [
+  # Using `hmac-sha256` from `//build/rust/chromium_prelude` is an attempt to
+  # limit dependencies of `//build/rust` (`//third_party/rust` is likely to
+  # be used together with `//build/rust`, but we don't want to also require
+  # `//third_party/boringssl` for its SHA-256 imlementation).
+  '//build/rust/chromium_prelude:*',
+]
+
 [crate.icu_calendar.extra_kv]
 allow_unsafe = false
 

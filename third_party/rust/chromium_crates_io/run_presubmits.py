@@ -140,7 +140,7 @@ def CheckCargoTomlIsSorted(crate_toml):
     if problem:
         return ("Please sort `[dependencies]` tables in "
                 f"`{CARGO_TOML_RELATIVE_PATH}`.  "
-                f"Example problem: {problem}.  "
+                f"Example problem: {problem}  "
                 "Try running `tools/crates/run_gnrt.py fmt`.")
 
     return ""
@@ -157,7 +157,7 @@ def CheckGnrtConfigTomlIsSorted(_crate_ids, gnrt_config):
     if problem:
         return ("Please sort `[crate]` tables in "
                 f"`{GNRT_CONFIG_RELATIVE_PATH}`.  "
-                f"Example problem: {problem}."
+                f"Example problem: {problem}  "
                 "Try running `tools/crates/run_gnrt.py fmt`.")
 
     return ""

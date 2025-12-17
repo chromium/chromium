@@ -161,6 +161,7 @@ dependencies = [
  "fend-core",
  "font-types",
  "hex",
+ "hmac-sha256",
  "icu_casemap",
  "icu_experimental",
  "icu_locale_core",
@@ -447,6 +448,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "hex"
 version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "hmac-sha256"
+version = "1.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
