@@ -470,6 +470,10 @@ TabDragController::Liveness TabDragController::Init(
             source_view->GetMirroredXInView(offset_from_source_view.x())) /
         source_view->width();
   }
+  if (source_view->height() > 0) {
+    ref->offset_to_height_ratio_ =
+        static_cast<float>(offset_from_source_view.y()) / source_view->height();
+  }
   ref->initial_selection_model_ = std::move(initial_selection_model);
 
   ref->window_finder_ = std::make_unique<WindowFinder>();
@@ -2531,14 +2535,19 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
 }
 
 gfx::Vector2d TabDragController::CalculateWindowDragOffset() {
-  const gfx::Rect source_tab_bounds =
-      drag_data_.attached_views()[drag_data_.source_view_index_]->bounds();
-  const int cursor_offset_within_tab =
+  const views::View* source_view =
+      drag_data_.attached_views()[drag_data_.source_view_index_];
+  const gfx::Rect source_tab_bounds = source_view->bounds();
+  const int cursor_x_offset_within_tab =
       base::ClampRound(source_tab_bounds.width() * offset_to_width_ratio_);
+  const int cursor_y_offset_within_tab =
+      base::ClampRound(source_tab_bounds.height() * offset_to_height_ratio_);
   gfx::Point desired_cursor_pos_in_widget(
       attached_context_->GetMirroredXInView(source_tab_bounds.x() +
-                                            cursor_offset_within_tab),
-      source_tab_bounds.height() / 2);
+                                            cursor_x_offset_within_tab),
+      source_tab_bounds.y() + cursor_y_offset_within_tab);
+  desired_cursor_pos_in_widget = views::View::ConvertPointToTarget(
+      source_view->parent(), attached_context_, desired_cursor_pos_in_widget);
   views::View::ConvertPointToWidget(attached_context_,
                                     &desired_cursor_pos_in_widget);
   return desired_cursor_pos_in_widget.OffsetFromOrigin();

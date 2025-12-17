@@ -627,9 +627,10 @@ class TabDragController : public views::WidgetObserver,
   // DraggedTabView is constructed.
   gfx::Point start_point_in_screen_;
 
-  // Ratio of the x-coordinate of the `source_view_offset` to the width of the
-  // source view.
-  float offset_to_width_ratio_;
+  // Ratio of the x and y coordinates of the `source_view_offset` to the
+  // width and height of the source view.
+  float offset_to_width_ratio_ = 0;
+  float offset_to_height_ratio_ = 0;
 
   // Used to track the view that had focus in the window containing
   // `source_view_`. This is saved so that focus can be restored properly when
