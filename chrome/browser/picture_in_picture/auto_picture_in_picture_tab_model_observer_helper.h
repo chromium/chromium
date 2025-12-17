@@ -46,7 +46,7 @@ class AutoPictureInPictureTabModelObserverHelper final
 
  private:
   // Find the correct tab model to observe.
-  void ReevaluateObservedModelAndState();
+  void ReevaluateObservedModelAndState(bool check_tab_activation = true);
 
   // Updates `is_tab_activated_` based on the current model state and runs the
   // callback if it changed.
