@@ -1872,6 +1872,7 @@ android_library("chrome_unit_test_java_various") {
 
   sources = [
     "src/org/chromium/chrome/browser/ExampleOnDeviceUnitTest.java",
+    "src/org/chromium/chrome/browser/InitFeatureListEarlyTest.java",
     "src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
     "src/org/chromium/chrome/browser/IntentHandlerNativeTest.java",
     "src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridgeTest.java",

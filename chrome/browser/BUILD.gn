@@ -2780,6 +2780,8 @@ static_library("browser") {
       "android/history/history_deletion_info.h",
       "android/httpclient/http_client_bridge.cc",
       "android/httpclient/http_client_bridge.h",
+      "android/initialize_feature_list_android.cc",
+      "android/initialize_feature_list_android.h",
       "android/intent_handler.cc",
       "android/media/document_picture_in_picture_bridge_android.cc",
       "android/media/media_capture_devices_dispatcher_android.cc",

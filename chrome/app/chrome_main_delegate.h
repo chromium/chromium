@@ -96,6 +96,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
   void InitializeMemorySystem();
 
+  bool IsInitFeatureListEarly() override;
+
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
   std::unique_ptr<ChromeContentUtilityClient> chrome_content_utility_client_;
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
@@ -39,7 +40,10 @@ class ChromeMetricsServicesManagerClient;
 // whose behavior depends on DBusThreadManager being initialized.
 class ChromeFeatureListCreator {
  public:
-  ChromeFeatureListCreator();
+  // The instance of ChromeFeatureListCreator gets constructed on first access
+  // through this API and is never destroyed. This construction is generally a
+  // no-op until CreateFeatureList() is called.
+  static ChromeFeatureListCreator* GetInstance();
 
   ChromeFeatureListCreator(const ChromeFeatureListCreator&) = delete;
   ChromeFeatureListCreator& operator=(const ChromeFeatureListCreator&) = delete;
@@ -103,6 +107,10 @@ class ChromeFeatureListCreator {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  friend class base::NoDestructor<ChromeFeatureListCreator>;
+
+  ChromeFeatureListCreator();
+
   void CreatePrefService();
   void ConvertFlagsToSwitches();
   void CreateNetworkTimeTracker();
