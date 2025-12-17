@@ -12,7 +12,6 @@
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ipc/param_traits_macros.h"
 #include "ipc/param_traits_utils.h"
-#include "ui/gfx/ipc/buffer_types/gfx_param_traits.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gl/gpu_preference.h"
 
