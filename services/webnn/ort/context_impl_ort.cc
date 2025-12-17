@@ -4,7 +4,6 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
-#include "base/feature_list.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
@@ -21,6 +20,8 @@
 namespace webnn::ort {
 
 namespace {
+
+using Microsoft::WRL::ComPtr;
 
 // The feature flag allows us to try using device allocator to create device
 // tensors for EPs, e.g. OpenVINO EP.
@@ -422,9 +423,76 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     WebNNTensorImpl::RepresentationPtr representation) {
-  return base::unexpected(
-      mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                        "WebGPU Interop is not supported."));
+  // TODO(crbug.com/419598085): Enable multi-threaded WebNN with WebGPU interop
+  // once access to the representation has been made thread-safe.
+  if (!main_task_runner()->BelongsToCurrentThread()) {
+    LOG(ERROR) << "[WebNN] WebGPU interop is not implemented for "
+                  "multi-threaded WebNN.";
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kNotSupportedError, "Failed to create tensor."));
+  }
+
+  ComPtr<ID3D12Resource> d3d12_buffer = representation->GetD3D12Buffer();
+
+  // Validate D3D12 buffer size matches TensorInfo.
+  if (d3d12_buffer->GetDesc().Width !=
+      static_cast<uint64_t>(tensor_info->descriptor.PackedByteLength())) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+
+  D3D12_HEAP_PROPERTIES heap_properties = {};
+  HRESULT hr = d3d12_buffer->GetHeapProperties(&heap_properties, nullptr);
+  CHECK_EQ(hr, S_OK) << "[WebNN] Failed to get D3D12 buffer heap properties.";
+  ComPtr<ID3D12Device> device;
+  hr = d3d12_buffer->GetDevice(IID_PPV_ARGS(&device));
+  CHECK_EQ(hr, S_OK) << "[WebNN] Failed to get D3D12 device from buffer.";
+
+  if (heap_properties.Type != D3D12_HEAP_TYPE_CUSTOM) {
+    heap_properties = device->GetCustomHeapProperties(0, heap_properties.Type);
+  }
+
+  if (heap_properties.CPUPageProperty !=
+          D3D12_CPU_PAGE_PROPERTY_WRITE_COMBINE &&
+      heap_properties.CPUPageProperty != D3D12_CPU_PAGE_PROPERTY_WRITE_BACK) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "WebGPU interop is not supported."));
+  }
+
+  void* mapped_ptr = nullptr;
+  hr = d3d12_buffer->Map(0, nullptr, &mapped_ptr);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "[WebNN] Failed to map D3D12 buffer: "
+               << logging::SystemErrorCodeToString(hr);
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+  size_t size = d3d12_buffer->GetDesc().Width;
+  CHECK(base::IsValueInRangeForNumericType<int>(size));
+
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  ONNXTensorElementDataType ort_data_type =
+      WebnnToOnnxDataType(tensor_info->descriptor.data_type());
+  std::vector<int64_t> ort_shape =
+      WebnnToOnnxShape(tensor_info->descriptor.shape());
+
+  ScopedOrtMemoryInfo memory_info;
+  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(
+      OrtDeviceAllocator, OrtMemTypeCPU,
+      ScopedOrtMemoryInfo::Receiver(memory_info).get()));
+
+  ScopedOrtValue tensor;
+  CHECK_STATUS(ort_api->CreateTensorWithDataAsOrtValue(
+      memory_info.get(), mapped_ptr, size, ort_shape.data(), ort_shape.size(),
+      ort_data_type, ScopedOrtValue::Receiver(tensor).get()));
+  CHECK(tensor.get());
+
+  return base::MakeRefCounted<TensorImplOrt>(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info),
+      std::move(representation), size, std::move(tensor),
+      std::move(d3d12_buffer));
 }
 
 }  // namespace webnn::ort

@@ -7,14 +7,21 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notimplemented.h"
+#include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/error.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 
 namespace webnn::ort {
+
+namespace {
+using Microsoft::WRL::ComPtr;
+}  // namespace
 
 TensorImplOrt::TensorImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -38,6 +45,22 @@ TensorImplOrt::TensorImplOrt(
     std::ranges::fill(AsSpan(), 0);
   }
 }
+
+TensorImplOrt::TensorImplOrt(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    mojom::TensorInfoPtr tensor_info,
+    RepresentationPtr representation,
+    size_t size,
+    ScopedOrtValue tensor,
+    ComPtr<ID3D12Resource> d3d12_buffer)
+    : WebNNTensorImpl(std::move(receiver),
+                      std::move(context),
+                      std::move(tensor_info),
+                      std::move(representation)),
+      d3d12_buffer_(std::move(d3d12_buffer)),
+      tensor_(std::move(tensor)),
+      size_(size) {}
 
 TensorImplOrt::~TensorImplOrt() = default;
 
@@ -71,13 +94,50 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
 }
 
 bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
-  NOTIMPLEMENTED();
-  return false;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  CHECK(d3d12_buffer_);
+
+  scoped_refptr<gfx::D3DSharedFence> d3d_write_fence =
+      access->GetAcquireFence();
+  if (d3d_write_fence) {
+    ComPtr<ID3D12Fence> wait_fence = d3d_write_fence->GetD3D12Fence();
+    if (!wait_fence) {
+      HANDLE fence_handle = d3d_write_fence->GetSharedHandle();
+      CHECK(fence_handle) << "[WebNN] Invalid shared handle in fence.";
+      ComPtr<ID3D12Device> device;
+      HRESULT hr = d3d12_buffer_->GetDevice(IID_PPV_ARGS(&device));
+      CHECK_EQ(hr, S_OK) << "[WebNN] Failed to get D3D device from buffer";
+      hr = device->OpenSharedHandle(fence_handle, IID_PPV_ARGS(&wait_fence));
+      CHECK_EQ(hr, S_OK) << "[WebNN] Failed to open shared handle";
+    }
+    if (wait_fence->GetCompletedValue() < d3d_write_fence->GetFenceValue()) {
+      // Passing nullptr as the event handle to SetEventOnCompletion means the
+      // function will block until the fence is signaled.
+      //
+      // Blocking is acceptable because WebNN interop is behind a feature flag
+      // and will be moved to a separate thread later.
+      // TODO(crbug.com/419598085): Remove comment once WebNN interop is moved
+      // to a separate thread.
+      HRESULT hr = wait_fence->SetEventOnCompletion(
+          d3d_write_fence->GetFenceValue(), nullptr);
+      CHECK_EQ(hr, S_OK) << "[WebNN] Failed to set event on completion";
+    }
+  }
+
+  representation_access_ = std::move(access);
+
+  return true;
 }
 
 void TensorImplOrt::ExportTensorImpl(ScopedAccessPtr access,
                                      ExportTensorCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  // Since we wait for all WebNN operations to complete, we only need to release
+  // the ScopedAccess to end WebNN access.
+
+  std::move(callback).Run(context_->GenVerifiedSyncToken());
 }
 
 }  // namespace webnn::ort
