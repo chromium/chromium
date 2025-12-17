@@ -1,0 +1,16 @@
+Name: scopeguard
+URL: https://crates.io/crates/scopeguard
+Version: 1.2.0
+Revision: bb988222848d39b0b9037b29da3a3a1eb05ebf4b
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/scopeguard-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A RAII scope guard that will run a given closure when it goes out of scope,
+even if the code between panics (assuming unwinding panic).
+
+Defines the macros `defer!`, `defer_on_unwind!`, `defer_on_success!` as
+shorthands for guards with one of the implemented strategies.
+

@@ -1,0 +1,11 @@
+Name: bit-set
+URL: https://crates.io/crates/bit-set
+Version: 0.8.0
+Revision: 2b8861d23b53d63d326d2694ddabde6e7b19fbd0
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/bit-set-v0_8/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A set of bits

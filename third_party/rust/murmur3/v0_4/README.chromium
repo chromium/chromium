@@ -1,0 +1,10 @@
+Name: murmur3
+URL: https://crates.io/crates/murmur3
+Version: 0.4.1
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/murmur3-v0_4/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A rust implementation of Murmur3 hash

@@ -1,0 +1,11 @@
+Name: bit-vec
+URL: https://crates.io/crates/bit-vec
+Version: 0.8.0
+Revision: 16d8d5ed27e9d379ae5d531ffcf7535cd02ef8f3
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/bit-vec-v0_8/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A vector of bits

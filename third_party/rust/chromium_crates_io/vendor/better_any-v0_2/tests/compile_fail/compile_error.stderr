@@ -1,0 +1,11 @@
+error: lifetime may not live long enough
+ --> $DIR/compile_error.rs:5:5
+  |
+4 | fn testlt<'a, 'b>(any: &'a dyn Any) -> &'b i32 {
+  |           --  -- lifetime `'b` defined here
+  |           |
+  |           lifetime `'a` defined here
+5 |     downcast_any(any).unwrap()
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ function was supposed to return data with lifetime `'b` but it is returning data with lifetime `'a`
+  |
+  = help: consider adding the following bound: `'a: 'b`

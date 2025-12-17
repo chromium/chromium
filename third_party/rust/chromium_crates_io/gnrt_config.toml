@@ -105,6 +105,9 @@ allow_unsafe = false
 [crate.anstyle.extra_kv]
 allow_unsafe = true
 
+[crate.antlr4rust]
+extra_kv = { allow_unsafe = true }
+
 [crate.anyhow.extra_kv]
 allow_unsafe = true
 
@@ -119,6 +122,15 @@ allow_unsafe = false
 
 [crate.base64.extra_kv]
 allow_unsafe = false
+
+[crate.better_any]
+extra_kv = { allow_unsafe = true }
+
+[crate.bit-set]
+extra_kv = { allow_unsafe = true }
+
+[crate.bit-vec]
+extra_kv = { allow_unsafe = true }
 
 [crate.bitflags.extra_kv]
 allow_unsafe = false
@@ -395,6 +407,9 @@ allow_unsafe = false
 [crate.llguidance.extra_kv]
 allow_unsafe = true
 
+[crate.lock_api]
+extra_kv = { allow_unsafe = true }
+
 [crate.log.extra_kv]
 allow_unsafe = true
 
@@ -408,6 +423,9 @@ allow_unsafe = true
 allow_unsafe = false
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+
+[crate.murmur3]
+extra_kv = { allow_unsafe = false }
 
 [crate.num-bigint.extra_kv]
 allow_unsafe = true
@@ -424,6 +442,15 @@ allow_unsafe = false
 [crate.num-traits]
 # Configures the has_total_cmp feature, not necessary
 remove_build_rs = true
+extra_kv = { allow_unsafe = true }
+
+[crate.once_cell]
+extra_kv = { allow_unsafe = true }
+
+[crate.parking_lot]
+extra_kv = { allow_unsafe = true }
+
+[crate.parking_lot_core]
 extra_kv = { allow_unsafe = true }
 
 [crate.png.extra_kv]
@@ -483,6 +510,9 @@ shipped = false
 
 [crate.ryu.extra_kv]
 allow_unsafe = true
+
+[crate.scopeguard]
+extra_kv = { allow_unsafe = true }
 
 [crate.serde]
 build_script_outputs = [ "private.rs" ]
@@ -583,14 +613,23 @@ allow_unsafe = true
 [crate.toktrie.extra_kv]
 allow_unsafe = false
 
+[crate.typed-arena]
+extra_kv = { allow_unsafe = true }
+
 [crate.unicode-ident.extra_kv]
 allow_unsafe = true
 
 [crate.unicode-width.extra_kv]
 allow_unsafe = false
 
+[crate.uuid]
+extra_kv = { allow_unsafe = true }
+
 [crate.winapi-util.extra_kv]
 allow_unsafe = true
+
+[crate.windows-link]
+extra_kv = { allow_unsafe = false }
 
 [crate.windows-sys.extra_kv]
 allow_unsafe = false

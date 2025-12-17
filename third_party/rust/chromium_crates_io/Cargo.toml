@@ -16,6 +16,7 @@ version = "0.1.0"
 [workspace]
 
 [dependencies]
+antlr4rust = "0.5.2"
 anyhow = "1.0.98"
 base64 = "0.22"
 bitflags = "2"
@@ -136,4 +137,3 @@ features = ["float64_representable_durations"]
 version = "6.0.0"
 default-features = false
 features = ["deflate-flate2"]
-

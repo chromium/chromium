@@ -1,0 +1,48 @@
+[package]
+name = "better_any"
+version = "0.2.0"
+authors = ["Konstantin Anisimov <rrevenantt@gmail.com>"]
+homepage = "https://github.com/rrevenantt/better_typeid"
+repository = "https://github.com/rrevenantt/better_typeid"
+license = "MIT OR Apache-2.0"
+description = "Type id and Any for non static types"
+readme = "../README.md"
+keywords = ["Any", "TypeId", "downcast"]
+edition = "2018"
+
+
+[features]
+default = ["any"]
+any = []
+nightly = []
+derive = ["better_typeid_derive"]
+
+[dependencies]
+better_typeid_derive = { version = "=0.1.1", optional=true }
+
+[dev-dependencies]
+trybuild = "=1.0"
+macrotest = "=1.0"
+
+[[test]]
+name = "main_test"
+path = "tests/test.rs"
+required-features = ["derive"]
+
+[[test]]
+name = "expand"
+path = "tests/expand.rs"
+required-features = ["derive"]
+
+[[test]]
+name = "nightly"
+path = "tests/nightly.rs"
+required-features = ["nightly"]
+
+[[test]]
+name = "compile_fail"
+path = "tests/compile_fail.rs"
+required-features = ["nightly"]
+
+[package.metadata.docs.rs]
+all-features = true

@@ -1,0 +1,11 @@
+Name: once_cell
+URL: https://crates.io/crates/once_cell
+Version: 1.21.3
+Revision: 29e3d93cf0367fc6c295785b282b8101127a3e16
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/once_cell-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Single assignment cells and lazy values.
