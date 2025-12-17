@@ -19193,6 +19193,21 @@
             ]
         }
     ],
+    "PointerLockOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PointerLockOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PolicyBlocklistProceedUntilResponse": [
         {
             "platforms": [
