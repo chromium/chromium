@@ -55,6 +55,8 @@ class DelayHandler final : public AudioHandler {
 
   scoped_refptr<AudioParamHandler> delay_time_;
   double max_delay_time_;
+
+  AudioFloatArray delay_time_sample_accurate_values_;
 };
 
 }  // namespace blink

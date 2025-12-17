@@ -40,7 +40,8 @@ DelayHandler::DelayHandler(AudioNode& node,
       sample_rate_(sample_rate),
       render_quantum_frames_(node.context()->renderQuantumSize()),
       delay_time_(&delay_time),
-      max_delay_time_(max_delay_time) {
+      max_delay_time_(max_delay_time),
+      delay_time_sample_accurate_values_(render_quantum_frames_) {
   AddInput();
   AddOutput(kNumberOfOutputs);
   Initialize();
@@ -95,15 +96,11 @@ void DelayHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   if (!IsInitialized()) {
     return;
   }
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
-  CHECK_EQ(render_quantum_frames_, render_quantum_frames_expected);
-  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
-  float values[render_quantum_frames_expected];
+
+  DCHECK_LE(frames_to_process, render_quantum_frames_);
+
   delay_time_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      delay_time_sample_accurate_values_.as_span().first(frames_to_process));
 }
 
 void DelayHandler::Initialize() {
