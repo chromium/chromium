@@ -317,6 +317,10 @@ class CONTENT_EXPORT Database {
       std::vector<PartitionedLockManager::PartitionedLockRequest>&
           lock_requests);
 
+  // Returns `nullptr` if the object store does not exist.
+  const blink::IndexedDBObjectStoreMetadata* GetObjectStoreMetadataIfExists(
+      int64_t object_store_id) const;
+
   // Gets metadata for the given object store ID, asserting that the object
   // store exists.
   const blink::IndexedDBObjectStoreMetadata& GetObjectStoreMetadata(

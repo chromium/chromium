@@ -256,6 +256,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
                blink::mojom::IDBPutMode put_mode,
                std::vector<blink::IndexedDBIndexKeys> index_keys,
                blink::mojom::IDBTransaction::PutCallback callback,
+               mojo::ReportBadMessageCallback bad_message_callback,
                Transaction* transaction);
 
   Status DoSetIndexKeys(int64_t object_store_id,

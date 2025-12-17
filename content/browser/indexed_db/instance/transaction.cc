@@ -462,6 +462,11 @@ void Transaction::Put(int64_t object_store_id,
     return;
   }
 
+  if (mode_ == blink::mojom::IDBTransactionMode::ReadOnly) {
+    receiver_.ReportBadMessage("Attempted to Put on readonly txn.");
+    return;
+  }
+
   if (!connection()->IsConnected()) {
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
                         "Not connected.");
@@ -473,7 +478,7 @@ void Transaction::Put(int64_t object_store_id,
 
   if (input_value->bits.storage_type() ==
       mojo_base::BigBuffer::StorageType::kInvalidBuffer) {
-    mojo::ReportBadMessage("Attempted to Put invalid SSV.");
+    receiver_.ReportBadMessage("Attempted to Put invalid SSV.");
     return;
   }
 
@@ -482,7 +487,7 @@ void Transaction::Put(int64_t object_store_id,
   if (!input_value->external_objects.empty() &&
       !CreateExternalObjects(input_value, &external_objects,
                              &total_blob_size)) {
-    mojo::ReportBadMessage("Couldn't deserialize external objects.");
+    receiver_.ReportBadMessage("Couldn't deserialize external objects.");
     return;
   }
 
@@ -507,8 +512,10 @@ void Transaction::Put(int64_t object_store_id,
       "PutRecord",
       base::BindOnce(&Transaction::DoPut, base::Unretained(this),
                      object_store_id, std::move(value), std::move(key), mode,
-                     std::move(index_keys), std::move(wrapped_callback)),
-      ObjectStoreMustExist(object_store_id));
+                     std::move(index_keys), std::move(wrapped_callback),
+                     // The validation checks are a bit too complex to squeeze
+                     // into a lambda, so they're performed in `DoPut`.
+                     receiver_.GetBadMessageCallback()));
 }
 
 Status Transaction::DoPut(int64_t object_store_id,
@@ -517,15 +524,14 @@ Status Transaction::DoPut(int64_t object_store_id,
                           blink::mojom::IDBPutMode put_mode,
                           std::vector<IndexedDBIndexKeys> index_keys,
                           blink::mojom::IDBTransaction::PutCallback callback,
+                          mojo::ReportBadMessageCallback bad_message_callback,
                           Transaction* txn) {
   CHECK_EQ(this, txn);
   TRACE_EVENT2("IndexedDB", "Database::PutOperation", "txn.id", id(), "size",
                value.SizeEstimate());
-  CHECK_NE(mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   in_flight_memory_ -= value.SizeEstimate();
   CHECK(in_flight_memory_.IsValid());
-
   auto on_put_error = [&txn](blink::mojom::IDBTransaction::PutCallback callback,
                              blink::mojom::IDBException code,
                              const std::u16string& message) {
@@ -535,17 +541,14 @@ Status Transaction::DoPut(int64_t object_store_id,
             blink::mojom::IDBError::New(code, message)));
   };
 
-  if (!connection()->database()->IsObjectStoreIdInMetadata(object_store_id)) {
-    on_put_error(std::move(callback), blink::mojom::IDBException::kUnknownError,
-                 u"Bad request");
+  const blink::IndexedDBObjectStoreMetadata* object_store =
+      connection()->database()->GetObjectStoreMetadataIfExists(object_store_id);
+  if (!object_store) {
+    std::move(bad_message_callback).Run("Invalid object_store_id");
     return Status::InvalidArgument("Invalid object_store_id.");
   }
-
-  const IndexedDBObjectStoreMetadata& object_store =
-      connection()->database()->GetObjectStoreMetadata(object_store_id);
-  CHECK(object_store.auto_increment || key.IsValid());
   if (put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
-      object_store.auto_increment && !key.IsValid()) {
+      object_store->auto_increment && !key.IsValid()) {
     IndexedDBKey auto_inc_key = GenerateAutoIncrementKey(object_store_id);
     key_was_generated = true;
     if (!auto_inc_key.IsValid()) {
@@ -558,6 +561,7 @@ Status Transaction::DoPut(int64_t object_store_id,
   }
 
   if (!key.IsValid()) {
+    std::move(bad_message_callback).Run("Invalid key");
     return Status::InvalidArgument("Invalid key");
   }
 
@@ -578,7 +582,7 @@ Status Transaction::DoPut(int64_t object_store_id,
   std::string error_message;
   bool obeys_constraints = false;
   bool backing_store_success = MakeIndexWriters(
-      this, object_store, key, key_was_generated, std::move(index_keys),
+      this, *object_store, key, key_was_generated, std::move(index_keys),
       &index_writers, &error_message, &obeys_constraints);
   if (!backing_store_success) {
     on_put_error(std::move(callback), blink::mojom::IDBException::kUnknownError,
@@ -607,7 +611,7 @@ Status Transaction::DoPut(int64_t object_store_id,
     }
   }
 
-  if (object_store.auto_increment &&
+  if (object_store->auto_increment &&
       put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
       key.type() == blink::mojom::IDBKeyType::Number) {
     TRACE_EVENT1("IndexedDB", "Database::PutOperation.AutoIncrement", "txn.id",
@@ -628,7 +632,7 @@ Status Transaction::DoPut(int64_t object_store_id,
   }
 
   bucket_context()->delegate().on_content_changed.Run(
-      connection()->database()->name(), object_store.name);
+      connection()->database()->name(), object_store->name);
   return Status::OK();
 }
 

@@ -1128,6 +1128,15 @@ bool Database::CanBeDestroyed() {
   return !connection_coordinator_.HasTasks() && connections_.empty();
 }
 
+const IndexedDBObjectStoreMetadata* Database::GetObjectStoreMetadataIfExists(
+    int64_t object_store_id) const {
+  auto object_store_it = metadata().object_stores.find(object_store_id);
+  if (object_store_it != metadata().object_stores.end()) {
+    return &object_store_it->second;
+  }
+  return nullptr;
+}
+
 const IndexedDBObjectStoreMetadata& Database::GetObjectStoreMetadata(
     int64_t object_store_id) const {
   auto object_store_it = metadata().object_stores.find(object_store_id);
