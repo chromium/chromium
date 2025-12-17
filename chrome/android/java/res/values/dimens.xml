@@ -354,6 +354,7 @@ found in the LICENSE file.
 
     <!-- Settings dimensions -->
     <dimen name="settings_single_column_layout_margin">16dp</dimen>
+    <dimen name="settings_two_column_layout_margin">32dp</dimen>
     <dimen name="settings_wide_display_min_padding">16dp</dimen>
     <dimen name="settings_min_multi_column_screen_width">840dp</dimen>
     <dimen name="settings_narrow_header_width">360dp</dimen>
@@ -364,6 +365,7 @@ found in the LICENSE file.
     <dimen name="settings_detailed_title_height">48dp</dimen>
     <dimen name="settings_multi_column_divider_size">24dp</dimen>
     <dimen name="settings_detailed_title_offset">16dp</dimen>
+    <dimen name="settings_help_icon_size">24dp</dimen>
 
     <!-- Sharing Hub dimensions -->
     <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>
