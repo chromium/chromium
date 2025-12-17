@@ -214,7 +214,7 @@ TEST_F(BackingStoreSqliteTest, PutDeleteCommitBlob) {
 TEST_F(BackingStoreSqliteTest, BlobChunking) {
   constexpr int kBlobChunkSizeForTest = 137;
   DatabaseConnection::OverrideMaxBlobSizeForTesting(
-      base::ByteCount(kBlobChunkSizeForTest));
+      base::ByteSize(kBlobChunkSizeForTest));
 
   auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
   ASSERT_TRUE(db_creation_result.has_value());

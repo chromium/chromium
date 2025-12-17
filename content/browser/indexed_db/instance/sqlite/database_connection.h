@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -254,7 +254,7 @@ class CONTENT_EXPORT DatabaseConnection {
       int compression_type);
 
   // Changes the size at which blobs are chunked.
-  static void OverrideMaxBlobSizeForTesting(base::ByteCount size);
+  static void OverrideMaxBlobSizeForTesting(base::ByteSize size);
 
  private:
   friend class BackingStoreSqliteTest;
