@@ -344,6 +344,7 @@ if (!is_android && !is_mac) {
         deps += [
           "//chrome/browser/ash/locale",
           "//chrome/browser/ash/schedqos",
+          "//chromeos/ash/experiences/arc:arc_base_utils",
         ]
       }
 

@@ -17,11 +17,6 @@ source_set("tab_groups") {
   public_deps = [
     "//extensions/browser",
     "//extensions/buildflags",
-
-    # TODO(crbug.com/364501603): Move this into deps. Because it's a public dep
-    # it is accidentally satisfying dependencies for other modules (e.g.
-    # prefetch, on_device_translation, and cookie_controls).
-    "//chrome/browser/ui",
   ]
 
   deps = [
@@ -29,6 +24,7 @@ source_set("tab_groups") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/common/extensions",
