@@ -6082,6 +6082,7 @@
       keywords: ["none", "auto"],
       default_value: "none",
       typedom_types: ["Keyword"],
+      runtime_flag: "OverlayProperty",
     },
     {
       name: "touch-action",

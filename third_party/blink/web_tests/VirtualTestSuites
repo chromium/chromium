@@ -2354,6 +2354,27 @@
     ],
     "expires": "never"
   },
+  {
+    "prefix": "overlay-disabled",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-overlay.html",
+      "external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-overlay-re-add-during-transition.html",
+      "external/wpt/html/semantics/popovers/chrome-392042073-crash.html",
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.html",
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-animations.html",
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-exit-animation.html"
+    ],
+    "args": [
+      "--disable-features=OverlayProperty"
+    ],
+    "expires": "Dec 1, 2026",
+    "owners": [
+      "jarhar@chromium.org"
+    ]
+  },
   "The overlay-scrollbar virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {

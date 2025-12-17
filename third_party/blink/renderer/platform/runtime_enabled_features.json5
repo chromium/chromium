@@ -3786,6 +3786,13 @@
       status: "stable",
     },
     {
+      // Enables the CSS overlay property. When this flag is disabled, top
+      // layer exit animations will work without the need for using the overlay
+      // property.
+      name: "OverlayProperty",
+      status: "stable",
+    },
+    {
       name: "OverscrollCustomization",
       status: "experimental",
     },

@@ -1749,17 +1749,17 @@ void StyleResolver::ApplyBaseStyleNoCache(
           {.origin = CascadeOrigin::kUserAgent});
     }
 
-    // UA rule: * { overlay: none !important }
-    // and
-    // UA rule: ::scroll-marker-group { contain: size !important; }
-    // Implemented here because DCHECKs ensures we don't add universal rules to
-    // the UA sheets. Note that this is a universal rule in any namespace.
-    // Adding this to the html.css would only do the override in the HTML
-    // namespace since the sheet has a default namespace.
-    cascade.MutableMatchResult().AddMatchedProperties(
-        UniversalOverlayUserAgentDeclaration(),
-        /*mixin_parameter_bindings=*/nullptr,
-        {.origin = CascadeOrigin::kUserAgent});
+    if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+      // UA rule: * { overlay: none !important }
+      // Implemented here because DCHECKs ensures we don't add universal rules
+      // to the UA sheets. Note that this is a universal rule in any namespace.
+      // Adding this to the html.css would only do the override in the HTML
+      // namespace since the sheet has a default namespace.
+      cascade.MutableMatchResult().AddMatchedProperties(
+          UniversalOverlayUserAgentDeclaration(),
+          /*mixin_parameter_bindings=*/nullptr,
+          {.origin = CascadeOrigin::kUserAgent});
+    }
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme

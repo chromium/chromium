@@ -10588,6 +10588,10 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
         return style->HasScrollMarkerGroupAfter();
       }
     }
+    if (!RuntimeEnabledFeatures::OverlayPropertyEnabled() &&
+        pseudo_id == kPseudoIdBackdrop) {
+      return IsInTopLayer();
+    }
     return style->CanGeneratePseudoElement(pseudo_id);
   }
   return false;

@@ -3095,8 +3095,10 @@ bool ComputedStyle::GapRuleColorIsTransparent(
 }
 
 bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
-  return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
-         StyleType() == kPseudoIdBackdrop;
+  return StyleType() == kPseudoIdBackdrop ||
+         (element.IsInTopLayer() &&
+          (!RuntimeEnabledFeatures::OverlayPropertyEnabled() ||
+           Overlay() == EOverlay::kAuto));
 }
 
 bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {

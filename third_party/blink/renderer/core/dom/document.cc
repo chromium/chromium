@@ -8648,8 +8648,12 @@ void Document::RemoveFinishedTopLayerElements() {
   HeapVector<Member<Element>> to_remove;
   for (const auto& pending_removal : top_layer_elements_pending_removal_) {
     Element* element = pending_removal->element;
-    const ComputedStyle* style = element->GetComputedStyle();
-    if (!style || style->Overlay() == EOverlay::kNone) {
+    const ComputedStyle* style =
+        RuntimeEnabledFeatures::OverlayPropertyEnabled()
+            ? element->GetComputedStyle()
+            : ComputedStyle::NullifyEnsured(element->GetComputedStyle());
+    if (!style || (RuntimeEnabledFeatures::OverlayPropertyEnabled() &&
+                   style->Overlay() == EOverlay::kNone)) {
       to_remove.push_back(element);
     }
   }
