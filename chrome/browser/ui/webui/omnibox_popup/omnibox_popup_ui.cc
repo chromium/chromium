@@ -126,7 +126,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kCloseComposeboxByEscape.Get());
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
                      omnibox::kContextMenuEnableMultiTabSelection.Get());
-  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
+  source->AddBoolean("composeboxContextDragAndDropEnabled",
+                     omnibox::kEnableContextDragAndDrop.Get());
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   source->AddBoolean("composeboxShowContextMenu",
                      omnibox::kShowContextMenu.Get());
