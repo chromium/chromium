@@ -939,6 +939,12 @@ void TracingHandler::GetCategories(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+Response TracingHandler::GetTrackEventDescriptor(Binary* out_descriptor) {
+  *out_descriptor = Binary::fromVector(
+      TracingController::GetInstance()->GetTrackEventDescriptor());
+  return Response::Success();
+}
+
 void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
                                         const std::string& error_msg) {
   if (!error_msg.empty()) {

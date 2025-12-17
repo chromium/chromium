@@ -61,6 +61,7 @@
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
+#include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -110,6 +111,30 @@ void AddCategoriesToSet(
       continue;
     }
     category_set.insert(registry.GetCategory(i)->name);
+  }
+}
+
+void AddCategoriesToDescriptor(
+    const perfetto::internal::TrackEventCategoryRegistry& registry,
+    perfetto::protos::gen::TrackEventDescriptor& descriptor) {
+  for (size_t i = 0; i < registry.category_count(); ++i) {
+    const auto* category = registry.GetCategory(i);
+    if (category->IsGroup()) {
+      continue;
+    }
+    auto* proto_category = descriptor.add_available_categories();
+    proto_category->set_name(category->name);
+    if (category->description) {
+      proto_category->set_description(category->description);
+    }
+    std::vector<std::string> tags_vector;
+    for (const char* tag : category->tags) {
+      if (!tag) {
+        break;
+      }
+      tags_vector.push_back(tag);
+    }
+    *proto_category->mutable_tags() = std::move(tags_vector);
   }
 }
 
@@ -216,6 +241,15 @@ bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
 
   std::move(callback).Run(category_set);
   return true;
+}
+
+std::vector<uint8_t> TracingControllerImpl::GetTrackEventDescriptor() {
+  perfetto::protos::gen::TrackEventDescriptor track_event;
+  AddCategoriesToDescriptor(
+      base::perfetto_track_event::internal::kCategoryRegistry, track_event);
+  AddCategoriesToDescriptor(v8::GetTrackEventCategoryRegistry(), track_event);
+  AddCategoriesToDescriptor(GetWebRtcTrackEventCategoryRegistry(), track_event);
+  return track_event.SerializeAsArray();
 }
 
 bool TracingControllerImpl::StartTracing(
