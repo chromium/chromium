@@ -286,7 +286,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
     [self.viewController
         addChildViewController:self.locationBarBadgeCoordinator.viewController];
-    // TODO(crbug.com/450006763): After migration, refactor to
+    // TODO(crbug.com/469528076): After migration, refactor to
     // setLocationBarBadgeView and set it in LocationBarSteadyView.
     [self.viewController
         setContextualPanelEntrypointView:self.locationBarBadgeCoordinator

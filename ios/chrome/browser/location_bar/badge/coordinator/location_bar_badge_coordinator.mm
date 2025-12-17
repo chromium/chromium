@@ -107,14 +107,19 @@
   self.viewController.incognitoBadgeViewController = incognitoViewController;
 }
 
-// TODO(crbug.com/454351425): Remove pragma when Contextual Panel Entry Point is
-// integrated with LocationBarBadgeMediator.
+// TODO(crbug.com/454351425): Remove Contextual Panel pragma when
+// `kLocationBarBadgeMigration` is enabled by default.
 #pragma mark - ContextualPanelEntrypointMediatorDelegate
 #pragma mark - LocationBarBadgeMediatorDelegate
 
+// TODO(crbug.com/454351425): Remove when `kLocationBarBadgeMigration` is
+// enabled by default.
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (ContextualPanelEntrypointMediator*)mediator {
-  // TODO(crbug.com/450006763): Connect coordinator to LocationBarCoordinator.
+  return [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+- (BOOL)canShowChip:(LocationBarBadgeMediator*)mediator {
   return [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 

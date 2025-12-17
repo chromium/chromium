@@ -530,8 +530,7 @@ TEST_F(LocationBarBadgeMediatorTest,
   const base::HistogramTester histogram_tester;
   OCMExpect(
       [mock_entrypoint_iph_handler_ dismissContextualPanelEntrypointIPH:NO]);
-  OCMStub([mock_delegate_ canShowLargeContextualPanelEntrypoint:[OCMArg any]])
-      .andReturn(YES);
+  OCMStub([mock_delegate_ canShowChip:[OCMArg any]]).andReturn(YES);
 
   OCMExpect([mock_consumer_ showBadge]);
   OCMExpect([mock_consumer_ setBadgeConfig:[OCMArg any]]);
@@ -589,8 +588,7 @@ TEST_F(LocationBarBadgeMediatorTest,
 }
 
 TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelIPHEntrypointAppears) {
-  OCMStub([mock_delegate_ canShowLargeContextualPanelEntrypoint:[OCMArg any]])
-      .andReturn(YES);
+  OCMStub([mock_delegate_ canShowChip:[OCMArg any]]).andReturn(YES);
   EXPECT_CALL(
       *tracker_,
       WouldTriggerHelpUI(testing::Ref(

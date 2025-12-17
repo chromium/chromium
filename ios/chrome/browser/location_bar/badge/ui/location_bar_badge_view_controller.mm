@@ -282,7 +282,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     return;
   }
 
-  // TODO(crbug.com/450006763): If no priority badge shows, manipulate self.view
+  // TODO(crbug.com/453296003): If no priority badge shows, manipulate self.view
   // to change into "placeholder" badge.
   // Records why the placeholder view is hidden. These are not mutually
   // exclusive, price tracking will take precedence over messages.
@@ -593,7 +593,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // User swiped the expanded badge towards the leading edge to dismiss it.
 - (void)expandedBadgeSwiped {
   [self collapseBadgeContainer];
-  // TODO(crbug.com/450006763): Create and use a metric for Location Bar Badge.
+  // TODO(crbug.com/454072799): Create and use a metric for Location Bar Badge.
   base::RecordAction(base::UserMetricsAction(
       "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
 }

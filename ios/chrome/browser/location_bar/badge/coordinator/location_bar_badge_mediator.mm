@@ -394,8 +394,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Transforms the badge into a chip and starts the timers to transition back to
 // the default badge state.
 - (void)setupAndExpandChip:(LocationBarBadgeConfiguration*)badgeConfig {
-  if (![self shouldShowChip:badgeConfig] ||
-      ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+  if (![self shouldShowChip:badgeConfig] || ![self.delegate canShowChip:self]) {
     // Enable fullscreen in case it was disabled when trying to show the IPH.
     [self.delegate enableFullscreen];
     return;
@@ -736,7 +735,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
          !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
-         [self.delegate canShowLargeContextualPanelEntrypoint:self];
+         [self.delegate canShowChip:self];
 }
 
 // Creates a `LocationBarBadgeConfiguration` from

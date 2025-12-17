@@ -12,6 +12,7 @@
 
 // Whether the location bar is currently in a state where the large Contextual
 // Panel entrypoint can be shown.
+// TODO(crbug.com/454351425): Refactor function name to not use "entrypoint".
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (LocationBarBadgeCoordinator*)coordinator;
 

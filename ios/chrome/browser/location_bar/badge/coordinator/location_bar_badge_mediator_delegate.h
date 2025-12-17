@@ -9,15 +9,12 @@
 
 @class LocationBarBadgeMediator;
 
-// TODO(crbug.com/454351425): Refactor function names to not use "entrypoint".
 // Usage is for parity with ContextualPanelEntryPointConsumer.
 // Delegate for the LocationBarBadgeMediator;
 @protocol LocationBarBadgeMediatorDelegate
 
-// Whether the location bar is currently in a state where the large Contextual
-// Panel entrypoint can be shown.
-- (BOOL)canShowLargeContextualPanelEntrypoint:
-    (LocationBarBadgeMediator*)mediator;
+// Whether the location bar is currently in a state where the chip can be shown.
+- (BOOL)canShowChip:(LocationBarBadgeMediator*)mediator;
 
 // Sets the location label of the location bar centered relative to the content
 // around it when centered is passed as YES. Otherwise, resets it to the
