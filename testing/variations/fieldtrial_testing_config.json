@@ -26346,21 +26346,6 @@
             ]
         }
     ],
-    "UseTerminationStatusMemoryExhaustion": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseTerminationStatusMemoryExhaustion"
-                    ]
-                }
-            ]
-        }
-    ],
     "UserBypassUI": [
         {
             "platforms": [
