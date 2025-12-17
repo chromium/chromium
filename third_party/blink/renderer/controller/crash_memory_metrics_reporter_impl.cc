@@ -72,10 +72,8 @@ void CrashMemoryMetricsReporterImpl::SampleMemoryState(TimerBase*) {
   base::SystemMemoryInfo meminfo;
   base::GetSystemMemoryInfo(&meminfo);
   OomInterventionMetrics metrics;
-  metrics.current_available_memory =
-      base::ByteCount::FromUnsigned(meminfo.available.InBytes());
-  metrics.current_swap_free =
-      base::ByteCount::FromUnsigned(meminfo.swap_free.InBytes());
+  metrics.current_available_memory = meminfo.available;
+  metrics.current_swap_free = meminfo.swap_free;
   last_reported_metrics_ = metrics;
   WriteIntoSharedMemory();
 }
