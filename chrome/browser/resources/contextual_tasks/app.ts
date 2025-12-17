@@ -41,7 +41,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   static override get properties() {
     return {
       isShownInTab_: {type: Boolean},
-      threadUrl_: {type: String},
       threadTitle_: {type: String},
       contextTabs_: {type: Array},
       darkMode_: {
@@ -55,7 +54,6 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   accessor isShownInTab_: boolean = true;  // Most start in a tab.
-  protected accessor threadUrl_: string = '';
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
@@ -88,7 +86,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     chrome.metricsPrivate.recordBoolean(
         'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
-    this.threadUrl_ = url.url;
+    this.$.threadFrame.src = url.url;
   }
 
   override async connectedCallback() {
@@ -188,7 +186,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     // null, and therefore not yet set, do not load the URL.
     if (this.pendingUrl_ && this.commonSearchParams_ &&
         this.oauthToken_ != null) {
-      this.threadUrl_ = this.pendingUrl_;
+      this.$.threadFrame.src = this.pendingUrl_;
       this.pendingUrl_ = '';
     }
   }
