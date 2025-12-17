@@ -20,7 +20,6 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -32,7 +31,6 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
@@ -75,7 +73,13 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
   void InitServiceWithExternalProvidersAndUserType(bool standalone,
                                                    bool is_child) {
-    InitializeEmptyExtensionService();
+    ExtensionServiceInitParams params;
+    params.prefs_content = "";
+    // Avoid using the real SyncService instance, to avoid conflicting
+    // with sync startup notifications, specifically clearing of
+    // existing account data upon startup when there is no sync metadata.
+    params.use_test_sync_service = true;
+    InitializeExtensionService(std::move(params));
 
     if (is_child) {
       testing_profile()->SetIsSupervisedProfile();
@@ -267,17 +271,6 @@ TEST_F(ExternalProviderImplChromeOSTest, PolicyDisabled) {
 // completed.
 TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
   InitServiceWithExternalProviders(true);
-  // Since MergeDataAndStartSyncing() is called manually below, avoid using the
-  // real SyncService instance, to avoid conflicting with sync startup
-  // notifications, specifically clearing of existing account data upon startup
-  // when there is no sync metadata, which will hit a CHECK.
-  // TODO(crbug.com/425913203): Remove once usage of TestSyncService is
-  // simplified.
-  SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(), base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-        return std::make_unique<syncer::TestSyncService>();
-      }));
 
   // User is logged in.
   auto identity_test_env_profile_adaptor =
