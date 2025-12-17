@@ -639,6 +639,12 @@ class GtestTestInstance(test_instance.TestInstance):
       self._deobfuscator = deobfuscator.DeobfuscatorPool(
           self._proguard_mapping_path)
 
+  def GetLogcatPackageNames(self):
+    ret = {x.GetPackageName() for x in self._additional_apks}
+    if pkg := self.package:
+      ret.add(pkg)
+    return ','.join(sorted(ret))
+
   def MaybeDeobfuscateLines(self, lines):
     if not self._deobfuscator:
       return lines

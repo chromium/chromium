@@ -247,12 +247,6 @@ _CURRENT_FOCUS_CRASH_RE = re.compile(
     r'\s*mCurrentFocus.*Application (Error|Not Responding): (\S+)}')
 
 
-def _GetTargetPackageName(test_apk):
-  # apk_under_test does not work for smoke tests, where it is set to an
-  # apk that is not listed as the targetPackage in the test apk's manifest.
-  return test_apk.GetAllInstrumentations()[0]['android:targetPackage']
-
-
 def _ParseTestListOutputFromChromiumListener(output):
   parser = instrumentation_parser.InstrumentationParser(output)
   tests_by_class = collections.defaultdict(list)
@@ -349,8 +343,6 @@ class LocalDeviceInstrumentationTestRun(
 
   #override
   def SetUp(self):
-    target_package = _GetTargetPackageName(self._test_instance.test_apk)
-
     @local_device_environment.handle_shard_failures_with(
         self._env.DenylistDevice)
     @measures.timed_func('device_setup')
@@ -587,7 +579,7 @@ class LocalDeviceInstrumentationTestRun(
         cmd = ['am', 'set-debug-app', '--persistent']
         if self._test_instance.wait_for_java_debugger:
           cmd.append('-w')
-        cmd.append(target_package)
+        cmd.append(self._test_instance.target_package)
         dev.RunShellCommand(cmd, check_return=True)
 
       @measures.timed_func('device_setup', 'approve_app_links')
@@ -732,7 +724,7 @@ class LocalDeviceInstrumentationTestRun(
     if self._test_instance.wait_for_java_debugger:
       logging.warning('*' * 80)
       logging.warning('Waiting for debugger to attach to process: %s',
-                      target_package)
+                      self._test_instance.target_package)
       logging.warning('*' * 80)
 
   #override
@@ -1591,7 +1583,7 @@ class LocalDeviceInstrumentationTestRun(
     try:
       with self._env.output_manager.ArchivedTempfile(
           stream_name, 'logcat', output_manager.Datatype.TEXT,
-          _GetTargetPackageName(self._test_instance.test_apk)) as logcat_file:
+          self._test_instance.GetLogcatPackageNames()) as logcat_file:
         symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
             device.product_cpu_abi)
         with symbolizer:

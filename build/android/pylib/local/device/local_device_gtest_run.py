@@ -793,7 +793,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     try:
       with self._env.output_manager.ArchivedTempfile(
           stream_name, 'logcat', output_manager.Datatype.TEXT,
-          self._test_instance.package) as logcat_file:
+          self._test_instance.GetLogcatPackageNames()) as logcat_file:
         symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
             device.product_cpu_abi)
         with symbolizer:
