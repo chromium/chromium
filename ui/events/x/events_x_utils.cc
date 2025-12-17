@@ -378,38 +378,48 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
     return key->opcode == x11::KeyEvent::Press ? EventType::kKeyPressed
                                                : EventType::kKeyReleased;
   }
-  if (auto* xbutton = xev.As<x11::ButtonEvent>()) {
-    int button = static_cast<int>(xbutton->detail);
-    bool wheel = button >= kMinWheelButton && button <= kMaxWheelButton;
-    if (xbutton->opcode == x11::ButtonEvent::Press) {
-      return wheel ? EventType::kMousewheel : EventType::kMousePressed;
-    }
-    // Drop wheel events; we should've already scrolled on the press.
-    return wheel ? EventType::kUnknown : EventType::kMouseReleased;
-  }
-  if (auto* motion = xev.As<x11::MotionNotifyEvent>()) {
-    bool primary_button = static_cast<bool>(
-        motion->state & (x11::KeyButMask::Button1 | x11::KeyButMask::Button2 |
-                         x11::KeyButMask::Button3));
-    return primary_button ? EventType::kMouseDragged : EventType::kMouseMoved;
-  }
-  if (auto* crossing = xev.As<x11::CrossingEvent>()) {
-    bool enter = crossing->opcode == x11::CrossingEvent::EnterNotify;
-    // The standard on Windows is to send a MouseMove event when the mouse
-    // first enters a window instead of sending a special mouse enter event.
-    // To be consistent we follow the same style.
-    return enter ? EventType::kMouseMoved : EventType::kMouseExited;
-  }
-  if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
-    TouchFactory* factory = TouchFactory::GetInstance();
-    if (!factory->ShouldProcessDeviceEvent(*xievent))
-      return EventType::kUnknown;
+  TouchFactory* touch_factory = TouchFactory::GetInstance();
+  auto* xievent = xev.As<x11::Input::DeviceEvent>();
 
-    // This check works only for master and floating slave devices. That is
-    // why it is necessary to check for the Touch events in the following
-    // switch statement to account for attached-slave touchscreens.
-    if (factory->IsTouchDevice(xievent->sourceid))
+  // This check works only for master and floating non-master devices. That is
+  // why it is still necessary to check for the Touch events in the following
+  // switch statement to account for attached-non-master touchscreens.
+  x11::Input::DeviceId device_id =
+      xievent ? xievent->sourceid : static_cast<x11::Input::DeviceId>(0);
+  bool is_touch_device = touch_factory->IsTouchDevice(device_id);
+
+  if (!is_touch_device) {
+    if (auto* xbutton = xev.As<x11::ButtonEvent>()) {
+      int button = static_cast<int>(xbutton->detail);
+      bool wheel = button >= kMinWheelButton && button <= kMaxWheelButton;
+      if (xbutton->opcode == x11::ButtonEvent::Press) {
+        return wheel ? EventType::kMousewheel : EventType::kMousePressed;
+      }
+      // Drop wheel events; we should've already scrolled on the press.
+      return wheel ? EventType::kUnknown : EventType::kMouseReleased;
+    }
+    if (auto* motion = xev.As<x11::MotionNotifyEvent>()) {
+      bool primary_button = static_cast<bool>(
+          motion->state & (x11::KeyButMask::Button1 | x11::KeyButMask::Button2 |
+                           x11::KeyButMask::Button3));
+      return primary_button ? EventType::kMouseDragged : EventType::kMouseMoved;
+    }
+    if (auto* crossing = xev.As<x11::CrossingEvent>()) {
+      bool enter = crossing->opcode == x11::CrossingEvent::EnterNotify;
+      // The standard on Windows is to send a MouseMove event when the mouse
+      // first enters a window instead of sending a special mouse enter event.
+      // To be consistent we follow the same style.
+      return enter ? EventType::kMouseMoved : EventType::kMouseExited;
+    }
+  }
+  if (xievent) {
+    if (!touch_factory->ShouldProcessDeviceEvent(*xievent)) {
+      return EventType::kUnknown;
+    }
+
+    if (is_touch_device) {
       return GetTouchEventType(xev);
+    }
 
     switch (xievent->opcode) {
       case x11::Input::DeviceEvent::TouchBegin:
