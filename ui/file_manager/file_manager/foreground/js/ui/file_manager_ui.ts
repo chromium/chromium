@@ -45,7 +45,6 @@ import {FilesConfirmDialog} from './files_confirm_dialog.js';
 import {FilesMenuItem} from './files_menu.js';
 import {GearMenu} from './gear_menu.js';
 import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.js';
-import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
 import {ListContainer, ListType} from './list_container.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
@@ -111,12 +110,6 @@ export class FileManagerUI {
    * TODO(b:289003444): Make it readonly after fixing tests.
    */
   /* readonly */ defaultTaskPicker: DefaultTaskDialog;
-
-  /**
-   * Dialog for installing .deb files
-   * TODO(b:289003444): Make it readonly after fixing tests.
-   */
-  /* readonly */ installLinuxPackageDialog: InstallLinuxPackageDialog;
 
   /**
    * Dialog for import Crostini Image Files (.tini)
@@ -318,9 +311,6 @@ export class FileManagerUI {
     this.copyConfirmDialog.setOkLabel(str('CONFIRM_COPY_BUTTON_LABEL'));
 
     this.defaultTaskPicker = new DefaultTaskDialog(this.element);
-
-    this.installLinuxPackageDialog =
-        new InstallLinuxPackageDialog(this.element);
 
     this.importCrostiniImageDialog =
         new ImportCrostiniImageDialog(this.element);

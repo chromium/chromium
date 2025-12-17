@@ -28,13 +28,6 @@ export function isFilesAppId(appId: string): boolean {
   return appId === LEGACY_FILES_EXTENSION_ID || appId === SWA_APP_ID;
 }
 
-/** The task descriptor of 'Install Linux package'. */
-export const INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
-  appId: LEGACY_FILES_EXTENSION_ID,
-  taskType: 'app',
-  actionId: 'install-linux-package',
-} as const;
-
 /**
  * Gets the default task from tasks. In case there is no such task (i.e. all
  * tasks are generic file handlers), then return null.
@@ -131,9 +124,6 @@ export function annotateTasks(
       } else if (parsedActionId === 'open-in-office') {
         annotateTask.iconUrl =
             toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
-      } else if (parsedActionId === 'install-linux-package') {
-        annotateTask.iconType = 'crostini';
-        annotateTask.title = str('TASK_INSTALL_LINUX_PACKAGE');
       } else if (parsedActionId === 'import-crostini-image') {
         annotateTask.iconType = 'tini';
         annotateTask.title = str('TASK_IMPORT_CROSTINI_IMAGE');

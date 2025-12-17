@@ -376,20 +376,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             });
       });
 
-  apiFunctions.setHandleRequest(
-      'getLinuxPackageInfo', function(entry, successCallback, failureCallback) {
-        const url = getEntryURL(entry);
-        fileManagerPrivateInternal.getLinuxPackageInfo(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
-      'installLinuxPackage', function(entry, successCallback, failureCallback) {
-        const url = getEntryURL(entry);
-        fileManagerPrivateInternal.installLinuxPackage(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
   apiFunctions.setCustomCallback('searchFiles', function(callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(getExternalFileEntry);

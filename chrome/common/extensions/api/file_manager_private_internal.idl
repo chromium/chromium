@@ -61,10 +61,6 @@ namespace fileManagerPrivateInternal {
   callback GetRecentFilesCallback = void(EntryDescription[] entries);
   callback GetCrostiniSharedPathsCallback =
       void(CrostiniSharedPathResponse response);
-  callback GetLinuxPackageInfoCallback =
-      void(fileManagerPrivate.LinuxPackageInfo linux_package_info);
-  callback InstallLinuxPackageCallback =
-      void(fileManagerPrivate.InstallLinuxPackageStatus status);
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
   callback GetVolumeRootCallback = void(EntryDescription rootDir);
@@ -158,12 +154,6 @@ namespace fileManagerPrivateInternal {
         boolean observeFirstForSession,
         DOMString vmName,
         GetCrostiniSharedPathsCallback callback);
-    static void getLinuxPackageInfo(
-        DOMString url,
-        GetLinuxPackageInfoCallback callback);
-    static void installLinuxPackage(
-        DOMString url,
-        InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);
     static void toggleAddedToHoldingSpace(
         DOMString[] urls, boolean add,

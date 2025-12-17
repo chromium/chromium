@@ -21,10 +21,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::LaunchContainerApplicationResponse> callback)>;
-  using UninstallPackageOwningFileCallback = base::RepeatingCallback<void(
-      const vm_tools::cicerone::UninstallPackageOwningFileRequest&,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::UninstallPackageOwningFileResponse>)>;
 
   // Returns the fake global instance if initialized. May return null.
   static FakeCiceroneClient* Get();
@@ -37,8 +33,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   void RemoveObserver(Observer* observer) override;
   bool IsContainerStartedSignalConnected() override;
   bool IsContainerShutdownSignalConnected() override;
-  bool IsInstallLinuxPackageProgressSignalConnected() override;
-  bool IsUninstallPackageProgressSignalConnected() override;
   bool IsLxdContainerCreatedSignalConnected() override;
   bool IsLxdContainerDeletedSignalConnected() override;
   bool IsLxdContainerDownloadingSignalConnected() override;
@@ -62,26 +56,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ContainerAppIconRequest& request,
       chromeos::DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
           callback) override;
-  void GetLinuxPackageInfo(
-      const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
-          callback) override;
-  // Fake version of the method that installs an application inside a running
-  // Container. |callback| is called after the method call finishes. This does
-  // not cause progress events to be fired.
-  void InstallLinuxPackage(
-      const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::InstallLinuxPackageResponse> callback) override;
-  // If SetOnUninstallPackageOwningFileCallback has been called, it
-  // just triggers that callback. Otherwise, it generates a task to call
-  // |callback| with the response from
-  // set_uninstall_package_owning_file_response.
-  void UninstallPackageOwningFile(
-      const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::UninstallPackageOwningFileResponse> callback)
-      override;
   void CreateLxdContainer(
       const vm_tools::cicerone::CreateLxdContainerRequest& request,
       chromeos::DBusMethodCallback<
@@ -185,20 +159,11 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   // Sets a callback to be called during any call to LaunchContainerApplication.
   void SetOnLaunchContainerApplicationCallback(
       LaunchContainerApplicationCallback callback);
-  // Sets a callback to be called during any call to UninstallPackageOwningFile.
-  void SetOnUninstallPackageOwningFileCallback(
-      UninstallPackageOwningFileCallback callback);
   void set_container_started_signal_connected(bool connected) {
     is_container_started_signal_connected_ = connected;
   }
   void set_container_shutdown_signal_connected(bool connected) {
     is_container_shutdown_signal_connected_ = connected;
-  }
-  void set_install_linux_package_progress_signal_connected(bool connected) {
-    is_install_linux_package_progress_signal_connected_ = connected;
-  }
-  void set_uninstall_package_progress_signal_connected(bool connected) {
-    is_uninstall_package_progress_signal_connected_ = connected;
   }
   void set_lxd_container_created_signal_connected(bool connected) {
     is_lxd_container_created_signal_connected_ = connected;
@@ -251,30 +216,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ContainerAppIconResponse&
           container_app_icon_response) {
     container_app_icon_response_ = container_app_icon_response;
-  }
-  const vm_tools::cicerone::LinuxPackageInfoRequest&
-  get_most_recent_linux_package_info_request() const {
-    return most_recent_linux_package_info_request_;
-  }
-  void set_linux_package_info_response(
-      const vm_tools::cicerone::LinuxPackageInfoResponse&
-          get_linux_package_info_response) {
-    get_linux_package_info_response_ = get_linux_package_info_response;
-  }
-  const vm_tools::cicerone::InstallLinuxPackageRequest&
-  get_most_recent_install_linux_package_request() const {
-    return most_recent_install_linux_package_request_;
-  }
-  void set_install_linux_package_response(
-      const vm_tools::cicerone::InstallLinuxPackageResponse&
-          install_linux_package_response) {
-    install_linux_package_response_ = install_linux_package_response;
-  }
-  void set_uninstall_package_owning_file_response(
-      const vm_tools::cicerone::UninstallPackageOwningFileResponse&
-          uninstall_package_owning_file_response) {
-    uninstall_package_owning_file_response_ =
-        uninstall_package_owning_file_response;
   }
   void set_create_lxd_container_response(
       const vm_tools::cicerone::CreateLxdContainerResponse&
@@ -455,10 +396,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal);
   void NotifyImportLxdContainerProgress(
       const vm_tools::cicerone::ImportLxdContainerProgressSignal& signal);
-  void InstallLinuxPackageProgress(
-      const vm_tools::cicerone::InstallLinuxPackageProgressSignal& signal);
-  void UninstallPackageProgress(
-      const vm_tools::cicerone::UninstallPackageProgressSignal& signal);
   void NotifyPendingAppListUpdates(
       const vm_tools::cicerone::PendingAppListUpdatesSignal& signal);
   void NotifyUpgradeContainerProgress(
@@ -482,8 +419,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
  private:
   bool is_container_started_signal_connected_ = true;
   bool is_container_shutdown_signal_connected_ = true;
-  bool is_install_linux_package_progress_signal_connected_ = true;
-  bool is_uninstall_package_progress_signal_connected_ = true;
   bool is_lxd_container_created_signal_connected_ = true;
   bool is_lxd_container_deleted_signal_connected_ = true;
   bool is_lxd_container_downloading_signal_connected_ = true;
@@ -522,15 +457,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   vm_tools::cicerone::LaunchContainerApplicationResponse
       launch_container_application_response_;
   vm_tools::cicerone::ContainerAppIconResponse container_app_icon_response_;
-  vm_tools::cicerone::LinuxPackageInfoRequest
-      most_recent_linux_package_info_request_;
-  vm_tools::cicerone::LinuxPackageInfoResponse get_linux_package_info_response_;
-  vm_tools::cicerone::InstallLinuxPackageRequest
-      most_recent_install_linux_package_request_;
-  vm_tools::cicerone::InstallLinuxPackageResponse
-      install_linux_package_response_;
-  vm_tools::cicerone::UninstallPackageOwningFileResponse
-      uninstall_package_owning_file_response_;
   vm_tools::cicerone::CreateLxdContainerResponse create_lxd_container_response_;
   vm_tools::cicerone::DeleteLxdContainerResponse delete_lxd_container_response_;
   vm_tools::cicerone::StartLxdContainerResponse start_lxd_container_response_;
@@ -579,7 +505,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   vm_tools::cicerone::OsRelease lxd_container_os_release_;
 
   LaunchContainerApplicationCallback launch_container_application_callback_;
-  UninstallPackageOwningFileCallback uninstall_package_owning_file_callback_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

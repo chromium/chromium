@@ -25,7 +25,6 @@ import * as gearMenuTests from './file_manager/gear_menu.js';
 import * as gridViewTests from './file_manager/grid_view.js';
 import * as guestOsTests from './file_manager/guest_os.js';
 import * as holdingSpaceTests from './file_manager/holding_space.js';
-import * as installLinuxPackageDialogTests from './file_manager/install_linux_package_dialog.js';
 import * as keyboardOperationsTests from './file_manager/keyboard_operations.js';
 import * as manageDialogTests from './file_manager/manage_dialog.js';
 import * as metadataTests from './file_manager/metadata.js';
@@ -84,7 +83,6 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...gridViewTests,
   ...guestOsTests,
   ...holdingSpaceTests,
-  ...installLinuxPackageDialogTests,
   ...keyboardOperationsTests,
   ...manageDialogTests,
   ...metadataTests,

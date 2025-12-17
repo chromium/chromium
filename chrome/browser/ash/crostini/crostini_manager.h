@@ -63,26 +63,6 @@ extern const char kCrostiniStabilityHistogram[];
 class CrostiniUpgradeAvailableNotification;
 class CrostiniSshfs;
 
-class LinuxPackageOperationProgressObserver {
- public:
-  // A successfully started package install will continually fire progress
-  // events until it returns a status of SUCCEEDED or FAILED. The
-  // |progress_percent| field is given as a percentage of the given step,
-  // DOWNLOADING or INSTALLING. If |status| is FAILED, the |error_message|
-  // will contain output of the failing installation command.
-  virtual void OnInstallLinuxPackageProgress(
-      const guest_os::GuestId& container_id,
-      InstallLinuxPackageProgressStatus status,
-      int progress_percent,
-      const std::string& error_message) = 0;
-
-  // A successfully started package uninstall will continually fire progress
-  // events until it returns a status of SUCCEEDED or FAILED.
-  virtual void OnUninstallPackageProgress(const guest_os::GuestId& container_id,
-                                          UninstallPackageProgressStatus status,
-                                          int progress_percent) = 0;
-};
-
 class PendingAppListUpdatesObserver : public base::CheckedObserver {
  public:
   // Called whenever the kPendingAppListUpdatesMethod signal is sent.
@@ -416,40 +396,6 @@ class CrostiniManager : public KeyedService,
                             int scale,
                             GetContainerAppIconsCallback callback);
 
-  // Asynchronously retrieve information about a Linux Package (.deb) inside the
-  // container.
-  using GetLinuxPackageInfoCallback =
-      base::OnceCallback<void(const LinuxPackageInfo&)>;
-  void GetLinuxPackageInfo(const guest_os::GuestId& container_id,
-                           std::string package_path,
-                           GetLinuxPackageInfoCallback callback);
-
-  // Begin installation of a Linux Package inside the container. If the
-  // installation is successfully started, further updates will be sent to
-  // added LinuxPackageOperationProgressObservers.
-  using InstallLinuxPackageCallback = CrostiniResultCallback;
-  void InstallLinuxPackage(const guest_os::GuestId& container_id,
-                           std::string package_path,
-                           InstallLinuxPackageCallback callback);
-
-  // Begin installation of a Linux Package inside the container. If the
-  // installation is successfully started, further updates will be sent to
-  // added LinuxPackageOperationProgressObservers. Uses a package_id, given
-  // by "package_name;version;arch;data", to identify the package to install
-  // from the APT repository.
-  void InstallLinuxPackageFromApt(const guest_os::GuestId& container_id,
-                                  std::string package_id,
-                                  InstallLinuxPackageCallback callback);
-
-  // Begin uninstallation of a Linux Package inside the container. The package
-  // is identified by its associated .desktop file's ID; we don't use package_id
-  // to avoid problems with stale package_ids (such as after upgrades). If the
-  // uninstallation is successfully started, further updates will be sent to
-  // added LinuxPackageOperationProgressObservers.
-  void UninstallPackageOwningFile(const guest_os::GuestId& container_id,
-                                  std::string desktop_file_id,
-                                  CrostiniResultCallback callback);
-
   // Runs all the steps required to restart the given crostini vm and container.
   // The optional |observer| tracks progress. If provided, it must be alive
   // until the restart completes (i.e. when |callback| is called) or the request
@@ -509,12 +455,6 @@ class CrostiniManager : public KeyedService,
   using RemoveCrostiniCallback = CrostiniResultCallback;
   void AddRemoveCrostiniCallback(RemoveCrostiniCallback remove_callback);
 
-  // Add/remove observers for package install and uninstall progress.
-  void AddLinuxPackageOperationProgressObserver(
-      LinuxPackageOperationProgressObserver* observer);
-  void RemoveLinuxPackageOperationProgressObserver(
-      LinuxPackageOperationProgressObserver* observer);
-
   // Add/remove observers for pending app list updates.
   void AddPendingAppListUpdatesObserver(
       PendingAppListUpdatesObserver* observer);
@@ -568,12 +508,6 @@ class CrostiniManager : public KeyedService,
       const vm_tools::cicerone::ContainerStartedSignal& signal) override;
   void OnContainerShutdown(
       const vm_tools::cicerone::ContainerShutdownSignal& signal) override;
-  void OnInstallLinuxPackageProgress(
-      const vm_tools::cicerone::InstallLinuxPackageProgressSignal& signal)
-      override;
-  void OnUninstallPackageProgress(
-      const vm_tools::cicerone::UninstallPackageProgressSignal& signal)
-      override;
   void OnLxdContainerCreated(
       const vm_tools::cicerone::LxdContainerCreatedSignal& signal) override;
   void OnLxdContainerDeleted(
@@ -829,22 +763,6 @@ class CrostiniManager : public KeyedService,
       GetContainerAppIconsCallback callback,
       std::optional<vm_tools::cicerone::ContainerAppIconResponse> response);
 
-  // Callback for CrostiniManager::GetLinuxPackageInfo.
-  void OnGetLinuxPackageInfo(
-      GetLinuxPackageInfoCallback callback,
-      std::optional<vm_tools::cicerone::LinuxPackageInfoResponse> response);
-
-  // Callback for CrostiniManager::InstallLinuxPackage.
-  void OnInstallLinuxPackage(
-      InstallLinuxPackageCallback callback,
-      std::optional<vm_tools::cicerone::InstallLinuxPackageResponse> response);
-
-  // Callback for CrostiniManager::UninstallPackageOwningFile.
-  void OnUninstallPackageOwningFile(
-      CrostiniResultCallback callback,
-      std::optional<vm_tools::cicerone::UninstallPackageOwningFileResponse>
-          response);
-
   // Helper for CrostiniManager::MaybeUpdateCrostini. Makes blocking calls to
   // check for /dev/kvm.
   static void CheckPaths();
@@ -955,9 +873,6 @@ class CrostiniManager : public KeyedService,
   std::set<guest_os::GuestId> container_upgrade_prompt_shown_;
 
   std::vector<RemoveCrostiniCallback> remove_crostini_callbacks_;
-
-  base::ObserverList<LinuxPackageOperationProgressObserver>::
-      UncheckedAndDanglingUntriaged linux_package_operation_progress_observers_;
 
   base::ObserverList<PendingAppListUpdatesObserver>
       pending_app_list_updates_observers_;

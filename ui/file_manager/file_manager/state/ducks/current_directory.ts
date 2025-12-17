@@ -4,11 +4,10 @@
 
 import {getFileTasks} from '../../common/js/api.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
-import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {debug, descriptorEqual} from '../../common/js/util.js';
+import {annotateTasks, getDefaultTask} from '../../common/js/file_tasks.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {debug} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {DEFAULT_CROSTINI_VM} from '../../foreground/js/constants.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isInvalidationError, Slice} from '../../lib/base_store.js';
@@ -322,28 +321,6 @@ function updateDirectoryContentReducer(currentState: State, payload: {
   };
 }
 
-/**
- * Linux package installation is currently only supported for a single file
- * which is inside the Linux container, or in a shareable volume.
- * TODO(timloh): Instead of filtering these out, we probably should show a
- * dialog with an error message, similar to when attempting to run Crostini
- * tasks with non-Crostini entries.
- */
-function allowCrostiniTask(filesData: FileData[]) {
-  if (filesData.length !== 1) {
-    return false;
-  }
-  const fileData = filesData[0]!;
-  const rootType = (fileData.entry as FakeEntry).rootType;
-  if (rootType !== RootType.CROSTINI) {
-    return false;
-  }
-  const crostini = window.fileManager.crostini;
-  return crostini.canSharePath(
-      DEFAULT_CROSTINI_VM, (fileData.entry as Entry),
-      /*persiste=*/ false);
-}
-
 const emptyAction = (status: PropStatus) => updateFileTasks({
   tasks: [],
   policyDefaultHandlerStatus: undefined,
@@ -382,11 +359,6 @@ export async function*
     if (filesData.length === 0 || resultingTasks.tasks.length === 0) {
       yield emptyAction(PropStatus.SUCCESS);
       return;
-    }
-    if (!allowCrostiniTask(filesData)) {
-      resultingTasks.tasks = resultingTasks.tasks.filter(
-          (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
-              task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
     const tasks = annotateTasks(resultingTasks.tasks, filesData);
     resultingTasks.tasks = tasks;

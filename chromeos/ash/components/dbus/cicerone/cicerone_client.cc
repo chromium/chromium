@@ -62,14 +62,6 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_container_shutdown_signal_connected_;
   }
 
-  bool IsInstallLinuxPackageProgressSignalConnected() override {
-    return is_install_linux_package_progress_signal_connected_;
-  }
-
-  bool IsUninstallPackageProgressSignalConnected() override {
-    return is_uninstall_package_progress_signal_connected_;
-  }
-
   bool IsLxdContainerCreatedSignalConnected() override {
     return is_lxd_container_created_signal_connected_;
   }
@@ -174,77 +166,6 @@ class CiceroneClientImpl : public CiceroneClient {
         base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
                            vm_tools::cicerone::ContainerAppIconResponse>,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void GetLinuxPackageInfo(
-      const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
-          callback) override {
-    dbus::MethodCall method_call(
-        vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kGetLinuxPackageInfoMethod);
-    dbus::MessageWriter writer(&method_call);
-
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode LinuxPackageInfoRequest protobuf";
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
-
-    cicerone_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
-                           vm_tools::cicerone::LinuxPackageInfoResponse>,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void InstallLinuxPackage(
-      const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::InstallLinuxPackageResponse> callback) override {
-    dbus::MethodCall method_call(
-        vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kInstallLinuxPackageMethod);
-    dbus::MessageWriter writer(&method_call);
-
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode InstallLinuxPackageRequest protobuf";
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-      return;
-    }
-
-    cicerone_proxy_->CallMethod(
-        &method_call, kDefaultTimeout.InMilliseconds(),
-        base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
-                           vm_tools::cicerone::InstallLinuxPackageResponse>,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void UninstallPackageOwningFile(
-      const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::UninstallPackageOwningFileResponse> callback)
-      override {
-    dbus::MethodCall method_call(
-        vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kUninstallPackageOwningFileMethod);
-    dbus::MessageWriter writer(&method_call);
-
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR)
-          << "Failed to encode UninstallPackageOwningFileRequest protobuf";
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-      return;
-    }
-
-    cicerone_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(
-            &CiceroneClientImpl::OnDBusProtoResponse<
-                vm_tools::cicerone::UninstallPackageOwningFileResponse>,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void CreateLxdContainer(
@@ -801,22 +722,6 @@ class CiceroneClientImpl : public CiceroneClient {
                        weak_ptr_factory_.GetWeakPtr()));
     cicerone_proxy_->ConnectToSignal(
         vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kInstallLinuxPackageProgressSignal,
-        base::BindRepeating(
-            &CiceroneClientImpl::OnInstallLinuxPackageProgressSignal,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    cicerone_proxy_->ConnectToSignal(
-        vm_tools::cicerone::kVmCiceroneInterface,
-        vm_tools::cicerone::kUninstallPackageProgressSignal,
-        base::BindRepeating(
-            &CiceroneClientImpl::OnUninstallPackageProgressSignal,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    cicerone_proxy_->ConnectToSignal(
-        vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kLxdContainerCreatedSignal,
         base::BindRepeating(&CiceroneClientImpl::OnLxdContainerCreatedSignal,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -977,30 +882,6 @@ class CiceroneClientImpl : public CiceroneClient {
     }
     for (auto& observer : observer_list_) {
       observer.OnContainerShutdown(container_shutdown_signal);
-    }
-  }
-
-  void OnInstallLinuxPackageProgressSignal(dbus::Signal* signal) {
-    vm_tools::cicerone::InstallLinuxPackageProgressSignal proto;
-    dbus::MessageReader reader(signal);
-    if (!reader.PopArrayOfBytesAsProto(&proto)) {
-      LOG(ERROR) << "Failed to parse proto from DBus Signal";
-      return;
-    }
-    for (auto& observer : observer_list_) {
-      observer.OnInstallLinuxPackageProgress(proto);
-    }
-  }
-
-  void OnUninstallPackageProgressSignal(dbus::Signal* signal) {
-    vm_tools::cicerone::UninstallPackageProgressSignal proto;
-    dbus::MessageReader reader(signal);
-    if (!reader.PopArrayOfBytesAsProto(&proto)) {
-      LOG(ERROR) << "Failed to parse proto from DBus Signal";
-      return;
-    }
-    for (auto& observer : observer_list_) {
-      observer.OnUninstallPackageProgress(proto);
     }
   }
 
@@ -1184,12 +1065,6 @@ class CiceroneClientImpl : public CiceroneClient {
       is_container_started_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kContainerShutdownSignal) {
       is_container_shutdown_signal_connected_ = is_connected;
-    } else if (signal_name ==
-               vm_tools::cicerone::kInstallLinuxPackageProgressSignal) {
-      is_install_linux_package_progress_signal_connected_ = is_connected;
-    } else if (signal_name ==
-               vm_tools::cicerone::kUninstallPackageProgressSignal) {
-      is_uninstall_package_progress_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kLxdContainerCreatedSignal) {
       is_lxd_container_created_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kLxdContainerDeletedSignal) {
@@ -1235,8 +1110,6 @@ class CiceroneClientImpl : public CiceroneClient {
 
   bool is_container_started_signal_connected_ = false;
   bool is_container_shutdown_signal_connected_ = false;
-  bool is_install_linux_package_progress_signal_connected_ = false;
-  bool is_uninstall_package_progress_signal_connected_ = false;
   bool is_lxd_container_created_signal_connected_ = false;
   bool is_lxd_container_deleted_signal_connected_ = false;
   bool is_lxd_container_downloading_signal_connected_ = false;

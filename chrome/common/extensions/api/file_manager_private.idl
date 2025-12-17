@@ -100,13 +100,6 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 // File transfer progress state.
 enum TransferState { in_progress, queued, completed, failed };
 
-// The response when starting installing a Linux package.
-enum InstallLinuxPackageStatus {
-  started,
-  failed,
-  install_already_active
-};
-
 // Specifies type of event that is raised.
 enum FileWatchEventType { changed, error };
 
@@ -997,17 +990,6 @@ dictionary FileSystemProviderAction {
   DOMString? title;
 };
 
-// Information about a Linux package in response to GetLinuxPackageInfo.
-dictionary LinuxPackageInfo {
-  DOMString name;
-  DOMString version;
-
-  // A one-line summary of the project. Almost always present.
-  DOMString? summary;
-  // A longer description of the project. Almost always present.
-  DOMString? description;
-};
-
 // Payload data for crostini event.
 dictionary CrostiniEvent {
   // Is the event raised for enable, disable, share, or unshare.
@@ -1510,12 +1492,6 @@ callback GetVolumeRootCallback =
 callback GetCrostiniSharedPathsCallback =
     void(CrostiniSharedPathResponse response);
 
-// |linux_package_info| Package info for the queried package.
-callback GetLinuxPackageInfoCallback =
-    void(LinuxPackageInfo linux_package_info);
-
-callback InstallLinuxPackageCallback = void(InstallLinuxPackageStatus status);
-
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
 
@@ -1930,16 +1906,6 @@ interface Functions {
   static void getCrostiniSharedPaths(boolean observeFirstForSession,
                                      DOMString vmName,
                                      GetCrostiniSharedPathsCallback callback);
-
-  // Requests information about a Linux package. |entry| is a .deb file.
-  [nocompile, doesNotSupportPromises]
-  static void getLinuxPackageInfo([instanceOf=Entry] object entry,
-                                  GetLinuxPackageInfoCallback callback);
-
-  // Starts installation of a Linux package.
-  [nocompile, doesNotSupportPromises]
-  static void installLinuxPackage([instanceOf=Entry] object entry,
-                                  InstallLinuxPackageCallback callback);
 
   // Imports a Crostini Image File (.tini). This overrides the existing Linux
   // apps and files.

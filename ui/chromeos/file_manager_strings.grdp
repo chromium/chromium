@@ -400,46 +400,6 @@
   <message name="IDS_FILE_BROWSER_TASK_INSTALL_ISOLATED_WEB_APP" desc="Title of the action to install an Isolated Web App from a swbn file">
     Install
   </message>
-  <message name="IDS_FILE_BROWSER_TASK_INSTALL_LINUX_PACKAGE" desc="Title of the action to install a Linux package.">
-    Install with Linux
-  </message>
-
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_TITLE" desc="In the File Manager, the title shown in the dialog for installing a Linux application.">
-    Install app with Linux
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_LABEL" desc="In the File Manager, the label shown above the app information (name, version, etc.) in the dialog for installing a Linux application.">
-    Details
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_APPLICATION_LABEL" desc="In the File Manager, the label shown next to the application name in the dialog for installing a Linux application.">
-    Application
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_VERSION_LABEL" desc="In the File Manager, the label shown next to the version string in the dialog for installing a Linux application.">
-    Version
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_DESCRIPTION_LABEL" desc="In the File Manager, the label shown next to a block of text describing the application in the dialog for installing a Linux application.">
-    Description
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_LOADING" desc="In the File Manager, the message shown to indicate we are loading information about the application (name, version, etc.) in the dialog for installing a Linux application.">
-    Loading information...
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_NOT_AVAILABLE" desc="In the File Manager, the message shown to indicate we failed to load information about the application in the dialog for installing a Linux application.">
-    Failed to retrieve app info.
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DESCRIPTION" desc="In the File Manager, the message shown in the dialog for installing a Linux application.">
-    The Linux application will be available within your Terminal and may also show an icon in your Launcher.
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_INSTALL_BUTTON" desc="In the File Manager, the label on the button to begin installing a Linux application. ">
-    Install
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_INSTALLATION_STARTED" desc="In the File Manager, the dialog message when a Linux application installation successfully starts.">
-    Installation successfully started.
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_ERROR_TITLE" desc="In the File Manager, the title shown in the dialog for installing a Linux application when an error occurs.">
-    Error installing Linux application
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_ERROR_DESCRIPTION" desc="In the File Manager, the dialog message when a Linux application installation fails.">
-    An error occured during installation of your Linux application.
-  </message>
 
   <message name="IDS_FILE_BROWSER_RECOVERED_FILES_FROM_GOOGLE_DRIVE_DIRECTORY_NAME" desc="The name of the directory which stores files recovered from Google Drive directory when the locally stored Google Drive data is found to be broken.">
     Recovered files from Google Drive

@@ -4975,40 +4975,6 @@
     Please connect to the internet and try again.
   </message>
 
-  <!-- Linux install package messages -->
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_DISPLAY_SOURCE" desc="Source of the Notification for Linux package installation.">
-    Linux installer
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_QUEUED_TITLE" desc="Title of the Notification when an Linux application is queued waiting for other operations to finish.">
-    Install pending
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_IN_PROGRESS_TITLE" desc="Title of the Notification for an in-progress Linux package installation.">
-    Installation in progress
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_TITLE" desc="Title of the Notification for Linux package installation once installation has completed successfully.">
-    Installation complete
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_MESSAGE" desc="Message in the Notification for Linux package installation once installation has completed successfully.">
-    App is available in your terminal. There may also be an icon in your Launcher.
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_BUTTON" desc="Button text in the Notification for Linux package installation once installation has completed successfully.">
-    Launch
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_ERROR_TITLE" desc="Title of the Notification for Linux package installation when there is an error during installation.">
-    Error while installing
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_ERROR_MESSAGE" desc="Message in the Notification for Linux package installation when there is an error during installation.">
-    An error occurred during installation of your Linux application. Click on the notification for details.
-  </message>
-
-  <!-- Linux package installation failure messages -->
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_TITLE" desc="Title of the crostini package-install-failure dialog, which shows detailed error messages when installing .deb packages.">
-    Error installing Linux application
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_MESSAGE" desc="Message displayed to the user in the package-install-failure dialog.">
-    An error occurred during installation of your Linux application.
-  </message>
-
   <!-- Linux windows force closing messages -->
   <message name="IDS_CROSTINI_FORCE_CLOSE_TITLE_UNKNOWN" desc="Title of the crostini force-close dialog, which is used to destroy windows which are not responding. This version is used when we don't know which app is not responding.">
     Application not responding.

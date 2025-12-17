@@ -74,7 +74,6 @@ namespace {
 
 const char kVmName[] = "vm_name";
 const char kContainerName[] = "container_name";
-const char kPackageID[] = "package;1;;";
 constexpr int64_t kDiskSizeBytes = 4ll * 1024 * 1024 * 1024;  // 4 GiB
 const char kTerminaKernelVersion[] =
     "4.19.56-05556-gca219a5b1086 #3 SMP PREEMPT Mon Jul 1 14:36:38 CEST 2019";
@@ -480,117 +479,6 @@ TEST_F(CrostiniManagerTest, StopVmSuccess) {
 
   EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
   EXPECT_GE(fake_concierge_client_->stop_vm_call_count(), 1);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageRootAccessError) {
-  FakeCrostiniFeatures crostini_features;
-
-  crostini_features.set_root_access_allowed(false);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackage(container_id(), "/tmp/package.deb",
-                                          result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalNotConnectedError) {
-  fake_cicerone_client_->set_install_linux_package_progress_signal_connected(
-      false);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackage(container_id(), "/tmp/package.deb",
-                                          result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalSuccess) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-
-  response.set_status(vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  fake_cicerone_client_->set_install_linux_package_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackage(container_id(), "/tmp/package.deb",
-                                          result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalFailure) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-  std::string failure_reason = "Unit tests can't install Linux packages!";
-
-  response.set_status(vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
-  response.set_failure_reason(failure_reason);
-  fake_cicerone_client_->set_install_linux_package_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackage(container_id(), "/tmp/package.deb",
-                                          result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalOperationBlocked) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-  response.set_status(
-      vm_tools::cicerone::InstallLinuxPackageResponse::INSTALL_ALREADY_ACTIVE);
-  fake_cicerone_client_->set_install_linux_package_response(response);
-
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackage(container_id(), "/tmp/package.deb",
-                                          result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(),
-            CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE);
-}
-
-TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalNotConnectedError) {
-  fake_cicerone_client_->set_uninstall_package_progress_signal_connected(false);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UninstallPackageOwningFile(container_id(), "emacs",
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::UNINSTALL_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalSuccess) {
-  vm_tools::cicerone::UninstallPackageOwningFileResponse response;
-
-  response.set_status(
-      vm_tools::cicerone::UninstallPackageOwningFileResponse::STARTED);
-  fake_cicerone_client_->set_uninstall_package_owning_file_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UninstallPackageOwningFile(container_id(), "emacs",
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-}
-
-TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalFailure) {
-  vm_tools::cicerone::UninstallPackageOwningFileResponse response;
-  response.set_status(
-      vm_tools::cicerone::UninstallPackageOwningFileResponse::FAILED);
-  response.set_failure_reason("Didn't feel like it");
-  fake_cicerone_client_->set_uninstall_package_owning_file_response(response);
-
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UninstallPackageOwningFile(container_id(), "emacs",
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::UNINSTALL_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
-  vm_tools::cicerone::UninstallPackageOwningFileResponse response;
-  response.set_status(vm_tools::cicerone::UninstallPackageOwningFileResponse::
-                          BLOCKING_OPERATION_IN_PROGRESS);
-  fake_cicerone_client_->set_uninstall_package_owning_file_response(response);
-
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UninstallPackageOwningFile(container_id(), "emacs",
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(),
-            CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE);
 }
 
 TEST_F(CrostiniManagerTest, RegisterCreateOptions) {
@@ -2344,56 +2232,6 @@ TEST_F(CrostiniManagerTest, ImportContainerFailOnVmStop) {
 
   EXPECT_EQ(result_future.Get(),
             CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageFromAptSignalNotConnectedError) {
-  fake_cicerone_client_->set_install_linux_package_progress_signal_connected(
-      false);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackageFromApt(container_id(), kPackageID,
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageFromAptSignalSuccess) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-
-  response.set_status(vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  fake_cicerone_client_->set_install_linux_package_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackageFromApt(container_id(), kPackageID,
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageFromAptSignalFailure) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-
-  response.set_status(vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
-  response.set_failure_reason(
-      "Unit tests can't install Linux package from apt!");
-  fake_cicerone_client_->set_install_linux_package_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackageFromApt(container_id(), kPackageID,
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(), CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-}
-
-TEST_F(CrostiniManagerTest, InstallLinuxPackageFromAptSignalOperationBlocked) {
-  vm_tools::cicerone::InstallLinuxPackageResponse response;
-
-  response.set_status(
-      vm_tools::cicerone::InstallLinuxPackageResponse::INSTALL_ALREADY_ACTIVE);
-  fake_cicerone_client_->set_install_linux_package_response(response);
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->InstallLinuxPackageFromApt(container_id(), kPackageID,
-                                                 result_future.GetCallback());
-
-  EXPECT_EQ(result_future.Get(),
-            CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE);
 }
 
 TEST_F(CrostiniManagerTest, InstallerStatusInitiallyFalse) {

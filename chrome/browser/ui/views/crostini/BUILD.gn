@@ -12,8 +12,6 @@ static_library("crostini") {
     "crostini_expired_container_warning_view.h",
     "crostini_force_close_view.cc",
     "crostini_force_close_view.h",
-    "crostini_package_install_failure_view.cc",
-    "crostini_package_install_failure_view.h",
     "crostini_recovery_view.cc",
     "crostini_recovery_view.h",
     "crostini_uninstaller_view.cc",
@@ -85,7 +83,6 @@ source_set("browser_tests") {
 
   sources = [
     "crostini_force_close_view_browsertest.cc",
-    "crostini_package_install_failure_view_browsertest.cc",
     "crostini_recovery_view_browsertest.cc",
     "crostini_uninstaller_view_browsertest.cc",
     "crostini_update_filesystem_view_browsertest.cc",

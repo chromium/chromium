@@ -39,7 +39,6 @@ ts_files = [
   "file_manager/grid_view.ts",
   "file_manager/guest_os.ts",
   "file_manager/holding_space.ts",
-  "file_manager/install_linux_package_dialog.ts",
   "file_manager/keyboard_operations.ts",
   "file_manager/manage_dialog.ts",
   "file_manager/metadata.ts",

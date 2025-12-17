@@ -31,8 +31,6 @@
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_package_service.h"
-#include "chrome/browser/ash/crostini/crostini_package_service_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -894,86 +892,6 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
     entry.file_is_directory = true;
   }
   return RespondNow(WithArguments(response.ToValue()));
-}
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
-  using fmpi::GetLinuxPackageInfo::Params;
-  const optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  const scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
-
-  crostini::CrostiniPackageServiceFactory::GetForProfile(profile)
-      ->GetLinuxPackageInfo(
-          crostini::DefaultContainerId(),
-          file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
-          base::BindOnce(
-              &FileManagerPrivateInternalGetLinuxPackageInfoFunction::
-                  OnGetLinuxPackageInfo,
-              this));
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalGetLinuxPackageInfoFunction::
-    OnGetLinuxPackageInfo(
-        const crostini::LinuxPackageInfo& linux_package_info) {
-  fmp::LinuxPackageInfo result;
-  if (!linux_package_info.success) {
-    Respond(Error(linux_package_info.failure_reason));
-    return;
-  }
-
-  result.name = linux_package_info.name;
-  result.version = linux_package_info.version;
-  result.summary = linux_package_info.summary;
-  result.description = linux_package_info.description;
-
-  Respond(ArgumentList(fmpi::GetLinuxPackageInfo::Results::Create(result)));
-}
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
-  using fmpi::InstallLinuxPackage::Params;
-  const optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  const scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
-
-  crostini::CrostiniPackageServiceFactory::GetForProfile(profile)
-      ->QueueInstallLinuxPackage(
-          crostini::DefaultContainerId(),
-          file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
-          base::BindOnce(
-              &FileManagerPrivateInternalInstallLinuxPackageFunction::
-                  OnInstallLinuxPackage,
-              this));
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalInstallLinuxPackageFunction::
-    OnInstallLinuxPackage(crostini::CrostiniResult result) {
-  fmp::InstallLinuxPackageStatus response;
-  switch (result) {
-    case crostini::CrostiniResult::SUCCESS:
-      response = fmp::InstallLinuxPackageStatus::kStarted;
-      break;
-    case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED:
-      response = fmp::InstallLinuxPackageStatus::kFailed;
-      break;
-    case crostini::CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE:
-      response = fmp::InstallLinuxPackageStatus::kInstallAlreadyActive;
-      break;
-    default:
-      NOTREACHED();
-  }
-  Respond(ArgumentList(fmpi::InstallLinuxPackage::Results::Create(response)));
 }
 
 FileManagerPrivateInternalGetCustomActionsFunction::

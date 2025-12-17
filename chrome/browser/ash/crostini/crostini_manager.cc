@@ -2667,104 +2667,6 @@ void CrostiniManager::GetContainerAppIcons(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CrostiniManager::GetLinuxPackageInfo(
-    const guest_os::GuestId& container_id,
-    std::string package_path,
-    GetLinuxPackageInfoCallback callback) {
-  vm_tools::cicerone::LinuxPackageInfoRequest request;
-  request.set_owner_id(CryptohomeIdForProfile(profile_));
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_file_path(std::move(package_path));
-
-  GetCiceroneClient()->GetLinuxPackageInfo(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnGetLinuxPackageInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CrostiniManager::InstallLinuxPackage(
-    const guest_os::GuestId& container_id,
-    std::string package_path,
-    InstallLinuxPackageCallback callback) {
-  if (!CrostiniFeatures::Get()->IsRootAccessAllowed(profile_)) {
-    LOG(ERROR) << "Attempted to install package when root access to Crostini "
-                  "VM not allowed.";
-    std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-    return;
-  }
-
-  if (!GetCiceroneClient()->IsInstallLinuxPackageProgressSignalConnected()) {
-    // Technically we could still start the install, but we wouldn't be able
-    // to detect when the install completes, successfully or otherwise.
-    LOG(ERROR)
-        << "Attempted to install package when progress signal not connected.";
-    std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-    return;
-  }
-
-  vm_tools::cicerone::InstallLinuxPackageRequest request;
-  request.set_owner_id(owner_id_);
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_file_path(std::move(package_path));
-
-  GetCiceroneClient()->InstallLinuxPackage(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnInstallLinuxPackage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CrostiniManager::InstallLinuxPackageFromApt(
-    const guest_os::GuestId& container_id,
-    std::string package_id,
-    InstallLinuxPackageCallback callback) {
-  if (!GetCiceroneClient()->IsInstallLinuxPackageProgressSignalConnected()) {
-    // Technically we could still start the install, but we wouldn't be able
-    // to detect when the install completes, successfully or otherwise.
-    LOG(ERROR)
-        << "Attempted to install package when progress signal not connected.";
-    std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-    return;
-  }
-
-  vm_tools::cicerone::InstallLinuxPackageRequest request;
-  request.set_owner_id(owner_id_);
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_package_id(std::move(package_id));
-
-  GetCiceroneClient()->InstallLinuxPackage(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnInstallLinuxPackage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CrostiniManager::UninstallPackageOwningFile(
-    const guest_os::GuestId& container_id,
-    std::string desktop_file_id,
-    CrostiniResultCallback callback) {
-  if (!GetCiceroneClient()->IsUninstallPackageProgressSignalConnected()) {
-    // Technically we could still start the uninstall, but we wouldn't be able
-    // to detect when the uninstall completes, successfully or otherwise.
-    LOG(ERROR) << "Attempted to uninstall package when progress signal not "
-                  "connected.";
-    std::move(callback).Run(CrostiniResult::UNINSTALL_PACKAGE_FAILED);
-    return;
-  }
-
-  vm_tools::cicerone::UninstallPackageOwningFileRequest request;
-  request.set_owner_id(owner_id_);
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_desktop_file_id(std::move(desktop_file_id));
-
-  GetCiceroneClient()->UninstallPackageOwningFile(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnUninstallPackageOwningFile,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 bool CrostiniManager::GetCrostiniDialogStatus(DialogType dialog_type) const {
   return open_crostini_dialogs_.count(dialog_type) == 1;
 }
@@ -2926,16 +2828,6 @@ void CrostiniManager::AddShutdownContainerCallback(
 void CrostiniManager::AddRemoveCrostiniCallback(
     RemoveCrostiniCallback remove_callback) {
   remove_crostini_callbacks_.emplace_back(std::move(remove_callback));
-}
-
-void CrostiniManager::AddLinuxPackageOperationProgressObserver(
-    LinuxPackageOperationProgressObserver* observer) {
-  linux_package_operation_progress_observers_.AddObserver(observer);
-}
-
-void CrostiniManager::RemoveLinuxPackageOperationProgressObserver(
-    LinuxPackageOperationProgressObserver* observer) {
-  linux_package_operation_progress_observers_.RemoveObserver(observer);
 }
 
 void CrostiniManager::AddPendingAppListUpdatesObserver(
@@ -3343,82 +3235,6 @@ void CrostiniManager::OnContainerShutdown(
   HandleContainerShutdown(container_id);
 }
 
-void CrostiniManager::OnInstallLinuxPackageProgress(
-    const vm_tools::cicerone::InstallLinuxPackageProgressSignal& signal) {
-  if (signal.owner_id() != owner_id_) {
-    return;
-  }
-  if (signal.progress_percent() < 0 || signal.progress_percent() > 100) {
-    LOG(ERROR) << "Received install progress with invalid progress of "
-               << signal.progress_percent() << "%.";
-    return;
-  }
-
-  InstallLinuxPackageProgressStatus status;
-  std::string error_message;
-  switch (signal.status()) {
-    case vm_tools::cicerone::InstallLinuxPackageProgressSignal::SUCCEEDED:
-      status = InstallLinuxPackageProgressStatus::SUCCEEDED;
-      break;
-    case vm_tools::cicerone::InstallLinuxPackageProgressSignal::FAILED:
-      LOG(ERROR) << "Install failed: " << signal.failure_details();
-      status = InstallLinuxPackageProgressStatus::FAILED;
-      error_message = signal.failure_details();
-      break;
-    case vm_tools::cicerone::InstallLinuxPackageProgressSignal::DOWNLOADING:
-      status = InstallLinuxPackageProgressStatus::DOWNLOADING;
-      break;
-    case vm_tools::cicerone::InstallLinuxPackageProgressSignal::INSTALLING:
-      status = InstallLinuxPackageProgressStatus::INSTALLING;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
-  for (auto& observer : linux_package_operation_progress_observers_) {
-    observer.OnInstallLinuxPackageProgress(
-        container_id, status, signal.progress_percent(), error_message);
-  }
-}
-
-void CrostiniManager::OnUninstallPackageProgress(
-    const vm_tools::cicerone::UninstallPackageProgressSignal& signal) {
-  if (signal.owner_id() != owner_id_) {
-    return;
-  }
-
-  if (signal.progress_percent() < 0 || signal.progress_percent() > 100) {
-    LOG(ERROR) << "Received uninstall progress with invalid progress of "
-               << signal.progress_percent() << "%.";
-    return;
-  }
-
-  UninstallPackageProgressStatus status;
-  switch (signal.status()) {
-    case vm_tools::cicerone::UninstallPackageProgressSignal::SUCCEEDED:
-      status = UninstallPackageProgressStatus::SUCCEEDED;
-      break;
-    case vm_tools::cicerone::UninstallPackageProgressSignal::FAILED:
-      status = UninstallPackageProgressStatus::FAILED;
-      LOG(ERROR) << "Uninstalled failed: " << signal.failure_details();
-      break;
-    case vm_tools::cicerone::UninstallPackageProgressSignal::UNINSTALLING:
-      status = UninstallPackageProgressStatus::UNINSTALLING;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
-  for (auto& observer : linux_package_operation_progress_observers_) {
-    observer.OnUninstallPackageProgress(container_id, status,
-                                        signal.progress_percent());
-  }
-}
-
 void CrostiniManager::OnUpgradeContainerProgress(
     const vm_tools::cicerone::UpgradeContainerProgressSignal& signal) {
   if (signal.owner_id() != owner_id_) {
@@ -3457,36 +3273,6 @@ void CrostiniManager::OnUpgradeContainerProgress(
     observer.OnUpgradeContainerProgress(container_id, status,
                                         progress_messages);
   }
-}
-
-void CrostiniManager::OnUninstallPackageOwningFile(
-    CrostiniResultCallback callback,
-    std::optional<vm_tools::cicerone::UninstallPackageOwningFileResponse>
-        response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to uninstall Linux package. Empty response.";
-    std::move(callback).Run(CrostiniResult::UNINSTALL_PACKAGE_FAILED);
-    return;
-  }
-
-  if (response->status() ==
-      vm_tools::cicerone::UninstallPackageOwningFileResponse::FAILED) {
-    LOG(ERROR) << "Failed to uninstall Linux package: "
-               << response->failure_reason();
-    std::move(callback).Run(CrostiniResult::UNINSTALL_PACKAGE_FAILED);
-    return;
-  }
-
-  if (response->status() ==
-      vm_tools::cicerone::UninstallPackageOwningFileResponse::
-          BLOCKING_OPERATION_IN_PROGRESS) {
-    LOG(WARNING) << "Failed to uninstall Linux package, another operation is "
-                    "already active.";
-    std::move(callback).Run(CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE);
-    return;
-  }
-
-  std::move(callback).Run(CrostiniResult::SUCCESS);
 }
 
 void CrostiniManager::OnStartLxd(
@@ -3898,79 +3684,6 @@ void CrostiniManager::OnGetContainerAppIcons(
              .format = icon.format()});
   }
   std::move(callback).Run(/*success=*/true, icons);
-}
-
-void CrostiniManager::OnGetLinuxPackageInfo(
-    GetLinuxPackageInfoCallback callback,
-    std::optional<vm_tools::cicerone::LinuxPackageInfoResponse> response) {
-  LinuxPackageInfo result;
-  if (!response) {
-    LOG(ERROR) << "Failed to get Linux package info. Empty response.";
-    result.success = false;
-    // The error message is currently only used in a console message. If we
-    // want to display it to the user, we'd need to localize this.
-    result.failure_reason = "D-Bus response was empty.";
-    std::move(callback).Run(result);
-    return;
-  }
-
-  if (!response->success()) {
-    LOG(ERROR) << "Failed to get Linux package info: "
-               << response->failure_reason();
-    result.success = false;
-    result.failure_reason = response->failure_reason();
-    std::move(callback).Run(result);
-    return;
-  }
-
-  // The |package_id| field is formatted like "name;version;arch;data". We're
-  // currently only interested in name and version.
-  std::vector<std::string> split = base::SplitString(
-      response->package_id(), ";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (split.size() < 2 || split[0].empty() || split[1].empty()) {
-    LOG(ERROR) << "Linux package info contained invalid package id: \""
-               << response->package_id() << '"';
-    result.success = false;
-    result.failure_reason = "Linux package info contained invalid package id.";
-    std::move(callback).Run(result);
-    return;
-  }
-
-  result.success = true;
-  result.package_id = response->package_id();
-  result.name = split[0];
-  result.version = split[1];
-  result.description = response->description();
-  result.summary = response->summary();
-
-  std::move(callback).Run(result);
-}
-
-void CrostiniManager::OnInstallLinuxPackage(
-    InstallLinuxPackageCallback callback,
-    std::optional<vm_tools::cicerone::InstallLinuxPackageResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to install Linux package. Empty response.";
-    std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-    return;
-  }
-
-  if (response->status() ==
-      vm_tools::cicerone::InstallLinuxPackageResponse::FAILED) {
-    LOG(ERROR) << "Failed to install Linux package: "
-               << response->failure_reason();
-    std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
-    return;
-  }
-
-  if (response->status() ==
-      vm_tools::cicerone::InstallLinuxPackageResponse::INSTALL_ALREADY_ACTIVE) {
-    LOG(WARNING) << "Failed to install Linux package, install already active.";
-    std::move(callback).Run(CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE);
-    return;
-  }
-
-  std::move(callback).Run(CrostiniResult::SUCCESS);
 }
 
 void CrostiniManager::RemoveCrostini(std::string vm_name,
