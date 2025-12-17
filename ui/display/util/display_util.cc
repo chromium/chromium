@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -56,10 +57,13 @@ void EmitEdidColorSpaceChecksOutcomeUma(EdidColorSpaceChecksOutcome outcome) {
 bool NearlyEqual(const skcms_Matrix3x3& lhs,
                  const skcms_Matrix3x3& rhs,
                  float epsilon) {
+  auto lhs_span = base::span(lhs.vals);
+  auto rhs_span = base::span(rhs.vals);
   for (int r = 0; r < 3; r++) {
+    auto lhs_row = base::span(lhs_span[r]);
+    auto rhs_row = base::span(rhs_span[r]);
     for (int c = 0; c < 3; c++) {
-      if (std::abs(UNSAFE_TODO(lhs.vals[r][c]) - UNSAFE_TODO(rhs.vals[r][c])) >
-          epsilon) {
+      if (std::abs(lhs_row[c] - rhs_row[c]) > epsilon) {
         return false;
       }
     }
