@@ -822,7 +822,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.{RequestContext}"
-    enum="OptimizationGuideFetcherRequestStatus" expires_after="2025-12-14">
+    enum="OptimizationGuideFetcherRequestStatus" expires_after="2026-12-14">
   <owner>rajendrant@chromium.org</owner>
   <owner>catliu@chromium.org</owner>
   <summary>
