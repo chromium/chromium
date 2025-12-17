@@ -44,6 +44,16 @@ BrowserWindowInterface* GetLastActiveBrowserWithProfile(
     Profile& profile,
     bool include_incognito_or_parent);
 
+// Returns the last active browser with the given `profile` with the type
+// BrowserWindowInterface::Type::TYPE_NORMAL. If `include_incognito_or_parent`
+// is true, this will also return a browser that crosses the incognito
+// boundary.
+// TODO(devlin): Should GetLastActiveBrowserWithProfile() just use this? Do
+// callers ever expect a non-normal browser?
+BrowserWindowInterface* GetLastActiveNormalBrowserWithProfile(
+    Profile& profile,
+    bool include_incognito_or_parent);
+
 }  // namespace extensions::browser_window_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_BROWSER_WINDOW_UTIL_H_

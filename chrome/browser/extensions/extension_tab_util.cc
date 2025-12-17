@@ -1169,7 +1169,10 @@ void ExtensionTabUtil::CreateTab(
     bool user_gesture) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+  CHECK(profile);
+  BrowserWindowInterface* browser =
+      browser_window_util::GetLastActiveNormalBrowserWithProfile(
+          *profile, /*include_incognito_or_parent=*/false);
   const bool browser_created = !browser;
   if (!browser)
     browser = CreateBrowser(profile, user_gesture);

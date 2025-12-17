@@ -108,6 +108,7 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
   }
 
   Profile* profile = Profile::FromBrowserContext(function.browser_context());
+  CHECK(profile);
   Profile* profile_to_use =
       needs_original_profile ? profile->GetOriginalProfile() : profile;
 
@@ -116,8 +117,8 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
     // since the goal is to find a non-incognito browser.
     bool include_incognito_information =
         function.include_incognito_information() && !needs_original_profile;
-    browser = chrome::FindTabbedBrowser(profile_to_use,
-                                        include_incognito_information);
+    browser = browser_window_util::GetLastActiveNormalBrowserWithProfile(
+        *profile_to_use, include_incognito_information);
   }
 
   if (!browser && create_if_needed) {
