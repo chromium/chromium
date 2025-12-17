@@ -2005,7 +2005,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
   base::RepeatingClosure run_delayed_startup_tasks_;
 
  private:
-  bool is_redirection_on_;
+  bool is_redirection_on_ = false;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kWebAppPeriodicPreinstallUpdate};
 
