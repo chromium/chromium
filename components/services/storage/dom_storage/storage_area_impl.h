@@ -257,8 +257,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     ~CommitBatch();
 
     bool clear_all_first = false;
-    // Prefix copying is performed before applying changes.
-    std::optional<std::vector<uint8_t>> copy_to_prefix;
     // Used if the map_type_ is LOADED_KEYS_ONLY.
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.

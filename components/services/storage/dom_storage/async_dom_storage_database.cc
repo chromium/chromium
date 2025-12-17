@@ -68,6 +68,21 @@ void AsyncDomStorageDatabase::ReadMapKeyValues(
                   std::move(callback));
 }
 
+void AsyncDomStorageDatabase::CloneMap(
+    DomStorageDatabase::MapLocator source_map,
+    DomStorageDatabase::MapLocator target_map,
+    StatusCallback callback) {
+  RunDatabaseTask(base::BindOnce(
+                      [](DomStorageDatabase::MapLocator source_map,
+                         DomStorageDatabase::MapLocator target_map,
+                         DomStorageDatabase& db) {
+                        return db.CloneMap(std::move(source_map),
+                                           std::move(target_map));
+                      },
+                      std::move(source_map), std::move(target_map)),
+                  std::move(callback));
+}
+
 void AsyncDomStorageDatabase::ReadAllMetadata(
     ReadAllMetadataCallback callback) {
   RunDatabaseTask(base::BindOnce([](DomStorageDatabase& db) {
@@ -248,13 +263,6 @@ void AsyncDomStorageDatabase::InitiateCommit() {
               }
               for (const auto& key : commit.keys_to_delete) {
                 batch->Delete(key);
-              }
-              if (commit.copy_to_prefix) {
-                DbStatus status = batch->CopyPrefixed(
-                    commit.prefix, commit.copy_to_prefix.value());
-                if (!status.ok()) {
-                  return status;
-                }
               }
             }
             return batch->Commit();

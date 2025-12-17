@@ -45,7 +45,14 @@ constexpr const char kThirdFakeSessionId[] =
 constexpr const char kThirdFakeUrlString[] = "https://c-fake.test/";
 constexpr int64_t kThirdFakeMapId = 1567;
 
+constexpr const char kFourthFakeSessionId[] =
+    "b5675eaf_30eb_462d_8d82_c6ba8e6bee4c";
+constexpr int64_t kFourthFakeMapId = 1570;
+
 constexpr const uint8_t kExpectedVersion[] = {'1'};
+
+constexpr const char kScriptKey1[] = "key_1";
+constexpr const char kScriptKey2[] = "key_2";
 
 void VerifyDatabaseVersionEntry(
     const DomStorageDatabase::KeyValuePair& version_entry) {
@@ -61,6 +68,32 @@ DomStorageDatabase::Key CreateMapEntryKey(int64_t map_id,
 
   map_data_key.insert(map_data_key.end(), script_key.begin(), script_key.end());
   return map_data_key;
+}
+
+void CloneMapAndVerifyResults(
+    SessionStorageLevelDB& session_storage_leveldb,
+    const DomStorageDatabase::MapLocator& source_map_locator,
+    const DomStorageDatabase::MapLocator& target_map_locator,
+    const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>&
+        expected_entries) {
+  DbStatus status = session_storage_leveldb.CloneMap(
+      source_map_locator.Clone(), target_map_locator.Clone());
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the cloned entries exist.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           cloned_entries),
+      session_storage_leveldb.ReadMapKeyValues(target_map_locator.Clone()));
+
+  EXPECT_EQ(cloned_entries, expected_entries);
+
+  // Verify the source entries did not change.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           source_entries),
+      session_storage_leveldb.ReadMapKeyValues(source_map_locator.Clone()));
+  EXPECT_EQ(source_entries, expected_entries);
 }
 
 }  // namespace
@@ -1111,8 +1144,6 @@ TEST_F(SessionStorageLevelDBTest, ReadMapKeyValues) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
   // Add two key/value pairs to a single map.
-  constexpr const char kScriptKey1[] = "key_1";
-  constexpr const char kScriptKey2[] = "key_2";
   const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
   const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
 
@@ -1146,8 +1177,6 @@ TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
   // Create two maps, adding a key/value pair to each map.
-  constexpr const char kScriptKey1[] = "key_1";
-  constexpr const char kScriptKey2[] = "key_2";
   const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
   const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
 
@@ -1182,6 +1211,121 @@ TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
 
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMapWithEmpty) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Clone an empty map, which is a no-op.
+  DomStorageDatabase::MapLocator source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator target_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      CloneMapAndVerifyResults(*session_storage_leveldb, source_map_locator,
+                               target_map_locator, /*expected_entries=*/{}));
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMap) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add two key/value pairs to a single map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Clone the map with two entries.
+  DomStorageDatabase::MapLocator source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator target_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      CloneMapAndVerifyResults(*session_storage_leveldb, source_map_locator,
+                               target_map_locator, /*expected_entries=*/
+                               {
+                                   {
+                                       ToBytes(kScriptKey1),
+                                       kValue1,
+                                   },
+                                   {
+                                       ToBytes(kScriptKey2),
+                                       kValue2,
+                                   },
+                               }));
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMapWithMultipleMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create two maps, adding a key/value pair to each map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kOtherFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Clone the first map.
+  DomStorageDatabase::MapLocator first_source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator first_target_map_locator{
+      kThirdFakeSessionId, kFakeUrlStorageKey, kThirdFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(CloneMapAndVerifyResults(
+      *session_storage_leveldb, first_source_map_locator,
+      first_target_map_locator, /*expected_entries=*/
+      {
+          {
+              ToBytes(kScriptKey1),
+              kValue1,
+          },
+      }));
+
+  // Clone the second map.
+  DomStorageDatabase::MapLocator second_source_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  DomStorageDatabase::MapLocator second_target_map_locator{
+      kFourthFakeSessionId, kFakeUrlStorageKey, kFourthFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(CloneMapAndVerifyResults(
+      *session_storage_leveldb, second_source_map_locator,
+      second_target_map_locator, /*expected_entries=*/
+      {
+          {
+              ToBytes(kScriptKey2),
+              kValue2,
+          },
+      }));
 }
 
 }  // namespace storage

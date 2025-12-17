@@ -123,6 +123,21 @@ SessionStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.map_id().value()));
 }
 
+DbStatus SessionStorageLevelDB::CloneMap(MapLocator source_map,
+                                         MapLocator target_map) {
+  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+      leveldb_->CreateBatchOperation();
+
+  // Copy the key/value pairs from `source_map` to `target_map`.
+  DbStatus status =
+      batch->CopyPrefixed(GetMapPrefix(source_map.map_id().value()),
+                          GetMapPrefix(target_map.map_id().value()));
+  if (!status.ok()) {
+    return status;
+  }
+  return batch->Commit();
+}
+
 StatusOr<DomStorageDatabase::Metadata>
 SessionStorageLevelDB::ReadAllMetadata() {
   Metadata metadata;

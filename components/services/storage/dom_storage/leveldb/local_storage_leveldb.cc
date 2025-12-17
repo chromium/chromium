@@ -194,6 +194,12 @@ LocalStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.storage_key()));
 }
 
+DbStatus LocalStorageLevelDB::CloneMap(MapLocator source_map,
+                                       MapLocator target_map) {
+  // Local storage does not support cloning.
+  NOTREACHED();
+}
+
 StatusOr<DomStorageDatabase::Metadata> LocalStorageLevelDB::ReadAllMetadata() {
   ASSIGN_OR_RETURN(
       std::vector<DomStorageDatabase::KeyValuePair> leveldb_metadata_entries,

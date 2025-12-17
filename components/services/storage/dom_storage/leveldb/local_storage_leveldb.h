@@ -123,6 +123,7 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
+  DbStatus CloneMap(MapLocator source_map, MapLocator target_map) override;
 
   // Reads the "META:" and "METACCESS" entries from the LevelDB database
   // described above. Parses the following from each entry to create a

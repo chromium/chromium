@@ -90,7 +90,6 @@ class AsyncDomStorageDatabase {
 
     std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
     std::vector<DomStorageDatabase::Key> keys_to_delete;
-    std::optional<DomStorageDatabase::Key> copy_to_prefix;
     std::vector<base::TimeTicks> timestamps;
   };
 
@@ -115,6 +114,9 @@ class AsyncDomStorageDatabase {
       StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>)>;
   void ReadMapKeyValues(DomStorageDatabase::MapLocator map_locator,
                         ReadMapKeyValuesCallback callback);
+  void CloneMap(DomStorageDatabase::MapLocator source_map,
+                DomStorageDatabase::MapLocator target_map,
+                StatusCallback callback);
 
   using ReadAllMetadataCallback =
       base::OnceCallback<void(StatusOr<DomStorageDatabase::Metadata>)>;
