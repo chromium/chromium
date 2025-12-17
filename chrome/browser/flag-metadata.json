@@ -54,16 +54,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "adaptive-charging",
-    "owners": [ "thanhdng@chromium.org", "alanlxl@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
-    "name": "adaptive-charging-for-testing",
-    "owners": [ "thanhdng@chromium.org", "alanlxl@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "add-printer-via-printscanmgr",
     "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
     "expiry_milestone": 133
