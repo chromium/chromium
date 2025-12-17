@@ -2,6 +2,9 @@ features:
 - name: speak
   files:
   - speak.html
+- name: font-feature-settings
+  files:
+  - font-feature-settings.html
 - name: font-variant
   files:
   - font-variant.html

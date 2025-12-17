@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] svg
+  assert_equals: <svg height="100" width="100" data-testname="svg" data-expectedrole="UNDEFINED in SVG-AAM, but possibly graphics-document" class="ex">\n  <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></circle>\n</svg> expected "UNDEFINED in SVG-AAM, but possibly graphics-document" but got "image"
+[FAIL] svg-text
+  assert_equals: <svg height="130" width="500" data-testname="svg-text" data-expectedrole="UNDEFINED in SVG-AAM, but possibly graphics-document" class="ex">\n   <defs>\n      <linearGradient id="grad1">\n         <stop offset="0%" stop-color="yellow"></stop>\n         <stop offset="100%" stop-color="red"></stop>\n      </linearGradient>\n   </defs>\n   <ellipse cx="100" cy="70" rx="85" ry="55" fill="url(#grad1)"></ellipse>\n   <text fill="#ffffff" font-size="45" font-family="Verdana" x="50" y="86">SVG</text>\n</svg> expected "UNDEFINED in SVG-AAM, but possibly graphics-document" but got "SvgRoot"
+[FAIL] svg-symbol
+  assert_equals: <svg data-testname="svg-symbol" data-expectedrole="UNDEFINED in SVG-AAM, but possibly graphics-document" class="ex">\n  <symbol id="myDot" width="10" height="10" viewBox="0 0 2 2">\n    <circle cx="1" cy="1" r="1"></circle>\n  </symbol>\n</svg> expected "UNDEFINED in SVG-AAM, but possibly graphics-document" but got "image"
+Harness: the test ran to completion.
+
