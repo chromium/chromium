@@ -399,6 +399,51 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setTouchOverride(
+    params: Emulation.SetTouchOverrideParameters,
+  ): Promise<EmptyResult> {
+    const maxTouchPoints = params.maxTouchPoints;
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          maxTouchPoints,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        maxTouchPoints,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        maxTouchPoints,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+        await context.setTouchOverride(config.maxTouchPoints ?? null);
+      }),
+    );
+    return {};
+  }
+
   async setUserAgentOverrideParams(
     params: Emulation.SetUserAgentOverrideParameters,
   ): Promise<EmptyResult> {

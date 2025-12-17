@@ -1974,6 +1974,14 @@ export class BrowsingContextImpl {
     );
   }
 
+  async setTouchOverride(maxTouchPoints: number | null) {
+    await Promise.allSettled(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setTouchOverride(maxTouchPoints),
+      ),
+    );
+  }
+
   async setExtraHeaders(
     cdpExtraHeaders: Protocol.Network.Headers,
   ): Promise<Promise<any>> {

@@ -43,6 +43,7 @@ export class ContextConfig {
     | Emulation.GeolocationPositionError
     | null;
   locale?: string | null;
+  maxTouchPoints?: number | null;
   prerenderingDisabled?: boolean;
   screenArea?: Emulation.ScreenArea | null;
   screenOrientation?: Emulation.ScreenOrientation | null;

@@ -698,6 +698,10 @@ export class CdpTarget {
       );
     }
 
+    if (config.maxTouchPoints !== undefined) {
+      promises.push(this.setTouchOverride(config.maxTouchPoints));
+    }
+
     await Promise.all(promises);
   }
 
@@ -762,6 +766,20 @@ export class CdpTarget {
         'Unexpected geolocation coordinates value',
       );
     }
+  }
+
+  async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
+    const touchEmulationParams: Protocol.Emulation.SetTouchEmulationEnabledRequest =
+      {
+        enabled: maxTouchPoints !== null,
+      };
+    if (maxTouchPoints !== null) {
+      touchEmulationParams.maxTouchPoints = maxTouchPoints;
+    }
+    await this.cdpClient.sendCommand(
+      'Emulation.setTouchEmulationEnabled',
+      touchEmulationParams,
+    );
   }
 
   #toCdpScreenOrientationAngle(
