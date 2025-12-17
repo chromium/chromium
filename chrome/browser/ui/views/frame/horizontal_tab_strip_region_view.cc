@@ -152,7 +152,8 @@ class TabSearchPositionMetricsLogger {
   void LogMetrics() {
     const tabs::TabSearchPosition position =
         tabs::GetTabSearchPosition(profile_);
-    if (position != tabs::TabSearchPosition::kToolbarButton) {
+    if (position != tabs::TabSearchPosition::kToolbarButton &&
+        position != tabs::TabSearchPosition::kVerticalToolbarButton) {
       base::UmaHistogramEnumeration(
           "Tabs.TabSearch.PositionInTabstrip2",
           position == tabs::TabSearchPosition::kTrailingTabstrip

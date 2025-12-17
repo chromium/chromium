@@ -17,6 +17,7 @@ enum class TabSearchPosition {
   kLeadingTabstrip,
   kTrailingTabstrip,
   kToolbarButton,
+  kVerticalToolbarButton,
 };
 
 // Returns the default behavior per platform for tab search position.

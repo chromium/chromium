@@ -255,10 +255,11 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
 
+  const tabs::TabSearchPosition position = tabs::GetTabSearchPosition(profile_);
   webui_bubble_manager_->ShowBubble(
       std::nullopt,
-      tabs::GetTabSearchPosition(profile_) ==
-              tabs::TabSearchPosition::kLeadingTabstrip
+      (position == tabs::TabSearchPosition::kLeadingTabstrip ||
+       position == tabs::TabSearchPosition::kVerticalToolbarButton)
           ? views::BubbleBorder::TOP_LEFT
           : views::BubbleBorder::TOP_RIGHT,
       kTabSearchBubbleElementId);

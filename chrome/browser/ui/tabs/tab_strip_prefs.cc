@@ -37,6 +37,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 TabSearchPosition GetTabSearchPosition(const Profile* profile) {
+  if (tabs::IsVerticalTabsFeatureEnabled() &&
+      profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsEnabled)) {
+    return TabSearchPosition::kVerticalToolbarButton;
+  }
+
   if (features::HasTabSearchToolbarButton()) {
     return TabSearchPosition::kToolbarButton;
   }
