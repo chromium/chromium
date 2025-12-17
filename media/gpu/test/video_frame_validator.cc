@@ -155,7 +155,8 @@ void VideoFrameValidator::ProcessVideoFrameTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
 
   scoped_refptr<const VideoFrame> frame = video_frame;
-  // If this is a DMABuf-backed memory frame we need to map it before accessing.
+  // If this is a MappableSI-backed memory frame we need to map it before
+  // accessing.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (frame->HasMappableSharedImage()) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
@@ -168,7 +169,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
     frame = CreateDmabufVideoFrame(frame.get());
     if (!frame) {
       LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
-                 << "GpuMemoryBuffer-based VideoFrame";
+                 << "MappableSI-based VideoFrame";
       return;
     }
   }
