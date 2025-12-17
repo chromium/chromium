@@ -1967,18 +1967,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
                                    GetTotalSentBytes(), 1, 50000000, 50);
     base::UmaHistogramCustomCounts("Net.HttpJob.BytesReceived2",
                                    GetTotalReceivedBytes(), 1, 50000000, 50);
-    // Having a transaction_ does not imply having a response_info_. This is
-    // particularly the case in some aborted/cancelled jobs. The transaction is
-    // the primary source of MDL match information.
-    if ((transaction_ && transaction_->IsMdlMatchForMetrics()) ||
-        (response_info_ && response_info_->was_mdl_match)) {
-      base::UmaHistogramCustomCounts(
-          "Net.HttpJob.IpProtection.AllowListMatch.BytesSent2",
-          GetTotalSentBytes(), 1, 50000000, 50);
-      base::UmaHistogramCustomCounts(
-          "Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2",
-          GetTotalReceivedBytes(), 1, 50000000, 50);
-    }
   }
 
   if (response_info_) {
@@ -2011,59 +1999,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
                                      prefilter_bytes_read(), 1, 50000000, 50);
     } else {
       base::UmaHistogramTimes("Net.HttpJob.TotalTimeNotCached", total_time);
-      if (response_info_->was_mdl_match) {
-        base::UmaHistogramCustomCounts(
-            "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
-            prefilter_bytes_read(), 1, 50000000, 50);
-      }
-
-      auto& proxy_chain = response_info_->proxy_chain;
-
-      // TODO: crbug.com/458071609 - Delete this default value placeholder for
-      // features::kIpPrivacyDirectOnly when cleaning up IPP histograms.
-      bool direct_only = false;
-
-      if (proxy_chain.is_for_ip_protection()) {
-        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached3",
-                                total_time);
-        base::UmaHistogramCustomCounts("Net.HttpJob.IpProtection.BytesSent2",
-                                       GetTotalSentBytes(), 1, 50000000, 50);
-        base::UmaHistogramCustomCounts(
-            "Net.HttpJob.IpProtection.PrefilterBytesRead.Net2",
-            prefilter_bytes_read(), 1, 50000000, 50);
-      }
-      // To enable measuring how much traffic would be proxied (for
-      // experimentation and planning purposes), treat use of the direct
-      // proxy chain as success only when `kIpPrivacyDirectOnly` is
-      // true. When it is false, we only care about traffic that actually went
-      // through the IP Protection proxies, so a direct chain must be a
-      // fallback.
-      // Note that the non-chain-specific histograms don't log anything when IP
-      // Protection fails and we fall back to direct. That makes them unsuitable
-      // for measuring the success of experiments. Use the *2 variants above for
-      // that.
-      bool protection_success = proxy_chain.is_for_ip_protection() &&
-                                (!proxy_chain.is_direct() || direct_only);
-      if (protection_success) {
-        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached",
-                                total_time);
-        // Log specific times for non-zero chains. The zero chain is the
-        // default and is still counted in the base `TotalTimeNotCached`.
-        int chain_id = proxy_chain.ip_protection_chain_id();
-        if (chain_id != ProxyChain::kNotIpProtectionChainId) {
-          UmaHistogramTimes(
-              base::StrCat({"Net.HttpJob.IpProtection.TotalTimeNotCached.Chain",
-                            base::NumberToString(chain_id)}),
-              total_time);
-        }
-
-        base::UmaHistogramCustomCounts("Net.HttpJob.IpProtection.BytesSent",
-                                       GetTotalSentBytes(), 1, 50000000, 50);
-
-        base::UmaHistogramCustomCounts(
-            "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
-            prefilter_bytes_read(), 1, 50000000, 50);
-      }
       base::UmaHistogramCustomCounts("Net.HttpJob.PrefilterBytesRead.Net",
                                      prefilter_bytes_read(), 1, 50000000, 50);
 
@@ -2076,34 +2011,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
         base::UmaHistogramMediumTimes(
             "Net.HttpJob.TotalTimeNotCached.Secure.Quic", total_time);
       }
-
-      // Log the result of an IP-Protected request.
-      IpProtectionJobResult ipp_result;
-      if (proxy_chain.is_for_ip_protection()) {
-        if (protection_success) {
-          ipp_result = IpProtectionJobResult::kProtectionSuccess;
-        } else {
-          ipp_result = IpProtectionJobResult::kDirectFallback;
-          base::UmaHistogramTimes(
-              "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2",
-              total_time);
-          base::UmaHistogramCustomCounts(
-              "Net.HttpJob.IpProtection.Fallback.BytesSent",
-              GetTotalSentBytes(), 1, 50000000, 50);
-          base::UmaHistogramCustomCounts(
-              "Net.HttpJob.IpProtection.Fallback.PrefilterBytesRead.Net",
-              prefilter_bytes_read(), 1, 50000000, 50);
-        }
-        base::UmaHistogramEnumeration(
-            base::StrCat(
-                {"Net.HttpJob.IpProtection.JobResult.Chain",
-                 base::NumberToString(proxy_chain.ip_protection_chain_id())}),
-            ipp_result);
-      } else {
-        ipp_result = IpProtectionJobResult::kProtectionNotAttempted;
-      }
-      base::UmaHistogramEnumeration("Net.HttpJob.IpProtection.JobResult",
-                                    ipp_result);
     }
   }
 

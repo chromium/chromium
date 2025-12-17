@@ -101,7 +101,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
   void CloseConnectionOnDestruction() override;
-  bool IsMdlMatchForMetrics() const override;
 
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const ProxyInfo& used_proxy_info,

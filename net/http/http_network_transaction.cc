@@ -837,10 +837,6 @@ void HttpNetworkTransaction::CloseConnectionOnDestruction() {
   close_connection_on_destruction_ = true;
 }
 
-bool HttpNetworkTransaction::IsMdlMatchForMetrics() const {
-  return proxy_info_.is_mdl_match();
-}
-
 void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
                                            std::unique_ptr<HttpStream> stream) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
@@ -2526,7 +2522,6 @@ void HttpNetworkTransaction::AddTraceParamsForStreamRequestResult(
 void HttpNetworkTransaction::SetProxyInfoInResponse(
     const ProxyInfo& proxy_info,
     HttpResponseInfo* response_info) {
-  response_info->was_mdl_match = proxy_info.is_mdl_match();
   if (proxy_info.is_empty()) {
     response_info->proxy_chain = ProxyChain();
   } else {

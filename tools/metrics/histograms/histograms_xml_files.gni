@@ -137,8 +137,6 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/invalidation/histograms.xml",
   "//tools/metrics/histograms/metadata/ios/enums.xml",
   "//tools/metrics/histograms/metadata/ios/histograms.xml",
-  "//tools/metrics/histograms/metadata/ip_protection/enums.xml",
-  "//tools/metrics/histograms/metadata/ip_protection/histograms.xml",
   "//tools/metrics/histograms/metadata/kerberos/histograms.xml",
   "//tools/metrics/histograms/metadata/kiosk/histograms.xml",
   "//tools/metrics/histograms/metadata/language/enums.xml",

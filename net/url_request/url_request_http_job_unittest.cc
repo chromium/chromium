@@ -342,7 +342,6 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   http_job_with_proxy.socket_factory_.AddSocketDataProvider(&socket_data);
 
   TestDelegate delegate;
-  base::HistogramTester histogram_tester;
   std::unique_ptr<URLRequest> request =
       http_job_with_proxy.context_->CreateRequest(
           GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
@@ -357,12 +356,6 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("Net.HttpJob.IpProtection.BytesSent")
-          .empty());
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("Net.HttpJob.IpProtection.BytesSent2")
-          .empty());
 }
 
 class URLRequestHttpJobTest : public TestWithTaskEnvironment {

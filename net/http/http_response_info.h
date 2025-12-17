@@ -109,12 +109,6 @@ class NET_EXPORT HttpResponseInfo {
   // Information about the proxy chain used to fetch this response, if any.
   ProxyChain proxy_chain;
 
-  // Whether this request was eligible for IP Protection based on the request
-  // being a match to the masked domain list, if available.
-  // This field is not persisted by `Persist()` and not restored by
-  // `InitFromPickle()`.
-  bool was_mdl_match = false;
-
   // Whether the request uses server authentication.
   bool did_use_server_http_auth = false;
 

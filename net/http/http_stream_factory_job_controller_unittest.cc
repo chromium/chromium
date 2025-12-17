@@ -1323,12 +1323,6 @@ struct TcpProxyTestCase {
 
   TcpErrorPhase phase;
   Error error;
-
-  // For tests that verify metrics.
-  struct {
-    Error error;
-    size_t size;
-  } recorded_metric;
 };
 
 std::string PrintHttpProxyTestName(
@@ -1375,7 +1369,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(eroman): The testing should be expanded to test cases where proxy
 //               fallback is NOT supposed to occur.
 TEST_P(JobControllerReconsiderProxyAfterErrorHttpProxyTest, Test) {
-  const auto [phase, error, unused] = std::get<0>(GetParam());
+  const auto [phase, error] = std::get<0>(GetParam());
   const GURL dest_url(std::get<1>(GetParam()));
 
   CreateSessionDeps();
@@ -1544,7 +1538,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test proxy fallback logic in the case connecting through an HTTPS proxy.
 TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest, Test) {
-  const auto [phase, error, unused] = std::get<0>(GetParam());
+  const auto [phase, error] = std::get<0>(GetParam());
   bool triggers_ssl_connect_job_retry_logic =
       std::get<0>(GetParam()).TriggersSslConnectJobRetryLogic();
   const GURL dest_url(std::get<1>(GetParam()));
@@ -1724,7 +1718,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest, Test) {
 // TestProxyDelegate::can_fallover_to_next_proxy_override_count.
 TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest,
        TestCanFalloverToNextProxyReceivesProxyDelegate) {
-  const auto [phase, error, unused] = std::get<0>(GetParam());
+  const auto [phase, error] = std::get<0>(GetParam());
   bool triggers_ssl_connect_job_retry_logic =
       std::get<0>(GetParam()).TriggersSslConnectJobRetryLogic();
   const GURL dest_url(std::get<1>(GetParam()));
@@ -1922,26 +1916,16 @@ constexpr TcpProxyTestCase kFirstNestedHttpsProxyTestCases[] = {
     //
     // TODO(davidben): Is omitting `ERR_EMPTY_RESPONSE` a bug in proxy error
     // handling?
-    {TcpErrorPhase::kHostResolution, ERR_NAME_NOT_RESOLVED,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kTcpConnect, ERR_ADDRESS_UNREACHABLE,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_TIMED_OUT,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_RESET,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_ABORTED,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_REFUSED,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 2}},
-    {TcpErrorPhase::kProxySslHandshake, ERR_CERT_COMMON_NAME_INVALID,
-     /*recorded_metric=*/{ERR_PROXY_CERTIFICATE_INVALID, 2}},
-    {TcpErrorPhase::kProxySslHandshake, ERR_SSL_PROTOCOL_ERROR,
-     /*recorded_metric=*/{ERR_PROXY_CONNECTION_FAILED, 1}},
-    {TcpErrorPhase::kTunnelRead, ERR_TIMED_OUT,
-     /*recorded_metric=*/{ERR_TIMED_OUT, 2}},
-    {TcpErrorPhase::kTunnelRead, ERR_SSL_PROTOCOL_ERROR,
-     /*recorded_metric=*/{ERR_SSL_PROTOCOL_ERROR, 2}},
+    {TcpErrorPhase::kHostResolution, ERR_NAME_NOT_RESOLVED},
+    {TcpErrorPhase::kTcpConnect, ERR_ADDRESS_UNREACHABLE},
+    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_TIMED_OUT},
+    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_RESET},
+    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_ABORTED},
+    {TcpErrorPhase::kTcpConnect, ERR_CONNECTION_REFUSED},
+    {TcpErrorPhase::kProxySslHandshake, ERR_CERT_COMMON_NAME_INVALID},
+    {TcpErrorPhase::kProxySslHandshake, ERR_SSL_PROTOCOL_ERROR},
+    {TcpErrorPhase::kTunnelRead, ERR_TIMED_OUT},
+    {TcpErrorPhase::kTunnelRead, ERR_SSL_PROTOCOL_ERROR},
 };
 
 using JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest =
@@ -1957,7 +1941,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Same as above but using a multi-proxy chain, with errors encountered by the
 // first proxy server in the chain.
 TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
-  const auto [phase, error, recorded_metric] = std::get<0>(GetParam());
+  const auto [phase, error] = std::get<0>(GetParam());
   const GURL dest_url(std::get<1>(GetParam()));
   bool triggers_ssl_connect_job_retry_logic =
       std::get<0>(GetParam()).TriggersSslConnectJobRetryLogic();
@@ -1975,7 +1959,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
   const ProxyChain kDirectIpProtectionProxyChain =
       ProxyChain::ForIpProtection({});
 
-  base::HistogramTester histogram_tester;
   CreateSessionDeps();
 
   ProxyList proxy_list;
@@ -2148,18 +2131,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
     socket_pool->CloseIdleSockets("Close socket reason");
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
-
-  // Check that the errors were logged.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
-      BucketsAre(base::Bucket(recorded_metric.error, recorded_metric.size)));
-
-  // Check that no other proxy chains were logged.
-  const base::HistogramTester::CountsMap counts =
-      histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
-  EXPECT_THAT(counts, SizeIs(1));
 }
 
 constexpr TcpProxyTestCase kSecondNestedHttpsProxyTestCases[] = {
@@ -2172,14 +2143,10 @@ constexpr TcpProxyTestCase kSecondNestedHttpsProxyTestCases[] = {
     //
     // TODO(davidben): Is omitting `ERR_EMPTY_RESPONSE` a bug in proxy error
     // handling?
-    {TcpErrorPhase::kProxySslHandshake, ERR_CERT_COMMON_NAME_INVALID,
-     /*recorded_metric=*/{ERR_PROXY_CERTIFICATE_INVALID, 2}},
-    {TcpErrorPhase::kProxySslHandshake, ERR_SSL_PROTOCOL_ERROR,
-     /*recorded_metric=*/{ERR_SSL_PROTOCOL_ERROR, 1}},
-    {TcpErrorPhase::kTunnelRead, ERR_TIMED_OUT,
-     /*recorded_metric=*/{ERR_TIMED_OUT, 2}},
-    {TcpErrorPhase::kTunnelRead, ERR_SSL_PROTOCOL_ERROR,
-     /*recorded_metric=*/{ERR_SSL_PROTOCOL_ERROR, 2}},
+    {TcpErrorPhase::kProxySslHandshake, ERR_CERT_COMMON_NAME_INVALID},
+    {TcpErrorPhase::kProxySslHandshake, ERR_SSL_PROTOCOL_ERROR},
+    {TcpErrorPhase::kTunnelRead, ERR_TIMED_OUT},
+    {TcpErrorPhase::kTunnelRead, ERR_SSL_PROTOCOL_ERROR},
 };
 
 using JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest =
@@ -2195,7 +2162,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Same as above but using a multi-proxy chain, with errors encountered by the
 // second proxy server in the chain.
 TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
-  const auto [phase, error, recorded_metric] = std::get<0>(GetParam());
+  const auto [phase, error] = std::get<0>(GetParam());
   const bool triggers_ssl_connect_job_retry_logic =
       std::get<0>(GetParam()).TriggersSslConnectJobRetryLogic();
   const GURL dest_url(std::get<1>(GetParam()));
@@ -2213,7 +2180,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
   const ProxyChain kDirectIpProtectionProxyChain =
       ProxyChain::ForIpProtection({});
 
-  base::HistogramTester histogram_tester;
   CreateSessionDeps();
 
   ProxyList proxy_list;
@@ -2407,18 +2373,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
     socket_pool->CloseIdleSockets("Close socket reason");
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
-
-  // Check that the errors were logged.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
-      BucketsAre(base::Bucket(recorded_metric.error, recorded_metric.size)));
-
-  // Check that no other proxy chains were logged.
-  const base::HistogramTester::CountsMap counts =
-      histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
-  EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Test proxy fallback logic for an IP Protection request.
@@ -2563,7 +2517,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // Test proxy fallback logic in the case connecting through socks5 proxy.
 TEST_P(JobControllerReconsiderProxyAfterErrorSocks5ProxyTest, Test) {
-  const auto [phase, error, unused] = GetParam();
+  const auto [phase, error] = GetParam();
   // "host" on port 80 matches the kSOCK5GreetRequest.
   const GURL kDestUrl = GURL("http://host:80/");
 
@@ -2764,7 +2718,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
   url::SchemeHostPort proxy_server(url::kHttpsScheme, "badproxy", 99);
   url::SchemeHostPort proxy_server2(url::kHttpsScheme, "badfallbackproxy", 98);
 
-  base::HistogramTester histogram_tester;
   CreateSessionDeps();
 
   auto quic_proxy_chain =
@@ -2888,17 +2841,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
     quic_session_pool->CloseAllSessions(OK, quic::QUIC_NO_ERROR);
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
-
-  // Check that the errors were logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
-              BucketsAre(base::Bucket(error, 2)));
-
-  // Check that no other proxy chains were logged.
-  const base::HistogramTester::CountsMap counts =
-      histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
-  EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Same as test above except that this is testing the retry behavior for

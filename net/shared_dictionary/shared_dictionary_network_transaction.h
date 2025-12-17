@@ -93,7 +93,6 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
       base::RepeatingCallback<bool()> callback) override;
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
-  bool IsMdlMatchForMetrics() const override;
 
  private:
   enum class DictionaryStatus {

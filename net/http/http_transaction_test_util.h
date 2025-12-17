@@ -251,7 +251,6 @@ class MockNetworkTransaction final : public HttpTransaction {
   ConnectionAttempts GetConnectionAttempts() const override;
 
   void CloseConnectionOnDestruction() override;
-  bool IsMdlMatchForMetrics() const override;
 
   CreateHelper* websocket_handshake_stream_create_helper() {
     return websocket_handshake_stream_create_helper_;
