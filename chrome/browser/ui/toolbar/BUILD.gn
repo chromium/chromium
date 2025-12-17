@@ -21,6 +21,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/login",
     "//chrome/common",
     "//chrome/common:constants",
+    "//components/contextual_tasks/public:feature_list",
     "//components/google/core/common",
     "//components/offline_pages/buildflags",
     "//components/omnibox/browser",

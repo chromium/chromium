@@ -59,8 +59,10 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -83,6 +85,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -361,6 +365,10 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
+  // Observe the WebContents for title changes and navigations for updating the
+  // placeholder text.
+  Observe(const_cast<content::WebContents*>(web_contents));
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   controller()->edit_model()->RestoreState(state ? &state->model_state
@@ -408,6 +416,9 @@ void OmniboxViewViews::InstallPlaceholderText() {
     // not announced.
     GetViewAccessibility().SetPlaceholder(
         l10n_util::GetStringUTF8(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT));
+  } else if (ShouldInstallContextualTasksPlaceholderText()) {
+    // For Contextual Tasks page, use the page title as placeholder text.
+    SetPlaceholderText(location_bar_view_->GetWebContents()->GetTitle());
   } else if (const auto* default_provider = controller()
                                                 ->client()
                                                 ->GetTemplateURLService()
@@ -2365,6 +2376,38 @@ void OmniboxViewViews::OnTemplateURLServiceChanged() {
   InstallPlaceholderText();
 }
 
+void OmniboxViewViews::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Update the placeholder text after primary main frame navigation of the
+  // currently displayed WebContents to ensure it reflects the current page,
+  // including cases like back/forward navigation between the New Tab Page and
+  // Contextual Tasks page.
+  if (!location_bar_view_ ||
+      location_bar_view_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    InstallPlaceholderText();
+  }
+}
+
+void OmniboxViewViews::TitleWasSet(content::NavigationEntry* entry) {
+  // Update the placeholder text after title changes in the primary main frame
+  // of the currently displayed WebContents.
+  // For Contextual Tasks page, updates the placeholder text to the page title.
+  if (!location_bar_view_ ||
+      location_bar_view_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (entry &&
+      entry == web_contents()->GetController().GetLastCommittedEntry()) {
+    InstallPlaceholderText();
+  }
+}
+
 void OmniboxViewViews::PermitExternalProtocolHandler() {
   ExternalProtocolHandler::PermitLaunchUrl();
 }
@@ -2426,10 +2469,11 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
-  // AIM placeholder text and keyword placeholders are dim to differentiate from
-  // user input. DSE placeholders are not dim to draw attention to the omnibox
-  // and because the omnibox is unfocused so there's less risk of confusion with
-  // user input.
+  // `AIM` and `Keyword` placeholders are applied when the omnibox has focus.
+  // They are dimmed to differentiate them from the user input.
+  // `DSE` and `Contextual Task` placeholders are applied when the omnibox is
+  // unfocused so there's less risk of confusion with user input. Additionally,
+  // not dimming the placeholder text helps draw attention to the omnibox.
   // Null in tests.
   if (!GetColorProvider()) {
     return;
@@ -2485,6 +2529,31 @@ bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
 
   return is_aim_entrypoint_enabled &&
          controller()->edit_model()->is_caret_visible();
+}
+
+bool OmniboxViewViews::ShouldInstallContextualTasksPlaceholderText() const {
+  // `location_bar_view_` can be null in tests.
+  if (!location_bar_view_) {
+    return false;
+  }
+
+  content::WebContents* web_contents = location_bar_view_->GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (!entry) {
+    return false;
+  }
+
+  const auto is_contextual_tasks = [](const GURL& url) {
+    return url.SchemeIs(content::kChromeUIScheme) &&
+           url.GetHost() == chrome::kChromeUIContextualTasksHost &&
+           base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  };
+  return is_contextual_tasks(entry->GetURL());
 }
 
 void OmniboxViewViews::RecordAimHintImpression() {
