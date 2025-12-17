@@ -830,6 +830,7 @@ suite('<settings-internet-detail-subpage>', () => {
           const staticIpAddress = '192.168.0.10';
           const staticRoutingPrefix = 24;
           const staticGateway = '192.168.0.1';
+          const staticWebProxyAutoDiscoveryUrl = 'http://google.com/';
           wifiNetwork.staticIpConfig = {
             nameServers: {
               activeValue: staticNameServers,
@@ -852,7 +853,11 @@ suite('<settings-internet-detail-subpage>', () => {
               policyValue: null,
             },
             type: IPConfigType.kIPv4,
-            webProxyAutoDiscoveryUrl: null,
+            webProxyAutoDiscoveryUrl: {
+              activeValue: staticWebProxyAutoDiscoveryUrl,
+              policySource: PolicySource.kNone,
+              policyValue: null,
+            },
           };
           mojoApi.setManagedPropertiesForTest(wifiNetwork);
           internetDetailPage.init('wifi_guid', 'WiFi', 'wifi');
@@ -878,7 +883,15 @@ suite('<settings-internet-detail-subpage>', () => {
           assertEquals('Static', config.nameServersConfigType);
           assertEquals('Static', config.ipAddressConfigType);
           assertTrue(!!config.staticIpConfig);
-          assertDeepEquals(wifiNetwork.staticIpConfig, config.staticIpConfig);
+          assertEquals(config.staticIpConfig.ipAddress, staticIpAddress);
+          assertEquals(config.staticIpConfig.gateway, staticGateway);
+          assertEquals(
+              config.staticIpConfig.routingPrefix, staticRoutingPrefix);
+          assertDeepEquals(
+              config.staticIpConfig.nameServers, staticNameServers);
+          assertEquals(
+              config.staticIpConfig.webProxyAutoDiscoveryUrl,
+              staticWebProxyAutoDiscoveryUrl);
         });
   });
 
