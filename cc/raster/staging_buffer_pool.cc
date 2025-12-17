@@ -116,10 +116,6 @@ StagingBufferPool::StagingBufferPool(
       this, "cc::StagingBufferPool",
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kStagingBufferPool, this);
-
   reduce_memory_usage_callback_ = base::BindRepeating(
       &StagingBufferPool::ReduceMemoryUsage, weak_ptr_factory_.GetWeakPtr());
 }
@@ -388,19 +384,6 @@ void StagingBufferPool::ReleaseBuffersNotUsedSince(base::TimeTicks time) {
       ri->OrderingBarrierCHROMIUM();
       worker_context_provider_->ContextSupport()->FlushPendingWork();
     }
-  }
-}
-
-void StagingBufferPool::OnMemoryPressure(base::MemoryPressureLevel level) {
-  base::AutoLock lock(lock_);
-  switch (level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // Release all buffers, regardless of how recently they were used.
-      ReleaseBuffersNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
-      break;
   }
 }
 
