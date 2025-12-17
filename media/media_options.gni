@@ -45,8 +45,9 @@ declare_args() {
   media_use_ffmpeg = true
 
   # Enable usage of Symphonia within the media library. Used experimentally
-  # for software decoding. Currently only enabled on linux builds.
-  media_use_symphonia = is_linux
+  # for software decoding.
+  # TODO(crbug.com/40074653): enable on Android, Fuchsia when stabilized.
+  media_use_symphonia = is_linux || is_mac || is_win || is_chromeos
 
   # Enable usage of libvpx within the media library. Used for software based
   # decoding of VP9 and VP8A type content.
