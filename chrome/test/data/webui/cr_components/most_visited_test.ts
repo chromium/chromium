@@ -2260,9 +2260,8 @@ suite('ShortcutsAutoRemovalToast', () => {
   });
 
   test('toast shown with Undo auto removal button', async () => {
-    // TODO(crbug.com/467437715): Call this via the callback router once the
-    // browser side is ready.
-    mostVisited.autoRemovalToast();
+    callbackRouterRemote.onMostVisitedTilesAutoRemoval();
+    await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     assertTrue(mostVisited.$.toastManager.isToastOpen);
 
@@ -2286,9 +2285,8 @@ suite('ShortcutsAutoRemovalToast', () => {
     assertFalse(mostVisited.$.toastManager.isToastOpen);
 
     // Check toast is open after auto removal event.
-    // TODO(crbug.com/467437715): Call this via the callback router once the
-    // browser side is ready.
-    mostVisited.autoRemovalToast();
+    callbackRouterRemote.onMostVisitedTilesAutoRemoval();
+    await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     assertTrue(mostVisited.$.toastManager.isToastOpen);
 

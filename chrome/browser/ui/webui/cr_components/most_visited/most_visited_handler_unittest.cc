@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -36,6 +40,7 @@ class MockMostVisitedPage : public most_visited::mojom::MostVisitedPage {
               SetMostVisitedInfo,
               (most_visited::mojom::MostVisitedInfoPtr info),
               (override));
+  MOCK_METHOD(void, OnMostVisitedTilesAutoRemoval, (), (override));
 
  private:
   mojo::Receiver<most_visited::mojom::MostVisitedPage> receiver_{this};
@@ -58,6 +63,14 @@ class ShortcutsAutoRemovalPrefTest
             GetParam().custom_links_enabled));
   }
 
+  void InitFeature(bool enable) {
+    if (enable) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          ntp_features::kNtpFeatureOptimizationShortcutsRemoval,
+          {{ntp_features::kStaleShortcutsCountThreshold.name, "5"}});
+    }
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -65,6 +78,7 @@ class ShortcutsAutoRemovalPrefTest
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MostVisitedHandler> handler_;
   testing::NiceMock<MockMostVisitedPage> page_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -195,6 +209,107 @@ TEST_P(ShortcutsAutoRemovalPrefTest,
   EXPECT_EQ(
       profile_.GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount),
       1);
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest,
+       DoNotRemoveStaleShortcutsIfFeatureDisabled) {
+  InitFeature(false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 5);
+
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval()).Times(0);
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest,
+       DoNotRemoveStaleShortcutsIfEnterpriseShortcutsEnabled) {
+  InitFeature(true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 5);
+
+  handler_->EnableTileTypes(
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+          .with_custom_links(GetParam().custom_links_enabled)
+          .with_enterprise_shortcuts(true));
+
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval()).Times(0);
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest, RemoveStaleShortcutsIfReachThreshold) {
+  InitFeature(true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 5);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+  EXPECT_EQ(5, profile_.GetPrefs()->GetInteger(
+                   ntp_prefs::kNtpShortcutsStalenessCount));
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfAlreadyHidden) {
+  InitFeature(true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 5);
+
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval()).Times(0);
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+
+  EXPECT_FALSE(
+      profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest, DoNotRemoveStaleShortcutsIfDisabled) {
+  InitFeature(true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  true);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 5);
+
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval()).Times(0);
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+}
+
+TEST_P(ShortcutsAutoRemovalPrefTest,
+       DoNotRemoveStaleShortcutsIfNotAboveThreshold) {
+  InitFeature(true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                  false);
+  profile_.GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsStalenessCount, 4);
+
+  EXPECT_CALL(page_, OnMostVisitedTilesAutoRemoval()).Times(0);
+  static_cast<ntp_tiles::MostVisitedSites::Observer*>(handler_.get())
+      ->OnURLsAvailable(false, {{ntp_tiles::SectionType::PERSONALIZED, {}}});
+
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 }
 
 }  // namespace
