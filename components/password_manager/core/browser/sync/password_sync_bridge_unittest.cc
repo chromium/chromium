@@ -1140,33 +1140,6 @@ TEST_F(PasswordSyncBridgeTest,
 
 TEST_F(
     PasswordSyncBridgeTest,
-    ShouldNotRemoveSyncMetadataWhenUndecryptablePasswordsWereDeletedButKillswitchWasUsed) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{features::kClearUndecryptablePasswords, true},
-       {features::kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
-        false}});
-  ON_CALL(*mock_password_store_sync(), ReadAllCredentials)
-      .WillByDefault(testing::Return(FormRetrievalResult::kSuccess));
-
-  EXPECT_CALL(*mock_sync_metadata_store_sync(),
-              GetAllSyncMetadata(syncer::PASSWORDS));
-  EXPECT_CALL(*mock_sync_metadata_store_sync(),
-              DeleteAllSyncMetadata(syncer::PASSWORDS))
-      .Times(0);
-
-  auto bridge =
-      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
-                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
-  bridge.Init(mock_password_store_sync(), base::DoNothing());
-
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
-                                      0, 1);
-}
-
-TEST_F(
-    PasswordSyncBridgeTest,
     ShouldRemoveSyncMetadataWhenUndecryptablePasswordsDetectedAndFeatureEnabled) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;

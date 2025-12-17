@@ -360,11 +360,7 @@ void PasswordSyncBridge::Init(
           syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
-    } else if (
-        base::FeatureList::IsEnabled(
-            features::
-                kTriggerPasswordResyncAfterDeletingUndecryptablePasswords) &&
-        WereUndecryptablePasswordsDeleted(password_store_sync_)) {
+    } else if (WereUndecryptablePasswordsDeleted(password_store_sync_)) {
       // Some locally undecryptable credentials were deleted, force initial sync
       // by dropping the sync metadata.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(

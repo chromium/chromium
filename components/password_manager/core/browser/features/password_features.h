@@ -193,10 +193,6 @@ BASE_DECLARE_FEATURE(kStopLoginCheckOnFailedLogin);
 // Adds throttling logic to password change dialog.
 BASE_DECLARE_FEATURE(kThrottlePasswordChangeDialog);
 
-// Starts passwords resync after undecryptable passwords were removed. This flag
-// is enabled by default and should be treaded as a killswitch.
-BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
-
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
