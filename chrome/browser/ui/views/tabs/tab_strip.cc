@@ -1899,7 +1899,7 @@ bool TabStrip::ShouldCompactLeadingEdge() const {
               ->GetFrameView()
               ->CaptionButtonsOnLeadingEdge() &&
          (tabs::GetTabSearchPosition(controller_->GetProfile()) ==
-          tabs::TabSearchPosition::kTrailingTabstrip);
+          tabs::TabSearchPosition::kTrailingHorizontalTabstrip);
 }
 
 void TabStrip::MaybeStartDrag(TabSlotView* source,

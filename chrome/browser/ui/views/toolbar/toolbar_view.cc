@@ -1317,7 +1317,7 @@ ToolbarView::GetCornerStyles() const {
     // corners.
     const bool tab_strip_has_leading_action_buttons =
         tabs::GetTabSearchPosition(browser()->profile()) ==
-        tabs::TabSearchPosition::kLeadingTabstrip;
+        tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
     const bool first_tab_selected =
         browser_->tab_strip_model()->IsTabInForeground(0);
     if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||

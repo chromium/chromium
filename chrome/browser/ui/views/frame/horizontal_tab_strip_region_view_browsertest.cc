@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewWithTabstripTabSearchTest,
       HorizontalTabStripRegionView::TabSearchPositionEnum;
   const bool tab_search_trailing_tabstrip =
       tabs::GetTabSearchPosition(browser()->profile()) ==
-      tabs::TabSearchPosition::kTrailingTabstrip;
+      tabs::TabSearchPosition::kTrailingHorizontalTabstrip;
   TabSearchPositionEnum expected_enum_val =
       tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
                                    : TabSearchPositionEnum::kLeading;

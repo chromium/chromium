@@ -39,7 +39,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 TabSearchPosition GetTabSearchPosition(const Profile* profile) {
   if (tabs::IsVerticalTabsFeatureEnabled() &&
       profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsEnabled)) {
-    return TabSearchPosition::kVerticalToolbarButton;
+    return TabSearchPosition::kVerticalTabstrip;
   }
 
   if (features::HasTabSearchToolbarButton()) {
@@ -53,8 +53,8 @@ TabSearchPosition GetTabSearchPosition(const Profile* profile) {
   }
 
   return g_tab_search_trailing_tabstrip_at_startup.value()
-             ? TabSearchPosition::kTrailingTabstrip
-             : TabSearchPosition::kLeadingTabstrip;
+             ? TabSearchPosition::kTrailingHorizontalTabstrip
+             : TabSearchPosition::kLeadingHorizontalTabstrip;
 }
 
 void SetTabSearchRightAlignedForTesting(bool is_right_aligned) {

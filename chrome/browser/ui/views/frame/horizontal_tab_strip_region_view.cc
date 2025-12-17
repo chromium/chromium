@@ -152,11 +152,11 @@ class TabSearchPositionMetricsLogger {
   void LogMetrics() {
     const tabs::TabSearchPosition position =
         tabs::GetTabSearchPosition(profile_);
-    if (position != tabs::TabSearchPosition::kToolbarButton &&
-        position != tabs::TabSearchPosition::kVerticalToolbarButton) {
+    if (position == tabs::TabSearchPosition::kLeadingHorizontalTabstrip ||
+        position == tabs::TabSearchPosition::kTrailingHorizontalTabstrip) {
       base::UmaHistogramEnumeration(
           "Tabs.TabSearch.PositionInTabstrip2",
-          position == tabs::TabSearchPosition::kTrailingTabstrip
+          position == tabs::TabSearchPosition::kTrailingHorizontalTabstrip
               ? HorizontalTabStripRegionView::TabSearchPositionEnum::kTrailing
               : HorizontalTabStripRegionView::TabSearchPositionEnum::kLeading);
     }
@@ -197,7 +197,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
                    : nullptr),
       render_tab_search_before_tab_strip_(
           tabs::GetTabSearchPosition(profile_) ==
-          tabs::TabSearchPosition::kLeadingTabstrip),
+          tabs::TabSearchPosition::kLeadingHorizontalTabstrip),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(profile_)) {
   views::SetCascadingColorProviderColor(

@@ -588,9 +588,10 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showVerticalTabsEnabled",
                           tabs::IsVerticalTabsFeatureEnabled());
 
-  html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
-                          tabs::GetTabSearchPosition(profile) ==
-                              tabs::TabSearchPosition::kTrailingTabstrip);
+  html_source->AddBoolean(
+      "tabSearchIsRightAlignedAtStartup",
+      tabs::GetTabSearchPosition(profile) ==
+          tabs::TabSearchPosition::kTrailingHorizontalTabstrip);
 
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
