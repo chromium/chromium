@@ -203,7 +203,11 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
-    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenIncognitoTab_Tablet() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
