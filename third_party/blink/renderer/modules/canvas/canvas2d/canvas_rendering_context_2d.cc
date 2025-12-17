@@ -707,7 +707,14 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   if (!IsResourceProviderValid()) {
     return nullptr;
   }
-  return resource_provider_->ProduceCanvasResource(reason);
+
+  // Only CRPSI can produce CanvasResources.
+  auto* si_provider = resource_provider_->AsSharedImageProvider();
+  if (!si_provider) {
+    return nullptr;
+  }
+
+  return si_provider->ProduceCanvasResource(reason);
 }
 
 const std::optional<cc::PaintRecord>&
