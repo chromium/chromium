@@ -4499,11 +4499,10 @@ void TabStripModel::MoveTabToIndexImpl(
 
   TabStripSelectionChange selection(GetActiveTab(),
                                     selection_model().ToListSelectionModel());
+  // TODO(crbug.com/469501104): Make MoveTabRecursive support splits, then
+  // replace ReverseSplit with it.
   if (move_within_split) {
-    int index_of_first_tab_in_split = initial_split_tabs[0].second;
-    CHECK(final_index >= index_of_first_tab_in_split);
-    contents_data_->GetSplitTabCollection(tab->GetSplit().value())
-        ->MoveTab(tab, final_index - index_of_first_tab_in_split);
+    contents_data_->ReverseSplit(tab->GetSplit().value());
   } else {
     contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
   }

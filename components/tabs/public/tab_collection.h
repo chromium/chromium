@@ -190,7 +190,6 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 
   // Manipulate direct child tabs.
   TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
-  void MoveTab(TabInterface* tab, size_t index);
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not

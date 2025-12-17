@@ -479,12 +479,6 @@ TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
   return inserted_tab;
 }
 
-void TabCollection::MoveTab(TabInterface* tab, size_t index) {
-  CHECK(tab);
-
-  impl_->MoveTab(tab, index);
-}
-
 std::unique_ptr<TabInterface> TabCollection::MaybeRemoveTab(TabInterface* tab) {
   CHECK(tab);
 

@@ -446,6 +446,15 @@ void TabStripCollection::CreateSplit(
   }
 }
 
+void TabStripCollection::ReverseSplit(split_tabs::SplitTabId split_id) {
+  SplitTabCollection* split = GetSplitTabCollection(split_id);
+  // MoveTabImpl requires the position's index to be prior to the tab being
+  // moved, so use the final index of the split + 1.
+  TabCollection::Position positon = {split->GetHandle(),
+                                     split->TabCountRecursive()};
+  MoveTabImpl(split->GetTabAtIndexRecursive(0), positon);
+}
+
 void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
   SplitTabCollection* split = GetSplitTabCollection(split_id);
   if (!split) {
