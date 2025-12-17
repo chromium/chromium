@@ -74,7 +74,7 @@ function addCommonCleanupCallback(test) {
       });
 }
 
-function retriedKey(key) {
+function activeKey(key) {
     return key + 'active';
 }
 
@@ -135,7 +135,7 @@ promise_test(async (t) => {
     assertHeaderValuesMatch(headers, {'sec-fetch-storage-access': ['inactive'],
                                       'origin': [https_origin], 'cookie': undefined});
     // Retrieve the headers for the retried request.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     // The unpartitioned cookie should have been included in the retry.
     assertHeaderValuesMatch(retried_headers, {
     'sec-fetch-storage-access': ['active'],
@@ -161,7 +161,7 @@ promise_test(async (t) => {
         'cookie': undefined
     });
     // Retrieve the headers for the retried request.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
@@ -184,7 +184,7 @@ promise_test(async (t) => {
     // sent but was previously retrieved. To ensure the request to retrieve the
     // post-retry header occurs only because they were never sent, always
     // test its retrieval first.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assert_equals(retried_headers, undefined);
     // Retrieve the pre-retry headers.
     const headers = await sendRetrieveRequest(key);
@@ -201,7 +201,7 @@ promise_test(async (t) => {
                                             [['retry-allowed-origin',
                                               same_site]]));
     // Should not be able to retrieve any headers at the post-retry key.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assert_equals(retried_headers, undefined);
     // Retrieve the pre-retry headers.
     const headers = await sendRetrieveRequest(key);
@@ -217,7 +217,7 @@ promise_test(async (t) => {
                                             [['retry-allowed-origin',
                                               https_origin]]));
     // Should not be able to retrieve any headers at the post-retry key.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assert_equals(retried_headers, undefined);
     // Retrieve the pre-retry headers.
     const headers = await sendRetrieveRequest(key);
@@ -326,7 +326,7 @@ promise_test(async t => {
 
     // Storage access should have been activated, without the need for a grant,
     // on the ABA case.
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [cross_site],
@@ -359,14 +359,14 @@ promise_test(async (t) => {
     const headers = await sendRetrieveRequest(key);
     assertHeaderValuesMatch(headers, {'sec-fetch-storage-access': ['inactive'],
                                       'origin': [https_origin], 'cookie': undefined});
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
         'cookie': ['cookie=unpartitioned']
     });
     // Retrieve the headers for the post-retry redirect request.
-    const redirected_headers = await sendRetrieveRequest(redirectedKey(retriedKey(key)));
+    const redirected_headers = await sendRetrieveRequest(redirectedKey(activeKey(key)));
     assertHeaderValuesMatch(redirected_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
@@ -398,7 +398,7 @@ promise_test(async (t) => {
         'origin': [https_origin],
         'cookie': undefined
     });
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
@@ -436,7 +436,7 @@ promise_test(async (t) => {
         'origin': [https_origin],
         'cookie': undefined
     });
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
@@ -479,7 +479,7 @@ promise_test(async (t) => {
     assertHeaderValuesMatch(headers, {'sec-fetch-storage-access': ['inactive'],
                                       'origin': [https_origin],
                                       'cookie': undefined});
-    const retried_headers = await sendRetrieveRequest(retriedKey(key));
+    const retried_headers = await sendRetrieveRequest(activeKey(key));
     assertHeaderValuesMatch(retried_headers, {
         'sec-fetch-storage-access': ['active'],
         'origin': [https_origin],
