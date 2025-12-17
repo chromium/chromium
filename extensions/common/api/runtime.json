@@ -503,6 +503,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
+          "description": "Promise support was added for extension contexts in Chrome 99. When communicating from a web page to an extension, promises are available from Chrome 118.",
           "parameters": [
             {
               "name": "response",
