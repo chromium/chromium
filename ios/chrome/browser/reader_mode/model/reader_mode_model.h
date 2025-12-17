@@ -9,10 +9,12 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 
+class ProfileIOS;
+
 // A ContextualPanelModel for Reader Mode.
 class ReaderModeModel : public ContextualPanelModel, public KeyedService {
  public:
-  ReaderModeModel();
+  explicit ReaderModeModel(ProfileIOS* profile);
 
   ReaderModeModel(const ReaderModeModel&) = delete;
   ReaderModeModel& operator=(const ReaderModeModel&) = delete;
@@ -25,6 +27,7 @@ class ReaderModeModel : public ContextualPanelModel, public KeyedService {
       FetchConfigurationForWebStateCallback callback) override;
 
  private:
+  raw_ptr<ProfileIOS> profile_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

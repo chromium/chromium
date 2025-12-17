@@ -81,6 +81,7 @@ source_set("eg2_tests") {
     "//components/dom_distiller/core:dom_distiller_features",
     "//components/dom_distiller/core:prefs",
     "//components/dom_distiller/core/mojom",
+    "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/app/strings:ios_strings_grit",

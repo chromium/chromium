@@ -150,6 +150,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSDownloadAutoDeletionFeature,
     &kIPHiOSFeedSwipeAnimatedFeature,
     &kIPHiOSFeedSwipeStaticFeature,
+    &kIPHiOSReaderModeLargeOmniboxEntrypointFeature,
     &kIPHiOSLensKeyboardFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoWhatsNewFeature,

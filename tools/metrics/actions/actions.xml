@@ -514,6 +514,8 @@ should be able to be added at any place in this file.
   <variant name="_iOSPromoWhatsNew" summary="For iOSPromoWhatsNew feature"/>
   <variant name="_iOSPullToRefreshFeature"
       summary="For iOSPullToRefreshFeature feature"/>
+  <variant name="_iOSReaderModeLargeOmniboxEntrypointFeature"
+      summary="For iOSReaderModeLargeOmniboxEntrypoint feature"/>
   <variant name="_iOSReaderModeOptionsFeature"
       summary="For Reader Mode options IPH."/>
   <variant name="_iOSReminderNotificationsOverflowMenuBubbleFeature"

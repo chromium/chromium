@@ -713,6 +713,9 @@ BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
 BASE_FEATURE(kIPHiOSPullToRefreshFeature,
              "IPH_iOSPullToRefreshFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSReaderModeLargeOmniboxEntrypointFeature,
+             "IPH_iOSReaderModeLargeOmniboxEntrypointFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos,
              "IPH_iOSReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);

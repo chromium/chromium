@@ -11,9 +11,11 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -45,6 +47,11 @@ std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
       GetApplicationContext()->GetLocalState());
 }
 
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    ProfileIOS* profile) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
 }  // namespace
 
 ReaderModeTest::ReaderModeTest()
@@ -67,6 +74,9 @@ void ReaderModeTest::SetUp() {
       OptimizationGuideServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SafeBrowsingClientFactory::GetInstance(),
                             base::BindOnce(&BuildSafeBrowsingClient));
+  builder.AddTestingFactory(
+      feature_engagement::TrackerFactory::GetInstance(),
+      base::BindRepeating(&BuildFeatureEngagementMockTracker));
   profile_ = std::move(builder).Build();
 
   // Ensure that kOfferTranslateEnabled is enabled.

@@ -353,6 +353,9 @@ extern const char kIOSFREBadgeHoldbackPeriodElapsed[];
 // The user has tapped on the Reader Mode entrypoint.
 extern const char kIOSReaderModeUsed[];
 
+// The Reading Mode expanded omnibox entrypoint is presented.
+extern const char kIOSReaderModeChipExpanded[];
+
 // Event fired when the Reader Mode "What's new" badge is displayed.
 extern const char kIOSIPHBadgedReaderModeTriggered[];
 

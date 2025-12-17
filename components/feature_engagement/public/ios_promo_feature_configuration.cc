@@ -235,6 +235,22 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
+  if (kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    // No availability requirement for this feature.
+    config.availability = Comparator(ANY, 0);
+    // No session rate limit for this feature.
+    config.session_rate = Comparator(ANY, 0);
+    config.used = EventConfig("reader_mode_chip_expanded_used",
+                              Comparator(ANY, 0), 360, 360);
+    // The expanded chip should not be triggered more than 3 times per day.
+    config.trigger =
+        EventConfig(feature_engagement::events::kIOSReaderModeChipExpanded,
+                    Comparator(LESS_THAN, 3), 1, 360);
+    return config;
+  }
+
   if (kIPHiOSWelcomeBackFeature.name == feature->name) {
     // Show the promo any time the conditions are met.
     FeatureConfig config;

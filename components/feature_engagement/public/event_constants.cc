@@ -179,6 +179,7 @@ const char kIOSFirstRunComplete[] = "ios_first_run_complete";
 const char kIOSFREBadgeHoldbackPeriodElapsed[] =
     "ios_fre_badge_holdback_period_elapsed";
 const char kIOSReaderModeUsed[] = "ios_reader_mode_used";
+const char kIOSReaderModeChipExpanded[] = "ios_reader_mode_chip_expanded";
 const char kIOSIPHBadgedReaderModeTriggered[] =
     "ios_iph_badged_reader_mode_triggered";
 const char kIOSAIHubNewBadgeTriggered[] = "ios_new_ai_hub_badge_triggered";
