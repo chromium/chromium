@@ -379,6 +379,13 @@ enum OptimizationType {
   // Provides information about whether we may trigger Autofill on a page
   // element in an iframe with this origin during an actor task.
   AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST = 116;
+
+  // Provides information about whether a page is eligible for walletable
+  // transit ticket pass detection.
+  WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST = 117;
+  // Provides information about whether a page is eligible for walletable
+  // event pass detection.
+  WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST = 118;
 }
 
 // Presents semantics for how page load URLs should be matched.

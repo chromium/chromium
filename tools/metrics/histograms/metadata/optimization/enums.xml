@@ -795,6 +795,8 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="114" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID"/>
   <int value="115" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID"/>
   <int value="116" label="AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST"/>
+  <int value="117" label="WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST"/>
+  <int value="118" label="WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

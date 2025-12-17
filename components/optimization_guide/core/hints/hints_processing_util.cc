@@ -211,6 +211,12 @@ std::string GetStringNameForOptimizationType(
     case proto::OptimizationType::
         WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST:
       return "WalletablePassDetectionBoardingPassAllowlist";
+    case proto::OptimizationType::
+        WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST:
+      return "WalletablePassDetectionTransitTicketAllowlist";
+    case proto::OptimizationType::
+        WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST:
+      return "WalletablePassDetectionEventPassAllowlist";
     case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST:
       return "NtpNextDeepDiveActionChipBlocklist";
     case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST:

@@ -537,9 +537,15 @@ chromium-metrics-reviews@google.com.
   <variant name="WalletablePassDetectionBoardingPassAllowlist"
       summary="This optimization provides information about whether a URL is
                eligible for walletable boarding pass detection."/>
+  <variant name="WalletablePassDetectionEventPassAllowlist"
+      summary="This optimization provides information about whether a URL is
+               eligible for walletable event pass detection."/>
   <variant name="WalletablePassDetectionLoyaltyAllowlist"
       summary="This optimization provides information about whether a URL is
                eligible for walletable loyalty pass detection."/>
+  <variant name="WalletablePassDetectionTransitTicketAllowlist"
+      summary="This optimization provides information about whether a URL is
+               eligible for walletable transit ticket pass detection."/>
 </variants>
 
 <variants name="PageContentAnnotationsStorageType">
