@@ -107,6 +107,9 @@ export class FakeNetworkConfig {
     /** @private {!number} */
     this.apnIdCounter_ = 0;
 
+    /** @type {!Array<!{guid: string, properties: ConfigProperties}>} */
+    this.setPropertiesCalls = [];
+
     this.resetForTest();
   }
 
@@ -159,6 +162,7 @@ export class FakeNetworkConfig {
 
     this.serverCas_ = [];
     this.userCerts_ = [];
+    this.setPropertiesCalls = [];
 
     ['getNetworkState', 'getNetworkStateList', 'getDeviceStateList',
      'getManagedProperties', 'setNetworkTypeEnabledState', 'requestNetworkScan',
@@ -390,6 +394,7 @@ export class FakeNetworkConfig {
    */
   setProperties(guid, properties) {
     return new Promise(resolve => {
+      this.setPropertiesCalls.push({guid, properties});
       this.propertiesToSet_ =
           /** @type(!ConfigProperties)*/ (Object.assign({}, properties));
       this.methodCalled('setProperties');

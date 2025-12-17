@@ -26,7 +26,7 @@ import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/comm
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {ConfigProperties, CrosNetworkConfigInterface, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ConfigProperties, CrosNetworkConfigInterface, ManagedProperties, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -146,6 +146,7 @@ export class SettingsInternetKnownNetworksPageElement extends
   private pendingSettingId_: Setting|null;
   private selectedGuid_: string;
   private selectedSubscriptionId_: string;
+  private selectedManagedProperties_: ManagedProperties|null = null;
   private showAddPreferred_: boolean;
   private showRemovePreferred_: boolean;
 
@@ -303,6 +304,7 @@ export class SettingsInternetKnownNetworksPageElement extends
       console.warn('Properties not found for: ' + this.selectedGuid_);
       return;
     }
+    this.selectedManagedProperties_ = properties;
     if (properties.priority &&
         this.isNetworkPolicyEnforced(properties.priority)) {
       this.showAddPreferred_ = false;
@@ -339,16 +341,18 @@ export class SettingsInternetKnownNetworksPageElement extends
   }
 
   private onRemovePreferredClick_(): void {
-    assertExists(this.networkType);
-    const config = OncMojo.getBaselineConfigProperties(this.networkType);
+    assertExists(this.selectedManagedProperties_);
+    const config =
+        OncMojo.getBaselineConfigProperties(this.selectedManagedProperties_);
     config.priority = {value: 0};
     this.setProperties_(config);
     this.$.dotsMenu.close();
   }
 
   private onAddPreferredClick_(): void {
-    assertExists(this.networkType);
-    const config = OncMojo.getBaselineConfigProperties(this.networkType);
+    assertExists(this.selectedManagedProperties_);
+    const config =
+        OncMojo.getBaselineConfigProperties(this.selectedManagedProperties_);
     config.priority = {value: 1};
     this.setProperties_(config);
     this.$.dotsMenu.close();
