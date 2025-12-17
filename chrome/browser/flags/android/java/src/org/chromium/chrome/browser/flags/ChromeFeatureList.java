@@ -946,7 +946,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
-            newCachedFlag(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2, false);
+            newCachedFlag(
+                    LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
