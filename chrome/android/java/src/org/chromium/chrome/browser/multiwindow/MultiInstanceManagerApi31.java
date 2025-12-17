@@ -1506,7 +1506,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ApplicationStatus.unregisterActivityStateListener(this);
         }
         if (sState != null) {
-            if (getAllRunningActivities().isEmpty()) {
+            List<Activity> activities = getAllRunningActivities();
+            // We're called before the corresponding activity is actually destroyed, so there should
+            // be at least one running activity.
+            assert !activities.isEmpty();
+            if (activities.size() == 1) {
                 sState.clear();
             } else {
                 sState.removeObserver(mOnMultiInstanceStateChanged);

@@ -140,15 +140,22 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onDestroy() {
         mDestroyed = true;
-        mLifecycleDispatcher.onDestroyStarted();
 
+        // Dispatch onDestroy() for objects created for the activity.
+        mLifecycleDispatcher.onDestroyStarted();
+        mLifecycleDispatcher.dispatchOnDestroy();
+
+        // Destroy ActivityWindowAndroid if it exists. This must be after
+        // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
+        // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
 
+        // Finally, destroy the activity. This must be after destroying ActivityWindowAndroid
+        // because it has a reference to the Activity.
         super.onDestroy();
-        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     @Override

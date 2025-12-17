@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -652,6 +653,40 @@ public class ChromeAndroidTaskIntegrationTest {
         // Assert.
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNull(chromeAndroidTask);
+    }
+
+    /**
+     * Verifies that a {@link ChromeAndroidTask} outlives objects owned by {@code Activity}.
+     *
+     * <p>Many objects owned by {@link ChromeTabbedActivity} (namely {@link RootUiCoordinator})
+     * destroy themselves on the activity destruction by registering to {@link
+     * ActivityLifecycleDispatcher}. Since they often pass {@link ChromeAndroidTask} to JNI bridges
+     * on initialization (as BrowserWindowInterface), the lifetime of {@link ChromeAndroidTask} must
+     * be longer than that of those objects.
+     */
+    @Test
+    @MediumTest
+    public void destroyChromeTabbedActivity_chromeAndroidTaskOutlivesObjectsOwnedByActivity() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+
+        ChromeTabbedActivity activity = mFreshCtaTransitTestRule.getActivity();
+        int taskId = activity.getTaskId();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLifecycleDispatcher()
+                            .register(
+                                    new DestroyObserver() {
+                                        @Override
+                                        public void onDestroy() {
+                                            // Assert.
+                                            assertNotNull(getChromeAndroidTask(taskId));
+                                        }
+                                    });
+                });
+
+        // Act.
+        mFreshCtaTransitTestRule.finishActivity();
     }
 
     @Test
