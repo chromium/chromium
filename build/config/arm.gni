@@ -26,11 +26,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # "vfpv3". An empty string means to use the default for the arm_version.
     arm_fpu = ""
 
-    # The ARM variant-specific tuning mode. This will be a string like "armv6"
-    # or "cortex-a15". An empty string means to use the default for the
-    # arm_version.
-    arm_tune = ""
-
     # Whether to enable optional NEON code paths.
     arm_optionally_use_neon = false
 
@@ -75,10 +70,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     if (arm_arch == "") {
       arm_arch = "armv8-a"
     }
-    if (arm_tune == "") {
-      arm_tune = "generic-armv8-a"
-    }
-
     if (arm_float_abi == "") {
       arm_float_abi = "hard"
     }

@@ -1321,9 +1321,6 @@ config("compiler_cpu_abi") {
         "-march=$arm_arch",
         "-mfloat-abi=$arm_float_abi",
       ]
-      if (arm_tune != "") {
-        cflags += [ "-mtune=$arm_tune" ]
-      }
     } else if (current_cpu == "arm64") {
       if (is_clang && !is_android && !is_fuchsia && !is_chromeos_device) {
         cflags += [ "--target=aarch64-linux-gnu" ]
