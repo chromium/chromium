@@ -4951,8 +4951,9 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   }
 
   // Determine if the TabStrip exists and is capable of being clicked on. We
-  // might be a popup window without a TabStrip.
-  if (ShouldDrawTabStrip()) {
+  // might be a popup window without a TabStrip. Use `GetTabStripVisible` as the
+  // tabstrip might have been hidden in immersive mode.
+  if (GetTabStripVisible()) {
     if (tabs::IsVerticalTabsFeatureEnabled() &&
         tabs::VerticalTabStripStateController::From(browser_)
             ->ShouldDisplayVerticalTabs()) {
