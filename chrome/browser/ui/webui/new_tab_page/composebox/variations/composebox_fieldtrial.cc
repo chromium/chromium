@@ -200,9 +200,7 @@ std::unique_ptr<
 CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
-  config_params->send_lns_surface = kSendLnsSurfaceParam.Get();
-  config_params->suppress_lns_surface_param_if_no_image =
-      kSuppressLnsSurfaceParamIfNoImage.Get();
+  config_params->send_lns_surface = true;
   config_params->enable_multi_context_input_flow = kMaxNumFiles.Get() > 1;
   config_params->enable_viewport_images = kEnableViewportImages.Get();
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
@@ -218,15 +216,6 @@ BASE_FEATURE(kNtpComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
                                                    "ConfigParam",
                                                    "");
-
-const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
-                                                    "SendLnsSurfaceParam",
-                                                    true);
-
-const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
-    &kNtpComposebox,
-    "SuppressLnsSurfaceParamIfNoImage",
-    true);
 
 const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(

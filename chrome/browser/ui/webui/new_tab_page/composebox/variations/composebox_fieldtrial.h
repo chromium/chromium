@@ -22,14 +22,6 @@ BASE_DECLARE_FEATURE(kNtpComposebox);
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
-// Whether to send the lns_surface parameter.
-// TODO(crbug.com/430070871): Remove this flag once the server supports the
-// `lns_surface` parameter.
-extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
-// If kSendLnsSurfaceParam is true, whether to suppress the `lns_surface`
-// parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
-// is false.
-extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
 // Whether or not to use separate request ids for viewport images if the
 // multi-context input flow is enabled.
 extern const base::FeatureParam<bool>
