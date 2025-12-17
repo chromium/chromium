@@ -1224,6 +1224,7 @@ data/accessibility/aria/aria-modal-expected-android-external.txt
 data/accessibility/aria/aria-modal-expected-auralinux.txt
 data/accessibility/aria/aria-modal-expected-mac.txt
 data/accessibility/aria/aria-modal-expected-win.txt
+data/accessibility/aria/aria-modal-focusable-dialog-expected-android.txt
 data/accessibility/aria/aria-modal-focusable-dialog-expected-mac.txt
 data/accessibility/aria/aria-modal-focusable-dialog.html
 data/accessibility/aria/aria-modal-layered-expected-mac.txt

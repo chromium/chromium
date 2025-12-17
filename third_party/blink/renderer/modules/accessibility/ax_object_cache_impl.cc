@@ -5754,6 +5754,11 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* focused_node) {
   if (active_aria_modal_dialog_ == new_active_aria_modal)
     return;
 
+  // Don't update when the focus itself is the modal.
+  if (new_active_aria_modal == focused_node) {
+    return;
+  }
+
   active_aria_modal_dialog_ = new_active_aria_modal;
   MarkDocumentDirty();
 }

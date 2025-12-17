@@ -6,11 +6,12 @@
   <button id="btn" aria-label="not in tree">Click</btn>
   <script>
     // Test that when the ARIA modal dialog itself is focused, the tree pruning
-    // is performed correctly.
+    // is not performed unlike when something within is focused.
 
     // Note: This test checks an edge case in the aria-modal pruning logic. This
-    // logic currently only runs on Mac, so there are only mac expectations for
-    // this test. See aria-modal.html for more information on tree pruning.
+    // logic currently only runs on Mac and Android, so there are only mac and
+    // Android expectations for this test. See aria-modal.html for more
+    // information on tree pruning.
     function loaded() {
       focusableDialog.focus();
     }

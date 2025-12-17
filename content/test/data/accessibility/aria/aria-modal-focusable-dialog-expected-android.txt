@@ -1,0 +1,5 @@
+android.webkit.WebView focusable
+++android.app.AlertDialog interesting name='Nonmodal'
+++android.app.AlertDialog focusable focused interesting name='modal dialog'
+++++android.widget.TextView interesting name='Focusable'
+++android.widget.Button clickable focusable interesting content_description='not in tree'
