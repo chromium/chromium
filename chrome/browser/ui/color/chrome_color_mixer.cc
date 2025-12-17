@@ -107,6 +107,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
+  mixer[kColorActorUiHandoffButtonBorder] = {
+      key.custom_theme ? static_cast<ui::ColorId>(kColorToolbar)
+                       : ui::kColorRefPrimary50};
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(
       ui::kColorAlertLowSeverity, kColorToolbar);
   mixer[kColorAppMenuHighlightSeverityHigh] = {
