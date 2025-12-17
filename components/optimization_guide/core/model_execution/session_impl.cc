@@ -48,8 +48,6 @@ namespace optimization_guide {
 namespace {
 
 using google::protobuf::RepeatedPtrField;
-using ModelExecutionError =
-    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 void LogSessionCreation(OptimizationGuideLogger* logger,
                         mojom::OnDeviceFeature feature) {

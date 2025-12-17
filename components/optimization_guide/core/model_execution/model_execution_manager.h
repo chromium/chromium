@@ -7,15 +7,11 @@
 #include <map>
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -99,11 +95,6 @@ class ModelExecutionManager final {
       OptimizationGuideModelExecutionResultCallback callback,
       base::expected<const proto::ExecuteResponse,
                      OptimizationGuideModelExecutionError> execute_response);
-
-  // Returns the `OnDeviceModelAdaptationMetadata` for `feature`.
-  std::optional<optimization_guide::OnDeviceModelAdaptationMetadata>
-  GetOnDeviceModelAdaptationMetadata(
-      optimization_guide::ModelBasedCapabilityKey feature);
 
   // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
   // passed through the ModelQualityLogEntry to invoke upload during log
