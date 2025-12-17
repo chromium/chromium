@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <iostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -35,12 +36,11 @@ constexpr std::string_view kCorpUserSwitch = "corp-user";
 constexpr std::string_view kCloudUserSwitch = "cloud-user";
 
 void PrintGroupMembershipError(const char* user_name) {
-  UNSAFE_TODO(fprintf(stderr,
-                      "%s is not a member of the `%s` group.\n"
-                      "  Please add them using this command:\n"
-                      "  sudo usermod -G %s %s\n",
-                      user_name, kChromotingGroupName, kChromotingGroupName,
-                      user_name));
+  std::cerr << user_name << " is not a member of the `" << kChromotingGroupName
+            << "` group.\n"
+            << "  Please add them using this command:\n"
+            << "  sudo usermod -G " << kChromotingGroupName << " " << user_name
+            << "\n";
 }
 
 bool CheckChromotingGroupMembership(const char* user_name,
@@ -51,12 +51,10 @@ bool CheckChromotingGroupMembership(const char* user_name,
     // The installer creates this group so this condition is unexpected but we
     // check here in case the machine is in a bad state or our installer was
     // modified (broken) in some way such that the group does not exist.
-    UNSAFE_TODO(
-        fprintf(stderr,
-                "Failed to retrieve group info for `%s`. errno = %s(%d)\n"
-                "  Please create this group using this command:\n"
-                "  sudo addgroup --system chrome-remote-desktop\n",
-                kChromotingGroupName, strerror(errno), errno));
+    std::cerr << "Failed to retrieve group info for `" << kChromotingGroupName
+              << "`. errno = " << strerror(errno) << "(" << errno << ")\n"
+              << "  Please create this group using this command:\n"
+              << "  sudo addgroup --system chrome-remote-desktop\n";
     return false;
   }
 
@@ -77,8 +75,8 @@ bool CheckChromotingGroupMembership(const char* user_name,
     return false;
   }
 
-  UNSAFE_TODO(fprintf(stdout, "Verified that %s is a member of %s\n", user_name,
-                      kChromotingGroupName));
+  std::cout << "Verified that " << user_name << " is a member of "
+            << kChromotingGroupName << "\n";
   return true;
 }
 
@@ -88,21 +86,19 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
   bool has_cloud_user = command_line.HasSwitch(kCloudUserSwitch);
 
   if (!has_username && !has_corp_user && !has_cloud_user) {
-    fprintf(stderr,
-            "At least one of the following args must be provided:\n"
-            "  --user-name=<username>\n"
-            "  --corp-user=<username>\n"
-            "  --cloud-user=<email>\n");
+    std::cerr << "At least one of the following args must be provided:\n"
+              << "  --user-name=<username>\n"
+              << "  --corp-user=<username>\n"
+              << "  --cloud-user=<email>\n";
     return false;
   } else if (has_corp_user && has_cloud_user) {
-    fprintf(
-        stderr,
-        "'--corp-user' and '--cloud-user' flags cannot be used together.\n");
+    std::cerr << "'--corp-user' and '--cloud-user' flags cannot be used "
+                 "together.\n";
     return false;
   } else if (has_cloud_user) {
     std::string arg_value = command_line.GetSwitchValueASCII(kCloudUserSwitch);
     if (!base::SplitStringOnce(arg_value, '@')) {
-      fprintf(stderr, "The --cloud-user flag requires an email address.\n");
+      std::cerr << "The --cloud-user flag requires an email address.\n";
       return false;
     }
   }
@@ -149,46 +145,43 @@ int StartHostAsRoot(int argc, char** argv) {
   }
   std::string user_name = ExtractUsernameFromCommandLine(command_line);
   if (user_name.empty()) {
-    fprintf(stderr,
-            "A username and/or email must be provided from one of the "
-            "following switches:\n"
-            "  --user-name=<username>\n"
-            "  --corp-user=<username>\n"
-            "  --cloud-user=<email>\n");
+    std::cerr << "A username and/or email must be provided from one of the "
+                 "following switches:\n"
+              << "  --user-name=<username>\n"
+              << "  --corp-user=<username>\n"
+              << "  --cloud-user=<email>\n";
     return 1;
   }
-  fprintf(stdout, "Configuring the host service to run as local account: %s\n",
-          user_name.c_str());
+  std::cout << "Configuring the host service to run as local account: "
+            << user_name << "\n";
 
   errno = 0;
   const passwd* user_struct = getpwnam(user_name.c_str());
   if (!user_struct) {
-    UNSAFE_TODO(
-        fprintf(stderr,
-                "Failed to retrieve passwd struct for %s. errno = %s(%d)\n"
-                "Does this user account exist on the machine?\n",
-                user_name.c_str(), strerror(errno), errno));
+    std::cerr << "Failed to retrieve passwd struct for " << user_name
+              << ". errno = " << strerror(errno) << "(" << errno << ")\n"
+              << "Does this user account exist on the machine?\n";
     return -1;
   }
 
   std::string home_dir = user_struct->pw_dir ?: "";
   base::FilePath home_dir_path = base::FilePath(home_dir);
   if (!base::DirectoryExists(home_dir_path)) {
-    fprintf(stderr,
-            "[WARNING] Can't find home directory (%s) for %s(%d).\n"
-            "Please run the 'mkhomedir_helper' utility, or similar, to create "
-            "a home directory for the user.\nThe host setup process will not "
-            "complete successfully without one.\n",
-            home_dir.c_str(), user_name.c_str(), user_struct->pw_uid);
+    std::cerr << "[WARNING] Can't find home directory (" << home_dir << ") for "
+              << user_name << "(" << user_struct->pw_uid << ").\n"
+              << "Please run the 'mkhomedir_helper' utility, or similar, to "
+                 "create a home directory for the user.\n"
+              << "The host setup process will not complete successfully "
+                 "without one.\n";
   } else {
-    fprintf(stdout, "Verified that home directory (%s) exists for %s(%d)\n",
-            home_dir.c_str(), user_name.c_str(), user_struct->pw_uid);
+    std::cout << "Verified that home directory (" << home_dir << ") exists for "
+              << user_name << "(" << user_struct->pw_uid << ")\n";
   }
 
   // This switch is provided for environments where systemd is not being used.
   bool use_sysvinit = command_line.HasSwitch("sysvinit");
   if (use_sysvinit) {
-    fprintf(stdout, "Checking sysvinit configuration requirements.\n");
+    std::cout << "Checking sysvinit configuration requirements.\n";
     if (!CheckChromotingGroupMembership(user_struct->pw_name,
                                         user_struct->pw_gid)) {
       return -1;
@@ -216,7 +209,7 @@ int StartHostAsRoot(int argc, char** argv) {
       base::LaunchProcess(create_config_command_line, options);
   close(stdin_dup);
   if (!create_config_process.WaitForExit(&return_value) || return_value != 0) {
-    fprintf(stderr, "Failed to set new config.\n");
+    std::cerr << "Failed to set new config.\n";
     return return_value;
   }
 
@@ -234,11 +227,10 @@ int StartHostAsRoot(int argc, char** argv) {
   auto start_service_process =
       base::LaunchProcess(start_service_command_line, base::LaunchOptions());
   if (!start_service_process.WaitForExit(&return_value) || return_value != 0) {
-    fprintf(stderr, "Failed to enable host service.\n");
+    std::cerr << "Failed to enable host service.\n";
     return return_value;
   }
-
-  printf("Host service started successfully.\n");
+  std::cout << "Host service started successfully.\n";
   return 0;
 }
 
