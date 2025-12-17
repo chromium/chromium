@@ -2858,11 +2858,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-accessibility-manifest-v3-enhanced-network-tts",
-    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-accessibility-manifest-v3-espeakng",
     "owners": [
       "mwoj@google.com",

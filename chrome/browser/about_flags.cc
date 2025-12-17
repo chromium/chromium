@@ -8855,12 +8855,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityManifestV3ChromeVoxDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3ChromeVox)},
 
-    {"enable-accessibility-manifest-v3-enhanced-network-tts",
-     flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsName,
-     flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3EnhancedNetworkTts)},
-
     {"enable-accessibility-manifest-v3-espeakng",
      flag_descriptions::kAccessibilityManifestV3EspeakNGName,
      flag_descriptions::kAccessibilityManifestV3EspeakNGDescription, kOsCrOS,

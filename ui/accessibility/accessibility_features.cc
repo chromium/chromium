@@ -306,13 +306,6 @@ bool IsAccessibilityManifestV3EnabledForChromeVox() {
       ::features::kAccessibilityManifestV3ChromeVox);
 }
 
-BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3EnhancedNetworkTts);
-}
-
 BASE_FEATURE(kAccessibilityManifestV3EspeakNGTts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForEspeakNGTts() {

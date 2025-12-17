@@ -48,9 +48,4 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
             base::Unretained(ash::AccessibilityManager::Get()));
     `);
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kAccessibilityManifestV3EnhancedNetworkTts']};
-  }
 };
