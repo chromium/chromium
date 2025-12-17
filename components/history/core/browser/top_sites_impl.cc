@@ -14,6 +14,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -386,6 +388,18 @@ MostVisitedURLList TopSitesImpl::ApplyBlockedUrls(
 
 // static
 std::string TopSitesImpl::GetURLHash(const GURL& url) {
+  DCHECK(url.is_valid())
+      << "TopSites error: Attempting to hash invalid URL. Spec: "
+      << url.possibly_invalid_spec();
+
+  if (!url.is_valid()) {
+    std::string invalid_spec = url.possibly_invalid_spec();
+    base::debug::Alias(&invalid_spec);
+    base::debug::DumpWithoutCrashing();
+
+    return std::string();
+  }
+
   // We don't use canonical URLs here to be able to block only one of the two
   // 'duplicate' sites, e.g. 'gmail.com' and 'mail.google.com'.
   return Md5AsHexForTopSites(url.spec());
