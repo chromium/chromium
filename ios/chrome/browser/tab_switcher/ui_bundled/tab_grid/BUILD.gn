@@ -273,6 +273,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs:pinned_tabs_ui",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:unit_tests",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test:block_cleanup_test",

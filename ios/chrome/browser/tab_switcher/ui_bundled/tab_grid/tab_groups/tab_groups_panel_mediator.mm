@@ -312,6 +312,10 @@ NSString* CreationText(base::Time creation_date) {
   NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
+- (void)closeOtherTabsButtonTapped:(id)sender {
+  NOTREACHED() << "Should not be called in Tab Groups.";
+}
+
 - (void)doneButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
   [self.tabGridHandler exitTabGrid];

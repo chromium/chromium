@@ -29731,6 +29731,24 @@ should be able to be added at any place in this file.
   <description>User in the iOS tab grid closed an incognito tab.</description>
 </action>
 
+<action name="MobileTabGridCloseOtherIncognitoTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    User in the incognito tab grid context menu used the 'Close Other Tabs'
+    control.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseOtherRegularTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    User in the regular tab grid context menu used the 'Close Other Tabs'
+    control.
+  </description>
+</action>
+
 <action name="MobileTabGridCloseRegularTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>

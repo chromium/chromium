@@ -120,6 +120,15 @@
   [self closeAllItems];
 }
 
+- (void)closeOtherTabsButtonTapped:(id)sender {
+  RecordTabGridCloseOtherTabs(/*incognito=*/true);
+  // There is no pinned tabs in incognito.
+  RecordTabGridCloseTabsCount(self.webStateList->count() - 1);
+  int indexToKeep = self.webStateList->active_index();
+  CloseOtherWebStates(*self.webStateList, indexToKeep,
+                      WebStateList::ClosingReason::kUserAction);
+}
+
 - (void)newTabButtonTapped:(id)sender {
   // Ignore the tap if the current page is disabled for some reason, by policy
   // for instance. This is to avoid situations where the tap action from an

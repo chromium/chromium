@@ -429,6 +429,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   NOTREACHED();
 }
 
+- (void)closeTabsExceptID:(web::WebStateID)itemID {
+  NOTREACHED();
+}
+
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
             sourceView:(UIView*)sourceView {
   NOTREACHED();

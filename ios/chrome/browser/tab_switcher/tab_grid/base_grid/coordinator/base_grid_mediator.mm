@@ -1004,6 +1004,16 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   }
 }
 
+- (void)closeTabsExceptID:(web::WebStateID)itemID {
+  CHECK(IsCloseOtherTabsEnabled());
+  int indexToKeep = GetWebStateIndex(
+      self.webStateList, WebStateSearchCriteria{.identifier = itemID});
+  if (indexToKeep != WebStateList::kInvalidIndex) {
+    CloseOtherWebStates(*(self.webStateList), indexToKeep,
+                        WebStateList::ClosingReason::kUserAction);
+  }
+}
+
 - (void)selectTabGroup:(const TabGroup*)tabGroup {
   WebStateList* webStateList = self.webStateList;
 
@@ -1853,6 +1863,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
+  NOTREACHED() << "Should be implemented in a subclass.";
+}
+
+- (void)closeOtherTabsButtonTapped:(id)sender {
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 

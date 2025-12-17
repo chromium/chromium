@@ -54,6 +54,21 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
   EXPECT_EQ(0UL, consumer_.items.size());
 }
 
+// Tests that the WebStateList is correctly updated when
+// `-closeOtherTabsButtonTapped` is called.
+TEST_F(IncognitoGridMediatorTest, CloseOtherTabsButtonTapped) {
+  // Setup: 3 tabs default.
+  // Activate index 1.
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+
+  // Call closeOtherTabsButtonTapped.
+  [mediator_ closeOtherTabsButtonTapped:nil];
+
+  // Expect: Index 1 (active) remains. Others closed.
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+}
+
 // Checks that opening a new regular tab from the toolbar is done when allowed.
 TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
   // Disconnect the existing mediator first as we will re-create it.

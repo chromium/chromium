@@ -75,6 +75,11 @@ class WebStateID;
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito;
 
+// Tells the delegate to close all tabs except the one with `identifier`.
+// `incognito` tracks the incognito state of the tab.
+- (void)closeTabsExceptIdentifier:(web::WebStateID)identifier
+                        incognito:(BOOL)incognito;
+
 // Tells the delegate to delete the group. `sourceView` is the view that the
 // delete action originated from.
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group

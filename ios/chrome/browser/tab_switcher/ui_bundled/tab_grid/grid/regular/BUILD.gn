@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/flags",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",

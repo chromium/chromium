@@ -216,6 +216,12 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 }
 
+// Matcher for the Close Other Tabs button in the context menu.
+id<GREYMatcher> CloseOtherTabsButton() {
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS);
+}
+
 // Type `text` into the TabGridSearchBar and press enter.
 void PerformTabGridSearch(NSString* text) {
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
@@ -284,6 +290,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testDragAndDropCreatesGroup)]) {
     config.features_enabled.push_back(kTabGridDragAndDrop);
+  }
+
+  if ([self isRunningTest:@selector(testCloseOtherTabsUsingEditMenu)] ||
+      [self isRunningTest:@selector(testCloseOtherTabsUsingContextMenu)] ||
+      [self isRunningTest:@selector(testCloseOtherTabsUnavailableInEditMenu)] ||
+      [self isRunningTest:@selector
+            (testCloseOtherTabsUnavailableInContextMenu)]) {
+    config.features_enabled.push_back(kCloseOtherTabs);
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
   }
 
   if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
@@ -623,6 +638,106 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
+}
+
+// Tests "Close Other Tabs" functionality from the Edit menu.
+- (void)testCloseOtherTabsUsingEditMenu {
+  // Load 3 tabs with distinct content.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Tap Edit button to enter selection mode.
+  TapVisibleTabGridEditButton();
+
+  // Tap "Close Other Tabs" in the Edit menu.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      performAction:grey_tap()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Expect 1 tab remaining.
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Verify the remaining tab is the one that was active (third tab).
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+}
+
+// Tests "Close Other Tabs" functionality from the Context menu.
+- (void)testCloseOtherTabsUsingContextMenu {
+  // Load 3 tabs with distinct content.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Long press on the second tab.
+  [self longPressTabWithTitle:kTitle2];
+
+  // Tap "Close Other Tabs" in the context menu.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      performAction:grey_tap()];
+
+  // Wait for the context menu to disappear.
+  [self waitForContextMenuToDisappear];
+
+  // Expect 1 tab remaining.
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Verify the remaining tab is Page two.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabWithTitle(kTitle2)];
+}
+
+// Tests that "Close Other Tabs" is not available in the Edit Menu when there is
+// only one tab.
+- (void)testCloseOtherTabsUnavailableInEditMenu {
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open Edit Menu.
+  TapVisibleTabGridEditButton();
+
+  // Verify the menu is open by checking for "Close All Tabs".
+  [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify "Close Other Tabs" is NOT present.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that "Close Other Tabs" is not available in the Context Menu when there
+// is only one tab.
+- (void)testCloseOtherTabsUnavailableInContextMenu {
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open Context Menu.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify the menu is open by checking for "Select Tabs" (which should be
+  // present).
+  [[EarlGrey selectElementWithMatcher:SelectTabsContextMenuItem()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify "Close Other Tabs" is NOT present.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the Undo button is no longer available after tapping Close All,

@@ -1611,6 +1611,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeItemWithID:identifier];
 }
 
+- (void)closeTabsExceptIdentifier:(web::WebStateID)identifier
+                        incognito:(BOOL)incognito {
+  CHECK(IsCloseOtherTabsEnabled());
+  if (incognito) {
+    [self.incognitoTabsMediator closeTabsExceptID:identifier];
+    return;
+  }
+  [self.regularTabsMediator closeTabsExceptID:identifier];
+}
+
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
             sourceView:(UIView*)sourceView {
   [self.regularTabsMediator deleteTabGroup:group sourceView:sourceView];

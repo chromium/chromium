@@ -266,6 +266,24 @@
   [self.topToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
 }
 
+// Returns YES if "Close Other Tabs" should be enabled.
+- (BOOL)canCloseOtherTabs {
+  if (!base::FeatureList::IsEnabled(kCloseOtherTabs)) {
+    return NO;
+  }
+  if (!_webStateList) {
+    return NO;
+  }
+  int activeIndex = _webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex) {
+    return NO;
+  }
+  if (_webStateList->IsWebStatePinnedAt(activeIndex)) {
+    return _webStateList->regular_tabs_count() > 0;
+  }
+  return _webStateList->regular_tabs_count() > 1;
+}
+
 // Configures buttons that are available under the edit menu.
 - (void)configureEditButtons {
   BOOL shouldEnableEditButton =
@@ -281,6 +299,13 @@
         [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
           [weakButtonDelegate closeAllButtonTapped:nil];
         }] ] mutableCopy];
+
+    if ([self canCloseOtherTabs]) {
+      [menuElements
+          addObject:[actionFactory actionToCloseAllOtherTabsWithBlock:^{
+            [weakButtonDelegate closeOtherTabsButtonTapped:nil];
+          }]];
+    }
     // Disable the "Select All" option from the edit button when there are no
     // tabs in the regular tab grid. "Close All" can still be called if there
     // are inactive tabs.
