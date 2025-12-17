@@ -10,6 +10,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_lower_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -115,111 +116,6 @@ struct StringViewLookupTranslator {
 // of hash and equality computations as if we had done so. Strings reaching
 // these methods are expected to not be lowercase.
 
-// NOTE: Interestingly, the SIMD paths here improve on code size, not just
-// on performance.
-template <typename CharType>
-struct ASCIILowerHashReader {
-  static constexpr unsigned kCompressionFactor = 1;
-  static constexpr unsigned kExpansionFactor = 1;
-
-  ALWAYS_INLINE static uint64_t Lowercase(CharType ch) {
-    return ToASCIILower(ch);
-  }
-
-  ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
-    const CharType* p = reinterpret_cast<const CharType*>(ptr);
-#if defined(__SSE2__) || defined(__ARM_NEON__)
-    CharType b __attribute__((vector_size(8)));
-    UNSAFE_TODO(memcpy(&b, p, sizeof(b)));
-    b |= (b >= 'A' & b <= 'Z') & 0x20;
-    uint64_t ret;
-    UNSAFE_TODO(memcpy(&ret, &b, sizeof(b)));
-    return ret;
-#else
-    if constexpr (sizeof(CharType) == 2) {
-      return Lowercase(p[0]) | (Lowercase(p[1]) << 16) |
-             (Lowercase(p[2]) << 32) | (Lowercase(p[3]) << 48);
-    } else {
-      return Lowercase(p[0]) | (Lowercase(p[1]) << 8) |
-             (Lowercase(p[2]) << 16) | (Lowercase(p[3]) << 24) |
-             (Lowercase(p[4]) << 32) | (Lowercase(p[5]) << 40) |
-             (Lowercase(p[6]) << 48) | (Lowercase(p[7]) << 56);
-    }
-#endif
-  }
-  ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
-    const CharType* p = reinterpret_cast<const CharType*>(ptr);
-#if defined(__SSE2__) || defined(__ARM_NEON__)
-    CharType b __attribute__((vector_size(4)));
-    UNSAFE_TODO(memcpy(&b, p, sizeof(b)));
-    b |= (b >= 'A' & b <= 'Z') & 0x20;
-    uint32_t ret;
-    UNSAFE_TODO(memcpy(&ret, &b, sizeof(b)));
-    return ret;
-#else
-    if constexpr (sizeof(CharType) == 2) {
-      return Lowercase(p[0]) | (Lowercase(p[1]) << 16);
-    } else {
-      return Lowercase(p[0]) | (Lowercase(p[1]) << 8) |
-             (Lowercase(p[2]) << 16) | (Lowercase(p[3]) << 24);
-    }
-#endif
-  }
-
-  ALWAYS_INLINE static uint64_t ReadSmall(const uint8_t* p, size_t k) {
-    if constexpr (sizeof(CharType) == 2) {
-      // This is fine, but the reasoning is a bit subtle. If we get here,
-      // we have to be a UTF-16 string, and since ReadSmall can only be called
-      // with 1, 2 or 3, it means we must be a UTF-16 string with a single
-      // code point (i.e., two bytes). Furthermore, we know that this code point
-      // must be above 0xFF, or the HashTranslatorLowercaseBuffer constructor
-      // would not have called us. Thus, ToASCIILower() on this code point would
-      // do nothing, and this, we should just hash it exactly as PlainHashReader
-      // would have done.
-      DCHECK_EQ(k, 2u);
-      k = 2;
-      return (uint64_t{p[0]} << 56) | (uint64_t{UNSAFE_TODO(p[k >> 1])} << 32) |
-             uint64_t{UNSAFE_TODO(p[k - 1])};
-    } else {
-      return (Lowercase(p[0]) << 56) |
-             (Lowercase(UNSAFE_TODO(p[k >> 1])) << 32) |
-             Lowercase(UNSAFE_TODO(p[k - 1]));
-    }
-  }
-};
-
-// Combines ASCIILowerHashReader and ConvertTo8BitHashReader into one.
-// This is an obscure case that we only need for completeness,
-// so it is fine that it's not all that optimized.
-struct ASCIIConvertTo8AndLowerHashReader {
-  static constexpr unsigned kCompressionFactor = 2;
-  static constexpr unsigned kExpansionFactor = 1;
-
-  static uint64_t Lowercase(uint16_t ch) { return ToASCIILower(ch); }
-
-  static uint64_t Read64(const uint8_t* ptr) {
-    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
-    return Lowercase(p[0]) | (Lowercase(UNSAFE_TODO(p[1])) << 8) |
-           (Lowercase(UNSAFE_TODO(p[2])) << 16) |
-           (Lowercase(UNSAFE_TODO(p[3])) << 24) |
-           (Lowercase(UNSAFE_TODO(p[4])) << 32) |
-           (Lowercase(UNSAFE_TODO(p[5])) << 40) |
-           (Lowercase(UNSAFE_TODO(p[6])) << 48) |
-           (Lowercase(UNSAFE_TODO(p[7])) << 56);
-  }
-  static uint64_t Read32(const uint8_t* ptr) {
-    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
-    return Lowercase(p[0]) | (Lowercase(UNSAFE_TODO(p[1])) << 8) |
-           (Lowercase(UNSAFE_TODO(p[2])) << 16) |
-           (Lowercase(UNSAFE_TODO(p[3])) << 24);
-  }
-  static uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
-    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
-    return (Lowercase(p[0]) << 56) | (Lowercase(UNSAFE_TODO(p[k >> 1])) << 32) |
-           Lowercase(UNSAFE_TODO(p[k - 1]));
-  }
-};
-
 class HashTranslatorLowercaseBuffer {
  public:
   explicit HashTranslatorLowercaseBuffer(const StringImpl* impl) : impl_(impl) {
@@ -228,16 +124,16 @@ class HashTranslatorLowercaseBuffer {
     DCHECK(!impl_->IsLowerASCII());
     if (impl_->Is8Bit()) {
       hash_ =
-          StringHasher::ComputeHashAndMaskTop8Bits<ASCIILowerHashReader<LChar>>(
+          StringHasher::ComputeHashAndMaskTop8Bits<AsciiLowerHashReader<LChar>>(
               (const char*)UNSAFE_TODO(impl_->Characters8()), impl_->length());
     } else {
       if (IsOnly8Bit(impl_->Span16())) {
         hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            ASCIIConvertTo8AndLowerHashReader>(
+            AsciiConvertTo8AndLowerHashReader>(
             (const char*)UNSAFE_TODO(impl_->Characters16()), impl_->length());
       } else {
         hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            ASCIILowerHashReader<UChar>>(
+            AsciiLowerHashReader<UChar>>(
             (const char*)UNSAFE_TODO(impl_->Characters16()),
             impl_->length() * 2);
       }

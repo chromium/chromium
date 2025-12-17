@@ -77,6 +77,7 @@ TEST(IgnoringAsciiCaseHashTest, StringKeyHash) {
   const auto not_found = map.end();
   EXPECT_NE(not_found, map.find("k"));
   EXPECT_NE(not_found, map.find("K"));
+  EXPECT_NE(not_found, map.find(u"K"));
   EXPECT_NE(not_found, map.find(AtomicString("K")));
   // U+212A Kelvin sign should not match to ASCII "k" because of no FoldCase().
   EXPECT_EQ(not_found, map.find(u"\u212A"));

@@ -112,6 +112,7 @@ component("wtf") {
     "text/ascii_ctype.h",
     "text/ascii_fast_path.cc",
     "text/ascii_fast_path.h",
+    "text/ascii_lower_hash_reader.h",
     "text/atomic_string.cc",
     "text/atomic_string.h",
     "text/atomic_string_encoding.h",
