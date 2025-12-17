@@ -203,8 +203,7 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Very flaky on Pixel 2 and Samsung A13 Android bots
-crbug.com/444480419 [ android android-pixel-2 ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
-crbug.com/444480419 [ android android-pixel-4 ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
+crbug.com/444480419 [ android android-pixel-2 no-clang-coverage ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
 crbug.com/444480419 [ android android-sm-a137f ] ContextLost_WebGLContextLostInHiddenTab [ Failure ]
 
 # Fails with Graphite on Windows and Mac
