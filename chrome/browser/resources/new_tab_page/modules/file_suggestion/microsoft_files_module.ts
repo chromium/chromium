@@ -104,7 +104,6 @@ export class MicrosoftFilesModuleElement extends
   }
 
   protected onDismissButtonClick_() {
-    // TODO(crbug.com/372724129): Update dismiss message.
     this.handler_.dismissModule();
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
