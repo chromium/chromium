@@ -503,10 +503,16 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 bool OmniboxEditModel::ShouldShowAddContextButton() const {
-  return controller_->client()->IsAimPopupEnabled() &&
-         omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
-             omnibox::AddContextButtonVariant::kInline &&
-         controller_->IsPopupOpen();
+  const bool aim_button_pref =
+      GetPrefService()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
+  const bool is_aim_popup_enabled = controller_->client()->IsAimPopupEnabled();
+  const bool is_variant_inline =
+      omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
+      omnibox::AddContextButtonVariant::kInline;
+  const bool is_popup_open = controller_->IsPopupOpen();
+
+  return aim_button_pref && is_aim_popup_enabled && is_variant_inline &&
+         is_popup_open;
 }
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
