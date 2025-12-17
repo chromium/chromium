@@ -234,7 +234,6 @@ crbug.com/329138770 [ graphite-enabled nvidia-0x2184 win11 ] WebGPUCachingTraceT
 
 # Win/AMD RX 7600 failures
 crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
 
 # Win/AMD 780M failures
 # Commented out until full procurement is ready since UAT is done.
