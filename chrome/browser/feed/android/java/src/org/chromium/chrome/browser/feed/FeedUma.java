@@ -32,12 +32,12 @@ public class FeedUma {
      * Records the number of remaining cards (for the user to scroll through) at which the feed is
      * triggered to load more content.
      *
+     * @param sectionType The type of stream, which should be one of the values from
+     *     {@link org.chromium.chrome.browser.feed.StreamKind}.
      * @param numCardsRemaining the number of cards the user has yet to scroll through.
      */
     public static void recordFeedLoadMoreTrigger(
             int sectionType, int totalCards, int numCardsRemaining) {
-        // TODO(crbug.com/40783878): annotate sectionType param with
-        // @org.chromium.chrome.browser.feed.StreamKind
         assert totalCards >= 0;
         assert numCardsRemaining >= 0;
         assert OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES.length
