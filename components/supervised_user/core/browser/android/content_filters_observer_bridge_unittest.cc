@@ -6,7 +6,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,17 +38,91 @@ TEST_F(ContentFiltersObserverBridgeTest,
   TestingPrefServiceSimple pref_service;
 
   MockObserver observer;
-  std::string_view setting_name = "test_setting";
-
-  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(setting_name)).Times(0);
-  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(setting_name))
+  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(0);
+  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
+                            kBrowserContentFiltersSettingName))
       .Times(0);
 
-  ContentFiltersObserverBridge bridge(setting_name, pref_service);
+  ContentFiltersObserverBridge bridge(kBrowserContentFiltersSettingName,
+                                      &pref_service);
 
   bridge.AddObserver(&observer);
   bridge.Init();
   bridge.Shutdown();
+}
+
+// TODO(crbug.com/469694485): Remove test when filters no longer check parental
+// control status.
+TEST_F(ContentFiltersObserverBridgeTest,
+       ParentalControlsVetoTrueValueButFalseIsPropagated) {
+  TestingPrefServiceSimple pref_service;
+  RegisterProfilePrefs(pref_service.registry());
+  EnableParentalControls(pref_service);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(0);
+  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(1);
+
+  ContentFiltersObserverBridge bridge(kBrowserContentFiltersSettingName,
+                                      &pref_service);
+
+  bridge.AddObserver(&observer);
+  // Vetoed, will not yield OnContentFiltersObserverEnabled
+  bridge.SetEnabledForTesting(true);
+  // Accepted, will yield OnContentFiltersObserverDisabled
+  bridge.SetEnabledForTesting(false);
+}
+
+// TODO(crbug.com/469694485): Remove test when filters no longer check parental
+// control status.
+TEST_F(ContentFiltersObserverBridgeTest, RegularUsersAreNotifiedAboutChanges) {
+  TestingPrefServiceSimple pref_service;
+  RegisterProfilePrefs(pref_service.registry());
+  DisableParentalControls(pref_service);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(1);
+  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(1);
+
+  ContentFiltersObserverBridge bridge(kBrowserContentFiltersSettingName,
+                                      &pref_service);
+
+  bridge.AddObserver(&observer);
+  // Both settings will trigger notifications.
+  bridge.SetEnabledForTesting(true);
+  bridge.SetEnabledForTesting(false);
+}
+
+TEST_F(ContentFiltersObserverBridgeTest, NotificationsAreSent) {
+  TestingPrefServiceSimple pref_service;
+  RegisterProfilePrefs(pref_service.registry());
+  DisableParentalControls(pref_service);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, OnContentFiltersObserverEnabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(1);
+  EXPECT_CALL(observer, OnContentFiltersObserverDisabled(
+                            kBrowserContentFiltersSettingName))
+      .Times(1);
+
+  ContentFiltersObserverBridge bridge(kBrowserContentFiltersSettingName,
+                                      nullptr);
+
+  bridge.AddObserver(&observer);
+  // Both settings will trigger notifications.
+  bridge.SetEnabledForTesting(true);
+  bridge.SetEnabledForTesting(false);
 }
 
 }  // namespace

@@ -49,7 +49,7 @@ bool IsFeatureEnabledForSetting(std::string_view setting_name) {
 
 ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
-    const PrefService& pref_service)
+    const PrefService* pref_service)
     : setting_name_(setting_name), pref_service_(pref_service) {}
 
 ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
@@ -82,7 +82,8 @@ void ContentFiltersObserverBridge::SetEnabled(bool enabled) {
   // accounts.
   if (base::FeatureList::IsEnabled(
           kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      IsSubjectToParentalControls(*pref_service_) && enabled) {
+      pref_service_ != nullptr && IsSubjectToParentalControls(*pref_service_) &&
+      enabled) {
     base::UmaHistogramEnumeration(kSupervisionConflictHistogramName,
                                   SupervisionHasConflict::kHasConflict);
     LOG(INFO)

@@ -123,7 +123,7 @@ class FakeContentFiltersObserverBridge final
  public:
   // Matching constructor of ContentFiltersObserverBridge.
   FakeContentFiltersObserverBridge(std::string_view setting_name,
-                                   const PrefService& pref_service);
+                                   const PrefService* pref_service);
   FakeContentFiltersObserverBridge(const FakeContentFiltersObserverBridge&) =
       delete;
   FakeContentFiltersObserverBridge& operator=(

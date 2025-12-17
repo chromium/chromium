@@ -582,9 +582,9 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
                 platform_delegate->GetChannel())),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
         std::make_unique<FakeContentFiltersObserverBridge>(
-            kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+            kBrowserContentFiltersSettingName, profile->GetPrefs()),
         std::make_unique<FakeContentFiltersObserverBridge>(
-            kSearchContentFiltersSettingName, *profile->GetPrefs()));
+            kSearchContentFiltersSettingName, profile->GetPrefs()));
   }
 
   // Enables or disables the browser content filters for all profiles.

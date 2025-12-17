@@ -116,10 +116,10 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           ,
       std::make_unique<supervised_user::ContentFiltersObserverBridge>(
           supervised_user::kBrowserContentFiltersSettingName,
-          *profile->GetPrefs()),
+          profile->GetPrefs()),
       std::make_unique<supervised_user::ContentFiltersObserverBridge>(
           supervised_user::kSearchContentFiltersSettingName,
-          *profile->GetPrefs())
+          profile->GetPrefs())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

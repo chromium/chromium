@@ -59,7 +59,7 @@ class WrappedUrlCheckerClient : public safe_search_api::URLCheckerClient {
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<ContentFiltersObserverBridge>
 CreateFakeContentFiltersObserverBridge(const std::string& setting_name,
-                                       PrefService& pref_service,
+                                       const PrefService* pref_service,
                                        bool enabled) {
   // Create the bridge and configure its initial value before passing
   // ownership to the SupervisedUserService.
@@ -93,10 +93,10 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
 #if BUILDFLAG(IS_ANDROID)
           ,
       CreateFakeContentFiltersObserverBridge(
-          kBrowserContentFiltersSettingName, *profile->GetPrefs(),
+          kBrowserContentFiltersSettingName, profile->GetPrefs(),
           initial_state.android_parental_controls.browser_filter),
       CreateFakeContentFiltersObserverBridge(
-          kSearchContentFiltersSettingName, *profile->GetPrefs(),
+          kSearchContentFiltersSettingName, profile->GetPrefs(),
           initial_state.android_parental_controls.search_filter)
 #endif  // BUILDFLAG(IS_ANDROID)
   );

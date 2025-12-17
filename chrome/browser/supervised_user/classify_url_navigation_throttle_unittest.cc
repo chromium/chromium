@@ -94,9 +94,9 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
 #if BUILDFLAG(IS_ANDROID)
           ,
       std::make_unique<FakeContentFiltersObserverBridge>(
-          kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+          kBrowserContentFiltersSettingName, profile->GetPrefs()),
       std::make_unique<FakeContentFiltersObserverBridge>(
-          kSearchContentFiltersSettingName, *profile->GetPrefs())
+          kSearchContentFiltersSettingName, profile->GetPrefs())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

@@ -38,8 +38,11 @@ class ContentFiltersObserverBridge {
         std::string_view setting_name) {}
   };
 
+  // Creates a bridge for a given setting. If present, the pref service is used
+  // to veto Android Parental Control changes if the user is already subject to
+  // parental controls.
   ContentFiltersObserverBridge(std::string_view setting_name,
-                               const PrefService& pref_service);
+                               const PrefService* pref_service);
 
   ContentFiltersObserverBridge(const ContentFiltersObserverBridge&) = delete;
   ContentFiltersObserverBridge& operator=(const ContentFiltersObserverBridge&) =
@@ -76,7 +79,7 @@ class ContentFiltersObserverBridge {
   // Java native storage backend, it might be controlled explicitly.
   bool enabled_ = false;
   std::string setting_name_;
-  raw_ref<const PrefService> pref_service_;
+  raw_ptr<const PrefService> pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> bridge_;
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<ContentFiltersObserverBridge> weak_ptr_factory_{this};
