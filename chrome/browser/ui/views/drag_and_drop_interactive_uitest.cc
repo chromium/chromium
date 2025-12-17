@@ -778,22 +778,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUp() override {
-    // TODO(crbug.com/394369035): The parameters for the width of the drop
-    // targets have not been determined yet, and may interfere with the tests
-    // below by shifting the contents around.
-    // These overrides should be removed once the parameters are finalized.
-    //
     // Ensure PreserveDropEffect is enabled for DragAndDropBrowserTest.
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide,
-          {{features::kSideBySideDropTargetMinWidth.name, "0"},
-           {features::kSideBySideDropTargetMaxWidth.name, "0"}}},
-         {features::kSideBySideDropTargetNudge,
-          {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
-           {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
-           {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
-           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}},
-         {blink::features::kPreserveDropEffect, {}}},
+        {{blink::features::kPreserveDropEffect, {}}},
         {blink::features::kSupportOpeningDraggedLinksInSameTab});
     InProcessBrowserTest::SetUp();
   }
