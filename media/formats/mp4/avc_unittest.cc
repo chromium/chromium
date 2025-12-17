@@ -253,8 +253,7 @@ INSTANTIATE_TEST_SUITE_P(AVCConversionTestValues,
                          ::testing::Values(1, 2, 4));
 
 TEST_F(AVCConversionTest, AnalyzeSEI) {
-  base::test::ScopedFeatureList scoped_sei_flag(
-      kTreatSEIRecoveryPointAsKeyframe);
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
   constexpr auto kStream = std::to_array<const uint8_t>({
       // First NALU Start code.
       0x00,
@@ -296,8 +295,7 @@ TEST_F(AVCConversionTest, AnalyzeSEI) {
 }
 
 TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
-  base::test::ScopedFeatureList scoped_sei_flag(
-      kTreatSEIRecoveryPointAsKeyframe);
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
   constexpr auto kStream = std::to_array<const uint8_t>({
       // First NALU Start code.
       0x00,

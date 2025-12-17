@@ -491,8 +491,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPicturePageInfoDetails);
 // than encoding it inside the URL.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePostBodyForUrlProvisionFetcher);
 
-// Treats H.264 SEI recovery points with a `recovery_frame_cnt=0` as keyframes.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kTreatSEIRecoveryPointAsKeyframe);
+// Causes the AVC parser to output Treats H.264 SEI recovery points with a
+// `recovery_frame_cnt=0` as keyframes.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kParseSEIRecoveryPoints);
 
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy

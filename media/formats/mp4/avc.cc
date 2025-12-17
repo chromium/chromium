@@ -241,8 +241,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
 
             order_state = kBeforeFirstVCL;
 
-            if (base::FeatureList::IsEnabled(
-                    kTreatSEIRecoveryPointAsKeyframe)) {
+            if (base::FeatureList::IsEnabled(kParseSEIRecoveryPoints)) {
               H264SEI sei;
               if (parser.ParseSEI(&sei) != H264Parser::kOk) {
                 // This is non-fatal for historical compliance.
