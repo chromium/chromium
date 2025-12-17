@@ -308,46 +308,38 @@ bool AimEligibilityService::IsAimEligible() const {
 }
 
 bool AimEligibilityService::IsPdfUploadEligible() const {
-  if (!IsAimEligible()) {
-    return false;
-  }
-
-  if (IsServerEligibilityEnabled()) {
-    return most_recent_response_.is_pdf_upload_eligible();
-  }
-
-  return true;
+  return IsEligibleByServer(most_recent_response_.is_pdf_upload_eligible());
 }
 
 bool AimEligibilityService::IsDeepSearchEligible() const {
-  if (!IsAimEligible()) {
-    return false;
-  }
-
-  if (IsServerEligibilityEnabled()) {
-    return most_recent_response_.is_deep_search_eligible();
-  }
-
-  return true;
+  return IsEligibleByServer(most_recent_response_.is_deep_search_eligible());
 }
 
 bool AimEligibilityService::IsCreateImagesEligible() const {
   if (is_off_the_record_) {
     return false;
   }
+  return IsEligibleByServer(
+      most_recent_response_.is_image_generation_eligible());
+}
 
+bool AimEligibilityService::IsCanvasEligible() const {
+  return IsEligibleByServer(most_recent_response_.is_canvas_eligible());
+}
+
+// Private methods -------------------------------------------------------------
+
+bool AimEligibilityService::IsEligibleByServer(bool server_eligibility) const {
   if (!IsAimEligible()) {
     return false;
   }
 
   if (IsServerEligibilityEnabled()) {
-    return most_recent_response_.is_image_generation_eligible();
+    return server_eligibility;
   }
 
   return true;
 }
-
-// Private methods -------------------------------------------------------------
 
 void AimEligibilityService::Initialize() {
   // The service should not be initialized if AIM is disabled.
