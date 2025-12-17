@@ -73,6 +73,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -8339,6 +8340,9 @@ void Document::SetTextScaleMetaTagPresent(bool present) {
     return;
   }
   text_scale_meta_tag_present_ = present;
+  if (present) {
+    UseCounter::CountWebDXFeature(this, WebDXFeature::kDRAFT_MetaTextScale);
+  }
   GetStyleEngine().InitialStyleChanged();
 }
 

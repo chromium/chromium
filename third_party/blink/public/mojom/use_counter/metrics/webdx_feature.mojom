@@ -476,6 +476,7 @@ enum WebDXFeature {
   kTextJustify = 414,
   kSummarizer = 415,
   kTranslationApi = 416,
+  kDRAFT_MetaTextScale = 417,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
