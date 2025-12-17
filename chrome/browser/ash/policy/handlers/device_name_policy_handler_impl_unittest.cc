@@ -9,6 +9,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -100,6 +102,9 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     }
 
     handler_ = base::WrapUnique(new DeviceNamePolicyHandlerImpl(
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
         ash::CrosSettings::Get(), &fake_statistics_provider_,
         ash::NetworkHandler::Get()->network_state_handler()));
     handler_->AddObserver(&fake_observer_);

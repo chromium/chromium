@@ -7,12 +7,11 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -41,19 +40,23 @@ DeviceNamePolicyHandler::DeviceNamePolicy ComputeInitialPolicy() {
 }  // namespace
 
 DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
+    BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     ash::CrosSettings* cros_settings)
     : DeviceNamePolicyHandlerImpl(
+          browser_policy_connector_ash,
           cros_settings,
           ash::system::StatisticsProvider::GetInstance(),
           ash::NetworkHandler::Get()->network_state_handler()) {}
 
 DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
+    BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     ash::CrosSettings* cros_settings,
     ash::system::StatisticsProvider* statistics_provider,
     ash::NetworkStateHandler* handler)
-    : cros_settings_(cros_settings),
-      statistics_provider_(statistics_provider),
-      handler_(handler),
+    : browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      cros_settings_(CHECK_DEREF(cros_settings)),
+      statistics_provider_(CHECK_DEREF(statistics_provider)),
+      handler_(CHECK_DEREF(handler)),
       device_name_policy_(ComputeInitialPolicy()) {
   template_policy_subscription_ = cros_settings_->AddSettingsObserver(
       ash::kDeviceHostnameTemplate,
@@ -158,17 +161,13 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
   const std::string_view serial =
       statistics_provider_->GetMachineID().value_or(std::string_view());
 
-  const std::string asset_id = g_browser_process->platform_part()
-                                   ->browser_policy_connector_ash()
-                                   ->GetDeviceAssetID();
+  const std::string asset_id =
+      browser_policy_connector_ash_->GetDeviceAssetID();
+  const std::string machine_name =
+      browser_policy_connector_ash_->GetMachineName();
+  const std::string location =
+      browser_policy_connector_ash_->GetDeviceAnnotatedLocation();
 
-  const std::string machine_name = g_browser_process->platform_part()
-                                       ->browser_policy_connector_ash()
-                                       ->GetMachineName();
-
-  const std::string location = g_browser_process->platform_part()
-                                   ->browser_policy_connector_ash()
-                                   ->GetDeviceAnnotatedLocation();
   std::string mac = "MAC_unknown";
   const ash::NetworkState* network = handler_->DefaultNetwork();
   if (network) {

@@ -285,8 +285,8 @@ void BrowserPolicyConnectorAsh::Init(
   bluetooth_policy_handler_ =
       std::make_unique<BluetoothPolicyHandler>(ash::CrosSettings::Get());
 
-  device_name_policy_handler_ =
-      std::make_unique<DeviceNamePolicyHandlerImpl>(ash::CrosSettings::Get());
+  device_name_policy_handler_ = std::make_unique<DeviceNamePolicyHandlerImpl>(
+      this, ash::CrosSettings::Get());
 
   minimum_version_policy_handler_delegate_ =
       std::make_unique<MinimumVersionPolicyHandlerDelegateImpl>();
