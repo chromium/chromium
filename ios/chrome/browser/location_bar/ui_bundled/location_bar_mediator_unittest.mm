@@ -8,10 +8,14 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -43,12 +47,20 @@ class LocationBarMediatorTest : public PlatformTest {
     // Initialize with a default search engine.
     AddAndSetDefaultSearchProvider(kTestProviderName);
 
+    mock_favicon_loader_ =
+        std::make_unique<testing::NiceMock<MockFaviconLoader>>();
+
+    placeholder_service_ = std::make_unique<PlaceholderService>(
+        mock_favicon_loader_.get(), template_url_service_);
+
     mediator_ = [[LocationBarMediator alloc] initWithIsIncognito:NO];
     mediator_.templateURLService = template_url_service_;
+    mediator_.placeholderService = placeholder_service_.get();
   }
 
   void TearDown() override {
     [mediator_ disconnect];
+    placeholder_service_->Shutdown();
     PlatformTest::TearDown();
   }
 
@@ -66,6 +78,8 @@ class LocationBarMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<TemplateURLService> template_url_service_;
+  std::unique_ptr<testing::NiceMock<MockFaviconLoader>> mock_favicon_loader_;
+  std::unique_ptr<PlaceholderService> placeholder_service_;
   LocationBarMediator* mediator_;
 };
 
@@ -76,6 +90,23 @@ TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderTextImmediately) {
 
   OCMExpect([mock_consumer
       setPlaceholderText:base::SysUTF16ToNSString(kTestProviderName)]);
+
+  [mediator_ setConsumer:mock_consumer];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
+}
+
+// Tests that the consumer is updated with the placeholder icon immediately
+// upon being set, provided the `omnibox::kOmniboxMobileParityUpdateV2` feature
+// is enabled.
+TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderIconImmediately) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxMobileParityUpdateV2);
+
+  id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+
+  OCMExpect(
+      [mock_consumer setPlaceholderDefaultSearchEngineIcon:[OCMArg isNotNil]]);
 
   [mediator_ setConsumer:mock_consumer];
 

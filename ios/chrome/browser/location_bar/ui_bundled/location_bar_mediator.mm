@@ -121,6 +121,7 @@ const CGFloat kIconPointSize = 16.0;
   [consumer setLensImageEnabled:self.searchEngineSupportsLens];
   [self updatePlaceholderType];
   [self searchEngineChanged];
+  [self placeholderImageUpdated];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
