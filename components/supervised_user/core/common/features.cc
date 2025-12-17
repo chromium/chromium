@@ -151,4 +151,7 @@ bool ClassifyUrlWithoutCredentialsForLocalSupervision() {
 
 #endif
 
+BASE_FEATURE(kSupervisedUserUseUrlFilteringService,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace supervised_user

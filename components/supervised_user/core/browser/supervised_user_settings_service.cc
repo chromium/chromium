@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -22,6 +25,7 @@
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -31,9 +35,10 @@
 
 namespace supervised_user {
 
+namespace {
+
 using base::JSONReader;
 using base::UserMetricsAction;
-using base::Value;
 using syncer::DataType;
 using syncer::ModelError;
 using syncer::SUPERVISED_USER_SETTINGS;
@@ -49,8 +54,6 @@ const char kQueuedItems[] = "queued_items";
 const char kSplitSettingKeySeparator = ':';
 const char kSplitSettings[] = "split_settings";
 
-namespace {
-
 bool SettingShouldApplyToPrefs(const std::string& name) {
   return !base::StartsWith(name, kSupervisedUserInternalItemPrefix,
                            base::CompareCase::INSENSITIVE_ASCII);
@@ -61,7 +64,7 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
                                     base::Value* old_value,
                                     base::Value* new_value) {
   bool is_host_permission_change =
-      base::StartsWith(name, supervised_user::kContentPackManualBehaviorHosts,
+      base::StartsWith(name, kContentPackManualBehaviorHosts,
                        base::CompareCase::INSENSITIVE_ASCII);
   if (!is_host_permission_change) {
     return false;
@@ -97,8 +100,7 @@ void SupervisedUserSettingsService::Init(
     base::FilePath profile_path,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     bool load_synchronously) {
-  base::FilePath path =
-      profile_path.Append(supervised_user::kSupervisedUserSettingsFilename);
+  base::FilePath path = profile_path.Append(kSupervisedUserSettingsFilename);
   PersistentPrefStore* store = new JsonPrefStore(
       path, std::unique_ptr<PrefFilter>(), std::move(sequenced_task_runner));
   Init(store);
@@ -137,8 +139,8 @@ SupervisedUserSettingsService::SubscribeForNewWebsiteApproval(
 void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
     const std::string& host) {
   // Write the sync setting.
-  std::string setting_key = MakeSplitSettingKey(
-      supervised_user::kContentPackManualBehaviorHosts, host);
+  std::string setting_key =
+      MakeSplitSettingKey(kContentPackManualBehaviorHosts, host);
   SaveItem(setting_key, base::Value(true));
 
   // Now notify subscribers of the updates.
@@ -160,18 +162,17 @@ void SupervisedUserSettingsService::SetActive(bool active) {
 
   if (active_) {
     // Child account supervised users must be signed in.
-    SetLocalSetting(supervised_user::kSigninAllowed, base::Value(true));
-    SetLocalSetting(supervised_user::kSigninAllowedOnNextStartup,
-                    base::Value(true));
+    SetLocalSetting(kSigninAllowed, base::Value(true));
+    SetLocalSetting(kSigninAllowedOnNextStartup, base::Value(true));
 
     // Always allow cookies, to avoid website compatibility issues.
-    SetLocalSetting(supervised_user::kCookiesAlwaysAllowed, base::Value(true));
+    SetLocalSetting(kCookiesAlwaysAllowed, base::Value(true));
 
     // SafeSearch and GeolocationDisabled are controlled at the account level,
     // so don't override them client-side.
   } else {
-    RemoveLocalSetting(supervised_user::kSigninAllowed);
-    RemoveLocalSetting(supervised_user::kCookiesAlwaysAllowed);
+    RemoveLocalSetting(kSigninAllowed);
+    RemoveLocalSetting(kCookiesAlwaysAllowed);
   }
 
   InformSubscribers();
@@ -202,9 +203,8 @@ std::string SupervisedUserSettingsService::MakeSplitSettingKey(
   return prefix + kSplitSettingKeySeparator + key;
 }
 
-void SupervisedUserSettingsService::SaveItem(
-    const std::string& key,
-    base::Value value) {
+void SupervisedUserSettingsService::SaveItem(const std::string& key,
+                                             base::Value value) {
   // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
   base::Value::Dict* dict = nullptr;
@@ -227,7 +227,7 @@ void SupervisedUserSettingsService::SaveItem(
     base::RecordAction(UserMetricsAction("ManagedUsers_UploadItem_Queued"));
     dict = GetQueuedItems();
   }
-  dict->Set(key_suffix,std::move(value));
+  dict->Set(key_suffix, std::move(value));
 
   // Now notify subscribers of the updates.
   // For simplicity and consistency with ProcessSyncChanges() we notify both
@@ -507,7 +507,7 @@ base::Value::Dict* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
 }
 
 base::Value::Dict* SupervisedUserSettingsService::GetOrCreateDictionary(
-    const std::string& key) const {
+    std::string_view key) const {
   base::Value* value = nullptr;
   if (!store_->GetMutableValue(key, &value)) {
     store_->SetValue(key, base::Value(base::Value::Dict()),
@@ -530,7 +530,8 @@ base::Value::Dict* SupervisedUserSettingsService::GetQueuedItems() const {
   return GetOrCreateDictionary(kQueuedItems);
 }
 
-base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault() {
+base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault()
+    const {
   DCHECK(IsReady());
   if (!active_ || initialization_failed_) {
     return base::Value::Dict();
@@ -568,4 +569,46 @@ void SupervisedUserSettingsService::InformSubscribers() {
   settings_callback_list_.Notify(std::move(settings));
 }
 
+WebFilterType SupervisedUserSettingsService::GetWebFilterType() const {
+  // When the service is inactive or failed to initialize, we consider the web
+  // filter to be disabled to not interfere with regular browsing experience.
+  // Otherwise, we try to infer the filter type from the settings: block always
+  // takes precedence regardless the safe sites setting. Then, safe sites value
+  // determines the remaining allow or try-to-block verdict.
+
+  // LINT.IfChange(GetWebFilterType)
+  if (!active_ || initialization_failed_) {
+    return WebFilterType::kDisabled;
+  }
+
+  base::Value::Dict settings = GetSettingsWithDefault();
+  if (GetDefaultFilteringBehavior(settings) == FilteringBehavior::kBlock) {
+    return WebFilterType::kCertainSites;
+  }
+  return IsSafeSitesEnabled(settings) ? WebFilterType::kTryToBlockMatureSites
+                                      : WebFilterType::kAllowAllSites;
+  // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_url_filter.cc:GetWebFilterType)
+}
+
+FilteringBehavior SupervisedUserSettingsService::GetDefaultFilteringBehavior(
+    const base::Value::Dict& settings) const {
+  // The default value for the default filtering behavior is "allow", including
+  // malformed data from remote.
+  int value = settings.FindInt(kContentPackDefaultFilteringBehavior)
+                  .value_or(static_cast<int>(FilteringBehavior::kAllow));
+
+  // Only explicit match renders as `FilteringBehavior::kBlock`.
+  if (value == static_cast<int>(FilteringBehavior::kBlock)) {
+    return FilteringBehavior::kBlock;
+  }
+  // All other values are equivalent to `FilteringBehavior::kAllow` (do not
+  // CHECK value, it comes from external system; default instead).
+  return FilteringBehavior::kAllow;
+}
+
+bool SupervisedUserSettingsService::IsSafeSitesEnabled(
+    const base::Value::Dict& settings) const {
+  // In Family Link, safe sites setting defaults to true.
+  return settings.FindBool(kSafeSitesEnabled).value_or(true);
+}
 }  // namespace supervised_user

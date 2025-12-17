@@ -97,6 +97,12 @@ bool UseInterstitialForLocalSupervision();
 bool ClassifyUrlWithoutCredentialsForLocalSupervision();
 #endif
 
+// SupervisedUserUrlFilteringService does not use the PrefService indirection
+// (specifically, the SupervisedUserPrefStore) to get the URL filtering
+// settings. When enabled, all url filtering settings are read directly from the
+// related supervision services.
+BASE_DECLARE_FEATURE(kSupervisedUserUseUrlFilteringService);
+
 // Returns whether the V3 version of the URL filter interstitial is
 // enabled.
 bool IsBlockInterstitialV3Enabled();

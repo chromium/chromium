@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -15,8 +16,9 @@ namespace supervised_user {
 // subservices that define the status of these users.
 class SupervisedUserUrlFilteringService : public KeyedService {
  public:
-  explicit SupervisedUserUrlFilteringService(
-      const SupervisedUserService& supervised_user_service);
+  SupervisedUserUrlFilteringService(
+      const SupervisedUserService& supervised_user_service,
+      const SupervisedUserSettingsService& supervised_user_settings_service);
   ~SupervisedUserUrlFilteringService() override;
   SupervisedUserUrlFilteringService(const SupervisedUserUrlFilteringService&) =
       delete;
@@ -29,6 +31,9 @@ class SupervisedUserUrlFilteringService : public KeyedService {
  private:
   // Provides access to legacy way of resolving URL filtering.
   raw_ref<const SupervisedUserService> supervised_user_service_;
+
+  // Provides access to parental controls settings from Family Link.
+  raw_ref<const SupervisedUserSettingsService> family_link_settings_service_;
 };
 }  // namespace supervised_user
 

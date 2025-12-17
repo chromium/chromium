@@ -693,6 +693,7 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
 }
 
 WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
+  // LINT.IfChange(GetWebFilterType)
   if (FilterIsDisabled(user_prefs_.get())) {
     return WebFilterType::kDisabled;
   }
@@ -707,6 +708,7 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
   return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
+  // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_settings_service.cc:GetWebFilterType)
 }
 
 bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,

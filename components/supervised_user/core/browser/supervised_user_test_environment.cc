@@ -240,8 +240,8 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 
-  url_filtering_service_ =
-      std::make_unique<SupervisedUserUrlFilteringService>(*service_.get());
+  url_filtering_service_ = std::make_unique<SupervisedUserUrlFilteringService>(
+      *service_.get(), *pref_store_environment_.settings_service());
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
       *url_filtering_service_.get(),

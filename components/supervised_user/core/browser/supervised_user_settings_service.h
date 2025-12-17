@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/model/syncable_service.h"
 
@@ -29,9 +31,13 @@ class SequencedTaskRunner;
 
 namespace supervised_user {
 
-// This class syncs supervised user settings from a server, which are mapped to
-// preferences. The downloaded settings are persisted in a PrefStore (which is
-// not directly hooked up to the PrefService; it's just used internally).
+// This class syncs Family Link user settings from the sync server, which are
+// mapped to preferences. The downloaded settings are either persisted in the
+// SupervisedUserPrefStore - second most important store of the PrefService, or
+// are available directly using accessors. Note: Family Link settings are one of
+// many sources for user supervision; but this class uses generic name
+// "SupervisedUserSettingsService" for historical reasons.
+//
 // Settings are key-value pairs, where the key uniquely identifies the setting.
 // The value is a string containing a JSON serialization of an arbitrary value,
 // which is the value of the setting.
@@ -57,7 +63,7 @@ class SupervisedUserSettingsService : public KeyedService,
                                       public syncer::SyncableService,
                                       public PrefStore::Observer {
  public:
-  // A callback whose first parameter is a dictionary containing all supervised
+  // A callback whose first parameter is a dictionary containing all Family Link
   // user settings. If the dictionary is empty, it means that the service is
   // inactive, i.e. the user is not supervised.
   using SettingsCallbackType = void(const base::Value::Dict&);
@@ -65,7 +71,7 @@ class SupervisedUserSettingsService : public KeyedService,
   using SettingsCallbackList =
       base::RepeatingCallbackList<SettingsCallbackType>;
 
-  // Called when a new host is remotely approved for this supervised user. The
+  // Called when a new host is remotely approved for this Family Link user. The
   // first param is newly approved host, which might be a pattern containing
   // wildcards (e.g. "*.google.*"").
   using WebsiteApprovalCallbackType = void(const std::string& hostname);
@@ -100,7 +106,7 @@ class SupervisedUserSettingsService : public KeyedService,
   // default one.
   void Init(scoped_refptr<PersistentPrefStore> pref_store);
 
-  // Adds a callback to be called when supervised user settings are initially
+  // Adds a callback to be called when Family Link user settings are initially
   // available, or when they change.
   [[nodiscard]] base::CallbackListSubscription SubscribeForSettingsChange(
       const SettingsCallback& callback);
@@ -125,13 +131,13 @@ class SupervisedUserSettingsService : public KeyedService,
   // SupervisedUserService when it is (de)activated.
   void SetActive(bool active);
 
-  // Whether supervised user settings are available.
+  // Whether Family Link user settings are available.
   bool IsReady() const;
 
-  // Clears all supervised user settings and items.
+  // Clears all Family Link user settings and items.
   void Clear();
 
-  // Constructs a key for a split supervised user setting from a prefix and a
+  // Constructs a key for a split Family Link user setting from a prefix and a
   // variable key.
   static std::string MakeSplitSettingKey(const std::string& prefix,
                                          const std::string& key);
@@ -188,21 +194,32 @@ class SupervisedUserSettingsService : public KeyedService,
 
   const base::Value::Dict& LocalSettingsForTest() const;
 
+  // Returns the type of web filter that is applied to the current profile.
+  WebFilterType GetWebFilterType() const;
+
+ private:
+  // Returns parsed logical value for the default filtering behavior setting,
+  // considering its default value.
+  FilteringBehavior GetDefaultFilteringBehavior(
+      const base::Value::Dict& settings) const;
+
+  // Returns parsed logical value for the safe sites setting, considering its
+  // default value.
+  bool IsSafeSitesEnabled(const base::Value::Dict& settings) const;
+
   // Returns the dictionary where a given Sync item should be stored, depending
-  // on whether the supervised user setting is atomic or split. In case of a
+  // on whether the Family Link user setting is atomic or split. In case of a
   // split setting, the split setting prefix of |key| is removed, so that |key|
   // can be used to update the returned dictionary.
   base::Value::Dict* GetDictionaryAndSplitKey(std::string* key) const;
-
- private:
-  base::Value::Dict* GetOrCreateDictionary(const std::string& key) const;
+  base::Value::Dict* GetOrCreateDictionary(std::string_view key) const;
   base::Value::Dict* GetAtomicSettings() const;
   base::Value::Dict* GetSplitSettings() const;
   base::Value::Dict* GetQueuedItems() const;
 
-  // Returns a dictionary with all supervised user settings if the service is
+  // Returns a dictionary with all Family Link user settings if the service is
   // active, or empty dictionary otherwise.
-  base::Value::Dict GetSettingsWithDefault();
+  base::Value::Dict GetSettingsWithDefault() const;
 
   // Sends the settings to all subscribers. This method should be called by the
   // subclass whenever the settings change.
