@@ -78,7 +78,8 @@ void IOSTranslateDriver::Initialize(
       language::IOSLanguageDetectionTabHelper::FromWebState(web_state_));
 
   TranslateController::CreateForWebState(web_state_);
-  TranslateController::FromWebState(web_state_)->set_observer(this);
+  translate_controller_observation_.Observe(
+      TranslateController::FromWebState(web_state_));
 }
 
 IOSTranslateDriver::~IOSTranslateDriver() {
@@ -308,8 +309,14 @@ void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,
   timeout_timer_.Stop();
 }
 
+void IOSTranslateDriver::TranslateControllerWasDestroyed(
+    TranslateController* translate_controller) {
+  StopAllObservations();
+}
+
 void IOSTranslateDriver::StopAllObservations() {
   timeout_timer_.Stop();
+  translate_controller_observation_.Reset();
   language_detection_observation_.Reset();
   web_state_observation_.Reset();
   web_state_ = nullptr;

@@ -12,6 +12,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_errors.h"
 #import "ios/web/public/web_state.h"
@@ -28,7 +30,7 @@ namespace translate {
 class TranslateController : public web::WebStateUserData<TranslateController> {
  public:
   // Observer class to monitor the progress of the translation.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the translate script is ready.
     // |error_type| Indicates error code.
@@ -41,6 +43,11 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
     virtual void OnTranslateComplete(TranslateErrors error_type,
                                      const std::string& source_language,
                                      double translation_time) = 0;
+
+    // Called when the observed instance is being destroyed so that observers
+    // can call RemoveObserver on the instance.
+    virtual void TranslateControllerWasDestroyed(
+        TranslateController* translate_controller) = 0;
   };
 
   TranslateController(const TranslateController&) = delete;
@@ -48,8 +55,8 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
 
   ~TranslateController() override;
 
-  // Sets the observer.
-  void set_observer(Observer* observer) { observer_ = observer; }
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Injects the translate script.
   void InjectTranslateScript(const std::string& translate_script);
@@ -98,7 +105,7 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
   // The WebState this instance is observing.
   raw_ptr<web::WebState> web_state_;
 
-  raw_ptr<Observer, DanglingUntriaged> observer_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace translate

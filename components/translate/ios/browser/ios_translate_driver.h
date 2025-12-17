@@ -77,6 +77,9 @@ class IOSTranslateDriver
   // TranslateDriver methods.
   void OnIsPageTranslatedChanged() override;
   void OnTranslateEnabledChanged() override;
+  void TranslateControllerWasDestroyed(
+      TranslateController* translate_controller) override;
+
   bool IsLinkNavigation() override;
   void PrepareToTranslatePage(int page_seq_no,
                               const std::string& original_source_lang,
@@ -156,6 +159,8 @@ class IOSTranslateDriver
   base::ScopedObservation<language::IOSLanguageDetectionTabHelper,
                           language::IOSLanguageDetectionTabHelper::Observer>
       language_detection_observation_{this};
+  base::ScopedObservation<TranslateController, TranslateController::Observer>
+      translate_controller_observation_{this};
 
   base::WeakPtrFactory<IOSTranslateDriver> weak_ptr_factory_{this};
 };

@@ -7,6 +7,7 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
@@ -42,8 +43,7 @@ class TranslateControllerTest : public PlatformTest,
     fake_web_state_->SetWebFramesManager(content_world,
                                          std::move(frames_manager));
     TranslateController::CreateForWebState(fake_web_state_.get());
-    TranslateController::FromWebState(fake_web_state_.get())
-        ->set_observer(this);
+    translate_controller_observation_.Observe(translate_controller());
   }
 
   // TranslateController::Observer methods.
@@ -65,6 +65,11 @@ class TranslateControllerTest : public PlatformTest,
     translation_time_ = translation_time;
   }
 
+  void TranslateControllerWasDestroyed(
+      TranslateController* translate_controller) override {
+    translate_controller_observation_.Reset();
+  }
+
   TranslateController* translate_controller() {
     return TranslateController::FromWebState(fake_web_state_.get());
   }
@@ -82,6 +87,8 @@ class TranslateControllerTest : public PlatformTest,
   double translation_time_;
   bool on_script_ready_called_;
   bool on_translate_complete_called_;
+  base::ScopedObservation<TranslateController, TranslateController::Observer>
+      translate_controller_observation_{this};
 };
 
 // Tests that OnTranslateScriptReady() is called when a timeout message is

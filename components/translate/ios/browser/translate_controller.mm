@@ -65,11 +65,23 @@ std::optional<TranslateErrors> FindTranslateErrorsKey(
 }  // anonymous namespace
 
 TranslateController::TranslateController(web::WebState* web_state)
-    : web_state_(web_state), observer_(nullptr) {
+    : web_state_(web_state) {
   DCHECK(web_state_);
 }
 
-TranslateController::~TranslateController() {}
+TranslateController::~TranslateController() {
+  for (Observer& observer : observers_) {
+    observer.TranslateControllerWasDestroyed(this);
+  }
+}
+
+void TranslateController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TranslateController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 web::WebFrame* TranslateController::GetMainWebFrame() {
   return TranslateJavaScriptFeature::GetInstance()
@@ -132,9 +144,10 @@ void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
       return;
     }
   }
-  if (observer_) {
-    observer_->OnTranslateScriptReady(*error_type, load_time.value_or(0.),
-                                      ready_time.value_or(0.));
+
+  for (Observer& observer : observers_) {
+    observer.OnTranslateScriptReady(*error_type, load_time.value_or(0.),
+                                    ready_time.value_or(0.));
   }
 }
 
@@ -155,8 +168,8 @@ void TranslateController::OnTranslateComplete(
     }
   }
 
-  if (observer_) {
-    observer_->OnTranslateComplete(
+  for (Observer& observer : observers_) {
+    observer.OnTranslateComplete(
         *error_type, source_language ? *source_language : std::string(),
         translation_time.value_or(0.));
   }
