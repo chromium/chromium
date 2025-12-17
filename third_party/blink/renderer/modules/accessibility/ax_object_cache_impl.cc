@@ -4386,6 +4386,20 @@ AriaNotifications AXObjectCacheImpl::RetrieveAriaNotifications(
   return aria_notifications_.Take(obj->AXObjectID());
 }
 
+ImeState* AXObjectCacheImpl::GetImeState(const AXObject* obj) {
+  DCHECK(obj);
+
+  if (ime_state_axid_ == obj->AXObjectID()) {
+    return &ime_state_;
+  }
+  return nullptr;
+}
+
+void AXObjectCacheImpl::ClearImeState() {
+  ime_state_axid_ = ui::AXNodeData::kInvalidAXID;
+  ime_state_ = ImeState();
+}
+
 void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {
   if (AXObject* ax_table = Get(table)) {
     if (ax_table->RoleValue() == ax::mojom::blink::Role::kLayoutTable &&
@@ -5008,6 +5022,42 @@ void AXObjectCacheImpl::HandleEventListenerRemoved(
 
 void AXObjectCacheImpl::HandleReferenceTargetChanged(Element& element) {
   DeferTreeUpdate(TreeUpdateReason::kReferenceTargetChanged, &element);
+}
+
+void AXObjectCacheImpl::HandleSetComposition(Node* node) {
+  if (!node) {
+    return;
+  }
+
+  AXObject* obj = Get(node);
+  if (!obj) {
+    return;
+  }
+
+  ime_state_axid_ = obj->AXObjectID();
+  ime_state_.has_composition = true;
+}
+
+void AXObjectCacheImpl::HandleCommitText(Node* node,
+                                         int committed_text_length) {
+  if (committed_text_length == 0) {
+    return;
+  }
+
+  if (!node) {
+    return;
+  }
+
+  AXObject* obj = Get(node);
+  if (!obj) {
+    return;
+  }
+
+  ime_state_axid_ = obj->AXObjectID();
+  ime_state_.committed_text_length = committed_text_length;
+
+  // Text commit might cause no text value changes.
+  MarkAXObjectDirty(obj);
 }
 
 bool AXObjectCacheImpl::DoesEventListenerImpactIgnoredState(

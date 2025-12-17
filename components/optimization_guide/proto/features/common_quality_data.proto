@@ -1701,7 +1701,7 @@ enum AXStringAttribute {
 }
 
 // AX Int attribute enum.
-// Next ID: 69
+// Next ID: 70
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -1840,6 +1840,8 @@ enum AXIntAttribute {
   AX_IA_MAXLENGTH = 67;
 
   AX_IA_PAINTORDER = 68;
+
+  AX_IA_COMMITTEDTEXTLENGTH = 69;
 }
 
 // AX Float attribute enum.
@@ -1865,7 +1867,7 @@ enum AXFloatAttribute {
 }
 
 // AX Bool attribute enum.
-// Next ID: 23
+// Next ID: 26
 enum AXBoolAttribute {
   AX_BA_NONE = 0;
 
@@ -1912,6 +1914,12 @@ enum AXBoolAttribute {
   AX_BA_LONGCLICKABLE = 21;
 
   AX_BA_HASHIDDENOFFSCREENNODES = 22;
+
+  AX_BA_HASCOMPOSITION = 23;
+
+  AX_BA_COMMITTEDBYIME = 24;
+
+  AX_BA_TEXTSUGGESTIONSELECTEDBYIME = 25;
 }
 
 // AX IntList attribute enum.

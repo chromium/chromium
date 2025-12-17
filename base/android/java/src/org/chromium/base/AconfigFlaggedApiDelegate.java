@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.TextAttribute;
 import android.webkit.WebViewDelegate;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -151,6 +152,21 @@ public interface AconfigFlaggedApiDelegate {
 
     /** Returns whether rebindService() is available or not. */
     default boolean isUpdateServiceBindingApiAvailable() {
+        return false;
+    }
+
+    /**
+     * Calls {@link
+     * android.view.accessibility.AccessibilityEvent#setTextChangeTypes(@TextChangeTypes int types)}
+     * method if supported.
+     */
+    default void setTextChangeTypes(AccessibilityEvent event, int subType) {}
+
+    /**
+     * Calls {@link android.view.inputmethod.TextAttribute#isTextSuggestionSelected()} method if
+     * supported.
+     */
+    default boolean isTextSuggestionSelected(@Nullable TextAttribute textAttribute) {
         return false;
     }
 

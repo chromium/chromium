@@ -294,6 +294,9 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
       return optimization_guide::proto::AXIntAttribute::AX_IA_MAXLENGTH;
     case ax::mojom::IntAttribute::kPaintOrder:
       return optimization_guide::proto::AXIntAttribute::AX_IA_PAINTORDER;
+    case ax::mojom::IntAttribute::kCommittedTextLength:
+      return optimization_guide::proto::AXIntAttribute::
+          AX_IA_COMMITTEDTEXTLENGTH;
   }
 }
 
@@ -386,6 +389,11 @@ optimization_guide::proto::AXBoolAttribute BoolAttributeToProto(
     case ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes:
       return optimization_guide::proto::AXBoolAttribute::
           AX_BA_HASHIDDENOFFSCREENNODES;
+    case ax::mojom::BoolAttribute::kHasComposition:
+      return optimization_guide::proto::AXBoolAttribute::AX_BA_HASCOMPOSITION;
+    case ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME:
+      return optimization_guide::proto::AXBoolAttribute::
+          AX_BA_TEXTSUGGESTIONSELECTEDBYIME;
   }
 }
 

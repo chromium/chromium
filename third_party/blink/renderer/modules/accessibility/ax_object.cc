@@ -1780,6 +1780,10 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
   if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
     node_data->SetCheckedState(CheckedState());
   }
+
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    SerializeTextChangeTypesAttributes(node_data);
+  }
 }
 
 String AXObject::KeyboardShortcut() const {
@@ -2856,6 +2860,26 @@ void AXObject::SerializeTextInsertionDeletionOffsetAttributes(
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperations, operations_ints);
   AXObjectCache().ClearTextOperationInNodeIdMap();
+}
+
+void AXObject::SerializeTextChangeTypesAttributes(
+    ui::AXNodeData* node_data) const {
+  ImeState* ime_state = AXObjectCache().GetImeState(this);
+  if (!ime_state) {
+    return;
+  }
+
+  if (ime_state->committed_text_length > 0) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kCommittedTextLength,
+        ime_state->committed_text_length);
+  } else if (ime_state->has_composition) {
+    node_data->AddBoolAttribute(
+        ax::mojom::blink::BoolAttribute::kHasComposition, true);
+  } else {
+    NOTREACHED();
+  }
+  AXObjectCache().ClearImeState();
 }
 
 bool AXObject::IsAXNodeObject() const {

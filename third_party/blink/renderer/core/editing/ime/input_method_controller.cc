@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -689,12 +690,25 @@ bool InputMethodController::CommitText(
     const String& text,
     const Vector<ImeTextSpan>& ime_text_spans,
     int relative_caret_position) {
+  bool result;
   if (HasComposition()) {
-    return ReplaceCompositionAndMoveCaret(text, relative_caret_position,
-                                          ime_text_spans);
+    result = ReplaceCompositionAndMoveCaret(text, relative_caret_position,
+                                            ime_text_spans);
+  } else {
+    result =
+        InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
   }
 
-  return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
+  // 'compositionend' event handler could remove current frame.
+  if (result && IsAvailable()) {
+    if (Node* focused_element = GetDocument().FocusedElement()) {
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        cache->HandleCommitText(focused_element, text.length());
+      }
+    }
+  }
+
+  return result;
 }
 
 bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
@@ -1104,6 +1118,11 @@ void InputMethodController::SetComposition(
     composition_range_ = Range::Create(GetDocument());
   composition_range_->setStart(anchor_node, anchor_offset);
   composition_range_->setEnd(focus_node, focus_offset);
+  if (Node* focused_element = GetDocument().FocusedElement()) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleSetComposition(focused_element);
+    }
+  }
 
   if (anchor_node->GetLayoutObject()) {
     anchor_node->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
@@ -1210,6 +1229,11 @@ void InputMethodController::SetCompositionFromExistingText(
     composition_range_ = Range::Create(GetDocument());
   composition_range_->setStart(range.StartPosition());
   composition_range_->setEnd(range.EndPosition());
+  if (Node* focused_element = GetDocument().FocusedElement()) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleSetComposition(focused_element);
+    }
+  }
 
   DispatchCompositionUpdateEvent(GetFrame(), ComposingText());
 }

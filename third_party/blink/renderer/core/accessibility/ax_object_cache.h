@@ -156,6 +156,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleEventListenerRemoved(Node& node,
                                           const AtomicString& event_type) = 0;
   virtual void HandleReferenceTargetChanged(Element&) = 0;
+  virtual void HandleSetComposition(Node*) = 0;
+  virtual void HandleCommitText(Node*, int committed_text_length) = 0;
 
   // Handle any notifications which arrived while layout was dirty.
   // If |force|, then process regardless of any active batching or pauses.

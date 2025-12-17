@@ -1853,18 +1853,63 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
 // form AXB and new_value_ to be of the form AYB, where X and Y are the pieces
 // that don't match. We take the X to be the "removed" characters and Y to be
 // the "added" characters.
-
+//
+// The above diff-based text change calculation is effective, except for text
+// committed by CJKV IMEs. For these IMEs, the actual text change for
+// accessibility services is the entire committed string, which may not align
+// with a minimal character-level diff. For example, if a composition "はn"
+// results in "はな", the committed text is "はな", not just "な".
+// Given: |' (cursor location in composition), X' (prior composition text),
+// | (cursor location after commit), X (committed text), A (prefix text),
+// B (postfix text) where the old value is A|'X'B, and the new value is AX|B,
+// the indices are derived as follows:
+// * fromIndex = location(|') = location(|) - len(X)
+// * addedCount = len(X)
+// * removedCount = len(X') = len(A|'X'B) - (len(AX|B) - len(X))
 int BrowserAccessibilityAndroid::GetTextChangeFromIndex() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // Cursor should move to the end of committed text.
+      DCHECK_GE(GetSelectionStart() - committed_text_length, 0);
+      // This is current_cursor_location - len(X).
+      return GetSelectionStart() - committed_text_length;
+    }
+  }
+
   // This is len(A)
   return CommonPrefixLength(old_value_, new_value_);
 }
 
 int BrowserAccessibilityAndroid::GetTextChangeAddedCount() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // This is len(X).
+      return committed_text_length;
+    }
+  }
+
   // This is len(AYB) - (len(A) + len(B)), or len(Y), the added characters.
   return new_value_.length() - CommonEndLengths(old_value_, new_value_);
 }
 
 int BrowserAccessibilityAndroid::GetTextChangeRemovedCount() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // This is len(A|X'B)-(len(AX|B) - len(X))
+      return old_value_.length() -
+             (new_value_.length() - committed_text_length);
+    }
+  }
+
   // This is len(AXB) - (len(A) + len(B)), or len(X), the removed characters.
   return old_value_.length() - CommonEndLengths(old_value_, new_value_);
 }

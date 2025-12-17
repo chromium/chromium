@@ -60,6 +60,10 @@ AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextFormatting);
 AX_BASE_EXPORT bool IsAccessibilityTextFormattingEnabled();
 
+// Enables text change types for text changed events.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextChangeTypes);
+AX_BASE_EXPORT bool IsAccessibilityTextChangeTypesEnabled();
+
 // Enables the addition of `labeledby` relationships in the accessibility tree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityLabeledBy);
 AX_BASE_EXPORT bool IsAccessibilityLabeledByEnabled();

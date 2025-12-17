@@ -106,6 +106,16 @@ struct TextChangedOperation {
   ax::mojom::blink::Command op;
 };
 
+// Represents the current IME (Input Method Editor) state for a given AXObject
+// associated with a text field.
+// This struct is used to track whether a text field has an active composition
+// or any text committed by the IME, which is crucial for providing accurate
+// accessibility feedback for text changes.
+struct ImeState {
+  bool has_composition = false;
+  int committed_text_length = 0;
+};
+
 // This class should only be used from inside the accessibility directory.
 class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
  public:
@@ -336,6 +346,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // releases them from `aria_notifications_`. If there are no notifications
   // stored for the given object, returns an empty `AriaNotifications`.
   AriaNotifications RetrieveAriaNotifications(const AXObject*) override;
+
+  void HandleSetComposition(Node* node) override;
+  void HandleCommitText(Node* node, int committed_text_length) override;
 
   void SetCanvasObjectBounds(HTMLCanvasElement*,
                              Element*,
@@ -662,6 +675,13 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // Clears the map after each call, should be called after each serialization.
   void ClearTextOperationInNodeIdMap();
+
+  // Returns the `ImeState` for a given AXObject. Returns nullptr if the given
+  // AXObject's id is not equal to `ime_state_axid_`.
+  ImeState* GetImeState(const AXObject* obj);
+
+  // Clears stored IME state. It should be called after each serialization.
+  void ClearImeState();
 
   // Adds an event to the list of pending_events_ and mark the object as dirty
   // via AXObjectCache::AddDirtyObjectToSerializationQueue. If
@@ -1273,6 +1293,13 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
   HashMap<AXID, AriaNotifications> aria_notifications_;
+
+  // Stores the AXID of the object currently undergoing IME composition or
+  // commit. This is kInvalidAXID if no active ime state.
+  AXID ime_state_axid_ = ui::AXNodeData::kInvalidAXID;
+  // Stores the IME state details for the object identified by
+  // `ime_state_axid_`.
+  ImeState ime_state_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

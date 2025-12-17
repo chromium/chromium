@@ -678,6 +678,14 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kDefaultActionVerb:
       AddEvent(node, Event::DEFAULT_ACTION_VERB_CHANGED);
       break;
+    case ax::mojom::IntAttribute::kCommittedTextLength:
+      if (new_value > 0) {
+        // Add text field value change event when there is a text commit and
+        // committed text is not empty, even when there is no text field value
+        // change.
+        AddEvent(node, Event::VALUE_IN_TEXT_FIELD_CHANGED);
+      }
+      break;
     default:
       break;
   }

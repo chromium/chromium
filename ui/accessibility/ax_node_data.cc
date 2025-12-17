@@ -170,6 +170,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
     case ax::mojom::IntAttribute::kPaintOrder:
+    case ax::mojom::IntAttribute::kCommittedTextLength:
       return false;
   }
 
@@ -1354,6 +1355,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntAttribute::kPaintOrder:
         result += " paintorder=" + value;
         break;
+      case ax::mojom::IntAttribute::kCommittedTextLength:
+        result += " committed_text_length=" + value;
+        break;
       case ax::mojom::IntAttribute::kNone:
         break;
     }
@@ -1584,6 +1588,12 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes:
         result += " has_hidden_nodes=" + value;
+        break;
+      case ax::mojom::BoolAttribute::kHasComposition:
+        result += " has_composition=" + value;
+        break;
+      case ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME:
+        result += " text_suggestion_selected_by_ime=" + value;
         break;
       case ax::mojom::BoolAttribute::kNone:
         break;

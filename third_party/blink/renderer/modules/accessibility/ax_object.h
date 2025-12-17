@@ -1657,6 +1657,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeImageDataAttributes(ui::AXNodeData* node_data) const;
   void SerializeTextInsertionDeletionOffsetAttributes(
       ui::AXNodeData* node_data) const;
+  void SerializeTextChangeTypesAttributes(ui::AXNodeData* node_data) const;
 
   void SetCachedValuesNeedUpdate(
       bool cached_values_need_update,

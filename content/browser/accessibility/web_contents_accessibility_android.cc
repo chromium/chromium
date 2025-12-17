@@ -1021,14 +1021,15 @@ void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
 }
 
 void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
-    int32_t unique_id) {
+    int32_t unique_id,
+    int32_t subType) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     return;
   }
-  Java_WebContentsAccessibilityImpl_handleEditableTextChanged(env, obj,
-                                                              unique_id);
+  Java_WebContentsAccessibilityImpl_handleEditableTextChanged(
+      env, obj, unique_id, subType);
 }
 
 void WebContentsAccessibilityAndroid::HandleActiveDescendantChanged(
