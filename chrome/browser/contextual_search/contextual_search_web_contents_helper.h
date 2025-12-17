@@ -15,7 +15,9 @@ class WebContents;
 }
 
 // Helper class that scopes the `ContextualSearchSessionHandle`'s
-// lifetime to a `content::WebContents`.
+// lifetime to a `content::WebContents`. Used for transferring a contextual
+// search session from one WebUI (e.g., Omnibox) to another (i.e., Co-Browsing)
+// when the user submits a query.
 class ContextualSearchWebContentsHelper
     : public content::WebContentsUserData<ContextualSearchWebContentsHelper> {
  public:
@@ -25,7 +27,7 @@ class ContextualSearchWebContentsHelper
       const ContextualSearchWebContentsHelper&) = delete;
   ~ContextualSearchWebContentsHelper() override;
 
-  // Takes ownership of a contextual session handle.
+  // Takes ownership of a contextual session handle and stores it.
   void set_session_handle(
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           handle) {
@@ -34,6 +36,11 @@ class ContextualSearchWebContentsHelper
   // Returns the owned contextual session handle. May return nullptr.
   contextual_search::ContextualSearchSessionHandle* session_handle() const {
     return session_handle_.get();
+  }
+  // Takes ownership away from this helper and returns it.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+  TakeSessionHandle() {
+    return std::move(session_handle_);
   }
 
  private:

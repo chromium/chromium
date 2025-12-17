@@ -26,7 +26,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
@@ -979,25 +978,10 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  // Only create the composebox query controller and metrics recorder needed for
-  // contextual search if realbox next is enabled.
-  if (ntp_realbox::IsNtpRealboxNextEnabled(profile_)) {
-    // Create a contextual session for this WebContents if one does not exist.
-    if (auto* contextual_search_web_contents_helper =
-            ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-                web_contents());
-        !contextual_search_web_contents_helper->session_handle()) {
-      auto* contextual_search_service =
-          ContextualSearchServiceFactory::GetForProfile(profile_);
-      auto contextual_session_handle = contextual_search_service->CreateSession(
-          ntp_composebox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kNewTabPage);
-      contextual_search_web_contents_helper->set_session_handle(
-          std::move(contextual_session_handle));
-    }
-  }
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), profile_, web_contents());
+      std::move(pending_page_handler), profile_, web_contents(),
+      base::BindRepeating(&NewTabPageUI::GetContextualSessionHandle,
+                          base::Unretained(this)));
 }
 
 void NewTabPageUI::BindInterface(
@@ -1203,23 +1187,11 @@ void NewTabPageUI::CreatePageHandler(
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
 
-  // Create a contextual session for this WebContents if one does not exist.
-  if (auto* contextual_search_web_contents_helper =
-          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-              web_contents());
-      !contextual_search_web_contents_helper->session_handle()) {
-    auto* contextual_search_service =
-        ContextualSearchServiceFactory::GetForProfile(profile_);
-    auto contextual_session_handle = contextual_search_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kNewTabPage);
-    contextual_search_web_contents_helper->set_session_handle(
-        std::move(contextual_session_handle));
-  }
-
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler), profile_, web_contents());
+      std::move(pending_searchbox_handler), profile_, web_contents(),
+      base::BindRepeating(&NewTabPageUI::GetContextualSessionHandle,
+                          base::Unretained(this)));
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
@@ -1284,6 +1256,20 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
           : "");
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
+}
+
+contextual_search::ContextualSearchSessionHandle*
+NewTabPageUI::GetContextualSessionHandle() {
+  if (!shared_session_handle_) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile_);
+    if (contextual_search_service) {
+      shared_session_handle_ = contextual_search_service->CreateSession(
+          ntp_composebox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kNewTabPage);
+    }
+  }
+  return shared_session_handle_.get();
 }
 
 void NewTabPageUI::DidStartNavigation(

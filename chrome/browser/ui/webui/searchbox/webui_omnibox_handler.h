@@ -30,7 +30,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       MetricsReporter* metrics_reporter,
       OmniboxController* omnibox_controller,
-      content::WebUI* web_ui);
+      content::WebUI* web_ui,
+      GetSessionHandleCallback get_session_callback);
 
   WebuiOmniboxHandler(const WebuiOmniboxHandler&) = delete;
   WebuiOmniboxHandler& operator=(const WebuiOmniboxHandler&) = delete;

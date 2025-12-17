@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -116,9 +117,13 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
   std::pair<GURL, GURL> StartPrefetchAndPrerender() {
     mojo::Remote<searchbox::mojom::PageHandler> remote_page_handler;
     RealboxSearchBrowserTestPage page;
-    RealboxHandler realbox_handler =
-        RealboxHandler(remote_page_handler.BindNewPipeAndPassReceiver(),
-                       browser()->profile(), GetWebContents());
+    RealboxHandler realbox_handler = RealboxHandler(
+        remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),
+        GetWebContents(),
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     realbox_handler.SetPage(page.GetRemotePage());
     content::test::PrerenderHostRegistryObserver registry_observer(
         *GetWebContents());
@@ -246,7 +251,11 @@ class RealboxHandlerTest : public InProcessBrowserTest,
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         browser()->profile(),
-        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents());
+        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

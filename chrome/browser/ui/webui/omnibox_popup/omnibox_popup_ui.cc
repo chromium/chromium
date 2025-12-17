@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -201,7 +200,9 @@ void OmniboxPopupUI::BindInterface(
   omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(pending_page_handler),
       metrics_reporter_service->metrics_reporter(), omnibox_controller,
-      web_ui());
+      web_ui(),
+      base::BindRepeating(&OmniboxPopupUI::GetContextualSessionHandle,
+                          base::Unretained(this)));
   omnibox_handler_->SetEmbedder(embedder());
 }
 
@@ -211,6 +212,20 @@ void OmniboxPopupUI::BindInterface(
     composebox_page_factory_receiver_.reset();
   }
   composebox_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+contextual_search::ContextualSearchSessionHandle*
+OmniboxPopupUI::GetContextualSessionHandle() {
+  if (!shared_session_handle_) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile_);
+    if (contextual_search_service) {
+      shared_session_handle_ = contextual_search_service->CreateSession(
+          omnibox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kOmnibox);
+    }
+  }
+  return shared_session_handle_.get();
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -228,28 +243,16 @@ void OmniboxPopupUI::CreatePageHandler(
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
 
-  // Create a contextual session for this WebContents if one does not exist.
-  if (auto* contextual_search_web_contents_helper =
-          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-              web_ui()->GetWebContents());
-      !contextual_search_web_contents_helper->session_handle()) {
-    auto* contextual_search_service =
-        ContextualSearchServiceFactory::GetForProfile(profile_);
-    auto contextual_session_handle = contextual_search_service->CreateSession(
-        omnibox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kOmnibox);
-    contextual_search_web_contents_helper->set_session_handle(
-        std::move(contextual_session_handle));
+  composebox_handler_ = std::make_unique<OmniboxComposeboxHandler>(
+      std::move(pending_page_handler), std::move(pending_page),
+      std::move(pending_searchbox_handler), profile_,
+      web_ui()->GetWebContents(),
+      base::BindRepeating(&OmniboxPopupUI::GetContextualSessionHandle,
+                          base::Unretained(this)));
 
-    composebox_handler_ = std::make_unique<OmniboxComposeboxHandler>(
-        std::move(pending_page_handler), std::move(pending_page),
-        std::move(pending_searchbox_handler), profile_,
-        web_ui()->GetWebContents());
-
-    // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
-    composebox_handler_->SetPage(std::move(pending_searchbox_page));
-    composebox_handler_->SetEmbedder(embedder());
-  }
+  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
+  composebox_handler_->SetPage(std::move(pending_searchbox_page));
+  composebox_handler_->SetEmbedder(embedder());
 }
 
 void OmniboxPopupUI::CreatePageHandler(

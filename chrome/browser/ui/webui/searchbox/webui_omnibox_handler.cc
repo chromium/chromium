@@ -88,11 +88,13 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    GetSessionHandleCallback get_session_callback)
     : ContextualSearchboxHandler(std::move(pending_page_handler),
                                  Profile::FromWebUI(web_ui),
                                  web_ui->GetWebContents(),
-                                 /*controller=*/nullptr),
+                                 /*controller=*/nullptr,
+                                 std::move(get_session_callback)),
       metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.

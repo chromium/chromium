@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -25,6 +27,8 @@
 #include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/webui_browser_resources.h"
 #include "chrome/grit/webui_browser_resources_map.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -144,9 +148,10 @@ void WebUIBrowserUI::BindInterface(
   content::WebContents* web_contents = webui->GetWebContents();
   // TODO(crbug.com/445510209): Pass `metrics_reporter_` after installing a
   // WebUIOmniboxHandler.
-  realbox_handler_ =
-      std::make_unique<RealboxHandler>(std::move(pending_page_handler),
-                                       Profile::FromWebUI(webui), web_contents);
+  realbox_handler_ = std::make_unique<RealboxHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(webui), web_contents,
+      base::BindRepeating(&WebUIBrowserUI::GetContextualSessionHandle,
+                          base::Unretained(this)));
 }
 
 void WebUIBrowserUI::BindInterface(
@@ -252,6 +257,21 @@ void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
 
 void WebUIBrowserUI::CloseSidePanel() {
   page_->CloseSidePanel();
+}
+
+contextual_search::ContextualSearchSessionHandle*
+WebUIBrowserUI::GetContextualSessionHandle() {
+  if (!session_handle_) {
+    auto* service = ContextualSearchServiceFactory::GetForProfile(
+        Profile::FromWebUI(web_ui()));
+    if (service) {
+      // TODO(crbug.com/445510209): Use appropriate config and source
+      session_handle_ = service->CreateSession(
+          omnibox::CreateQueryControllerConfigParams(),
+          contextual_search::ContextualSearchSource::kOmnibox);
+    }
+  }
+  return session_handle_.get();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIBrowserUI)

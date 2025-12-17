@@ -4,7 +4,6 @@
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_search/contextual_search_session_handle.h"

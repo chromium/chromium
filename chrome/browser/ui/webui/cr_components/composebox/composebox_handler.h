@@ -35,7 +35,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       Profile* profile,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      GetSessionHandleCallback get_session_callback);
   ~ComposeboxHandler() override;
 
   void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
@@ -94,7 +95,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
           pending_searchbox_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<OmniboxController> omnibox_controller);
+      std::unique_ptr<OmniboxController> omnibox_controller,
+      GetSessionHandleCallback get_session_callback);
 
  private:
   // The tool mode for the composebox, if any. These tool modes are disjoint

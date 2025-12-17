@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -80,11 +80,13 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<OmniboxController> controller)
+      std::unique_ptr<OmniboxController> controller,
+      GetSessionHandleCallback get_session_callback)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
-                                   std::move(controller)) {}
+                                   std::move(controller),
+                                   std::move(get_session_callback)) {}
   ~FakeContextualSearchboxHandler() override = default;
 
   // searchbox::mojom::PageHandler
@@ -134,18 +136,17 @@ class ContextualSearchboxHandlerTest
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle = service_->CreateSessionForTesting(
+    contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
-    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-        ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         web_contents(),
         std::make_unique<OmniboxController>(
-            std::make_unique<TestOmniboxClient>()));
-
+            std::make_unique<TestOmniboxClient>()),
+        base::BindLambdaForTesting(
+            [&]() { return contextual_session_handle_.get(); }));
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }
 
@@ -188,6 +189,8 @@ class ContextualSearchboxHandlerTest
   raw_ptr<MockQueryController> query_controller_;
   std::unique_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
   std::unique_ptr<FakeContextualSearchboxHandler> handler_;
 };
 
@@ -289,11 +292,11 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
 
   handler().AddFileContext(std::move(file_info), std::move(file_data),
                            callback.Get());
-  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 1u);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 1u);
 
   EXPECT_CALL(query_controller(), ClearFiles).Times(0);
   handler().ClearFiles();
-  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 0u);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
@@ -386,10 +389,9 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
                                 &MockQueryController::InitializeIfNeededBase));
 
   // Set a cached tab context snapshot.
-  auto* contextual_search_web_contents_helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
   auto token = base::UnguessableToken::Create();
-  contextual_search_web_contents_helper->session_handle()
+  handler()
+      .GetContextualSessionHandle()
       ->GetUploadedContextTokensForTesting()
       .push_back(token);
   handler().tab_context_snapshot_ =
@@ -762,7 +764,11 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
           mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
           web_contents(),
           std::make_unique<OmniboxController>(
-              std::make_unique<TestOmniboxClient>()));
+              std::make_unique<TestOmniboxClient>()),
+          base::BindLambdaForTesting(
+              []() -> contextual_search::ContextualSearchSessionHandle* {
+                return nullptr;
+              }));
 
   // Use a new MockSearchboxPage for the new handler.
   testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;

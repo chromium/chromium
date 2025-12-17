@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -110,17 +109,17 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle = service_->CreateSessionForTesting(
+    contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
-    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-        ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents());
+        web_contents(), base::BindLambdaForTesting([&]() {
+          return contextual_session_handle_.get();
+        }));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
     embedder_ = std::make_unique<TestEmbedder>();
@@ -178,6 +177,8 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   raw_ptr<MockQueryController> query_controller_;
   std::unique_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
   std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<ComposeboxHandler> handler_;
 };
@@ -307,7 +308,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
         return true;
       });
 
-  handler().DeleteContext(delete_file_token, /*from_suggested_chip=*/false);
+  handler().DeleteContext(delete_file_token, /*from_automatic_chip=*/false);
 
   SubmitQueryAndWaitForNavigation();
 

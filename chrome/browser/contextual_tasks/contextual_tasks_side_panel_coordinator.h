@@ -113,6 +113,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Returns the number of active tasks tracked by `this`.
   size_t GetNumberOfActiveTasks() const;
 
+  // Helper method to get the session handle from the side panel's WebUI.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandleForSidePanel();
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 
@@ -181,10 +185,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Initialize the open state of the tab scoped side panel if the
   // active tab does not have an open state.
   void MaybeInitTabScopedOpenState();
-
-  // Helper method to get the session handle from the side panel's web contents.
-  contextual_search::ContextualSearchSessionHandle*
-  GetContextualSearchSessionHandleForSidePanel();
 
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);
