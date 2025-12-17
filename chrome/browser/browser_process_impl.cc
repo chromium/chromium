@@ -1231,10 +1231,6 @@ GlobalFeatures* BrowserProcessImpl::GetFeatures() {
   return features_.get();
 }
 
-void BrowserProcessImpl::CreateGlobalFeaturesForTesting() {
-  NOTIMPLEMENTED();
-}
-
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!download_request_limiter_.get()) {

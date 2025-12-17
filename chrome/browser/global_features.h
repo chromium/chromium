@@ -104,14 +104,6 @@ class GlobalFeatures {
   void PostMainMessageLoopRun();
   void PostDestroyThreads();
 
-  // Legacy method used in some tests. New code and non-test code should not use
-  // this.
-  //
-  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
-  // replace them with
-  // TestingBrowserProcess::TearDownGlobalFeaturesForTesting().
-  void Shutdown();
-
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 

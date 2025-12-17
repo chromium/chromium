@@ -41,7 +41,12 @@ class StartupLaunchManagerTest : public testing::Test {
             }));
 
     // Construct StartupLaunchManager with mocked override.
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   TestStartupLaunchManager* launch_on_startup_manager() {

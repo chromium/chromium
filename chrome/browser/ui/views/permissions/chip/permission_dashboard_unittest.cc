@@ -55,10 +55,16 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
       delete;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     TestWithBrowserView::SetUp();
 
     AddTab(browser(), GURL("http://a.com"));
+  }
+
+  void TearDown() override {
+    TestWithBrowserView::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   void WaitForAnimationCompletion() {

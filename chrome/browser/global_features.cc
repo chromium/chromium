@@ -184,11 +184,6 @@ void GlobalFeatures::PostDestroyThreads() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void GlobalFeatures::Shutdown() {
-  PostMainMessageLoopRun();
-  PostDestroyThreads();
-}
-
 std::unique_ptr<system_permission_settings::PlatformHandle>
 GlobalFeatures::CreateSystemPermissionsPlatformHandle() {
   return system_permission_settings::PlatformHandle::Create();

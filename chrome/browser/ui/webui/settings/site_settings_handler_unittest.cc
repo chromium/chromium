@@ -3159,7 +3159,8 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   SiteSettingsHandlerInfobarTest& operator=(
       const SiteSettingsHandlerInfobarTest&) = delete;
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     BrowserWithTestWindowTest::SetUp();
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
@@ -3200,6 +3201,8 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     // Browser()'s destruction is handled in
     // BrowserWithTestWindowTest::TearDown()
     BrowserWithTestWindowTest::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

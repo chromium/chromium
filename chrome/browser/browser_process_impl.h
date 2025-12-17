@@ -241,7 +241,6 @@ class BrowserProcessImpl : public BrowserProcess,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
   GlobalFeatures* GetFeatures() override;
-  void CreateGlobalFeaturesForTesting() override;
 
  private:
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;

@@ -94,7 +94,12 @@ constexpr ContentSettingsType kContentTypeNotifications =
 class SiteSettingsHelperTest : public testing::Test {
  public:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   void VerifySetting(const base::Value::List& exceptions,
@@ -1107,11 +1112,16 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
   Profile* profile() { return &profile_; }
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     SetUpUsbChooserContext();
 #if BUILDFLAG(IS_CHROMEOS)
     SetUpSmartCardPermissionContext();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   // Sets up the UsbChooserContext with two devices and permissions for these
@@ -1410,10 +1420,16 @@ class SiteSettingsHelperExtensionTest
             std::make_unique<content::BrowserTaskEnvironment>()) {}
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     extensions::ExtensionServiceTestBase::SetUp();
     // The test profile is initialized in InitializeEmptyExtensionService().
     InitializeEmptyExtensionService();
+  }
+
+  void TearDown() override {
+    extensions::ExtensionServiceTestBase::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   scoped_refptr<const extensions::Extension> LoadExtension(
@@ -1532,8 +1548,13 @@ TEST_F(SiteSettingsHelperExtensionTest,
 class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
  protected:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(

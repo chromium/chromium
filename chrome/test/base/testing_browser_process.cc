@@ -626,11 +626,6 @@ GlobalFeatures* TestingBrowserProcess::GetFeatures() {
   return features_.get();
 }
 
-void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
-  CreateGlobalFeaturesPreProfileManager();
-  CreateGlobalFeaturesPostProfileManager();
-}
-
 void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {
   // To replace the GlobalFeatures, shutdown the default instance first.
   CHECK(features_);

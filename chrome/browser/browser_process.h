@@ -326,11 +326,6 @@ class BrowserProcess {
   // Returns the feature controllers scoped to this browser process.
   virtual GlobalFeatures* GetFeatures() = 0;
 
-  // Legacy method. Should not be used in new code.
-  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
-  // replace them with TestingBrowserProcess::SetUpGlobalFeaturesForTesting().
-  virtual void CreateGlobalFeaturesForTesting() = 0;
-
   // Do not add new members to this class. Instead use GlobalFeatures. See file
   // level comment for details.
 };

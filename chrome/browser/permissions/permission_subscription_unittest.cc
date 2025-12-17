@@ -149,7 +149,8 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
 
  private:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     ChromeRenderViewHostTestHarness::SetUp();
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(GetBrowserContext()));
@@ -159,6 +160,7 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     GetPermissionManager()->Shutdown();
     RenderViewHostTestHarness::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   const url::Origin url_;

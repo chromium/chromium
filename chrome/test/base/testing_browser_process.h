@@ -189,7 +189,6 @@ class TestingBrowserProcess
 
   BuildState* GetBuildState() override;
   GlobalFeatures* GetFeatures() override;
-  void CreateGlobalFeaturesForTesting() override;
 
   // TaskEnvironment::DestructionObserver:
   void WillDestroyCurrentTaskEnvironment() override;

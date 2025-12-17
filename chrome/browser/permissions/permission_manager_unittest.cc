@@ -29,10 +29,16 @@
 class PermissionManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     ChromeRenderViewHostTestHarness::SetUp();
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(GetBrowserContext()));
+  }
+
+  void TearDown() override {
+    ChromeRenderViewHostTestHarness::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   void OnPermissionChange(content::PermissionResult permission) {
