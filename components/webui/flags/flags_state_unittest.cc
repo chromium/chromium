@@ -52,6 +52,8 @@ const char kFlags9[] = "flag9";
 const char kFlags10[] = "flag10";
 const char kFlags11[] = "flag11";
 const char kFlags12[] = "flag12";
+const char kFlags13[] = "flag13";
+const char kFlags14[] = "flag14";
 
 const char kSwitch1[] = "switch";
 const char kSwitch2[] = "switch2";
@@ -146,6 +148,19 @@ const FeatureEntry::Choice kMultiChoices[] = {
     {kDummyDescription, kMultiSwitch2, kValueForMultiSwitch2},
 };
 
+const FeatureEntry::Choice kMultiChoicesWithEnableDisableFeatures1[] = {
+    {kDummyDescription, "", ""},
+    {kDummyDescription, kEnableFeatures,
+     "MultiChoiceFeature1,MultiChoiceFeature2"},
+    {kDummyDescription, kDisableFeatures, "MultiChoiceFeature1"},
+};
+
+const FeatureEntry::Choice kMultiChoicesWithEnableDisableFeatures2[] = {
+    {kDummyDescription, "", ""},
+    {kDummyDescription, kEnableFeatures, "MultiChoiceFeature3"},
+    {kDummyDescription, kDisableFeatures, "MultiChoiceFeature3"},
+};
+
 // The entries that are set for these tests. The 3rd entry is not supported on
 // the current platform, all others are.
 auto kEntries = std::to_array<FeatureEntry>({
@@ -195,6 +210,12 @@ auto kEntries = std::to_array<FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature3,
                                     kTestVariations3,
                                     kTestTrial)},
+    {kFlags13, kDummyName, kDummyDescription,
+     0,  // Ends up being mapped to the current platform.
+     MULTI_VALUE_TYPE(kMultiChoicesWithEnableDisableFeatures1)},
+    {kFlags14, kDummyName, kDummyDescription,
+     0,  // Ends up being mapped to the current platform.
+     MULTI_VALUE_TYPE(kMultiChoicesWithEnableDisableFeatures2)},
 });
 
 class FlagsStateTest : public ::testing::Test,
@@ -733,6 +754,59 @@ TEST_F(FlagsStateTest, MultiValues) {
   }
 }
 
+TEST_F(FlagsStateTest, MultiValuesWithEnableFeatures) {
+  const FeatureEntry& feature_value_entry = kEntries[6];
+  ASSERT_EQ(feature_value_entry.internal_name, kFlags7);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_value_entry.NameForOption(1), true);
+
+  const FeatureEntry& multi_values_entry_1 = kEntries[12];
+  ASSERT_EQ(multi_values_entry_1.internal_name, kFlags13);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, multi_values_entry_1.NameForOption(1), true);
+
+  const FeatureEntry& multi_values_entry_2 = kEntries[13];
+  ASSERT_EQ(multi_values_entry_2.internal_name, kFlags14);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, multi_values_entry_2.NameForOption(1), true);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line,
+                                       kAddSentinels, kEnableFeatures,
+                                       kDisableFeatures);
+
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kEnableFeatures),
+            "MultiChoiceFeature1,MultiChoiceFeature2,MultiChoiceFeature3,"
+            "FeatureName1");
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kDisableFeatures), "");
+}
+
+TEST_F(FlagsStateTest, MultiValuesWithDisableFeatures) {
+  const FeatureEntry& feature_value_entry = kEntries[6];
+  ASSERT_EQ(feature_value_entry.internal_name, kFlags7);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, feature_value_entry.NameForOption(2), true);
+
+  const FeatureEntry& multi_values_entry_1 = kEntries[12];
+  ASSERT_EQ(multi_values_entry_1.internal_name, kFlags13);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, multi_values_entry_1.NameForOption(2), true);
+
+  const FeatureEntry& multi_values_entry_2 = kEntries[13];
+  ASSERT_EQ(multi_values_entry_2.internal_name, kFlags14);
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, multi_values_entry_2.NameForOption(2), true);
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line,
+                                       kAddSentinels, kEnableFeatures,
+                                       kDisableFeatures);
+
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kEnableFeatures), "");
+  EXPECT_EQ(command_line.GetSwitchValueASCII(kDisableFeatures),
+            "MultiChoiceFeature1,MultiChoiceFeature3,FeatureName1");
+}
+
 // Tests that disable flags are added when an entry is disabled.
 TEST_F(FlagsStateTest, DisableFlagCommandLine) {
   // Nothing selected.
@@ -900,7 +974,7 @@ TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
   // All |kEntries| except for |kFlags3| should be supported.
   auto supported_count = supported_entries.size();
   auto unsupported_count = unsupported_entries.size();
-  EXPECT_EQ(11u, supported_count);
+  EXPECT_EQ(13u, supported_count);
   EXPECT_EQ(1u, unsupported_count);
   EXPECT_EQ(std::size(kEntries), supported_count + unsupported_count);
 }

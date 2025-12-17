@@ -843,8 +843,23 @@ void FlagsState::AddSwitchesToCommandLine(
         variation_ids.push_back(entry.variation_id);
       }
     } else if (!entry.switch_name.empty()) {
-      command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
-      flags_switches_[entry.switch_name] = entry.switch_value;
+      if (entry.switch_name == enable_features_flag_name ||
+          entry.switch_name == disable_features_flag_name) {
+        // Make sure we don't overwrite the existing `enable_features_flag_name`
+        // or `disable_features_flag_name` switch.
+        const bool feature_state =
+            entry.switch_name == enable_features_flag_name;
+        std::map<std::string, bool> features;
+        for (std::string_view feature :
+             base::FeatureList::SplitFeatureListString(entry.switch_value)) {
+          features[std::string(feature)] = feature_state;
+        }
+        MergeFeatureCommandLineSwitch(features, entry.switch_name.c_str(),
+                                      feature_state, command_line);
+      } else {
+        command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
+        flags_switches_[entry.switch_name] = entry.switch_value;
+      }
     }
     // If an entry doesn't match either of the above, then it is likely the
     // default entry for a FEATURE_VALUE entry. Safe to ignore.
