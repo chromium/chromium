@@ -9,8 +9,6 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionClient;
@@ -54,11 +52,6 @@ public class TestSelectionPopupController implements SelectionPopupController {
     @Override
     public boolean isSelectActionBarShowing() {
         return false;
-    }
-
-    @Override
-    public ObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
-        return new ObservableSupplierImpl<>();
     }
 
     @Override

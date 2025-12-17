@@ -4,8 +4,6 @@
 
 package org.chromium.ui.edge_to_edge;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
@@ -14,9 +12,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.insets.WindowInsetsUtils;
@@ -27,8 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @NullMarked
 public class EdgeToEdgeManager {
-    private final ObservableSupplierImpl<Boolean> mContentFitsWindowInsetsSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mContentFitsWindowInsetsSupplier;
     private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
     private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
@@ -84,8 +82,7 @@ public class EdgeToEdgeManager {
             OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
             boolean shouldDrawEdgeToEdge,
             boolean canColorStatusBarColor) {
-        mContentFitsWindowInsetsSupplier.set(!shouldDrawEdgeToEdge);
-
+        mContentFitsWindowInsetsSupplier = ObservableSuppliers.createNonNull(!shouldDrawEdgeToEdge);
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mEdgeToEdgeSystemBarColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
@@ -138,13 +135,13 @@ public class EdgeToEdgeManager {
      * content should be drawn edge-to-edge (into the window insets).
      */
     public boolean shouldContentFitsWindowInsets() {
-        return assumeNonNull(mContentFitsWindowInsetsSupplier.get());
+        return mContentFitsWindowInsetsSupplier.get();
     }
 
     /**
      * Returns the supplier informing whether the contents fit within the system's window insets.
      */
-    public ObservableSupplier<Boolean> getContentFitsWindowInsetsSupplier() {
+    public NonNullObservableSupplier<Boolean> getContentFitsWindowInsetsSupplier() {
         return mContentFitsWindowInsetsSupplier;
     }
 

@@ -48,8 +48,9 @@ import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -170,8 +171,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private @Nullable ActionMode mActionMode;
 
     // Supplier of whether action bar is showing now.
-    private final ObservableSupplierImpl<Boolean> mIsActionBarShowingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsActionBarShowingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // Bit field for mappings from menu item to a flag indicating it is allowed.
     private int mAllowedMenuItems;
@@ -1899,7 +1900,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
-    public ObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
+    public NonNullObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
         return mIsActionBarShowingSupplier;
     }
 

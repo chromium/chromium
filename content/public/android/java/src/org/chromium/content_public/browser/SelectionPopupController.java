@@ -7,7 +7,9 @@ package org.chromium.content_public.browser;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
@@ -95,9 +97,11 @@ public interface SelectionPopupController {
 
     /**
      * @return An {@link ObservableSupplier<Boolean>} which holds true when a selection action bar
-     *         is showing; otherwise, it holds false.
+     *     is showing; otherwise, it holds false.
      */
-    ObservableSupplier<Boolean> isSelectActionBarShowingSupplier();
+    default NonNullObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
+        return ObservableSuppliers.alwaysFalse();
+    }
 
     /**
      * @return {@link ActionModeCallbackHelper} object.
