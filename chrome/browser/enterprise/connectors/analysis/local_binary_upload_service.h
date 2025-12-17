@@ -17,8 +17,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace enterprise_connectors {
@@ -26,7 +26,7 @@ namespace enterprise_connectors {
 // This class encapsulates the process of sending a file to local content
 // analysis agents for deep scanning and asynchronously retrieving a verdict.
 // This class runs on the UI thread.
-class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
+class LocalBinaryUploadService : public BinaryUploadService {
  public:
   // the maximum number of concurrently active requests to the local content
   // analysis agent.

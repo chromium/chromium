@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 
@@ -12,7 +12,7 @@ namespace enterprise_connectors {
 
 RequestHandlerBase::RequestHandlerBase(
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     DeepScanAccessPoint access_point)
@@ -40,8 +40,7 @@ void RequestHandlerBase::AppendFinalActionsTo(
   request_tokens_to_ack_final_actions_.clear();
 }
 
-safe_browsing::BinaryUploadService*
-RequestHandlerBase::GetBinaryUploadService() {
+BinaryUploadService* RequestHandlerBase::GetBinaryUploadService() {
   return upload_service_.get();
 }
 

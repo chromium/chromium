@@ -27,10 +27,9 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 
-using safe_browsing::BinaryUploadService;
 using safe_browsing::CloudBinaryUploadServiceFactory;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

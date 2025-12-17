@@ -2032,6 +2032,7 @@ static_library("browser") {
     "//chrome/browser/webid:impl",
     "//components/browser_apis/tab_strip:mojom",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
 
     # TODO(crbug.com/369436587): Remove this dependency when
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.
