@@ -750,8 +750,6 @@ public final class SafetyHubTest {
     })
     @DisabledTest(message = "https://crbug.com/411312866")
     public void testUpdateCheckModule() {
-        // TODO(crbug.com/324562205): Move the initialization of the SafetyHubFetchService so
-        // that there is no dependency on ChromeTabbedActivity.
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
