@@ -54,6 +54,7 @@ enum class MediaTrackContainerType {
   kVideoMatroska,
   kAudioMp4,
   kAudioWebM,
+  kAudioMatroska,
 };
 
 MODULES_EXPORT MediaTrackContainerType

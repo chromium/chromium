@@ -131,22 +131,17 @@ media::AudioCodec AudioStringToAudioCodec(const String& codecs) {
 }
 
 bool CanSupportVideoType(const String& type) {
-  bool support = EqualIgnoringASCIICase(type, "video/webm") ||
-                 EqualIgnoringASCIICase(type, "video/x-matroska");
-  if (support) {
-    return true;
-  }
-
-  return EqualStringView(type, "video/mp4");
+  return EqualIgnoringASCIICase(type, "video/webm") ||
+         EqualIgnoringASCIICase(type, "video/x-matroska") ||
+         EqualIgnoringASCIICase(type, "video/matroska") ||
+         EqualStringView(type, "video/mp4");
 }
 
 bool CanSupportAudioType(const String& type) {
-  bool support = EqualIgnoringASCIICase(type, "audio/webm");
-  if (support) {
-    return true;
-  }
-
-  return EqualStringView(type, "audio/mp4");
+  return EqualIgnoringASCIICase(type, "audio/webm") ||
+         EqualIgnoringASCIICase(type, "audio/x-matroska") ||
+         EqualIgnoringASCIICase(type, "audio/matroska") ||
+         EqualStringView(type, "audio/mp4");
 }
 
 bool IsAllowedMp4Type(const String& type) {
@@ -354,14 +349,7 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
                   });
 
   if (video) {
-    // Currently `video/x-matroska` is not supported by mime util, replace to
-    // `video/mp4` instead.
-    //
-    // TODO(crbug.com/40276507): rework MimeUtil such that clients can inject
-    // their own supported mime+codec types.
-    std::string mime_type = EqualIgnoringASCIICase(type, "video/x-matroska")
-                                ? "video/mp4"
-                                : type.Ascii();
+    std::string mime_type = type.Ascii();
     // It supports full qualified string for `avc1`, `avc3`, `hvc1`, `hev1`,
     // and `av01` codecs, e.g.
     //  `avc1.<profile>.<level>`,
@@ -837,7 +825,9 @@ String MediaRecorderHandler::ActualMimeType() {
       case media::VideoCodec::kHEVC:
 #endif
         if (!passthrough_enabled_ &&
-            EqualIgnoringASCIICase(type_, "video/mp4")) {
+            (EqualIgnoringASCIICase(type_, "video/mp4") ||
+             EqualIgnoringASCIICase(type_, "video/matroska") ||
+             EqualIgnoringASCIICase(type_, "video/x-matroska"))) {
           mime_type.Append(type_.Span8());
         } else {
           mime_type.Append("video/x-matroska");
