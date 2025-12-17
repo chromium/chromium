@@ -40,6 +40,8 @@ source_set("impl") {
     "top_container_button.cc",
     "vertical_pinned_tab_container_view.cc",
     "vertical_split_tab_view.cc",
+    "vertical_tab_drag_handler.cc",
+    "vertical_tab_drag_handler.h",
     "vertical_tab_group_header_view.cc",
     "vertical_tab_group_view.cc",
     "vertical_tab_strip_bottom_container.cc",

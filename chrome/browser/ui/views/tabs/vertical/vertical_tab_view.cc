@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -196,6 +197,10 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
     } else if (!selected_) {
       controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
     }
+    // Potentially start the drag for the mouse press.
+    // Follow-up mouse-movement events will update the drag controller and
+    // eventually kick off the drag-loop.
+    controller->GetDragHandler().InitializeDrag(*collection_node_, event);
   }
   return true;
 }
@@ -210,6 +215,10 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
              !IsSelectionModifierDown(event)) {
     controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
   }
+  // Cancel the initialized drag (noop if not started). This is considered
+  // a cancel because the drag handler assumes mouse capture when the drag
+  // loop starts.
+  controller->GetDragHandler().EndDrag(EndDragReason::kCancel);
   if (!self) {
     return;
   }
@@ -220,6 +229,12 @@ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
   // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
   // an enter event and fail to hover the tab.
   UpdateHovered(true);
+}
+
+bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
+  auto* controller = collection_node_->GetController();
+  CHECK(controller);
+  return controller->GetDragHandler().ContinueDrag(*this, event);
 }
 
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {

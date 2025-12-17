@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -24,8 +25,9 @@
 VerticalTabStripController::VerticalTabStripController(
     TabStripModel* model,
     BrowserView* browser_view,
+    VerticalTabDragHandler& drag_handler,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
-    : model_(model), browser_view_(browser_view) {
+    : model_(model), browser_view_(browser_view), drag_handler_(drag_handler) {
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
   } else {

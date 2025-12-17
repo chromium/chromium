@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
@@ -101,7 +102,12 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   UpdateBackgroundColors();
 }
 
-VerticalTabStripRegionView::~VerticalTabStripRegionView() = default;
+VerticalTabStripRegionView::~VerticalTabStripRegionView() {
+  root_node_->SetController(nullptr);
+  tab_strip_controller_.reset();
+  auto handler = RemoveChildViewT(drag_handler_);
+  drag_handler_ = nullptr;
+}
 
 void VerticalTabStripRegionView::AddedToWidget() {
   paint_as_active_subscription_ =
@@ -274,8 +280,14 @@ void VerticalTabStripRegionView::CreateTabStripController(
         browser_view->browser()->app_controller()->GetTabMenuModelFactory();
   }
 
+  TabStripModel* tab_strip_model = browser_view->browser()->GetTabStripModel();
+  CHECK(tab_strip_model);
+  auto drag_handler = std::make_unique<VerticalTabDragHandlerImpl>(
+      *tab_strip_model, *root_node_.get());
+  drag_handler_ = drag_handler.get();
+
   tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
-      browser_view->browser()->GetTabStripModel(), browser_view,
+      tab_strip_model, browser_view, *AddChildView(std::move(drag_handler)),
       std::move(tab_menu_model_factory));
 
   if (root_node_) {
