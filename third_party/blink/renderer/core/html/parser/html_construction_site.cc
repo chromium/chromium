@@ -292,7 +292,10 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 static inline void ExecuteRemoveChildrenTask(HTMLConstructionSiteTask& task) {
   DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kRemoveChildren);
 
-  task.parent->ParserRemoveAllChildren();
+  // Note that there is currently no special "ParserRemoveChildren" method, as
+  // removing children by patch templates has the same effect as removing them
+  // with a JS call.
+  task.parent->RemoveChildren();
 }
 
 static inline void ExecuteReplaceChildTask(HTMLConstructionSiteTask& task) {

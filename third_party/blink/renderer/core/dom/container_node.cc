@@ -188,12 +188,6 @@ void ContainerNode::ParserTakeAllChildrenFrom(ContainerNode& old_parent) {
   }
 }
 
-void ContainerNode::ParserRemoveAllChildren() {
-  while (Node* child = firstChild()) {
-    ParserRemoveChild(*child);
-  }
-}
-
 void ContainerNode::ParserReplaceChild(Node& new_child, Node& old_child) {
   CHECK_EQ(old_child.parentNode(), this);
   Node* next = old_child.nextSibling();
