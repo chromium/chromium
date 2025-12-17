@@ -1698,8 +1698,19 @@ ConfiguredProxyResolutionService::RequestHostResolution(
 
   auto sub_net_log = NetLogWithSource::Make(
       net_log.net_log(), NetLogSourceType::PROXY_OVERRIDE_HOST_RESOLUTION);
-  auto request = host_resolver_for_override_rules_->CreateRequest(
-      dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+
+  std::unique_ptr<HostResolver::ResolveHostRequest> request;
+  if (GURL::SchemeIsCryptographic(dns_condition.host.scheme())) {
+    request = host_resolver_for_override_rules_->CreateRequest(
+        dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+  } else {
+    // If HTTPS DNS is not specified by the rule, remove the scheme as it may
+    // fail if HTTPS DNS turns out to be supported for that domain
+    // (crbug.com/469064221).
+    request = host_resolver_for_override_rules_->CreateRequest(
+        HostPortPair::FromSchemeHostPort(dns_condition.host),
+        network_anonymization_key, sub_net_log, parameters);
+  }
 
   // Link the two net log sources together.
   sub_net_log.AddEventReferencingSource(
