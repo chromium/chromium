@@ -5,6 +5,9 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--fail-fast"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

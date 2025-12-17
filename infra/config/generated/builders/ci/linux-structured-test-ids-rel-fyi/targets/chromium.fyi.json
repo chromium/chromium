@@ -2402,7 +2402,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "module_scheme": "webgpucts",
-        "name": "webgpu_cts_structured_test_id_dedicated_worker_tests",
+        "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

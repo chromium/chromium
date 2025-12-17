@@ -837,6 +837,11 @@ ci.builder(
             "retry_only_failed_tests",
         ],
         per_test_modifications = {
+            "absl_hardening_tests": targets.mixin(
+                args = [
+                    "--fail-fast",
+                ],
+            ),
             "angle_unittests": targets.mixin(
                 # crbug.com/41493162: angle_unittests has a high failure rate.
                 # Re-enable cq when the issue is fixed.
