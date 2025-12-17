@@ -309,35 +309,35 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Adds a video to the photo library.
 - (void)addVideoToPhotoLibrary {
-  base::FilePath video_path;
-  base::PathService::Get(base::DIR_ASSETS, &video_path);
-  video_path = video_path.AppendASCII(
+  base::FilePath videoPath;
+  base::PathService::Get(base::DIR_ASSETS, &videoPath);
+  videoPath = videoPath.AppendASCII(
       "ios/testing/data/http_server_files/video_sample.mov");
 
-  NSURL* video_url =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(video_path.value())];
+  NSURL* videoURL =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(videoPath.value())];
 
-  __block BOOL changes_performed = NO;
+  __block BOOL changesPerformed = NO;
   __block NSError* error = nil;
   [[PHPhotoLibrary sharedPhotoLibrary]
       performChanges:^{
         [PHAssetChangeRequest
-            creationRequestForAssetFromVideoAtFileURL:video_url];
+            creationRequestForAssetFromVideoAtFileURL:videoURL];
       }
-      completionHandler:^(BOOL success, NSError* error_out) {
-        changes_performed = YES;
-        error = error_out;
+      completionHandler:^(BOOL success, NSError* errorOut) {
+        changesPerformed = YES;
+        error = errorOut;
       }];
 
   // Wait for the alert to appear and accept it, or for the changes to complete.
   // The alert might not appear if the permission was already granted.
   BOOL success = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^{
-        if (changes_performed) {
+        if (changesPerformed) {
           return YES;
         }
         [self checkAndAcceptSystemDialog];
-        return changes_performed;
+        return changesPerformed;
       });
 
   GREYAssertTrue(success, @"Failed to add video to photo library: %@", error);
