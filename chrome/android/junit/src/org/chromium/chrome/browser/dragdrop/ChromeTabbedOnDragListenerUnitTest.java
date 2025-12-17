@@ -52,7 +52,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
@@ -608,12 +608,13 @@ public class ChromeTabbedOnDragListenerUnitTest {
                     .thenReturn(
                             new ChromeTabGroupDropDataAndroid.Builder()
                                     .withTabGroupMetadata(mTabGroupMetadata)
+                                    .withTabs(Collections.singletonList(mTab))
                                     .build());
         } else if (isMultiTabDrag) {
             when(mDragDropGlobalState.getData())
                     .thenReturn(
                             new ChromeMultiTabDropDataAndroid.Builder()
-                                    .withTabs(Arrays.asList(mTab))
+                                    .withTabs(Collections.singletonList(mTab))
                                     .build());
         } else {
             when(mDragDropGlobalState.getData())

@@ -110,6 +110,7 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -2060,6 +2061,7 @@ public class TabStripDragHandlerTest {
                 dropData =
                         new ChromeTabGroupDropDataAndroid.Builder()
                                 .withTabGroupMetadata(tabGroupMetadata)
+                                .withTabs(Collections.singletonList(tab))
                                 .build();
                 mimeTypes = SUPPORTED_GROUP_MIME_TYPES;
                 break;

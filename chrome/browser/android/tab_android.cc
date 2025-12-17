@@ -600,6 +600,20 @@ void TabAndroid::NotifyTabGroupChanged(
       this, tab_groups::TabGroupId::FromOptionalToken(tab_group_id));
 }
 
+bool TabAndroid::IsDragging() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_isDragging(env, weak_java_tab_.get(env));
+}
+
+void TabAndroid::OnDraggingStateChanged(jboolean is_dragging) {
+  dragging_changed_callback_list_.Notify(this, is_dragging);
+}
+
+base::CallbackListSubscription TabAndroid::RegisterDraggingChanged(
+    base::RepeatingCallback<void(TabInterface*, bool)> callback) {
+  return dragging_changed_callback_list_.Add(std::move(callback));
+}
+
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {
   return devtools_host_;
 }

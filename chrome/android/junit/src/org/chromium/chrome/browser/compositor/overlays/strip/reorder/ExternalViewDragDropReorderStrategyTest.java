@@ -495,6 +495,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     private void setupDragDropState(boolean isGroupDrag) {
         ChromeDropDataAndroid dropData;
+        Tab tab = mModel.getTabById(INTERACTING_VIEW_ID);
         if (isGroupDrag) {
             TabGroupMetadata tabGroupMetadata =
                     new TabGroupMetadata(
@@ -511,9 +512,9 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
             dropData =
                     new ChromeTabGroupDropDataAndroid.Builder()
                             .withTabGroupMetadata(tabGroupMetadata)
+                            .withTabs(Collections.singletonList(tab))
                             .build();
         } else {
-            Tab tab = mModel.getTabById(INTERACTING_VIEW_ID);
             dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
         }
         TrackerToken dragTrackerToken =

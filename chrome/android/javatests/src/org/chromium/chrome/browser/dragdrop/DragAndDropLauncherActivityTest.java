@@ -527,6 +527,7 @@ public class DragAndDropLauncherActivityTest {
             TabGroupMetadata tabGroupMetadata, boolean allowDragToCreateNewInstance) {
         return new ChromeTabGroupDropDataAndroid.Builder()
                 .withTabGroupMetadata(tabGroupMetadata)
+                .withTabs(new ArrayList<Tab>()) // Unimportant for this test; must be non-null.
                 .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();
     }

@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDragStateData;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -319,7 +320,7 @@ public abstract class TabDragHandlerBase
             builder.withTabGroupMetadata(metadata);
         }
 
-        return builder.build();
+        return builder.withTabs(groupedTabs).build();
     }
 
     /**
@@ -329,6 +330,7 @@ public abstract class TabDragHandlerBase
      * @param builder {@link DragShadowBuilder} to build a drag shadow.
      * @param dropData A {@link ChromeDropDataAndroid} object pointing to the data to be transferred
      *     by the drag and drop operation.
+     * @return whether the drag started.
      */
     protected boolean startDrag(
             View dragSourceView, DragShadowBuilder builder, ChromeDropDataAndroid dropData) {
@@ -338,9 +340,13 @@ public abstract class TabDragHandlerBase
                         mMultiInstanceManager.getCurrentInstanceId(), dropData, builder);
         boolean res = mDragAndDropDelegate.startDragAndDrop(dragSourceView, builder, dropData);
         if (!res) {
+            // The drag failed to start reset the token.
             clearDragDropGlobalState();
+        } else {
+            // The drag succeed we can begin the drag.
+            setTabDraggingState(dropData, true);
+            mDragInProgressSupplier.set(true);
         }
-        mDragInProgressSupplier.set(true);
         return res;
     }
 
@@ -352,6 +358,9 @@ public abstract class TabDragHandlerBase
     protected void finishDrag(boolean dropHandled) {
         // Get the drag source Chrome instance id before it is cleared as it may be closed.
         @Nullable DragDropGlobalState dragDropGlobalState = getDragDropGlobalState(null);
+        if (dragDropGlobalState != null && dragDropGlobalState.getData() != null) {
+            setTabDraggingState((ChromeDropDataAndroid) dragDropGlobalState.getData(), false);
+        }
         int sourceInstanceId =
                 dragDropGlobalState != null
                         ? dragDropGlobalState.getDragSourceInstance()
@@ -446,5 +455,25 @@ public abstract class TabDragHandlerBase
     public static void setDragTrackerTokenForTesting(TrackerToken token) {
         sDragTrackerToken = token;
         ResettersForTesting.register(() -> sDragTrackerToken = null);
+    }
+
+    private void setTabDraggingState(ChromeDropDataAndroid dropData, boolean isDragging) {
+        final List<Tab> tabs;
+        if (dropData instanceof ChromeTabDropDataAndroid tabDropData) {
+            tabs = Collections.singletonList(tabDropData.tab);
+        } else if (dropData instanceof ChromeMultiTabDropDataAndroid tabsDropData) {
+            tabs = tabsDropData.tabs;
+        } else if (dropData instanceof ChromeTabGroupDropDataAndroid groupDropData) {
+            tabs = groupDropData.tabs;
+        } else {
+            assert false : "Unsupported drop data type: " + dropData.getClass().getName();
+            return;
+        }
+
+        if (tabs != null) {
+            for (Tab tab : tabs) {
+                TabDragStateData.getOrCreateForTab(tab).setIsDragging(isDragging);
+            }
+        }
     }
 }

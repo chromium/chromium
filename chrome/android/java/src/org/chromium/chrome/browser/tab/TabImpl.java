@@ -42,6 +42,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.process_launcher.ScopedServiceBindingBatch;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -337,6 +338,8 @@ class TabImpl implements Tab {
     private @Nullable String mPendingNativePageHost;
 
     private @Nullable SmoothTransitionDelegate mNativePageSmoothTransitionDelegate;
+
+    private @Nullable Callback<Boolean> mIsDraggingObserver;
 
     /**
      * Notified when the content sensitivity changes, and sets the content sensitivity property on
@@ -1284,6 +1287,14 @@ class TabImpl implements Tab {
         // this class.
         mIsDestroyed = true;
 
+        if (mIsDraggingObserver != null) {
+            TabDragStateData data = TabDragStateData.getForTab(this);
+            if (data != null) {
+                data.getIsDraggingSupplier().removeObserver(mIsDraggingObserver);
+            }
+            mIsDraggingObserver = null;
+        }
+
         // Update the title before destroying the tab. http://b/5783092
         updateTitle();
 
@@ -1458,6 +1469,14 @@ class TabImpl implements Tab {
             mDelegateFactory = delegateFactory;
 
             TabHelpers.initTabHelpers(this, parent);
+
+            mIsDraggingObserver =
+                    (isDragging) -> {
+                        if (mNativeTabAndroid != 0) {
+                            TabImplJni.get().onDraggingStateChanged(mNativeTabAndroid, isDragging);
+                        }
+                    };
+            getIsDraggingSupplier().addObserver(mIsDraggingObserver);
 
             if (tabState != null) {
                 restoreFieldsFromState(tabState);
@@ -2918,6 +2937,18 @@ class TabImpl implements Tab {
 
     @Override
     @CalledByNative
+    public boolean isDragging() {
+        TabDragStateData data = TabDragStateData.getForTab(this);
+        return data != null && data.getIsDraggingSupplier().get();
+    }
+
+    private NonNullObservableSupplier<Boolean> getIsDraggingSupplier() {
+        TabDragStateData data = TabDragStateData.getOrCreateForTab(this);
+        return data.getIsDraggingSupplier();
+    }
+
+    @Override
+    @CalledByNative
     public boolean isMultiSelected() {
         if (mSelectionStateSupplier == null) return false;
         return mSelectionStateSupplier.isTabMultiSelected(mId);
@@ -2986,6 +3017,8 @@ class TabImpl implements Tab {
         void notifyTabGroupChanged(
                 long nativeTabAndroid,
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId);
+
+        void onDraggingStateChanged(long nativeTabAndroid, boolean isDragging);
     }
 
     @VisibleForTesting

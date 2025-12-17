@@ -202,6 +202,10 @@ class TabAndroid : public tabs::TabInterface,
   void OnShow();
   void NotifyPinnedStateChanged(jboolean is_pinned);
   void NotifyTabGroupChanged(std::optional<base::Token> tab_group_id);
+  bool IsDragging() const;
+  void OnDraggingStateChanged(jboolean is_dragging);
+  base::CallbackListSubscription RegisterDraggingChanged(
+      base::RepeatingCallback<void(TabInterface*, bool)> callback);
 
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
@@ -269,6 +273,7 @@ class TabAndroid : public tabs::TabInterface,
 
   void UpdateProperties();
   void SetIsPinned(bool pinned);
+  void SetIsDragging(bool dragging);
   void SetTabGroupId(std::optional<tab_groups::TabGroupId> tab_group_id);
 
   int tab_id_;
@@ -297,6 +302,9 @@ class TabAndroid : public tabs::TabInterface,
   base::RepeatingCallbackList<void(TabInterface*,
                                    std::optional<tab_groups::TabGroupId>)>
       group_changed_callback_list_;
+
+  base::RepeatingCallbackList<void(TabInterface*, bool)>
+      dragging_changed_callback_list_;
 
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;

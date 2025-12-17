@@ -521,5 +521,12 @@ public interface Tab extends TabLifecycle {
     /** Called when the tab is removed from a tab model. */
     void onRemovedFromTabModel(NullableObservableSupplier<Tab> currentTabSupplier);
 
+    /** Returns whether the tab is multi-selected. */
     boolean isMultiSelected();
+
+    /**
+     * Returns whether the tab is currently being dragged. To observe this use {@link
+     * TabDragStateData}. This exists as a convenience method for plumbing the data to native.
+     */
+    boolean isDragging();
 }
