@@ -157,6 +157,11 @@ void ValuableMetadataSyncBridge::DeleteOrphanMetadata() {
     }
   }
 
+  if (std::optional<syncer::ModelError> error =
+          ApplyMetadataChanges(std::move(metadata_change_list))) {
+    return;
+  }
+
   base::UmaHistogramCounts100(
       "Autofill.ValuableMetadata.OrphanEntriesRemovedCount", removed_count);
 
@@ -167,6 +172,7 @@ void ValuableMetadataSyncBridge::DeleteOrphanMetadata() {
   if (transaction) {
     transaction->Commit();
   }
+
   // We do not need to NotifyOnAutofillChangedBySync() because this change is
   // invisible for the EntityDataManager - it does not change metadata for any
   // existing data.
@@ -263,6 +269,8 @@ void ValuableMetadataSyncBridge::ApplyDisableSyncChanges(
        GetEntityTable()->GetSyncedMetadata()) {
     table->RemoveEntityMetadata(storage_key);
   }
+
+  ApplyMetadataChanges(std::move(delete_metadata_change_list));
 
   web_data_backend_->CommitChanges();
   if (transaction) {
@@ -376,6 +384,8 @@ void ValuableMetadataSyncBridge::ServerEntityInstanceMetadataChanged(
     case EntityInstanceMetadataChange::HIDE_IN_AUTOFILL:
       NOTREACHED();
   }
+
+  ApplyMetadataChanges(std::move(metadata_change_list));
 }
 
 std::optional<syncer::ModelError>
