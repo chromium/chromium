@@ -263,12 +263,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // stable on desktop Android.
   feature_overrides.EnableFeature(chrome::android::kChromeNativeUrlOverriding);
 
-  // Enable desktop full screen feature flags by default for desktop platforms.
-  // This includes: Display Edge to Edge fullscreen and full screen to any
-  // screen
+  // Enable desktop full screen to a screen feature flag by default for desktop
+  // platforms.
   // TODO(crbug.com/417426218) Remove once feature is launched to 100% on all
   // form factors.
-  feature_overrides.EnableFeature(features::kDisplayEdgeToEdgeFullscreen);
   feature_overrides.EnableFeature(
       features::kEnableFullscreenToAnyScreenAndroid);
 
