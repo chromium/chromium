@@ -18,7 +18,7 @@ public interface ChromeAndroidTaskFeature {
      * <p>This is the start of the feature's lifecycle. Usually a feature would initialize objects
      * it owns in this method.
      *
-     * @see ChromeAndroidTask#addFeature(ChromeAndroidTaskFeature)
+     * @see ChromeAndroidTask#addFeature
      */
     void onAddedToTask();
 

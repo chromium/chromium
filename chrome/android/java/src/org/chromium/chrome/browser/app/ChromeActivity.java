@@ -212,6 +212,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFac
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridge;
 import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -1071,11 +1072,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             pendingId);
 
             // 2. Add windowing features.
-            ChromeAndroidTaskFeature extensionWindowControllerBridge =
-                    ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
-            if (extensionWindowControllerBridge != null) {
-                chromeAndroidTask.addFeature(extensionWindowControllerBridge);
-            }
+            chromeAndroidTask.addFeature(
+                    ExtensionWindowControllerBridge.class,
+                    () -> ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask));
 
             // 3. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);

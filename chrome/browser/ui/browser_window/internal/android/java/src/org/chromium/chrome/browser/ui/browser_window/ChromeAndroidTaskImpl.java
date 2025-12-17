@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.util.ArrayMap;
 import android.util.Pair;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -55,6 +56,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTask}. */
 @NullMarked
@@ -133,7 +136,8 @@ final class ChromeAndroidTaskImpl
      * Contains all {@link ChromeAndroidTaskFeature}s associated with this {@link
      * ChromeAndroidTask}.
      */
-    private final List<ChromeAndroidTaskFeature> mFeatures = new ArrayList<>();
+    private final Map<Class<? extends ChromeAndroidTaskFeature>, ChromeAndroidTaskFeature>
+            mFeatures = new ArrayMap<>();
 
     /**
      * The {@link ActivityScopedObjects} in this Task.
@@ -312,11 +316,31 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public <T extends ChromeAndroidTaskFeature> void addFeature(
+            Class<T> featureClazz, Supplier<@Nullable T> featureSupplier) {
+        ThreadUtils.assertOnUiThread();
+        assertPendingCreateOrIdle();
+
+        if (mFeatures.containsKey(featureClazz)) {
+            return;
+        }
+
+        var feature = featureSupplier.get();
+        if (feature != null) {
+            mFeatures.put(featureClazz, feature);
+            feature.onAddedToTask();
+        }
+    }
+
+    @Override
     public void addFeature(ChromeAndroidTaskFeature feature) {
         ThreadUtils.assertOnUiThread();
         assertPendingCreateOrIdle();
-        mFeatures.add(feature);
-        feature.onAddedToTask();
+
+        if (!mFeatures.containsKey(feature.getClass())) {
+            mFeatures.put(feature.getClass(), feature);
+            feature.onAddedToTask();
+        }
     }
 
     @Override
@@ -558,7 +582,7 @@ final class ChromeAndroidTaskImpl
                     }
 
                     mLastBoundsInDpOnConfigChanged = newBoundsInDp;
-                    for (var feature : mFeatures) {
+                    for (var feature : mFeatures.values()) {
                         feature.onTaskBoundsChanged(newBoundsInDp);
                     }
                 });
@@ -733,7 +757,7 @@ final class ChromeAndroidTaskImpl
             maybeSetStateIdle(actions);
         }
 
-        for (var feature : mFeatures) {
+        for (var feature : mFeatures.values()) {
             feature.onTaskFocusChanged(isTopResumedActivity);
         }
     }
@@ -772,9 +796,16 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public @Nullable ChromeAndroidTaskFeature getFeatureForTesting(
+            Class<? extends ChromeAndroidTaskFeature> featureClazz) {
+        ThreadUtils.assertOnUiThread();
+        return mFeatures.get(featureClazz);
+    }
+
+    @Override
     public List<ChromeAndroidTaskFeature> getAllFeaturesForTesting() {
         ThreadUtils.assertOnUiThread();
-        return mFeatures;
+        return new ArrayList<>(mFeatures.values());
     }
 
     @Override
@@ -946,7 +977,7 @@ final class ChromeAndroidTaskImpl
     }
 
     private void destroyFeatures() {
-        for (var feature : mFeatures) {
+        for (var feature : mFeatures.values()) {
             feature.onTaskRemoved();
         }
         mFeatures.clear();

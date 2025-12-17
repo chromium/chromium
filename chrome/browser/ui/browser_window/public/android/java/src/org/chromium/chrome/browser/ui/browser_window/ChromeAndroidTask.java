@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents an Android window containing Chrome.
@@ -190,9 +191,27 @@ public interface ChromeAndroidTask {
     /**
      * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.
      *
-     * <p>This method is the start of the {@link ChromeAndroidTaskFeature}'s lifecycle, and {@link
+     * <p>If an instance of the given {@code featureClazz} hasn't been added to this Task, this
+     * method will be the start of the feature's lifecycle, and {@link
      * ChromeAndroidTaskFeature#onAddedToTask} will be invoked.
+     *
+     * <p>If an instance of the given {@code featureClazz} is already added, this method will be a
+     * no-op and {@link ChromeAndroidTaskFeature#onAddedToTask} won't be invoked.
+     *
+     * <p>Production code should initialize a feature inside {@code featureSupplier}'s {@link
+     * Supplier#get()} implementation to avoid unnecessarily initializing the feature if it
+     * shouldn't be added.
+     *
+     * @param featureClazz The class of the feature, used as the feature identifier.
+     * @param featureSupplier {@link Supplier} that should instantiate the feature.
      */
+    <T extends ChromeAndroidTaskFeature> void addFeature(
+            Class<T> featureClazz, Supplier<@Nullable T> featureSupplier);
+
+    /** Deprecated. Please use {@link #addFeature(Class, Supplier)}. */
+    // TODO(http://crbug.com/434055958): Delete this method after downstream code starts using
+    // addFeature(Class, Supplier).
+    @Deprecated
     void addFeature(ChromeAndroidTaskFeature feature);
 
     /**
@@ -216,7 +235,7 @@ public interface ChromeAndroidTask {
      * Destroys all objects owned by this {@link ChromeAndroidTask}, including all {@link
      * ChromeAndroidTaskFeature}s.
      *
-     * @see #addFeature(ChromeAndroidTaskFeature)
+     * @see #addFeature
      */
     void destroy();
 
@@ -300,6 +319,10 @@ public interface ChromeAndroidTask {
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
+
+    /** Returns the {@link ChromeAndroidTaskFeature} instance for the given class. */
+    @Nullable ChromeAndroidTaskFeature getFeatureForTesting(
+            Class<? extends ChromeAndroidTaskFeature> featureClazz);
 
     /**
      * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.

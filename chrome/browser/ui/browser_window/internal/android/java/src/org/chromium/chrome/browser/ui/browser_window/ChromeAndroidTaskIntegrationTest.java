@@ -279,7 +279,10 @@ public class ChromeAndroidTaskIntegrationTest {
         var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
         assertNotNull(firstChromeAndroidTask);
         var testFeature = new TestChromeAndroidTaskFeature();
-        ThreadUtils.runOnUiThreadBlocking(() -> firstChromeAndroidTask.addFeature(testFeature));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        firstChromeAndroidTask.addFeature(
+                                TestChromeAndroidTaskFeature.class, () -> testFeature));
 
         // Act:
         // Open a new window. The first window will lose focus.
