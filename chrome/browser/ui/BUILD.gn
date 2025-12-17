@@ -428,6 +428,7 @@ static_library("ui") {
     "//components/compose/core/browser",
     "//components/compose/core/browser:features",
     "//components/consent_auditor/",
+    "//components/content_capture/common",
     "//components/content_settings/browser",
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/browser",
