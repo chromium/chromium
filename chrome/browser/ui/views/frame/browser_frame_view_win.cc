@@ -71,20 +71,6 @@ namespace {
 BASE_FEATURE(kAvoidUnnecessaryGetMinimizeButtonOffset,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Converts the |image| to a Windows icon and returns the corresponding HICON
-// handle. |image| is resized to desired |width| and |height| if needed.
-base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmapSizedTo(
-    const gfx::ImageSkia& image,
-    int width,
-    int height) {
-  return IconUtil::CreateHICONFromSkBitmap(
-      width == image.width() && height == image.height()
-          ? *image.bitmap()
-          : skia::ImageOperations::Resize(*image.bitmap(),
-                                          skia::ImageOperations::RESIZE_BEST,
-                                          width, height));
-}
-
 // If nothing has been added to the left of the window title, match native
 // Windows 10 UWP apps that don't have window icons.
 // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
@@ -990,10 +976,12 @@ void BrowserFrameViewWin::StopThrobber() {
       previous_big_icon = std::move(big_window_icon_);
 
       // Take responsibility for eventually destroying the created icons.
-      small_window_icon_ = CreateHICONFromSkBitmapSizedTo(
-          icon, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
-      big_window_icon_ = CreateHICONFromSkBitmapSizedTo(
-          icon, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+      small_window_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+          *icon.bitmap(), GetSystemMetrics(SM_CXSMICON),
+          GetSystemMetrics(SM_CYSMICON));
+      big_window_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+          *icon.bitmap(), GetSystemMetrics(SM_CXICON),
+          GetSystemMetrics(SM_CYICON));
 
       small_icon = small_window_icon_.get();
       big_icon = big_window_icon_.get();
