@@ -2904,8 +2904,7 @@ bool NavigationControllerImpl::ValidateDataURLAsString(
     return false;
   }
 
-  if (data_url_as_string->size() >
-      kMaxLengthOfDataURLString.InBytesUnsigned()) {
+  if (data_url_as_string->size() > kMaxLengthOfDataURLString.InBytes()) {
     return false;
   }
 

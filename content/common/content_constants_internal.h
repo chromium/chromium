@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "media/media_buildflags.h"
@@ -16,7 +16,7 @@
 namespace content {
 
 // The maximum length of string as data url.
-inline constexpr base::ByteCount kMaxLengthOfDataURLString = base::MiB(20);
+inline constexpr base::ByteSize kMaxLengthOfDataURLString = base::MiBU(20);
 
 // Accept header used for frame requests.
 #if BUILDFLAG(ENABLE_AV1_DECODER)
