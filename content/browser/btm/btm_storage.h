@@ -37,9 +37,6 @@ class CONTENT_EXPORT BtmStorage {
   std::optional<PopupsStateValue> ReadPopup(const std::string& first_party_site,
                                             const std::string& tracking_site);
 
-  std::vector<PopupWithTime> ReadRecentPopupsWithInteraction(
-      const base::TimeDelta& lookback);
-
   bool WritePopup(const std::string& first_party_site,
                   const std::string& tracking_site,
                   const uint64_t access_id,

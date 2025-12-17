@@ -119,9 +119,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   // removed.
   void WaitForBtmCleanupForTesting();
 
-  // (See BrowserContext::BackfillPopupHeuristicGrants().)
-  void BackfillPopupHeuristicGrants(base::OnceCallback<void(bool)> callback);
-
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
   // decoding performance stats.  Exposed here rather than StoragePartition

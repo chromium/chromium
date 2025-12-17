@@ -70,14 +70,6 @@ std::optional<PopupsStateValue> BtmStorage::ReadPopup(
   return db_->ReadPopup(first_party_site, tracking_site);
 }
 
-std::vector<PopupWithTime> BtmStorage::ReadRecentPopupsWithInteraction(
-    const base::TimeDelta& lookback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-
-  return db_->ReadRecentPopupsWithInteraction(lookback);
-}
-
 bool BtmStorage::WritePopup(const std::string& first_party_site,
                             const std::string& tracking_site,
                             const uint64_t access_id,

@@ -135,12 +135,6 @@ struct PopupsStateValue {
   bool is_authentication_interaction;
 };
 
-struct PopupWithTime {
-  std::string opener_site;
-  std::string popup_site;
-  base::Time last_popup_time;
-};
-
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.user_activation_times, lhs.bounce_times,
                   lhs.web_authn_assertion_times) ==

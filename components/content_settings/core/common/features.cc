@@ -93,8 +93,6 @@ const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[] =
     "TpcdWritePopupCurrentInteractionHeuristicsGrants";
 const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
     "TpcdWritePopupPastInteractionHeuristicsGrants";
-const char kTpcdBackfillPopupHeuristicsGrantsName[] =
-    "TpcdBackfillPopupHeuristicsGrants";
 const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
     "TpcdPopupHeuristicDisableForAdTaggedPopups";
 const char kTpcdPopupHeuristicEnableForIframeInitiatorName[] =
@@ -126,10 +124,6 @@ const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants{
         &content_settings::features::kTpcdHeuristicsGrants,
         kTpcdWritePopupPastInteractionHeuristicsGrantsName, base::TimeDelta()};
-
-const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
-    &content_settings::features::kTpcdHeuristicsGrants,
-    kTpcdBackfillPopupHeuristicsGrantsName, base::Days(30)};
 
 const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
     &content_settings::features::kTpcdHeuristicsGrants,

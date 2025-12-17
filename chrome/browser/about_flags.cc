@@ -3736,8 +3736,6 @@ const FeatureEntry::FeatureParam
             {content_settings::features::
                  kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
              "30d"},
-            {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-             "30d"},
             {content_settings::features::
                  kTpcdPopupHeuristicEnableForIframeInitiatorName,
              "none"},
@@ -3755,8 +3753,6 @@ const FeatureEntry::FeatureParam
          {content_settings::features::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
           "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-          "30d"},
          {content_settings::features::
               kTpcdPopupHeuristicEnableForIframeInitiatorName,
           "none"},
@@ -3773,8 +3769,6 @@ const FeatureEntry::FeatureParam
          {content_settings::features::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
           "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-          "30d"},
          {content_settings::features::
               kTpcdPopupHeuristicEnableForIframeInitiatorName,
           "all"},
@@ -3790,8 +3784,6 @@ const FeatureEntry::FeatureParam
         {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
          {content_settings::features::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-          "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
           "30d"},
          {content_settings::features::
               kTpcdPopupHeuristicEnableForIframeInitiatorName,
