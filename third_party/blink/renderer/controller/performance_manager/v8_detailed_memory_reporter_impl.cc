@@ -59,8 +59,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
     DCHECK_EQ(result.contexts.size(), result.sizes_in_bytes.size());
     for (size_t i = 0; i < result.contexts.size(); ++i) {
       const v8::Local<v8::Context>& context = result.contexts[i];
-      const base::ByteCount size =
-          base::ByteCount::FromUnsigned(result.sizes_in_bytes[i]);
+      const base::ByteSize size(result.sizes_in_bytes[i]);
 
       LocalFrame* frame = ToLocalFrameIfNotDetached(context);
 
@@ -92,7 +91,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
     isolate_memory_usage->shared_memory_used =
-        base::ByteCount::FromUnsigned(result.unattributed_size_in_bytes);
+        base::ByteSize(result.unattributed_size_in_bytes);
     std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 
@@ -180,7 +179,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       size_t node_bytes,
       size_t css_bytes) {
     isolate_memory_usage->blink_memory_used =
-        base::ByteCount::FromUnsigned(node_bytes + css_bytes);
+        base::ByteSize(node_bytes + css_bytes);
     MeasureCanvasMemory(std::move(isolate_memory_usage));
   }
 
@@ -188,14 +187,15 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage) {
     // We do not use HashMap here because there is no designated deleted value
     // of ExecutionContextToken.
-    std::unordered_map<ExecutionContextToken, base::ByteCount,
+    std::unordered_map<ExecutionContextToken, base::ByteSize,
                        ExecutionContextToken::Hasher>
         per_context_bytes;
     // Group and accumulate canvas bytes by execution context token.
     for (const auto& entry :
          CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
       ExecutionContextToken token = entry.value->GetExecutionContextToken();
-      base::ByteCount memory_used = entry.key->GetMemoryUsage();
+      base::ByteSize memory_used =
+          base::ByteSize::FromDeprecatedByteCount(entry.key->GetMemoryUsage());
       if (memory_used.is_zero()) {
         // Ignore canvas elements that do not have buffers.
         continue;

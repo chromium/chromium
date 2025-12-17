@@ -88,10 +88,9 @@ void WorkerMeasurementDelegate::MeasurementComplete(
   DCHECK(global_scope);
   DCHECK_LE(result.contexts.size(), 1u);
   DCHECK_LE(result.sizes_in_bytes.size(), 1u);
-  base::ByteCount bytes =
-      base::ByteCount::FromUnsigned(result.unattributed_size_in_bytes);
+  base::ByteSize bytes(result.unattributed_size_in_bytes);
   for (size_t size : result.sizes_in_bytes) {
-    bytes += base::ByteCount::FromUnsigned(size);
+    bytes += base::ByteSize(size);
   }
   auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
   auto memory_usage =

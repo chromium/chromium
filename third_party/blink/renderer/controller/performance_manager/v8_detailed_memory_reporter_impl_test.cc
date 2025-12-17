@@ -39,7 +39,7 @@ class MemoryUsageChecker {
         // because each context allocates a byte array of that length. Since
         // other objects are allocated during context initialization we can
         // only check the lower bound.
-        EXPECT_LE(base::ByteCount(1000000), entry->memory_used);
+        EXPECT_LE(base::ByteSize(1000000), entry->memory_used);
         ++actual_context_count;
         if (entry->token.Is<DedicatedWorkerToken>()) {
           EXPECT_EQ(String("http://fake.url/"), entry->url);
@@ -70,7 +70,7 @@ class CanvasMemoryUsageChecker {
       : canvas_width_(canvas_width), canvas_height_(canvas_height) {}
 
   void Callback(mojom::blink::PerProcessV8MemoryUsagePtr result) {
-    const base::ByteCount kMinBytesPerPixel = base::ByteCount(1);
+    const base::ByteSize kMinBytesPerPixel = base::ByteSize(1);
     size_t actual_context_count = 0;
     for (const auto& isolate : result->isolates) {
       for (const auto& entry : isolate->contexts) {

@@ -62,7 +62,7 @@ class MemoryUsageChecker {
   enum class CallbackAction { kExitRunLoop, kNone };
 
   MemoryUsageChecker(size_t worker_count,
-                     base::ByteCount memory_per_worker_lower_bound,
+                     base::ByteSize memory_per_worker_lower_bound,
                      CallbackAction callback_action)
       : worker_count_(worker_count),
         memory_per_worker_lower_bound_(memory_per_worker_lower_bound),
@@ -89,7 +89,7 @@ class MemoryUsageChecker {
  private:
   bool called_ = false;
   size_t worker_count_;
-  base::ByteCount memory_per_worker_lower_bound_;
+  base::ByteSize memory_per_worker_lower_bound_;
   CallbackAction callback_action_;
   base::RunLoop loop_;
 };
@@ -101,14 +101,14 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementSuccess) {
   reporter.SetWorkerCount(6);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(1)},
+                         base::ByteSize(1)},
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(2)},
-       WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteCount(3)},
-       WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteCount(4)},
-       WorkerMemoryUsage{WorkerToken(ServiceWorkerToken()), base::ByteCount(4)},
+                         base::ByteSize(2)},
+       WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteSize(3)},
+       WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteSize(4)},
+       WorkerMemoryUsage{WorkerToken(ServiceWorkerToken()), base::ByteSize(4)},
        WorkerMemoryUsage{WorkerToken(ServiceWorkerToken()),
-                         base::ByteCount(5)}})};
+                         base::ByteSize(5)}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
   for (auto& worker : result.workers) {
@@ -123,9 +123,9 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementFailure) {
   reporter.SetWorkerCount(3);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(1)},
+                         base::ByteSize(1)},
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(2)}})};
+                         base::ByteSize(2)}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
   reporter.OnMeasurementSuccess(
@@ -142,9 +142,9 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
   reporter.SetWorkerCount(4);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(1)},
+                         base::ByteSize(1)},
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(2)}})};
+                         base::ByteSize(2)}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
 
@@ -154,7 +154,7 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
       std::make_unique<WorkerMemoryUsage>(result.workers[1]));
   reporter.OnTimeout();
   reporter.OnMeasurementSuccess(std::make_unique<WorkerMemoryUsage>(
-      WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteCount(2)}));
+      WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), base::ByteSize(2)}));
   reporter.OnMeasurementFailure();
 }
 
@@ -165,9 +165,9 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeoutNoop) {
   reporter.SetWorkerCount(2);
   Result result = {Vector<WorkerMemoryUsage>(
       {WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(1)},
+                         base::ByteSize(1)},
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()),
-                         base::ByteCount(2)}})};
+                         base::ByteSize(2)}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
   reporter.OnMeasurementSuccess(
@@ -182,7 +182,7 @@ TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
   StartWorker();
   EvaluateClassicScript(source_code);
   WaitUntilWorkerIsRunning();
-  constexpr base::ByteCount kBytesPerArrayElement = base::ByteCount(4);
+  constexpr base::ByteSize kBytesPerArrayElement = base::ByteSize(4);
   constexpr size_t kArrayLength = 1000000;
   MemoryUsageChecker checker(1, kBytesPerArrayElement * kArrayLength,
                              MemoryUsageChecker::CallbackAction::kExitRunLoop);
@@ -199,7 +199,7 @@ TEST_F(V8WorkerMemoryReporterTestWithMockPlatform, GetMemoryUsageTimeout) {
   EvaluateClassicScript(source_code);
   // Since the worker is in infinite loop and does not process tasks,
   // we cannot call WaitUntilWorkerIsRunning here as that would block.
-  MemoryUsageChecker checker(0, base::ByteCount(0),
+  MemoryUsageChecker checker(0, base::ByteSize(0),
                              MemoryUsageChecker::CallbackAction::kNone);
   V8WorkerMemoryReporter::GetMemoryUsage(
       BindOnce(&MemoryUsageChecker::Callback, Unretained(&checker)),

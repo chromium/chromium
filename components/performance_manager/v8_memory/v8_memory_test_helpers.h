@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -238,7 +238,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   // Creates and adds a new frame node to the graph.
   FrameNodeImpl* AddFrameNode(
       std::string url,
-      std::optional<base::ByteCount> bytes,
+      std::optional<base::ByteSize> bytes,
       FrameNodeImpl* parent = nullptr,
       std::optional<std::string> id_attribute = std::nullopt,
       std::optional<std::string> src_attribute = std::nullopt) {
@@ -250,8 +250,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
   // Creates and adds a new frame node to the graph.
   FrameNodeImpl* AddFrameNodeWithCanvasMemory(
       std::string url,
-      std::optional<base::ByteCount> bytes,
-      std::optional<base::ByteCount> canvas_bytes,
+      std::optional<base::ByteSize> bytes,
+      std::optional<base::ByteSize> canvas_bytes,
       FrameNodeImpl* parent = nullptr,
       std::optional<std::string> id_attribute = std::nullopt,
       std::optional<std::string> src_attribute = std::nullopt) {
@@ -262,7 +262,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
 
   // Creates a frame node as if from window.open and adds it to the graph.
   FrameNodeImpl* AddFrameNodeFromOpener(std::optional<std::string> url,
-                                        std::optional<base::ByteCount> bytes,
+                                        std::optional<base::ByteSize> bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
@@ -274,7 +274,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   // graph.
   FrameNodeImpl* AddCrossBrowsingInstanceFrameNode(
       std::string url,
-      std::optional<base::ByteCount> bytes,
+      std::optional<base::ByteSize> bytes,
       FrameNodeImpl* parent = nullptr,
       std::optional<std::string> id_attribute = std::nullopt,
       std::optional<std::string> src_attribute = std::nullopt) {
@@ -287,7 +287,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   // window.open and adds it to the graph.
   FrameNodeImpl* AddCrossBrowsingInstanceFrameNodeFromOpener(
       std::string url,
-      std::optional<base::ByteCount> bytes,
+      std::optional<base::ByteSize> bytes,
       FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
@@ -298,7 +298,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   // Creates a frame node in a different process and adds it to the graph.
   FrameNodeImpl* AddCrossProcessFrameNode(
       std::string url,
-      std::optional<base::ByteCount> bytes,
+      std::optional<base::ByteSize> bytes,
       FrameNodeImpl* parent,
       std::optional<std::string> id_attribute = std::nullopt,
       std::optional<std::string> src_attribute = std::nullopt) {
@@ -309,7 +309,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
 
   WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
                                 std::string script_url,
-                                std::optional<base::ByteCount> bytes,
+                                std::optional<base::ByteSize> bytes,
                                 FrameNodeImpl* parent);
 
   WorkerNodeImpl* AddWorkerNodeWithoutData(WorkerNode::WorkerType worker_type,
@@ -317,10 +317,10 @@ class WebMemoryTestHarness : public GraphTestHarness {
 
   WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
                                 std::string script_url,
-                                std::optional<base::ByteCount> bytes,
+                                std::optional<base::ByteSize> bytes,
                                 WorkerNodeImpl* parent);
 
-  void SetBlinkMemory(std::optional<base::ByteCount> bytes);
+  void SetBlinkMemory(std::optional<base::ByteSize> bytes);
 
   ProcessNode* process_node() const { return process_.get(); }
 
@@ -331,18 +331,18 @@ class WebMemoryTestHarness : public GraphTestHarness {
   FrameNodeImpl* AddFrameNodeImpl(
       std::optional<std::string> url,
       int browsing_instance_id,
-      std::optional<base::ByteCount> bytes,
+      std::optional<base::ByteSize> bytes,
       FrameNodeImpl* parent,
       FrameNodeImpl* opener,
       ProcessNodeImpl* process,
       std::optional<std::string> id_attribute,
       std::optional<std::string> src_attribute,
-      std::optional<base::ByteCount> canvas_bytes = std::nullopt);
+      std::optional<base::ByteSize> canvas_bytes = std::nullopt);
   WorkerNodeImpl* AddWorkerNodeImpl(
       WorkerNode::WorkerType worker_type,
       const url::Origin& origin,
       std::string script_url = std::string(),
-      std::optional<base::ByteCount> bytes = std::nullopt);
+      std::optional<base::ByteSize> bytes = std::nullopt);
   int GetNextUniqueId();
   TestNodeWrapper<ProcessNodeImpl> process_;
   TestNodeWrapper<ProcessNodeImpl> other_process_;
@@ -361,7 +361,7 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
 // or creates it if it does not exist, and sets its memory_used to
 // |memory_used|.
 void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
-                           base::ByteCount memory_used,
+                           base::ByteSize memory_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate);
 
 // Finds the PerContextCanvasMemoryUsage in |isolate| whose token is |token|,
@@ -369,7 +369,7 @@ void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
 // |memory_used|.
 void AddIsolateCanvasMemoryUsage(
     blink::ExecutionContextToken token,
-    base::ByteCount memory_used,
+    base::ByteSize memory_used,
     blink::mojom::PerIsolateV8MemoryUsage* isolate);
 
 }  // namespace v8_memory

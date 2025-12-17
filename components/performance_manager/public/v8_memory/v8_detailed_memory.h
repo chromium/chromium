@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -139,19 +139,19 @@ class V8DetailedMemoryExecutionContextData {
 
   // Returns memory used by V8 for this frame at the last
   // measurement.
-  base::ByteCount v8_memory_used() const { return v8_memory_used_; }
+  base::ByteSize v8_memory_used() const { return v8_memory_used_; }
 
-  void set_v8_memory_used(base::ByteCount v8_memory_used) {
+  void set_v8_memory_used(base::ByteSize v8_memory_used) {
     v8_memory_used_ = v8_memory_used;
   }
 
   // Returns the memory used by canvas elements for this frame at the
   // last measurement. It is empty if the frame has no canvas elements.
-  std::optional<base::ByteCount> canvas_memory_used() const {
+  std::optional<base::ByteSize> canvas_memory_used() const {
     return canvas_memory_used_;
   }
 
-  void set_canvas_memory_used(base::ByteCount canvas_memory_used) {
+  void set_canvas_memory_used(base::ByteSize canvas_memory_used) {
     canvas_memory_used_ = canvas_memory_used;
   }
 
@@ -182,8 +182,8 @@ class V8DetailedMemoryExecutionContextData {
  private:
   friend class WebMemoryTestHarness;
 
-  base::ByteCount v8_memory_used_;
-  std::optional<base::ByteCount> canvas_memory_used_;
+  base::ByteSize v8_memory_used_;
+  std::optional<base::ByteSize> canvas_memory_used_;
   std::optional<std::string> url_;
 };
 
@@ -199,41 +199,41 @@ class V8DetailedMemoryProcessData {
 
   // Returns the memory used by V8 at the last measurement in this process that
   // could not be attributed to a frame.
-  base::ByteCount detached_v8_memory_used() const {
+  base::ByteSize detached_v8_memory_used() const {
     return detached_v8_memory_used_;
   }
 
-  void set_detached_v8_memory_used(base::ByteCount detached_v8_memory_used) {
+  void set_detached_v8_memory_used(base::ByteSize detached_v8_memory_used) {
     detached_v8_memory_used_ = detached_v8_memory_used;
   }
 
   // Returns the memory used by canvas elements at the last measurement in this
   // process that could not be attributed to a frame.
-  base::ByteCount detached_canvas_memory_used() const {
+  base::ByteSize detached_canvas_memory_used() const {
     return detached_canvas_memory_used_;
   }
 
   void set_detached_canvas_memory_used(
-      base::ByteCount detached_canvas_memory_used) {
+      base::ByteSize detached_canvas_memory_used) {
     detached_canvas_memory_used_ = detached_canvas_memory_used;
   }
 
   // Returns the memory used by V8 at the last measurement in this process that
   // are shared between all frames.
-  base::ByteCount shared_v8_memory_used() const {
+  base::ByteSize shared_v8_memory_used() const {
     return shared_v8_memory_used_;
   }
 
-  void set_shared_v8_memory_used(base::ByteCount shared_v8_memory_used) {
+  void set_shared_v8_memory_used(base::ByteSize shared_v8_memory_used) {
     shared_v8_memory_used_ = shared_v8_memory_used;
   }
 
   // Returns the memory used by Blink heaps corresponding to V8
   // isolates at the last measurement in this process that are shared between
   // all frames.
-  base::ByteCount blink_memory_used() const { return blink_memory_used_; }
+  base::ByteSize blink_memory_used() const { return blink_memory_used_; }
 
-  void set_blink_memory_used(base::ByteCount blink_memory_used) {
+  void set_blink_memory_used(base::ByteSize blink_memory_used) {
     blink_memory_used_ = blink_memory_used;
   }
 
@@ -248,10 +248,10 @@ class V8DetailedMemoryProcessData {
 
   static V8DetailedMemoryProcessData* GetOrCreateForTesting(
       const ProcessNode* node);
-  base::ByteCount detached_v8_memory_used_;
-  base::ByteCount detached_canvas_memory_used_;
-  base::ByteCount shared_v8_memory_used_;
-  base::ByteCount blink_memory_used_;
+  base::ByteSize detached_v8_memory_used_;
+  base::ByteSize detached_canvas_memory_used_;
+  base::ByteSize shared_v8_memory_used_;
+  base::ByteSize blink_memory_used_;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {

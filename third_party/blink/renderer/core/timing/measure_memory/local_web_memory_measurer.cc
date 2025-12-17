@@ -69,10 +69,9 @@ void LocalWebMemoryMeasurer::MeasurementComplete(
   DCHECK_LE(result.sizes_in_bytes.size(), 1u);
   // The isolate has only one context, so all memory of the isolate can be
   // attributed to that context.
-  base::ByteCount bytes =
-      base::ByteCount::FromUnsigned(result.unattributed_size_in_bytes);
+  base::ByteSize bytes(result.unattributed_size_in_bytes);
   for (size_t size : result.sizes_in_bytes) {
-    bytes += base::ByteCount::FromUnsigned(size);
+    bytes += base::ByteSize(size);
   }
   WebMemoryAttributionPtr attribution = WebMemoryAttribution::New();
   attribution->scope = attribution_scope_;
@@ -82,8 +81,8 @@ void LocalWebMemoryMeasurer::MeasurementComplete(
   breakdown->memory = bytes;
   WebMemoryMeasurementPtr measurement = WebMemoryMeasurement::New();
   measurement->breakdown.push_back(std::move(breakdown));
-  measurement->blink_memory = base::ByteCount(0);
-  measurement->shared_memory = base::ByteCount(0);
+  measurement->blink_memory = base::ByteSize(0);
+  measurement->shared_memory = base::ByteSize(0);
   controller_->MeasurementComplete(std::move(measurement));
 }
 

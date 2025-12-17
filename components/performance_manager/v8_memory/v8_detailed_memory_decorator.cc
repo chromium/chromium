@@ -485,10 +485,10 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // If a frame doesn't have corresponding data in the result, clear any data
   // it may have had. Any datum in the result that doesn't correspond to an
   // existing frame is likewise accrued to detached bytes.
-  base::ByteCount detached_v8_memory_used;
-  base::ByteCount detached_canvas_memory_used;
-  base::ByteCount shared_v8_memory_used;
-  base::ByteCount blink_memory_used;
+  base::ByteSize detached_v8_memory_used;
+  base::ByteSize detached_canvas_memory_used;
+  base::ByteSize shared_v8_memory_used;
+  base::ByteSize blink_memory_used;
 
   // Create a mapping from token to execution context usage for the merge below.
   std::vector<std::pair<ExecutionContextToken, PerContextV8MemoryUsagePtr>>

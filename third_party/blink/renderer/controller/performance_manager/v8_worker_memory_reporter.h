@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_V8_WORKER_MEMORY_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_V8_WORKER_MEMORY_REPORTER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -45,7 +45,7 @@ class CONTROLLER_EXPORT V8WorkerMemoryReporter {
  public:
   struct WorkerMemoryUsage {
     WorkerToken token;
-    base::ByteCount memory;
+    base::ByteSize memory;
     // TODO(https://crbug.com/400455021): Remove because PlzDedicatedWorker
     // shipped. Before then, the browser did not know URLs of dedicated workers,
     // so we passed them together with the measurement result. URLs longer than
