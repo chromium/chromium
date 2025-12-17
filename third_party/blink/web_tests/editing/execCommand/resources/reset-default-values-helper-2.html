@@ -3,6 +3,6 @@
     window.parent.postMessage(JSON.stringify({
         DefaultParagraphSeparator: document.queryCommandValue("DefaultParagraphSeparator"),
         StyleWithCSS: document.queryCommandValue("StyleWithCSS")
-    }), location.protocol + "//" + location.host);
+    }), "*");
 </script>
 
