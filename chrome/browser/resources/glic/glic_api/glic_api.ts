@@ -163,6 +163,9 @@ export declare interface GlicBrowserHost {
   /** Returns the precise Chrome's version. */
   getChromeVersion(): Promise<ChromeVersion>;
 
+  /** Return the platform glic is running on. */
+  getPlatform?(): Platform;
+
   /**
    * Notifies the browser that the web client has switched modes. Note that this
    * call does not change any aspect of the panel itself (e.g. resize-ability).
@@ -2192,6 +2195,7 @@ export interface ExtensibleEnums {
   actorTaskStopReason: typeof ActorTaskStopReason;
   UserGrantedPermissionDuration: typeof UserGrantedPermissionDuration;
   webUseCounter: typeof WebUseCounter;
+  platform: typeof Platform;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2286,6 +2290,17 @@ export enum CaptureScreenshotErrorReason {
   SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
   // User declined screen capture dialog before taking a screenshot.
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The platform glic is running on.
+export enum Platform {
+  UNKNOWN = 0,
+  MAC_OS = 1,
+  WINDOWS = 2,
+  LINUX = 3,
+  CHROME_OS = 4,
 }
 
 ///////////////////////////////////////////////

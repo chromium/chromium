@@ -275,6 +275,16 @@ struct UserProfileInfo {
   bool is_managed;
 };
 
+// @generate glic_api
+// The platform glic is running on.
+enum Platform {
+  kUnknown = 0,
+  kMacOS = 1,
+  kWindows = 2,
+  kLinux = 3,
+  kChromeOS = 4,
+};
+
 // The result of `WebClientCreated()`. Contains information that needs to be
 // available before the web client is initialized.
 struct WebClientInitialState {
@@ -287,6 +297,7 @@ struct WebClientInitialState {
   bool os_location_permission_enabled;
   string hotkey;
   mojo_base.mojom.Version chrome_version;
+  Platform platform;
   // Whether the glic panel can currently be attached to a browser window.
   bool can_attach;
   // Whether the panel is active. See `NotifyPanelActiveChange`.

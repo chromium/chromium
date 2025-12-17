@@ -43,6 +43,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -128,6 +129,18 @@ struct EqualsTraits<::SkBitmap> {
 namespace glic {
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+constexpr mojom::Platform kPlatform = mojom::Platform::kMacOS;
+#elif BUILDFLAG(IS_WIN)
+constexpr mojom::Platform kPlatform = mojom::Platform::kWindows;
+#elif BUILDFLAG(IS_LINUX)
+constexpr mojom::Platform kPlatform = mojom::Platform::kLinux;
+#elif BUILDFLAG(IS_CHROMEOS)
+constexpr mojom::Platform kPlatform = mojom::Platform::kChromeOS;
+#else
+constexpr mojom::Platform kPlatform = mojom::Platform::kUnknown;
+#endif
 
 mojom::GetContextResultPtr LogErrorAndUnwrapResult(
     base::OnceCallback<void(GlicGetContextFromTabError)> error_logger,
@@ -737,6 +750,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
+    state->platform = kPlatform;
     state->microphone_permission_enabled =
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled);
     state->location_permission_enabled =

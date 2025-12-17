@@ -18,7 +18,7 @@ import {ResponseExtras} from '../post_message_transport.js';
 import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 
-import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, optionalFromClient, optionalToClient, panelStateToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, byteArrayFromClient, captureRegionResultToClient, focusedTabDataToClient, getArrayBufferFromBigBuffer, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, optionalFromClient, optionalToClient, panelStateToClient, platformToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, taskOptionsToMojo, timeDeltaFromClient, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
@@ -81,6 +81,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     const chromeVersion = initialState.chromeVersion.components;
     const hostCapabilities = initialState.hostCapabilities;
     this.host.setInstanceIsActive(initialState.instanceIsActive);
+    const platform = initialState.platform;
 
     // If the panel isn't active, don't send the focused tab until later.
     if (initialState.enableApiActivationGating && !initialState.panelIsActive) {
@@ -106,6 +107,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
           build: chromeVersion[2] || 0,
           patch: chromeVersion[3] || 0,
         },
+        platform: platformToClient(platform),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
       }),

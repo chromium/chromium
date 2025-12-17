@@ -18,9 +18,9 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, Screenshot as ScreenshotMojo, TabContext as TabContextMojo, TabData as TabDataMojo, WebPageData as WebPageDataMojo} from '../../glic.mojom-webui.js';
+import type {AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, Platform as PlatformMojo, Screenshot as ScreenshotMojo, TabContext as TabContextMojo, TabData as TabDataMojo, WebPageData as WebPageDataMojo} from '../../glic.mojom-webui.js';
 import {WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
-import type {CaptureRegionResult, ConversationInfo, GetPinCandidatesOptions, HostCapability, PageMetadata, PanelOpeningData, PanelState, Screenshot, TabContextOptions, TaskOptions, WebPageData} from '../../glic_api/glic_api.js';
+import type {CaptureRegionResult, ConversationInfo, GetPinCandidatesOptions, HostCapability, PageMetadata, PanelOpeningData, PanelState, Platform, Screenshot, TabContextOptions, TaskOptions, WebPageData} from '../../glic_api/glic_api.js';
 import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, WebClientMode} from '../../glic_api/glic_api.js';
 
 import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
@@ -407,6 +407,10 @@ export function byteArrayFromClient(buffer: ArrayBuffer): number[] {
 export function hostCapabilitiesToClient(capabilities: HostCapabilityMojo[]):
     HostCapability[] {
   return capabilities.map(capability => capability as number as HostCapability);
+}
+
+export function platformToClient(platform: PlatformMojo): Platform {
+  return platform as number as Platform;
 }
 
 export function selectCredentialDialogResponseToMojo(
