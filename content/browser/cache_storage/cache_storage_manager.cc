@@ -402,15 +402,6 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Wait to register the MemoryPressureListener until the first CacheStorage
-  // object is needed. This ensures it is registered on the correct thread.
-  if (!memory_pressure_listener_registration_) {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kCacheStorageManager,
-            this);
-  }
-
   CacheStorageMap::const_iterator it =
       cache_storage_map_.find({bucket_locator, owner});
   if (it == cache_storage_map_.end()) {
@@ -808,17 +799,6 @@ bool CacheStorageManager::IsValidQuotaStorageKey(
   // Disallow opaque storage keys at the quota boundary because we DCHECK that
   // we don't get an opaque key in lower code layers.
   return !storage_key.origin().opaque();
-}
-
-void CacheStorageManager::OnMemoryPressure(base::MemoryPressureLevel level) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    return;
-  }
-
-  for (auto& entry : cache_storage_map_) {
-    entry.second->ReleaseUnreferencedCaches();
-  }
 }
 
 // static

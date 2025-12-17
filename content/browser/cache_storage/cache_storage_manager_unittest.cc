@@ -1420,41 +1420,6 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndDelete) {
       << "deleted cache not destroyed after last reference removed";
 }
 
-// Critical memory pressure should remove any warmed caches that been kept
-// alive without a reference.
-TEST_F(CacheStorageManagerTest, DropReferenceAndMemoryPressure) {
-  // Hold a reference to the CacheStorage to permit the warmed
-  // CacheStorageCache to be kept alive.
-  CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
-
-  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
-  base::WeakPtr<CacheStorageCache> cache =
-      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
-  // Run a cache operation to ensure that the cache has finished initializing so
-  // that when the handle is dropped it could possibly close immediately.
-  EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
-                          GURL("http://example.com/foo")));
-
-  callback_cache_handle_ = CacheStorageCacheHandle();
-  EXPECT_TRUE(cache) << "unreferenced cache destroyed while owning "
-                        "CacheStorage is still referenced";
-
-  // Moderate memory pressure should not destroy unreferenced cache objects
-  // since reading data back in from disk can be expensive.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(cache);
-
-  // Critical memory pressure should destroy unreferenced cache objects.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(cache)
-      << "unreferenced cache not destroyed on critical memory pressure";
-}
-
 TEST_F(CacheStorageManagerTest, DropReferenceDuringQuery) {
   // Setup the cache and execute an operation to make sure all initialization
   // is complete.
