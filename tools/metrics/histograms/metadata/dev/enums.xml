@@ -1622,7 +1622,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="9" label="Position fallback link"/>
   <int value="10" label="Position try link"/>
   <int value="11" label="Attribute link"/>
-  <int value="12" label="Masonry editor"/>
+  <int value="12" label="Grid-lanes editor"/>
 </enum>
 
 <enum name="DevToolsSyncSetting">
