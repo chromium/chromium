@@ -363,6 +363,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetPrefersReducedMotion(bool prefers_reduced_motion);
 
   void SetMayThrottleIfUndrawnFrames(bool may_throttle_if_undrawn_frames);
+  bool may_throttle_if_undrawn_frames() const {
+    return may_throttle_if_undrawn_frames_;
+  }
 
   // Analogous to a commit, this function is used to create a sync tree and
   // add impl-side invalidations to it.

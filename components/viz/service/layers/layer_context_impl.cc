@@ -1874,6 +1874,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   } else {
     layers.clear_delegated_ink_metadata();
   }
+  host_impl_->SetMayThrottleIfUndrawnFrames(
+      update->may_throttle_if_undrawn_frames);
 
   {
     TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",

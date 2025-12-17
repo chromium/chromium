@@ -1386,6 +1386,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
         std::make_unique<gfx::DelegatedInkMetadata>(
             *tree.delegated_ink_metadata());
   }
+  update->may_throttle_if_undrawn_frames =
+      host_impl_->may_throttle_if_undrawn_frames();
   update->max_safe_area_inset_bottom = tree.max_safe_area_inset_bottom();
   update->browser_controls_params = tree.browser_controls_params();
   update->browser_controls_offset_tag_modifications =

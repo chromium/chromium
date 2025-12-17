@@ -228,6 +228,9 @@ struct LayerTreeUpdate {
 
   // Metadata for delegated ink trails.
   gfx.mojom.DelegatedInkMetadata? delegated_ink_metadata;
+
+  // Whether the compositor should throttle if there are undrawn frames.
+  bool may_throttle_if_undrawn_frames;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
