@@ -2962,6 +2962,18 @@ std::optional<int> AXTree::GetPosInSet(const AXNode& node) {
     return std::nullopt;
   }
 
+  if (node.GetRole() == ax::mojom::Role::kRadioButton &&
+      !node.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet) &&
+      node.HasIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds)) {
+    const std::vector<int32_t>& ids =
+        node.GetIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds);
+    for (size_t i = 0; i < ids.size(); ++i) {
+      if (ids[i] == node.id()) {
+        return static_cast<int>(i + 1);
+      }
+    }
+  }
+
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
        node.GetRole() == ax::mojom::Role::kPopUpButton) &&
       node.GetUnignoredChildCount() == 0 &&
@@ -3001,6 +3013,14 @@ std::optional<int> AXTree::GetSetSize(const AXNode& node) {
   if (node.IsIgnored()) {
     return std::nullopt;
   };
+
+  if (node.GetRole() == ax::mojom::Role::kRadioButton &&
+      !node.HasIntAttribute(ax::mojom::IntAttribute::kSetSize) &&
+      node.HasIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds)) {
+    return static_cast<int>(
+        node.GetIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds)
+            .size());
+  }
 
   if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
        node.GetRole() == ax::mojom::Role::kPopUpButton) &&

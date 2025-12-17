@@ -3928,6 +3928,13 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
     return radio_buttons;
 
   if (auto* node_radio_button = DynamicTo<HTMLInputElement>(node_.Get())) {
+    if (auto* cache = DynamicTo<AXObjectCacheImpl>(AXObjectCache())) {
+      radio_buttons = cache->GetRadioButtonGroupMembers(node_radio_button);
+      if (!radio_buttons.empty()) {
+        return radio_buttons;
+      }
+    }
+
     HeapVector<Member<HTMLInputElement>> html_radio_buttons =
         FindAllRadioButtonsWithSameName(node_radio_button);
     for (HTMLInputElement* radio_button : html_radio_buttons) {

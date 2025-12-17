@@ -195,6 +195,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     if (--frozen_count_ == 0) {
       ax_tree_source_->Thaw();
       ClearCachedNodesOnLine();
+      radio_group_name_to_node_ids_.clear();
     }
   }
   bool IsFrozen() const override { return frozen_count_; }
@@ -779,6 +780,10 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // information is used.
   void ComputeNodesOnLine(const LayoutObject* layout_object);
 
+  // Returns the radio button group members for the given radio button.
+  HeapVector<Member<AXObject>> GetRadioButtonGroupMembers(
+      HTMLInputElement* radio_button);
+
   bool HasCachedDataForNodesOnLine() const {
     return !processed_blocks_.empty();
   }
@@ -1261,6 +1266,28 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Maps ids to their object's autofill suggestion availability.
   HashMap<AXID, WebAXAutofillSuggestionAvailability>
       autofill_suggestion_availability_map_;
+
+  struct RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
+    RadioButtonGroup(HTMLFormElement* form,
+                     TreeScope* tree_scope,
+                     Vector<AXID> members)
+        : form_(form), tree_scope_(tree_scope), members_(std::move(members)) {}
+
+    void Trace(Visitor* visitor) const;
+
+    WeakMember<HTMLFormElement> form_;
+    WeakMember<TreeScope> tree_scope_;
+    Vector<AXID> members_;
+  };
+
+  RadioButtonGroup* GetCachedRadioButtonGroup(HTMLInputElement* radio_button);
+  void RemoveFromRadioButtonGroupCache(AXID id);
+  RadioButtonGroup* ComputeAndCacheRadioButtonGroup(
+      HTMLInputElement* radio_button,
+      AXObject* ax_object);
+
+  HeapHashMap<String, HeapVector<Member<RadioButtonGroup>>>
+      radio_group_name_to_node_ids_;
 
   // The set of node IDs whose bounds has changed since the last time
   // SerializeLocationChanges was called.

@@ -453,6 +453,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Member<LayoutObject> layout_object_;
 
   friend class AXObject;  // For GetNode().
+  friend class AXObjectCacheImpl;
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RadioButtonsInGroupInTableRows);
 };
 
 template <>

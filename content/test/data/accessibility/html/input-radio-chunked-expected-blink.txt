@@ -2,16 +2,16 @@ rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++radioButton setSize=4 posInSet=1 checkedState=false
+++++++++radioButton setSize=4 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton,radioButton,radioButton
 ++++++++staticText name='Airedale'
 ++++++++++inlineTextBox name='Airedale'
 ++++++++genericContainer
-++++++++++radioButton setSize=4 posInSet=2 checkedState=false
+++++++++++radioButton setSize=4 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton,radioButton,radioButton
 ++++++++++staticText name='Beagle'
 ++++++++++++inlineTextBox name='Beagle'
-++++++++radioButton setSize=4 posInSet=3 checkedState=false
+++++++++radioButton setSize=4 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton,radioButton,radioButton
 ++++++++staticText name='Chihuahua '
 ++++++++++inlineTextBox name='Chihuahua '
-++++++++radioButton setSize=4 posInSet=4 checkedState=false
+++++++++radioButton setSize=4 posInSet=4 checkedState=false radioGroupIds=radioButton,radioButton,radioButton,radioButton
 ++++++++staticText name='Dachshund'
 ++++++++++inlineTextBox name='Dachshund'

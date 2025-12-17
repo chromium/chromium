@@ -5333,4 +5333,41 @@ TEST(AXTreeTest, ReparentToNewRoot) {
 }
 #endif
 
+TEST(AXTreeTest, SetSizePosInSetRadioButtonsWithGroupIds) {
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(4);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kGroup;
+  update.nodes[0].child_ids = {2, 3, 4};
+
+  update.nodes[1].id = 2;
+  update.nodes[1].role = ax::mojom::Role::kRadioButton;
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {2, 3});
+
+  update.nodes[2].id = 3;
+  update.nodes[2].role = ax::mojom::Role::kRadioButton;
+  update.nodes[2].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {2, 3});
+
+  update.nodes[3].id = 4;
+  update.nodes[3].role = ax::mojom::Role::kRadioButton;
+  update.nodes[3].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {4});
+
+  AXTree tree(update);
+
+  // Group 1: nodes 2 and 3. SetSize = 2.
+  EXPECT_EQ(1, tree.GetPosInSet(*tree.GetFromId(2)));
+  EXPECT_EQ(2, tree.GetSetSize(*tree.GetFromId(2)));
+
+  EXPECT_EQ(2, tree.GetPosInSet(*tree.GetFromId(3)));
+  EXPECT_EQ(2, tree.GetSetSize(*tree.GetFromId(3)));
+
+  // Group 2: node 4. SetSize = 1.
+  EXPECT_EQ(1, tree.GetPosInSet(*tree.GetFromId(4)));
+  EXPECT_EQ(1, tree.GetSetSize(*tree.GetFromId(4)));
+}
+
 }  // namespace ui

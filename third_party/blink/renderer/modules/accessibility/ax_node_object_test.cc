@@ -6,7 +6,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_data.h"
 
 namespace blink {
 namespace test {
@@ -418,4 +421,59 @@ TEST_F(AccessibilityTest,
 }
 
 }  // namespace test
+
+TEST_F(AccessibilityTest, RadioButtonsInGroupInTableRows) {
+  SetBodyInnerHTML(R"HTML(
+      <table>
+        <tr>
+          <th>Question</th>
+          <th id="a1">1</th><th id="a2">2</th><th id="a3">3</th><th id="a4">4</th><th id="a5">5</th><th id="a6">No Answer</th>
+        </tr>
+        <tr>
+          <th id="q1">Question 1?</th>
+          <td><input aria-labelledby="a1" aria-describedby="q1" type="radio" name="1q" id="r1_1" /></td>
+          <td><input aria-labelledby="a2" aria-describedby="q1" type="radio" name="1q" id="r1_2" /></td>
+          <td><input aria-labelledby="a3" aria-describedby="q1" type="radio" name="1q" id="r1_3" /></td>
+          <td><input aria-labelledby="a4" aria-describedby="q1" type="radio" name="1q" id="r1_4" /></td>
+          <td><input aria-labelledby="a5" aria-describedby="q1" type="radio" name="1q" id="r1_5" /></td>
+          <td><input aria-labelledby="a6" aria-describedby="q1" type="radio" name="1q" id="r1_6" /></td>
+        </tr>
+        <tr>
+          <th id="q2">Question 2?</th>
+          <td><input aria-labelledby="a1" aria-describedby="q2" type="radio" name="2q" id="r2_1" /></td>
+          <td><input aria-labelledby="a2" aria-describedby="q2" type="radio" name="2q" id="r2_2" /></td>
+          <td><input aria-labelledby="a3" aria-describedby="q3" type="radio" name="2q" id="r2_3" /></td>
+          <td><input aria-labelledby="a4" aria-describedby="q2" type="radio" name="2q" id="r2_4" /></td>
+          <td><input aria-labelledby="a5" aria-describedby="q2" type="radio" name="2q" id="r2_5" /></td>
+          <td><input aria-labelledby="a6" aria-describedby="q2" type="radio" name="2q" id="r2_6" /></td>
+        </tr>
+      </table>
+  )HTML");
+
+  const AXObject* r1_1 = GetAXObjectByElementId("r1_1");
+  ASSERT_NE(nullptr, r1_1);
+  while (r1_1 && r1_1->RoleValue() != ax::mojom::Role::kRadioButton) {
+    r1_1 = r1_1->FirstChildIncludingIgnored();
+  }
+  ASSERT_NE(nullptr, r1_1);
+  EXPECT_EQ(ax::mojom::Role::kRadioButton, r1_1->RoleValue());
+
+  const AXNodeObject* r1_1_node = To<AXNodeObject>(r1_1);
+  AXObject::AXObjectVector group = r1_1_node->RadioButtonsInGroup();
+  EXPECT_EQ(6u, group.size());
+
+  ui::AXNodeData node_data;
+  GetAXObjectCache().Freeze();
+  r1_1->Serialize(&node_data, ui::kAXModeComplete);
+  GetAXObjectCache().Thaw();
+  // SetSize is not computed for radio buttons in AXNodeObject::SetSize unless
+  // aria-setsize is present. It is computed in the browser process using
+  // kRadioGroupIds.
+  EXPECT_EQ(0, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+
+  std::vector<int32_t> radio_group_ids = node_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds);
+  EXPECT_EQ(6u, radio_group_ids.size());
+}
+
 }  // namespace blink
