@@ -37,8 +37,8 @@ import {RouteObserverMixin, Router} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import type {HatsBrowserProxy} from '../hats_browser_proxy.js';
 import {HatsBrowserProxyImpl, SecurityPageV2Interaction} from '../hats_browser_proxy.js';
-import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 
+import {SafeBrowsingSetting} from './safe_browsing_types.js';
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 import {getTemplate} from './security_page_v2.html.js';
 

@@ -382,7 +382,8 @@ enum PasswordProtectionTrigger {
 //
 // Must be kept in sync with the SafeBrowsingSetting enum located in
 // chrome/browser/resources/settings/privacy_page/security/security_page.ts
-// and chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts
+// and
+// chrome/browser/resources/settings/privacy_page/security/safe_browsing_types.ts
 // LINT.IfChange(SafeBrowsingState)
 enum class SafeBrowsingState {
   // The user is not opted into Safe Browsing.
@@ -395,7 +396,7 @@ enum class SafeBrowsingState {
   kMaxValue = ENHANCED_PROTECTION,
 };
 
-// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts:SafeBrowsingSetting)
+// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/safe_browsing_types.ts:SafeBrowsingSetting)
 
 // Must be kept in sync with the SecuritySettingsBundle enum located in
 // chrome/browser/resources/settings/privacy_page/security/security_page_v2.js.

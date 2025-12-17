@@ -125,7 +125,7 @@ export {PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy
 export type {PrivacyGuideBrowserProxy} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {SettingsPrivacyPageIndexElement} from './privacy_page/privacy_page_index.js';
-export {SafeBrowsingSetting} from './privacy_page/safe_browsing_types.js';
+export {SafeBrowsingSetting} from './privacy_page/security/safe_browsing_types.js';
 export {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox/privacy_sandbox_browser_proxy.js';
 export type {CanonicalTopic, FirstLevelTopicsState, FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxInterest, TopicsState} from './privacy_sandbox/privacy_sandbox_browser_proxy.js';
 export {RelaunchMixin, RestartType} from './relaunch_mixin.js';

@@ -4,7 +4,7 @@
 
 /** @fileoverview Handles Happiness Tracking Surveys for the settings pages. */
 
-import type {SafeBrowsingSetting} from './safe_browsing_types.js';
+import type {SafeBrowsingSetting} from './security/safe_browsing_types.js';
 
 /**
  * All Trust & Safety based interactions which may result in a HaTS survey.

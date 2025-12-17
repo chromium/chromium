@@ -44,8 +44,8 @@ import {ContentSettingsTypes} from '../../site_settings/constants.js';
 import type {SiteSettingsBrowserProxy} from '../../site_settings/site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from '../../site_settings/site_settings_browser_proxy.js';
 import {isSettingEnabled} from '../../site_settings/site_settings_util.js';
-import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 
+import {SafeBrowsingSetting} from './safe_browsing_types.js';
 import {getTemplate} from './security_page.html.js';
 
 /**

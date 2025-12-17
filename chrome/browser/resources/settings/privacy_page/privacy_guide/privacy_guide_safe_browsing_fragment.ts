@@ -22,7 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {SafeBrowsingSetting} from '../safe_browsing_types.js';
+import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
 
 import {getTemplate} from './privacy_guide_safe_browsing_fragment.html.js';
 

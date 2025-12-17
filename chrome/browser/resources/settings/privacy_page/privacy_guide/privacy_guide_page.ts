@@ -34,11 +34,11 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
 import {RouteObserverMixin, Router} from '../../router.js';
 import {ContentSetting} from '../../site_settings/constants.js';
+import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
