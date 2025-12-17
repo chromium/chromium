@@ -807,6 +807,7 @@ chromium-metrics-reviews@google.com.
   <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
   <int value="100369" label="PinContextualTaskButton"/>
   <int value="100370" label="AccessibilityReadAnythingOmniboxChipIgnoredCount"/>
+  <int value="100371" label="AccessibilityReadAnythingLineFocus"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

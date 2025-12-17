@@ -70,6 +70,12 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingLineFocus,
+        static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

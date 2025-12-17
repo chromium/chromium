@@ -300,7 +300,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
   read_anything::mojom::LineFocus line_focus =
-      read_anything::mojom::LineFocus::kDefaultValue;
+      features::IsReadAnythingLineFocusEnabled()
+          ? static_cast<read_anything::mojom::LineFocus>(
+                prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus))
+          : read_anything::mojom::LineFocus::kDefaultValue;
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(
@@ -741,7 +744,10 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
 
 void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
     read_anything::mojom::LineFocus line_focus) {
-  // TODO(crbug.com/447427066): Store this value in prefs.
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
+                                     static_cast<size_t>(line_focus));
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
