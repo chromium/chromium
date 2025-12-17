@@ -1832,6 +1832,30 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.HatsSurveyAndroid.TriedShowing"
+    enum="SigninSurveyTrigger" expires_after="2026-10-01">
+  <owner>triploblastic@google.com</owner>
+  <owner>bsazonov@chromium.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records that a signin HaTS survey may have been shown to the user. It means
+    that we got a valid survey config and the user is eligible to be shown a
+    survey. The survey may not get shown in the end due to external restrictions
+    such as survey limit within 24 hours being reached. (Android only).
+  </summary>
+</histogram>
+
+<histogram name="Signin.HatsSurveyAndroid.TriggerRegistered"
+    enum="SigninSurveyTrigger" expires_after="2026-10-01">
+  <owner>triploblastic@google.com</owner>
+  <owner>bsazonov@chromium.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records that a trigger for signin HaTS survey was registered. This is
+    registered only once per chrome run. (Android only).
+  </summary>
+</histogram>
+
 <histogram name="Signin.HistoryAlreadyOptedInAccessPoint.{ConsentLevel}"
     enum="SigninAccessPoint" expires_after="2026-05-02">
   <owner>treib@google.com</owner>

@@ -1377,6 +1377,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Finished"/>
 </enum>
 
+<!-- LINT.IfChange(SigninSurveyTrigger) -->
+
+<enum name="SigninSurveyTrigger">
+  <int value="0" label="First Run"/>
+  <int value="1" label="Web Sign-in"/>
+  <int value="2" label="Ntp Avatar Sign-in"/>
+  <int value="3" label="Ntp Promo Sign-in"/>
+  <int value="4" label="Bookmark Promo Sign-in"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SigninSurveyController.java:SigninSurveyTrigger) -->
+
 <!-- LINT.IfChange(SigninTokenTableGetAllWrappedBindingKeysResult) -->
 
 <enum name="SigninTokenTableGetAllWrappedBindingKeysResult">
