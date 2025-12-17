@@ -47,10 +47,10 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
@@ -111,10 +111,8 @@ std::vector<FormGlobalId> GetFormIds(const std::vector<FormData>& forms) {
 // Matches a std::map<FormGlobalId, std::unique_ptr<FormStructure>>::value_type
 // whose key is `form.global_id()`.
 auto HaveSameFormIdAs(const FormData& form) {
-  return Field(
-      "global_id",
-      &std::pair<const FormGlobalId, std::unique_ptr<FormStructure>>::first,
-      form.global_id());
+  return Pointee(
+      Property("global_id", &FormStructure::global_id, form.global_id()));
 }
 
 // Matches a std::map<FormGlobalId, std::unique_ptr<FormStructure>> whose
@@ -128,9 +126,10 @@ void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
                                  const std::vector<FormData>& updated_forms,
                                  const std::vector<FormGlobalId>& removed_forms,
                                  const std::vector<FormData>& expectation) {
-  const size_t num = std::min(updated_forms.size(),
-                              kAutofillManagerMaxFormCacheSize -
-                                  autofill_manager.form_structures().size());
+  const size_t num =
+      std::min(updated_forms.size(),
+               kAutofillManagerMaxFormCacheSize -
+                   test_api(autofill_manager).form_structures().size());
   EXPECT_CALL(autofill_manager, ShouldParseForms)
       .Times(1)
       .WillOnce(Return(true));
@@ -140,7 +139,7 @@ void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
                                    {AutofillManagerEvent::kFormsSeen});
   autofill_manager.OnFormsSeen(updated_forms, removed_forms);
   ASSERT_TRUE(waiter.Wait());
-  EXPECT_THAT(autofill_manager.form_structures(),
+  EXPECT_THAT(test_api(autofill_manager).form_structures(),
               HaveSameFormIdsAs(expectation));
 }
 

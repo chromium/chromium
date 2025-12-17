@@ -21,6 +21,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/heuristic_source.h"
@@ -158,7 +159,7 @@ class FormStructureBrowserTest
 
   // Serializes the given `forms` into a string.
   std::string FormStructuresToString(
-      const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms);
+      base::span<const FormStructure* const> forms);
 
   web::WebState* web_state() const { return web_state_.get(); }
 
@@ -285,17 +286,17 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
       autofill_manager_injector_->GetForMainFrame();
   ASSERT_NE(nullptr, autofill_manager);
   ASSERT_TRUE(autofill_manager->waiter().Wait(1));
-  *output = FormStructuresToString(autofill_manager->form_structures());
+  *output =
+      FormStructuresToString(test_api(*autofill_manager).form_structures());
 }
 
 std::string FormStructureBrowserTest::FormStructuresToString(
-    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
+    base::span<const FormStructure* const> forms) {
   std::vector<std::string> forms_string;
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
-  for (const auto& form_kv : forms) {
+  for (const FormStructure* form : forms) {
     std::string form_string;
-    const auto* form = form_kv.second.get();
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form) {
       std::string name = base::UTF16ToUTF8(field->name());

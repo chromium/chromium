@@ -801,9 +801,9 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
 
 BrowserAutofillManager::~BrowserAutofillManager() {
   // Process log events and record into UKM when the FormStructure is destroyed.
-  for (const auto& [form_id, form_structure] : form_structures()) {
-    ProcessFieldLogEventsInForm(*form_structure);
-  }
+  ForEachCachedForm([this](const FormStructure& form_structure) {
+    ProcessFieldLogEventsInForm(form_structure);
+  });
   client().GetSingleFieldFillRouter().CancelPendingQueries();
 }
 
@@ -2620,9 +2620,9 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
 //   - fast_checkout_delegate_
 void BrowserAutofillManager::Reset() {
   // Process log events and record into UKM when the FormStructure is destroyed.
-  for (const auto& [form_id, form_structure] : form_structures()) {
-    ProcessFieldLogEventsInForm(*form_structure);
-  }
+  ForEachCachedForm([this](const FormStructure& form_structure) {
+    ProcessFieldLogEventsInForm(form_structure);
+  });
   ProcessPendingFormForUpload();
   DCHECK(!pending_form_data_);
 

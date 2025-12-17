@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
@@ -308,10 +309,10 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
     FillTestProfile(form);
 
-    base::TimeTicks parse_time = autofill_manager()
+    base::TimeTicks parse_time = test_api(autofill_manager())
                                      .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
+                                     .front()
+                                     ->form_parsed_timestamp();
     // Simulate text input in the first fields.
     SimulateUserChangedFieldTo(form, form.fields()[0], u"United States",
                                parse_time + base::Milliseconds(3));
@@ -654,10 +655,10 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
 
   FormData form = GetAndAddSeenForm(form_description);
 
-  base::TimeTicks parse_time = autofill_manager()
+  base::TimeTicks parse_time = test_api(autofill_manager())
                                    .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
+                                   .front()
+                                   ->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
   SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
                              parse_time + base::Milliseconds(3));

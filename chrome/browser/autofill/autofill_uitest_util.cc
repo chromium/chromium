@@ -127,18 +127,19 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
     return a << " " << __func__ << "(): "
              << "TestAutofillManagerSingleEventWaiter assertion failed";
   }
-  if (driver.GetAutofillManager().form_structures().size() != 1u) {
-    return testing::AssertionFailure()
-           << " " << __func__
-           << "(): driver.GetAutofillManager().form_structures().size() != 1u";
+  if (test_api(driver.GetAutofillManager()).form_structures().size() != 1u) {
+    return testing::AssertionFailure() << " " << __func__
+                                       << "(): "
+                                          "test_api(driver.GetAutofillManager()"
+                                          ").form_structures().size() != 1u";
   }
 
   // `form.host_frame` and `form.url` have only been set by
   // ContentAutofillDriver::AskForValuesToFill().
-  form = driver.GetAutofillManager()
+  form = test_api(driver.GetAutofillManager())
              .form_structures()
-             .begin()
-             ->second->ToFormData();
+             .front()
+             ->ToFormData();
 
   TestAutofillExternalDelegate* delegate =
       static_cast<TestAutofillExternalDelegate*>(

@@ -29,6 +29,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -108,12 +109,12 @@ std::vector<base::FilePath> GetTestFiles() {
 }
 
 std::string FormStructuresToString(
-    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
+    base::span<const FormStructure* const> forms) {
   std::vector<std::string> string_forms;
   string_forms.reserve(forms.size());
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
-  for (const auto& [form_id, form_structure] : forms) {
+  for (const FormStructure* form_structure : forms) {
     std::string string_form;
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form_structure) {
@@ -281,7 +282,8 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   TestAutofillManager* autofill_manager =
       autofill_manager_injector_[web_contents()];
   ASSERT_TRUE(autofill_manager->waiter().Wait(1));
-  *output = FormStructuresToString(autofill_manager->form_structures());
+  *output =
+      FormStructuresToString(test_api(*autofill_manager).form_structures());
 }
 
 std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(

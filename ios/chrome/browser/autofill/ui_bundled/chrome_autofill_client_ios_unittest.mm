@@ -14,6 +14,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -121,7 +122,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
                                    size_t expected_number_of_forms) {
     web::test::LoadHtml(html, web_state_.get());
     return main_frame_manager()->waiter().Wait(1) &&
-           main_frame_manager()->form_structures().size() ==
+           test_api(*main_frame_manager()).form_structures().size() ==
                expected_number_of_forms;
   }
 
@@ -160,7 +161,7 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
        "</form>",
       1));
   const FormStructure& form =
-      *(main_frame_manager()->form_structures().begin()->second);
+      *test_api(*main_frame_manager()).form_structures().front();
   FormData form_data = form.ToFormData();
   const auto expected = PasswordFormClassification{
       .type = PasswordFormClassification::Type::kLoginForm,

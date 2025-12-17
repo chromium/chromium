@@ -372,12 +372,6 @@ class AutofillManager
     }
   }
 
-  // Returns the present form structures seen by Autofill handler.
-  const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-  form_structures() const {
-    return form_structures_;
-  }
-
   AutofillDriver& driver() { return *driver_; }
 
   // Reparses all known forms.

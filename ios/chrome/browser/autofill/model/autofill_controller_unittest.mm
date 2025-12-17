@@ -24,6 +24,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
@@ -478,7 +479,8 @@ bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
   TestAutofillManager* autofill_manager =
       autofill_manager_injector_->GetForMainFrame();
   return autofill_manager->waiter().Wait(expected_number_of_calls) &&
-         autofill_manager->form_structures().size() == expected_number_of_forms;
+         test_api(*autofill_manager).form_structures().size() ==
+             expected_number_of_forms;
 }
 
 void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
@@ -530,8 +532,8 @@ TEST_F(AutofillControllerTest, ReadForm) {
   BrowserAutofillManager& autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->GetAutofillManager();
-  const auto& forms = autofill_manager.form_structures();
-  const auto& form = *(forms.begin()->second);
+  const FormStructure& form =
+      *test_api(autofill_manager).form_structures().front();
   CheckField(form, NAME_FULL, "name");
   CheckField(form, ADDRESS_HOME_LINE1, "address");
   CheckField(form, ADDRESS_HOME_CITY, "city");
@@ -561,11 +563,9 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames) {
                                             /*expected_number_of_calls=*/5));
 
   // Verify that the child frames are present in the form data.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   EXPECT_THAT(
       form_data,
       ElementsAre(AllOf(
@@ -597,11 +597,9 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
                                             /*expected_number_of_calls=*/3));
 
   // Verify that the child frames are present in the form data.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   EXPECT_THAT(
       form_data,
       ElementsAre(AllOf(
@@ -668,11 +666,9 @@ TEST_F(AutofillControllerTest,
   // Verify that the form data is correctly filled with the child frames data
   // by respecting the child frames limit, where the first form has its 20 child
   // frames then the follow up forms don't have any child frames.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
                              Property(&FormData::child_frames, SizeIs(20)));
   auto following_forms_matcher =
@@ -730,11 +726,9 @@ TEST_F(AutofillControllerTest,
   // by respecting the child frames limit, where the first form has its 4 child
   // frames then the follow up synthetic form hasn't any child frame because it
   // busted the xform limit.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
                              Property(&FormData::child_frames, SizeIs(4)));
   auto synthetic_form_matcher =
@@ -783,11 +777,9 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Throttling_SingleForm) {
 
   // Verify that the form data doesn't have child frames when the form exceeds
   // the child frame limit.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   auto form_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
                             Property(&FormData::child_frames, IsEmpty()));
   EXPECT_THAT(form_data, ElementsAre(form_matcher));
@@ -834,11 +826,9 @@ TEST_F(AutofillControllerTest,
 
   // Verify that the synthetic form data doesn't have child frames when the form
   // exceeds the child frame limit.
-  std::vector<FormData> form_data;
-  for (const auto& [_, form] :
-       autofill_manager_for_main_frame()->form_structures()) {
-    form_data.push_back(form->ToFormData());
-  }
+  std::vector<FormData> form_data = base::ToVector(
+      test_api(*autofill_manager_for_main_frame()).form_structures(),
+      &FormStructure::ToFormData);
   auto form_matcher =
       AllOf(Property(&FormData::renderer_id, Eq(FormRendererId(0))),
             Property(&FormData::child_frames, IsEmpty()));
@@ -857,8 +847,8 @@ TEST_F(AutofillControllerTest, ReadFormName) {
   BrowserAutofillManager& autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->GetAutofillManager();
-  const auto& forms = autofill_manager.form_structures();
-  const auto& form = *(forms.begin()->second);
+  const FormStructure& form =
+      *test_api(autofill_manager).form_structures().front();
   EXPECT_EQ(u"form1", form.ToFormData().name());
 }
 
