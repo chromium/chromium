@@ -150,12 +150,6 @@ feedwire::Request CreateFeedQueryRequest(
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
 
-  if (base::FeatureList::IsEnabled(kFeedStamp)) {
-    feed_request.add_client_capability(Capability::SILK_AMP_OPEN_COMMAND);
-    feed_request.add_client_capability(Capability::AMP_STORY_PLAYER);
-    feed_request.add_client_capability(Capability::AMP_GROUP_DATASTORE);
-  }
-
   feed_request.add_client_capability(Capability::READ_LATER);
   // Cormorant is only enabled for en.* locales
   if (feed::IsCormorantEnabledForLocale(request_metadata.country)) {

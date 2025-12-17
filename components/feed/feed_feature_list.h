@@ -51,10 +51,6 @@ BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-// Feature that enables StAMP cards in the feed.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedStamp);
-
 // Feature that provides the user assistance in discovering the web feed.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedAwareness);
