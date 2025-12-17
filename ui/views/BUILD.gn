@@ -41,6 +41,7 @@ aggregate_vector_icons("views_vector_icons") {
     "launch.icon",
     "linux_high_density.icon",
     "linux_low_density.icon",
+    "menu.icon",
     "menu_check.icon",
     "menu_close.icon",
     "menu_open.icon",

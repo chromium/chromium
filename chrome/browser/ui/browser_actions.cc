@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -640,6 +641,21 @@ void BrowserActions::InitializeBrowserActions() {
                 l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
             .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
+            .Build());
+  }
+
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto* controller = ProjectsPanelStateController::From(bwi);
+                  controller->SetProjectsVisible(
+                      !controller->IsProjectsPanelVisible());
+                },
+                bwi))
+            .SetActionId(kActionToggleProjectsPanel)
             .Build());
   }
 

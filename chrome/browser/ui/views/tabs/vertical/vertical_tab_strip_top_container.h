@@ -58,6 +58,7 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::LabelButton> tab_search_button_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
+  raw_ptr<views::LabelButton> projects_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 

@@ -514,6 +514,8 @@
   E(kActionCommerceDiscounts) \
   /*Vertical Tabs*/ \
   E(kActionToggleCollapseVertical) \
+  /*Projects Panel*/ \
+  E(kActionToggleProjectsPanel) \
   /*Omnibox Context Menu*/       \
   E(kActionOmniboxContextAddImage, IDC_OMNIBOX_CONTEXT_ADD_IMAGE)\
   E(kActionOmniboxContextAddFile, IDC_OMNIBOX_CONTEXT_ADD_FILE)  \

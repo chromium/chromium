@@ -69,6 +69,7 @@ class LocationBarModel;
 class MemorySaverOptInIPHController;
 class PinnedToolbarActionsController;
 class ProfileMenuCoordinator;
+class ProjectsPanelStateController;
 class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
 class BrowserSelectFileDialogController;
@@ -569,6 +570,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_state_controller_;
+
+  std::unique_ptr<ProjectsPanelStateController>
+      projects_panel_state_controller_;
 
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;

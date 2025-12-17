@@ -10346,7 +10346,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Create split view
       </message>
 
-      <!-- Vertical Tab Strings -->
+      <!-- Vertical Tab Strings (crbug.com/469487552) -->
       <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
           Show tabs to the side
       </message>
@@ -10357,6 +10357,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Collapse vertical tabs
       </message>
       <!-- /Vertical Tab Strings -->
+
+      <!-- Projects Panel Strings -->
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_VIEW_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the projects panel.">
+            View Projects
+          </message>
+          <message name="IDS_HIDE_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the projects panel.">
+            Hide Projects
+          </message>
+        </then>
+        <else>
+          <message name="IDS_VIEW_PROJECTS_PANEL" desc="The tooltip for the button in the top container that shows the projects panel.">
+            View projects
+          </message>
+          <message name="IDS_HIDE_PROJECTS_PANEL" desc="The tooltip for the button in the top container that hides the projects panel.">
+            Hide projects
+          </message>
+        </else>
+      </if>
+      <!-- /Projects Panel Strings -->
 
       <!-- Strings for intent picker -->
       <if expr="not is_android">

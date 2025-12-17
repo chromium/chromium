@@ -540,6 +540,7 @@ if (!is_android) {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/tabs/projects",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/toolbar",

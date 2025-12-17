@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
@@ -302,6 +303,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                   browser_actions_->root_action_item(),
                   SessionServiceFactory::GetForProfile(browser_->GetProfile()),
                   browser_->GetSessionID());
+    }
+
+    if (tabs::IsProjectsPanelFeatureEnabled()) {
+      projects_panel_state_controller_ =
+          GetUserDataFactory().CreateInstance<ProjectsPanelStateController>(
+              *browser, browser, browser_actions_->root_action_item());
     }
   }
 

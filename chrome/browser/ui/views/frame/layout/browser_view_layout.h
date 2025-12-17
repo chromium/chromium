@@ -18,6 +18,7 @@ class Browser;
 class BrowserViewLayoutDelegate;
 class InfoBarContainerView;
 class MultiContentsView;
+class ProjectsPanelView;
 class SidePanel;
 class TabStrip;
 class HorizontalTabStripRegionView;
@@ -56,6 +57,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<views::Label> web_app_window_title = nullptr;
   raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view = nullptr;
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container = nullptr;
+  raw_ptr<ProjectsPanelView> projects_panel_container = nullptr;
   raw_ptr<views::View> toolbar = nullptr;
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;
   raw_ptr<views::View> contents_container = nullptr;

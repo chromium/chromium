@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("projects") {
+  sources = [
+    "projects_panel_state_controller.cc",
+    "projects_panel_state_controller.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base/unowned_user_data",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "projects_panel_state_controller_unittest.cc" ]
+  deps = [
+    ":projects",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "projects_panel_state_controller_interactive_uitest.cc" ]
+  deps = [
+    ":projects",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/views",
+  ]
+}

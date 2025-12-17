@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -320,6 +321,18 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(views().vertical_tab_strip_container,
                     vertical_tab_strip_bounds,
                     tab_strip_type == TabStripType::kVertical);
+  }
+
+  // TODO(crbug.com/469425263): Ensure correct layout calculations for the
+  // Project Panel Container.
+  if (IsParentedToAndVisible(views().projects_panel_container,
+                             views().browser_view)) {
+    gfx::Rect projects_panel_bounds =
+        gfx::Rect(browser_params.visual_client_area.x(),
+                  browser_params.visual_client_area.y(),
+                  views().projects_panel_container->GetPreferredSize().width(),
+                  browser_params.visual_client_area.height());
+    layout.AddChild(views().projects_panel_container, projects_panel_bounds);
   }
 
   // When the tabstrip isn't at the top, the top container is laid out before

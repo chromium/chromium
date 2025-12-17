@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -81,6 +82,7 @@ class ExclusiveAccessBubbleViewsContext;
 class InfoBarContainerView;
 class LocationBarView;
 class MultiContentsView;
+class ProjectsPanelView;
 class ScrimView;
 class SidePanel;
 class TabDragDelegate;
@@ -942,6 +944,8 @@ class BrowserView : public BrowserWindow,
   void OnVerticalTabStripStateChanged(
       tabs::VerticalTabStripStateController* controller);
 
+  void OnProjectsPanelStateChanged(ProjectsPanelStateController* controller);
+
   // Make sure the WebUI tab strip exists if it should.
   void MaybeInitializeWebUITabStrip();
 
@@ -1291,6 +1295,9 @@ class BrowserView : public BrowserWindow,
   // The view responsible for housing the contents of the vertical tab strip.
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container_ = nullptr;
 
+  // The view responsible for housing the contents of the projects panel.
+  raw_ptr<ProjectsPanelView> projects_panel_container_ = nullptr;
+
   // Side panel that extends to the height of the toolbar.
   raw_ptr<SidePanel> toolbar_height_side_panel_ = nullptr;
 
@@ -1432,6 +1439,8 @@ class BrowserView : public BrowserWindow,
   PrefChangeRegistrar registrar_;
 
   base::CallbackListSubscription vertical_tab_subscription_;
+
+  base::CallbackListSubscription projects_panel_subscription_;
 
   // Bitmask of current combination of reparenting states, e.g. immersive and
   // ChromeOS tablet modes.

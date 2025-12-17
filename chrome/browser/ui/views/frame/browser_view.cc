@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -190,6 +191,7 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -983,6 +985,14 @@ BrowserView::BrowserView(Browser* browser)
         AddChildView(std::move(vertical_tab_strip_container));
   }
 
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    auto projects_panel_container = std::make_unique<ProjectsPanelView>(
+        browser_->GetActions()->root_action_item());
+
+    projects_panel_container_ =
+        AddChildView(std::move(projects_panel_container));
+  }
+
   // Create do-nothing view for the sake of controlling the z-order of the find
   // bar widget.
   find_bar_host_view_ = AddChildView(std::make_unique<View>());
@@ -1041,6 +1051,13 @@ BrowserView::BrowserView(Browser* browser)
                 &BrowserView::OnVerticalTabStripStateChanged,
                 base::Unretained(this)));
   }
+
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    projects_panel_subscription_ =
+        ProjectsPanelStateController::From(browser_)->RegisterOnStateChanged(
+            base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,
+                                base::Unretained(this)));
+  }
 }
 
 BrowserView::~BrowserView() {
@@ -1088,6 +1105,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_container_ = nullptr;
+  projects_panel_container_ = nullptr;
   toolbar_height_side_panel_ = nullptr;
   contents_height_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;
@@ -1394,6 +1412,12 @@ bool BrowserView::IsInSplitView() const {
 void BrowserView::OnVerticalTabStripStateChanged(
     tabs::VerticalTabStripStateController* controller) {
   UpdateTabSearchBubbleHost();
+  InvalidateLayout();
+}
+
+void BrowserView::OnProjectsPanelStateChanged(
+    ProjectsPanelStateController* controller) {
+  projects_panel_container_->OnProjectsPanelStateChanged(controller);
   InvalidateLayout();
 }
 
@@ -4954,9 +4978,18 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   // might be a popup window without a TabStrip. Use `GetTabStripVisible` as the
   // tabstrip might have been hidden in immersive mode.
   if (GetTabStripVisible()) {
-    if (tabs::IsVerticalTabsFeatureEnabled() &&
-        tabs::VerticalTabStripStateController::From(browser_)
-            ->ShouldDisplayVerticalTabs()) {
+    if (projects_panel_container_ && projects_panel_container_->GetVisible()) {
+      // See if the mouse pointer is within the bounds of the
+      // ProjectsPanelView.
+      gfx::Point test_point(point);
+      if (ConvertedHitTest(parent(), projects_panel_container_, &test_point)) {
+        if (projects_panel_container_->IsPositionInWindowCaption(test_point)) {
+          return HTCAPTION;
+        }
+        return HTCLIENT;
+      }
+    } else if (vertical_tab_strip_container_ &&
+               vertical_tab_strip_container_->GetVisible()) {
       // See if the mouse pointer is within the bounds of the
       // VerticalTabStripRegionView.
       gfx::Point test_point(point);
@@ -5248,6 +5281,7 @@ void BrowserView::AddedToWidget() {
   layout_views.web_app_window_title = web_app_window_title_;
   layout_views.tab_strip_region_view = tab_strip_region_view_;
   layout_views.vertical_tab_strip_container = vertical_tab_strip_container_;
+  layout_views.projects_panel_container = projects_panel_container_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;
   layout_views.contents_container = contents_container_;

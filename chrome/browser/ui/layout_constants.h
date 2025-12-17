@@ -203,6 +203,10 @@ enum LayoutConstant {
   // the vertical tab strip when it is uncollapsed.
   VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING,
 
+  // The default height of the top container for the vertical tab strip when
+  // uncollapsed.
+  VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT,
+
   // The size of the app menu button in a web app browser window.
   WEB_APP_MENU_BUTTON_SIZE,
 
