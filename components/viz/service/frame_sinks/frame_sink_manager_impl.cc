@@ -269,6 +269,11 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
   MaybeAddHitTestQuery(frame_sink_id);
 }
 
+#if BUILDFLAG(IS_MAC)
+void FrameSinkManagerImpl::CreateCompositorDisplayLink(
+    mojom::CompositorDisplayLinkParamsPtr params) {}
+#endif
+
 void FrameSinkManagerImpl::CreateFrameSinkBundle(
     const FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,

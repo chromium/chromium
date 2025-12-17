@@ -41,6 +41,7 @@ class FrameSinkImpl;
 namespace viz {
 class CompositorFrameSinkImpl;
 class FrameSinkManagerImpl;
+class ExternalBeginFrameSourceMojoMac;
 }
 
 namespace mojo {
@@ -138,6 +139,7 @@ class DirectReceiverKey {
   friend class blink::WidgetInputHandlerImpl;
   friend class viz::CompositorFrameSinkImpl;
   friend class viz::FrameSinkManagerImpl;
+  friend class viz::ExternalBeginFrameSourceMojoMac;
 };
 
 // DirectReceiver is a wrapper around the standard Receiver<T> type that always

@@ -172,6 +172,7 @@ RootCompositorFrameSinkImpl::Create(
             std::move(params->external_begin_frame_controller_client),
             restart_id);
 #else
+    // On MacOS, CADisplayLink created in the browser does not take this path.
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceMojo>(
             frame_sink_manager,
@@ -216,11 +217,14 @@ RootCompositorFrameSinkImpl::Create(
                 restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
       }
 #elif BUILDFLAG(IS_MAC)
-        external_begin_frame_source =
-            std::make_unique<ExternalBeginFrameSourceMac>(
-                restart_id, params->renderer_settings.display_id,
-                output_surface.get());
-        created_external_begin_frame_source_mac = true;
+      // ExternalBeginFrameSourceMac is utilized for both CVDisplayLink
+      // instances (originating in the GPU process) and CADisplayLink instances
+      // (originating in the Browser process).
+      external_begin_frame_source =
+          std::make_unique<ExternalBeginFrameSourceMac>(
+              restart_id, params->renderer_settings.display_id,
+              output_surface.get());
+      created_external_begin_frame_source_mac = true;
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(

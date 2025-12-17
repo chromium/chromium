@@ -337,7 +337,11 @@ void VizProcessTransportFactory::OnGpuProcessLost() {
   // Reconnect HostFrameSinkManager to new GPU process.
   ConnectHostFrameSinkManager();
 
-  // TODO: Reconnect VSyncIpc for display_link_mac_mojo_ on mac;
+#if BUILDFLAG(IS_MAC)
+  if (display_link_mac_mojo_) {
+    display_link_mac_mojo_->OnGpuProcessLost(GetHostFrameSinkManager());
+  }
+#endif
 }
 
 void VizProcessTransportFactory::OnEstablishedGpuChannel(

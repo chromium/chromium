@@ -139,6 +139,18 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       mojom::RootCompositorFrameSinkParamsPtr params,
       bool maybe_wait_on_destruction = true);
 
+#if BUILDFLAG(IS_MAC)
+  // Creates a connection between Browser DisplayLinkMacMojoto and Viz
+  // ExternalBeginFrameSourceMojoMac. Provides the interface
+  // ExternalBeginFrameController and ExternalBeginFrameControllerClient that
+  // forwards the VSync event to Viz/Gpu and requests VSync from Browser. Only
+  // one channel is created for the whole GPU process and is shared among Viz
+  // RootCompositorFrameSinks and GPU ImageTransportSurfaceOverlayMacEGLs. The
+  // channel will be reconnected if the context is lost.
+  void CreateCompositorDisplayLink(
+      mojom::CompositorDisplayLinkParamsPtr params);
+#endif
+
   // Creates a connection from a client to viz, using |request| and |client|,
   // that allows the client to submit CompositorFrames. When no longer needed,
   // call InvalidateFrameSinkId().

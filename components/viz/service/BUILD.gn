@@ -385,6 +385,8 @@ viz_component("service") {
       sources += [
         "frame_sinks/external_begin_frame_source_mac.cc",
         "frame_sinks/external_begin_frame_source_mac.h",
+        "frame_sinks/external_begin_frame_source_mojo_mac.cc",
+        "frame_sinks/external_begin_frame_source_mojo_mac.h",
       ]
     }
   }

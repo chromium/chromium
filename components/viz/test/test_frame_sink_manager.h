@@ -44,6 +44,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                               const std::string& debug_label) override {}
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {}
+#if BUILDFLAG(IS_MAC)
+  void CreateCompositorDisplayLink(
+      mojom::CompositorDisplayLinkParamsPtr params) override {}
+#endif
   void CreateFrameSinkBundle(
       const FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,

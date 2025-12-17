@@ -211,6 +211,13 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
       std::make_unique<HitTestQuery>(std::nullopt);
 }
 
+#if BUILDFLAG(IS_MAC)
+void HostFrameSinkManager::CreateCompositorDisplayLink(
+    mojom::CompositorDisplayLinkParamsPtr params) {
+  frame_sink_manager_->CreateCompositorDisplayLink(std::move(params));
+}
+#endif
+
 void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,

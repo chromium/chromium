@@ -107,6 +107,32 @@ struct StructTraits<viz::mojom::BeginFrameAckDataView, viz::BeginFrameAck> {
                    viz::BeginFrameAck* out);
 };
 
+#if BUILDFLAG(IS_MAC)
+template <>
+struct StructTraits<viz::mojom::CADisplayLinkParamsDataView,
+                    viz::CADisplayLinkParams> {
+  static int64_t display_id(const viz::CADisplayLinkParams& params) {
+    return params.display_id;
+  }
+
+  static base::TimeTicks timestamp(const viz::CADisplayLinkParams& params) {
+    return params.timestamp;
+  }
+
+  static base::TimeTicks target_timestamp(
+      const viz::CADisplayLinkParams& params) {
+    return params.target_timestamp;
+  }
+
+  static base::TimeDelta interval(const viz::CADisplayLinkParams& params) {
+    return params.interval;
+  }
+
+  static bool Read(viz::mojom::CADisplayLinkParamsDataView data,
+                   viz::CADisplayLinkParams* out);
+};
+#endif
+
 }  // namespace mojo
 
 #endif  // SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_BEGIN_FRAME_ARGS_MOJOM_TRAITS_H_

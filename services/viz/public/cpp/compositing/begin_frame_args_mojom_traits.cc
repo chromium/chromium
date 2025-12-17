@@ -88,4 +88,20 @@ bool StructTraits<viz::mojom::BeginFrameAckDataView, viz::BeginFrameAck>::Read(
   return true;
 }
 
+#if BUILDFLAG(IS_MAC)
+// static
+bool StructTraits<viz::mojom::CADisplayLinkParamsDataView,
+                  viz::CADisplayLinkParams>::
+    Read(viz::mojom::CADisplayLinkParamsDataView data,
+         viz::CADisplayLinkParams* out) {
+  if (!data.ReadTimestamp(&out->timestamp) ||
+      !data.ReadTargetTimestamp(&out->target_timestamp) ||
+      !data.ReadInterval(&out->interval)) {
+    return false;
+  }
+  out->display_id = data.display_id();
+  return true;
+}
+#endif
+
 }  // namespace mojo

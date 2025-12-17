@@ -282,6 +282,21 @@ struct VIZ_COMMON_EXPORT BeginFrameAck {
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 };
 
+#if BUILDFLAG(IS_MAC)
+// Sent by DisplayLinkMacMojo. These are the parameters we received from system
+// CADisplayLink.
+struct VIZ_COMMON_EXPORT CADisplayLinkParams {
+  // The display on which this CADisplayLink is created
+  int64_t display_id;
+  // The time that represents when the last frame displayed.
+  base::TimeTicks timestamp;
+  // The time that represents when the next frame displays.
+  base::TimeTicks target_timestamp;
+  // The time interval between screen refresh updates.
+  base::TimeDelta interval;
+};
+#endif
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_FRAME_SINKS_BEGIN_FRAME_ARGS_H_
