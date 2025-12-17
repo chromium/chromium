@@ -134,4 +134,35 @@ TEST_F(TabContextMenuHelperTest,
   EXPECT_TRUE([helper_ canCloseOtherTabsForTabWithID:identifier_c]);
 }
 
+// Tests "Close Other Tabs" for a single tab in a group.
+TEST_F(TabContextMenuHelperTest, CanCloseOtherTabs_SingleTabInGroup) {
+  WebStateListBuilderFromDescription builder(browser_->GetWebStateList());
+  // Create a group with identifier '0' containing regular tab 'a'.
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a* ]"));
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+
+  web::WebStateID identifier_a =
+      builder.GetWebStateForIdentifier('a')->GetUniqueIdentifier();
+
+  // Only 1 tab in the group, should be disabled.
+  EXPECT_FALSE([helper_ canCloseOtherTabsForTabWithID:identifier_a]);
+}
+
+// Tests "Close Other Tabs" for multiple tabs in a group.
+TEST_F(TabContextMenuHelperTest, CanCloseOtherTabs_MultipleTabsInGroup) {
+  WebStateListBuilderFromDescription builder(browser_->GetWebStateList());
+  // Create a group with identifier '0' containing regular tabs 'a' and 'b'.
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a* b ]"));
+  EXPECT_EQ(2, browser_->GetWebStateList()->count());
+
+  web::WebStateID identifier_a =
+      builder.GetWebStateForIdentifier('a')->GetUniqueIdentifier();
+  web::WebStateID identifier_b =
+      builder.GetWebStateForIdentifier('b')->GetUniqueIdentifier();
+
+  // Multiple tabs in the group, should be enabled.
+  EXPECT_TRUE([helper_ canCloseOtherTabsForTabWithID:identifier_a]);
+  EXPECT_TRUE([helper_ canCloseOtherTabsForTabWithID:identifier_b]);
+}
+
 }  // namespace

@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -1006,12 +1007,32 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
 - (void)closeTabsExceptID:(web::WebStateID)itemID {
   CHECK(IsCloseOtherTabsEnabled());
-  int indexToKeep = GetWebStateIndex(
-      self.webStateList, WebStateSearchCriteria{.identifier = itemID});
-  if (indexToKeep != WebStateList::kInvalidIndex) {
-    CloseOtherWebStates(*(self.webStateList), indexToKeep,
-                        WebStateList::ClosingReason::kUserAction);
+  if (!self.webStateList) {
+    return;
   }
+
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{.identifier = itemID});
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
+  if (!group) {
+    CloseOtherWebStates(*(self.webStateList), index,
+                        WebStateList::ClosingReason::kUserAction);
+    return;
+  }
+
+  std::vector<int> indicesToRemove;
+  for (int i : group->range()) {
+    if (i != index) {
+      indicesToRemove.push_back(i);
+    }
+  }
+  self.webStateList->CloseWebStatesAtIndices(
+      WebStateList::ClosingReason::kUserAction,
+      RemovingIndexes(indicesToRemove));
 }
 
 - (void)selectTabGroup:(const TabGroup*)tabGroup {

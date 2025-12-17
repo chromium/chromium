@@ -530,6 +530,13 @@ using tab_groups::SharingState;
       if (webStateList->IsWebStatePinnedAt(index)) {
         return webStateList->regular_tabs_count() > 0;
       }
+      const TabGroup* group = webStateList->GetGroupOfWebStateAt(index);
+      if (group) {
+        // If the tab is in a group, the "Close Other Tabs" action is scoped to
+        // the group. It should only be enabled if there are other tabs in the
+        // group.
+        return group->range().count() > 1;
+      }
       return webStateList->regular_tabs_count() > 1;
     }
   }

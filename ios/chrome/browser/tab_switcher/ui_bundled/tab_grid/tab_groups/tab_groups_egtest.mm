@@ -77,6 +77,7 @@ namespace {
 
 NSString* const kTab1Title = @"Tab1";
 NSString* const kTab2Title = @"Tab2";
+NSString* const kTab3Title = @"Tab3";
 
 // Put the number at the beginning to avoid issues with sentence case, as the
 // keyboard default can differ iPhone vs iPad, simulator vs device.
@@ -317,6 +318,9 @@ void TapTabGridEditButton() {
       data_sharing::features::kDataSharingFeature);
   if ([self isRunningTest:@selector(testCloseAllAndUndo)]) {
     config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+  } else if ([self isRunningTest:@selector(testCloseOtherTabsInGroup)]) {
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+    config.features_enabled.push_back(kCloseOtherTabs);
   } else {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }
@@ -815,6 +819,57 @@ void TapTabGridEditButton() {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests "Close Other Tabs" in a tab group.
+- (void)testCloseOtherTabsInGroup {
+  // Create Tab 1.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create Group 1 from Tab 1.
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Create Tab 2.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Add Tab 2 to Group 1.
+  // Group currently has 1 tab, so title is "1 Tab".
+  AddTabAtIndexToGroupWithTitle(
+      1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
+
+  // Create Tab 3 (outside group).
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab3Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open Group 1.
+  OpenTabGroupAtIndex(0);
+
+  // Long press Tab 2 (index 1 in group) and tap "Close Other Tabs".
+  // Tab 1 is at index 0. Tab 2 is at index 1.
+  DisplayContextMenuForTabCellAtIndex(1);
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS)]
+      performAction:grey_tap()];
+
+  // Expect Tab 2 to remain.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabWithTitle(kTab2Title)];
+  // Expect Tab 1 to be gone.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // Close Group View.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupCloseButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Assert Tab 3 exists in main grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab3Title)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests the group deletion from the overflow menu in the group view.
