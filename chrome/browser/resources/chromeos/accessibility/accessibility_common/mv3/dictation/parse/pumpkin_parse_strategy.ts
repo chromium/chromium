@@ -53,8 +53,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
     this.requestedPumpkinInstall_ = true;
     const data = await chrome.accessibilityPrivate.installPumpkinForDictation();
-    // TODO(crbug.com/259352407): Consider retrying installation at a later
-    // time if it failed.
     this.onPumpkinInstalled_(data);
   }
 
