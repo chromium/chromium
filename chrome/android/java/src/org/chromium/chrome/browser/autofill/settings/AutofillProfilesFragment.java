@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.Auto
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -55,6 +56,7 @@ import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -200,26 +202,32 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         PreferenceScreen screen = getPreferenceScreen();
         screen.removeAll();
         screen.setOrderingAsAdded(true);
-        if (disabledSettingsInThirdPartyMode()) {
+        // LINT.IfChange(RebuildProfileList)
+        if (disabledSettingsInThirdPartyMode(getProfile())) {
             addDisabledSettingsInfoCard(screen);
         }
         addAutofillSwitch(screen);
         addProfilePreferences(screen);
-        if (!disabledSettingsInThirdPartyMode()) {
+        if (!disabledSettingsInThirdPartyMode(getProfile())) {
             addAddAddressButton(screen);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
             addPlusAddressesPreference(screen);
         }
+        // LINT.ThenChange(:DynamicPreferences)
+
+        updateDynamicPreferences(getProfile());
     }
 
     /** Adds an information card if settings are disabled in third-party mode. */
     private void addDisabledSettingsInfoCard(PreferenceScreen screen) {
+        // LINT.IfChange(AddDisabledSettingsInfoCard)
         CardWithButtonPreference disabledSettingsInfoPref =
                 new CardWithButtonPreference(getStyledContext(), null);
         disabledSettingsInfoPref.setKey(DISABLED_SETTINGS_INFO);
         disabledSettingsInfoPref.setTitle(R.string.autofill_disable_settings_explanation_title);
         disabledSettingsInfoPref.setSummary(R.string.autofill_disable_settings_explanation);
+        // LINT.ThenChange(:DynamicDisabledSettingsInfoCard)
         disabledSettingsInfoPref.setButtonText(
                 getResources().getString(R.string.autofill_disable_settings_button_label));
         disabledSettingsInfoPref.setIconResource(R.drawable.ic_google_services_24dp);
@@ -239,6 +247,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     /** Adds the "Save and fill addresses" toggle. */
     private void addAutofillSwitch(PreferenceScreen screen) {
+        // LINT.IfChange(AddAutofillSwitch)
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
         ChromeSwitchPreference autofillSwitch =
@@ -266,7 +275,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 });
         // For testing.
         autofillSwitch.setKey(SAVE_AND_FILL_ADDRESSES);
-        if (disabledSettingsInThirdPartyMode()) {
+        // LINT.ThenChange(:DynamicAutofillSwitch)
+        if (disabledSettingsInThirdPartyMode(getProfile())) {
             autofillSwitch.setChecked(false);
             autofillSwitch.setEnabled(false);
         }
@@ -306,6 +316,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
      * in new addresses.
      */
     private void addAddAddressButton(PreferenceScreen screen) {
+        // LINT.IfChange(AddAddAddressButton)
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
 
@@ -320,6 +331,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             pref.setIcon(plusIcon);
             pref.setTitle(R.string.autofill_create_profile);
             pref.setKey(PREF_NEW_PROFILE); // For testing.
+            // LINT.ThenChange(:DynamicAddAddressButton)
 
             screen.addPreference(pref);
         }
@@ -327,11 +339,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     /** Adds the "Manage plus addresses" link if the feature is enabled. */
     private void addPlusAddressesPreference(PreferenceScreen screen) {
+        // LINT.IfChange(AddPlusAddressesPreference)
         AutofillProfileEditorPreference pref =
                 new AutofillProfileEditorPreference(getStyledContext());
         pref.setTitle(R.string.plus_address_settings_entry_title);
         pref.setSummary(R.string.plus_address_settings_entry_summary);
         pref.setKey(MANAGE_PLUS_ADDRESSES);
+        // LINT.ThenChange(:DynamicAddPlusAddressesPreference)
 
         screen.addPreference(pref);
     }
@@ -447,14 +461,100 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         return "autofill_addresses";
     }
 
-    private boolean disabledSettingsInThirdPartyMode() {
+    private static boolean disabledSettingsInThirdPartyMode(Profile profile) {
         return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
-                        UserPrefs.get(getProfile()))
+                        UserPrefs.get(profile))
                 == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
-    // entries that need adding?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(AutofillProfilesFragment.class.getName(), 0);
+            new ChromeBaseSearchIndexProvider(AutofillProfilesFragment.class.getName(), 0) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    // LINT.IfChange(DynamicPreferences)
+                    boolean disabledSettingsInThirdPartyMode =
+                            disabledSettingsInThirdPartyMode(profile);
+
+                    if (disabledSettingsInThirdPartyMode) {
+                        addDisabledSettingsInfoCard(indexData, getPrefFragmentName());
+                    } else {
+                        addAddAddressButton(indexData, profile, getPrefFragmentName());
+                    }
+
+                    addAutofillSwitch(indexData);
+
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
+                        addPlusAddressesPreference(indexData);
+                    }
+                    // LINT.ThenChange(:RebuildProfileList)
+                }
+
+                private void addAutofillSwitch(SettingsIndexData indexData) {
+                    // LINT.IfChange(DynamicAutofillSwitch)
+                    indexData.addEntryForKey(
+                            getPrefFragmentName(),
+                            SAVE_AND_FILL_ADDRESSES,
+                            R.string.autofill_enable_profiles_toggle_label,
+                            R.string.autofill_enable_profiles_toggle_sublabel);
+                    // LINT.ThenChange(:AddAutofillSwitch)
+                }
+
+                private void addPlusAddressesPreference(SettingsIndexData indexData) {
+                    // LINT.IfChange(DynamicAddPlusAddressesPreference)
+                    indexData.addEntryForKey(
+                            getPrefFragmentName(),
+                            MANAGE_PLUS_ADDRESSES,
+                            R.string.plus_address_settings_entry_title,
+                            R.string.plus_address_settings_entry_summary);
+                    // LINT.ThenChange(:AddPlusAddressesPreference)
+                }
+            };
+
+    private static void updateDynamicPreferences(Profile profile) {
+        SettingsIndexData indexData = SettingsIndexData.getInstance();
+        if (indexData == null) return;
+
+        String prefFragmentName = AutofillProfilesFragment.class.getName();
+
+        boolean disabledSettingsInThirdPartyMode = disabledSettingsInThirdPartyMode(profile);
+
+        if (disabledSettingsInThirdPartyMode) {
+            if (indexData.getEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO) == null) {
+                addDisabledSettingsInfoCard(indexData, prefFragmentName);
+            }
+            indexData.removeEntryForKey(prefFragmentName, PREF_NEW_PROFILE);
+        } else {
+            if (indexData.getEntryForKey(prefFragmentName, PREF_NEW_PROFILE) == null) {
+                addAddAddressButton(indexData, profile, prefFragmentName);
+            }
+            indexData.removeEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO);
+        }
+
+        indexData.resolveIndex();
+    }
+
+    private static void addDisabledSettingsInfoCard(
+            SettingsIndexData indexData, String prefFragmentName) {
+        // LINT.IfChange(DynamicDisabledSettingsInfoCard)
+        indexData.addEntryForKey(
+                prefFragmentName,
+                DISABLED_SETTINGS_INFO,
+                R.string.autofill_disable_settings_explanation_title,
+                R.string.autofill_disable_settings_explanation);
+        // LINT.ThenChange(:AddDisabledSettingsInfoCard)
+    }
+
+    private static void addAddAddressButton(
+            SettingsIndexData indexData, Profile profile, String prefFragmentName) {
+        // LINT.IfChange(DynamicAddAddressButton)
+        PersonalDataManager personalDataManager = PersonalDataManagerFactory.getForProfile(profile);
+        if (!personalDataManager.isAutofillProfileEnabled()) {
+            return;
+        }
+
+        indexData.addEntryForKey(
+                prefFragmentName, PREF_NEW_PROFILE, R.string.autofill_create_profile);
+        // LINT.ThenChange(:AddAddAddressButton)
+    }
 }
