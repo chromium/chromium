@@ -263,15 +263,10 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
                         blink::IndexedDBIndexKeys index_keys,
                         Transaction* transaction);
 
-  // Helper for posting a task to call Transaction::CommitPhaseTwo when
-  // we know the transaction had no requests and therefore the commit must
-  // succeed.
-  static Status CommitPhaseTwoProxy(Transaction* transaction);
-
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  Status BlobWriteComplete(StatusOr<BlobWriteResult> result);
+  void BlobWriteComplete(Status result);
   void CloseOpenCursors();
   Status CommitPhaseTwo();
   void TimeoutFired();

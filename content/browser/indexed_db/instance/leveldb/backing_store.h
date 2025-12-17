@@ -138,8 +138,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
     Status Begin(std::vector<PartitionedLock> locks) override;
     // The `serialize_fsa_handle` callback is not used.
-    Status CommitPhaseOne(BlobWriteCallback callback,
-                          SerializeFsaCallback serialize_fsa_handle) override;
+    StatusOr<bool> CommitPhaseOne(
+        BlobWriteCallback callback,
+        SerializeFsaCallback serialize_fsa_handle) override;
     Status CommitPhaseTwo() override;
     void Rollback() override;
     Status SetDatabaseVersion(int64_t version) override;
@@ -259,10 +260,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // success, false on failure.
     bool CollectBlobFilesToRemove();
 
-    // Called by CommitPhaseOne: Kicks off the asynchronous writes of blobs
-    // identified in HandleBlobPreTransaction. The callback will be called
-    // eventually on success or failure.
-    Status WriteNewBlobs(BlobWriteCallback callback);
+    // If there are blobs to write in the current commit, returns true and
+    // invokes `callback` asynchronously, when done. Otherwise returns false.
+    bool WriteNewBlobs(BlobWriteCallback callback);
 
     // Called by CommitPhaseTwo: Partition blob references in blobs_to_remove_
     // into live (active references) and dead (no references).

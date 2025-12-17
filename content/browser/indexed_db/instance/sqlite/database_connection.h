@@ -105,7 +105,7 @@ class CONTENT_EXPORT DatabaseConnection {
   Status BeginTransaction(base::PassKey<BackingStoreTransactionImpl>,
                           const BackingStoreTransactionImpl& transaction);
   // In this phase, blobs, if any, are asynchronously written.
-  Status CommitTransactionPhaseOne(
+  StatusOr<bool> CommitTransactionPhaseOne(
       base::PassKey<BackingStoreTransactionImpl>,
       const BackingStoreTransactionImpl& transaction,
       BlobWriteCallback callback,

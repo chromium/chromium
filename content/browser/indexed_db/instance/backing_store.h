@@ -28,6 +28,8 @@ namespace content::indexed_db {
 struct IndexedDBDataLossInfo;
 struct IndexedDBValue;
 
+using BlobWriteCallback = base::OnceCallback<void(Status)>;
+
 // NB: This interface is a WIP and is expected to experience heavy churn in the
 // near future as additional interfaces are introduced to appropriately abstract
 // the different database engines. See crbug.com/40273263.
@@ -103,14 +105,15 @@ class BackingStore {
     virtual ~Transaction() = default;
 
     virtual Status Begin(std::vector<PartitionedLock> locks) = 0;
+
     // CommitPhaseOne determines what blobs (if any) need to be written to disk
     // and updates the primary blob journal, and kicks off the async writing
     // of the blob files. In case of crash/rollback, the journal indicates what
     // files should be cleaned up.
-    // The blob write callback will be called eventually on success or failure,
-    // or immediately if phase one is complete due to lack of any blobs to
-    // write.
-    virtual Status CommitPhaseOne(
+    // The return value is true if there are blob operations pending, or false
+    // if the commit can proceed synchronously. In the former case,
+    // `blob_write_callback` will be invoked later, otherwise not at all.
+    virtual StatusOr<bool> CommitPhaseOne(
         BlobWriteCallback blob_write_callback,
         SerializeFsaCallback serialize_fsa_handle) = 0;
     // CommitPhaseTwo is called once the blob files (if any) have been written

@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -38,11 +39,9 @@ BlobWriteCallback CreateBlobWriteCallback(
     base::OnceClosure on_done = base::DoNothing()) {
   *succeeded = false;
   return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done,
-         StatusOr<BlobWriteResult> result) {
-        *succeeded = result.has_value();
+      [](bool* succeeded, base::OnceClosure on_done, Status result) {
+        *succeeded = result.ok();
         std::move(on_done).Run();
-        return Status::OK();
       },
       succeeded, std::move(on_done));
 }
@@ -132,9 +131,11 @@ class DatabaseConnectionTest : public testing::Test {
                     .has_value());
     ASSERT_TRUE(vc->SetDatabaseVersion(1).ok());
     bool succeeded = false;
-    ASSERT_TRUE(
-        vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
-    EXPECT_TRUE(succeeded);
+    ASSERT_OK_AND_ASSIGN(
+        bool async_work_to_be_done,
+        vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}));
+    EXPECT_FALSE(async_work_to_be_done);
+    EXPECT_FALSE(succeeded);
     ASSERT_TRUE(vc->CommitPhaseTwo().ok());
   }
 

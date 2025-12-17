@@ -15,26 +15,6 @@
 
 namespace content::indexed_db {
 
-// This file contains all of the classes & types used to store external objects
-// (such as blobs) in IndexedDB. Currently it is messy because this is
-// mid-refactor, but it will be cleaned up over time.
-
-enum class BlobWriteResult {
-  // The blobs were written, and phase two should be scheduled asynchronously.
-  // The returned status will be ignored.
-  kRunPhaseTwoAsync,
-  // The blobs were written, and phase two should be run now. The returned
-  // status will be correctly propagated.
-  kRunPhaseTwoAndReturnResult,
-};
-
-// This callback is used to signify that writing blobs is complete. The
-// `StatusOr<BlobWriteResult>` signifies if the operation succeeded or not, and
-// the returned status is used to handle errors in the next part of the
-// transaction commit lifecycle. Note: The returned status can only be used when
-// the result is `kRunPhaseTwoAndReturnResult`.
-using BlobWriteCallback = base::OnceCallback<Status(StatusOr<BlobWriteResult>)>;
-
 // This callback will serialize a single object that represents an FSA handle
 // and return the serialized token asynchronously via the inner callback.
 using SerializeFsaCallback = base::RepeatingCallback<void(

@@ -25,9 +25,10 @@ FakeTransaction::FakeTransaction(
 
 FakeTransaction::~FakeTransaction() = default;
 
-Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback,
-                                       SerializeFsaCallback /*unused*/) {
-  return std::move(callback).Run(BlobWriteResult::kRunPhaseTwoAndReturnResult);
+StatusOr<bool> FakeTransaction::CommitPhaseOne(
+    BlobWriteCallback callback,
+    SerializeFsaCallback /*unused*/) {
+  return false;
 }
 
 Status FakeTransaction::CommitPhaseTwo() {

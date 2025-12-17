@@ -4346,7 +4346,7 @@ BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
   });
 }
 
-Status BackingStore::Transaction::CommitPhaseOne(
+StatusOr<bool> BackingStore::Transaction::CommitPhaseOne(
     BlobWriteCallback callback,
     SerializeFsaCallback /*unused*/) {
   DCHECK(transaction_.get());
@@ -4359,7 +4359,7 @@ Status BackingStore::Transaction::CommitPhaseOne(
   if (!s.ok()) {
     INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
     transaction_ = nullptr;
-    return s;
+    return base::unexpected(s);
   }
 
   DCHECK(external_object_change_map_.empty() ||
@@ -4367,19 +4367,12 @@ Status BackingStore::Transaction::CommitPhaseOne(
   if (!CollectBlobFilesToRemove()) {
     INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
     transaction_ = nullptr;
-    return InternalInconsistencyStatus();
+    return base::unexpected(InternalInconsistencyStatus());
   }
 
   committing_ = true;
   backing_store_->WillCommitTransaction();
-
-  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
-    // This kicks off the writes of the new blobs, if any.
-    return WriteNewBlobs(std::move(callback));
-  } else {
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
-  }
+  return WriteNewBlobs(std::move(callback));
 }
 
 Status BackingStore::Transaction::CommitPhaseTwo() {
@@ -4520,10 +4513,12 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
   return s;
 }
 
-Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
+bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   DCHECK(backing_store_);
-  DCHECK(!backing_store_->in_memory());
-  DCHECK(!external_object_change_map_.empty());
+
+  if (backing_store_->in_memory()) {
+    return false;
+  }
 
   TRACE_EVENT_BEGIN("IndexedDB", "BackingStore::Transaction::WriteNewBlobs",
                     perfetto::Track::FromPointer(this));
@@ -4550,8 +4545,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   }
   if (num_objects_to_write == 0) {
     TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
+    return false;
   }
 
   write_state_.emplace(num_objects_to_write, std::move(callback));
@@ -4575,8 +4569,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
           std::move(on_complete)
-              .Run(base::unexpected(
-                  Status::IOError(WriteBlobToFileResultToString(result))));
+              .Run(Status::IOError(WriteBlobToFileResultToString(result)));
           return;
         }
         --(write_state.calls_left);
@@ -4585,7 +4578,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           transaction->write_state_.reset();
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
-          std::move(on_complete).Run(BlobWriteResult::kRunPhaseTwoAsync);
+          std::move(on_complete).Run(Status::OK());
         }
       },
       weak_ptr_factory_.GetWeakPtr());
@@ -4671,7 +4664,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
       }
     }
   }
-  return Status::OK();
+  return true;
 }
 
 void BackingStore::Transaction::Rollback() {

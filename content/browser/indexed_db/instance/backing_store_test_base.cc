@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/test/fake_blob.h"
@@ -129,25 +130,25 @@ bool BackingStoreTestBase::CommitTransactionPhaseOneAndVerify(
     BackingStore::Transaction& transaction) {
   bool blob_write_succeeded = false;
   base::RunLoop phase_one_blob_wait;
-  EXPECT_TRUE(
-      transaction
-          .CommitPhaseOne(
-              MockBlobStorageContext::CreateBlobWriteCallback(
-                  &blob_write_succeeded, phase_one_blob_wait.QuitClosure()),
-              base::BindLambdaForTesting(
-                  [&](blink::mojom::FileSystemAccessTransferToken& token_remote,
-                      base::OnceCallback<void(const std::vector<uint8_t>&)>
-                          deliver_serialized_token) {
-                    mojo::PendingRemote<
-                        blink::mojom::FileSystemAccessTransferToken>
-                        token_clone;
-                    token_remote.Clone(
-                        token_clone.InitWithNewPipeAndPassReceiver());
-                    file_system_access_context_->SerializeHandle(
-                        std::move(token_clone),
-                        std::move(deliver_serialized_token));
-                  }))
-          .ok());
+  StatusOr<bool> async_work_to_be_done = transaction.CommitPhaseOne(
+      MockBlobStorageContext::CreateBlobWriteCallback(
+          &blob_write_succeeded, phase_one_blob_wait.QuitClosure()),
+      base::BindLambdaForTesting(
+          [&](blink::mojom::FileSystemAccessTransferToken& token_remote,
+              base::OnceCallback<void(const std::vector<uint8_t>&)>
+                  deliver_serialized_token) {
+            mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                token_clone;
+            token_remote.Clone(token_clone.InitWithNewPipeAndPassReceiver());
+            file_system_access_context_->SerializeHandle(
+                std::move(token_clone), std::move(deliver_serialized_token));
+          }));
+  if (!async_work_to_be_done.has_value()) {
+    return false;
+  }
+  if (!*async_work_to_be_done) {
+    return true;
+  }
   phase_one_blob_wait.Run();
   return blob_write_succeeded;
 }

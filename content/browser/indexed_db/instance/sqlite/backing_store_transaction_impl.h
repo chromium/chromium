@@ -36,8 +36,8 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
 
   // BackingStore::Transaction:
   Status Begin(std::vector<PartitionedLock> locks) override;
-  Status CommitPhaseOne(BlobWriteCallback callback,
-                        SerializeFsaCallback serialize_fsa) override;
+  StatusOr<bool> CommitPhaseOne(BlobWriteCallback callback,
+                                SerializeFsaCallback serialize_fsa) override;
   Status CommitPhaseTwo() override;
   void Rollback() override;
   Status SetDatabaseVersion(int64_t version) override;

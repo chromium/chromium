@@ -1081,7 +1081,7 @@ Status DatabaseConnection::BeginTransaction(
   return Status::OK();
 }
 
-Status DatabaseConnection::CommitTransactionPhaseOne(
+StatusOr<bool> DatabaseConnection::CommitTransactionPhaseOne(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction,
     BlobWriteCallback callback,
@@ -1127,13 +1127,12 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
   }
 
   if (outstanding_external_object_writes_ == 0) {
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
+    return false;
   }
 
   CHECK_NE(transaction.mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   blob_write_callback_ = std::move(callback);
-  return Status::OK();
+  return true;
 }
 
 std::optional<sql::StreamingBlobHandle>
@@ -1177,7 +1176,7 @@ void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
   }
 
   if (--outstanding_external_object_writes_ == 0) {
-    std::move(blob_write_callback_).Run(BlobWriteResult::kRunPhaseTwoAsync);
+    std::move(blob_write_callback_).Run(Status::OK());
   }
 }
 
@@ -1203,8 +1202,7 @@ void DatabaseConnection::CancelBlobWriting() {
   blob_writers_.clear();
   outstanding_external_object_writes_ = 0;
   if (blob_write_callback_) {
-    std::move(blob_write_callback_)
-        .Run(base::unexpected(Status::IOError("Error")));
+    std::move(blob_write_callback_).Run(Status::IOError("Error"));
   }
 }
 

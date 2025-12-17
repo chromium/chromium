@@ -135,18 +135,15 @@ TEST_P(BackingStoreTest, RollbackDuringBlobWrite) {
   EXPECT_TRUE(transaction->PutRecord(1, key, value.Clone()).has_value());
 
   bool blob_write_callback_lives = false;
-  EXPECT_TRUE(
-      transaction
-          ->CommitPhaseOne(
-              /*blob_write_callback=*/
-              base::IgnoreArgs<StatusOr<BlobWriteResult>>(base::BindOnce(
-                  [](base::AutoReset<bool> auto_reset) {
-                    ADD_FAILURE();
-                    return Status::OK();
-                  },
-                  base::AutoReset(&blob_write_callback_lives, true))),
-              /*serialize_fsa_handle=*/base::DoNothing())
-          .ok());
+  ASSERT_OK_AND_ASSIGN(
+      bool async_work_to_be_done,
+      transaction->CommitPhaseOne(
+          /*blob_write_callback=*/
+          base::IgnoreArgs<Status>(base::BindOnce(
+              [](base::AutoReset<bool> auto_reset) { ADD_FAILURE(); },
+              base::AutoReset(&blob_write_callback_lives, true))),
+          /*serialize_fsa_handle=*/base::DoNothing()));
+  EXPECT_TRUE(async_work_to_be_done);
   EXPECT_TRUE(blob_write_callback_lives);
   transaction->Rollback();
 

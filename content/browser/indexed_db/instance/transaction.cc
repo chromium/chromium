@@ -259,11 +259,6 @@ Status Transaction::Abort(const DatabaseError& error) {
   return Status::OK();
 }
 
-// static
-Status Transaction::CommitPhaseTwoProxy(Transaction* transaction) {
-  return transaction->CommitPhaseTwo();
-}
-
 bool Transaction::IsTaskQueueEmpty() const {
   return preemptive_task_queue_.empty() && task_queue_.empty();
 }
@@ -812,43 +807,32 @@ bool Transaction::CreateExternalObjects(
   return true;
 }
 
-Status Transaction::BlobWriteComplete(StatusOr<BlobWriteResult> result) {
-  // Log this histogram in both success and error cases, but only when blobs
-  // were actually written in the transaction. An error `result` can only arise
-  // when blob write was attempted. A `result` of `kRunPhaseTwoAsync` indicates
-  // that non-zero blobs were written.
-  constexpr char kHistogramName[] = "IndexedDB.BackingStore.WriteBlobs";
-
+void Transaction::BlobWriteComplete(Status result) {
   TRACE_EVENT0("IndexedDB", "Transaction::BlobWriteComplete");
   if (state_ == FINISHED) {  // aborted
-    return Status::OK();
+    return;
   }
   CHECK_EQ(state_, COMMITTING);
 
-  if (!result.has_value()) {
-    LogStatus(result.error(), kHistogramName, bucket_context_->in_memory());
-    Status status = Abort(DatabaseError(
-        blink::mojom::IDBException::kDataError,
-        base::ASCIIToUTF16(absl::StrFormat("Failed to write blobs (%s)",
-                                           result.error().ToString()))));
+  LogStatus(result, "IndexedDB.BackingStore.WriteBlobs",
+            bucket_context_->in_memory());
+
+  if (!result.ok()) {
+    Status status = Abort(
+        DatabaseError(blink::mojom::IDBException::kDataError,
+                      base::ASCIIToUTF16(absl::StrFormat(
+                          "Failed to write blobs (%s)", result.ToString()))));
     if (!status.ok()) {
       bucket_context_->OnDatabaseError(database_.get(), status, {});
     }
-    // The result is ignored.
-    return Status::OK();
+    return;
   }
 
-  switch (result.value()) {
-    case BlobWriteResult::kRunPhaseTwoAsync:
-      LogStatus(Status::OK(), kHistogramName, bucket_context_->in_memory());
-      ScheduleTask(/*operation_name_for_metrics=*/{},
-                   base::BindOnce(&CommitPhaseTwoProxy));
-      bucket_context_->QueueRunTasks();
-      return Status::OK();
-    case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
-      return CommitPhaseTwo();
-    }
-  }
+  ScheduleTask(
+      /*operation_name_for_metrics=*/{},
+      base::IgnoreArgs<Transaction*>(base::BindOnce(
+          &Transaction::CommitPhaseTwo, base::Unretained(this))));
+  bucket_context_->QueueRunTasks();
 }
 
 Status Transaction::DoPendingCommit() {
@@ -896,44 +880,45 @@ Status Transaction::DoPendingCommit() {
 
   // CommitPhaseOne will call the callback synchronously if there are no blobs
   // to write.
-  return LogStatus(
-      backing_store_transaction_->CommitPhaseOne(
-          /*blob_write_callback=*/
-          base::BindOnce(
-              [](base::WeakPtr<Transaction> transaction,
-                 StatusOr<BlobWriteResult> result) {
-                if (!transaction) {
-                  return Status::OK();
-                }
-                return transaction->BlobWriteComplete(result);
-              },
-              ptr_factory_.GetWeakPtr()),
-          // This callback is only used by SQLite. The LevelDB version of this
-          // code lives in `BackingStore::Transaction::WriteNewBlobs`.
-          /*serialize_fsa_handle=*/
-          base::BindRepeating(
-              [](base::WeakPtr<Transaction> transaction,
-                 blink::mojom::FileSystemAccessTransferToken& token_remote,
-                 base::OnceCallback<void(const std::vector<uint8_t>&)>
-                     deliver_serialized_token) {
-                if (!transaction) {
-                  return;
-                }
+  ASSIGN_OR_RETURN(
+      bool async_work_in_progress,
+      LOG_RESULT(
+          backing_store_transaction_->CommitPhaseOne(
+              /*blob_write_callback=*/
+              base::BindOnce(&Transaction::BlobWriteComplete,
+                             ptr_factory_.GetWeakPtr()),
+              // This callback is only used by SQLite. The LevelDB version of
+              // this code lives in `BackingStore::Transaction::WriteNewBlobs`.
+              /*serialize_fsa_handle=*/
+              base::BindRepeating(
+                  [](base::WeakPtr<Transaction> transaction,
+                     blink::mojom::FileSystemAccessTransferToken& token_remote,
+                     base::OnceCallback<void(const std::vector<uint8_t>&)>
+                         deliver_serialized_token) {
+                    if (!transaction) {
+                      return;
+                    }
 
-                // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
-                // SharedRemote, so this code can just move the remote, instead
-                // of cloning.
-                mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
-                    token_clone;
-                token_remote.Clone(
-                    token_clone.InitWithNewPipeAndPassReceiver());
-                transaction->bucket_context()
-                    ->file_system_access_context()
-                    ->SerializeHandle(std::move(token_clone),
-                                      std::move(deliver_serialized_token));
-              },
-              ptr_factory_.GetWeakPtr())),
-      "IndexedDB.BackingStore.CommitPhaseOne", bucket_context_->in_memory());
+                    // TODO(dmurph): Refactor IndexedDBExternalObject to not use
+                    // a SharedRemote, so this code can just move the remote,
+                    // instead of cloning.
+                    mojo::PendingRemote<
+                        blink::mojom::FileSystemAccessTransferToken>
+                        token_clone;
+                    token_remote.Clone(
+                        token_clone.InitWithNewPipeAndPassReceiver());
+                    transaction->bucket_context()
+                        ->file_system_access_context()
+                        ->SerializeHandle(std::move(token_clone),
+                                          std::move(deliver_serialized_token));
+                  },
+                  ptr_factory_.GetWeakPtr())),
+          "IndexedDB.BackingStore.CommitPhaseOne",
+          bucket_context_->in_memory()));
+  if (async_work_in_progress) {
+    return Status::OK();
+  }
+  return CommitPhaseTwo();
 }
 
 Status Transaction::CommitPhaseTwo() {
