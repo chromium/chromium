@@ -63,12 +63,10 @@ TEST(JSONReaderTest, InvalidString) {
 }
 
 TEST(JSONReaderTest, SimpleBool) {
-  base::HistogramTester histograms;
   std::optional<Value> root =
       JSONReader::Read("true  ", JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_bool());
-  histograms.ExpectTotalCount("Security.JSONParser.ParsingTime", 1);
 }
 
 TEST(JSONReaderTest, EmbeddedComments) {

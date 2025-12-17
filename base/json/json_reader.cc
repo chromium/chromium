@@ -16,10 +16,6 @@
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
 
-namespace {
-const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
-}  // namespace
-
 // This namespace defines FFI-friendly functions that are be called from Rust in
 // //third_party/rust/serde_json_lenient/v0_2/wrapper/.
 namespace serde_json_lenient {
@@ -133,8 +129,6 @@ std::string JSONReader::Error::ToString() const {
 std::optional<Value> JSONReader::Read(std::string_view json,
                                       int options,
                                       size_t max_depth) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
-
   JSONReader::Result result =
       serde_json_lenient::DecodeJSONInRust(json, options, max_depth);
   if (!result.has_value()) {
@@ -169,7 +163,6 @@ std::optional<Value::List> JSONReader::ReadList(std::string_view json,
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(
     std::string_view json,
     int options) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   return serde_json_lenient::DecodeJSONInRust(json, options,
                                               internal::kAbsoluteMaxDepth);
 }
