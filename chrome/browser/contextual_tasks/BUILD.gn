@@ -169,6 +169,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -304,6 +305,7 @@ source_set("unit_tests") {
       ":ui_impl",
       "//chrome/browser/contextual_search",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:public",
@@ -311,6 +313,7 @@ source_set("unit_tests") {
       "//components/passage_embeddings",
       "//components/tabs:test_support",
       "//components/variations:test_support",
+      "//chrome/browser/ui/webui:webui_util",
     ]
   }
 }

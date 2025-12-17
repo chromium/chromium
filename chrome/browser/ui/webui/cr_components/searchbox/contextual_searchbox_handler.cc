@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -36,6 +37,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/url_constants.h"
@@ -257,11 +259,11 @@ ContextualSearchboxHandler::GetContextualSessionHandle() const {
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
-    auto* browser_window_interface =
-        webui::GetBrowserWindowInterface(web_contents_);
-    if (browser_window_interface) {
-      browser_window_interface->GetTabStripModel()->RemoveObserver(this);
-    }
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (browser_window_interface) {
+    browser_window_interface->GetTabStripModel()->RemoveObserver(this);
+  }
 }
 
 contextual_search::ContextualSearchMetricsRecorder*
@@ -378,7 +380,8 @@ void ContextualSearchboxHandler::OnAddTabContextTokenCreated(
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
-    std::move(callback).Run(std::nullopt);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -387,7 +390,50 @@ void ContextualSearchboxHandler::OnAddTabContextTokenCreated(
   tab_contextualization_controller->GetPageContext(base::BindOnce(
       &ContextualSearchboxHandler::OnGetTabPageContext,
       weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
-  std::move(callback).Run(context_token);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), context_token));
+}
+
+void ContextualSearchboxHandler::UploadTabContextWithData(
+    int32_t tab_id,
+    std::optional<int64_t> context_id,
+    std::unique_ptr<lens::ContextualInputData> data,
+    RecontextualizeTabCallback callback) {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  // TODO(crbug.com/458050417): Move more of the tab context logic to
+  // ContextualSessionHandle.
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  contextual_session_handle->AddTabContext(
+      tab_id,
+      base::BindOnce(
+          &ContextualSearchboxHandler::OnUploadTabContextWithDataTokenCreated,
+          weak_ptr_factory_.GetWeakPtr(), context_id, std::move(data),
+          std::move(callback)));
+}
+
+void ContextualSearchboxHandler::OnUploadTabContextWithDataTokenCreated(
+    std::optional<int64_t> context_id,
+    std::unique_ptr<lens::ContextualInputData> data,
+    RecontextualizeTabCallback callback,
+    const base::UnguessableToken& context_token) {
+  if (context_id.has_value()) {
+    data->context_id = context_id.value();
+  }
+  UploadTabContext(context_token, std::move(data));
+  std::move(callback).Run(true);
 }
 
 void ContextualSearchboxHandler::RecordTabClickedMetric(
