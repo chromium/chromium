@@ -5446,7 +5446,6 @@ if (!is_android) {
       ]
       data_deps += [
         "//ash/keyboard/ui:resources",
-        "//chrome",
         "//testing/buildbot/filters:chromeos_filters",
         "//third_party/liblouis:liblouis_test_data",
         "//ui/file_manager/integration_tests:build",
