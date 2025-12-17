@@ -31,15 +31,6 @@
 namespace blink {
 
 String TextRun::NormalizedUTF16() const {
-  const UChar* source;
-  String string_for8_bit_run;
-  if (Is8Bit()) {
-    string_for8_bit_run = String::Make16BitFrom8BitSource(Span8());
-    source = string_for8_bit_run.Span16().data();
-  } else {
-    source = Span16().data();
-  }
-
   wtf_size_t len = length();
   StringBuffer<UChar> buffer(len);
   unsigned result_length = 0;
@@ -47,8 +38,7 @@ String TextRun::NormalizedUTF16() const {
   bool error = false;
   unsigned position = 0;
   while (position < len) {
-    UChar32 character;
-    UNSAFE_TODO(U16_NEXT(source, position, len, character));
+    UChar32 character = text_.CodePointAtAndNext(position);
     // Don't normalize tabs as they are not treated as spaces for word-end.
     if (Character::TreatAsSpace(character) &&
         character != uchar::kNoBreakSpace) {
