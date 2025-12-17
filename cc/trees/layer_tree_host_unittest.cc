@@ -11278,6 +11278,64 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestDamagePropagatesFromViewTransitionSurface);
 
+class LayerTreeHostTestFarAwayQuadsDontNeedAA : public LayerTreeHostTest {
+  // Due to precision issues (especially on Android), sometimes far away quads
+  // can end up thinking they need AA.
+ public:
+  void SetupTree() override {
+    LayerTreeHostTest::SetupTree();
+    layer_tree_host()->SetViewportRectAndScale(
+        gfx::Rect(gfx::Size(2000, 1000)), 4.f / 3.f,
+        layer_tree_host()->local_surface_id_from_parent());
+    layer_tree_host()->SetPageScaleFactorAndLimits(1.f, 1.f / 16.f, 16.f);
+
+    gfx::Size root_size(2000, 1000);
+    layer_tree_host()->root_layer()->SetBounds(root_size);
+
+    gfx::Size content_layer_bounds(100001, 100);
+
+    scroll_layer_ = Layer::Create();
+    scroll_layer_->SetElementId(
+        LayerIdToElementIdForTesting(scroll_layer_->id()));
+    scroll_layer_->SetBounds(content_layer_bounds);
+    scroll_layer_->SetScrollable(root_size);
+    layer_tree_host()->root_layer()->AddChild(scroll_layer_);
+
+    content_layer_client_.set_bounds(content_layer_bounds);
+    content_layer_ = PictureLayer::Create(&content_layer_client_);
+    content_layer_->SetBounds(content_layer_bounds);
+    content_layer_->SetIsDrawable(true);
+    scroll_layer_->AddChild(content_layer_);
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillCommit(const CommitState& commit_state) override {
+    scroll_layer_->SetScrollOffset(gfx::PointF(100000, 0));
+  }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    const auto& quad_list = frame.render_pass_list[0]->quad_list;
+    ASSERT_LE(1u, quad_list.size());
+    const viz::DrawQuad* quad = quad_list.front();
+
+    bool clipped = false;
+    MathUtil::MapQuad(quad->shared_quad_state->quad_to_target_transform,
+                      gfx::QuadF(gfx::RectF(quad->rect)), &clipped);
+    EXPECT_FALSE(clipped);
+    EndTest();
+  }
+
+ private:
+  FakeContentLayerClient content_layer_client_;
+  scoped_refptr<Layer> scroll_layer_;
+  scoped_refptr<PictureLayer> content_layer_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestFarAwayQuadsDontNeedAA);
+
 class LayerTreeHostTestBlendingOffWhenDrawingOpaqueLayers
     : public LayerTreeHostTest {
  public:

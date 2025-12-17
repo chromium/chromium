@@ -157,12 +157,6 @@ MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
 
 }  // namespace
 
-class CommitToPendingTreeLayerTreeHostImplTest : public LayerTreeHostImplTest {
-};
-
-INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(CommitToPendingTreeLayerTreeHostImplTest,
-                                       CommitToPendingTree);
-
 class CommitToActiveTreeLayerTreeHostImplTest
     : public LayerTreeHostImplTestBase {
  public:
@@ -10929,70 +10923,7 @@ TEST_P(LayerTreeHostImplTestDrawAndTestDamage, FrameIncludesDamageRect) {
   DrawFrameAndTestDamage(no_damage, child);
 }
 
-// This test relies on LayerTreeHostImpl to produce CompositorFrames, which it
-// doesn't do in TreesInViz mode.
-TEST_P(CommitToPendingTreeLayerTreeHostImplTest, FarAwayQuadsDontNeedAA) {
-  // Due to precision issues (especially on Android), sometimes far
-  // away quads can end up thinking they need AA.
-  float device_scale_factor = 4 / 3;
-  gfx::Size root_size(2000, 1000);
-  CreatePendingTree();
-  host_impl_->pending_tree()->SetDeviceScaleFactor(device_scale_factor);
-  host_impl_->pending_tree()->PushPageScaleFromMainThread(1, 1 / 16, 16);
 
-  auto* root = SetupRootLayer<LayerImpl>(host_impl_->pending_tree(), root_size);
-  root->SetNeedsPushProperties();
-
-  gfx::Size content_layer_bounds(100001, 100);
-  auto* scrolling_layer =
-      AddScrollableLayer(root, content_layer_bounds, gfx::Size());
-  scrolling_layer->SetNeedsPushProperties();
-
-  scoped_refptr<FakeRasterSource> raster_source(
-      FakeRasterSource::CreateFilled(content_layer_bounds));
-
-  auto* content_layer =
-      AddLayer<FakePictureLayerImpl>(host_impl_->pending_tree(), raster_source);
-  CopyProperties(scrolling_layer, content_layer);
-  content_layer->SetBounds(content_layer_bounds);
-  content_layer->SetDrawsContent(true);
-  content_layer->SetNeedsPushProperties();
-
-  UpdateDrawProperties(host_impl_->pending_tree());
-
-  gfx::PointF scroll_offset(100000, 0);
-  scrolling_layer->layer_tree_impl()
-      ->property_trees()
-      ->scroll_tree_mutable()
-      .UpdateScrollOffsetBaseForTesting(scrolling_layer->element_id(),
-                                        scroll_offset);
-  host_impl_->ActivateSyncTree();
-
-  UpdateDrawProperties(host_impl_->active_tree());
-  ASSERT_EQ(1u, host_impl_->active_tree()->GetRenderSurfaceList().size());
-
-  TestFrameData frame;
-  auto args = viz::CreateBeginFrameArgsForTesting(
-      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
-      base::TimeTicks() + base::Milliseconds(1));
-  host_impl_->WillBeginImplFrame(args);
-  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
-
-  ASSERT_EQ(1u, frame.render_passes.size());
-  ASSERT_LE(1u, frame.render_passes[0]->quad_list.size());
-  const viz::DrawQuad* quad = frame.render_passes[0]->quad_list.front();
-
-  bool clipped = false;
-  MathUtil::MapQuad(
-      quad->shared_quad_state->quad_to_target_transform,
-      gfx::QuadF(gfx::RectF(quad->shared_quad_state->visible_quad_layer_rect)),
-      &clipped);
-  EXPECT_FALSE(clipped);
-
-  host_impl_->DrawLayers(&frame);
-  host_impl_->DidDrawAllLayers(frame);
-  host_impl_->DidFinishImplFrame(args);
-}
 
 class CompositorFrameMetadataTest : public LayerTreeHostImplTest {
  public:
