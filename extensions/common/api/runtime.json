@@ -728,7 +728,14 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
           "type": "boolean",
@@ -745,7 +752,14 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
           "type": "boolean",
@@ -762,7 +776,14 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the user script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
           "type": "boolean",
