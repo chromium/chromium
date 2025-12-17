@@ -873,11 +873,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 #pragma mark - NewTabPageHeaderConsumer
 
-- (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState {
-  _searchEngineLogoState = logoState;
-  [self updateFakeboxDisplay];
-}
-
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator {
   _searchEngineLogoMediator = searchEngineLogoMediator;

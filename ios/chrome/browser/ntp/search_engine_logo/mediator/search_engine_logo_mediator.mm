@@ -261,6 +261,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   }
   // The consumer should not be set after disconnect.
   CHECK(_templateURLService);
+  [_consumer searchEngineLogoStateDidChange:self.logoState];
   [self searchEngineChanged];
 }
 

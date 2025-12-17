@@ -232,8 +232,7 @@ class NewTabPageMediatorTest : public PlatformTest {
 TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   // Setup.
   CreateMediator();
-  OCMExpect(
-      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
+  OCMExpect([header_consumer_ setDefaultSearchEngineName:[OCMArg any]]);
 
   // Action.
   [mediator_ setUp];
@@ -359,8 +358,6 @@ TEST_F(NewTabPageMediatorTest, TestAIMNotEligible) {
   CreateMediator(/*with_aim_eligibility_service=*/true);
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(testing::Return(false));
-  OCMExpect(
-      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
 
   // Consumer should be notified.
   id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
@@ -383,8 +380,6 @@ TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
   CreateMediator(/*with_aim_eligibility_service=*/true);
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(testing::Return(true));
-  OCMExpect(
-      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
 
   // Consumer should be notified.
   id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
@@ -436,8 +431,6 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
   EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
 
   // Consumer are updated during setup.
-  OCMExpect(
-      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
   OCMExpect([ntp_consumer setAIMAllowed:YES]);
   OCMExpect([header_consumer_ setAIMAllowed:YES]);
   [mediator_ setUp];
@@ -467,8 +460,6 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
   });
 
   CreateMediator(/*with_aim_eligibility_service=*/true);
-  OCMExpect(
-      [header_consumer_ setSearchEngineLogoState:SearchEngineLogoState::kLogo]);
 
   // Setup with non eligible.
   id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
