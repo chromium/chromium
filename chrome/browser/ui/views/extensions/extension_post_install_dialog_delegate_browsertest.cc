@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -33,28 +34,13 @@ class ExtensionPostInstallDialogDelegateBrowserTest
       const std::string& type) {
     extensions::ExtensionBuilder builder(type);
 
-    if (type == "BrowserAction") {
-      builder.SetAction(extensions::ActionInfo::Type::kBrowser);
-    } else if (type == "PageAction") {
-      builder.SetAction(extensions::ActionInfo::Type::kPage);
-    }
-
     if (type == "SignInPromo" || type == "NoAction") {
       builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
     } else {
       builder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
     }
 
-    if (type == "Omnibox") {
-      base::Value::Dict extra_keys;
-      extra_keys.SetByDottedPath(extensions::manifest_keys::kOmniboxKeyword,
-                                 "foo");
-      builder.MergeManifest(std::move(extra_keys));
-    }
-
-    scoped_refptr<const extensions::Extension> extension = builder.Build();
-    extension_registrar()->AddExtension(extension);
-    return extension;
+    return builder.Build();
   }
 
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> bubble_widget_;
@@ -68,6 +54,17 @@ void ExtensionPostInstallDialogDelegateBrowserTest::ShowUi(
   views::Widget::Widgets old_widgets = views::test::WidgetTest::GetAllWidgets();
   ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
                                         SkBitmap());
+
+  // In the real world, the extension would be installed now, triggering the
+  // watcher. Simulate that by adding the extension to the registrar.
+  extension_registrar()->AddExtension(extension);
+
+  // Wait for the ExtensionInstalledWatcher to fire and the dialog to be
+  // created.
+  (void)base::test::RunUntil([&]() {
+    return views::test::WidgetTest::GetAllWidgets().size() > old_widgets.size();
+  });
+
   views::Widget::Widgets new_widgets = views::test::WidgetTest::GetAllWidgets();
   views::Widget::Widgets added_widgets;
   std::set_difference(new_widgets.begin(), new_widgets.end(),
@@ -96,16 +93,10 @@ void ExtensionPostInstallDialogDelegateBrowserTest::WaitForUserDismissal() {
 // InProcessBrowserTest is not equipped to handle.
 // TODO(ellyjones): Fix that, or figure out an alternate way to test this UI.
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#define MAYBE_InvokeUi_BrowserAction DISABLED_InvokeUi_BrowserAction
-#define MAYBE_InvokeUi_PageAction DISABLED_InvokeUi_PageAction
 #define MAYBE_InvokeUi_SignInPromo DISABLED_InvokeUi_SignInPromo
-#define MAYBE_InvokeUi_Omnibox DISABLED_InvokeUi_Omnibox
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
-#define MAYBE_InvokeUi_BrowserAction InvokeUi_BrowserAction
-#define MAYBE_InvokeUi_PageAction InvokeUi_PageAction
 #define MAYBE_InvokeUi_SignInPromo InvokeUi_SignInPromo
-#define MAYBE_InvokeUi_Omnibox InvokeUi_Omnibox
 #endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
@@ -114,21 +105,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
-                       MAYBE_InvokeUi_BrowserAction) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
-                       MAYBE_InvokeUi_PageAction) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
                        MAYBE_InvokeUi_SignInPromo) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateBrowserTest,
-                       MAYBE_InvokeUi_Omnibox) {
   ShowAndVerifyUi();
 }

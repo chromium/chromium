@@ -53,6 +53,7 @@ class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
 class DevtoolsUIController;
 class EmbedderBrowserWindowFeatures;
+class ExtensionInstalledWatcher;
 class ExtensionKeybindingRegistryViews;
 class ExclusiveAccessManager;
 class FindBarController;
@@ -267,6 +268,10 @@ class BrowserWindowFeatures {
 
   CommentsSidePanelCoordinator* comments_side_panel_coordinator() {
     return comments_side_panel_coordinator_.get();
+  }
+
+  ExtensionInstalledWatcher* extension_installed_watcher() {
+    return extension_installed_watcher_.get();
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -578,6 +583,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<PinnedToolbarActionsController>
       pinned_toolbar_actions_controller_;
+
+  std::unique_ptr<ExtensionInstalledWatcher> extension_installed_watcher_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;

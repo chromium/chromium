@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extension_installed_waiter.h"
+#include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/run_until.h"
@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
@@ -18,33 +19,28 @@
 
 using extensions::Extension;
 
-class ExtensionInstalledWaiterTest : public extensions::ExtensionBrowserTest {
+class ExtensionInstalledWatcherBrowserTest
+    : public extensions::ExtensionBrowserTest {
  public:
-  void TearDownOnMainThread() override {
-    ExtensionInstalledWaiter::SetGivingUpCallbackForTesting(
-        base::NullCallback());
-    extensions::ExtensionBrowserTest::TearDownOnMainThread();
-  }
-
   void WaitFor(scoped_refptr<const Extension> extension,
                Browser* test_browser = nullptr) {
-    ExtensionInstalledWaiter::SetGivingUpCallbackForTesting(base::BindRepeating(
-        &ExtensionInstalledWaiterTest::GivingUp, base::Unretained(this)));
     if (!test_browser) {
       test_browser = browser();
     }
-    ExtensionInstalledWaiter::WaitForInstall(
-        extension, test_browser,
-        base::BindOnce(&ExtensionInstalledWaiterTest::Done,
+    test_browser->GetFeatures().extension_installed_watcher()->WaitForInstall(
+        extension->id(),
+        base::BindOnce(&ExtensionInstalledWatcherBrowserTest::Done,
                        base::Unretained(this)));
   }
 
-  void Done() { done_called_++; }
-  void GivingUp() { giving_up_called_++; }
+  void Done(bool success) {
+    done_called_++;
+    install_success_ = success;
+  }
 
  protected:
   int done_called_ = 0;
-  int giving_up_called_ = 0;
+  std::optional<bool> install_success_;
 
   scoped_refptr<const Extension> MakeExtensionNamed(const std::string& name) {
     return extensions::ExtensionBuilder(name).Build();
@@ -55,16 +51,19 @@ class ExtensionInstalledWaiterTest : public extensions::ExtensionBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest,
                        ExtensionIsAlreadyInstalled) {
   auto extension = MakeExtensionNamed("foo");
   extension_registrar()->AddExtension(extension);
 
   WaitFor(extension);
+  EXPECT_EQ(0, done_called_);
+  ASSERT_TRUE(base::test::RunUntil([&] { return done_called_ >= 1; }));
   EXPECT_EQ(1, done_called_);
+  EXPECT_TRUE(install_success_.has_value() && install_success_.value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest, ExtensionInstall) {
   auto extension = MakeExtensionNamed("foo");
 
   WaitFor(extension);
@@ -72,16 +71,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
 
   extension_registrar()->AddExtension(extension);
 
-  // ExtensionInstalledWaiter must *not* call the done callback on the same
+  // ExtensionInstalledWatcher must *not* call the done callback on the same
   // runloop cycle as the extension installation, to allow all the other
   // observers to run.
   EXPECT_EQ(0, done_called_);
 
   ASSERT_TRUE(base::test::RunUntil([&] { return done_called_ >= 1; }));
   EXPECT_EQ(1, done_called_);
+  EXPECT_TRUE(install_success_.has_value() && install_success_.value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest,
                        NotTheExtensionYouAreLookingFor) {
   auto foo = MakeExtensionNamed("foo");
   auto bar = MakeExtensionNamed("bar");
@@ -94,49 +94,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
 
   ASSERT_TRUE(base::test::RunUntil([&] { return done_called_ >= 1; }));
   EXPECT_EQ(1, done_called_);
+  EXPECT_TRUE(install_success_.has_value() && install_success_.value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
-                       ExtensionUninstalledWhileWaiting) {
-  auto extension = MakeExtensionNamed("foo");
-
-  WaitFor(extension);
-  EXPECT_EQ(0, done_called_);
-  EXPECT_EQ(0, giving_up_called_);
-
-  extension_registrar()->AddExtension(extension);
-  extension_registrar()->RemoveExtension(
-      extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
-
-  ASSERT_TRUE(base::test::RunUntil([&] { return giving_up_called_ >= 1; }));
-  EXPECT_EQ(1, giving_up_called_);
-  EXPECT_EQ(0, done_called_);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest,
                        BrowserShutdownWhileWaiting) {
   auto foo = MakeExtensionNamed("foo");
-  WaitFor(foo, browser());
+
+  WaitFor(foo);
 
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1, giving_up_called_);
   EXPECT_EQ(0, done_called_);
+  EXPECT_FALSE(install_success_.has_value());  // Callback was never run
 }
 
 // Regression test for https://crbug.com/1049190.
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest,
                        BrowserShutdownWhileWaitingDoesntCrash) {
   auto foo = MakeExtensionNamed("foo");
-  WaitFor(foo, browser());
-
-  // Null out the giving-up callback, which is how the class is actually used in
-  // production.
-  ExtensionInstalledWaiter::SetGivingUpCallbackForTesting({});
+  WaitFor(foo);
 
   // If the fix for https://crbug.com/1049190 regresses, this will crash:
   chrome::CloseWindow(browser());
   ui_test_utils::WaitForBrowserToClose(browser());
-
-  EXPECT_EQ(0, giving_up_called_);
   EXPECT_EQ(0, done_called_);
 }

@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -358,6 +359,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   signin_view_controller_ = std::make_unique<SigninViewController>(
       browser, profile, tab_strip_model_);
+
+  extension_installed_watcher_ =
+      std::make_unique<ExtensionInstalledWatcher>(profile);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
@@ -916,6 +920,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   omnibox_popup_closer_.reset();
 
   split_tab_highlight_controller_.reset();
+
+  extension_installed_watcher_.reset();
 
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_.reset();

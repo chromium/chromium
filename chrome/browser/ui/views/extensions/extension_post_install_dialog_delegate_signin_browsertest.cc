@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -26,12 +27,14 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-// Tests sign in behavior from the extension installed bubble.
+// Tests sign in behavior from the extension post-install bubble.
 class ExtensionPostInstallDialogDelegateSignInBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
@@ -57,12 +60,24 @@ class ExtensionPostInstallDialogDelegateSignInBrowserTest
   }
 
   views::Widget* ShowBubble(
-      scoped_refptr<const extensions::Extension> extension) {
+      scoped_refptr<const extensions::Extension> extension,
+      base::ScopedMockTimeMessageLoopTaskRunner* mock_time_runner = nullptr) {
     views::Widget::Widgets old_widgets =
         views::test::WidgetTest::GetAllWidgets();
 
     ExtensionInstallUIDesktop::ShowBubble(extension, browser(), profile(),
                                           SkBitmap());
+
+    // Wait for the ExtensionInstalledWatcher to fire and the dialog to be
+    // created.
+    if (mock_time_runner) {
+      mock_time_runner->task_runner()->RunUntilIdle();
+    } else {
+      (void)base::test::RunUntil([&]() {
+        return views::test::WidgetTest::GetAllWidgets().size() >
+               old_widgets.size();
+      });
+    }
 
     views::Widget::Widgets new_widgets =
         views::test::WidgetTest::GetAllWidgets();
@@ -86,8 +101,9 @@ class ExtensionPostInstallDialogDelegateSignInBrowserTest
   // `extension`.
   void InitiateSignInFromExtensionPromo(
       scoped_refptr<const extensions::Extension> extension,
-      const AccountInfo& account_info = AccountInfo()) {
-    views::Widget* bubble_view_widget = ShowBubble(extension);
+      const AccountInfo& account_info = AccountInfo(),
+      base::ScopedMockTimeMessageLoopTaskRunner* mock_time_runner = nullptr) {
+    views::Widget* bubble_view_widget = ShowBubble(extension, mock_time_runner);
     ASSERT_TRUE(bubble_view_widget);
     ASSERT_TRUE(bubble_view_widget->widget_delegate());
 
@@ -107,7 +123,7 @@ class ExtensionPostInstallDialogDelegateSignInBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test that by default, signing in from the extension installed bubble will
+// Test that by default, signing in from the extension post-install bubble will
 // sign the user into sync.
 IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
                        BubbleSignsIntoSync) {
@@ -163,8 +179,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
   base::ScopedMockTimeMessageLoopTaskRunner mock_time_task_runner;
 
   // Initiate a sign in for the old extensions.
-  InitiateSignInFromExtensionPromo(old_extension);
-  InitiateSignInFromExtensionPromo(old_extension_2);
+  InitiateSignInFromExtensionPromo(old_extension, AccountInfo(),
+                                   &mock_time_task_runner);
+  InitiateSignInFromExtensionPromo(old_extension_2, AccountInfo(),
+                                   &mock_time_task_runner);
 
   // Advance the clock past the maximum delay to simulate the user not
   // completing the sign in flow in time.
@@ -173,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
       2);
 
   // After some time has passed, initiate a sign in for the `new_extension`.
-  InitiateSignInFromExtensionPromo(new_extension);
+  InitiateSignInFromExtensionPromo(new_extension, AccountInfo(),
+                                   &mock_time_task_runner);
 
   // Simulate a sign in from the extensions bubble to finish what was initiated
   // above.
@@ -211,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,
 }
 
 // Test that if the user is already signed in on the web, signing in via
-// extension installed promo should still promote the extension to an account
+// extension post-install promo should still promote the extension to an account
 // extension.
 // This tests the fix for crbug.com/400522723
 IN_PROC_BROWSER_TEST_F(ExtensionPostInstallDialogDelegateSignInBrowserTest,

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -43,7 +44,7 @@ using extensions::Extension;
 
 namespace {
 
-Browser* FindOrCreateVisibleBrowser(Profile* profile) {
+BrowserWindowInterface* FindOrCreateVisibleBrowser(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
   if (browser->tab_strip_model()->count() == 0) {
@@ -73,10 +74,12 @@ void ShowAppInstalledNotification(
                                        base::UTF8ToUTF16(extension->name())));
 #else
   Profile* current_profile = profile->GetOriginalProfile();
-  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  CHECK(browser);
-  NavigateParams params(
-      GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
+  BrowserWindowInterface* browser_window =
+      FindOrCreateVisibleBrowser(current_profile);
+  CHECK(browser_window);
+  NavigateParams params(GetSingletonTabNavigateParams(
+      browser_window->GetBrowserForMigrationOnly(),
+      GURL(chrome::kChromeUIAppsURL)));
   Navigate(&params);
 #endif
 }
@@ -106,11 +109,12 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
   // Extensions aren't enabled by default in incognito so we confirm
   // the install in a normal window.
   Profile* current_profile = profile()->GetOriginalProfile();
-  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  CHECK(browser);
+  BrowserWindowInterface* browser_window =
+      FindOrCreateVisibleBrowser(current_profile);
+  CHECK(browser_window);
 
   if (!extension->is_app()) {
-    ShowBubble(extension, browser, profile(), *icon);
+    ShowBubble(extension, browser_window, profile(), *icon);
     return;
   }
 

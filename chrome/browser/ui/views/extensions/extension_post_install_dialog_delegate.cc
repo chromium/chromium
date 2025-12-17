@@ -16,13 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
-#include "chrome/browser/ui/extensions/extension_installed_waiter.h"
+#include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -35,6 +34,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -189,20 +189,24 @@ void ExtensionPostInstallDialogDelegate::LinkClicked() {
 
 void ExtensionInstallUIDesktop::ShowBubble(
     scoped_refptr<const extensions::Extension> extension,
-    Browser* browser,
+    BrowserWindowInterface* browser_window,
     Profile* profile,
     const SkBitmap& icon) {
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  ExtensionInstalledWaiter::WaitForInstall(
-      extension, browser,
+  browser_window->GetFeatures().extension_installed_watcher()->WaitForInstall(
+      extension->id(),
       base::BindOnce(
           [](Profile* profile, scoped_refptr<const extensions::Extension> ext,
-             content::WebContents* contents, const SkBitmap& image) {
+             BrowserWindowInterface* bwi, const SkBitmap& image,
+             bool installed) {
+            if (!installed) {
+              return;
+            }
+            content::WebContents* web_contents =
+                bwi->GetActiveTabInterface()->GetContents();
             ShowExtensionPostInstallDialog(
-                profile, contents,
+                profile, web_contents,
                 std::make_unique<ExtensionPostInstallDialogModel>(
                     profile, ext.get(), image));
           },
-          profile, extension, web_contents, icon));
+          profile, extension, browser_window, icon));
 }
