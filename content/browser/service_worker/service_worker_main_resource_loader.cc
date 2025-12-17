@@ -86,15 +86,6 @@ const std::string_view ComposeNavigationTypeString(
              : "CrossOriginNavigation";
 }
 
-// Check the eligibility based on the allowlist. This doesn't mean the
-// experiment is actually enabled. The eligibility is checked and UMA is
-// reported for the analysis purpose.
-bool HasAutoPreloadEligibleScript(scoped_refptr<ServiceWorkerVersion> version) {
-  return content::service_worker_loader_helpers::
-      FetchHandlerBypassedHashStrings()
-          .contains(version->sha256_script_checksum());
-}
-
 void MaybeSetHeaderReceivedTiming(net::LoadTimingInfo& timing) {
   if (timing.receive_headers_start.is_null()) {
     timing.receive_headers_start = base::TimeTicks::Now();
@@ -488,13 +479,6 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
           /*default_value=*/true) &&
       (GetContentClient()->browser()->HasWebRequestAPIProxy(
           context->browser_context()))) {
-    return false;
-  }
-
-  bool use_allowlist = base::GetFieldTrialParamByFeatureAsBool(
-      features::kServiceWorkerAutoPreload, "use_allowlist",
-      /*default_value=*/false);
-  if (use_allowlist && !HasAutoPreloadEligibleScript(version)) {
     return false;
   }
 
