@@ -47,7 +47,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_constants.h"
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   Browser* browser = CreateGuestBrowser();
   TestBrowserClosedWaiter close_waiter(browser);
 
-  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  chrome::CloseAllBrowsersWithProfile(browser->profile());
   ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
 }
@@ -1015,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
 
   browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                 base::Seconds(60) * 60);
-  BrowserList::CloseAllBrowsersWithProfile(browser->profile());
+  chrome::CloseAllBrowsersWithProfile(browser->profile());
   ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }

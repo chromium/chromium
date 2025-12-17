@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -396,6 +397,23 @@ size_t GetIncognitoBrowserCount() {
 size_t GetTabbedBrowserCount(Profile* profile) {
   return GetBrowserCountImpl(
       profile, kMatchNormal | kIncludeBrowsersScheduledForDeletion);
+}
+
+void CloseAllBrowsersWithProfile(Profile* profile) {
+  ProfileBrowserCollection* browser_collection =
+      ProfileBrowserCollection::GetForProfile(profile);
+  if (!browser_collection) {
+    return;
+  }
+
+  browser_collection->ForEach(
+      [profile](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->GetOriginalProfile() ==
+            profile->GetOriginalProfile()) {
+          browser->GetWindow()->Close();
+        }
+        return true;
+      });
 }
 
 size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
