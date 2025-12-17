@@ -314,8 +314,6 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
   // Ignore the request if the browser cannot upload data.
   if (auth_check_result !=
       enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
-    // users.
     request->FinishRequest(auth_check_result,
                            enterprise_connectors::ContentAnalysisResponse());
     return;
