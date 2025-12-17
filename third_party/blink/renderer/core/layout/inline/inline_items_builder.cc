@@ -228,6 +228,13 @@ inline bool IsNonOrc16BitCharacter(UChar ch) {
   return ch >= 0x100 && ch != uchar::kObjectReplacementCharacter;
 }
 
+// text-transform: full-width collapses spaces into ideographic space (U+3000).
+inline UChar GetCollapsedSpaceChar(const ComputedStyle* style) {
+  return style && style->TextTransform() == ETextTransform::kFullWidth
+             ? uchar::kIdeographicSpace
+             : uchar::kSpace;
+}
+
 }  // anonymous namespace
 
 template <typename MappingBuilder>
@@ -859,7 +866,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     DCHECK(i);
     unsigned collapsed_length = i;
     if (insert_space) {
-      text_.Append(uchar::kSpace);
+      text_.Append(GetCollapsedSpaceChar(style));
       mapping_builder_.AppendIdentityMapping(1);
       collapsed_length--;
     }
@@ -928,7 +935,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
         space_run_has_newline = false;
       } else {
         // If the segment break rules did not remove the run, append a space.
-        text_.Append(uchar::kSpace);
+        text_.Append(GetCollapsedSpaceChar(style));
         mapping_builder_.AppendIdentityMapping(1);
         start_of_spaces++;
         end_collapse = InlineItem::kCollapsible;
@@ -1360,7 +1367,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::RemoveTrailingCollapsibleSpace(
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
   unsigned space_offset = item->EndOffset() - 1;
-  DCHECK_EQ(text_[space_offset], uchar::kSpace);
+  DCHECK(text_[space_offset] == uchar::kSpace ||
+         text_[space_offset] == uchar::kIdeographicSpace);
   text_.erase(space_offset);
   mapping_builder_.CollapseTrailingSpace(space_offset);
 
@@ -1399,13 +1407,14 @@ void InlineItemsBuilderTemplate<
       To<LayoutText>(*item->GetLayoutObject()), item->EndOffset());
 
   // TODO(kojii): Implement StringBuilder::insert().
+  UChar space_char = GetCollapsedSpaceChar(item->Style());
   if (text_.length() == item->EndOffset()) {
-    text_.Append(' ');
+    text_.Append(space_char);
   } else {
     String current = text_.ToString();
     text_.Clear();
     text_.Append(StringView(current, 0, item->EndOffset()));
-    text_.Append(' ');
+    text_.Append(space_char);
     text_.Append(StringView(current, item->EndOffset()));
   }
 
