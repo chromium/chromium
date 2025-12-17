@@ -33,12 +33,14 @@ class OpenTabHelper {
     std::optional<int> bookmark_id;
   };
 
+#if !BUILDFLAG(IS_ANDROID)
   // Finds the current browser or creates a new browser that's appropriate to
   // show the given `validated_url`. Returns an error on failure.
   static base::expected<BrowserWindowInterface*, std::string>
   FindOrCreateBrowser(const GURL& validated_url,
                       ExtensionFunction& function,
                       bool create_if_needed);
+#endif
 
   // Opens a new tab given an extension function `function` and creation
   // parameters `params`. If a tab can be produced, it will return the newly-

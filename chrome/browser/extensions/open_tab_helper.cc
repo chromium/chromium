@@ -11,23 +11,31 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "ui/base/base_window.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#endif
+
 namespace extensions {
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
                                              bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -48,12 +56,14 @@ BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
   browser->GetWindow()->Show();
   return browser;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
 OpenTabHelper::Params::Params() = default;
 OpenTabHelper::Params::~Params() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 base::expected<BrowserWindowInterface*, std::string>
 OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
@@ -131,6 +141,7 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
 
   return browser;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
@@ -156,22 +167,13 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // will override this default.
   bool active = params.active.value_or(true);
 
-  // Default to not pinning the tab. Setting the 'pinned' property to true
-  // will override this default.
-  bool pinned = params.pinned.value_or(false);
-
   // If index is specified, honor the value, but keep it bound to
   // -1 <= index <= tab_strip->count() where -1 invokes the default behavior.
   int index = params.index.value_or(-1);
-  index = std::clamp(
-      index, -1,
-      browser.GetBrowserForMigrationOnly()->tab_strip_model()->count());
+  TabListInterface* tab_list = TabListInterface::From(&browser);
+  CHECK(tab_list);
+  index = std::clamp(index, -1, tab_list->GetTabCount());
 
-  int add_types = active ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
-  add_types |= AddTabTypes::ADD_FORCE_INDEX;
-  if (pinned) {
-    add_types |= AddTabTypes::ADD_PINNED;
-  }
   NavigateParams navigate_params(&browser, validated_url,
                                  ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = active
@@ -179,7 +181,22 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
                                     : WindowOpenDisposition::NEW_BACKGROUND_TAB;
   navigate_params.tabstrip_index = index;
   navigate_params.user_gesture = false;
+
+  // TODO(https://crbug.com/430344931): `NavigateParams::tabstrip_add_types`
+  // isn't supported on android builds yet.
+#if !BUILDFLAG(IS_ANDROID)
+  // Default to not pinning the tab. Setting the 'pinned' property to true
+  // will override this default.
+  bool pinned = params.pinned.value_or(false);
+
+  int add_types = active ? AddTabTypes::ADD_ACTIVE : AddTabTypes::ADD_NONE;
+  add_types |= AddTabTypes::ADD_FORCE_INDEX;
+  if (pinned) {
+    add_types |= AddTabTypes::ADD_PINNED;
+  }
   navigate_params.tabstrip_add_types = add_types;
+#endif
+
   // Ensure that this navigation will not get 'captured' into PWA windows, as
   // this means that `browser` could be ignored. It may be useful/desired in
   // the future to allow this behavior, but this may require an API change, and
