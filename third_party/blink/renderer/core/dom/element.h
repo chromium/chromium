@@ -306,7 +306,7 @@ class CORE_EXPORT Element : public ContainerNode {
     kForce = 1,
   };
 
-  // Animatable implementation (most of it in animatable.cc).
+  // Animatable implementation.
   // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
 
   // Returns the target element of the animation that these methods are being

@@ -43,17 +43,33 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/effect_input.h"
+#include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/core/animation/timing_input.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -71,14 +87,17 @@
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
 #include "third_party/blink/renderer/core/css/resolver/selector_filter_parent_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
@@ -245,9 +264,11 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -615,6 +636,155 @@ Element::Element(const QualifiedName& tag_name,
 
 Element* Element::GetAnimationTarget() {
   return this;
+}
+
+namespace {
+
+V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
+    const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options) {
+  switch (options->GetContentType()) {
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kKeyframeAnimationOptions:
+      return MakeGarbageCollected<
+          V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
+          options->GetAsKeyframeAnimationOptions());
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kUnrestrictedDouble:
+      return MakeGarbageCollected<
+          V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
+          options->GetAsUnrestrictedDouble());
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
+Animation* Element::animate(
+    ScriptState* script_state,
+    const ScriptValue& keyframes,
+    const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return nullptr;
+  }
+  Element* element = GetAnimationTarget();
+  if (!element->GetExecutionContext()) {
+    return nullptr;
+  }
+  KeyframeEffect* effect =
+      KeyframeEffect::Create(script_state, element, keyframes,
+                             CoerceEffectOptions(options), exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  // Creation of the keyframe effect parses JavaScript, which could result
+  // in destruction of the execution context. Recheck that it is still valid.
+  if (!element->GetExecutionContext()) {
+    return nullptr;
+  }
+
+  if (!options->IsKeyframeAnimationOptions()) {
+    return element->GetDocument().Timeline().Play(effect, exception_state);
+  }
+
+  Animation* animation;
+  const KeyframeAnimationOptions* options_dict =
+      options->GetAsKeyframeAnimationOptions();
+  if (!options_dict->hasTimeline()) {
+    animation = element->GetDocument().Timeline().Play(effect, exception_state);
+  } else if (AnimationTimeline* timeline = options_dict->timeline()) {
+    animation = timeline->Play(effect, exception_state);
+  } else {
+    animation = Animation::Create(element->GetExecutionContext(), effect,
+                                  nullptr, exception_state);
+  }
+
+  if (!animation) {
+    return nullptr;
+  }
+
+  animation->setId(options_dict->id());
+
+  // ViewTimeline options.
+  if (options_dict->hasRangeStart()) {
+    animation->SetRangeStartInternal(TimelineOffset::Create(
+        element, options_dict->rangeStart(), 0, exception_state));
+  }
+  if (options_dict->hasRangeEnd()) {
+    animation->SetRangeEndInternal(TimelineOffset::Create(
+        element, options_dict->rangeEnd(), 100, exception_state));
+  }
+  return animation;
+}
+
+// https://w3.org/TR/web-animations-1/#dom-animatable-animate
+Animation* Element::animate(ScriptState* script_state,
+                            const ScriptValue& keyframes,
+                            ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return nullptr;
+  }
+  Element* element = GetAnimationTarget();
+  if (!element->GetExecutionContext()) {
+    return nullptr;
+  }
+  KeyframeEffect* effect =
+      KeyframeEffect::Create(script_state, element, keyframes, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  // Creation of the keyframe effect parses JavaScript, which could result
+  // in destruction of the execution context. Recheck that it is still valid.
+  if (!element->GetExecutionContext()) {
+    return nullptr;
+  }
+
+  return element->GetDocument().Timeline().Play(effect, exception_state);
+}
+
+// https://w3.org/TR/web-animations-1/#dom-animatable-getanimations
+HeapVector<Member<Animation>> Element::getAnimations(
+    GetAnimationsOptions* options) {
+  bool use_subtree = options && options->subtree();
+  return GetAnimationsInternal(
+      GetAnimationsOptionsResolved{.use_subtree = use_subtree});
+}
+
+HeapVector<Member<Animation>> Element::GetAnimationsInternal(
+    GetAnimationsOptionsResolved options) {
+  Element* element = GetAnimationTarget();
+  if (options.use_subtree) {
+    element->GetDocument().UpdateStyleAndLayoutTreeForSubtree(
+        element, DocumentUpdateReason::kWebAnimation);
+  } else {
+    element->GetDocument().UpdateStyleAndLayoutTreeForElement(
+        element, DocumentUpdateReason::kWebAnimation);
+  }
+
+  HeapVector<Member<Animation>> animations;
+  if (!options.use_subtree && !element->HasAnimations()) {
+    return animations;
+  }
+
+  for (const auto& animation :
+       element->GetDocument().GetDocumentAnimations().getAnimations(
+           element->GetTreeScope())) {
+    DCHECK(animation->effect());
+    // TODO(gtsteel) make this use the idl properties
+    Element* target = To<KeyframeEffect>(animation->effect())->EffectTarget();
+    if (element == target ||
+        (options.use_subtree && element->contains(target))) {
+      // DocumentAnimations::getAnimations should only give us animations that
+      // are either current or in effect.
+      DCHECK(animation->effect()->IsCurrent() ||
+             animation->effect()->IsInEffect());
+      animations.push_back(animation);
+    }
+  }
+  return animations;
 }
 
 bool Element::HasElementFlag(ElementFlags mask) const {

@@ -20,7 +20,6 @@ buildflag_header("buildflags") {
 
 blink_core_sources("animation") {
   sources = [
-    "animatable.cc",
     "animation.cc",
     "animation.h",
     "animation_clock.cc",
