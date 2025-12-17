@@ -428,6 +428,14 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
                    base::ToValueList(component_->data.managed_allowlist));
     debug_data.Set("blocklist", base::ToValueList(component_->data.blocklist));
 
+    auto* user_install_allowlist =
+        debug_data.EnsureDict("user_install_allowlist");
+    for (const auto& [web_bundle_id, user_install_allowlist_entry] :
+         component_->data.user_install_allowlist) {
+      user_install_allowlist->Set(web_bundle_id,
+                                  user_install_allowlist_entry.AsDebugValue());
+    }
+
     auto* key_rotations = debug_data.EnsureDict("key_rotations");
     for (const auto& [web_bundle_id, kr_info] :
          component_->data.key_rotations) {
