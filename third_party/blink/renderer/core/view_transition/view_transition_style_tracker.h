@@ -68,7 +68,7 @@ class ViewTransitionStyleTracker
     bool operator==(const ContainerProperties& other) const = default;
 
     // The rect used to compute the reference rect, which is what's eventually
-    // used fo the projecting the content to the coordinate space of the
+    // used for projecting the content to the coordinate space of the
     // pseudo-element. It is in layer space, as the contents are captured in
     // layer space.
     PhysicalRect border_box_rect_in_enclosing_layer_css_space;

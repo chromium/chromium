@@ -513,8 +513,12 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   if (!layer) {
     return;
   }
-  auto rect = paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
-  layer->SetBounds(rect.PixelSnappedSize());
+
+  PhysicalRect box_border_rect =
+      paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
+  PhysicalRect ink_overflow_rect = object.ApplyFiltersToRect(box_border_rect);
+  PhysicalOffset paint_offset = ink_overflow_rect.offset;
+  layer->SetBounds(ink_overflow_rect.PixelSnappedSize());
   layer->SetIsDrawable(true);
 
   PropertyTreeStateOrAlias properties =
@@ -522,11 +526,9 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   DCHECK(effect);
   properties.SetEffect(*effect);
 
-  // TODO(crbug.com/405117383): layer size and paint offset may need to be
-  // adjusted for ink overflow.
-  RecordForeignLayer(context, paint_layer_,
-                     DisplayItem::kForeignLayerViewTransitionContent,
-                     std::move(layer), gfx::Point(), &properties);
+  RecordForeignLayer(
+      context, paint_layer_, DisplayItem::kForeignLayerViewTransitionContent,
+      std::move(layer), ToRoundedPoint(paint_offset), &properties);
 }
 
 PaintResult PaintLayerPainter::PaintTransitionPseudos(
