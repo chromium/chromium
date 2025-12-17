@@ -351,6 +351,7 @@ suite('CrActionMenu', function() {
     assertTrue(dialog.open);
     assertEquals(`${config.left}px`, dialog.style.left);
     assertEquals(`${config.top}px`, dialog.style.top);
+    assertTrue(menu.getDialog().matches(':modal'));
     menu.close();
 
     // Align the menu's bottom-right to the anchor's top-left.
@@ -683,6 +684,54 @@ suite('CrActionMenu', function() {
       await new Promise(resolve => requestAnimationFrame(resolve));
       assertEquals(
           menu.querySelector('.dropdown-item'), getDeepActiveElement());
+    });
+  });
+
+  suite('NonModal', function() {
+    let menu: CrActionMenuElement;
+    let dots: HTMLElement;
+
+    setup(function() {
+      document.body.innerHTML = getTrustedStaticHtml`
+        <button id="dots">...</button>
+        <cr-action-menu non-modal>
+          <button class="dropdown-item">Item</button>
+        </cr-action-menu>
+      `;
+      menu = document.querySelector('cr-action-menu')!;
+      dots = document.querySelector('#dots')!;
+    });
+
+    test('verifies opening and positioning', function() {
+      // Use showAtPosition directly to test exact coordinates.
+      // showAt() adds alignment logic relative to the anchor (e.g. right-align)
+      // which makes asserting specific pixel values difficult.
+      menu.showAtPosition({top: 100, left: 200});
+
+      assertTrue(menu.getDialog().open);
+      assertEquals('100px', menu.getDialog().style.top);
+      assertEquals('200px', menu.getDialog().style.left);
+      assertFalse(menu.getDialog().matches(':modal'));
+    });
+
+    test('close on Tab key', async function() {
+      // showAsNonModal doesn't use the native dialog focus trap.
+      // We must verify our custom 'Tab' handler works.
+      menu.showAt(dots);
+      assertTrue(menu.getDialog().open);
+
+      const whenFired = eventToPromise('tabkeyclose', menu);
+      keyDownOn(menu, 0, [], 'Tab');
+
+      await whenFired;
+      assertFalse(menu.getDialog().open);
+    });
+
+    test('close on Escape key', function() {
+      menu.showAt(dots);
+      assertTrue(menu.getDialog().open);
+      keyDownOn(menu, 0, [], 'Escape');
+      assertFalse(menu.getDialog().open);
     });
   });
 });
