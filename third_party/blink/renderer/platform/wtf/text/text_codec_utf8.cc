@@ -250,22 +250,6 @@ void TextCodecUtf8::FillPartialSequenceBytes(
   }
 }
 
-void TextCodecUtf8::HandleError(int character,
-                                base::span<UChar>& destination,
-                                bool stop_on_error,
-                                bool& saw_error) {
-  saw_error = true;
-  if (stop_on_error)
-    return;
-  // Each error generates a replacement character and consumes 1-3 bytes.
-  destination.take_first<1u>()[0] = uchar::kReplacementCharacter;
-  DCHECK(IsNonCharacter(character));
-  size_t num_bytes_consumed = LengthOfNonCharacter(character);
-  DCHECK_GE(num_bytes_consumed, 1u);
-  DCHECK_LE(num_bytes_consumed, 3u);
-  ConsumePartialSequenceBytes(num_bytes_consumed);
-}
-
 bool TextCodecUtf8::NeedMoreData(size_t sequence_length,
                                  int character,
                                  bool flush) const {
@@ -295,21 +279,24 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
       continue;
     }
     size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
-    if (!count)
-      return true;
-
-    if (count > partial_sequence_size_) {
-      FillPartialSequenceBytes(count, source);
+    int character;
+    if (!count) {
+      character = kNonCharacter1;
+    } else {
+      if (count > partial_sequence_size_) {
+        FillPartialSequenceBytes(count, source);
+      }
+      character =
+          DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+      if (NeedMoreData(count, character, flush)) {
+        return false;
+      }
     }
-    const int character =
-        DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
-    if (NeedMoreData(count, character, flush)) {
-      return false;
-    }
-
-    if (character & ~0xff)
+    // The character is invalid or outside the Latin-1 range. Both of these
+    // cases are handled by the UTF-16 code-path.
+    if (character & ~0xff) {
       return true;
-
+    }
     // `count` should be always be two here and the partial buffer can't
     // contain more code units than that at this point. ASCII characters can't
     // be partial, and all Latin-1 characters can be encoded with two code
@@ -337,31 +324,28 @@ bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
       continue;
     }
     size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
+    int character;
     if (!count) {
-      HandleError(kNonCharacter1, destination, stop_on_error, saw_error);
-      if (stop_on_error)
+      character = kNonCharacter1;
+    } else {
+      if (count > partial_sequence_size_) {
+        FillPartialSequenceBytes(count, source);
+      }
+      character =
+          DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+      if (NeedMoreData(count, character, flush)) {
         return false;
-      continue;
+      }
     }
-
-    if (count > partial_sequence_size_) {
-      FillPartialSequenceBytes(count, source);
-    }
-    const int character =
-        DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
-    if (NeedMoreData(count, character, flush)) {
-      return false;
-    }
-
     if (IsNonCharacter(character)) {
-      HandleError(character, destination, stop_on_error, saw_error);
+      saw_error = true;
       if (stop_on_error)
         return false;
-      continue;
+      count = LengthOfNonCharacter(character);
+      character = uchar::kReplacementCharacter;
     }
-
-    ConsumePartialSequenceBytes(count);
     destination = AppendCharacter(destination, character);
+    ConsumePartialSequenceBytes(count);
   } while (partial_sequence_size_);
 
   return false;
@@ -527,15 +511,11 @@ upConvertTo16Bit:
         if (stop_on_error)
           break;
         // Each error generates one replacement character and consumes the
-        // 'largest subpart' of the incomplete character.
-        // Note that the kNonCharacterX constants go from -1..-3 and contain
-        // the negative of number of bytes comprising the broken encoding
-        // detected. So subtracting c (when IsNonCharacter(c)) adds the number
-        // of broken bytes.
-        destination16.take_first<1u>()[0] = uchar::kReplacementCharacter;
-
-        source = source.subspan(LengthOfNonCharacter(character));
-        continue;
+        // 'largest subpart' of the incomplete character. Note that the
+        // kNonCharacterX constants go from -1..-3 and contain the negative of
+        // number of bytes comprising the broken encoding detected.
+        count = LengthOfNonCharacter(character);
+        character = uchar::kReplacementCharacter;
       }
       source = source.subspan(count);
       destination16 = AppendCharacter(destination16, character);

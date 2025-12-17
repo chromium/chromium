@@ -78,10 +78,6 @@ class TextCodecUtf8 : public TextCodec {
                              bool flush,
                              bool stop_on_error,
                              bool& saw_error);
-  void HandleError(int character,
-                   base::span<UChar>& destination,
-                   bool stop_on_error,
-                   bool& saw_error);
   void FillPartialSequenceBytes(size_t sequence_length,
                                 base::span<const uint8_t>& source);
   bool NeedMoreData(size_t sequence_length, int character, bool flush) const;
