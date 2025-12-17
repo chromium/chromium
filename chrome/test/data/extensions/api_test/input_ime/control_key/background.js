@@ -9,8 +9,7 @@ chrome.inputMethodPrivate.setCurrentInputMethod(
     });
 
 chrome.input.ime.onKeyEvent.addListener(function(unusedEngineID, keyData) {
-  // TODO(crbug.com/467185174): 'Ctrl' should be 'Control".
-  if (keyData.type == 'keydown' && keyData.key === 'Ctrl') {
+  if (keyData.type == 'keydown' && keyData.key === 'Control') {
     chrome.test.succeed();
   }
 

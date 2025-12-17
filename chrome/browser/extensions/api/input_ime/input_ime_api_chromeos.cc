@@ -150,10 +150,12 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
   }
 }
 
+// TODO(crbug.com/467185174): Compare these values against DOM spec and fix
+// inconsistencies.
 std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   const std::string code = event.GetCodeString();
   if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE))
-    return "Ctrl";
+    return "Control";
   if (base::StartsWith(code, "Shift", base::CompareCase::SENSITIVE))
     return "Shift";
   if (base::StartsWith(code, "Alt", base::CompareCase::SENSITIVE))
