@@ -78,8 +78,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer);
 
   // crosapi::mojom::VpnServiceForExtension:
-  void CreateConfiguration(const std::string& configuration_name,
-                           CreateConfigurationCallback) override;
   void DestroyConfiguration(const std::string& configuration_name,
                             DestroyConfigurationCallback) override;
 
@@ -240,6 +238,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
 class VpnServiceForExtensionAsh::VpnConfiguration
     : public ash::ShillThirdPartyVpnObserver {
  public:
+  virtual const std::string& extension_id() const = 0;
   virtual const std::string& configuration_name() const = 0;
   virtual const std::string& key() const = 0;
   virtual const std::string& object_path() const = 0;

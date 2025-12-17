@@ -139,6 +139,12 @@ class VpnService : public extensions::api::VpnServiceInterface,
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
   GetVpnServiceForExtension(const std::string& extension_id);
 
+  // Looks up the configuration identified by the given name and the extension
+  // it belongs to.
+  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
+      const std::string& extension_id,
+      const std::string& configuration_name);
+
   // Sends the given event to the given extension.
   void SendToExtension(const std::string& extension_id,
                        std::unique_ptr<extensions::Event> event);
@@ -154,6 +160,19 @@ class VpnService : public extensions::api::VpnServiceInterface,
   crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
   CreateConfigurationInternal(const std::string& extension_id,
                               const std::string& configuration_name);
+
+  // Callback used to indicate that configuration creation succeeded.
+  void OnCreateConfigurationSuccess(
+      SuccessCallback callback,
+      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
+      const std::string& service_path,
+      const std::string&);
+
+  // Callback used to indicate that configuration creation failed.
+  void OnCreateConfigurationFailure(
+      FailureCallback callback,
+      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
+      const std::string& error_name);
 
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.

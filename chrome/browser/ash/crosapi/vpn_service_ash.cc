@@ -79,62 +79,6 @@ void VpnServiceForExtensionAsh::BindReceiverAndObserver(
   observers_.Add(std::move(observer));
 }
 
-void VpnServiceForExtensionAsh::CreateConfiguration(
-    const std::string& configuration_name,
-    CreateConfigurationCallback callback) {
-  if (configuration_name.empty()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Empty name not supported.");
-    return;
-  }
-
-  const std::string key = GetKey(extension_id(), configuration_name);
-  if (base::Contains(controller_->key_to_configuration_map_, key)) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Name not unique.");
-    return;
-  }
-
-  // Since the API is only designed to be used with the primary profile, it's
-  // safe to get the hash of the primary profile here.
-  const ash::NetworkProfile* profile =
-      ash::NetworkHandler::Get()
-          ->network_profile_handler()
-          ->GetProfileForUserhash(ash::ProfileHelper::GetUserIdHashFromProfile(
-              ProfileManager::GetPrimaryUserProfile()));
-  if (!profile) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "No user profile for unshared network configuration.");
-    return;
-  }
-
-  VpnConfiguration* configuration = controller_->CreateConfigurationInternal(
-      extension_id(), configuration_name);
-
-  auto properties =
-      base::Value::Dict()
-          .Set(shill::kTypeProperty, shill::kTypeVPN)
-          .Set(shill::kNameProperty, configuration_name)
-          .Set(shill::kProviderHostProperty, extension_id())
-          .Set(shill::kObjectPathSuffixProperty, key)
-          .Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn)
-          .Set(shill::kProfileProperty, profile->path)
-          .Set(shill::kGuidProperty,
-               base::Uuid::GenerateRandomV4().AsLowercaseString());
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::NetworkHandler::Get()
-      ->network_configuration_handler()
-      ->CreateShillConfiguration(
-          std::move(properties),
-          base::BindOnce(
-              &VpnServiceForExtensionAsh::OnCreateConfigurationSuccess,
-              weak_factory_.GetWeakPtr(), std::move(success), configuration),
-          base::BindOnce(
-              &VpnServiceForExtensionAsh::OnCreateConfigurationFailure,
-              weak_factory_.GetWeakPtr(), std::move(failure), configuration));
-}
-
 void VpnServiceForExtensionAsh::DestroyConfiguration(
     const std::string& configuration_name,
     DestroyConfigurationCallback callback) {

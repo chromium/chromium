@@ -480,6 +480,20 @@ class TestEventObserverForExtension
   void OnPacketReceived(const std::vector<uint8_t>& data) override {}
 };
 
+using SuccessOrFailureCallback =
+    base::OnceCallback<void(crosapi::mojom::VpnErrorResponsePtr)>;
+
+void RunSuccessCallback(SuccessOrFailureCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
+void RunFailureCallback(SuccessOrFailureCallback callback,
+                        const std::string& error_name,
+                        const std::string& error_message) {
+  std::move(callback).Run(
+      crosapi::mojom::VpnErrorResponse::New(error_name, error_message));
+}
+
 // Tests that the per-extension crosapi connection between ash and browser
 // is initialized by the moment ash decides to send a platform message to the
 // browser.
@@ -493,7 +507,14 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
       receiver.BindNewPipeAndPassRemote());
 
   base::test::TestFuture<crosapi::mojom::VpnErrorResponsePtr> future;
-  remote->CreateConfiguration(kTestConfig, future.GetCallback());
+  auto callback = future.GetCallback();
+  auto [success, failure] = base::SplitOnceCallback(std::move(callback));
+
+  service()->CreateConfiguration(
+      extension_id(), kTestConfig,
+      base::BindOnce(&RunSuccessCallback, std::move(success)),
+      base::BindOnce(&RunFailureCallback, std::move(failure)));
+
   auto error = future.Take();
   ASSERT_FALSE(error) << "CreateConfiguration failed with |message| = "
                       << error->message.value_or(std::string{});
