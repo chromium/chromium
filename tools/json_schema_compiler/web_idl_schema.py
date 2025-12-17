@@ -181,15 +181,29 @@ def _ExtractNodeComment(node: IDLNode) -> str:
   if ext_attribute_node is not None:
     return _ExtractNodeComment(ext_attribute_node)
 
-  # Look through the lines above the current node and extract every consecutive
-  # line that is a comment until a blank or non-comment line is found.
+  # Since we do the logic above for extended attributes, the 'parent' is
+  # actually the grandparent for them.
+  if node.GetClass() == 'ExtAttributes':
+    parent_node = node.GetParent().GetParent()
+  else:
+    parent_node = node.GetParent()
+
   filename, line_number = node.GetFileAndLine()
+  _, parent_line_number = parent_node.GetFileAndLine()
+
+  # If a definition is packed into a single line, we don't want to incorrectly
+  # attribute a comment meant for the parent node onto a child.
+  if line_number == parent_line_number:
+    return ''
 
   # In theory the IDL parser shouldn't annotate any of our nodes with line
   # number 0, but in case it does we throw an error to make it obvious.
   assert line_number > 0, node.GetLogLine(
       'Attempted to extract a description comment for an IDL node, but the line'
       ' number of the node was reported as 0: %s.' % (node.GetName()))
+
+  # Look through the lines above the current node and extract every consecutive
+  # line that is a comment until a blank or non-comment line is found.
   lines = []
   while line_number > 0:
     line = linecache.getline(filename, line_number - 1)

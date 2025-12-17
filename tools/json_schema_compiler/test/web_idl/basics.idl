@@ -148,6 +148,9 @@ enum EnumType {
   "name2"
 };
 
+// Single line enum.
+enum SingleLineEnum {"value1", "value2"};
+
 partial dictionary ExtensionManifest {
   // Description of a manifest key.
   required DOMString string_key;
