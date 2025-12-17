@@ -171,9 +171,10 @@ class FakeTabDragDelegate : public TabDragDelegate {
   ~FakeTabDragDelegate() override = default;
 
   // TabDragDelegate:
-  void OnTabDragUpdated(TabDragDelegate::DragController& controller,
+  TabDragContext* OnTabDragUpdated(TabDragDelegate::DragController& controller,
                         const gfx::Point& point_in_screen) override {
     drag_updated_ = true;
+    return nullptr;
   }
   void OnTabDragEntered() override { drag_entered_ = true; }
   void OnTabDragExited() override { drag_exited_ = true; }

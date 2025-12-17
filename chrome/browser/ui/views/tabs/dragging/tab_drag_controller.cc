@@ -898,7 +898,12 @@ TabDragController::Liveness TabDragController::ContinueDragging(
     target_context = context;
     UpdateDragTarget(drop_target);
     if (current_drag_delegate_) {
-      current_drag_delegate_->OnTabDragUpdated(*this, point_in_screen);
+      TabDragContext* delegate_context =
+          current_drag_delegate_->OnTabDragUpdated(*this, point_in_screen);
+      if (!delegate_context && current_state_ == DragState::kDraggingWindow) {
+        delegate_context = attached_context_;
+      }
+      target_context = delegate_context;
     }
   }
 
@@ -1222,11 +1227,8 @@ TabDragController::GetDragTargetForPoint(gfx::Point point_in_screen) {
       } else if (TabDragDelegate* candidate =
                      GetTabDragPointResolver()->GetDragTarget(
                          *browser_view, point_in_screen)) {
-        return std::tuple(Liveness::kAlive,
-                          current_state_ == DragState::kDraggingWindow
-                              ? attached_context_.get()
-                              : nullptr,
-                          candidate);
+        // The delegate will provide the context to attach to.
+        return std::tuple(Liveness::kAlive, nullptr, candidate);
       }
     }
   }

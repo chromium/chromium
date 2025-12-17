@@ -102,8 +102,11 @@ class TabDragDelegate {
 
   // Invoked on each iteration of the drag loop where this is the delegate of
   // the drag controller.
-  virtual void OnTabDragUpdated(TabDragDelegate::DragController& controller,
-                                const gfx::Point& point_in_screen) = 0;
+  // Returns the context to attach to, or nullptr if the tabs should be dragged
+  // in their own window.
+  virtual TabDragContext* OnTabDragUpdated(
+      TabDragDelegate::DragController& controller,
+      const gfx::Point& point_in_screen) = 0;
 
   // Invoked when this delegate is no longer targeted by the controller.
   virtual void OnTabDragExited() = 0;

@@ -56,8 +56,8 @@ class MultiContentsViewDropTargetController final
       const MultiContentsViewDropTargetController&) = delete;
 
   // TabDragDelegate
-  void OnTabDragUpdated(TabDragDelegate::DragController& controller,
-                        const gfx::Point& point_in_screen) override;
+  TabDragContext* OnTabDragUpdated(TabDragDelegate::DragController& controller,
+                                   const gfx::Point& point_in_screen) override;
   void OnTabDragEntered() override;
   void OnTabDragExited() override;
   void OnTabDragEnded() override;

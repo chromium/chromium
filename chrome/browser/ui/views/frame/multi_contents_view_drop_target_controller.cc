@@ -63,14 +63,14 @@ MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
     MultiContentsDropTargetView::DragType drag_type)
     : drop_side(drop_side), drag_type(drag_type) {}
 
-void MultiContentsViewDropTargetController::OnTabDragUpdated(
+TabDragContext* MultiContentsViewDropTargetController::OnTabDragUpdated(
     TabDragDelegate::DragController& controller,
     const gfx::Point& point_in_screen) {
   // Only allow creating split with a single dragged tab.
   if (controller.GetSessionData().num_dragging_tabs() != 1) {
     ResetDropTargetTimers();
     HideDropTarget();
-    return;
+    return nullptr;
   }
 
   const gfx::Point point_in_parent = views::View::ConvertPointFromScreen(
@@ -78,10 +78,11 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
   if (PointOverlapsWithOSDropTarget(point_in_parent)) {
     ResetDropTargetTimers();
     HideDropTarget();
-    return;
+    return nullptr;
   }
   HandleDragUpdate(point_in_parent,
                    MultiContentsDropTargetView::DragType::kTab);
+  return nullptr;
 }
 
 void MultiContentsViewDropTargetController::OnTabDragEntered() {}
