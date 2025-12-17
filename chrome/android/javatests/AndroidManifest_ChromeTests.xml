@@ -39,7 +39,6 @@
             android:hardwareAccelerated="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density">
         </activity>
-
         <!-- Used by ContextualSearchManagerTest -->
         <activity android:name="android.app.Activity" android:exported="true" >
             <intent-filter>
