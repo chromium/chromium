@@ -121,16 +121,10 @@ LensQueryFlowRouter::GetSuggestInputs() {
 
 void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     base::RepeatingClosure callback) {
-  // If Lens in contextual tasks is enabled, setup a callback to be called when
-  // the file upload status changes, which can then be used to know if the
-  // suggest inputs are ready.
-  if (IsOff()) {
-    return;
-  }
-
   // Return the callback immediately if the suggest inputs are already ready.
   if (AreLensSuggestInputsReady(GetSuggestInputs())) {
     callback.Run();
+    return;
   }
 
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
@@ -247,7 +241,7 @@ void LensQueryFlowRouter::OnFileUploadStatusChanged(
   if (!suggest_inputs.has_value()) {
     return;
   }
-  if (AreLensSuggestInputsReady(GetSuggestInputs())) {
+  if (AreLensSuggestInputsReady(*suggest_inputs)) {
     if (suggest_inputs_ready_callback_) {
       suggest_inputs_ready_callback_.Run();
     }

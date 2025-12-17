@@ -881,6 +881,10 @@ void LensSearchController::HandleInteractionResponse(
 }
 
 void LensSearchController::OnSuggestInputsReady() {
+  if (IsOff()) {
+    return;
+  }
+
   auto suggest_inputs = query_router_->GetSuggestInputs();
   if (suggest_inputs.has_value()) {
     lens_searchbox_controller_->NotifySuggestInputsReady(*suggest_inputs);
