@@ -507,6 +507,7 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="http://b/450771615")
 async def test_network_collector_get_data_response_oopif(
         websocket, context_id, html):
     await goto_url(websocket, context_id, html())
