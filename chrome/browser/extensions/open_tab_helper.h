@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 
 class ExtensionFunction;
 
@@ -30,7 +29,6 @@ class OpenTabHelper {
     std::optional<int> window_id;
     std::optional<std::string> url;
     std::optional<bool> active;
-    std::optional<bool> split;
     std::optional<bool> pinned;
     std::optional<int> index;
     std::optional<int> bookmark_id;
@@ -39,10 +37,10 @@ class OpenTabHelper {
   };
 
   // Opens a new tab given an extension function `function` and creation
-  // parameters `params`. If a tab can be produced, it will return a
-  // base::Value::Dict representing the tab, otherwise it will optionally return
-  // an error message, if any is appropriate.
-  static base::expected<base::Value::Dict, std::string>
+  // parameters `params`. If a tab can be produced, it will return the newly-
+  // added WebContents for the tab; otherwise, it will optionally return an
+  // error message, if any is appropriate.
+  static base::expected<content::WebContents*, std::string>
   OpenTab(ExtensionFunction* function, const Params& params, bool user_gesture);
 };
 

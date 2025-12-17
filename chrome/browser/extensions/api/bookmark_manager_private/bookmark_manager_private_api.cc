@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/open_tab_helper.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -679,15 +681,29 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
 
   OpenTabHelper::Params options;
   options.url = node->url().spec();
-  if (params->params.has_value()) {
-    options.active = params->params.value().active;
-    options.split = params->params.value().split;
+  if (params->params) {
+    options.active = params->params->active;
   }
   options.bookmark_id = node->id();
 
   auto result = OpenTabHelper::OpenTab(this, options, user_gesture());
   if (!result.has_value())
     return Error(result.error());
+
+  content::WebContents* new_contents = result.value();
+
+  if (params->params && params->params->split) {
+    BrowserWindowInterface* browser =
+        browser_window_util::GetBrowserForTabContents(*new_contents);
+    if (browser) {
+      TabStripModel* tab_strip =
+          browser->GetBrowserForMigrationOnly()->tab_strip_model();
+      tab_strip->AddToNewSplit(
+          {tab_strip->GetIndexOfWebContents(new_contents)},
+          split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kExtensionsApi);
+    }
+  }
 
   return NoArguments();
 }

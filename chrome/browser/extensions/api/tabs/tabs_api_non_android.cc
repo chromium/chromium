@@ -43,6 +43,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/open_tab_helper.h"
@@ -206,6 +207,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
       return Error(result.error());
     }
 
+    content::WebContents* new_contents = result.value();
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     tabs_internal::NotifyExtensionTelemetry(
         Profile::FromBrowserContext(browser_context()), extension(),
@@ -214,8 +217,36 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
         js_callstack());
 #endif
 
-    // Return data about the newly created tab.
-    return has_callback() ? WithArguments(std::move(*result)) : NoArguments();
+    // The tab may have been created in a different window, so make sure we look
+    // at the right tab strip.
+    if (opener) {
+      BrowserWindowInterface* browser =
+          browser_window_util::GetBrowserForTabContents(*opener);
+      if (browser) {
+        TabStripModel* const tab_strip =
+            browser->GetBrowserForMigrationOnly()->tab_strip_model();
+        const int new_index = tab_strip->GetIndexOfWebContents(new_contents);
+        // Only set the opener if the opener tab is in the same tab strip as the
+        // new tab.
+        if (new_index != TabStripModel::kNoTab) {
+          tab_strip->SetOpenerOfWebContentsAt(new_index, opener);
+        }
+      }
+    }
+
+    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+        ExtensionTabUtil::GetScrubTabBehavior(
+            extension(), source_context_type(), new_contents);
+
+    // Return data about the created tab only if the extension might use it;
+    // otherwise, don't create the object as a (minor) optimization.
+    if (has_callback()) {
+      return WithArguments(ExtensionTabUtil::CreateTabObject(
+                               new_contents, scrub_tab_behavior, extension())
+                               .ToValue());
+    }
+
+    return NoArguments();
   }());
 }
 

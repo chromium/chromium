@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -59,7 +58,7 @@ OpenTabHelper::Params::Params() = default;
 OpenTabHelper::Params::~Params() = default;
 
 // static
-base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
+base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     ExtensionFunction* function,
     const Params& params,
     bool user_gesture) {
@@ -174,10 +173,6 @@ base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
   // will override this default.
   bool active = params.active.value_or(true);
 
-  // Default to unsplit for the new tab. The presence of the 'split' property
-  // will override this default.
-  bool split = params.split.value_or(false);
-
   // Default to not pinning the tab. Setting the 'pinned' property to true
   // will override this default.
   bool pinned = params.pinned.value_or(false);
@@ -225,46 +220,19 @@ base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
     ui_data->set_bookmark_id(*params.bookmark_id);
   }
 
+  content::WebContents* new_contents =
+      navigate_params.navigated_or_inserted_contents;
+
   // This happens in locked fullscreen mode.
-  if (!navigate_params.navigated_or_inserted_contents) {
+  if (!new_contents) {
     return base::unexpected(ExtensionTabUtil::kLockedFullscreenModeNewTabError);
   }
 
-  // The tab may have been created in a different window, so make sure we look
-  // at the right tab strip.
-  TabStripModel* const tab_strip =
-      navigate_params.browser->GetBrowserForMigrationOnly()->tab_strip_model();
-  const int new_index = tab_strip->GetIndexOfWebContents(
-      navigate_params.navigated_or_inserted_contents);
-  if (params.opener_tab) {
-    // Only set the opener if the opener tab is in the same tab strip as the
-    // new tab.
-    if (tab_strip->GetIndexOfWebContents(params.opener_tab) !=
-        TabStripModel::kNoTab) {
-      tab_strip->SetOpenerOfWebContentsAt(new_index, params.opener_tab);
-    }
-  }
-
   if (active) {
-    navigate_params.navigated_or_inserted_contents->SetInitialFocus();
+    new_contents->SetInitialFocus();
   }
 
-  if (split) {
-    tab_strip->AddToNewSplit({new_index}, split_tabs::SplitTabVisualData(),
-                             split_tabs::SplitTabCreatedSource::kExtensionsApi);
-  }
-
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          function->extension(), function->source_context_type(),
-          navigate_params.navigated_or_inserted_contents);
-
-  // Return data about the newly created tab.
-  return ExtensionTabUtil::CreateTabObject(
-             navigate_params.navigated_or_inserted_contents, scrub_tab_behavior,
-             function->extension(),
-             TabListInterface::From(navigate_params.browser), new_index)
-      .ToValue();
+  return new_contents;
 }
 
 }  // namespace extensions
