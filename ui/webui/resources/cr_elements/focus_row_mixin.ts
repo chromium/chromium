@@ -113,8 +113,8 @@ export const FocusRowMixin = dedupingMixin(
               this.onFirstControlKeydown_.bind(this);
 
           afterNextRender(this, () => {
-            const rowContainer =
-                this.root!.querySelector<HTMLElement>('[focus-row-container]');
+            const rowContainer = this.shadowRoot!.querySelector<HTMLElement>(
+                '[focus-row-container]');
             assert(rowContainer);
             this.row_ = new VirtualFocusRow(
                 rowContainer, new FocusRowMixinDelegate(this));
