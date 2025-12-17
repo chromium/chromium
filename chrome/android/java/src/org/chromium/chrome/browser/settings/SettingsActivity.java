@@ -443,7 +443,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mMultiColumnSettings,
                         mItemDecorations,
                         mProfile,
-                        updateFirstVisibleTitle);
+                        updateFirstVisibleTitle,
+                        getModalDialogManagerSupplier());
         mSearchCoordinator.initializeSearchUi();
     }
 

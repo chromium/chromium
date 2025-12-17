@@ -38,6 +38,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -62,6 +63,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -88,6 +90,7 @@ public class SettingsSearchCoordinator {
     private final Handler mHandler = new Handler();
     private final Profile mProfile;
     private final Callback<Integer> mUpdateFirstVisibleTitle;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
@@ -154,7 +157,8 @@ public class SettingsSearchCoordinator {
             @Nullable MultiColumnSettings multiColumnSettings,
             Map<PreferenceFragmentCompat, ContainmentItemDecoration> itemDecorations,
             Profile profile,
-            Callback<Integer> updateFirstVisibleTitle) {
+            Callback<Integer> updateFirstVisibleTitle,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
@@ -162,6 +166,7 @@ public class SettingsSearchCoordinator {
         mItemDecorations = itemDecorations;
         mProfile = profile;
         mUpdateFirstVisibleTitle = updateFirstVisibleTitle;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     /** Initializes search UI, sets up listeners, backpress action handler, etc. */
@@ -726,16 +731,25 @@ public class SettingsSearchCoordinator {
     }
 
     /**
-     * Open the PreferenceFragment chosen from the search results.
+     * Called when a preference is chosen from search results. Open the associated fragment or
+     * activity, and if possible, scrolls to the chosen item and highlights it.
      *
      * @param preferenceFragment Settings fragment to show.
      * @param key The key of the chosen preference in the fragment.
      * @param extras The additional args required to launch the pref.
      */
-    private void onResultSelected(String preferenceFragment, String key, Bundle extras) {
+    private void onResultSelected(@Nullable String preferenceFragment, String key, Bundle extras) {
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
+        if (preferenceFragment == null) {
+            if (MainSettings.openSearchResult(
+                    mActivity, mProfile, key, extras, mModalDialogManagerSupplier.asNonNull())) {
+                enterSearchResultState();
+            }
+            return;
+        }
+
         try {
-            EditText queryEdit = mActivity.findViewById(R.id.search_query);
-            KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
             Class fragment = Class.forName(preferenceFragment);
             Constructor constructor = fragment.getConstructor();
             var pf = (PreferenceFragmentCompat) constructor.newInstance();
@@ -756,7 +770,7 @@ public class SettingsSearchCoordinator {
                                 @NonNull FragmentManager fm,
                                 @NonNull Fragment f,
                                 @NonNull Context context) {
-                            mHandler.post(() -> showResultPreference(pf, key));
+                            mHandler.post(() -> scrollAndHighlightItem(pf, key));
                             fm.unregisterFragmentLifecycleCallbacks(this);
                         }
                     },
@@ -769,6 +783,11 @@ public class SettingsSearchCoordinator {
             Log.e(TAG, "Search result fragment cannot be opened: " + preferenceFragment);
             return;
         }
+
+        enterSearchResultState();
+    }
+
+    private void enterSearchResultState() {
         mFragmentState = FS_RESULTS;
         if (mUseMultiColumn) {
             mActivity.findViewById(R.id.search_query).clearFocus();
@@ -782,7 +801,7 @@ public class SettingsSearchCoordinator {
         }
     }
 
-    private void showResultPreference(PreferenceFragmentCompat fragment, String key) {
+    private void scrollAndHighlightItem(PreferenceFragmentCompat fragment, String key) {
         RecyclerView listView = fragment.getListView();
         assert listView.getAdapter() instanceof PreferencePositionCallback
                 : "Recycler adapter must implement PreferencePositionCallback";

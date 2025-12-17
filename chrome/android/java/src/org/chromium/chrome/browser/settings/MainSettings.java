@@ -639,12 +639,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         passwordsPreference.setOnPreferenceClickListener(
                 preference -> {
                     onPreferenceSelected(preference);
-                    PasswordManagerLauncher.showPasswordSettings(
-                            getActivity(),
-                            getProfile(),
-                            ManagePasswordsReferrer.CHROME_SETTINGS,
-                            mModalDialogManagerSupplier.asNonNull(),
-                            /* managePasskeys= */ false);
+                    showPasswordSettings(
+                            getActivity(), getProfile(), mModalDialogManagerSupplier.asNonNull());
                     return true;
                 });
 
@@ -663,6 +659,40 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     .launchDownloadPasswordsCsvFlow(getContext(), mSettingsCustomTabLauncher);
             getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
         }
+    }
+
+    /**
+     * From search results, open a preference that is not handled via {@code android:fragment}
+     * specified in the xml resource, therefore needs manual processing.
+     *
+     * @return Whether the flow should proceed and update the fragment state. For some preferences
+     *     that open an external activity, the state should remain as is.
+     */
+    public static boolean openSearchResult(
+            Context context,
+            Profile profile,
+            String key,
+            Bundle extras,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (key.equals(PREF_PASSWORDS)) {
+            MainSettings.showPasswordSettings(context, profile, modalDialogManagerSupplier);
+            // Open an external activity. Keep the state as is.
+            return false;
+        }
+        // TODO(crbug.com/469676538): Handle the rest of preferences.
+        return false;
+    }
+
+    private static void showPasswordSettings(
+            Context context,
+            Profile profile,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        PasswordManagerLauncher.showPasswordSettings(
+                context,
+                profile,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                modalDialogManagerSupplier.asNonNull(),
+                /* managePasskeys= */ false);
     }
 
     private void updatePlusAddressesPreference() {
@@ -914,6 +944,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowManageSyncPref(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_MANAGE_SYNC));
                     }
+                    indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
                     if (!shouldAddPlusAddressesPref()) {
                         indexData.removeEntry(getUniqueId(PREF_PLUS_ADDRESSES));
                     }
