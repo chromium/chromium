@@ -20,7 +20,7 @@
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
+#include "chrome/browser/autofill/android/jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

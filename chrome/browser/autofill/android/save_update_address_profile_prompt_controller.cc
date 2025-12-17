@@ -31,7 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
+#include "chrome/browser/autofill/android/jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 
 namespace autofill {
 

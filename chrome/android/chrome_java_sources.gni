@@ -132,8 +132,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/CreditCardScanner.java",
   "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/GoogleWalletLauncher.java",
-  "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
-  "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
   "java/src/org/chromium/chrome/browser/autofill/WebContentsViewRectProvider.java",
   "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetContent.java",

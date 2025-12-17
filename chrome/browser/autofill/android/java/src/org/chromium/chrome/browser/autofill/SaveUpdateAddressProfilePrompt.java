@@ -18,7 +18,6 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,9 +29,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Prompt that asks users to confirm saving an address profile imported from a form submission.
- */
+/** Prompt that asks users to confirm saving an address profile imported from a form submission. */
 @JNINamespace("autofill")
 @NullMarked
 public class SaveUpdateAddressProfilePrompt {
