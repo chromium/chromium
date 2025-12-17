@@ -7973,8 +7973,8 @@
   },
   {
     "name": "one-time-default-browser-notification",
-    "owners": [ "scottyoder@google.com",  "bling-pandamonium@google.com" ],
-    "expiry_milestone": 145
+    "owners": [ "gujen@google.com","scottyoder@google.com",  "bling-mony-pod@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "only-access-clipboard-async",
