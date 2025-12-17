@@ -257,7 +257,7 @@ class TabListEditorMediator
     private void updateColors(boolean isIncognito) {
         @ColorInt
         int primaryColor =
-                TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                         mContext, isIncognito, mCreationMode);
         @ColorInt
         int toolbarBackgroundColor =

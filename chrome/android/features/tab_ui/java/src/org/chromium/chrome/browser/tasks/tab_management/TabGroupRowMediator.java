@@ -192,7 +192,7 @@ class TabGroupRowMediator {
                     backgroundColor = SemanticColorUtils.getColorSurfaceBright(mContext);
                 } else {
                     backgroundColor =
-                            TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                            TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                                     mContext, /* isIncognito= */ false);
                 }
                 SharedImageTilesConfig config =

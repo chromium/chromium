@@ -854,7 +854,7 @@ public class TabGridDialogMediator
     private void updateColorProperties(Context context, boolean isIncognito) {
         @ColorInt
         int dialogBackgroundColor =
-                TabUiThemeProvider.getTabGridDialogBackgroundColor(context, isIncognito);
+                TabUiThemeProvider.getTabGroupDialogBackgroundColor(context, isIncognito);
         ColorStateList tintList =
                 isIncognito
                         ? AppCompatResources.getColorStateList(

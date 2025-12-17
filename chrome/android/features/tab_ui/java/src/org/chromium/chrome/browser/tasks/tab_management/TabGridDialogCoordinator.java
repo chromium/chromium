@@ -195,7 +195,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
                 @ColorInt
                 int backgroundColor =
-                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                        TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                                 mDialogView.getContext(), /* isIncognito= */ false);
                 SharedImageTilesConfig config =
                         SharedImageTilesConfig.Builder.createForButton(activity)

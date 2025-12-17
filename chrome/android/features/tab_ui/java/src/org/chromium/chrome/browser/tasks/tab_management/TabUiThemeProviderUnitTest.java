@@ -31,18 +31,18 @@ public class TabUiThemeProviderUnitTest {
     }
 
     @Test
-    public void testGetTabGridDialogBackgroundColor() {
+    public void testGetTabGroupDialogBackgroundColor() {
         @ColorInt
         int gtsBackgroundColor =
-                TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                         mContext, /* isIncognito= */ false);
         assertEquals(
-                ContextCompat.getColor(mContext, R.color.tab_grid_dialog_bg_color),
+                ContextCompat.getColor(mContext, R.color.tab_group_dialog_bg_color),
                 gtsBackgroundColor);
 
         @ColorInt
         int gtsBackgroundColorIncognito =
-                TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                         mContext, /* isIncognito= */ true);
         assertEquals(
                 ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_dark),

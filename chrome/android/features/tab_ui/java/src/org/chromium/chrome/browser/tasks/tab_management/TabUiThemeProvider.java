@@ -137,10 +137,10 @@ public class TabUiThemeProvider {
      * @param creationMode The mode of creation of the tab selector list.
      * @return The background color.
      */
-    public static @ColorInt int getTabGridDialogBackgroundColor(
+    public static @ColorInt int getTabGroupDialogBackgroundColor(
             Context context, boolean isIncognito, @CreationMode int creationMode) {
         if (creationMode == CreationMode.DIALOG) {
-            return getTabGridDialogBackgroundColor(context, isIncognito);
+            return getTabGroupDialogBackgroundColor(context, isIncognito);
         } else {
             return getGridTabSwitcherBackgroundColor(context, isIncognito);
         }
@@ -153,12 +153,12 @@ public class TabUiThemeProvider {
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The background color for tab grid dialog.
      */
-    public static @ColorInt int getTabGridDialogBackgroundColor(
+    public static @ColorInt int getTabGroupDialogBackgroundColor(
             Context context, boolean isIncognito) {
         if (isIncognito) {
             return context.getColor(R.color.gm3_baseline_surface_container_dark);
         } else {
-            return ContextCompat.getColor(context, R.color.tab_grid_dialog_bg_color);
+            return ContextCompat.getColor(context, R.color.tab_group_dialog_bg_color);
         }
     }
 
@@ -170,7 +170,7 @@ public class TabUiThemeProvider {
                             R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color)
                     : SemanticColorUtils.getColorPrimary(context);
         }
-        return getTabGridDialogBackgroundColor(context, isIncognito);
+        return getTabGroupDialogBackgroundColor(context, isIncognito);
     }
 
     private static @ColorInt int getTabGridDialogUngroupBarTextColor(
@@ -309,7 +309,7 @@ public class TabUiThemeProvider {
     public static @ColorInt int getTabSelectionToolbarBackground(
             Context context, boolean isIncognito, @CreationMode int creationMode) {
         if (creationMode == CreationMode.DIALOG) {
-            return getTabGridDialogBackgroundColor(context, isIncognito);
+            return getTabGroupDialogBackgroundColor(context, isIncognito);
         }
         return getGridTabSwitcherBackgroundColor(context, isIncognito);
     }
