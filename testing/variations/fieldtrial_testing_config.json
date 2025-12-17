@@ -6190,11 +6190,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "HCAcceptanceRate": "1.0",
+                        "HCAcceptanceRate": "1",
                         "MaxLength": "1000",
                         "MinLength": "50",
-                        "ProcessPayload": "false",
-                        "SampleRate": "1.0"
+                        "ProcessPayload": "true",
+                        "SampleRate": "1"
                     },
                     "enable_features": [
                         "ClientSideDetectionClipboardCopyApi"
