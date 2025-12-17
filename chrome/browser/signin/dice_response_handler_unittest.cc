@@ -960,7 +960,8 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
 TEST_F(DiceResponseHandlerTest, Reauth) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_params.signin_info->account_info.email, signin::ConsentLevel::kSync);
+      dice_params.signin_info->account_info.email,
+      signin::ConsentLevel::kSignin);
   dice_params.signin_info->account_info.gaia_id = account_info.gaia;
   CoreAccountId account_id = account_info.account_id;
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -1099,7 +1100,8 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
 
 // Checks that a ENABLE_SYNC action received after the refresh token is added
 // to the token service, triggers a call to enable sync on the delegate.
-TEST_F(DiceResponseHandlerTest, SigninEnableSyncAfterRefreshTokenFetched) {
+TEST_F(DiceResponseHandlerTest,
+       SigninEnableSyncDiceHeaderAfterRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -1134,7 +1136,8 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncAfterRefreshTokenFetched) {
 // Checks that a ENABLE_SYNC action received before the refresh token is added
 // to the token service, is schedules a call to enable sync on the delegate
 // once the refresh token is received.
-TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
+TEST_F(DiceResponseHandlerTest,
+       SigninEnableSyncDiceHeaderBeforeRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -1222,31 +1225,6 @@ TEST_F(DiceResponseHandlerTest, DeleteBeforeTimeout) {
   EXPECT_EQ(1, reconcilor_unblocked_count_);
 }
 
-TEST_F(DiceResponseHandlerTest, SignoutSyncPrimaryAccount) {
-  // Setup.
-  // Configure Dice params.
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
-  const char kSecondarySignedOutEmail[] = "secondary_signed_out@gmail.com";
-  dice_params.signout_info->account_infos.push_back(
-      GetDiceResponseParamsAccountInfo(kSecondarySignedOutEmail));
-  const std::string dice_primary_account_email =
-      dice_params.signout_info->account_infos[0].email;
-  // Configure Chrome.
-  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_primary_account_email, signin::ConsentLevel::kSync);
-  AccountInfo secondary_signed_out =
-      identity_test_env_.MakeAccountAvailable(kSecondarySignedOutEmail);
-  AccountInfo secondary_not_signed_out =
-      identity_test_env_.MakeAccountAvailable("other@gmail.com");
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3U);
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Receive signout response including sync and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 primary_account.account_id, /*invalid_primary_account=*/true);
-}
-
 TEST_F(DiceResponseHandlerTest, SignoutSigninPrimaryAccount) {
   // Setup.
   // Configure Dice params.
@@ -1282,7 +1260,7 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
   // account.
   AccountInfo primary_account_info =
       identity_test_env_.MakePrimaryAccountAvailable(
-          kPrimaryAccount, signin::ConsentLevel::kSync);
+          kPrimaryAccount, signin::ConsentLevel::kSignin);
   AccountInfo secondary_account_info =
       identity_test_env_.MakeAccountAvailable(secondary_account_email);
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
@@ -1290,7 +1268,7 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
   EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response for the secondary account.
   RunSignoutTest(dice_params, {}, primary_account_info.account_id,
                  /*invalid_primary_account=*/false);
@@ -1310,7 +1288,7 @@ TEST_F(DiceResponseHandlerTest, SignoutWebOnly) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response.
   RunSignoutTest(dice_params, {secondary_account_info.account_id},
                  /*primary_account=*/CoreAccountId(),
@@ -1324,7 +1302,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutSameAccount) {
 
   // User is signed in to Chrome.
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_account_info.email, signin::ConsentLevel::kSync);
+      dice_account_info.email, signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_FALSE(
@@ -1400,8 +1378,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
           account_id_2));
 }
 
-TEST_F(DiceResponseHandlerTest,
-       SignoutPrimaryNonSyncAccountWithSignoutRestrictions) {
+TEST_F(DiceResponseHandlerTest, SignoutPrimaryAccountWithSignoutRestrictions) {
   signin_client_.set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   const char kSecondaryEmail[] = "other@gmail.com";
@@ -1417,8 +1394,6 @@ TEST_F(DiceResponseHandlerTest,
       primary_account.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response.
