@@ -8,7 +8,6 @@
 #include "ipc/param_traits_utils.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"
-#include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
 
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"

@@ -9,7 +9,6 @@ component("buffer_types") {
     "gfx_ipc_export.h",
     "gfx_param_traits.cc",
     "gfx_param_traits.h",
-    "gfx_param_traits_macros.h",
   ]
 
   defines = [ "GFX_IPC_BUFFER_TYPES_IMPLEMENTATION" ]
