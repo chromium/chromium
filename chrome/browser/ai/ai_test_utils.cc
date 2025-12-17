@@ -62,16 +62,6 @@ AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-AITestUtils::MockCreateLanguageModelClient::MockCreateLanguageModelClient() =
-    default;
-AITestUtils::MockCreateLanguageModelClient::~MockCreateLanguageModelClient() =
-    default;
-
-mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
-AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
 mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
 AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
   return mock_monitor_.BindNewPipeAndPassRemote();
@@ -157,13 +147,17 @@ void AITestUtils::MockComponentUpdateService::SendUpdate(
   }
 }
 
-AITestUtils::AITestBase::AITestBase() = default;
+AITestUtils::AITestBase::AITestBase()
+    : ChromeRenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
-  optimization_guide::FakeModelBroker::Options options{};
+  optimization_guide::FakeModelBroker::Options options{
+      .performance_class =
+          optimization_guide::OnDeviceModelPerformanceClass::kUnknown};
   fake_broker_ = std::make_unique<optimization_guide::FakeModelBroker>(options);
   optimization_guide::FakeAdaptationAsset::Content content{.config =
                                                                CreateConfig()};

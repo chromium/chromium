@@ -93,46 +93,6 @@ TEST_F(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath) {
   task_environment()->RunUntilIdle();
 }
 
-// Tests the `AIUserDataSet`'s behavior of managing the lifetime of
-// `AILanguageModel`s.
-TEST_F(AIManagerTest, AIContextBoundObjectSet) {
-  mojo::Remote<blink::mojom::AILanguageModel> mock_session;
-  AITestUtils::MockCreateLanguageModelClient mock_create_language_model_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
-      .WillOnce(
-          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
-              blink::mojom::AILanguageModelInstanceInfoPtr info) {
-            EXPECT_TRUE(language_model);
-            mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
-                std::move(language_model));
-            run_loop.Quit();
-          });
-
-  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  // Initially the `AIContextBoundObjectSet` is empty.
-  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
-
-  // After creating one `AILanguageModel`, the `AIContextBoundObjectSet`
-  // contains 1 element.
-  mock_remote->CreateLanguageModel(
-      mock_create_language_model_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AILanguageModelCreateOptions::New(
-          /*sampling_params=*/nullptr,
-          /*initial_prompts=*/
-          std::vector<blink::mojom::AILanguageModelPromptPtr>(),
-          /*expected_inputs=*/std::nullopt,
-          /*expected_outputs=*/std::nullopt));
-  run_loop.Run();
-  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
-
-  // After resetting the session, the size of `AIContextBoundObjectSet` becomes
-  // empty again.
-  mock_session.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
-}
-
 TEST_F(AIManagerTest, CanCreate) {
   base::MockCallback<
       base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>

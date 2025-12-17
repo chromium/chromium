@@ -8,10 +8,15 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_test_utils.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
@@ -21,6 +26,7 @@
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -28,8 +34,10 @@
 
 namespace {
 
+using ::base::test::TestFuture;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
+using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
 using ::optimization_guide::ForbidUnsafe;
 using ::optimization_guide::ProtoField;
@@ -44,30 +52,42 @@ constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
 constexpr char kInputString[] = "input string";
 
-class MockCreateRewriterClient
+struct Error {
+  blink::mojom::AIManagerCreateClientError error;
+  blink::mojom::QuotaErrorInfoPtr quota_error_info;
+};
+
+using CreateRewriterResult =
+    base::expected<mojo::PendingRemote<blink::mojom::AIRewriter>, Error>;
+
+class TestCreateRewriterClient
     : public blink::mojom::AIManagerCreateRewriterClient {
  public:
-  MockCreateRewriterClient() = default;
-  ~MockCreateRewriterClient() override = default;
-  MockCreateRewriterClient(const MockCreateRewriterClient&) = delete;
-  MockCreateRewriterClient& operator=(const MockCreateRewriterClient&) = delete;
+  TestCreateRewriterClient() = default;
+  ~TestCreateRewriterClient() override = default;
+  TestCreateRewriterClient(const TestCreateRewriterClient&) = delete;
+  TestCreateRewriterClient& operator=(const TestCreateRewriterClient&) = delete;
 
   mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient>
   BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD(void,
-              OnResult,
-              (mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter),
-              (override));
-  MOCK_METHOD(void,
-              OnError,
-              (blink::mojom::AIManagerCreateClientError error,
-               blink::mojom::QuotaErrorInfoPtr quota_error_info),
-              (override));
+  void OnResult(
+      mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) override {
+    result_.SetValue(std::move(rewriter));
+  }
+
+  void OnError(blink::mojom::AIManagerCreateClientError error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info) override {
+    result_.SetValue(
+        base::unexpected(Error{error, std::move(quota_error_info)}));
+  }
+
+  TestFuture<CreateRewriterResult>& result() { return result_; }
 
  private:
+  TestFuture<CreateRewriterResult> result_;
   mojo::Receiver<blink::mojom::AIManagerCreateRewriterClient> receiver_{this};
 };
 
@@ -143,27 +163,15 @@ class AIRewriterTest : public AITestUtils::AITestBase {
     return config;
   }
 
-  mojo::Remote<blink::mojom::AIRewriter> GetAIRewriterRemote() {
-    mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
+  mojo::Remote<blink::mojom::AIRewriter> GetAIRewriterRemote(
+      blink::mojom::AIRewriterCreateOptionsPtr options = GetDefaultOptions()) {
+    TestCreateRewriterClient create_rewriter_client;
+    GetAIManagerRemote()->CreateRewriter(
+        create_rewriter_client.BindNewPipeAndPassRemote(), std::move(options));
 
-    MockCreateRewriterClient mock_create_rewriter_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-        .WillOnce(
-            [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-              EXPECT_TRUE(rewriter);
-              rewriter_remote =
-                  mojo::Remote<blink::mojom::AIRewriter>(std::move(rewriter));
-              run_loop.Quit();
-            });
-
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateRewriter(
-        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-        GetDefaultOptions());
-    run_loop.Run();
-
-    return rewriter_remote;
+    CreateRewriterResult result = create_rewriter_client.result().Take();
+    EXPECT_OK(result);
+    return mojo::Remote<blink::mojom::AIRewriter>(std::move(result.value()));
   }
 
   void RunSimpleRewriteTest(blink::mojom::AIRewriterTone tone,
@@ -177,25 +185,8 @@ class AIRewriterTest : public AITestUtils::AITestBase {
         /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
         /*output_language=*/AILanguageCode::New(""));
 
-    mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
-    {
-      MockCreateRewriterClient mock_create_rewriter_client;
-      base::RunLoop run_loop;
-      EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-          .WillOnce(
-              [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-                EXPECT_TRUE(rewriter);
-                rewriter_remote =
-                    mojo::Remote<blink::mojom::AIRewriter>(std::move(rewriter));
-                run_loop.Quit();
-              });
-
-      mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-      ai_manager->CreateRewriter(
-          mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-          options.Clone());
-      run_loop.Run();
-    }
+    mojo::Remote<blink::mojom::AIRewriter> rewriter_remote =
+        GetAIRewriterRemote(options.Clone());
 
     EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),
                 ElementsAreArray({"Result text"}));
@@ -215,22 +206,14 @@ class AIRewriterTest : public AITestUtils::AITestBase {
 TEST_F(AIRewriterTest, CreateRewriterNoService) {
   SetupNullOptimizationGuideKeyedService();
 
-  MockCreateRewriterClient mock_create_rewriter_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnError(_, _))
-      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        ASSERT_EQ(
-            error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-        run_loop.Quit();
-      });
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
 
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateRewriter(
-      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-      GetDefaultOptions());
-  run_loop.Run();
+  CreateRewriterResult result = create_rewriter_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
 TEST_F(AIRewriterTest, CanCreateWaitsForEligibility) {
@@ -273,6 +256,105 @@ TEST_F(AIRewriterTest, CanCreateUnavailableWhenAdaptationNotAvailable) {
                                      kUnavailableModelAdaptationNotAvailable);
 }
 
+TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+        {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+      {{on_device_model::features::kOnDeviceModelCpuBackend}});
+
+  fake_broker_->service_settings().performance_class =
+      PerformanceClass::kVeryLow;
+
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  CreateRewriterResult result = create_rewriter_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+TEST_F(AIRewriterTest, CreateRewriterWaitsForBaseModel) {
+  fake_broker_->InstallBaseModel(nullptr);
+
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  TestFuture<CreateRewriterResult>& future = create_rewriter_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  fake_broker_->InstallBaseModel(
+      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIRewriterTest, CreateRewriterWaitsForModelAdaptation) {
+  fake_broker_->model_provider().RemoveModel(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
+
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  TestFuture<CreateRewriterResult>& future = create_rewriter_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIRewriterTest, CreateRewriterWaitsForTextSafetyModel) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  TestFuture<CreateRewriterResult>& future = create_rewriter_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIRewriterTest, CreateRewriterSafetyConfigNotAvailable) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  // Provide a safety asset that does not support rewriter.
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    safety_config.set_feature(
+        optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST);
+    return safety_config;
+  }());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  CreateRewriterResult result = create_rewriter_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
 TEST_F(AIRewriterTest, CreateRewriterUnableToCalculateTokenSize) {
   // Incorrect `request_base_name` cause session to fail constructing input
   // string and checking token size.
@@ -283,48 +365,33 @@ TEST_F(AIRewriterTest, CreateRewriterUnableToCalculateTokenSize) {
   optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
   fake_broker_->UpdateModelAdaptation(fake_asset);
 
-  MockCreateRewriterClient mock_create_rewriter_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnError(_, _))
-      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
-                             kUnableToCalculateTokenSize);
-        run_loop.Quit();
-      });
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
 
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateRewriter(
-      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-      GetDefaultOptions());
-  run_loop.Run();
+  CreateRewriterResult result = create_rewriter_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error().error,
+      blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
 }
 
 TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
   fake_broker_->settings().set_size_in_tokens(
       blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
 
-  MockCreateRewriterClient mock_create_rewriter_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_rewriter_client, OnError(_, _))
-      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        ASSERT_EQ(
-            error,
-            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
-        ASSERT_TRUE(quota_error_info);
-        ASSERT_EQ(quota_error_info->requested,
-                  blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-        ASSERT_EQ(quota_error_info->quota,
-                  blink::mojom::kWritingAssistanceMaxInputTokenSize);
-        run_loop.Quit();
-      });
+  TestCreateRewriterClient create_rewriter_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_rewriter_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
 
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateRewriter(
-      mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-      GetDefaultOptions());
-  run_loop.Run();
+  CreateRewriterResult result = create_rewriter_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  EXPECT_EQ(result.error().quota_error_info->requested,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+  EXPECT_EQ(result.error().quota_error_info->quota,
+            blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 
 TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
@@ -546,26 +613,8 @@ TEST_F(AIRewriterTest, TextSafetySharedContext) {
       /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
       /*output_language=*/AILanguageCode::New(""));
 
-  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
-  {
-    MockCreateRewriterClient mock_create_rewriter_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-        .WillOnce(
-            [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-              EXPECT_TRUE(rewriter);
-              rewriter_remote =
-                  mojo::Remote<blink::mojom::AIRewriter>(std::move(rewriter));
-              run_loop.Quit();
-            });
-
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateRewriter(
-        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-        options.Clone());
-    run_loop.Run();
-  }
-
+  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote =
+      GetAIRewriterRemote(options.Clone());
   AITestUtils::TestStreamingResponder responder;
   rewriter_remote->Rewrite(kInputString, kContextString,
                            responder.BindRemote());

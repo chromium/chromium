@@ -18,9 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/features.h"
@@ -39,6 +42,7 @@
 #include "components/update_client/update_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +55,8 @@
 
 namespace {
 
+using ::base::test::TestFuture;
+using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
 using ::optimization_guide::ForbidUnsafe;
 using ::optimization_guide::StringValueField;
@@ -69,6 +75,50 @@ constexpr uint32_t kTestMaxTokens = 100u;
 constexpr uint64_t kTestModelDownloadSize = 572u;
 static_assert(kTestDefaultTopK <= kTestMaxTopK);
 static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
+
+struct Result {
+  mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
+  blink::mojom::AILanguageModelInstanceInfoPtr info;
+};
+
+struct Error {
+  blink::mojom::AIManagerCreateClientError error;
+  blink::mojom::QuotaErrorInfoPtr quota_error_info;
+};
+
+class TestCreateLanguageModelClient
+    : public blink::mojom::AIManagerCreateLanguageModelClient {
+ public:
+  TestCreateLanguageModelClient() = default;
+  ~TestCreateLanguageModelClient() override = default;
+  TestCreateLanguageModelClient(const TestCreateLanguageModelClient&) = delete;
+  TestCreateLanguageModelClient& operator=(
+      const TestCreateLanguageModelClient&) = delete;
+
+  mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnResult(
+      mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+      blink::mojom::AILanguageModelInstanceInfoPtr info) override {
+    result_.SetValue(Result{std::move(language_model), std::move(info)});
+  }
+
+  void OnError(blink::mojom::AIManagerCreateClientError error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info) override {
+    result_.SetValue(
+        base::unexpected(Error{error, std::move(quota_error_info)}));
+  }
+
+  TestFuture<base::expected<Result, Error>>& result() { return result_; }
+
+ private:
+  TestFuture<base::expected<Result, Error>> result_;
+  mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
+      this};
+};
 
 SkBitmap CreateTestBitmap(int width, int height) {
   SkBitmap bitmap;
@@ -281,19 +331,14 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   mojo::Remote<blink::mojom::AILanguageModel> CreateSession(
       blink::mojom::AILanguageModelCreateOptionsPtr options =
           blink::mojom::AILanguageModelCreateOptions::New()) {
-    base::test::TestFuture<mojo::Remote<blink::mojom::AILanguageModel>> future;
-    AITestUtils::MockCreateLanguageModelClient language_model_client;
-    EXPECT_CALL(language_model_client, OnResult(_, _))
-        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
-                          language_model,
-                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
-          future.SetValue(mojo::Remote<blink::mojom::AILanguageModel>(
-              std::move(language_model)));
-        });
-
+    TestCreateLanguageModelClient language_model_client;
     GetAIManagerRemote()->CreateLanguageModel(
         language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-    return future.Take();
+
+    auto result = language_model_client.result().Take();
+    EXPECT_OK(result);
+    return mojo::Remote<blink::mojom::AILanguageModel>(
+        std::move(result.value().language_model));
   }
 
   std::vector<std::string> Prompt(
@@ -316,23 +361,37 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
 
   mojo::Remote<blink::mojom::AILanguageModel> Fork(
       blink::mojom::AILanguageModel& model) {
-    base::test::TestFuture<mojo::Remote<blink::mojom::AILanguageModel>> future;
-    AITestUtils::MockCreateLanguageModelClient language_model_client;
-    EXPECT_CALL(language_model_client, OnResult(_, _))
-        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
-                          language_model,
-                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
-          future.SetValue(mojo::Remote<blink::mojom::AILanguageModel>(
-              std::move(language_model)));
-        });
-
+    TestCreateLanguageModelClient language_model_client;
     model.Fork(language_model_client.BindNewPipeAndPassRemote());
-    return future.Take();
+
+    auto result = language_model_client.result().Take();
+    EXPECT_OK(result);
+    return mojo::Remote<blink::mojom::AILanguageModel>(
+        std::move(result.value().language_model));
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests the `AIContextBoundObjectSet`'s behavior of managing the lifetime of
+// `AILanguageModel`s.
+TEST_F(AILanguageModelTest, AIContextBoundObjectSet) {
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+  // Initially the `AIContextBoundObjectSet` is empty.
+  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
+
+  // After creating one `AILanguageModel`, the `AIContextBoundObjectSet`
+  // contains 1 element.
+  auto mock_session = CreateSession();
+  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
+
+  // After resetting the session, the size of `AIContextBoundObjectSet` becomes
+  // empty again.
+  mock_session.reset();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
+}
 
 TEST_F(AILanguageModelTest, Prompt) {
   auto session = CreateSession();
@@ -540,47 +599,36 @@ TEST_F(AILanguageModelTest, InitialPromptsMultipleContents) {
 }
 
 TEST_F(AILanguageModelTest, InitialPromptsInstanceInfo) {
-  base::test::TestFuture<blink::mojom::AILanguageModelInstanceInfoPtr> future;
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnResult(_, _))
-      .WillOnce(
-          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
-              blink::mojom::AILanguageModelInstanceInfoPtr info) {
-            future.SetValue(std::move(info));
-          });
-
+  TestCreateLanguageModelClient language_model_client;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(MakePrompt(Role::kSystem, "hi"));
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  auto info = future.Take();
+
+  auto result = language_model_client.result().Take();
+  ASSERT_OK(result);
+
+  auto info = std::move(result.value().info);
   EXPECT_EQ(info->input_quota, kTestMaxTokens);
   EXPECT_EQ(info->input_usage, std::strlen("ShiE"));
 }
 
 TEST_F(AILanguageModelTest, InitialPromptsTooLarge) {
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> error_future;
-  base::test::TestFuture<blink::mojom::QuotaErrorInfoPtr>
-      quota_error_info_future;
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_, _))
-      .WillOnce([&](auto error, auto quota_error_info) {
-        error_future.SetValue(error);
-        quota_error_info_future.SetValue(std::move(quota_error_info));
-      });
-
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(
       MakePrompt(Role::kSystem, std::string(kTestMaxTokens + 1, 'a')));
 
+  TestCreateLanguageModelClient language_model_client;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(error_future.Take(),
+
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+
+  EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
-  auto quota_error_info = quota_error_info_future.Take();
-  ASSERT_TRUE(quota_error_info);
-  ASSERT_GT(quota_error_info->requested, kTestMaxTokens);
-  ASSERT_EQ(quota_error_info->quota, kTestMaxTokens);
+  ASSERT_GT(result.error().quota_error_info->requested, kTestMaxTokens);
+  ASSERT_EQ(result.error().quota_error_info->quota, kTestMaxTokens);
 }
 
 TEST_F(AILanguageModelTest, InputTooLarge) {
@@ -790,29 +838,6 @@ class AILanguageModelTestWithLanguageParams
 };
 
 TEST_P(AILanguageModelTestWithLanguageParams, PromptWithEnabledLanguages) {
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> error_future;
-  base::test::TestFuture<mojo::Remote<blink::mojom::AILanguageModel>>
-      result_future;
-
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  if (GetParam().expect_error) {
-    EXPECT_CALL(language_model_client, OnResult(_, _)).Times(0);
-
-    EXPECT_CALL(language_model_client, OnError(_, _))
-        .WillOnce([&](auto error, auto quota_error_info) {
-          error_future.SetValue(error);
-        });
-  } else {
-    EXPECT_CALL(language_model_client, OnResult(_, _))
-        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
-                          language_model,
-                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
-          result_future.SetValue(mojo::Remote<blink::mojom::AILanguageModel>(
-              std::move(language_model)));
-        });
-    EXPECT_CALL(language_model_client, OnError(_, _)).Times(0);
-  }
-
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->languages.emplace();
   for (const auto& language : GetParam().expected_input_language) {
@@ -823,13 +848,18 @@ TEST_P(AILanguageModelTestWithLanguageParams, PromptWithEnabledLanguages) {
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_inputs.emplace();
   options->expected_inputs->push_back(std::move(expected_input));
+
+  TestCreateLanguageModelClient language_model_client;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = language_model_client.result().Take();
   if (GetParam().expect_error) {
-    EXPECT_EQ(error_future.Take(),
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().error,
               blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
   } else {
-    EXPECT_TRUE(result_future.Wait());
+    EXPECT_OK(result);
   }
 }
 
@@ -850,12 +880,7 @@ TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
   ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
       .WillByDefault(Return(on_device_model::Capabilities()));
 
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_, _))
-      .WillOnce(
-          [&](auto error, auto quota_error_info) { future.SetValue(error); });
-
+  TestCreateLanguageModelClient language_model_client;
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->type = blink::mojom::AILanguageModelPromptType::kImage;
 
@@ -864,7 +889,10 @@ TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
   options->expected_inputs->push_back(std::move(expected_input));
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(future.Take(),
+
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
@@ -872,21 +900,19 @@ TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
   ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
       .WillByDefault(Return(on_device_model::Capabilities()));
 
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_, _))
-      .WillOnce(
-          [&](auto error, auto quota_error_info) { future.SetValue(error); });
-
   auto expected_output = blink::mojom::AILanguageModelExpected::New();
   expected_output->type = blink::mojom::AILanguageModelPromptType::kImage;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_outputs.emplace();
   options->expected_outputs->push_back(std::move(expected_output));
+  TestCreateLanguageModelClient language_model_client;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(future.Take(),
+
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
@@ -1036,17 +1062,15 @@ TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
   optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
   fake_broker_->UpdateSafetyModel(safety_asset);
 
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
-  AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_, _))
-      .WillOnce(
-          [&](auto error, auto quota_error_info) { future.SetValue(error); });
-
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(MakePrompt(Role::kSystem, "unsafe"));
+
+  TestCreateLanguageModelClient language_model_client;
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(future.Take(),
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
@@ -1118,15 +1142,6 @@ TEST_F(AILanguageModelTest, TextSafetyOutputPartial) {
 }
 
 TEST_F(AILanguageModelTest, QueuesOperations) {
-  base::test::TestFuture<mojo::Remote<blink::mojom::AILanguageModel>>
-      fork_future;
-  AITestUtils::MockCreateLanguageModelClient fork_client;
-  EXPECT_CALL(fork_client, OnResult(_, _))
-      .WillOnce([&](auto language_model, auto info) {
-        fork_future.SetValue(mojo::Remote<blink::mojom::AILanguageModel>(
-            std::move(language_model)));
-      });
-
   auto session = CreateSession();
   AITestUtils::TestStreamingResponder responder1;
   AITestUtils::TestStreamingResponder responder2;
@@ -1135,6 +1150,8 @@ TEST_F(AILanguageModelTest, QueuesOperations) {
   // successfully and in order.
   session->Prompt(MakeInput("foo"), nullptr, responder1.BindRemote());
   session->Prompt(MakeInput("bar"), nullptr, responder2.BindRemote());
+
+  TestCreateLanguageModelClient fork_client;
   session->Fork(fork_client.BindNewPipeAndPassRemote());
   session->Prompt(MakeInput("baz"), nullptr, responder3.BindRemote());
 
@@ -1151,8 +1168,13 @@ TEST_F(AILanguageModelTest, QueuesOperations) {
       responder3.responses(),
       ElementsAreArray(FormatResponses({"UfooEM", "UbarEM", "UbazEM"})));
 
+  auto fork_future = fork_client.result().Take();
+  ASSERT_OK(fork_future);
+  mojo::Remote<blink::mojom::AILanguageModel> fork_model =
+      mojo::Remote<blink::mojom::AILanguageModel>(
+          std::move(fork_future.value().language_model));
   EXPECT_THAT(
-      Prompt(*fork_future.Take(), MakeInput("fork")),
+      Prompt(*fork_model, MakeInput("fork")),
       ElementsAreArray(FormatResponses({"UfooEM", "UbarEM", "UforkEM"})));
 }
 
@@ -1317,6 +1339,110 @@ TEST_F(AILanguageModelTest, CanCreate_UnavailableWhenAdaptationNotAvailable) {
                                                   result_future.GetCallback());
   EXPECT_EQ(result_future.Get(), blink::mojom::ModelAvailabilityCheckResult::
                                      kUnavailableModelAdaptationNotAvailable);
+}
+
+TEST_F(AILanguageModelTest, CreateLanguageModelModelNotEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+        {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+      {{on_device_model::features::kOnDeviceModelCpuBackend}});
+
+  fake_broker_->service_settings().performance_class =
+      PerformanceClass::kVeryLow;
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForBaseModel) {
+  fake_broker_->InstallBaseModel(nullptr);
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto& future = language_model_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  fake_broker_->InstallBaseModel(
+      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForModelAdaptation) {
+  fake_broker_->model_provider().RemoveModel(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API);
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto& future = language_model_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForTextSafetyModel) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto& future = language_model_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AILanguageModelTest, CreateLanguageModelSafetyConfigNotAvailable) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  // Provide a safety asset that does not support prompt.
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    safety_config.set_feature(
+        optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST);
+    return safety_config;
+  }());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = language_model_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
 // Tests the `AILanguageModel::Context` that's initialized with/without any
