@@ -614,8 +614,6 @@ export class SettingsGoogleDriveSubpageElement extends
 
   /** Gets the mirror sync sub label. */
   private getMirrorSyncDescription_(): string {
-    // TODO(b/338158838) Get size of MyFiles.
-    // TODO(b/338158838) Get available space on Google Drive.
     return this.i18n('googleDriveMirrorSyncDescription');
   }
 }
