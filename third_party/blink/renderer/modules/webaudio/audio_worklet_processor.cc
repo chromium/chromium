@@ -392,8 +392,8 @@ bool CopyParamValueMapToObject(
         param_array_value.As<v8::Float32Array>();
     size_t array_length = float32_array->Length();
 
-    // The `float32_array` is neither 1 nor 128 frames, or the array buffer is
-    // transferred/detached, do not proceed.
+    // The `float32_array` is neither 1 nor render quantum frames, or the array
+    // buffer is transferred/detached, do not proceed.
     if ((array_length != 1 && array_length != param_array->size()) ||
         float32_array->Buffer()->ByteLength() == 0) {
       return false;
