@@ -25,6 +25,7 @@ source_set("file_util") {
     "//components/safe_browsing:buildflags",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
+    "//third_party/unrar",
     "//third_party/zlib",
   ]
 

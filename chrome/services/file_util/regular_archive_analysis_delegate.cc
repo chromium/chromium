@@ -8,6 +8,8 @@
 
 #include "base/files/file.h"
 #include "chrome/utility/safe_browsing/zip_writer_delegate.h"
+#include "third_party/unrar/google/unrar_delegates.h"
+#include "third_party/unrar/google/unrar_wrapper.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {
@@ -87,6 +89,16 @@ RegularArchiveAnalysisDelegate::CreateZipReaderDelegate(base::File file) {
 std::unique_ptr<SafeBrowsingZipWriterDelegate>
 RegularArchiveAnalysisDelegate::CreateZipWriterDelegate(base::File file) {
   return std::make_unique<ZipWriterDelegate>(std::move(file));
+}
+
+std::unique_ptr<third_party_unrar::RarReaderDelegate>
+RegularArchiveAnalysisDelegate::CreateRarReaderDelegate(base::File file) {
+  return std::make_unique<third_party_unrar::FileReader>(std::move(file));
+}
+
+std::unique_ptr<third_party_unrar::RarWriterDelegate>
+RegularArchiveAnalysisDelegate::CreateRarWriterDelegate(base::File file) {
+  return std::make_unique<third_party_unrar::FileWriter>(std::move(file));
 }
 
 std::unique_ptr<ArchiveAnalysisDelegate>

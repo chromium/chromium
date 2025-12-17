@@ -9,4 +9,5 @@ include_rules = [
   "+third_party/lzma_sdk",
   "+third_party/zlib",
   "+third_party/zlib/google",
+  "+third_party/unrar",
 ]

@@ -7,11 +7,14 @@
 #include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -22,6 +25,8 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -72,6 +77,40 @@ class SandboxedRarAnalyzerTest : public testing::Test {
                                              std::move(remote));
     analyzer->Start();
     run_loop.Run();
+  }
+
+  void RunObfuscatedAnalyzer(const base::FilePath& file_path,
+                             std::optional<const std::string> password,
+                             safe_browsing::ArchiveAnalyzerResults* results) {
+    mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+    FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    ResultsGetter results_getter(run_loop.QuitClosure(), results);
+    std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+        SandboxedRarAnalyzer::CreateObfuscatedAnalyzer(
+            file_path, password, results_getter.GetCallback(),
+            std::move(remote));
+    analyzer->Start();
+    run_loop.Run();
+  }
+
+  void ObfuscateFile(const base::FilePath& input_path,
+                     const base::FilePath& output_path) {
+    base::File input_file(input_path,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(input_file.IsValid());
+    base::File output_file(
+        output_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    ASSERT_TRUE(output_file.IsValid());
+
+    enterprise_obfuscation::DownloadObfuscator obfuscator;
+    int64_t file_size = input_file.GetLength();
+    std::vector<uint8_t> content(file_size);
+    ASSERT_TRUE(input_file.Read(0, base::span(content)).has_value());
+
+    auto result = obfuscator.ObfuscateChunk(content, true);
+    ASSERT_TRUE(result.has_value());
+    output_file.WriteAtCurrentPos(base::span(result.value()));
   }
 
   base::FilePath GetFilePath(const char* file_name) {
@@ -496,6 +535,107 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionNoPassword) {
   EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
+}
+
+TEST_F(SandboxedRarAnalyzerTest, ObfuscatedEncryptedRar) {
+  base::FilePath original_path;
+  ASSERT_NO_FATAL_FAILURE(original_path = GetFilePath("passwd1234.rar"));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.rar");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "1234", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownCorrect);
+}
+
+TEST_F(SandboxedRarAnalyzerTest, ObfuscatedEncryptedRarWrongPassword) {
+  base::FilePath original_path;
+  ASSERT_NO_FATAL_FAILURE(original_path = GetFilePath("passwd1234.rar"));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.rar");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "5678", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownIncorrect);
+}
+
+TEST_F(SandboxedRarAnalyzerTest, ObfuscatedNestedRar) {
+  base::FilePath original_path;
+  ASSERT_NO_FATAL_FAILURE(original_path =
+                              GetFilePath("has_exe_rar_text_zip.rar"));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.rar");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  // Expect 3 binaries, matching AnalyzeRarContainingAssortmentOfFiles.
+  // empty.zip is successfully analyzed (and empty), so it's not reported as a
+  // binary.
+  EXPECT_EQ(3, results.archived_binary.size());
+
+  bool found_signed_exe = false;
+  bool found_not_a_rar = false;
+  bool found_text_txt = false;
+
+  for (const auto& binary : results.archived_binary) {
+    if (binary.file_path() == "signed.exe") {
+      found_signed_exe = true;
+      EXPECT_TRUE(binary.is_executable());
+      EXPECT_FALSE(binary.is_archive());
+    } else if (binary.file_path() == "not_a_rar.rar") {
+      found_not_a_rar = true;
+      EXPECT_FALSE(binary.is_executable());
+      EXPECT_TRUE(binary.is_archive());
+    } else if (binary.file_path() == "text.txt") {
+      found_text_txt = true;
+      EXPECT_FALSE(binary.is_executable());
+      EXPECT_FALSE(binary.is_archive());
+    }
+  }
+
+  EXPECT_TRUE(found_signed_exe);
+  EXPECT_TRUE(found_not_a_rar);
+  EXPECT_TRUE(found_text_txt);
+
+  EXPECT_EQ(1u, results.archived_archive_filenames.size());
+  EXPECT_THAT(
+      results.archived_archive_filenames,
+      UnorderedElementsAre(base::FilePath(FILE_PATH_LITERAL("not_a_rar.rar"))));
 }
 
 }  // namespace

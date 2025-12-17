@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_FILE_UTIL_REGULAR_ARCHIVE_ANALYSIS_DELEGATE_H_
 
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
+#include "third_party/unrar/google/unrar_delegates.h"
 
 namespace safe_browsing {
 
@@ -18,6 +19,10 @@ class RegularArchiveAnalysisDelegate : public ArchiveAnalysisDelegate {
   std::unique_ptr<zip::ReaderDelegate> CreateZipReaderDelegate(
       base::File file) override;
   std::unique_ptr<SafeBrowsingZipWriterDelegate> CreateZipWriterDelegate(
+      base::File file) override;
+  std::unique_ptr<third_party_unrar::RarReaderDelegate> CreateRarReaderDelegate(
+      base::File file) override;
+  std::unique_ptr<third_party_unrar::RarWriterDelegate> CreateRarWriterDelegate(
       base::File file) override;
   std::unique_ptr<ArchiveAnalysisDelegate> CreateNestedDelegate(
       base::File extracted_file) override;
