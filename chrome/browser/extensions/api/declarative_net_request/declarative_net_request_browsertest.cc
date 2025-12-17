@@ -8815,7 +8815,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 // no logging and no stack.
 // TODO(crbug.com/408364840): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
-                       DISABLED_CrossExtensionNavigationRequestBlocking) {
+                       CrossExtensionNavigationRequestBlocking) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission |
                    ConfigFlag::kConfig_HasManifestSandbox);
@@ -8851,8 +8851,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   NavigateToURL(extension_page_url);
   content::RenderFrameHost* extension_page = GetPrimaryMainFrame();
 
-  content::TestNavigationObserver navigation_observer(main_frame_url);
-  navigation_observer.StartWatchingNewWebContents();
+  content::TestNavigationObserver main_frame_observer(main_frame_url);
+  main_frame_observer.StartWatchingNewWebContents();
+
+  content::TestNavigationObserver sub_frame_observer(sub_frame_url);
+  sub_frame_observer.WatchWebContents(
+      content::WebContents::FromRenderFrameHost(extension_page));
 
   constexpr char kNavigationRequestsTemplate[] = R"(
       const frame = document.createElement('iframe');
@@ -8866,13 +8870,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
       extension_page, base::StringPrintf(kNavigationRequestsTemplate,
                                          sub_frame_url.spec().c_str(),
                                          main_frame_url.spec().c_str())));
-  navigation_observer.Wait();
+  main_frame_observer.Wait();
+  sub_frame_observer.Wait();
 
   // The main_frame request should be blocked.
   content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
   EXPECT_FALSE(WasFrameWithScriptLoaded(main_frame));
-  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
-  EXPECT_EQ(navigation_observer.last_net_error_code(),
+  EXPECT_FALSE(main_frame_observer.last_navigation_succeeded());
+  EXPECT_EQ(main_frame_observer.last_net_error_code(),
             net::ERR_BLOCKED_BY_CLIENT);
 
   // The sub_frame request shouldn't be blocked, unless the the
@@ -8882,10 +8887,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
       content::ChildFrameAt(extension_page, 0);
   ASSERT_TRUE(sub_frame);
   EXPECT_EQ(sub_frame_url, sub_frame->GetLastCommittedURL());
-  content::WaitForLoadStop(
-      content::WebContents::FromRenderFrameHost(sub_frame));
   EXPECT_EQ(should_iframe_navigation_succeed,
             WasFrameWithScriptLoaded(sub_frame));
+  EXPECT_EQ(should_iframe_navigation_succeed,
+            sub_frame_observer.last_navigation_succeeded());
 
   // The rule should have matched once (the main_frame request), or twice (both
   // sub_frame and main_frame requests) if the switch was used.
