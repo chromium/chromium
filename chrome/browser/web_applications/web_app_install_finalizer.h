@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -157,7 +158,7 @@ class WebAppInstallFinalizer {
       WebAppInstallInfo web_app_info,
       InstallFinalizedCallback callback,
       webapps::AppId app_id,
-      ScopeExtensions validated_scope_extensions);
+      OriginAssociations validated_origin_associations);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebAppInstallInfo& web_app_info,
@@ -176,11 +177,12 @@ class WebAppInstallFinalizer {
                           CommitCallback commit_callback,
                           bool success);
 
-  void OnOriginAssociationValidated(WebAppInstallInfo web_app_info,
-                                    FinalizeOptions options,
-                                    InstallFinalizedCallback callback,
-                                    webapps::AppId app_id,
-                                    ScopeExtensions validated_scope_extensions);
+  void OnOriginAssociationValidated(
+      WebAppInstallInfo web_app_info,
+      FinalizeOptions options,
+      InstallFinalizedCallback callback,
+      webapps::AppId app_id,
+      OriginAssociations validated_origin_associations);
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            webapps::AppId app_id,

@@ -18,17 +18,17 @@ FakeWebAppOriginAssociationManager::~FakeWebAppOriginAssociationManager() =
 
 void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
     const GURL& web_app_identity,
-    ScopeExtensions scope_extensions,
+    OriginAssociations origin_associations,
     OnDidGetWebAppOriginAssociations callback) {
-  ScopeExtensions result;
+  OriginAssociations result;
 
   if (pass_through_) {
-    result = scope_extensions;
+    result = origin_associations;
   } else {
-    for (const auto& scope_extension : scope_extensions) {
+    for (const auto& scope_extension : origin_associations.scope_extensions) {
       auto it = data_.find(scope_extension);
       if (it != data_.end())
-        result.insert(it->second);
+        result.scope_extensions.insert(it->second);
     }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

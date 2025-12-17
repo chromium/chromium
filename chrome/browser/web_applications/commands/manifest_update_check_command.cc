@@ -243,14 +243,16 @@ void ManifestUpdateCheckCommand::ValidateNewScopeExtensions(
   CHECK(new_install_info_);
   ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
 
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = std::move(new_scope_extensions);
   lock_->origin_association_manager().GetWebAppOriginAssociations(
-      new_install_info_->manifest_id(), std::move(new_scope_extensions),
+      new_install_info_->manifest_id(), std::move(origin_associations),
       std::move(next_step_callback));
 }
 
 void ManifestUpdateCheckCommand::StashValidatedScopeExtensions(
     base::OnceClosure next_step_callback,
-    ScopeExtensions validated_scope_extensions) {
+    OriginAssociations validated_origin_associations) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
   if (IsWebContentsDestroyed()) {
@@ -259,8 +261,8 @@ void ManifestUpdateCheckCommand::StashValidatedScopeExtensions(
     return;
   }
 
-  new_install_info_->validated_scope_extensions =
-      std::make_optional(std::move(validated_scope_extensions));
+  new_install_info_->validated_scope_extensions = std::make_optional(
+      std::move(validated_origin_associations.scope_extensions));
   std::move(next_step_callback).Run();
 }
 

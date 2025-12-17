@@ -282,12 +282,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
   if (options.skip_origin_association_validation ||
       web_app_info.scope_extensions.empty() ||
       web_app_info.validated_scope_extensions.has_value()) {
-    std::move(origin_association_validated_callback).Run(ScopeExtensions());
+    std::move(origin_association_validated_callback).Run(OriginAssociations());
     return;
   }
 
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = web_app_info.scope_extensions;
   provider_->origin_association_manager().GetWebAppOriginAssociations(
-      manifest_id, web_app_info.scope_extensions,
+      manifest_id, std::move(origin_associations),
       std::move(origin_association_validated_callback));
 }
 
@@ -296,7 +298,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     FinalizeOptions options,
     InstallFinalizedCallback callback,
     webapps::AppId app_id,
-    ScopeExtensions validated_scope_extensions) {
+    OriginAssociations validated_origin_associations) {
+  ScopeExtensions validated_scope_extensions =
+      validated_origin_associations.scope_extensions;
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
   std::unique_ptr<WebApp> web_app;
@@ -488,11 +492,14 @@ void WebAppInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_inf
   if (web_app_info.validated_scope_extensions.has_value() &&
       !web_app_info.validated_scope_extensions->empty()) {
     OnOriginAssociationValidatedForUpdate(web_app_info.Clone(),
-                                          std::move(callback), app_id, {});
+                                          std::move(callback), app_id,
+                                          OriginAssociations());
     return;
   }
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = web_app_info.scope_extensions;
   provider_->origin_association_manager().GetWebAppOriginAssociations(
-      manifest_id, web_app_info.scope_extensions,
+      manifest_id, std::move(origin_associations),
       base::BindOnce(
           &WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate,
           weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
@@ -548,7 +555,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
     WebAppInstallInfo web_app_info,
     InstallFinalizedCallback callback,
     webapps::AppId app_id,
-    ScopeExtensions validated_scope_extensions) {
+    OriginAssociations validated_origin_associations) {
+  ScopeExtensions validated_scope_extensions =
+      validated_origin_associations.scope_extensions;
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
 

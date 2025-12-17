@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
@@ -24,11 +25,13 @@ const std::string& kWebAppIdentity = "https://foo.com/index";
 const std::string& kInvalidFileUrl = "https://a.com";
 const std::string& kValidAppUrl = "https://b.com";
 const std::string& kValidAndInvalidAppsUrl = "https://c.com/search";
+const std::string& kAppWithMultipleMigrationCasesUrl = "https://d.com";
 
 constexpr char kInvalidFileContent[] = "invalid";
 constexpr char kValidAppFileContent[] =
     R"({
-      "https://foo.com/index": {}
+      "https://foo.com/index": {
+      }
     })";
 constexpr char kValidAndInvalidAppsFileContent[] =
     R"({
@@ -36,6 +39,17 @@ constexpr char kValidAndInvalidAppsFileContent[] =
       "https://foo.com/index": { "scope": "/search?q=some+text#frag"},
     // 2nd app is invalid since kWebAppIdentity doesn't match.
       "https://bar.com/": {}
+    })";
+constexpr char kAppWithMultipleMigrationCasesFileContent[] =
+    R"({
+      "https://foo.com/index_no_migration": {
+      },
+      "https://foo.com/index_migration_true": {
+        "allow_migration": true
+      },
+      "https://foo.com/index_migration_false": {
+        "allow_migration": false
+      }
     })";
 }  // namespace
 
@@ -60,6 +74,8 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
         {url::Origin::Create(GURL(kValidAppUrl)), kValidAppFileContent},
         {url::Origin::Create(GURL(kValidAndInvalidAppsUrl)),
          kValidAndInvalidAppsFileContent},
+        {url::Origin::Create(GURL(kAppWithMultipleMigrationCasesUrl)),
+         kAppWithMultipleMigrationCasesFileContent},
     };
     fetcher_->SetData(std::move(data));
     manager_->SetFetcherForTest(std::move(fetcher_));
@@ -81,9 +97,9 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
 
   void VerifyValidAndInvalidAppsResult(int expected_callback_count,
                                        base::OnceClosure done_callback,
-                                       ScopeExtensions result) {
+                                       OriginAssociations result) {
     callback_count_++;
-    ASSERT_EQ(result.size(), 2u);
+    ASSERT_EQ(result.scope_extensions.size(), 2u);
 
     auto valid_app_scope_extension =
         ScopeExtensionInfo::CreateForOrigin(valid_app_scope_extension_->origin);
@@ -93,9 +109,11 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
             /*has_origin_wildcard*/ valid_and_invalid_app_scope_extension_
                 ->has_origin_wildcard);
 
-    EXPECT_TRUE(base::Contains(result, std::move(valid_app_scope_extension)));
-    EXPECT_TRUE(base::Contains(
-        result, std::move(valid_and_invalid_app_scope_extension)));
+    EXPECT_TRUE(base::Contains(result.scope_extensions,
+                               std::move(valid_app_scope_extension)));
+    EXPECT_TRUE(
+        base::Contains(result.scope_extensions,
+                       std::move(valid_and_invalid_app_scope_extension)));
 
     if (callback_count_ == expected_callback_count) {
       callback_count_ = 0;
@@ -115,31 +133,36 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, NoHandlers) {
-  base::test::TestFuture<ScopeExtensions> future;
+  base::test::TestFuture<OriginAssociations> future;
   manager_->GetWebAppOriginAssociations(
-      GURL(kWebAppIdentity), ScopeExtensions(), future.GetCallback());
-  const ScopeExtensions result = future.Get<0>();
-  ASSERT_TRUE(result.empty());
+      GURL(kWebAppIdentity), OriginAssociations(), future.GetCallback());
+  const OriginAssociations result = future.Get<0>();
+  ASSERT_TRUE(result.scope_extensions.empty());
+  ASSERT_TRUE(result.migration_sources.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
                        InvalidAssociationFile) {
-  base::test::TestFuture<ScopeExtensions> future;
-  ScopeExtensions scope_extensions{*invalid_file_scope_extension_};
-  manager_->GetWebAppOriginAssociations(
-      GURL(kWebAppIdentity), std::move(scope_extensions), future.GetCallback());
-  const ScopeExtensions result = future.Get<0>();
-  ASSERT_TRUE(result.empty());
+  base::test::TestFuture<OriginAssociations> future;
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = {*invalid_file_scope_extension_};
+  manager_->GetWebAppOriginAssociations(GURL(kWebAppIdentity),
+                                        std::move(origin_associations),
+                                        future.GetCallback());
+  const OriginAssociations result = future.Get<0>();
+  ASSERT_TRUE(result.scope_extensions.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, OneValidApp) {
-  base::test::TestFuture<ScopeExtensions> future;
-  ScopeExtensions scope_extensions{*valid_app_scope_extension_};
-  manager_->GetWebAppOriginAssociations(
-      GURL(kWebAppIdentity), std::move(scope_extensions), future.GetCallback());
-  const ScopeExtensions result = future.Get<0>();
-  ASSERT_TRUE(result.size() == 1);
-  auto scope_extension = std::move(*result.begin());
+  base::test::TestFuture<OriginAssociations> future;
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = {*valid_app_scope_extension_};
+  manager_->GetWebAppOriginAssociations(GURL(kWebAppIdentity),
+                                        std::move(origin_associations),
+                                        future.GetCallback());
+  const OriginAssociations result = future.Get<0>();
+  ASSERT_TRUE(result.scope_extensions.size() == 1);
+  auto scope_extension = std::move(*result.scope_extensions.begin());
   EXPECT_EQ(scope_extension.origin, valid_app_scope_extension_->origin);
   EXPECT_EQ(scope_extension.has_origin_wildcard,
             valid_app_scope_extension_->has_origin_wildcard);
@@ -149,11 +172,12 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
                        ValidAndInvalidApps) {
   base::test::TestFuture<void> future;
 
-  ScopeExtensions scope_extensions{*valid_app_scope_extension_,
-                                   *valid_and_invalid_app_scope_extension_};
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = {
+      *valid_app_scope_extension_, *valid_and_invalid_app_scope_extension_};
   callback_count_ = 0;
   manager_->GetWebAppOriginAssociations(
-      GURL(kWebAppIdentity), std::move(scope_extensions),
+      GURL(kWebAppIdentity), std::move(origin_associations),
       base::BindOnce(
           &WebAppOriginAssociationManagerTest::VerifyValidAndInvalidAppsResult,
           base::Unretained(this), 1, future.GetCallback()));
@@ -162,15 +186,16 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, RunTasks) {
   base::test::TestFuture<void> future;
-  ScopeExtensions scope_extensions{*valid_app_scope_extension_,
-                                   *valid_and_invalid_app_scope_extension_};
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = {
+      *valid_app_scope_extension_, *valid_and_invalid_app_scope_extension_};
 
   // Set status as running temporarily to queue up tasks.
   manager_->task_in_progress_ = true;
   int task_count = 6;
   for (int i = 0; i < task_count - 1; i++) {
     manager_->GetWebAppOriginAssociations(
-        GURL(kWebAppIdentity), scope_extensions,
+        GURL(kWebAppIdentity), origin_associations,
         base::BindOnce(&WebAppOriginAssociationManagerTest::
                            VerifyValidAndInvalidAppsResult,
                        base::Unretained(this), task_count,
@@ -181,11 +206,85 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, RunTasks) {
 
   callback_count_ = 0;
   manager_->GetWebAppOriginAssociations(
-      GURL(kWebAppIdentity), std::move(scope_extensions),
+      GURL(kWebAppIdentity), std::move(origin_associations),
       base::BindOnce(
           &WebAppOriginAssociationManagerTest::VerifyValidAndInvalidAppsResult,
           base::Unretained(this), task_count, future.GetCallback()));
   EXPECT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
+                       InvalidMigrationSource) {
+  base::test::TestFuture<OriginAssociations> future;
+  OriginAssociations origin_associations;
+  web_app::proto::WebAppMigrationSource migration_source;
+  migration_source.set_manifest_id(kInvalidFileUrl);
+  migration_source.set_behavior(
+      web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  origin_associations.migration_sources.push_back(std::move(migration_source));
+
+  manager_->GetWebAppOriginAssociations(GURL(kWebAppIdentity),
+                                        std::move(origin_associations),
+                                        future.GetCallback());
+
+  const OriginAssociations result = future.Get<0>();
+  ASSERT_TRUE(result.migration_sources.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
+                       ValidMigrationSource) {
+  // WebAppIdentity matching an app with no allow_migration field.
+  {
+    base::test::TestFuture<OriginAssociations> future;
+    OriginAssociations origin_associations;
+    web_app::proto::WebAppMigrationSource migration_source;
+    migration_source.set_manifest_id(kAppWithMultipleMigrationCasesUrl);
+    migration_source.set_behavior(
+        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    origin_associations.migration_sources.push_back(
+        std::move(migration_source));
+    manager_->GetWebAppOriginAssociations(
+        GURL("https://foo.com/index_no_migration"),
+        std::move(origin_associations), future.GetCallback());
+    const OriginAssociations result = future.Get<0>();
+    ASSERT_TRUE(result.migration_sources.empty());
+  }
+
+  // WebAppIdentity matching an app with allow_migration: true.
+  {
+    base::test::TestFuture<OriginAssociations> future;
+    OriginAssociations origin_associations;
+    web_app::proto::WebAppMigrationSource migration_source;
+    migration_source.set_manifest_id(kAppWithMultipleMigrationCasesUrl);
+    migration_source.set_behavior(
+        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    origin_associations.migration_sources.push_back(
+        std::move(migration_source));
+    manager_->GetWebAppOriginAssociations(
+        GURL("https://foo.com/index_migration_true"),
+        std::move(origin_associations), future.GetCallback());
+    const OriginAssociations result = future.Get<0>();
+    ASSERT_EQ(result.migration_sources.size(), 1u);
+    EXPECT_EQ(GURL(result.migration_sources[0].manifest_id()).spec(),
+              GURL(kAppWithMultipleMigrationCasesUrl).spec());
+  }
+
+  // WebAppIdentity matching an app with allow_migration: false.
+  {
+    base::test::TestFuture<OriginAssociations> future;
+    OriginAssociations origin_associations;
+    web_app::proto::WebAppMigrationSource migration_source;
+    migration_source.set_manifest_id(kAppWithMultipleMigrationCasesUrl);
+    migration_source.set_behavior(
+        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    origin_associations.migration_sources.push_back(
+        std::move(migration_source));
+    manager_->GetWebAppOriginAssociations(
+        GURL("https://foo.com/index_migration_false"),
+        std::move(origin_associations), future.GetCallback());
+    const OriginAssociations result = future.Get<0>();
+    ASSERT_TRUE(result.migration_sources.empty());
+  }
 }
 
 }  // namespace web_app

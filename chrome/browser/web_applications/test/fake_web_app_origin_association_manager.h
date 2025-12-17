@@ -22,7 +22,7 @@ class FakeWebAppOriginAssociationManager
   // Sends back |scope_extensions| as is if pass_through_ is set.
   void GetWebAppOriginAssociations(
       const GURL& web_app_identity,
-      ScopeExtensions scope_extensions,
+      OriginAssociations origin_associations,
       OnDidGetWebAppOriginAssociations callback) override;
 
   void SetData(std::map<ScopeExtensionInfo, ScopeExtensionInfo> data);
