@@ -21,6 +21,12 @@ found in the LICENSE file.
   #pageHeader.connected {
     background-color: green;
   }
+  .draggable {
+    -webkit-app-region: drag;
+  }
+  .not-draggable {
+    -webkit-app-region: no-drag;
+  }
   #pageHeader {
     background-color: blue;
     color: white;
@@ -179,18 +185,18 @@ found in the LICENSE file.
     color: white;
   }
 </style>
-<div id="pageHeader">
+<div id="pageHeader" class="draggable">
   <h1>Test Web Client</h1>
-  <div class="permission-switch">
+  <div class="permission-switch not-draggable">
     <label>Interaction Mode:</label>
     <input type="radio" id="textmode" name="interactionMode" value="text" checked>
     <label for="textmode">Text</label>
     <input type="radio" id="audiomode" name="interactionMode" value="audio">
     <label for="audiomode">Audio</label>
   </div>
-  <button id="refreshbn">🔄</button>
-  <button id="closebn">❌</button>
-  <button id="shutdownbn">⏻</button>
+  <button id="refreshbn" class="not-draggable">🔄</button>
+  <button id="closebn" class="not-draggable">❌</button>
+  <button id="shutdownbn" class="not-draggable">⏻</button>
 </div>
 <div id="content">
   <div class="section">
