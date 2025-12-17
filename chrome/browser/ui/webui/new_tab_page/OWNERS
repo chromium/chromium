@@ -6,6 +6,7 @@ rtatum@google.com
 tiborg@chromium.org
 tluk@chromium.org
 mfacey@chromium.org
+hannahrogers@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
