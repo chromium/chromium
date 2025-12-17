@@ -1473,27 +1473,27 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
     background_sync_restorer_->SetStoragePartition(storage_partition_);
 }
 
-void NetworkHandler::Enable(std::optional<int> max_total_size,
-                            std::optional<int> max_resource_size,
-                            std::optional<int> max_post_data_size,
-                            std::optional<bool> report_direct_socket_traffic,
-                            std::optional<bool> enable_durable_messages,
-                            std::unique_ptr<EnableCallback> callback) {
+Response NetworkHandler::Enable(
+    std::optional<int> max_total_size,
+    std::optional<int> max_resource_size,
+    std::optional<int> max_post_data_size,
+    std::optional<bool> report_direct_socket_traffic,
+    std::optional<bool> enable_durable_messages) {
   // Durable Messages require a maxTotalBufferSize to be set, for enabling
   // collection.
   durable_message_max_total_size_ = max_total_size.value_or(0);
   if (enable_durable_messages.value_or(false) &&
       !durable_message_max_total_size_) {
-    callback->sendFailure(Response::InvalidParams(
-        "maxTotalBufferSize is required with enableDurableMessages"));
-    return;
+    return Response::InvalidParams(
+        "maxTotalBufferSize is required with enableDurableMessages");
   }
   enable_durable_messages_ = enable_durable_messages.value_or(false);
   enabled_ = true;
   if (enable_durable_messages_) {
-    MaybeEnableDurableMessages(
-        base::BindOnce(&EnableCallback::fallThrough, std::move(callback)));
-    return;
+    // MaybeEnableDurableMessages will asynchronously enable durable messages
+    // collection if possible, if used with enable(). This will be deprecated,
+    // in favor of enableDurableMessages in the future.
+    MaybeEnableDurableMessages(base::DoNothing());
   }
   if (enable_durable_messages.has_value() &&
       enable_durable_messages.value() == false) {
@@ -1501,7 +1501,7 @@ void NetworkHandler::Enable(std::optional<int> max_total_size,
     // disabled for this profile.
     DisableDurableMessages();
   }
-  callback->fallThrough();
+  return Response::FallThrough();
 }
 
 DispatchResponse NetworkHandler::Disable() {
@@ -4021,10 +4021,25 @@ void NetworkHandler::MaybeEnableDurableMessages(base::OnceClosure callback) {
       devtools_token_, std::move(durable_messages_config), std::move(callback));
 }
 
-void NetworkHandler::DisableDurableMessages() {
+void NetworkHandler::DisableDurableMessages(base::OnceClosure callback) {
   enable_durable_messages_ = false;
   root_session_->DisableDurableMessageCollectorForProfile(devtools_token_,
-                                                          base::DoNothing());
+                                                          std::move(callback));
+}
+
+void NetworkHandler::ConfigureDurableMessages(
+    std::optional<int> max_total_size,
+    std::optional<int> max_resource_size,
+    std::unique_ptr<ConfigureDurableMessagesCallback> callback) {
+  if (!max_total_size.has_value() || max_total_size.value() == 0) {
+    DisableDurableMessages(base::BindOnce(
+        &ConfigureDurableMessagesCallback::sendSuccess, std::move(callback)));
+    return;
+  }
+  durable_message_max_total_size_ = max_total_size.value();
+  enable_durable_messages_ = true;
+  MaybeEnableDurableMessages(base::BindOnce(
+      &ConfigureDurableMessagesCallback::sendSuccess, std::move(callback)));
 }
 
 }  // namespace protocol

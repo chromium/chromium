@@ -128,11 +128,12 @@
                   "setAcceptedEncodings",
                   "clearAcceptedEncodingsOverride",
                   "enableReportingApi",
-                  "setCookieControls"
+                  "setCookieControls",
+                  "configureDurableMessages"
                 ],
                 "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "responseReceivedEarlyHints", "trustTokenOperationDone", "policyUpdated", "reportingApiReportAdded", "reportingApiReportUpdated", "reportingApiEndpointsChangedForOrigin"],
                 "async": [
-                  "enable",
+                  "configureDurableMessages",
                   "clearBrowserCookies",
                   "clearBrowserCache",
                   "getCookies",

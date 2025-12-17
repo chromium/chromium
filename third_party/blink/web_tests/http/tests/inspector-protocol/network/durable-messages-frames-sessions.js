@@ -38,8 +38,8 @@
   const page1 = await testRunner.createPage();
   const page1Session = await page1.createSession();
   const dp1 = page1Session.protocol;
-  await dp1.Network.enable(
-      {maxTotalBufferSize: 115025, enableDurableMessages: true});
+  dp1.Network.enable();
+  await dp1.Network.configureDurableMessages({maxTotalBufferSize: 115025});
 
   // Create a second page
   const page2 = await testRunner.createPage();
@@ -48,8 +48,8 @@
 
   // This storage will be shared with the earlier one, so lower storage will be
   // ignored.
-  await dp2.Network.enable(
-      {maxTotalBufferSize: 10, enableDurableMessages: true});
+  dp2.Network.enable();
+  await dp2.Network.configureDurableMessages({maxTotalBufferSize: 10});
 
   // Create an iframe on the first page
   await dp1.Target.setAutoAttach(
@@ -62,8 +62,8 @@
   const frame1Dp = frame1Session.protocol;
 
   // This storage will also be shared with the earlier one.
-  await frame1Dp.Network.enable(
-      {maxTotalBufferSize: 10, enableDurableMessages: true});
+  frame1Dp.Network.enable();
+  await frame1Dp.Network.configureDurableMessages({maxTotalBufferSize: 10});
 
   // Load a resource on the first page.
   const abe = await logResponseBodyAndGetId(
@@ -99,8 +99,8 @@
   const page3 = await testRunner.createPage();
   const page3Session = await page3.createSession();
   const dp3 = page3Session.protocol;
-  await dp3.Network.enable(
-      {maxTotalBufferSize: 115025, enableDurableMessages: true});
+  dp3.Network.enable();
+  await dp3.Network.configureDurableMessages({maxTotalBufferSize: 115025});
 
   // Retrieve resources from the first page, via dp2, that after session is
   // closed, but still available via Durable Messages because the root session

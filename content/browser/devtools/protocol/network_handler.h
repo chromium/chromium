@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -113,12 +114,11 @@ class NetworkHandler : public DevToolsDomainHandler,
   void SetRenderer(int render_process_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void Enable(std::optional<int> max_total_size,
-              std::optional<int> max_resource_size,
-              std::optional<int> max_post_data_size,
-              std::optional<bool> report_direct_socket_traffic,
-              std::optional<bool> enable_durable_messages,
-              std::unique_ptr<EnableCallback> callback) override;
+  Response Enable(std::optional<int> max_total_size,
+                  std::optional<int> max_resource_size,
+                  std::optional<int> max_post_data_size,
+                  std::optional<bool> report_direct_socket_traffic,
+                  std::optional<bool> enable_durable_messages) override;
   Response Disable() override;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -133,6 +133,11 @@ class NetworkHandler : public DevToolsDomainHandler,
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
+
+  void ConfigureDurableMessages(
+      std::optional<int> max_total_size,
+      std::optional<int> max_resource_size,
+      std::unique_ptr<ConfigureDurableMessagesCallback> callback) override;
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
@@ -399,7 +404,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   void GotAllCookies(std::unique_ptr<GetAllCookiesCallback> callback,
                      const std::vector<net::CanonicalCookie>& cookies);
   void MaybeEnableDurableMessages(base::OnceClosure callback);
-  void DisableDurableMessages();
+  void DisableDurableMessages(base::OnceClosure callback = base::DoNothing());
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;

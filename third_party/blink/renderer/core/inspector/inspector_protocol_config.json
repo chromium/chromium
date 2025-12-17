@@ -114,7 +114,8 @@
                             "getSecurityIsolationStatus",
                             "loadNetworkResource",
                             "enableReportingApi",
-                            "setCookieControls"
+                            "setCookieControls",
+                            "configureDurableMessages"
                           ],
                 "async": ["getResponseBody", "getRequestPostData"]
             },
