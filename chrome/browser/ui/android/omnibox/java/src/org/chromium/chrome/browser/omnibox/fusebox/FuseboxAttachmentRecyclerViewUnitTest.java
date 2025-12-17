@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,28 +41,24 @@ public class FuseboxAttachmentRecyclerViewUnitTest {
 
     @Test
     public void scrollToEndOnInsertionObserver_scrollsToEnd() {
-        when(mAdapter.getItemCount()).thenReturn(10);
         mScrollToEndOnInsertionObserver.onItemRangeInserted(0, 1);
-        verify(mScrollToEndOnInsertionMockView).scrollToPosition(9);
+        verify(mScrollToEndOnInsertionMockView).scrollToPosition(0);
     }
 
     @Test
     public void scrollToEndOnInsertionObserver_scrollsToEndWithMultipleItems() {
-        when(mAdapter.getItemCount()).thenReturn(15);
         mScrollToEndOnInsertionObserver.onItemRangeInserted(10, 5);
         verify(mScrollToEndOnInsertionMockView).scrollToPosition(14);
     }
 
     @Test
     public void scrollToEndOnInsertionObserver_doesNotScrollOnRemove() {
-        when(mAdapter.getItemCount()).thenReturn(10);
         mScrollToEndOnInsertionObserver.onItemRangeRemoved(0, 1);
         verify(mScrollToEndOnInsertionMockView, never()).scrollToPosition(anyInt());
     }
 
     @Test
     public void scrollToEndOnInsertionObserver_doesNotScrollOnMove() {
-        when(mAdapter.getItemCount()).thenReturn(10);
         mScrollToEndOnInsertionObserver.onItemRangeMoved(0, 1, 1);
         verify(mScrollToEndOnInsertionMockView, never()).scrollToPosition(anyInt());
     }

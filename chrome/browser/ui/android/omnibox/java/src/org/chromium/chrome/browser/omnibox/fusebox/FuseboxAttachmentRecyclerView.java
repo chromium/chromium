@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -41,9 +39,21 @@ public class FuseboxAttachmentRecyclerView extends RecyclerView {
     }
 
     @VisibleForTesting
+    /**
+     * An {@link AdapterDataObserver} that scrolls the {@link RecyclerView} to the end whenever new
+     * items are inserted. This ensures that newly added Fusebox attachments are always visible to
+     * the user.
+     *
+     * @see FuseboxAttachmentRecyclerView#setAdapter(Adapter)
+     */
     /* package */ static class ScrollToEndOnInsertionObserver extends AdapterDataObserver {
         private final RecyclerView mView;
 
+        /**
+         * Creates a new ScrollToEndOnInsertionObserver.
+         *
+         * @param view The {@link RecyclerView} to act on.
+         */
         @VisibleForTesting
         /* package */ ScrollToEndOnInsertionObserver(RecyclerView view) {
             mView = view;
@@ -52,8 +62,7 @@ public class FuseboxAttachmentRecyclerView extends RecyclerView {
         @Override
         public void onItemRangeInserted(int startPosition, int itemCount) {
             super.onItemRangeInserted(startPosition, itemCount);
-            int totalItemCount = assumeNonNull(mView.getAdapter()).getItemCount();
-            mView.scrollToPosition(totalItemCount - 1);
+            mView.scrollToPosition(startPosition + itemCount - 1);
         }
     }
 
