@@ -25,7 +25,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View name='Toolbar actions'
 ++++++android.widget.Button clickable interesting name='Bold'
 ++++++android.widget.Button clickable interesting name='Italic'
-++++++android.view.View role_description='link' clickable link name='Help'
+++++++android.view.View role_description='link' clickable link interesting name='Help'
 ++++++++android.widget.TextView name='Help'
 ++++android.view.View role_description='splitter'
 ++++android.widget.TextView interesting name='Plain text'

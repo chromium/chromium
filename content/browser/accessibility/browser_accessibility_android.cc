@@ -583,6 +583,11 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return true;
   }
 
+  // Mark clickable elements as interesting, for parity with visual rendering.
+  if (IsClickable()) {
+    return true;
+  }
+
   // If we are the direct descendant of a link and have no siblings/children,
   // then we are not interesting, return false
   parent = PlatformGetParent();
