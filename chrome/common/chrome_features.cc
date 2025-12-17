@@ -69,7 +69,7 @@ BASE_FEATURE(kAppShimNotificationAttribution,
 
 // When enabled, app shims used by PWAs will be signed with an ad-hoc signature
 // https://crbug.com/40276068
-BASE_FEATURE(kUseAdHocSigningForWebAppShims, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAdHocSigningForWebAppShims, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the KeychainKeyProvider is used to provide the OS Crypt async
 // key.

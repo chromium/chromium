@@ -26038,22 +26038,6 @@
             ]
         }
     ],
-    "UseAdHocSigningForWebAppShims": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MachPortRendezvousValidatePeerRequirements",
-                        "UseAdHocSigningForWebAppShims"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
