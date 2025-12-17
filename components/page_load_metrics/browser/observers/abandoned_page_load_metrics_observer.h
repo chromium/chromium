@@ -241,6 +241,13 @@ class AbandonedPageLoadMetricsObserver
   // `kFirstEssentialLoadingEvent` to `kLastEssentialLoadingEvent`.
   virtual bool DidLogAllLoadingMilestones() const;
 
+  // Returns the most up-to-date NavigationHandleTiming for the navigation we're
+  // tracking, updated from `OnNavigationHandleTimingUpdated()`.
+  const content::NavigationHandleTiming& latest_navigation_handle_timing()
+      const {
+    return latest_navigation_handle_timing_;
+  }
+
  private:
   using LoadingMilestone = std::pair<NavigationMilestone, base::TimeDelta>;
   // Returns the suffix to be added to the histograms logged. This is not static

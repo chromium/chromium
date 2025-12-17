@@ -16169,6 +16169,24 @@ be describing additional metrics about the same event.
       Whether the first redirect response is received yet.
     </summary>
   </metric>
+  <metric name="FirstRequestConnectDelay">
+    <summary>
+      The delay caused by connection setup for the first HTTP request which is
+      sent for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="FirstRequestDomainLookupDelay">
+    <summary>
+      The delay caused by domain lookup for the first HTTP request which is sent
+      for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="FirstRequestSslDelay">
+    <summary>
+      The delay caused by SSL handshake for the first HTTP request which is sent
+      for the main resource of a main frame navigation.
+    </summary>
+  </metric>
   <metric name="HasImpression" enum="Boolean">
     <summary>
       Whether the current navigation has any impression associated. This is set
