@@ -27,9 +27,6 @@ class RE2;
 namespace redaction {
 namespace features {
 COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_DECLARE_FEATURE(kEnableCreditCardRedaction);
-
-COMPONENT_EXPORT(REDACTION_TOOL)
 BASE_DECLARE_FEATURE(kEnableIbanRedaction);
 }  // namespace features
 
