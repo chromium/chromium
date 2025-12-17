@@ -18,8 +18,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -54,7 +55,7 @@ extern const char kPromotableKey[];
 
 // WebsiteMetrics monitors creation/deletion of Browser and its
 // TabStripModel to record the website usage time metrics.
-class WebsiteMetrics : public BrowserListObserver,
+class WebsiteMetrics : public BrowserCollectionObserver,
                        public TabStripModelObserver,
                        public aura::WindowObserver,
                        public wm::ActivationChangeObserver,
@@ -103,8 +104,8 @@ class WebsiteMetrics : public BrowserListObserver,
 
   ~WebsiteMetrics() override;
 
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver overrides:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver overrides:
   void OnTabStripModelChanged(
@@ -261,6 +262,9 @@ class WebsiteMetrics : public BrowserListObserver,
                bool is_from_last_login);
 
   const raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 

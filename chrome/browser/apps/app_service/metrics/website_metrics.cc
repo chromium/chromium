@@ -13,9 +13,10 @@
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -46,18 +48,29 @@ double GetRandomNoise() {
 
 // Checks if a given browser is running a windowed app. It will return true for
 // web apps, hosted apps, and packaged V1 apps.
-bool IsAppBrowser(const Browser* browser) {
-  return (browser->is_type_app() || browser->is_type_app_popup()) &&
-         !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
+bool IsAppBrowser(BrowserWindowInterface* browser) {
+  if (!browser) {
+    return false;
+  }
+
+  const BrowserWindowInterface::Type type = browser->GetType();
+  if (type != BrowserWindowInterface::TYPE_APP &&
+      type != BrowserWindowInterface::TYPE_APP_POPUP) {
+    return false;
+  }
+  return !web_app::GetAppIdFromApplicationName(
+              browser->GetBrowserForMigrationOnly()->app_name())
+              .empty();
 }
 
-aura::Window* GetWindowWithBrowser(Browser* browser) {
+aura::Window* GetWindowWithBrowser(BrowserWindowInterface* browser) {
   if (!browser) {
     return nullptr;
   }
-  BrowserWindow* browser_window = browser->window();
+
+  ui::BaseWindow* const base_window = browser->GetWindow();
   // In some test cases, browser window might be skipped.
-  return browser_window ? browser_window->GetNativeWindow() : nullptr;
+  return base_window ? base_window->GetNativeWindow() : nullptr;
 }
 
 aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
@@ -174,7 +187,8 @@ WebsiteMetrics::WebsiteMetrics(Profile* profile, int user_type_by_device_type)
     : profile_(profile),
       browser_tab_strip_tracker_(this, nullptr),
       user_type_by_device_type_(user_type_by_device_type) {
-  BrowserList::GetInstance()->AddObserver(this);
+  browser_collection_observation_.Observe(
+      ProfileBrowserCollection::GetForProfile(profile_));
   browser_tab_strip_tracker_.Init();
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileWithoutCreating(profile);
@@ -184,15 +198,13 @@ WebsiteMetrics::WebsiteMetrics(Profile* profile, int user_type_by_device_type)
 }
 
 WebsiteMetrics::~WebsiteMetrics() {
-  BrowserList::RemoveObserver(this);
-
   // Also notify observers.
   for (auto& observer : observers_) {
     observer.OnWebsiteMetricsDestroyed();
   }
 }
 
-void WebsiteMetrics::OnBrowserAdded(Browser* browser) {
+void WebsiteMetrics::OnBrowserCreated(BrowserWindowInterface* browser) {
   if (IsAppBrowser(browser)) {
     return;
   }
@@ -475,10 +487,10 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
     return;
   }
 
-  auto* const window =
-      GetWindowWithBrowser(tabs::TabInterface::GetFromContents(web_contents)
-                               ->GetBrowserWindowInterface()
-                               ->GetBrowserForMigrationOnly());
+  BrowserWindowInterface* const browser =
+      tabs::TabInterface::GetFromContents(web_contents)
+          ->GetBrowserWindowInterface();
+  auto* const window = GetWindowWithBrowser(browser);
   if (!window) {
     return;
   }
@@ -540,7 +552,7 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
     // the url.
     return;
   }
-  // WebContents in app windows are filtered out in OnBrowserAdded. Installed
+  // WebContents in app windows are filtered out in OnBrowserCreated. Installed
   // web apps opened in tabs are filtered out too. So every WebContents here
   // must be a website not installed.
   if (result == webapps::InstallableWebAppCheckResult::kYes_Promotable) {
