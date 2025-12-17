@@ -81,6 +81,10 @@ network::mojom::URLResponseHeadPtr RewriteResponseHead(
   return response_head;
 }
 
+// A feature flag to enable the speculative fix for crbug.com/463388771.
+BASE_FEATURE(kCancelPendingCallbacksBeforeFetchRestart,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A wrapper URLLoaderClient that invokes the given RewriteHeaderCallback
 // whenever a response or redirect is received.
 class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
@@ -611,6 +615,11 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
     }
   }
   fetch_request_restarted_ = true;
+  if (base::FeatureList::IsEnabled(kCancelPendingCallbacksBeforeFetchRestart)) {
+    // Invalidate weak pointers to cancel any pending callbacks from the
+    // previous fetch event dispatch.
+    weak_factory_.InvalidateWeakPtrs();
+  }
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerSubresourceLoader::DispatchFetchEvent,
