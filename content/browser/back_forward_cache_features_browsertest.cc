@@ -686,11 +686,20 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
+// TODO(crbug.com/469570289): enable the flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted \
+  DISABLED_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted
+#else
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted \
+  PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted
+#endif  // BUILDFLAG(IS_LINUX)
 // Tests the case when fetching started in a dedicated worker and the header was
 // received before the page is frozen, but parts of the response body is
 // received when the page is frozen.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse fetch_response(https_server(),
