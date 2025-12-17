@@ -141,8 +141,7 @@ public class NtpThemeMediatorUnitTest {
                         histogramName, BottomSheetType.CHROME_DEFAULT);
 
         mMediator.handleChromeDefaultSectionClick(mView);
-        verify(mNtpCustomizationConfigManager)
-                .onBackgroundColorChanged(eq(mContext), eq(null), eq(DEFAULT));
+        verify(mNtpCustomizationConfigManager).onBackgroundReset();
         verify(mNtpThemeCollectionManager).resetCustomBackground();
         histogramWatcher.assertExpected();
     }

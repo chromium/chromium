@@ -102,6 +102,7 @@ public class StatusBarColorController
     private final @ColorInt int mIncognitoActiveOmniboxColor;
     private final @ColorInt int mStandardScrolledOmniboxColor;
     private final @ColorInt int mIncognitoScrolledOmniboxColor;
+    private final @ColorInt int mDefaultBackgroundColorForNtp;
     private final ObservableSupplier<Integer> mOverviewColorSupplier;
     private final Callback<Integer> mOverviewColorObserver = ignored -> updateStatusBarColor();
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
@@ -187,8 +188,9 @@ public class StatusBarColorController
         mIncognitoDefaultThemeColor =
                 ChromeColors.getDefaultThemeColor(activity, /* isIncognito= */ true);
 
-        mBackgroundColorForNtp =
+        mDefaultBackgroundColorForNtp =
                 ContextCompat.getColor(activity, R.color.home_surface_background_color);
+        mBackgroundColorForNtp = mDefaultBackgroundColorForNtp;
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -311,10 +313,7 @@ public class StatusBarColorController
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        if (mBackgroundColorForNtp == backgroundColor) return;
-
-                        mBackgroundColorForNtp = backgroundColor;
-                        updateStatusBarColor();
+                        updateBackgroundColorForNtp(backgroundColor);
                     }
 
                     @Override
@@ -324,7 +323,12 @@ public class StatusBarColorController
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        onBackgroundImageChangedImpl();
+                        updateForceLightIconColorForNtp();
+                    }
+
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        updateBackgroundColorForNtp(mDefaultBackgroundColorForNtp);
                     }
                 };
         ntpCustomizationConfigManager.addListener(
@@ -332,10 +336,19 @@ public class StatusBarColorController
     }
 
     /** Called when the background image of the NTP has changed. */
-    public void onBackgroundImageChangedImpl() {
+    @VisibleForTesting
+    public void updateForceLightIconColorForNtp() {
         if (mForceLightIconColorForNtp) return;
 
         mForceLightIconColorForNtp = true;
+        updateStatusBarColor();
+    }
+
+    /** Called when the background color of the NTP has changed or reset. */
+    private void updateBackgroundColorForNtp(@ColorInt int backgroundColor) {
+        if (mBackgroundColorForNtp == backgroundColor) return;
+
+        mBackgroundColorForNtp = backgroundColor;
         updateStatusBarColor();
     }
 

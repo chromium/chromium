@@ -301,7 +301,7 @@ public class TopInsetCoordinatorUnitTest {
         assertNotNull(mTopInsetCoordinator.getTrackingTabForTesting());
 
         // Verifies that observers are removed when the customized background is removed.
-        setBackgroundType(NtpBackgroundImageType.THEME_COLLECTION, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.THEME_COLLECTION);
         verify(mNtpTab, times(2)).removeObserver(any(TabObserver.class));
         verify(mLayoutStateProvider)
                 .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
@@ -311,7 +311,7 @@ public class TopInsetCoordinatorUnitTest {
         // Verifies it is no-op when the background type is set to the default one again.
         clearInvocations(mNtpTab);
         clearInvocations(mLayoutStateProvider);
-        setBackgroundType(NtpBackgroundImageType.DEFAULT, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.DEFAULT);
         verify(mNtpTab, never()).removeObserver(any(TabObserver.class));
         verify(mLayoutStateProvider, never())
                 .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
@@ -339,7 +339,7 @@ public class TopInsetCoordinatorUnitTest {
 
         // Verifies that retriggerOnApplyWindowInsets() is called when the customized background is
         // removed.
-        setBackgroundType(NtpBackgroundImageType.THEME_COLLECTION, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.THEME_COLLECTION);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         // Verifies that retriggerOnApplyWindowInsets() isn't called again when the background type
@@ -435,5 +435,11 @@ public class TopInsetCoordinatorUnitTest {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(newType);
         mTopInsetCoordinator.onNtpBackgroundChanged(
                 /* fromInitialization= */ false, oldType, newType);
+    }
+
+    private void resetBackgroundType(@NtpBackgroundImageType int oldType) {
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.DEFAULT);
+        mTopInsetCoordinator.onNtpBackgroundReset(oldType);
     }
 }

@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -85,11 +88,18 @@ public class NtpCustomizationConfigManager {
          * @param newType The new background type of NTPs.
          */
         default void onBackgroundColorChanged(
-                @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                NtpThemeColorInfo ntpThemeColorInfo,
                 @ColorInt int backgroundColor,
                 boolean fromInitialization,
                 @NtpBackgroundImageType int oldType,
                 @NtpBackgroundImageType int newType) {}
+
+        /**
+         * Called when the user resets the NTP's background to default.
+         *
+         * @param oldType The previously set background type for NTPs.
+         */
+        default void onBackgroundReset(@NtpBackgroundImageType int oldType) {}
 
         /**
          * Called to notify observers to get refreshed system's window insets.
@@ -155,16 +165,13 @@ public class NtpCustomizationConfigManager {
         if (bitmap == null) {
             // TODO(crbug.com/423579377): need to update the trailing icons in the NTP appearance
             // bottom sheet.
-
-            // When failed to load image from the disk, resets to the default color.
-            mBackgroundImageType = NtpBackgroundImageType.DEFAULT;
-            cleanupBackgroundImage();
-            NtpCustomizationUtils.resetCustomizedColors();
+            if (mBackgroundImageType != NtpBackgroundImageType.DEFAULT) {
+                onBackgroundReset();
+            }
             return;
         }
-
-        notifyBackgroundImageChanged(
-                bitmap, imageInfo, /* fromInitialization= */ true, NtpBackgroundImageType.DEFAULT);
+        onBackgroundChangedImpl(
+                bitmap, imageInfo, NtpBackgroundImageType.DEFAULT, /* fromInitialization= */ true);
     }
 
     @VisibleForTesting
@@ -215,9 +222,10 @@ public class NtpCustomizationConfigManager {
         }
 
         switch (mBackgroundImageType) {
-            case NtpBackgroundImageType.IMAGE_FROM_DISK,
-                    NtpBackgroundImageType.THEME_COLLECTION -> {
-                if (mOriginalBitmap != null && mBackgroundImageInfo != null) {
+            case IMAGE_FROM_DISK, NtpBackgroundImageType.THEME_COLLECTION -> {
+                if (mOriginalBitmap != null) {
+                    // It is possible that when addListener() is called, the background image hasn't
+                    // been loaded, skip notifying the listener now.
                     listener.onBackgroundImageChanged(
                             mOriginalBitmap,
                             mBackgroundImageInfo,
@@ -226,15 +234,15 @@ public class NtpCustomizationConfigManager {
                             mBackgroundImageType);
                 }
             }
-            case NtpBackgroundImageType.CHROME_COLOR,
-                    NtpBackgroundImageType.COLOR_FROM_HEX,
-                    NtpBackgroundImageType.DEFAULT ->
+            case NtpBackgroundImageType.CHROME_COLOR, NtpBackgroundImageType.COLOR_FROM_HEX ->
                     listener.onBackgroundColorChanged(
-                            mNtpThemeColorInfo,
+                            assumeNonNull(mNtpThemeColorInfo),
                             getBackgroundColor(context),
                             /* fromInitialization= */ true,
                             NtpBackgroundImageType.DEFAULT,
                             mBackgroundImageType);
+
+            case NtpBackgroundImageType.DEFAULT -> listener.onBackgroundReset(mBackgroundImageType);
         }
     }
 
@@ -257,7 +265,7 @@ public class NtpCustomizationConfigManager {
     public void onUploadedImageSelected(Bitmap bitmap, BackgroundImageInfo backgroundImageInfo) {
         @NtpBackgroundImageType int oldType = mBackgroundImageType;
 
-        mBackgroundImageType = NtpBackgroundImageType.IMAGE_FROM_DISK;
+        mBackgroundImageType = IMAGE_FROM_DISK;
 
         NtpCustomizationUtils.saveBackgroundInfo(
                 /* customBackgroundInfo= */ null,
@@ -302,13 +310,25 @@ public class NtpCustomizationConfigManager {
             Bitmap bitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
             @NtpBackgroundImageType int oldBackgroundImageType) {
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
-
-        notifyBackgroundImageChanged(
+        onBackgroundChangedImpl(
                 bitmap,
                 backgroundImageInfo,
-                /* fromInitialization= */ false,
-                oldBackgroundImageType);
+                oldBackgroundImageType,
+                /* fromInitialization= */ false);
+    }
+
+    private void onBackgroundChangedImpl(
+            Bitmap bitmap,
+            @Nullable BackgroundImageInfo backgroundImageInfo,
+            @NtpBackgroundImageType int oldBackgroundImageType,
+            boolean fromInitialization) {
+        mOriginalBitmap = bitmap;
+        mBackgroundImageInfo = backgroundImageInfo;
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
+        NtpCustomizationUtils.resetCustomizedColors();
+
+        notifyBackgroundImageChanged(
+                bitmap, backgroundImageInfo, fromInitialization, oldBackgroundImageType);
     }
 
     /**
@@ -322,16 +342,17 @@ public class NtpCustomizationConfigManager {
      */
     public void onBackgroundColorChanged(
             Context context,
-            @Nullable NtpThemeColorInfo colorInfo,
+            NtpThemeColorInfo colorInfo,
             @NtpBackgroundImageType int backgroundImageType) {
+        assert backgroundImageType == NtpBackgroundImageType.CHROME_COLOR
+                || backgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX;
+
         @NtpBackgroundImageType int oldType = mBackgroundImageType;
         mBackgroundImageType = backgroundImageType;
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
         mNtpThemeColorInfo = colorInfo;
 
-        if (colorInfo == null && backgroundImageType != NtpBackgroundImageType.DEFAULT) {
-            return;
-        }
+        cleanupBackgroundImage();
         notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
 
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
@@ -341,15 +362,24 @@ public class NtpCustomizationConfigManager {
                     TimeUtils.currentTimeMillis(),
                     mBackgroundImageType,
                     /* customBackgroundInfo= */ null);
-        } else if (mBackgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
-            NtpThemeColorFromHexInfo colorFromHexInfo = (NtpThemeColorFromHexInfo) colorInfo;
-            NtpCustomizationUtils.setBackgroundColorToSharedPreference(
-                    assumeNonNull(colorFromHexInfo).backgroundColor);
-            NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
-                    assumeNonNull(colorFromHexInfo).primaryColor);
-        } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
-            NtpCustomizationUtils.resetCustomizedColors();
         }
+
+        if (colorInfo instanceof NtpThemeColorFromHexInfo colorFromHexInfo) {
+            NtpCustomizationUtils.setBackgroundColorToSharedPreference(
+                    colorFromHexInfo.backgroundColor);
+            NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
+                    colorFromHexInfo.primaryColor);
+        }
+    }
+
+    /** Notifies listeners about the NTP's customized background is reset. */
+    public void onBackgroundReset() {
+        @NtpBackgroundImageType int oldType = mBackgroundImageType;
+        mBackgroundImageType = NtpBackgroundImageType.DEFAULT;
+
+        cleanupOnBackgroundTypeChanged(oldType);
+        NtpCustomizationUtils.removeNtpBackgroundImageTypeFromSharedPreference();
+        notifyBackgroundReset(oldType);
     }
 
     /**
@@ -367,9 +397,6 @@ public class NtpCustomizationConfigManager {
             @Nullable BackgroundImageInfo backgroundImageInfo,
             boolean fromInitialization,
             @NtpBackgroundImageType int oldType) {
-        mOriginalBitmap = originalBitmap;
-        mBackgroundImageInfo = backgroundImageInfo;
-
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundImageChanged(
                     originalBitmap,
@@ -391,19 +418,28 @@ public class NtpCustomizationConfigManager {
     @VisibleForTesting
     public void notifyBackgroundColorChanged(
             Context context, boolean fromInitialization, @NtpBackgroundImageType int oldType) {
-        // Clear out image state when switching to a color background.
-        cleanupBackgroundImage();
-
         @ColorInt
         int backgroundColor =
                 NtpThemeColorUtils.getBackgroundColorFromColorInfo(context, mNtpThemeColorInfo);
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundColorChanged(
-                    mNtpThemeColorInfo,
+                    assumeNonNull(mNtpThemeColorInfo),
                     backgroundColor,
                     fromInitialization,
                     oldType,
                     mBackgroundImageType);
+        }
+    }
+
+    /**
+     * Notifies the NTP's background color is changed.
+     *
+     * @param oldType The previously set background type for NTP.
+     */
+    @VisibleForTesting
+    public void notifyBackgroundReset(@NtpBackgroundImageType int oldType) {
+        for (HomepageStateListener listener : mHomepageStateListeners) {
+            listener.onBackgroundReset(oldType);
         }
     }
 
@@ -506,6 +542,15 @@ public class NtpCustomizationConfigManager {
         mOriginalBitmap = null;
     }
 
+    private void cleanupOnBackgroundTypeChanged(@NtpBackgroundImageType int oldType) {
+        if (oldType == mBackgroundImageType) return;
+
+        switch (oldType) {
+            case CHROME_COLOR -> NtpCustomizationUtils.resetCustomizedColors();
+            case IMAGE_FROM_DISK, THEME_COLLECTION -> cleanupBackgroundImage();
+        }
+    }
+
     public void resetForTesting() {
         mHomepageStateListeners.clear();
         mIsInitialized = false;
@@ -516,5 +561,9 @@ public class NtpCustomizationConfigManager {
 
     void setCustomBackgroundInfoForTesting(CustomBackgroundInfo customBackgroundInfo) {
         mCustomBackgroundInfo = customBackgroundInfo;
+    }
+
+    @Nullable Bitmap getOriginalBitmapForTesting() {
+        return mOriginalBitmap;
     }
 }

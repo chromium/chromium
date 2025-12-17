@@ -294,7 +294,7 @@ public class StatusBarColorControllerUnitTest {
                 defaultNtpBackground,
                 mStatusBarColorController.getBackgroundColorForNtpForTesting());
 
-        mStatusBarColorController.onBackgroundImageChangedImpl();
+        mStatusBarColorController.updateForceLightIconColorForNtp();
         assertTrue(mStatusBarColorController.getForceLightIconColorForNtpForTesting());
     }
 

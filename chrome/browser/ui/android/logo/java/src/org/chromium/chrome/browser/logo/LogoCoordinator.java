@@ -119,6 +119,14 @@ public class LogoCoordinator {
                                                 context, ntpThemeColorInfo);
                         maybeUpdateTintForDefaultGoogleLogo(context, newType, primaryColor);
                     }
+
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        if (oldType == NtpBackgroundImageType.DEFAULT) return;
+
+                        maybeUpdateTintForDefaultGoogleLogo(
+                                context, NtpBackgroundImageType.DEFAULT, /* primaryColor= */ null);
+                    }
                 };
         // Skips being notified from NtpCustomizationConfigManager since the drawable has been
         // tinted if necessary when the initial logo view is shown.

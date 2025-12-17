@@ -569,6 +569,11 @@ public class FeedSurfaceCoordinator
                                 @NtpBackgroundImageType int newType) {
                             setBackgroundColor(backgroundColor);
                         }
+
+                        @Override
+                        public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                            setBackgroundColor(mDefaultBackgroundColor);
+                        }
                     };
 
             mNtpCustomizationConfigManager.addListener(

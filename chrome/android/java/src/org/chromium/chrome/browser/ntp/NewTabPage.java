@@ -837,12 +837,8 @@ public class NewTabPage
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        mUseLightIconTint = true;
-                        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
-                            return;
-                        }
-                        mNewTabPageLayout.onCustomizedBackgroundChanged(
-                                /* applyWhiteBackgroundOnSearchBox= */ true);
+                        onBackgroundChangedImpl(
+                                oldType, /* applyWhiteBackgroundOnSearchBox= */ true);
                     }
 
                     @Override
@@ -852,18 +848,29 @@ public class NewTabPage
                             boolean fromInitialization,
                             @NtpBackgroundImageType int oldType,
                             @NtpBackgroundImageType int newType) {
-                        mUseLightIconTint = false;
+                        onBackgroundChangedImpl(
+                                oldType, /* applyWhiteBackgroundOnSearchBox= */ false);
+                    }
 
-                        if (!NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
-                            return;
-                        }
-                        // Resets the fake search box's background.
-                        mNewTabPageLayout.onCustomizedBackgroundChanged(
-                                /* applyWhiteBackgroundOnSearchBox= */ false);
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        onBackgroundChangedImpl(
+                                oldType, /* applyWhiteBackgroundOnSearchBox= */ false);
                     }
                 };
         NtpCustomizationConfigManager.getInstance()
                 .addListener(mHomepageStateListener, mContext, /* skipNotify= */ false);
+    }
+
+    private void onBackgroundChangedImpl(
+            @NtpBackgroundImageType int oldType, boolean applyWhiteBackgroundOnSearchBox) {
+        mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
+
+        if (!NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
+            return;
+        }
+
+        mNewTabPageLayout.onCustomizedBackgroundChanged(applyWhiteBackgroundOnSearchBox);
     }
 
     /** Initializes whether to use a light tint color on icons of toolbar and status bar. */

@@ -380,6 +380,12 @@ public class NtpCustomizationUtils {
                 NtpBackgroundImageType.DEFAULT);
     }
 
+    /** Removes the NTP's background image type from the SharedPreference. */
+    public static void removeNtpBackgroundImageTypeFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+    }
+
     /**
      * Gets the current NTP's background image type from the SharedPreference. Returns
      * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
@@ -879,9 +885,9 @@ public class NtpCustomizationUtils {
     static void resetCustomizedColors() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        prefsManager.removeKey(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
     }
 
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
