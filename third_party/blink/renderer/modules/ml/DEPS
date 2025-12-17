@@ -12,11 +12,23 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Additional allowed list of include for ml trace unit test
+  # Additional allowed list of include for ml trace unit test,
   # we need them for parsing the trace.
   "ml_trace_unittest.cc" : [
     "+base/json/json_reader.h",
     "+base/memory/ref_counted_memory.h",
     "+base/strings/stringprintf.h",
   ],
+  # Additional allowed list of include for ml graph dump,
+  # we need them for dumping the graph.
+  "ml_graph_dump\.h" : [
+    "+base/values.h",
+  ],
+  "ml_graph_dump\.cc" : [
+    "+fp16/fp16.h",
+    "+base/json/json_writer.h",
+  ],
+  "ml_graph_test\.cc" : [
+    "+base/values.h",
+  ]
 }

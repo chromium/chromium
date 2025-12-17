@@ -21,6 +21,10 @@ class MODULES_EXPORT TransposeEliminationTransformer
   void Transform(MLNamedOperands& named_outputs) override;
   void Trace(Visitor* visitor) const override;
 
+  const StringView Name() const override {
+    return "TransposeEliminationTransformer";
+  }
+
  private:
   void HandleTranspose(
       MLOperator* transpose,

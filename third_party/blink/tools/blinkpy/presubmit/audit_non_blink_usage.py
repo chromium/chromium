@@ -2674,6 +2674,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.h",
+            "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.cc",
+        ],
+        'allowed': [
+            'base::JSONWriter',
+            'base::NumberToString',
+            'base::Value',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/ad_auction/',
             'third_party/blink/renderer/modules/shared_storage/',
         ],

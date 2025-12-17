@@ -26,6 +26,8 @@ class MODULES_EXPORT MLGraphTransformer
   // Apply the transformation to the given graph.
   virtual void Transform(MLNamedOperands& named_outputs) = 0;
 
+  virtual const StringView Name() const = 0;
+
   static void Disconnect(MLOperand* from,
                          MLOperator* to,
                          OperandIndex positional_input_index);

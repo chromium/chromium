@@ -18,6 +18,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -71,6 +73,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/ml_graph_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/transpose_elimination_transformer.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -2388,5 +2391,194 @@ TEST_F(MLGraphTest, MLConstantFoldingTransformerTest) {
       BuildGraph(scope, builder, named_outputs);
   ASSERT_THAT(graph, testing::NotNull());
 }
+
+#if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
+TEST_F(MLGraphTest, MLGraphDumpTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  MLContext* context = CreateContext(scope, MLContextOptions::Create());
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+    //
+    //     input0     input1
+    //        \        /
+    //        relu0   /
+    //          \    /
+    //           add
+    //            |
+    //           relu1
+
+    auto* input0 =
+        BuildInput(scope.GetScriptState(), builder, "input0", {3, 4, 5},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* input1 =
+        BuildInput(scope.GetScriptState(), builder, "input1", {3, 4, 5},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* relu0_options = MLOperatorOptions::Create();
+    auto* relu0 = builder->relu(input0, relu0_options, exception_state);
+    ASSERT_THAT(relu0, testing::NotNull());
+    auto* add_options = MLOperatorOptions::Create();
+    auto* add = builder->add(relu0, input1, add_options, exception_state);
+    ASSERT_THAT(add, testing::NotNull());
+    auto* relu1_options = MLOperatorOptions::Create();
+    auto* relu1 = builder->relu(add, relu1_options, exception_state);
+    ASSERT_THAT(relu1, testing::NotNull());
+
+    MLNamedOperands named_outputs = {{"output0", relu1}, {"output1", add}};
+    MLGraphDumper* graph_dumper = MakeGarbageCollected<MLGraphDumper>();
+    graph_dumper->RecordGraph("test_graph", named_outputs);
+
+    const base::Value::Dict& json_root = graph_dumper->GetRoot();
+    const base::Value::List* graphs = json_root.FindList("graphs");
+    ASSERT_TRUE(graphs);
+    EXPECT_EQ(graphs->size(), 1u);
+    const base::Value::Dict& graph_json = (*graphs)[0].GetDict();
+    EXPECT_TRUE(graph_json.FindString("id"));
+    const base::Value::List* nodes = graph_json.FindList("nodes");
+    ASSERT_TRUE(nodes);
+    EXPECT_EQ(nodes->size(), 7u);  // 2 inputs + 1 add + 2 relu + 2 outputs
+
+    const base::Value::Dict* json_output0 = nullptr;
+    const base::Value::Dict* json_output1 = nullptr;
+    const base::Value::Dict* json_relu0 = nullptr;
+    const base::Value::Dict* json_relu1 = nullptr;
+    const base::Value::Dict* json_add = nullptr;
+
+    std::map<std::string, const base::Value::Dict*> id_to_node_json;
+
+    for (const auto& node_val : *nodes) {
+      const base::Value::Dict& node_json = node_val.GetDict();
+      const std::string* id = node_json.FindString("id");
+      ASSERT_TRUE(id);
+      id_to_node_json[*id] = &node_json;
+
+      const std::string* label = node_json.FindString("label");
+      ASSERT_TRUE(label);
+      if (*label == "Output") {
+        const base::Value::List* attrs = node_json.FindList("attrs");
+        ASSERT_TRUE(attrs);
+        for (const auto& attr_val : *attrs) {
+          const base::Value::Dict& attr = attr_val.GetDict();
+          const std::string* key = attr.FindString("key");
+          const std::string* value = attr.FindString("value");
+          ASSERT_TRUE(key);
+          ASSERT_TRUE(value);
+          if (*key == "output_name") {
+            if (*value == "output0") {
+              json_output0 = &node_json;
+            } else if (*value == "output1") {
+              json_output1 = &node_json;
+            } else {
+              FAIL() << "Unexpected output name: " << *value;
+            }
+          }
+        }
+      }
+    }
+
+    ASSERT_TRUE(json_output0);
+    ASSERT_TRUE(json_output1);
+
+    {
+      const base::Value::List* incoming_edges =
+          json_output0->FindList("incomingEdges");
+      ASSERT_TRUE(incoming_edges);
+      EXPECT_EQ(incoming_edges->size(), 1u);
+      const base::Value::Dict& incoming_edge_json =
+          (*incoming_edges)[0].GetDict();
+      const std::string* source_node_id =
+          incoming_edge_json.FindString("sourceNodeId");
+      ASSERT_TRUE(source_node_id);
+      ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+      const base::Value::Dict* relu_node_json =
+          id_to_node_json[*source_node_id];
+      EXPECT_EQ(*relu_node_json->FindString("label"), "relu");
+      json_relu1 = relu_node_json;
+    }
+
+    {
+      const base::Value::List* incoming_edges =
+          json_output1->FindList("incomingEdges");
+      ASSERT_TRUE(incoming_edges);
+      EXPECT_EQ(incoming_edges->size(), 1u);
+      const base::Value::Dict& incoming_edge_json =
+          (*incoming_edges)[0].GetDict();
+      const std::string* source_node_id =
+          incoming_edge_json.FindString("sourceNodeId");
+      ASSERT_TRUE(source_node_id);
+      ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+      const base::Value::Dict* add_node_json = id_to_node_json[*source_node_id];
+      EXPECT_EQ(*add_node_json->FindString("label"), "add");
+      json_add = add_node_json;
+    }
+
+    {
+      const base::Value::List* incoming_edges =
+          json_relu1->FindList("incomingEdges");
+      ASSERT_TRUE(incoming_edges);
+      EXPECT_EQ(incoming_edges->size(), 1u);
+      const base::Value::Dict& incoming_edge_json =
+          (*incoming_edges)[0].GetDict();
+      const std::string* source_node_id =
+          incoming_edge_json.FindString("sourceNodeId");
+      ASSERT_TRUE(source_node_id);
+      ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+      const base::Value::Dict* add_node_json = id_to_node_json[*source_node_id];
+      EXPECT_EQ(*add_node_json->FindString("label"), "add");
+    }
+
+    {
+      const base::Value::List* incoming_edges =
+          json_add->FindList("incomingEdges");
+      ASSERT_TRUE(incoming_edges);
+      EXPECT_EQ(incoming_edges->size(), 2u);
+      {
+        const base::Value::Dict& incoming_edge_json =
+            (*incoming_edges)[0].GetDict();
+        const std::string* source_node_id =
+            incoming_edge_json.FindString("sourceNodeId");
+        ASSERT_TRUE(source_node_id);
+        ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+        const base::Value::Dict* relu0_node_json =
+            id_to_node_json[*source_node_id];
+        EXPECT_EQ(*relu0_node_json->FindString("label"), "relu");
+        json_relu0 = relu0_node_json;
+      }
+      {
+        const base::Value::Dict& incoming_edge_json =
+            (*incoming_edges)[1].GetDict();
+        const std::string* source_node_id =
+            incoming_edge_json.FindString("sourceNodeId");
+        ASSERT_TRUE(source_node_id);
+        ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+        const base::Value::Dict* input1_node_json =
+            id_to_node_json[*source_node_id];
+        EXPECT_EQ(*input1_node_json->FindString("label"), "Input");
+      }
+    }
+
+    {
+      const base::Value::List* incoming_edges =
+          json_relu0->FindList("incomingEdges");
+      ASSERT_TRUE(incoming_edges);
+      EXPECT_EQ(incoming_edges->size(), 1u);
+      const base::Value::Dict& incoming_edge_json =
+          (*incoming_edges)[0].GetDict();
+      const std::string* source_node_id =
+          incoming_edge_json.FindString("sourceNodeId");
+      ASSERT_TRUE(source_node_id);
+      ASSERT_TRUE(id_to_node_json.count(*source_node_id));
+      const base::Value::Dict* input0_node_json =
+          id_to_node_json[*source_node_id];
+      EXPECT_EQ(*input0_node_json->FindString("label"), "Input");
+    }
+  }
+}
+#endif
 
 }  // namespace blink
