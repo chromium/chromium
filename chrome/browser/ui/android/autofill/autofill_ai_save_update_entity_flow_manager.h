@@ -13,7 +13,13 @@
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace autofill {
+
+class AutofillAiSaveUpdateEntityPromptController;
 
 // Class to manage save/update Autofill AI entities on Android. The flow
 // consists of 3 steps:
@@ -27,6 +33,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   static constexpr int kDescriptionMaxLines = 2;
 
   explicit AutofillAiSaveUpdateEntityFlowManager(
+      content::WebContents* web_contents,
       AutofillMessageController* autofill_message_controller);
   AutofillAiSaveUpdateEntityFlowManager(
       const AutofillAiSaveUpdateEntityFlowManager&) = delete;
@@ -39,14 +46,17 @@ class AutofillAiSaveUpdateEntityFlowManager {
   void OfferSave(const EntityInstance& entity);
 
  private:
-  void OnMessagePrimaryAction();
+  void OnMessagePrimaryAction(const EntityInstance& entity);
 
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
       const EntityInstance& entity);
 
-  base::raw_ref<AutofillMessageController> autofill_message_controller_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ref<AutofillMessageController> autofill_message_controller_;
+  std::unique_ptr<AutofillAiSaveUpdateEntityPromptController>
+      save_update_entity_prompt_controller_;
   base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
       this};
 };

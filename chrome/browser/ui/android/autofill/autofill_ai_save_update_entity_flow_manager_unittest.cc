@@ -21,7 +21,7 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
  public:
   AutofillAiSaveUpdateEntityFlowManagerTest() {
     flow_manager_ = std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
-        &autofill_message_controller_);
+        web_contents(), &autofill_message_controller_);
   }
   ~AutofillAiSaveUpdateEntityFlowManagerTest() override = default;
 

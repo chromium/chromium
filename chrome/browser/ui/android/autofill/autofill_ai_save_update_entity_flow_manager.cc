@@ -8,6 +8,9 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_prompt_view_android.h"
+#include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
@@ -16,6 +19,7 @@
 #include "components/messages/android/message_enums.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -55,8 +59,10 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
 }  // namespace
 
 AutofillAiSaveUpdateEntityFlowManager::AutofillAiSaveUpdateEntityFlowManager(
+    content::WebContents* web_contents,
     AutofillMessageController* autofill_message_controller)
-    : autofill_message_controller_(CHECK_DEREF(autofill_message_controller)) {}
+    : web_contents_(web_contents),
+      autofill_message_controller_(CHECK_DEREF(autofill_message_controller)) {}
 
 AutofillAiSaveUpdateEntityFlowManager::
     ~AutofillAiSaveUpdateEntityFlowManager() = default;
@@ -88,12 +94,21 @@ AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
       std::move(message), AutofillMessageModel::Type::kEntitySaveUpdateFlow,
       base::BindOnce(
           &AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction,
-          weak_ptr_factory_.GetWeakPtr()),
+          weak_ptr_factory_.GetWeakPtr(), entity),
       base::BindOnce(&AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction() {}
+void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
+    const EntityInstance& entity) {
+  auto prompt_view_android =
+      std::make_unique<AutofillAiSaveUpdateEntityPromptViewAndroid>(
+          web_contents_);
+  save_update_entity_prompt_controller_ =
+      std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
+          std::move(prompt_view_android), entity.type().name());
+  save_update_entity_prompt_controller_->DisplayPrompt();
+}
 
 void AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed(
     messages::DismissReason dismiss_reason) {}
