@@ -63,8 +63,9 @@ class ClientImpl : public Client {
  private:
   friend class ClientImplTest;
 
-  // Recreates the secure channel and sets the response callback.
-  void RecreateSecureChannel();
+  // Returns the existing secure channel or creates a new one if it doesn't
+  // exist.
+  SecureChannel* GetOrCreateSecureChannel();
 
   // Sends a request over the secure channel.
   void SendRequest(int32_t request_id,

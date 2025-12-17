@@ -53,16 +53,26 @@ class FakeSecureChannelFactory {
   ~FakeSecureChannelFactory() = default;
 
   std::unique_ptr<SecureChannel> Create() {
-    auto channel =
-        std::make_unique<testing::StrictMock<MockSecureChannelClient>>();
+    CHECK(next_channel_);
+    auto channel = std::move(next_channel_);
     EXPECT_CALL(*channel, SetResponseCallback(_))
         .WillOnce(testing::SaveArg<0>(&response_callback_));
-    secure_channel_ = channel.get();
     return channel;
   }
 
-  raw_ptr<MockSecureChannelClient> secure_channel_ = nullptr;
+  MockSecureChannelClient* CreateNewChannel() {
+    CHECK(!next_channel_);
+    auto channel =
+        std::make_unique<testing::StrictMock<MockSecureChannelClient>>();
+    auto* channel_ptr = channel.get();
+    next_channel_ = std::move(channel);
+    return channel_ptr;
+  }
+
   SecureChannel::ResponseCallback response_callback_;
+
+ private:
+  std::unique_ptr<MockSecureChannelClient> next_channel_;
 };
 
 struct ResponseErrorTestParam {
@@ -76,6 +86,7 @@ void SetUpMockWrite(
     SecureChannel::ResponseCallback& response_callback,
     const ClientImpl::BinaryEncodedProtoResponse& response_template,
     bool mismatch_request_id = false) {
+  CHECK(mock_secure_channel);
   EXPECT_CALL(*mock_secure_channel, Write(_))
       .WillOnce([=, &response_callback](const Request& request_payload) {
         proto::LegionRequest request;
@@ -146,8 +157,8 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
                          serialized_response.end());
   }
 
-  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
-                 response_data);
+  auto* mock_channel = factory_.CreateNewChannel();
+  SetUpMockWrite(mock_channel, factory_.response_callback_, response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -173,8 +184,8 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
 
 // Test that SendRequest fails if SecureChannel::Write fails.
 TEST_F(ClientImplTest, SendTextRequestWriteFails) {
-  EXPECT_CALL(*factory_.secure_channel_, Write(_))
-      .WillOnce(testing::Return(false));
+  auto* mock_channel = factory_.CreateNewChannel();
+  EXPECT_CALL(*mock_channel, Write(_)).WillOnce(testing::Return(false));
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -217,8 +228,8 @@ TEST_F(ClientImplTest, IgnoresResponseWithUnknownRequestId) {
   }
 
   // Set up mock to respond with a mismatched request ID.
-  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
-                 response_data,
+  auto* mock_channel = factory_.CreateNewChannel();
+  SetUpMockWrite(mock_channel, factory_.response_callback_, response_data,
                  /*mismatch_request_id=*/true);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
@@ -242,9 +253,8 @@ TEST_F(ClientImplTest, IgnoresResponseWithUnknownRequestId) {
 
 // Test that the secure channel is recreated after a permanent failure.
 TEST_F(ClientImplTest, SecureChannelRecreation) {
-  auto* first_channel = factory_.secure_channel_.get();
-  EXPECT_CALL(*factory_.secure_channel_, Write(_))
-      .WillOnce(testing::Return(true));
+  auto* first_channel = factory_.CreateNewChannel();
+  EXPECT_CALL(*first_channel, Write(_)).WillOnce(testing::Return(true));
 
   // Send a request that will fail.
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
@@ -264,10 +274,6 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
                                        ErrorCode::kNetworkError, 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.RequestSize", 1);
   histogram_tester_.ExpectTotalCount("Legion.Client.ResponseSize.Success", 0);
-
-  // A new channel should have been created.
-  auto second_channel = factory_.secure_channel_;
-  EXPECT_NE(first_channel, second_channel.get());
 
   // A subsequent request should succeed on the new channel.
   const std::string kExpectedResponseText = "response text";
@@ -289,6 +295,7 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
                          serialized_response.end());
   }
 
+  auto* second_channel = factory_.CreateNewChannel();
   SetUpMockWrite(second_channel, factory_.response_callback_, response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> second_future;
@@ -311,8 +318,8 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
 // Test that a request times out correctly.
 TEST_F(ClientImplTest, SendTextRequestTimeout) {
   // Mock the secure channel to never respond.
-  EXPECT_CALL(*factory_.secure_channel_, Write(_))
-      .WillOnce(testing::Return(true));
+  auto* mock_channel = factory_.CreateNewChannel();
+  EXPECT_CALL(*mock_channel, Write(_)).WillOnce(testing::Return(true));
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -343,8 +350,8 @@ TEST_F(ClientImplTest, SendTextRequestTimeout) {
 // Test that a response received after a timeout is ignored.
 TEST_F(ClientImplTest, SendTextRequestResponseAfterTimeout) {
   // Mock the secure channel to not invoke the response callback.
-  EXPECT_CALL(*factory_.secure_channel_, Write(_))
-      .WillOnce(testing::Return(true));
+  auto* mock_channel = factory_.CreateNewChannel();
+  EXPECT_CALL(*mock_channel, Write(_)).WillOnce(testing::Return(true));
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -407,8 +414,8 @@ TEST_F(ClientImplTest, SendTextRequestEmptyResponse) {
     response_data.assign(serialized.begin(), serialized.end());
   }
 
-  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
-                 response_data);
+  auto* mock_channel = factory_.CreateNewChannel();
+  SetUpMockWrite(mock_channel, factory_.response_callback_, response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -439,13 +446,13 @@ class ClientImplSendTextRequestSecureChannelErrorTest
 
 TEST_P(ClientImplSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   ErrorCode error_code = GetParam();
-  EXPECT_CALL(*factory_.secure_channel_, Write(_))
-      .WillOnce([&](const Request& request) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(factory_.response_callback_,
-                                      base::unexpected(error_code)));
-        return true;
-      });
+  auto* mock_channel = factory_.CreateNewChannel();
+  EXPECT_CALL(*mock_channel, Write(_)).WillOnce([&](const Request& request) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(factory_.response_callback_,
+                                  base::unexpected(error_code)));
+    return true;
+  });
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -481,8 +488,9 @@ TEST_P(ClientImplSendGenerateContentRequestErrorTest,
        SendGenerateContentRequestMalformedResponse) {
   const auto& param = GetParam();
 
-  SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
-                 param.response_data, param.mismatch_request_id);
+  auto* mock_channel = factory_.CreateNewChannel();
+  SetUpMockWrite(mock_channel, factory_.response_callback_, param.response_data,
+                 param.mismatch_request_id);
 
   base::test::TestFuture<
       base::expected<proto::GenerateContentResponse, ErrorCode>>
@@ -541,13 +549,13 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that if session establishment fails, any pending requests are also
 // failed.
 TEST_F(ClientImplTest, EstablishSessionFailureFailsPendingRequests) {
-  auto* first_channel = factory_.secure_channel_.get();
+  auto* mock_channel = factory_.CreateNewChannel();
 
   // The first write will be queued.
-  EXPECT_CALL(*first_channel, Write(_)).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_channel, Write(_)).WillOnce(testing::Return(true));
 
   // The session establishment will fail.
-  EXPECT_CALL(*first_channel, EstablishChannel(_))
+  EXPECT_CALL(*mock_channel, EstablishChannel(_))
       .WillOnce([&](SecureChannel::EstablishChannelCallback cb) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
@@ -578,9 +586,6 @@ TEST_F(ClientImplTest, EstablishSessionFailureFailsPendingRequests) {
   const auto& text_result = text_future.Get();
   ASSERT_FALSE(text_result.has_value());
   EXPECT_EQ(text_result.error(), ErrorCode::kHandshakeFailed);
-
-  // A new channel should have been created.
-  EXPECT_NE(first_channel, factory_.secure_channel_.get());
 
   histogram_tester_.ExpectUniqueSample(
       "Legion.Client.FeatureName",

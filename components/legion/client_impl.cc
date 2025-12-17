@@ -66,23 +66,24 @@ void OnRequestSent(
 }  // namespace
 
 ClientImpl::ClientImpl(SecureChannelFactory channel_factory)
-    : secure_channel_factory_(std::move(channel_factory)) {
-  RecreateSecureChannel();
-}
+    : secure_channel_factory_(std::move(channel_factory)) {}
 
 ClientImpl::~ClientImpl() = default;
 
 void ClientImpl::EstablishSession(
     OnEstablishSessionCompletedCallback callback) {
-  secure_channel_->EstablishChannel(
+  GetOrCreateSecureChannel()->EstablishChannel(
       base::BindOnce(&ClientImpl::OnSessionEstablished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ClientImpl::RecreateSecureChannel() {
-  secure_channel_ = secure_channel_factory_.Run();
-  secure_channel_->SetResponseCallback(base::BindRepeating(
-      &ClientImpl::OnResponseReceived, base::Unretained(this)));
+SecureChannel* ClientImpl::GetOrCreateSecureChannel() {
+  if (!secure_channel_) {
+    secure_channel_ = secure_channel_factory_.Run();
+    secure_channel_->SetResponseCallback(base::BindRepeating(
+        &ClientImpl::OnResponseReceived, base::Unretained(this)));
+  }
+  return secure_channel_.get();
 }
 
 void ClientImpl::SendRequest(int32_t request_id,
@@ -97,7 +98,7 @@ void ClientImpl::SendRequest(int32_t request_id,
       &ClientImpl::OnRequestCompleted, weak_factory_.GetWeakPtr(),
       std::move(callback), base::TimeTicks::Now());
 
-  if (secure_channel_->Write(std::move(request))) {
+  if (GetOrCreateSecureChannel()->Write(std::move(request))) {
     pending_requests_.emplace(request_id, std::move(wrapped_callback));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -188,11 +189,11 @@ void ClientImpl::OnRequestTimeout(int32_t request_id) {
 void ClientImpl::OnResponseReceived(
     base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
-    // The secure channel is broken. Fail all pending requests and recreate the
-    // channel.
-    DVLOG(1) << "Secure channel read failed. Recreating channel.";
+    // The secure channel is broken. Fail all pending requests and destroy the
+    // channel. It will be recreated on the next request.
+    DVLOG(1) << "Secure channel read failed. Destroying channel.";
     FailAllPendingRequests(result.error());
-    RecreateSecureChannel();
+    secure_channel_.reset();
     return;
   }
 
