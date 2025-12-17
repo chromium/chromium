@@ -44,6 +44,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('chrome_url_overrides.idl', 'chrome_url_overrides.webidl'),
         ('cross_origin_isolation.idl', 'cross_origin_isolation.webidl'),
         ('file_handlers.idl', 'file_handlers.webidl'),
+        ('oauth2.idl', 'oauth2.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
