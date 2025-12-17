@@ -1354,9 +1354,7 @@ class TouchToFillPaymentMethodMediator {
         return new ListItem(
                 HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(
-                                IMAGE_DRAWABLE_ID,
-                                issuerImageId == 0 ? R.drawable.bnpl_icon_generic : issuerImageId)
+                        .with(IMAGE_DRAWABLE_ID, issuerImageId)
                         .with(TITLE_STRING, title)
                         .build());
     }

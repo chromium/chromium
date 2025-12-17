@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -565,6 +566,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .thenReturn(R.drawable.ic_globe_24dp);
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
+        when(mResourceProvider.getBnplIssuerTosDrawableId(anyString(), anyBoolean()))
+                .thenReturn(R.drawable.bnpl_icon_generic);
         mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mCoordinator.initialize(
                 mActivity,
