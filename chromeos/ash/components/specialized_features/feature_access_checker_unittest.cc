@@ -13,7 +13,6 @@
 #include "base/feature_list_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -32,6 +31,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
+#include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,6 +54,12 @@ BASE_FEATURE(kFeatureOnByDefault,
 BASE_FEATURE(kFeatureOffByDefault,
              "OffByDefaultName",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+std::string HashedKey(std::string_view key) {
+  std::array<uint8_t, crypto::hash::kSha256Size> hash =
+      crypto::hash::Sha256(key);
+  return std::string(hash.begin(), hash.end());
+}
 
 void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
   pref.registry()->RegisterBooleanPref(kSettingsTogglePref, true);
@@ -238,9 +244,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             key_val);
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString(key_val);
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey(key_val)};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -253,9 +258,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey("hunter2")};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -268,9 +272,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFailIfNoIdentityManager) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey("hunter2")};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_,
@@ -287,9 +290,8 @@ TEST_F(FeatureAccessCheckerTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey("hunter2")};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -305,9 +307,8 @@ TEST_F(FeatureAccessCheckerTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey("hunter2")};
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(
@@ -325,9 +326,8 @@ TEST_F(
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
-  std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
-                       .sha1_hashed_key_value = hashed};
+                       .sha256_hashed_key_value = HashedKey("hunter2")};
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(

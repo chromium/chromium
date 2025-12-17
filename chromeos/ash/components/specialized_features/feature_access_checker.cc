@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/hash/sha1.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -75,20 +76,28 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() const {
     failures.Put(kFeatureManagementCheckFailed);
   }
 
-  if (config_.secret_key.has_value() &&
-      config_.secret_key->sha1_hashed_key_value !=
-          base::SHA1HashString(
-              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                  config_.secret_key->flag))) {
-    // if identity_manager_ is not set, we should assume that the feature is not
-    // enabled to be safe.
-    if (identity_manager_ == nullptr ||
-        !config_.allow_google_accounts_skip_secret_key ||
-        !gaia::IsGoogleInternalAccountEmail(
-            identity_manager_
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .email)) {
-      failures.Put(kSecretKeyCheckFailed);
+  if (config_.secret_key.has_value()) {
+    std::string secret_key_flag_value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            config_.secret_key->flag);
+
+    std::array<uint8_t, crypto::hash::kSha256Size> secret_key_flag_value_bytes =
+        crypto::hash::Sha256(secret_key_flag_value);
+    std::string_view secret_key_flag_value_hash =
+        base::as_string_view(secret_key_flag_value_bytes);
+
+    if (config_.secret_key->sha256_hashed_key_value !=
+        secret_key_flag_value_hash) {
+      // if identity_manager_ is not set, we should assume that the feature is
+      // not enabled to be safe.
+      if (identity_manager_ == nullptr ||
+          !config_.allow_google_accounts_skip_secret_key ||
+          !gaia::IsGoogleInternalAccountEmail(
+              identity_manager_
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                  .email)) {
+        failures.Put(kSecretKeyCheckFailed);
+      }
     }
   }
 
