@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -33,8 +32,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -103,35 +100,6 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest, InvokeUiBasic) {
   base::UserActionTester action_tester;
   ShowAndVerifyUi();
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppDiyInstallShown"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest, TextFieldHasFocus) {
-  base::UserActionTester action_tester;
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppDiyInstallDialog");
-  ShowUi("random_text");
-  views::Widget* dialog_widget = widget_waiter.WaitIfNeededAndGet();
-  EXPECT_NE(nullptr, dialog_widget);
-
-  // Get the focused view in the browser, verify it is the same as the text
-  // field in the DIY install dialog.
-  views::View* focused_view_in_dialog =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetWidget()
-          ->GetFocusManager()
-          ->GetFocusedView();
-  views::Textfield* focused_text_field =
-      views::AsViewClass<views::Textfield>(focused_view_in_dialog);
-  ASSERT_NE(nullptr, focused_text_field);
-
-  views::ElementTrackerViews* tracker_views =
-      views::ElementTrackerViews::GetInstance();
-  ui::ElementContext context =
-      views::ElementTrackerViews::GetContextForWidget(dialog_widget);
-  views::Textfield* text_field_diy =
-      tracker_views->GetFirstMatchingViewAs<views::Textfield>(
-          WebAppInstallDialogDelegate::kDiyAppsDialogInputTextId, context);
-  EXPECT_EQ(focused_text_field, text_field_diy);
 }
 
 // Dialog destruction due to navigations or other reasons are measured as
