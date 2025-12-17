@@ -13836,21 +13836,6 @@
             ]
         }
     ],
-    "IOSReaderModeWithTranslate": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReaderModeTranslation"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSafariImportWorkflow": [
         {
             "platforms": [
