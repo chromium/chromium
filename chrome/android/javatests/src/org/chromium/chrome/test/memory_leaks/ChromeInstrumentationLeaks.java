@@ -18,19 +18,6 @@ public class ChromeInstrumentationLeaks implements LeakCanaryConfigProvider {
     // chrome_public_test_apk). The goal is to  burn this class down to nothing by fixing leaks.
     // Please include a bug for each leak.
 
-    // crbug.com/467345468
-    @IdentifierNameString
-    private static String sClass467345468 = "org.chromium.chrome.browser.metrics.UmaSessionStats$1";
-
-    @IdentifierNameString
-    private static String sField467345468 =
-            "org.chromium.chrome.browser.metrics.UmaSessionStats$1#this$0";
-
-    @Override
-    public Map<String, String> getInstanceFieldLeaks() {
-        return Map.of(sClass467345468, sField467345468);
-    }
-
     // crbug.com/462704925
     @IdentifierNameString
     private static String sClass462704925 = "org.chromium.ui.KeyboardVisibilityDelegate";
