@@ -499,9 +499,6 @@ void PerUserStateManagerChromeOS::UpdateLocalStatePrefs(bool metrics_enabled) {
 
   auto* user_prefs = GetCurrentUserPrefs();
 
-  // TODO(crbug.com/40203990): In the case that multiple users toggle consent
-  // off to on, this will cause the client ID to be reset each time, which is
-  // not necessary. Look for a way to allow resetting client id less eager.
   if (user_prefs->GetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent)) {
     RecordIdReset(IdResetType::kClientId);
     ForceClientIdReset();
