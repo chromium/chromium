@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] test no-referrer attribute on iframe for iframe containing B1
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] test toggle of masked A1 -> B1 iframe for A2 sets no-referrer -> A2
+  assert_array_equals: expected property 0 to be "null" but got "http://not-web-platform.test:8001" (expected array ["null", "http://web-platform.test:8001"] got ["http://not-web-platform.test:8001", "http://web-platform.test:8001"])
+[FAIL] test of toggle of masked at first origin != parentDocOrigin, A1 -> B1 -> B2 -> A2
+  assert_array_equals: expected property 0 to be "null" but got "http://not-web-platform.test:8001" (expected array ["null", "null", "http://web-platform.test:8001"] got ["http://not-web-platform.test:8001", "http://not-web-platform.test:8001", "http://web-platform.test:8001"])
+[FAIL] Test same-origin referrer policy, A1 -> B1 -> A2 iframe attribute same-origin -> B2
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null", "http://not-web-platform.test:8001", "http://web-platform.test:8001"] got ["http://web-platform.test:8001", "http://not-web-platform.test:8001", "http://web-platform.test:8001"])
+[FAIL] Test that mutating the iframe referrerpolicy attribute of B1 before creation of B2 does not impact the hiding/non-hiding when creating a grandchild browsing context (keep null)
+  assert_array_equals: expected property 0 to be "null" but got "http://not-web-platform.test:8001" (expected array ["null", "http://web-platform.test:8001"] got ["http://not-web-platform.test:8001", "http://web-platform.test:8001"])
+[FAIL] about:blank's location.ancestorOrigin policy=no-referrer
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] A -> about:blank, that set iframe referrer policy=no-referrer -> B1 -> B2
+  assert_array_equals: expected property 1 to be "null" but got "http://web-platform.test:8001" (expected array ["http://not-web-platform.test:8001", "null", "null"] got ["http://not-web-platform.test:8001", "http://web-platform.test:8001", "http://web-platform.test:8001"])
+Harness: the test ran to completion.
+

@@ -3170,6 +3170,7 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac ] external/wpt/html/browsers/history/the-location-interface/location-ancestor-origins.sub.html [ Pass Timeout ]
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Failure ]
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/global.py [ Failure ]
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/invalid.py [ Failure ]
