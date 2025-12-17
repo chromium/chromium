@@ -27,8 +27,6 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
-import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.build.annotations.NullMarked;

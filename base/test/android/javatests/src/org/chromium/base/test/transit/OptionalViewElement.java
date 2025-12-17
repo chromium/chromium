@@ -105,9 +105,9 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
     public ConditionWithResult<ViewT> present() {
         // Delay calculating the root spec because the owner state might not be set yet.
         Supplier<RootSpec> rootSpecSupplier = () -> ViewElement.calculateRootSpec(mOptions, mOwner);
-        ViewConditions.DisplayedCondition.Options conditionOptions =
+        DisplayedCondition.Options conditionOptions =
                 ViewElement.calculateDisplayedConditionOptions(mOptions).build();
-        return new ViewConditions.DisplayedCondition<>(
+        return new DisplayedCondition<>(
                 mViewSpec.getViewMatcher(),
                 mViewSpec.getViewClass(),
                 rootSpecSupplier,
@@ -116,7 +116,7 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
 
     /** Create a Condition fulfilled when this OptionalViewElement is absent. */
     public Condition absent() {
-        return new ViewConditions.NotDisplayedAnymoreCondition(
+        return new NotDisplayedAnymoreCondition(
                 /* viewElement= */ null, mViewSpec.getViewMatcher());
     }
 

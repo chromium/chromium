@@ -157,8 +157,7 @@ public class Elements extends BaseElements {
         /** See {@link ConditionalState#declareNoView(Matcher)}. */
         public void declareNoView(Matcher<View> viewMatcher) {
             declareEnterCondition(
-                    new ViewConditions.NotDisplayedAnymoreCondition(
-                            /* viewElement= */ null, viewMatcher));
+                    new NotDisplayedAnymoreCondition(/* viewElement= */ null, viewMatcher));
         }
 
         /** See {@link ConditionalState#declareEnterCondition(Condition)}. */
