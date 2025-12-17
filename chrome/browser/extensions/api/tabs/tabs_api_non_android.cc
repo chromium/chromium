@@ -177,14 +177,29 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     }
 
     OpenTabHelper::Params options;
-    options.window_id = params->create_properties.window_id;
-    options.opener_tab_id = params->create_properties.opener_tab_id;
-    options.active = params->create_properties.selected;
+    const tabs::Create::Params::CreateProperties& create_properties =
+        params->create_properties;
+    options.window_id = create_properties.window_id;
+    options.active = create_properties.selected;
     // The 'active' property has replaced the 'selected' property.
-    options.active = params->create_properties.active;
-    options.pinned = params->create_properties.pinned;
-    options.index = params->create_properties.index;
-    options.url = params->create_properties.url;
+    options.active = create_properties.active;
+    options.pinned = create_properties.pinned;
+    options.index = create_properties.index;
+    options.url = create_properties.url;
+
+    // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
+    // represents the active tab.
+    content::WebContents* opener = nullptr;
+    if (create_properties.opener_tab_id) {
+      if (!ExtensionTabUtil::GetTabById(
+              *create_properties.opener_tab_id, browser_context(),
+              include_incognito_information(), nullptr, &opener, nullptr)) {
+        return Error(ErrorUtils::FormatErrorMessage(
+            ExtensionTabUtil::kTabNotFoundError,
+            base::NumberToString(*create_properties.opener_tab_id)));
+      }
+      options.opener_tab = opener;
+    }
 
     auto result = OpenTabHelper::OpenTab(this, options, user_gesture());
     if (!result.has_value()) {

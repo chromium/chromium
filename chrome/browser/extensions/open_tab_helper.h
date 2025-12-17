@@ -8,10 +8,15 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 
 class ExtensionFunction;
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 
@@ -23,13 +28,14 @@ class OpenTabHelper {
 
     bool create_browser_if_needed = false;
     std::optional<int> window_id;
-    std::optional<int> opener_tab_id;
     std::optional<std::string> url;
     std::optional<bool> active;
     std::optional<bool> split;
     std::optional<bool> pinned;
     std::optional<int> index;
     std::optional<int> bookmark_id;
+
+    raw_ptr<content::WebContents> opener_tab = nullptr;
   };
 
   // Opens a new tab given an extension function `function` and creation

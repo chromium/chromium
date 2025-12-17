@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,23 +76,6 @@ base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
   }
 
   Profile* profile = Profile::FromBrowserContext(function->browser_context());
-  // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
-  // represents the active tab.
-  content::WebContents* opener = nullptr;
-  WindowController* opener_window = nullptr;
-  if (params.opener_tab_id) {
-    if (!ExtensionTabUtil::GetTabById(*params.opener_tab_id, profile,
-                                      function->include_incognito_information(),
-                                      &opener_window, &opener, nullptr) ||
-        !opener_window) {
-      return base::unexpected(ErrorUtils::FormatErrorMessage(
-          ExtensionTabUtil::kTabNotFoundError,
-          base::NumberToString(*params.opener_tab_id)));
-    }
-  }
-
-  BrowserWindowInterface* opener_browser =
-      opener_window ? opener_window->GetBrowserWindowInterface() : nullptr;
 
   // Try to find a suitable browser.
   // TODO(https://crbug.com/468223125): This is a wild set of tangled
@@ -150,12 +134,16 @@ base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
     create_new_if_none_found = true;
   }
 
-  // This check (for opener browser) comes last. It will fail (by design) if
+  // This check (for the opener) comes last. It will fail (by design) if
   // we're intending to create a new browser; that's good, because the new
   // browser would never match the one with the opener.
-  if (opener_browser && browser != opener_browser) {
-    return base::unexpected(
-        "Tab opener must be in the same window as the updated tab.");
+  if (params.opener_tab) {
+    BrowserWindowInterface* opener_browser =
+        browser_window_util::GetBrowserForTabContents(*params.opener_tab);
+    if (!opener_browser || opener_browser != browser) {
+      return base::unexpected(
+          "Tab opener must be in the same window as the updated tab.");
+    }
   }
 
   Profile* profile_to_use =
@@ -248,11 +236,12 @@ base::expected<base::Value::Dict, std::string> OpenTabHelper::OpenTab(
       navigate_params.browser->GetBrowserForMigrationOnly()->tab_strip_model();
   const int new_index = tab_strip->GetIndexOfWebContents(
       navigate_params.navigated_or_inserted_contents);
-  if (opener) {
+  if (params.opener_tab) {
     // Only set the opener if the opener tab is in the same tab strip as the
     // new tab.
-    if (tab_strip->GetIndexOfWebContents(opener) != TabStripModel::kNoTab) {
-      tab_strip->SetOpenerOfWebContentsAt(new_index, opener);
+    if (tab_strip->GetIndexOfWebContents(params.opener_tab) !=
+        TabStripModel::kNoTab) {
+      tab_strip->SetOpenerOfWebContentsAt(new_index, params.opener_tab);
     }
   }
 
