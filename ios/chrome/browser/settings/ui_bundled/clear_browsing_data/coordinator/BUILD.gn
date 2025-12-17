@@ -1,0 +1,124 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "quick_delete_coordinator.h",
+    "quick_delete_coordinator.mm",
+  ]
+  deps = [
+    ":mediator",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:model_remove_mask",
+    "//ios/chrome/browser/browsing_data/model:util",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:constants",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/coordinator",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ui/base",
+  ]
+}
+
+source_set("mediator") {
+  sources = [
+    "quick_delete_mediator.h",
+    "quick_delete_mediator.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/signin/public/identity_manager/objc",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ios/chrome/browser/browsing_data/model:model_remove_mask",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "quick_delete_util.h",
+    "quick_delete_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/browsing_data/core",
+    "//components/strings",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "quick_delete_mediator_unittest.mm",
+    "quick_delete_util_unittest.mm",
+  ]
+  deps = [
+    ":mediator",
+    ":util",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/prefs",
+    "//components/strings",
+    "//components/sync_preferences",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model:test_support",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
