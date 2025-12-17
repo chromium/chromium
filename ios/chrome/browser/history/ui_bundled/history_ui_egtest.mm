@@ -96,7 +96,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   GURL _URL3;
 }
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 

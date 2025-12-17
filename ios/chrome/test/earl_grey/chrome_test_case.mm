@@ -246,7 +246,7 @@ void ResetAuthentication() {
   }
   _executedTestMethodSetUp = YES;
 
-  if (![[self class] loadMinimalAppUI]) {
+  if (![self loadMinimalAppUI]) {
     [ChromeTestCaseAppInterface blockSigninIPH];
   }
 }
@@ -293,7 +293,7 @@ void ResetAuthentication() {
       [ChromeEarlGreyUI dismissContextMenuIfPresent];
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
-    if (![[self class] loadMinimalAppUI]) {
+    if (![self loadMinimalAppUI]) {
       [[self class] closeAllTabs];
     }
 
@@ -479,7 +479,7 @@ void ResetAuthentication() {
 // Resets the application state.
 // Called at the start of a test and when the app is relaunched.
 - (void)resetAppState {
-  if (![[self class] loadMinimalAppUI]) {
+  if (![self loadMinimalAppUI]) {
     [[self class] disableMockAuthentication];
     [[self class] enableMockAuthentication];
     ResetAuthentication();

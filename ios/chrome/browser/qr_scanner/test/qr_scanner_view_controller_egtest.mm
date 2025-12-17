@@ -154,7 +154,7 @@ void TapButton(id<GREYMatcher> button) {
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _camera_controller_swizzler;
 }
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 

@@ -167,7 +167,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSearchSuggestEnabled];
 }
 
-- (BOOL)shouldLoadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   std::vector<SEL> minimalAppUITests = {
       @selector(testAccessibility),
       @selector(testOmniboxWidthRotation),
@@ -192,9 +192,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Make sure the search engine country is set, for `testFavicons` test.
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
-  if ([self shouldLoadMinimalAppUI]) {
-    config.additional_args.push_back(std::string("-load-minimal-app-ui"));
-  }
 
   if ([self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)] ||
       [self

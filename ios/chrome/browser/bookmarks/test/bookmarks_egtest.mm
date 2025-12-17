@@ -34,7 +34,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 @implementation BookmarksTestCase
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 
