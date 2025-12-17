@@ -64,6 +64,7 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -168,6 +169,14 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (BOOL)loadMinimalAppUI {
+  // TODO(crbug.com/469833796): Fix this issue on ipad-device bot.
+#if !TARGET_OS_SIMULATOR
+  // The app hasn't booted yet, so `isIpadIdiom` cannot be used here.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return NO;
+  }
+#endif
+
   std::vector<SEL> minimalAppUITests = {
       @selector(testAccessibility),
       @selector(testOmniboxWidthRotation),
