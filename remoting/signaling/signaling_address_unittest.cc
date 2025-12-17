@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "remoting/signaling/corp_messaging_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -45,20 +46,17 @@ TEST(SignalingAddressTest, ParseAddress) {
 
   std::unique_ptr<jingle_xmpp::XmlElement> message(
       jingle_xmpp::XmlElement::ForStr(kTestMessage));
-  std::string error;
 
   SignalingAddress from =
-      SignalingAddress::Parse(message.get(), SignalingAddress::FROM, &error);
+      SignalingAddress::Parse(message.get(), SignalingAddress::FROM);
   EXPECT_FALSE(from.empty());
-  EXPECT_TRUE(error.empty());
 
   EXPECT_EQ("user@domain.com/chromoting_ftl_sender", from.id());
   EXPECT_EQ(SignalingAddress::Channel::FTL, from.channel());
 
   SignalingAddress to =
-      SignalingAddress::Parse(message.get(), SignalingAddress::TO, &error);
+      SignalingAddress::Parse(message.get(), SignalingAddress::TO);
   EXPECT_FALSE(to.empty());
-  EXPECT_TRUE(error.empty());
 
   EXPECT_EQ("remoting@bot.talk.google.com", to.id());
   EXPECT_EQ(SignalingAddress::Channel::XMPP, to.channel());
@@ -80,9 +78,8 @@ TEST(SignalingAddressTest, ParseEmptySignalingId) {
   std::string error;
 
   SignalingAddress from =
-      SignalingAddress::Parse(message.get(), SignalingAddress::FROM, &error);
+      SignalingAddress::Parse(message.get(), SignalingAddress::FROM);
   EXPECT_TRUE(from.empty());
-  EXPECT_TRUE(error.empty());
 }
 
 TEST(SignalingAddressTest, ParseMissingSignalingId) {
@@ -97,12 +94,10 @@ TEST(SignalingAddressTest, ParseMissingSignalingId) {
 
   std::unique_ptr<jingle_xmpp::XmlElement> message(
       jingle_xmpp::XmlElement::ForStr(kTestMessage));
-  std::string error;
 
   SignalingAddress from =
-      SignalingAddress::Parse(message.get(), SignalingAddress::FROM, &error);
+      SignalingAddress::Parse(message.get(), SignalingAddress::FROM);
   EXPECT_TRUE(from.empty());
-  EXPECT_TRUE(error.empty());
 }
 
 TEST(SignalingAddressTest, SetInMessageToXmpp) {
@@ -161,6 +156,23 @@ TEST(SignalingAddressTest, CorpAddress) {
   SignalingAddress addr(kCorpToken);
   EXPECT_EQ(SignalingAddress::Channel::CORP, addr.channel());
   EXPECT_EQ(kCorpToken, addr.id());
+
+  const char kCorpUserWithResource[] =
+      "user@corp.google.com/some-uuid-resource";
+  SignalingAddress addr1(kCorpUserWithResource);
+  EXPECT_EQ(SignalingAddress::Channel::CORP, addr1.channel());
+  EXPECT_EQ(kCorpUserWithResource, addr1.id());
+
+  const char kCorpServiceWithoutResource[] = "some-uuid@type.corp.google.com";
+  SignalingAddress addr2(kCorpServiceWithoutResource);
+  EXPECT_EQ(SignalingAddress::Channel::CORP, addr2.channel());
+  EXPECT_EQ(kCorpServiceWithoutResource, addr2.id());
+
+  const char kCorpServiceWithResource[] =
+      "some-uuid@type.corp.google.com/some-resource";
+  SignalingAddress addr3(kCorpServiceWithResource);
+  EXPECT_EQ(SignalingAddress::Channel::CORP, addr3.channel());
+  EXPECT_EQ(kCorpServiceWithResource, addr3.id());
 }
 
 TEST(SignalingAddressTest, JidWithoutResourceIsXmpp) {

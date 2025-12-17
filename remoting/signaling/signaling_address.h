@@ -39,8 +39,7 @@ class SignalingAddress {
   static SignalingAddress CreateSystemAddress(const std::string& id);
 
   static SignalingAddress Parse(const jingle_xmpp::XmlElement* iq,
-                                Direction direction,
-                                std::string* error);
+                                Direction direction);
 
   void SetInMessage(jingle_xmpp::XmlElement* message,
                     Direction direction) const;

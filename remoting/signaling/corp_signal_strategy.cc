@@ -64,6 +64,7 @@ class CorpSignalStrategy::Core {
   Error error_ = OK;
   std::string username_;
   SignalingAddress local_address_;
+  std::string messaging_authz_token_;
   int next_id_ = 0;
   bool is_signin_error_ = false;
 
@@ -104,6 +105,7 @@ void CorpSignalStrategy::Core::Disconnect() {
   messaging_client_->StopReceivingMessages();
   incoming_message_subscription_ = {};
   local_address_ = SignalingAddress();
+  messaging_authz_token_ = std::string();
   SetState(DISCONNECTED);
 }
 
@@ -141,11 +143,10 @@ bool CorpSignalStrategy::Core::SendStanza(
     return false;
   }
 
-  std::string to_error;
   SignalingAddress to =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO, &to_error);
-  if (!to_error.empty()) {
-    LOG(ERROR) << "Invalid destination address: " << to_error;
+      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO);
+  if (to.empty()) {
+    LOG(ERROR) << "Invalid destination address.";
     return false;
   }
 
@@ -174,10 +175,10 @@ bool CorpSignalStrategy::Core::SendMessage(
     LOG(ERROR) << "Tried to send a non-corp message with CorpSignalStrategy.";
     return false;
   }
-
-  // TODO: joedow - Get the messaging auth token from the session.
-  std::string messaging_authz_token = "faux_messaging_token";
-  SignalingAddress corp_destination_address(messaging_authz_token);
+  if (messaging_authz_token_.empty()) {
+    LOG(ERROR) << "Missing authz token.";
+    return false;
+  }
 
   auto on_done = base::BindOnce([](const HttpStatus& status) {
     if (!status.ok()) {
@@ -186,7 +187,7 @@ bool CorpSignalStrategy::Core::SendMessage(
                    << ", message: " << status.error_message();
     }
   });
-  messaging_client_->SendMessage(corp_destination_address,
+  messaging_client_->SendMessage(SignalingAddress(messaging_authz_token_),
                                  SignalingMessage(std::move(*peer_message)),
                                  std::move(on_done));
   return true;
@@ -233,12 +234,20 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     return;
   }
 
-  std::string error;
   SignalingAddress sender =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::FROM, &error);
+      SignalingAddress::Parse(stanza.get(), SignalingAddress::FROM);
   if (sender.empty()) {
-    LOG(WARNING) << "Received stanza with invalid sender: " << error;
+    LOG(WARNING) << "Received stanza with invalid sender.";
     return;
+  }
+
+  // TODO: joedow - Associate `messaging_authz_token_` with the sender JID. One
+  // way to do this is to update SignalingAddress to include a token field so
+  // it is associated with the sender JID.
+  messaging_authz_token_ = iq_stanza_struct->messaging_authz_token;
+
+  if (local_address_.empty()) {
+    local_address_ = SignalingAddress(stanza->Attr(kQNameTo));
   }
 
   OnStanza(sender, std::move(stanza));
@@ -247,7 +256,9 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
 void CorpSignalStrategy::Core::OnChannelReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  local_address_ = SignalingAddress(username_);
+  // TODO: joedow - We receive the local JID when we open a channel so plumb
+  // that value up through CorpMessageChannelStrategy::OnReceiveMessagesResponse
+  // and set it here instead of just accepting the first value in the stanza.
   SetState(CONNECTED);
 }
 
@@ -284,17 +295,17 @@ void CorpSignalStrategy::Core::OnStanza(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (stanza->Name() != kQNameIq) {
-    LOG(DFATAL) << "Received unexpected non-IQ packet " << stanza->Str();
+    LOG(WARNING) << "Received unexpected non-IQ packet " << stanza->Str();
     return;
   }
   if (SignalingAddress(stanza->Attr(kQNameFrom)) != sender_address) {
-    LOG(DFATAL) << "Expected sender: " << sender_address.id()
-                << ", but received: " << stanza->Attr(kQNameFrom);
+    LOG(WARNING) << "Expected sender: " << sender_address.id()
+                 << ", but received: " << stanza->Attr(kQNameFrom);
     return;
   }
   if (SignalingAddress(stanza->Attr(kQNameTo)) != local_address_) {
-    LOG(DFATAL) << "Expected receiver: " << local_address_.id()
-                << ", but received: " << stanza->Attr(kQNameTo);
+    LOG(WARNING) << "Expected receiver: " << local_address_.id()
+                 << ", but received: " << stanza->Attr(kQNameTo);
     return;
   }
 

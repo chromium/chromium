@@ -239,6 +239,15 @@ TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
       });
   signal_strategy_->Connect();
 
+  // Simulate an incoming message to set the remote address.
+  internal::IqStanzaStruct iq_stanza_struct;
+  iq_stanza_struct.xml = CreateXmlStanza(Direction::INCOMING, "id1")->Str();
+  iq_stanza_struct.messaging_authz_token = "faux_messaging_token";
+  internal::PeerMessageStruct peer_message;
+  peer_message.payload = std::move(iq_stanza_struct);
+  messaging_client_->OnMessage(SignalingAddress(kFakeRemoteCorpId),
+                               SignalingMessage(peer_message));
+
   auto stanza =
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
   std::string stanza_string = stanza->Str();
@@ -247,7 +256,6 @@ TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
       .WillOnce([stanza_string](const SignalingAddress& address,
                                 SignalingMessage&& message,
                                 MessagingClient::DoneCallback on_done) {
-        // TODO(joedow): Get the messaging auth token from the session.
         EXPECT_EQ("faux_messaging_token", address.id());
         auto* peer_message = std::get_if<internal::PeerMessageStruct>(&message);
         ASSERT_TRUE(peer_message);
@@ -282,6 +290,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {
 
   internal::IqStanzaStruct iq_stanza_struct;
   iq_stanza_struct.xml = stanza_string;
+  iq_stanza_struct.messaging_authz_token = "fake_authz_token";
 
   internal::PeerMessageStruct peer_message;
   peer_message.payload = std::move(iq_stanza_struct);

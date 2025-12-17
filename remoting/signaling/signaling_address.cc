@@ -10,9 +10,11 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/base/name_value_map.h"
+#include "remoting/signaling/corp_messaging_constants.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -35,15 +37,31 @@ SignalingAddress::Channel GetChannelType(std::string address) {
   std::string email;
   std::string resource;
   bool has_resource = SplitSignalingIdResource(address, &email, &resource);
-  if (has_resource) {
-    if (resource.find(kFtlResourcePrefix) == 0) {
-      return SignalingAddress::Channel::FTL;
-    }
-    return SignalingAddress::Channel::XMPP;
-  }
-  // No resource. It can be an XMPP JID (user@domain.com) or a corp token.
-  if (address.find('@') == std::string::npos) {
+
+  // Although a true XMPP JID does not require a 'user' field, every service we
+  // interact with does so we can expect that every address passed in will also
+  // have one. The current exception is that we have overloaded SignalingAddress
+  // to store an authz token for messaging. For now we can assume that no '@'
+  // means a CORP address.
+  // TODO: joedow - Refactor the SignalingAddress class to store the authz token
+  // alongside the user JID and remove this check and assume a missing '@' is
+  // 'XMPP' which doesn't have a signaling strategy associated with it.
+  auto email_parts = base::SplitStringOnce(email, '@');
+  if (!email_parts.has_value()) {
     return SignalingAddress::Channel::CORP;
+  }
+
+  auto [_, domain] = *email_parts;
+  // Corp signaling addresses will have a format like:
+  //   <username>@corp.google.com
+  //   <UUID>@<UUID_TYPE>.corp.google.com
+  if (base::EndsWith(domain, kCorpSignalingDomain,
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    return SignalingAddress::Channel::CORP;
+  }
+
+  if (has_resource && resource.find(kFtlResourcePrefix) == 0) {
+    return SignalingAddress::Channel::FTL;
   }
   return SignalingAddress::Channel::XMPP;
 }
@@ -97,9 +115,9 @@ SignalingAddress SignalingAddress::CreateFtlSignalingAddress(
 }
 
 // static
-SignalingAddress SignalingAddress::Parse(const jingle_xmpp::XmlElement* iq,
-                                         SignalingAddress::Direction direction,
-                                         std::string* error) {
+SignalingAddress SignalingAddress::Parse(
+    const jingle_xmpp::XmlElement* iq,
+    SignalingAddress::Direction direction) {
   std::string id = iq->Attr(GetIdQName(direction));
   if (id.empty()) {
     return SignalingAddress();
