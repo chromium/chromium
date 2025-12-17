@@ -59,6 +59,7 @@ OpenTabHelper::Params::~Params() = default;
 
 // static
 base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
+    const GURL& validated_url,
     ExtensionFunction* function,
     const Params& params,
     bool user_gesture) {
@@ -67,14 +68,14 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // case that the API call fails.
 
   auto* const extension = function->extension();
-  GURL url(chrome::kChromeUINewTabURL);
-  if (params.url) {
-    ASSIGN_OR_RETURN(url,
-                     ExtensionTabUtil::PrepareURLForNavigation(
-                         *params.url, extension, function->browser_context()));
-  }
-
   Profile* profile = Profile::FromBrowserContext(function->browser_context());
+
+  // DCHECK because the input should already have been validated, and this is
+  // a somewhat costly function.
+  DCHECK(ExtensionTabUtil::PrepareURLForNavigation(validated_url.spec(),
+                                                   extension, profile)
+             .has_value())
+      << "Invalid URL: " << validated_url;
 
   // Try to find a suitable browser.
   // TODO(https://crbug.com/468223125): This is a wild set of tangled
@@ -103,7 +104,7 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // uses split mode. Special case to fall back to a tabbed window or, if
   // needed, create one.
   bool needs_original_profile =
-      url.SchemeIs(kExtensionScheme) &&
+      validated_url.SchemeIs(kExtensionScheme) &&
       (!extension || !IncognitoInfo::IsSplitMode(extension));
 
   bool fallback_to_tabbed_browser = false;
@@ -189,7 +190,8 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   if (pinned) {
     add_types |= AddTabTypes::ADD_PINNED;
   }
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_LINK);
+  NavigateParams navigate_params(browser, validated_url,
+                                 ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = active
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                     : WindowOpenDisposition::NEW_BACKGROUND_TAB;

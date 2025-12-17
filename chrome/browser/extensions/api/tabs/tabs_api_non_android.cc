@@ -85,6 +85,7 @@
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
@@ -186,7 +187,17 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     options.active = create_properties.active;
     options.pinned = create_properties.pinned;
     options.index = create_properties.index;
-    options.url = create_properties.url;
+
+    GURL validated_url(chrome::kChromeUINewTabURL);
+    if (create_properties.url) {
+      base::expected<GURL, std::string> maybe_url =
+          ExtensionTabUtil::PrepareURLForNavigation(
+              *create_properties.url, extension(), browser_context());
+      if (!maybe_url.has_value()) {
+        return Error(maybe_url.error());
+      }
+      validated_url = std::move(maybe_url.value());
+    }
 
     // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
     // represents the active tab.
@@ -202,7 +213,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
       options.opener_tab = opener;
     }
 
-    auto result = OpenTabHelper::OpenTab(this, options, user_gesture());
+    auto result =
+        OpenTabHelper::OpenTab(validated_url, this, options, user_gesture());
     if (!result.has_value()) {
       return Error(result.error());
     }
@@ -213,8 +225,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     tabs_internal::NotifyExtensionTelemetry(
         Profile::FromBrowserContext(browser_context()), extension(),
         safe_browsing::TabsApiInfo::CREATE,
-        /*current_url=*/std::string(), options.url.value_or(std::string()),
-        js_callstack());
+        /*current_url=*/std::string(),
+        create_properties.url.value_or(std::string()), js_callstack());
 #endif
 
     // The tab may have been created in a different window, so make sure we look

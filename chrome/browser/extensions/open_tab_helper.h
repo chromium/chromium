@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 
 class ExtensionFunction;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -27,7 +28,6 @@ class OpenTabHelper {
 
     bool create_browser_if_needed = false;
     std::optional<int> window_id;
-    std::optional<std::string> url;
     std::optional<bool> active;
     std::optional<bool> pinned;
     std::optional<int> index;
@@ -40,8 +40,13 @@ class OpenTabHelper {
   // parameters `params`. If a tab can be produced, it will return the newly-
   // added WebContents for the tab; otherwise, it will optionally return an
   // error message, if any is appropriate.
-  static base::expected<content::WebContents*, std::string>
-  OpenTab(ExtensionFunction* function, const Params& params, bool user_gesture);
+  // `validated_url` must be validated prior to calling this; use
+  // ExtensionTabUtil::PrepareURLForNavigation().
+  static base::expected<content::WebContents*, std::string> OpenTab(
+      const GURL& validated_url,
+      ExtensionFunction* function,
+      const Params& params,
+      bool user_gesture);
 };
 
 }  // namespace extensions
