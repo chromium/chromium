@@ -7,7 +7,6 @@ import json
 import logging
 import multiprocessing
 import os
-import pathlib
 import queue
 import re
 import subprocess
@@ -17,7 +16,6 @@ import threading
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
-import ast
 
 from devil.utils import cmd_helper
 from py_utils import tempfile_ext
@@ -26,9 +24,6 @@ from pylib.base import base_test_result
 from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
-
-sys.path.append(str(pathlib.Path(__file__).parents[3] / 'gyp'))
-from util import md5_check
 
 # Chosen after timing test runs of chrome_junit_tests with 7,16,32,
 # and 64 workers in threadpool and different classes_per_job.
@@ -215,77 +210,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 json_config=job_json_config,
                 json_results_path=json_results_path)
 
-  def _GetJsonConfig(self, list_only: bool = False):
-    # The test list is expensive to generate, so cache it. The cache is
-    # invalidated when the classpath or this file changes.
-    cache_dir = pathlib.Path(
-        constants.GetOutDirectory()) / 'junit_test_list_cache'
-    os.makedirs(cache_dir, exist_ok=True)
-
-    # Cache --list-tests separately so that changing test filters does not
-    # invalidate its cache.
-    if list_only:
-      record_path = (cache_dir / f'{self._test_instance.suite}_list.stamp')
-      cached_test_list_path = (cache_dir /
-                               f'{self._test_instance.suite}_list.json')
-    else:
-      record_path = cache_dir / f'{self._test_instance.suite}.stamp'
-      cached_test_list_path = cache_dir / f'{self._test_instance.suite}.json'
-
-    # Extract the classpath from the wrapper script.
-    wrapper_script_source = ''
-    print(f'Wrapper path: {self._wrapper_path}')
-    with open(self._wrapper_path) as f:
-      wrapper_script_source = f.read()
-    classpath_re = re.compile(r'classpath = (\[[^\]]+\])', re.MULTILINE)
-    matches = classpath_re.search(wrapper_script_source)
-    classpath_str = matches.group(1)
-    classpath_list = ast.literal_eval(classpath_str)
-    # The paths in the wrapper script are relative to the script's location. We
-    # need to make them relative to the current working directory.
-    wrapper_dir = pathlib.Path(self._wrapper_path).parent
-    classpath = [str(wrapper_dir / p) for p in classpath_list]
-
-    # Filters affect the test list so changes in filter should invalidate the
-    # cache.
-    input_strings = self._GetFilterArgs()
-
-    # We don't want to rebuild the cache if only method implementations have
-    # been changed and no new tests have been added. This would be common when
-    # iterating on private methods or tests method content. We should only
-    # invalidate the cache if the public interface changes, which is likely
-    # when a new test is added or tests are removed. But avoid this
-    # optimization when listing tests as for parameterized tests, turbine jars
-    # do not change when parameters are updated (this does not affect modifying
-    # parameters and then running the test as robolectric loads the correct
-    # values at runtime).
-    if not list_only:
-      for i, p in enumerate(classpath):
-        if 'javac' in p:
-          turbine_p = p.replace('javac', 'turbine')
-          if os.path.exists(turbine_p):
-            classpath[i] = turbine_p
-
-    def do_query_test_json_config():
-      with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-        result = self._QueryTestJsonConfig(temp_dir,
-                                           allow_debugging=False,
-                                           enable_shadow_allowlist=True)
-        with open(cached_test_list_path, 'w') as f:
-          json.dump(result, f)
-
-    md5_check.CallAndRecordIfStale(do_query_test_json_config,
-                                   record_path=str(record_path),
-                                   input_paths=classpath + [__file__],
-                                   input_strings=input_strings,
-                                   output_paths=[str(cached_test_list_path)])
-
-    with open(cached_test_list_path) as f:
-      return json.load(f)
+  def _GetJsonConfig(self):
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      return self._QueryTestJsonConfig(temp_dir,
+                                       allow_debugging=False,
+                                       enable_shadow_allowlist=True)
 
   #override
   def GetTestsForListing(self):
-    json_config = self._GetJsonConfig(list_only=True)
+    json_config = self._GetJsonConfig()
     ret = []
     for config in json_config['configs'].values():
       for class_name, methods in config.items():
