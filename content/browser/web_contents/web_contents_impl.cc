@@ -5851,6 +5851,10 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
   auto* outermost_web_contents = GetOutermostWebContents();
   RenderWidgetHostView* view =
       outermost_web_contents->GetRenderWidgetHostView();
+  if (auto* connector = GetSecureEmbedConnector()) {
+    view = static_cast<SecureEmbedConnectorImpl*>(connector)
+               ->GetRootRenderWidgetHostView();
+  }
   // It's not entirely obvious why we need the transform only in the case where
   // the outer webcontents is not the same as the outermost webcontents. It may
   // be due to the fact that oopifs that are children of the mainframe get
