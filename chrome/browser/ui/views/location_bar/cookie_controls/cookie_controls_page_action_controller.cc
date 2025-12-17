@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -117,7 +116,6 @@ CookieControlsPageActionController::CookieControlsPageActionController(
                                              profile.GetOriginalProfile())
                                        : nullptr,
               HostContentSettingsMapFactory::GetForProfile(&profile),
-              TrackingProtectionSettingsFactory::GetForProfile(&profile),
               profile.IsIncognitoProfile())),
       bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {

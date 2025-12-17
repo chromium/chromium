@@ -20,7 +20,6 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -40,7 +39,6 @@ class CookieControlsController final
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<content_settings::CookieSettings> original_cookie_settings,
       HostContentSettingsMap* settings_map,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       bool is_incognito_profile);
   CookieControlsController(const CookieControlsController& other) = delete;
   CookieControlsController& operator=(const CookieControlsController& other) =
@@ -62,10 +60,6 @@ class CookieControlsController final
   // Called when the user clicks on the toggle to enable/disable cookie
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
-
-  // Called when the user clicks on the button to change their tracking
-  // protections state for the current site.
-  void OnTrackingProtectionsChangedForSite();
 
   // Called when the entry point for cookie controls was animated.
   void OnEntryPointAnimated();
@@ -145,7 +139,6 @@ class CookieControlsController final
   Status GetStatus(content::WebContents* web_contents);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
-      CookieBlocking3pcdStatus status,
       const GURL url,
       const SettingInfo& info,
       bool cookies_allowed);
@@ -188,10 +181,6 @@ class CookieControlsController final
   // This may be null.
   scoped_refptr<content_settings::CookieSettings> original_cookie_settings_;
   raw_ptr<HostContentSettingsMap> settings_map_;
-  // TrackingProtectionSettings class for the current profile. Corresponds to
-  // the regular profile if in incognito, since TP settings should still apply.
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>

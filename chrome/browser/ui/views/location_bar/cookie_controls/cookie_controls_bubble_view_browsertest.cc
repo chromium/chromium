@@ -5,7 +5,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -26,7 +25,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -70,7 +68,6 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
         /*is_incognito_profile=*/false);
 
     incognito_controller_ =
@@ -78,8 +75,6 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
             CookieSettingsFactory::GetForProfile(incognito_profile()),
             CookieSettingsFactory::GetForProfile(browser()->profile()),
             HostContentSettingsMapFactory::GetForProfile(incognito_profile()),
-            TrackingProtectionSettingsFactory::GetForProfile(
-                incognito_profile()),
             /*is_incognito_profile=*/true);
   }
 

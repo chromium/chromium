@@ -1451,16 +1451,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
 }
 
 class PageInfoBubbleViewBrowserTestCookiesSubpage
-    : public PageInfoBubbleViewBrowserTest,
-      public testing::WithParamInterface</*is_3pcd_enabled*/ bool> {
+    : public PageInfoBubbleViewBrowserTest {
  public:
-  PageInfoBubbleViewBrowserTestCookiesSubpage() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          content_settings::features::kTrackingProtection3pcd);
-    }
-  }
-
   void SetUpOnMainThread() override {
     mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -1522,8 +1514,6 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
     // The preference should only be recorded when blocking 3P cookies.
     const bool block_third_party =
-        base::FeatureList::IsEnabled(
-            content_settings::features::kTrackingProtection3pcd) ||
         prefs_->GetInteger(prefs::kCookieControlsMode) ==
             static_cast<int>(
                 content_settings::CookieControlsMode::kBlockThirdParty) ||
@@ -1540,14 +1530,10 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
       mock_privacy_sandbox_service_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewBrowserTestCookiesSubpage,
-                         testing::Bool());
-
 // Checks if there is correct number of buttons in cookies subpage when rws are
 // blocked and based on the third party cookies state (dependent on 3PCD) and
 // checks if the metrics for opening cookies dialog work properly.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ClickingCookieDialogButton) {
   OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
 
@@ -1570,7 +1556,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // Checks if there is a correct number of buttons in cookies subpage when rws
 // are allowed and third party cookies are blocked and tests the
 // click on the rws button (result and user action).
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ClickingRwsButton) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
@@ -1618,7 +1604,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // Checks if there is a correct number of buttons in cookies subpage when rws
 // are blocked and third party cookies are blocked(in settings) and testing the
 // toggle on blocking third party button.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ToggleForBlockingThirdPartyCookies) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
@@ -1656,7 +1642,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // Checks if there is a correct number of buttons in cookies subpage when rws
 // are allowed and based on third party cookies state (dependent on 3PCD) and
 // click on link in description of cookies subapge.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        LinkInDescriptionForCookiesSettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
@@ -1693,7 +1679,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 #if BUILDFLAG(IS_CHROMEOS)
 // Checks that cookie sync disclaimer is displayed when cookies are synced, and
 // verifies that Chrome Sync settings link works.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        LinkInCookieSyncDisclaimer) {
   EnableCookieSync();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
@@ -1718,7 +1704,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
 // Checks that cookie sync disclaimer is hidden when cookies are not synced for
 // the specific domain, even if in general cookie sync is enabled.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        CookieSyncDisclaimerRespectsDomainBlocklist) {
   // Enable cookie sync, but configure domain blocklist to exclude the site we
   // are visiting in this test from sync.

@@ -18,7 +18,6 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
@@ -239,7 +238,6 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
           : nullptr,
       HostContentSettingsMapFactory::GetForProfile(profile),
-      TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->IsIncognitoProfile());
 }
 

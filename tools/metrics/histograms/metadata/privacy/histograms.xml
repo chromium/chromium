@@ -262,16 +262,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.CookieControlsActivated.SaaRequested"
-    enum="BooleanEnabled" expires_after="2025-12-10">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether storage access API was granted or blocked for the site, recorded
-    when third-party party cookies are allowed using cookie controls UI.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.CookieControlsActivated.SiteDataAccessType"
     enum="ThirdPartySiteDataAccessType" expires_after="2026-04-12">
   <owner>fmacintosh@google.com</owner>
@@ -279,16 +269,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <summary>
     Represents if site data was accessed by any third-party sites and if any of
     those accesses were blocked, recorded when third-party party cookies are
-    allowed using cookie controls UI.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.CookieControlsActivated.SiteEngagementScore"
-    units="units" expires_after="2025-12-10">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    The site engagement score, recorded when third-party party cookies are
     allowed using cookie controls UI.
   </summary>
 </histogram>

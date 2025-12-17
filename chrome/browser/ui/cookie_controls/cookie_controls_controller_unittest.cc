@@ -13,7 +13,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
@@ -27,7 +26,6 @@
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -44,12 +42,8 @@ namespace {
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
-constexpr char kCookieControlsActivatedSaaHistogram[] =
-    "Privacy.CookieControlsActivated.SaaRequested";
 constexpr char kCookieControlsActivatedRefreshCountHistogram[] =
     "Privacy.CookieControlsActivated.PageRefreshCount";
-constexpr char kCookieControlsActivatedSiteEngagementHistogram[] =
-    "Privacy.CookieControlsActivated.SiteEngagementScore";
 constexpr char kCookieControlsActivatedSiteDataAccessHistogram[] =
     "Privacy.CookieControlsActivated.SiteDataAccessType";
 constexpr char kUrl[] = "https://example.com";
@@ -121,13 +115,10 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("chrome://newtab"));
 
     cookie_settings_ = CookieSettingsFactory::GetForProfile(profile());
-    tracking_protection_settings_ =
-        TrackingProtectionSettingsFactory::GetForProfile(profile());
     cookie_controls_ =
         std::make_unique<content_settings::CookieControlsController>(
             cookie_settings_, nullptr,
             HostContentSettingsMapFactory::GetForProfile(profile()),
-            tracking_protection_settings_,
             /*is_incognito_profile=*/false);
     cookie_controls_->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
@@ -138,7 +129,6 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     cookie_controls_->RemoveObserver(mock());
     cookie_controls_.reset();
-    tracking_protection_settings_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -196,10 +186,6 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     return cookie_settings_.get();
   }
 
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return tracking_protection_settings_;
-  }
-
   content_settings::PageSpecificContentSettings*
   page_specific_content_settings() {
     return content_settings::PageSpecificContentSettings::GetForFrame(
@@ -220,8 +206,6 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 };
 
 TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
@@ -302,9 +286,7 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
                   /*should_highlight=*/false))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
       kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses, 1);
@@ -385,9 +367,7 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
                   /*should_highlight=*/false))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedSiteDataAccessHistogram,
                        ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses,
                        1);
@@ -499,7 +479,6 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       CookieSettingsFactory::GetForProfile(profile()),
       HostContentSettingsMapFactory::GetForProfile(profile()),
-      TrackingProtectionSettingsFactory::GetForProfile(profile()),
       /*is_incognito_profile=*/true);
   incognito_cookie_controls.AddObserver(&incognito_mock);
 
@@ -841,9 +820,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                   /*should_highlight=*/false))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 2, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
       kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
@@ -926,9 +903,7 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
                   /*should_highlight=*/false))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 1, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
       kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
@@ -1089,10 +1064,7 @@ TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
                   /*should_highlight=*/false))
       .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, true, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
-  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram,
-                       kHighEngagement, 1);
   t.ExpectUniqueSample(
       kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);

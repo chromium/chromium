@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -100,7 +99,6 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
         CookieSettingsFactory::GetForProfile(browser()->profile()),
         /*original_cookie_settings=*/nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
         /*is_incognito_profile=*/false);
 
     incognito_controller_ =
@@ -108,8 +106,6 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
             CookieSettingsFactory::GetForProfile(incognito_profile()),
             CookieSettingsFactory::GetForProfile(browser()->profile()),
             HostContentSettingsMapFactory::GetForProfile(incognito_profile()),
-            TrackingProtectionSettingsFactory::GetForProfile(
-                incognito_profile()),
             /*is_incognito_profile=*/true);
 
     cookie_controls_coordinator_ =
@@ -177,22 +173,13 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
 };
 
 class CookieControlsBubbleViewPixelTest
-    : public CookieControlsBubbleViewPixelTestBase,
-      public testing::WithParamInterface<CookieBlocking3pcdStatus> {
+    : public CookieControlsBubbleViewPixelTestBase {
  public:
   CookieControlsBubbleViewPixelTest() = default;
   CookieControlsBubbleViewPixelTest(const CookieControlsBubbleViewPixelTest&) =
       delete;
   CookieControlsBubbleViewPixelTest& operator=(
       const CookieControlsBubbleViewPixelTest&) = delete;
-
-  void SetUp() override {
-    if (GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd) {
-      scoped_feature_list_.InitAndEnableFeature(
-          content_settings::features::kTrackingProtection3pcd);
-    }
-    CookieControlsBubbleViewPixelTestBase::SetUp();
-  }
 
   void BlockThirdPartyCookies() {
     browser()->profile()->GetPrefs()->SetInteger(
@@ -241,7 +228,8 @@ class CookieControlsBubbleViewPixelTest
           ->ExecuteForTesting();
     }
 
-    SetStatus(controls_state_, enforcement_, GetParam(), days_to_expiration_);
+    SetStatus(controls_state_, enforcement_,
+              CookieBlocking3pcdStatus::kNotIn3pcd, days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
     // Even with the waiter, it's possible that the toggle is in the process
@@ -254,19 +242,19 @@ class CookieControlsBubbleViewPixelTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_CookiesBlocked) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
   set_baseline("6229914");
   controls_state_ = CookieControlsState::kAllowed3pc;
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
   set_baseline("6229914");
   controls_state_ = CookieControlsState::kAllowed3pc;
@@ -274,50 +262,23 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByCookieSetting) {
   controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByPolicy) {
   controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByExtension) {
   controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   ShowAndVerifyUi();
 }
-
-std::string ParamToTestSuffix(
-    const testing::TestParamInfo<CookieControlsBubbleViewPixelTest::ParamType>&
-        info) {
-  std::stringstream name;
-  name << "3pcd";
-  switch (info.param) {
-    case CookieBlocking3pcdStatus::kNotIn3pcd:
-      name << "Off";
-      break;
-    case CookieBlocking3pcdStatus::kLimited:
-      name << "Limited";
-      break;
-    case CookieBlocking3pcdStatus::kAll:
-      name << "BlockAll";
-      break;
-  }
-  return name.str();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /*no prefix*/,
-    CookieControlsBubbleViewPixelTest,
-    testing::ValuesIn({CookieBlocking3pcdStatus::kNotIn3pcd,
-                       CookieBlocking3pcdStatus::kLimited,
-                       CookieBlocking3pcdStatus::kAll}),
-    &ParamToTestSuffix);

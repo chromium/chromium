@@ -53,7 +53,6 @@ void CookieControlsBridge::UpdateWebContents(
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
       permissions_client->GetSettingsMap(context),
-      permissions_client->GetTrackingProtectionSettings(context),
       is_incognito_branded);
 
   observation_.Observe(controller_.get());

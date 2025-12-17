@@ -18,11 +18,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -130,8 +128,6 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    // This test will become obsolete when 3PCD is rolled out.
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithTPCookiesDisabledUserBypass() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -275,8 +271,6 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    // This test will become obsolete when 3PCD is rolled out.
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithIncognitoSettingUserBypass() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -170,58 +170,6 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
                   views::kEyeCrossedRefreshIcon));
   }
 
-  auto CheckUserBypassAllowedState(bool incognito = false) {
-    return Steps(
-        CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn, true),
-        CheckViewProperty(
-            CookieControlsContentView::kTitle, &views::Label::GetText,
-            incognito
-                ? l10n_util::GetStringUTF16(
-                      IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE)
-                : l10n_util::GetPluralStringFUTF16(
-                      browser()->profile()->GetPrefs()->GetBoolean(
-                          prefs::kBlockAll3pcToggleEnabled)
-                          ? IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE
-                          : IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE,
-                      ExceptionDurationInDays())),
-        CheckViewProperty(
-            CookieControlsContentView::kDescription, &views::Label::GetText,
-            l10n_util::GetStringUTF16(
-                incognito
-                    ? IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
-                    : IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
-        CheckViewProperty(
-            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE)),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
-  }
-
-  auto CheckUserBypassBlockedState(bool incognito = false) {
-    return Steps(
-        CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn, false),
-        CheckViewProperty(
-            CookieControlsContentView::kTitle, &views::Label::GetText,
-            l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
-        CheckViewProperty(
-            CookieControlsContentView::kDescription, &views::Label::GetText,
-            l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
-        CheckViewProperty(
-            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
-            l10n_util::GetStringUTF16(
-                browser()->profile()->GetPrefs()->GetBoolean(
-                    prefs::kBlockAll3pcToggleEnabled) ||
-                        incognito
-                    ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE
-                    : IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE)),
-        CheckIcon(RichControlsContainerView::kIcon,
-                  views::kEyeCrossedRefreshIcon));
-  }
-
   auto CheckFeedbackButtonVisible(bool visible) {
     if (visible) {
       return Steps(EnsurePresent(CookieControlsContentView::kFeedbackButton));
@@ -234,11 +182,6 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
   int ExceptionDurationInDays() {
     return content_settings::features::kUserBypassUIExceptionExpiration.Get()
         .InDays();
-  }
-
-  void SetBlockAll3pcToggle(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kBlockAll3pcToggleEnabled, enabled);
   }
 
   void BlockThirdPartyCookies() {
@@ -259,12 +202,6 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  }
-
-  content_settings::CookieSettings* incognito_cookie_settings() {
-    return CookieSettingsFactory::GetForProfile(
-               browser()->profile()->GetPrimaryOTRProfile(true))
-        .get();
   }
 
   // If slow is set to true will return a URL for a page that never finishes
@@ -694,66 +631,3 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, NoReloadView) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
-
-class CookieControlsInteractiveUi3pcdTest
-    : public CookieControlsInteractiveTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
- protected:
-  std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {content_settings::features::kTrackingProtection3pcd};
-  }
-
-  std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    if (!testing::get<1>(GetParam())) {
-      disabled_features.push_back(
-          content_settings::features::kUserBypassFeedback);
-    }
-    return disabled_features;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest,
-                       CreateExceptionIncognito) {
-  SetBlockAll3pcToggle(std::get<0>(GetParam()));
-  auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  RunTestSequence(InContext(
-      BrowserElements::From(incognito_browser)->GetContext(),
-      Steps(InstrumentTab(kWebContentsElementId),
-            NavigateWebContents(kWebContentsElementId,
-                                third_party_cookie_page_url()),
-            PressButton(kCookieControlsIconElementId),
-            InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
-            CheckUserBypassBlockedState(/*incognito=*/true),
-            PressButton(CookieControlsContentView::kToggleButton),
-            CheckFeedbackButtonVisible(testing::get<1>(GetParam())),
-            EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
-            CheckUserBypassAllowedState(/*incognito=*/true))));
-}
-
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, RemoveException) {
-  // Open the bubble while 3PC are blocked, but the page already has an
-  // exception. Disable 3PC for the page, and confirm the exception is removed.
-  SetHighSiteEngagement();
-  SetBlockAll3pcToggle(std::get<0>(GetParam()));
-  cookie_settings()->SetCookieSettingForUserBypass(
-      third_party_cookie_page_url());
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      PressButton(kCookieControlsIconElementId),
-      InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
-      CheckUserBypassAllowedState(),
-      CheckFeedbackButtonVisible(testing::get<1>(GetParam())),
-      PressButton(CookieControlsContentView::kToggleButton),
-      CheckFeedbackButtonVisible(false),
-      CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
-      CheckUserBypassBlockedState());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CookieControlsInteractiveUi3pcdTest,
-    testing::Combine(/*block_all_third_party_cookies*/ testing::Bool(),
-                     /*show_feedback_button*/ testing::Bool()));

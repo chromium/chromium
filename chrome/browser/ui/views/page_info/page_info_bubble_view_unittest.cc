@@ -1184,64 +1184,6 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
             api_->GetCertificateButtonSubtitleText());
 }
 
-class PageInfoBubbleViewCookies3pcdButtonTest
-    : public PageInfoBubbleViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PageInfoBubbleViewCookies3pcdButtonTest() {
-    feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd}, {});
-    off_the_record_ = GetParam();
-  }
-
- protected:
-  void NavigateToPage(content::WebContents* web_contents,
-                      const std::string& url) {
-    web_contents->GetController().LoadURL(GURL(url), content::Referrer(),
-                                          ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
-                                          std::string());
-    content::RenderFrameHostTester::CommitPendingLoad(
-        &web_contents->GetController());
-  }
-
-  void CreateCookieExceptionForSite(const std::string& pattern) {
-    auto top_level_domain_pattern = ContentSettingsPattern::FromString(pattern);
-    HostContentSettingsMapFactory::GetForProfile(
-        web_contents_helper_->profile())
-        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                                       top_level_domain_pattern,
-                                       ContentSettingsType::COOKIES,
-                                       ContentSetting::CONTENT_SETTING_ALLOW);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(PageInfoBubbleViewCookies3pcdButtonTest, DisplaysCookiesButtonLabel) {
-  // Block all 3PC
-  web_contents_helper_->profile()->GetPrefs()->SetBoolean(
-      prefs::kBlockAll3pcToggleEnabled, true);
-  // Rerender with the new pref set
-  api_->CreateView();
-
-  EXPECT_EQ(api_->GetCookiesButtonTitleText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER));
-
-  // Turn off toggle
-  web_contents_helper_->profile()->GetPrefs()->SetBoolean(
-      prefs::kBlockAll3pcToggleEnabled, false);
-  // Rerender with the new pref set
-  api_->CreateView();
-
-  EXPECT_EQ(api_->GetCookiesButtonTitleText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewCookies3pcdButtonTest,
-                         /*is_otr*/ testing::Bool());
-
 class PageInfoBubbleViewCookiesSubpageTitleTest
     : public PageInfoBubbleViewTest,
       public testing::WithParamInterface<

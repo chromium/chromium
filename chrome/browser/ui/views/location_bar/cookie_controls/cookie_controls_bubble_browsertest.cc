@@ -9,7 +9,6 @@
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -101,7 +100,6 @@ class CookieControlsBubbleCoordinatorBrowserTest : public InProcessBrowserTest {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(GetProfile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(GetProfile()),
-        TrackingProtectionSettingsFactory::GetForProfile(GetProfile()),
         /*is_incognito_profile=*/false);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("http://a.com")));
@@ -186,7 +184,6 @@ class CookieControlsBubbleViewControllerBrowserTest
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(GetProfile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(GetProfile()),
-        TrackingProtectionSettingsFactory::GetForProfile(GetProfile()),
         /*is_incognito_profile=*/false);
 
     ON_CALL(*mock_bubble_view(), GetContentView())
@@ -587,7 +584,6 @@ class CookieControlsBubbleViewImplBrowserTest : public InProcessBrowserTest {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(GetProfile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(GetProfile()),
-        TrackingProtectionSettingsFactory::GetForProfile(GetProfile()),
         /*is_incognito_profile=*/false);
 
     coordinator()->ShowBubble(browser_view()->toolbar_button_provider(),
