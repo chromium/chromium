@@ -1192,6 +1192,11 @@ void GpuInit::RecordUMA() {
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
 
+#if BUILDFLAG(IS_WIN)
+  UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.Supported",
+                        gl::DirectCompositionSupported());
+#endif
+
   UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
   // Record the Skia backend type on GPU initialization.
   UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", gpu_info_.skia_backend_type);

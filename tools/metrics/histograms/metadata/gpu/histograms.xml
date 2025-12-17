@@ -734,6 +734,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.DirectComposition.Supported" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>lehoangquyen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether Direct Composition is supported. Recorded on GPU process
+    startup.
+  </summary>
+</histogram>
+
 <histogram
     name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected.{SoftwareProtectedType}"
     enum="Hresult" expires_after="2025-06-08">
