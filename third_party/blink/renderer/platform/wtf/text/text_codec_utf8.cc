@@ -233,13 +233,9 @@ void TextCodecUtf8::HandleError(int character,
   ConsumePartialSequenceBytes(num_bytes_consumed);
 }
 
-template <>
-bool TextCodecUtf8::HandlePartialSequence<LChar>(
-    base::span<LChar>& destination,
-    base::span<const uint8_t>& source,
-    bool flush,
-    bool,
-    bool&) {
+bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
+                                          base::span<const uint8_t>& source,
+                                          bool flush) {
   DCHECK(partial_sequence_size_);
   do {
     if (IsASCII(partial_sequence_[0])) {
@@ -299,13 +295,11 @@ bool TextCodecUtf8::HandlePartialSequence<LChar>(
   return false;
 }
 
-template <>
-bool TextCodecUtf8::HandlePartialSequence<UChar>(
-    base::span<UChar>& destination,
-    base::span<const uint8_t>& source,
-    bool flush,
-    bool stop_on_error,
-    bool& saw_error) {
+bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
+                                          base::span<const uint8_t>& source,
+                                          bool flush,
+                                          bool stop_on_error,
+                                          bool& saw_error) {
   DCHECK(partial_sequence_size_);
   do {
     if (IsASCII(partial_sequence_[0])) {
@@ -394,8 +388,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
       base::span<LChar> destination_for_handle_partial_sequence = destination;
       base::span<const uint8_t> source_for_handle_partial_sequence = source;
       if (HandlePartialSequence(destination_for_handle_partial_sequence,
-                                source_for_handle_partial_sequence, do_flush,
-                                stop_on_error, saw_error)) {
+                                source_for_handle_partial_sequence, do_flush)) {
         source = source_for_handle_partial_sequence;
         goto upConvertTo16Bit;
       }

@@ -70,8 +70,10 @@ class TextCodecUtf8 : public TextCodec {
   EncodeIntoResult EncodeIntoCommon(base::span<const CharType> characters,
                                     base::span<uint8_t> destination);
 
-  template <typename CharType>
-  bool HandlePartialSequence(base::span<CharType>& destination,
+  bool HandlePartialSequence(base::span<LChar>& destination,
+                             base::span<const uint8_t>& source,
+                             bool flush);
+  bool HandlePartialSequence(base::span<UChar>& destination,
                              base::span<const uint8_t>& source,
                              bool flush,
                              bool stop_on_error,
