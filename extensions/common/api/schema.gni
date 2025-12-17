@@ -38,7 +38,7 @@ extensions_api_schema_files_ = [
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
 extensions_types_only_schema_files_ = [
-  "chrome_url_overrides.idl",
+  "chrome_url_overrides.webidl",
   "content_scripts.idl",
   "cross_origin_isolation.idl",
   "extensions_manifest_types.json",
