@@ -13,6 +13,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
+#include "components/input/features.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/payments/content/android/payment_feature_map.h"
 #include "components/permissions/features.h"
@@ -63,6 +64,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // fixed before enabling this feature flag for android.
   aw_feature_overrides.DisableFeature(
       blink::features::kAboutBlankPageRespectsDarkModeOnUserAction);
+
+  // TODO(crbug.com/444669046): Remove this once webview experiment has
+  // concluded.
+  aw_feature_overrides.DisableFeature(
+      input::features::kUpdateScrollPredictorInputMapping);
 
   // Disable enforcing `noopener` on Blob URL navigations on WebView.
   aw_feature_overrides.DisableFeature(
