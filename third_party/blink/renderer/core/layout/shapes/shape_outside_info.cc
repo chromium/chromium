@@ -58,6 +58,15 @@ gfx::Rect ToPixelSnappedLogicalRect(const LogicalRect& rect) {
       SnapSizeToPixel(rect.size.block_size, rect.offset.block_offset));
 }
 
+PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalMargin(
+    const LayoutBox& layout_box,
+    const ComputedStyle& container_style) {
+  return PhysicalToLogicalGetter<LayoutUnit, LayoutBox>(
+      container_style.GetWritingDirection(), layout_box, &LayoutBox::MarginTop,
+      &LayoutBox::MarginRight, &LayoutBox::MarginBottom,
+      &LayoutBox::MarginLeft);
+}
+
 // Unlike LayoutBoxModelObject::PhysicalBorderToLogical(), this function
 // applies container's WritingDirectionMode.
 PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalBorder(
@@ -300,7 +309,7 @@ LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
       layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginBlockStart(&container_style);
+      return -LogicalMargin(*layout_box_, container_style).BlockStart();
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:
@@ -320,7 +329,7 @@ LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
       layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -layout_box_->MarginInlineStart(&container_style);
+      return -LogicalMargin(*layout_box_, container_style).InlineStart();
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:
