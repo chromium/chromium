@@ -40,7 +40,7 @@ extensions_api_schema_files_ = [
 extensions_types_only_schema_files_ = [
   "chrome_url_overrides.webidl",
   "content_scripts.idl",
-  "cross_origin_isolation.idl",
+  "cross_origin_isolation.webidl",
   "extensions_manifest_types.json",
   "incognito.json",
   "oauth2.idl",
