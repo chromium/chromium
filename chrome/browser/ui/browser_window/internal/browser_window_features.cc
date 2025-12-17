@@ -583,7 +583,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (browser_view) {
     color_provider_browser_helper_ =
         std::make_unique<ColorProviderBrowserHelper>(
-            browser->GetTabStripModel(), browser_view->GetWidget());
+            browser->GetTabStripModel(), browser_view->GetWidget(), browser);
   }
 
   live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
