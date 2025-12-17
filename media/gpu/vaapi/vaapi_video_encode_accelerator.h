@@ -137,12 +137,12 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void FlushTask(FlushCallback flush_callback);
 
   // Create input and reconstructed surfaces used in encoding whose sizes are
-  // |spatial_layer_resolutions| from GpuMemoryBuffer-based VideoFrame |frame|.
+  // |spatial_layer_resolutions| from MappableSI-based VideoFrame |frame|.
   // The created surfaces for input to an encoder driver are filled into
   // |input_surfaces| and, ones used as reconstructed surfaces by the driver are
   // filled to |reconstructed_surfaces|. This must be called only in native
   // input mode.
-  bool CreateSurfacesForGpuMemoryBufferEncoding(
+  bool CreateSurfacesForMappableSIEncoding(
       const VideoFrame& frame,
       const std::vector<gfx::Size>& spatial_layer_resolutions,
       std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>* input_surfaces,

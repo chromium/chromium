@@ -592,7 +592,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   EncodePendingInputs();
 }
 
-bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
+bool VaapiVideoEncodeAccelerator::CreateSurfacesForMappableSIEncoding(
     const VideoFrame& frame,
     const std::vector<gfx::Size>& spatial_layer_resolutions,
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>* input_surfaces,
@@ -602,7 +602,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
   DCHECK(frame.HasMappableSharedImage());
-  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
+  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForMappableSIEncoding");
 
   if (frame.format() != PIXEL_FORMAT_NV12) {
     NotifyError(
@@ -624,9 +624,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
 
   std::unique_ptr<ScopedVASurface> source_surface;
   {
-    TRACE_EVENT0("media,gpu", "VAVEA::ImportGpuMemoryBufferToVASurface");
+    TRACE_EVENT0("media,gpu", "VAVEA::ImportMappableSIToVASurface");
 
-    // Create VASurface from GpuMemory-based VideoFrame.
+    // Create VASurface from MappableSI-based VideoFrame.
     scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(&frame);
     if (!pixmap) {
       NotifyError({EncoderStatus::Codes::kSystemAPICallError,
@@ -957,7 +957,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>> input_surfaces;
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>> reconstructed_surfaces;
     if (native_input_mode_) {
-      if (!CreateSurfacesForGpuMemoryBufferEncoding(
+      if (!CreateSurfacesForMappableSIEncoding(
               *input_frame.frame, spatial_layer_resolutions, &input_surfaces,
               &reconstructed_surfaces)) {
         return;
