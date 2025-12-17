@@ -21,17 +21,18 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/startup_data.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -184,8 +185,9 @@ std::string GlicGlobalEnabling::Delegate::GetCountryCode() {
 }
 
 std::string GlicGlobalEnabling::Delegate::GetLocale() {
-  return base::ToLowerASCII(
-      g_browser_process->GetFeatures()->application_locale_storage()->Get());
+  return base::ToLowerASCII(g_browser_process->startup_data()
+                                ->chrome_feature_list_creator()
+                                ->actual_locale());
 }
 
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
