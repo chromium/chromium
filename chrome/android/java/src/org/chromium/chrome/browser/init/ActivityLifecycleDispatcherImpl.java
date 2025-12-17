@@ -239,11 +239,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
     }
 
-    public void onDestroyStarted() {
-        mDestroyed = true;
-    }
-
     public void dispatchOnDestroy() {
+        mDestroyed = true;
         mActivityState = ActivityState.DESTROYED;
 
         // Clear mActivity to prevent future calls to register().

@@ -196,15 +196,22 @@ public class CreatorActivity extends SnackbarActivity {
     @SuppressWarnings("NullAway")
     @Override
     protected void onDestroy() {
-        mLifecycleDispatcher.onDestroyStarted();
+        // Dispatch onDestroy() for objects created for the activity.
+        mLifecycleDispatcher.dispatchOnDestroy();
+        mTabShareDelegateSupplier.destroy();
+        mShareDelegateSupplier.destroy();
+
+        // Destroy ActivityWindowAndroid if it exists. This must be after
+        // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
+        // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
-        mTabShareDelegateSupplier.destroy();
-        mShareDelegateSupplier.destroy();
+
+        // Finally, destroy the activity. This must be after destroying ActivityWindowAndroid
+        // because it has a reference to the Activity.
         super.onDestroy();
-        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     // This implements the CreatorWebContents interface.
