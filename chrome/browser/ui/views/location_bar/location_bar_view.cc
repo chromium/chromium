@@ -1987,7 +1987,8 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
     if (!omnibox_popup_aim_presenter_ ||
         !omnibox_popup_aim_presenter_->GetWebUIContent() ||
-        !omnibox_popup_aim_presenter_->GetWebUIContent()->GetWebContents()) {
+        !omnibox_popup_aim_presenter_->GetWebUIContent()
+             ->GetWrappedWebContents()) {
       return;
     }
 
