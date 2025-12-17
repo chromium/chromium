@@ -77,6 +77,8 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   self.contentView.transform = transform;
   self.contentView.alpha = 0;
   self.contentView.layer.cornerRadius = DeviceCornerRadius();
+  self.contentView.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
   self.contentView.layer.masksToBounds = YES;
 
   // Animation components.
@@ -146,6 +148,9 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   [animations addCompletion:^(UIViewAnimatingPosition finalPosition) {
     self.contentView.layer.masksToBounds = NO;
     self.contentView.layer.cornerRadius = 0.0;
+    self.contentView.layer.maskedCorners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+        kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
     self.backgroundView.transform = CGAffineTransformIdentity;
     [blurView removeFromSuperview];
     [scrimView removeFromSuperview];
