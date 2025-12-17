@@ -96,7 +96,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
-    @DisabledTest(message = "crbug.com/332809183")
+    @DisabledTest(message = "Flaky, see crbug.com/468684305")
     public void testNavigationVariousCases() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         addWebMessageListenerOnUiThread(
@@ -298,6 +298,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisabledTest(message = "Flaky, see crbug.com/468684305")
     public void testNavigationPageWithIframe() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         setUpAndGetInitialProxy();
@@ -778,6 +779,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         "disable-features=WebViewBackForwardCache"
     })
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
+    @DisabledTest(message = "Flaky, see crbug.com/468684305")
     public void testNavigationHistoryNavigationBFCacheDisabled() throws Throwable {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
@@ -889,6 +891,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
+    @DisabledTest(message = "Flaky, see crbug.com/468684305")
     public void testNavigationHistoryNavigationBFCacheEnabled_ListenerDisablesBFCache()
             throws Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
