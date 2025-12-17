@@ -10,7 +10,6 @@ source_set("model") {
     "bwg_page_state_change_delegate.h",
     "bwg_page_state_change_handler.h",
     "bwg_page_state_change_handler.mm",
-    "bwg_session_delegate.h",
     "bwg_session_handler.h",
     "bwg_session_handler.mm",
     "gemini_session_delegate.h",

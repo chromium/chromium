@@ -56,11 +56,6 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
 // UI.
 - (void)didTapGeminiSettingsButton;
 
-// Called when the user taps the BWG settings button from within the BWG UI.
-// This method only exists for backward compatibility while it is being renamed.
-// TODO(crbug.com/467341096): Remove didTapBWGSettingsButton.
-- (void)didTapBWGSettingsButton;
-
 // Called when a query is sent with the specified input type and context info
 // and whether the page context was attached
 - (void)didSendQueryWithInputType:(BWGInputType)inputType

@@ -169,12 +169,6 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   [self.settingsHandler showBWGSettings];
 }
 
-// This method only exists for backward compatibility while it is being renamed.
-// TODO(crbug.com/467341096): Remove didTapBWGSettingsButton.
-- (void)didTapBWGSettingsButton {
-  [self didTapGeminiSettingsButton];
-}
-
 - (void)didSendQueryWithInputType:(BWGInputType)inputType
               pageContextAttached:(BOOL)pageContextAttached {
   _totalPromptsInSession++;
