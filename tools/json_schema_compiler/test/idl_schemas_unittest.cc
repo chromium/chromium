@@ -278,8 +278,8 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
         R"({"inline_choice": "string value"})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    EXPECT_EQ("string value", manifest_keys.inline_choice.as_string);
-    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_integer);
+    EXPECT_EQ("string value", manifest_keys.inline_choice->as_string);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice->as_integer);
   }
 
   {
@@ -289,9 +289,9 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
     EXPECT_EQ("single entry",
-              manifest_keys.choice_with_arrays.entries.as_string);
+              manifest_keys.choice_with_arrays->entries.as_string);
     EXPECT_EQ(std::nullopt,
-              manifest_keys.choice_with_arrays.entries.as_strings);
+              manifest_keys.choice_with_arrays->entries.as_strings);
   }
 
   {
@@ -300,11 +300,11 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
         R"({"choice_with_optional": {"entries": "single entry"}})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    ASSERT_TRUE(manifest_keys.choice_with_optional.entries);
+    ASSERT_TRUE(manifest_keys.choice_with_optional->entries);
     EXPECT_EQ("single entry",
-              manifest_keys.choice_with_optional.entries->as_string);
+              manifest_keys.choice_with_optional->entries->as_string);
     EXPECT_EQ(std::nullopt,
-              manifest_keys.choice_with_optional.entries->as_strings);
+              manifest_keys.choice_with_optional->entries->as_strings);
   }
 
   {
@@ -312,8 +312,8 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
     static constexpr char kManifestKeys[] = R"({"inline_choice": 42})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_string);
-    EXPECT_EQ(42, manifest_keys.inline_choice.as_integer);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice->as_string);
+    EXPECT_EQ(42, manifest_keys.inline_choice->as_integer);
   }
 
   {
@@ -322,8 +322,9 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
         R"({"choice_with_arrays": {"entries": ["entry1", "entry2"]}})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    EXPECT_EQ(std::nullopt, manifest_keys.choice_with_arrays.entries.as_string);
-    EXPECT_THAT(*manifest_keys.choice_with_arrays.entries.as_strings,
+    EXPECT_EQ(std::nullopt,
+              manifest_keys.choice_with_arrays->entries.as_string);
+    EXPECT_THAT(*manifest_keys.choice_with_arrays->entries.as_strings,
                 testing::ElementsAre("entry1", "entry2"));
   }
 
@@ -333,10 +334,10 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
         R"({"choice_with_optional": {"entries": ["entry1", "entry2"]}})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    ASSERT_TRUE(manifest_keys.choice_with_optional.entries);
+    ASSERT_TRUE(manifest_keys.choice_with_optional->entries);
     EXPECT_EQ(std::nullopt,
-              manifest_keys.choice_with_optional.entries->as_string);
-    EXPECT_THAT(*manifest_keys.choice_with_optional.entries->as_strings,
+              manifest_keys.choice_with_optional->entries->as_string);
+    EXPECT_THAT(*manifest_keys.choice_with_optional->entries->as_strings,
                 testing::ElementsAre("entry1", "entry2"));
   }
 
@@ -345,7 +346,7 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
     static constexpr char kManifestKeys[] = R"({"choice_with_optional": { }})";
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
-    EXPECT_EQ(std::nullopt, manifest_keys.choice_with_optional.entries);
+    EXPECT_EQ(std::nullopt, manifest_keys.choice_with_optional->entries);
   }
 
   {

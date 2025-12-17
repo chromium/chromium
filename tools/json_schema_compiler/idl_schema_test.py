@@ -660,17 +660,20 @@ class IdlSchemaTest(unittest.TestCase):
     manifest_keys = schema.get('manifest_keys')
     self.assertEqual(
         manifest_keys['key_str'],
-        OrderedDict([('description', 'String manifest key.'),
+        OrderedDict([('optional', True),
+                     ('description', 'String manifest key.'),
                      ('name', 'key_str'), ('type', 'string')]))
-    self.assertEqual(manifest_keys['key_ref'],
-                     OrderedDict([('name', 'key_ref'), ('$ref', 'MyType2')])),
+    self.assertEqual(
+        manifest_keys['key_ref'],
+        OrderedDict([('optional', True), ('name', 'key_ref'),
+                     ('$ref', 'MyType2')])),
     self.assertEqual(
         manifest_keys['choice_with_arrays'],
-        OrderedDict([('name', 'choice_with_arrays'),
+        OrderedDict([('optional', True), ('name', 'choice_with_arrays'),
                      ('$ref', 'ChoiceWithArraysType')])),
     self.assertEqual(
         manifest_keys['choice_with_optional'],
-        OrderedDict([('name', 'choice_with_optional'),
+        OrderedDict([('optional', True), ('name', 'choice_with_optional'),
                      ('$ref', 'ChoiceWithOptionalType')]))
 
   def testNoManifestKeys(self):

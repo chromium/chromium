@@ -157,6 +157,11 @@ class ModelTest(unittest.TestCase):
         'speficied as <class \'str\'>.', self.model.AddNamespace, test_json[0],
         'path/to/nodoc_specified_as_string.json')
 
+  def testManifestKeyMissingOptional(self):
+    CachedLoad('test/manifest_key_missing_optional.json')
+    self.assertRaisesRegex(model.ParseException,
+                           'Manifest key "foo" must be optional.')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)

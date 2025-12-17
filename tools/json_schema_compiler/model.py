@@ -839,8 +839,17 @@ def _GetManifestKeysType(self, json):
       'type': 'object',
       'properties': json['manifest_keys'],
   }
-  return Type(self, 'ManifestKeys', manifest_keys_type, self,
-              Origin(from_manifest_keys=True))
+
+  # Create a Type instance for the manifest keys object.
+  manifest_type = Type(self, 'ManifestKeys', manifest_keys_type, self,
+                       Origin(from_manifest_keys=True))
+
+  # Enforce that all the top-level manifest keys are optional.
+  for name, item in manifest_type.properties.items():
+    if not item.optional:
+      raise ParseException(self, 'Manifest key "%s" must be optional.' % name)
+
+  return manifest_type
 
 
 def _GetWithDefaultChecked(self, json, key, default):
