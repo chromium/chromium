@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/messages/android/message_enums.h"
 #include "components/resources/android/theme_resources.h"
@@ -68,7 +69,9 @@ AutofillAiSaveUpdateEntityFlowManager::
     ~AutofillAiSaveUpdateEntityFlowManager() = default;
 
 void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
+  prompt_closed_callback_ = std::move(prompt_closed_callback);
   autofill_message_controller_->Show(CreateMessageModel(entity));
 }
 
@@ -111,6 +114,28 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
 }
 
 void AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed(
-    messages::DismissReason dismiss_reason) {}
+    messages::DismissReason dismiss_reason) {
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+    case messages::DismissReason::SECONDARY_ACTION:
+      // Primary action is handled separately, no secondary action.
+      break;
+    case messages::DismissReason::GESTURE:
+      // User explicitly dismissed the message.
+      RunPromptClosedCallback(
+          AutofillClient::AutofillAiBubbleClosedReason::kClosed);
+      break;
+    default:
+      // Dismissal for any other reason like timeout, tab switch, etc.
+      RunPromptClosedCallback(
+          AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted);
+      break;
+  }
+}
+
+void AutofillAiSaveUpdateEntityFlowManager::RunPromptClosedCallback(
+    AutofillClient::AutofillAiBubbleClosedReason decision) {
+  std::move(prompt_closed_callback_).Run(decision);
+}
 
 }  // namespace autofill

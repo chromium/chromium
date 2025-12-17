@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace content {
 class WebContents;
@@ -43,7 +44,9 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
   // Triggers a confirmation flow for saving or updating an Autofill AI entity.
   // If another flow is in progress, the incoming offer will be auto-declined.
-  void OfferSave(const EntityInstance& entity);
+  void OfferSave(
+      const EntityInstance& entity,
+      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
 
  private:
   void OnMessagePrimaryAction(const EntityInstance& entity);
@@ -53,10 +56,18 @@ class AutofillAiSaveUpdateEntityFlowManager {
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
       const EntityInstance& entity);
 
+  void RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleClosedReason decision);
+
   raw_ptr<content::WebContents> web_contents_;
   raw_ref<AutofillMessageController> autofill_message_controller_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptController>
       save_update_entity_prompt_controller_;
+
+  // Callback to notify the data provider about the user decision for the save
+  // or update prompt.
+  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
+
   base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
       this};
 };
