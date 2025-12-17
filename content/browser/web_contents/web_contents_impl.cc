@@ -9004,7 +9004,7 @@ void WebContentsImpl::RunFileChooser(
     // Do not allow background tab to open file chooser.
     return;
   }
-  if (!delegate_->IsContentsActive(this)) {
+  if (delegate_ && !delegate_->IsContentsActive(this)) {
     // Do not allow inactive tabs to open file chooser.
     return;
   }
