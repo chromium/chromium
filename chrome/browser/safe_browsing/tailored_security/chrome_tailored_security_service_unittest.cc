@@ -156,10 +156,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     GetIdentityTestEnv()->SetTestURLLoaderFactory(&test_url_loader_factory_);
-    // TODO(crbug.com/40067771): `ConsentLevel::kSync` is deprecated and should
-    // be removed. See `ConsentLevel::kSync` documentation for details.
     GetIdentityTestEnv()->MakePrimaryAccountAvailable(
-        "test@foo.com", signin::ConsentLevel::kSync);
+        "test@foo.com", signin::ConsentLevel::kSignin);
     prefs_ = profile_->GetTestingPrefService();
     if (history_sync_enabled) {
       sync_service()->GetUserSettings()->SetSelectedTypes(

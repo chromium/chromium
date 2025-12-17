@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest,
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
   identity_test_env()->SetPrimaryAccount("test@example.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   identity_test_env()->SetRefreshTokenForPrimaryAccount();
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 

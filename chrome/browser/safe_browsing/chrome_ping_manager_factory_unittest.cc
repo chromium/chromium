@@ -84,7 +84,7 @@ TestingProfile* ChromePingManagerFactoryTest::SetUpProfile(
   if (is_signed_in) {
     IdentityTestEnvironmentProfileAdaptor adaptor(profile);
     adaptor.identity_test_env()->MakePrimaryAccountAvailable(
-        "testing@gmail.com", signin::ConsentLevel::kSync);
+        "testing@gmail.com", signin::ConsentLevel::kSignin);
   }
   return profile;
 }

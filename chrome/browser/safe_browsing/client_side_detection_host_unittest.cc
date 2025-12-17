@@ -455,8 +455,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
     ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
-    identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
-                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
 
     csd_host_ =
         ChromeClientSideDetectionHostDelegate::CreateHost(web_contents());

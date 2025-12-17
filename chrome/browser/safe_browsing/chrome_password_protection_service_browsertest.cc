@@ -196,7 +196,7 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
     CoreAccountInfo account_info =
         identity_test_env()->MakePrimaryAccountAvailable(
-            user_manager::kStubUserEmail, signin::ConsentLevel::kSync);
+            user_manager::kStubUserEmail, signin::ConsentLevel::kSignin);
 
     ASSERT_EQ(account_info.email, user_manager::kStubUserEmail);
 
