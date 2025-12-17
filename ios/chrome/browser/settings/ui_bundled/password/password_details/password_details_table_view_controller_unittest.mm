@@ -787,10 +787,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
 
 // Tests copy website works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
-  // TODO(crbug.com/440059889): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    return;
-  }
   std::vector<std::string> websites = {kExampleCom};
   NSString* expected_pasteboard = HTTPWebsite();
   CheckCopyWebsites(
