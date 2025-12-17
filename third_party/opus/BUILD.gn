@@ -106,13 +106,13 @@ config("opus_private_config") {
       ]
     }
 
-    if (arm_use_neon) {
-      defines += [
-        "OPUS_ARM_MAY_HAVE_NEON",
-        "OPUS_ARM_MAY_HAVE_NEON_INTR",
-      ]
-    }
+    defines += [
+      "OPUS_ARM_MAY_HAVE_NEON",
+      "OPUS_ARM_MAY_HAVE_NEON_INTR",
+    ]
 
+    # TODO(thakis): Do this on all platforms,
+    # no need for runtime detection anymore.
     if (is_ios && current_cpu == "arm64") {
       # Runtime detection of CPU features not available on iOS.
       defines += [
@@ -439,14 +439,24 @@ static_library("opus") {
 
   if (use_opus_arm_optimization) {
     sources += [
+      "src/celt/arm/celt_neon_intr.c",
       "src/celt/arm/fixed_arm64.h",
       "src/celt/arm/fixed_armv4.h",
       "src/celt/arm/fixed_armv5e.h",
       "src/celt/arm/kiss_fft_armv4.h",
       "src/celt/arm/kiss_fft_armv5e.h",
       "src/celt/arm/pitch_arm.h",
+      "src/celt/arm/pitch_neon_intr.c",
+      "src/silk/arm/LPC_inv_pred_gain_arm.h",
+      "src/silk/arm/LPC_inv_pred_gain_neon_intr.c",
+      "src/silk/arm/NSQ_del_dec_arm.h",
+      "src/silk/arm/NSQ_del_dec_neon_intr.c",
+      "src/silk/arm/NSQ_neon.c",
+      "src/silk/arm/NSQ_neon.h",
       "src/silk/arm/SigProc_FIX_armv4.h",
       "src/silk/arm/SigProc_FIX_armv5e.h",
+      "src/silk/arm/biquad_alt_arm.h",
+      "src/silk/arm/biquad_alt_neon_intr.c",
       "src/silk/arm/macros_arm64.h",
       "src/silk/arm/macros_armv4.h",
       "src/silk/arm/macros_armv5e.h",
@@ -465,21 +475,6 @@ static_library("opus") {
         "src/silk/fixed/main_FIX.h",
       ]
       deps += [ ":convert_rtcd_assembler" ]
-    }
-
-    if (arm_use_neon) {
-      sources += [
-        "src/celt/arm/celt_neon_intr.c",
-        "src/celt/arm/pitch_neon_intr.c",
-        "src/silk/arm/LPC_inv_pred_gain_arm.h",
-        "src/silk/arm/LPC_inv_pred_gain_neon_intr.c",
-        "src/silk/arm/NSQ_del_dec_arm.h",
-        "src/silk/arm/NSQ_del_dec_neon_intr.c",
-        "src/silk/arm/NSQ_neon.c",
-        "src/silk/arm/NSQ_neon.h",
-        "src/silk/arm/biquad_alt_arm.h",
-        "src/silk/arm/biquad_alt_neon_intr.c",
-      ]
     }
   }
 }

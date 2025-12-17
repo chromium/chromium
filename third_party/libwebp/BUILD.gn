@@ -41,8 +41,7 @@ set_opt_level = !is_debug && (is_posix || is_fuchsia || is_win) &&
 # webp's dsp code can be built for all configurations. Skipping it when both
 # arm_use_neon and arm_optionally_use_neon are false will result in link errors
 # for its dsp init functions.
-use_dsp_neon =
-    current_cpu == "arm64" || (current_cpu == "arm" && arm_version >= 7)
+use_dsp_neon = current_cpu == "arm64" || current_cpu == "arm"
 
 source_set("libwebp_webp") {
   visibility += allowed_visibility
@@ -366,11 +365,8 @@ if (use_dsp_neon) {
       configs += [ "//build/config/compiler:optimize_max" ]
     }
 
-    if (current_cpu == "arm") {
-      # behavior similar to *.c.neon in an Android.mk
-      configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
-      cflags = [ "-mfpu=neon" ]
-    } else if (current_cpu == "arm64" && !is_clang) {
+    # TODO(thakis): gcc-4.9 was long ago, try removing this.
+    if (current_cpu == "arm64" && !is_clang) {
       # avoid an ICE with gcc-4.9: b/15574841
       cflags = [ "-frename-registers" ]
     }

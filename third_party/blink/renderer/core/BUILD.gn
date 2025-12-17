@@ -111,12 +111,7 @@ declare_args() {
   # Use vectorization for fast path HTML parser.
   enable_vectorized_html_scanning = false
 
-  if (current_cpu == "arm" || current_cpu == "arm64") {
-    if (arm_use_neon) {
-      enable_vectorized_html_scanning = true
-    }
-  }
-  if (current_cpu == "x64") {
+  if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "x64") {
     enable_vectorized_html_scanning = true
   }
 }

@@ -1960,7 +1960,7 @@ component("platform") {
     allow_circular_includes_from += [ ":blink_x86_avx" ]
   }
 
-  if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
+  if (current_cpu == "arm64" || current_cpu == "arm") {
     sources += [ "audio/cpu/arm/delay_neon.cc" ]
   }
 

@@ -98,7 +98,7 @@ if (proprietary_codecs && media_use_ffmpeg) {
 # code base.
 config("media_config") {
   defines = []
-  if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
+  if (current_cpu == "arm64" || current_cpu == "arm") {
     defines += [ "USE_NEON" ]
   }
   if (use_pulseaudio) {

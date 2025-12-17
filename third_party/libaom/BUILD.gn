@@ -24,13 +24,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "x64"
   }
 } else if (current_cpu == "arm") {
-  if (arm_use_neon) {
-    cpu_arch_full = "arm-neon"
-  } else if (is_android) {
-    cpu_arch_full = "arm-neon-cpu-detect"
-  } else {
-    cpu_arch_full = "arm"
-  }
+  cpu_arch_full = "arm-neon"
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   cpu_arch_full = "arm64-cpu-detect"
 } else if (current_cpu == "riscv64") {

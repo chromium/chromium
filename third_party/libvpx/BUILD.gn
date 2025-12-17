@@ -22,13 +22,10 @@ if (current_cpu == "x86") {
 } else if (current_cpu == "arm") {
   if (is_chromeos) {
     # ChromeOS gets highbd vp9 but other arm targets do not.
+    # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
     cpu_arch_full = "arm-neon-highbd"
-  } else if (arm_use_neon) {
-    cpu_arch_full = "arm-neon"
-  } else if (is_android) {
-    cpu_arch_full = "arm-neon-cpu-detect"
   } else {
-    cpu_arch_full = "arm"
+    cpu_arch_full = "arm-neon"
   }
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   if (is_win || is_chromeos || is_mac || is_ios) {

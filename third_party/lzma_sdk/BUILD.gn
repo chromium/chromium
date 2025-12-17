@@ -7,8 +7,8 @@ import("//build/config/compiler/compiler.gni")
 
 # TODO(ritownsend@google.com): Optimizations temporarily disabled for
 # Windows on Arm MSVC builds, see http://crbug.com/v8/10012.
-use_arm_neon_optimizations = (target_cpu == "arm" || target_cpu == "arm64") &&
-                             arm_use_neon && !(is_win && !is_clang)
+use_arm_neon_optimizations =
+    (target_cpu == "arm" || target_cpu == "arm64") && !(is_win && !is_clang)
 
 # TODO(crbug.com/1341436) For Windows, to assemble lzma_sdk's assembly files,
 # ml64.exe needs to be utilized as llvm-ml cannot yet assemble it. Once llvm-ml

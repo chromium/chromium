@@ -192,11 +192,7 @@ config("skia_library_config") {
   }
 
   if (current_cpu == "arm") {
-    if (arm_use_neon) {
-      defines += [ "SK_ARM_HAS_NEON" ]
-    } else if (arm_optionally_use_neon) {
-      defines += [ "SK_ARM_HAS_OPTIONAL_NEON" ]
-    }
+    defines += [ "SK_ARM_HAS_NEON" ]
   }
 
   if (is_android) {
@@ -311,12 +307,10 @@ component("skia") {
       "ext/convolver_mips_dspr2.h",
     ]
   } else if (current_cpu == "arm" || current_cpu == "arm64") {
-    if (arm_use_neon) {
-      sources += [
-        "ext/convolver_neon.cc",
-        "ext/convolver_neon.h",
-      ]
-    }
+    sources += [
+      "ext/convolver_neon.cc",
+      "ext/convolver_neon.h",
+    ]
   } else if (current_cpu == "loong64") {
     sources += [
       "ext/convolver_LSX.cc",
@@ -834,17 +828,6 @@ skia_source_set("skia_opts") {
     # ARM), the compiler doesn't like that.
     if (!is_ios) {
       cflags += [ "-fomit-frame-pointer" ]
-    }
-
-    if (arm_version >= 7) {
-      if (arm_use_neon || arm_optionally_use_neon) {
-        # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
-        # when running this.
-        if (!arm_use_neon) {
-          configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
-          cflags += [ "-mfpu=neon" ]
-        }
-      }
     }
   } else if (current_cpu == "arm64") {
     # Conditional and empty body needed to avoid assert() below.
