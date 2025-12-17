@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Ezin izan da deskargatu <ph name="LANGUAGE" /> hizkuntzaren ortografia-zuzentzailea. Saiatu berriro.</translation>
 <translation id="1078037449555275327">ChromeVox-en ezarpenak</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> aplikazioak automatikoki irekitzen ditu leiho berriak.</translation>
 <translation id="1079242569060319448">PINa ahaztu zaizu?</translation>
 <translation id="1079766198702302550">Blokeatu beti kamerarako sarbidea</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 fitxa}other{<ph name="GROUP_TITLE" />: # fitxa}}</translation>
@@ -1014,6 +1015,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1668435968811469751">Erregistratu eskuz</translation>
 <translation id="1668804837842452164">Gorde <ph name="BRAND" /> zerbitzuan <ph name="EMAIL" /> helbide elektronikorako</translation>
 <translation id="1668979692599483141">Lortu informazio gehiago iradokizunei buruz</translation>
+<translation id="1670070366970670971">PDFaren azpimarkoa: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Oinarrizkoa</translation>
 <translation id="1671525612731130246">Aukeratu Drive-ko kontua</translation>
 <translation id="1671749176392751693">Eman da babestutako edukia erreproduzitzeko identifikatzaileak erabiltzeko baimena</translation>
@@ -5865,6 +5867,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4989479404508898003">Orrien eduki orokorrean oinarrituta egin ditzakezu arakatze-historiako bilaketak, ez orriaren izenean eta URLan oinarrituta soilik. Horrela, emaitza hobeak lortuko dituzu.</translation>
 <translation id="49896407730300355">Biratu e&amp;rlojuaren orratzen aurka</translation>
 <translation id="4989966318180235467">Ikuskatu &amp;atzeko planoko orria</translation>
+<translation id="499016799952867794">Horrela, aplikazioa espero bezala exekutatuko da.</translation>
 <translation id="4990673372047946816">Ez dago kamerarik erabilgarri</translation>
 <translation id="4991420928586866460">Tratatu goiko errenkadako teklak funtzio-tekla gisa</translation>
 <translation id="4991873517942703737">Galdetu dokumentu honi buruz</translation>
@@ -7710,6 +7713,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - Eskuineko ikuspegia</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 orriko muga gainditzen du}other{{COUNT} orriko muga gainditzen du}}</translation>
 <translation id="6282490239556659745">Kendu <ph name="EMBEDDED_SITE" /> webgunea <ph name="SITE" /> webgunetik</translation>
+<translation id="6282815764417508018">Ainguratu ikuspegi zatitua</translation>
 <translation id="6283438600881103103">Saioa automatikoki amaituko da.
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.</translation>
 <translation id="628352644014831790">4 segundo</translation>
@@ -7740,6 +7744,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6301300352769835063">Utzi Google-ri hardware-datuak erabiltzen <ph name="DEVICE_OS" /> hobetzeko. Aukera hau baztertu arren, datuak Google-ra bidaliko dira eguneratze egokiak zehazteko. Alabaina, ez dira ez gordeko, ez beste ezertarako erabiliko. Lortu informazio gehiago g.co/flex/HWDataCollection webgunean.</translation>
 <translation id="6302661287897119265">Iragazkiak</translation>
 <translation id="630292539633944562">Informazio pertsonalari buruzko iradokizunak</translation>
+<translation id="6303023592034094909">Aplikazioaren bertsio berri bat dago erabilgarri</translation>
 <translation id="630308129961693966">Aukeratu helbide-barraren posizioa</translation>
 <translation id="6304017513498618504">"Laburbildu" bezalako eskaerak ere egin ditzakezu</translation>
 <translation id="6305607932814307878">Gidalerro orokorra:</translation>
@@ -9142,6 +9147,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7293774463163321848">Bilaketa-historia, Gemini-ren historia eta pasahitzak haiek kudeatzeko ezarpenetan ezaba daitezke</translation>
 <translation id="7295614427631867477">Datu-bilketari eta erabilerari buruzko gidalerro propioek arautzen dituzte Android Play eta harekin erlazionatutako aplikazioak.</translation>
 <translation id="7296503797589217366">Hautatu <ph name="FOLDER_TITLE" /> karpeta</translation>
+<translation id="7297228218361240128">Gorde ikusten dituzun orrietako informazioa Google Diru-zorroa zerbitzuan</translation>
 <translation id="7297726121602187087">Berde iluna</translation>
 <translation id="7298195798382681320">Gomendatua</translation>
 <translation id="7299515639584427954">Onartzen diren estekak irekitzeko aplikazio lehenetsia aldatu nahi duzu?</translation>
@@ -9412,6 +9418,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7476454130948140105">Ez daukazu eguneratzeko behar adina bateria (% <ph name="BATTERY_PERCENT" />)</translation>
 <translation id="7476989672001283112">Automatikoki blokeatutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Aukeratu deskargatu nahi duzun eSIMaren profila</translation>
+<translation id="7477483325563774744">Honek eskainia: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Memoriaren erabilera handia: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Sortu orri honen QR kodea</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
@@ -10669,6 +10676,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8317671367883557781">Gehitu sareko konexioa</translation>
 <translation id="8317965619823678157">pasahitzak kopiatu behar ditu</translation>
 <translation id="8318266828739827371">Erabili pantaila zatituaren ikuspegia pantailaren handitutako eremua ikusteko. Erabili Bilaketa + Ktrl + D lupa ainguratua aktibatu eta desaktibatzeko.</translation>
+<translation id="8318680582681577962">Ezkutuko moduko PDFaren azpimarkoa: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Teklen erabilera hedatua</translation>
 <translation id="8320212361750431956">Azkenaldiko jarduerak</translation>
 <translation id="8321476692217554900">jakinarazpenak</translation>
@@ -11302,6 +11310,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8742998548129056176">Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, datu bateratu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
 <translation id="8743357966416354615">Garapen-ingurune kudeatua (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Eguneratu aurretik, berrikusi URLaren aldaketa, ondo iruditzen zaizula ziurtatzeko.</translation>
 <translation id="8745034592125932220">Ez du gailu honetan datuak gordetzeko baimenik</translation>
 <translation id="8746654918629346731">Eskatu duzu "<ph name="EXTENSION_NAME" />" dagoeneko</translation>
 <translation id="874689135111202667">{0,plural, =1{Fitxategi bat kargatu nahi duzu webgune honetara?}other{# fitxategi kargatu nahi dituzu webgune honetara?}}</translation>

@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Не удалось скачать словарь для проверки правописания (язык: <ph name="LANGUAGE" />). Повторите попытку.</translation>
 <translation id="1078037449555275327">Настройки ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> автоматически открывает новые окна</translation>
 <translation id="1079242569060319448">Забыли PIN-код?</translation>
 <translation id="1079766198702302550">Всегда блокировать доступ к камере</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 вкладка}one{<ph name="GROUP_TITLE" /> – # вкладка}few{<ph name="GROUP_TITLE" /> – # вкладки}many{<ph name="GROUP_TITLE" /> – # вкладок}other{<ph name="GROUP_TITLE" /> – # вкладки}}</translation>
@@ -1016,6 +1017,7 @@
 <translation id="1668435968811469751">Зарегистрировать вручную</translation>
 <translation id="1668804837842452164">Сохранить в сервисе "<ph name="BRAND" />" (<ph name="EMAIL" />)</translation>
 <translation id="1668979692599483141">Подробнее о подсказках…</translation>
+<translation id="1670070366970670971">Субфрейм PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Основные настройки</translation>
 <translation id="1671525612731130246">Выберите аккаунт Google Диска</translation>
 <translation id="1671749176392751693">Доступ к идентификаторам для воспроизведения защищенного контента разрешен</translation>
@@ -4129,6 +4131,7 @@
 <translation id="3785748905555897481">PIN-код изменен.</translation>
 <translation id="3786224729726357296">Удалить данные и разрешения сайта <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Показывать нижнее подчеркивание в смешанном письме</translation>
+<translation id="3786890785076278600">Статическая строка</translation>
 <translation id="3787434344076711519">Ожидается выполнение перевода</translation>
 <translation id="3788301286821743879">Не удалось запустить киоск-приложение.</translation>
 <translation id="3788401245189148511">Разрешения:</translation>
@@ -4508,6 +4511,7 @@
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029024445166427442">Клавиша панели запуска + Shift + Backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
+<translation id="4031178684547097947">5 строк</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4031527940632463547">Использование датчиков запрещено</translation>
 <translation id="4033471457476425443">Новая папка</translation>
@@ -5769,6 +5773,7 @@
 <translation id="4908811072292128752">Откройте новую вкладку, чтобы перейти на другой сайт, не закрывая предыдущий</translation>
 <translation id="4910241725741323970">Приложение уже установлено</translation>
 <translation id="4912643508233590958">Переходы в активный режим</translation>
+<translation id="4912892750325639080">3 строки</translation>
 <translation id="4913209098186576320">Этот файл может быть опасен.<ph name="LINE_BREAK" />Проверка занимает больше времени, чем обычно…</translation>
 <translation id="4913695564084524048">Не удается найти данные приложения.</translation>
 <translation id="4915961947098019832">Разрешить сайтам показывать изображения</translation>
@@ -5869,6 +5874,7 @@
 <translation id="4989479404508898003">Вы можете выполнять поиск в истории браузера не только по заголовку или URL, но и по содержимому страницы и получать улучшенные результаты.</translation>
 <translation id="49896407730300355">Повернуть п&amp;ротив часовой стрелки</translation>
 <translation id="4989966318180235467">Исследовать &amp;фоновую страницу</translation>
+<translation id="499016799952867794">Это позволит приложению работать правильно.</translation>
 <translation id="4990673372047946816">Камера не найдена</translation>
 <translation id="4991420928586866460">Использовать клавиши верхнего ряда как функциональные</translation>
 <translation id="4991873517942703737">Спросить об этом документе</translation>
@@ -7718,6 +7724,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" />: правое окно</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Превышено ограничение. Можно напечатать не более 1 листа бумаги.}one{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}few{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}many{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}other{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}}</translation>
 <translation id="6282490239556659745">Удалить <ph name="EMBEDDED_SITE" /> с сайта <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Закрепить параллельный просмотр</translation>
 <translation id="6283438600881103103">Вы автоматически выйдете из системы.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
 <translation id="628352644014831790">4 секунды</translation>
@@ -7748,6 +7755,7 @@
 <translation id="6301300352769835063">Разрешить компании Google использовать данные о вашем оборудовании, чтобы улучшать <ph name="DEVICE_OS" />. Если вы откажетесь, эта информация все равно будет отправляться в Google для определения подходящих обновлений, но она не будет храниться или использоваться в других целях. Подробная информация доступна на странице g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Фильтр</translation>
 <translation id="630292539633944562">Подсказки с личной информацией</translation>
+<translation id="6303023592034094909">Существует новая версия этого приложения</translation>
 <translation id="630308129961693966">Выберите место адресной строки</translation>
 <translation id="6304017513498618504">Вы также можете попросить, например, создать краткий пересказ.</translation>
 <translation id="6305607932814307878">Общая политика:</translation>
@@ -9013,6 +9021,7 @@
 <translation id="7191159667348037">Неизвестный принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
 <translation id="7191632649590906354">Теперь участники семейной группы могут использовать ваше имя пользователя и пароль в Google Менеджере паролей. Попросите их выполнить вход на сайте <ph name="WEBSITE" />.</translation>
+<translation id="7192393330344360021">1 строка</translation>
 <translation id="7193051357671784796">Это приложение добавила ваша организация. Перезапустите его, чтобы завершить установку.</translation>
 <translation id="7193374945610105795">Для сайта <ph name="ORIGIN" /> нет сохраненных паролей</translation>
 <translation id="7193663868864659844">Оставьте отзыв о рекомендациях по группировке вкладок</translation>
@@ -9157,6 +9166,7 @@
 <translation id="7293774463163321848">Историю Поиска, историю Gemini и пароли можно удалить в настройках.</translation>
 <translation id="7295614427631867477">Обратите внимание, что для Android, Google Play и связанных с ними приложений действуют их собственные правила по сбору и использованию данных.</translation>
 <translation id="7296503797589217366">Выбрать папку "<ph name="FOLDER_TITLE" />"</translation>
+<translation id="7297228218361240128">Сохраняйте в Google Кошельке информацию с просматриваемых страниц</translation>
 <translation id="7297726121602187087">Темно-зеленый</translation>
 <translation id="7298195798382681320">Рекомендованные</translation>
 <translation id="7299515639584427954">Изменить приложение по умолчанию для поддерживаемых ссылок?</translation>
@@ -9427,6 +9437,7 @@
 <translation id="7476454130948140105">Слишком низкий заряд батареи (<ph name="BATTERY_PERCENT" />%). Обновление невозможно.</translation>
 <translation id="7476989672001283112">Автоматически отключено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Выберите профиль eSIM, который нужно скачать</translation>
+<translation id="7477483325563774744">Издатель: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Вкладка использует много памяти: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Создать QR-код для этой страницы</translation>
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
@@ -10685,6 +10696,7 @@
 <translation id="8317671367883557781">Добавить сетевое подключение</translation>
 <translation id="8317965619823678157">копировать пароли</translation>
 <translation id="8318266828739827371">Разделить экран, чтобы в одной его части показывалась увеличенная область. Включайте и выключайте закрепленную лупу с помощью сочетания клавиш Поиск + Ctrl + D.</translation>
+<translation id="8318680582681577962">Субфрейм PDF в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Расширенное использование ключа</translation>
 <translation id="8320212361750431956">Недавние действия</translation>
 <translation id="8321476692217554900">уведомления</translation>
@@ -11120,6 +11132,7 @@
 <translation id="862750493060684461">Кеш CSS</translation>
 <translation id="8627795981664801467">только при защищенном подключении</translation>
 <translation id="8627804903623428808">Изучите условия и настройте использование данных своего ребенка</translation>
+<translation id="8628674746770065790">Следовать за курсором</translation>
 <translation id="862907440446514309">Администратор записывает ваш экран с помощью приложения "<ph name="APP0_NAME" />".</translation>
 <translation id="8630338733867813168">Спящий режим при зарядке устройства</translation>
 <translation id="8631032106121706562">Цветок</translation>
@@ -11318,6 +11331,7 @@
 <translation id="8742998548129056176">Мы будем получать общие сведения о работе устройства, например об уровне заряда батареи, ошибках и действиях в системе и приложениях. Они помогут нам усовершенствовать Android, а наши партнеры смогут использовать некоторые агрегированные данные, чтобы улучшать свои приложения и другие продукты.</translation>
 <translation id="8743357966416354615">Управляемая среда разработки (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Ромадзи</translation>
+<translation id="8744913471985800082">Проверьте, устраивает ли вас новый URL, прежде чем обновлять его.</translation>
 <translation id="8745034592125932220">Запрещено сохранять данные на этом устройстве</translation>
 <translation id="8746654918629346731">Вы уже запросили расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Загрузить файл на этот сайт?}one{Загрузить # файл на этот сайт?}few{Загрузить # файла на этот сайт?}many{Загрузить # файлов на этот сайт?}other{Загрузить # файла на этот сайт?}}</translation>

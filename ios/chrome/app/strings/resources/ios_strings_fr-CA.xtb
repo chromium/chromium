@@ -34,7 +34,6 @@
 <translation id="1096992026380844478">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. <ph name="BEGIN_LINK" />Voir ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Partagez le contenu de la page avec Gemini pour obtenir des réponses plus pertinentes. Lorsque vous partagez une page avec Gemini, le contenu complet et l'URL de la page sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1110772719190051587">Déverrouillez avec Face ID</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1118569444314402022">Bon retour, <ph name="USER_NAME" /></translation>
@@ -251,7 +250,6 @@
 <translation id="1901366738768303267">Comment puis-je utiliser cette fonctionnalité?</translation>
 <translation id="1901600657316773839">Garder la sélection</translation>
 <translation id="1902277226107477495">Détection d'adresse désactivée. Réactivez-la dans les paramètres.</translation>
-<translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
 <translation id="1925706052394657380">Ouvrez les réglages des <ph name="BEGIN_BOLD" />applis par défaut<ph name="END_BOLD" /> dans iOS</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
@@ -267,7 +265,6 @@
 <translation id="1965633132497641148">Code de sécurité non valide</translation>
 <translation id="1966313166384086081">données relatives aux sites</translation>
 <translation id="1967461193809857427">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre les onglets que vous avez laissés sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
-<translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1977621687170192347">Activez « Demander à ouvrir des liens à partir d'autres applis en navigation privée ».</translation>
 <translation id="1979055159547313322">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait être en mesure de consulter certaines informations, notamment</translation>
@@ -529,7 +526,6 @@
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="2996291259634659425">Créer une phrase de passe</translation>
 <translation id="3010025794097054078">Protégez-vous contre les violations de données, les sites Web dangereux et plus encore.</translation>
-<translation id="301080557829842765">Guide sur la confidentialité</translation>
 <translation id="3012310354105716927">Certaines données ne sont pas encore enregistrées</translation>
 <translation id="3013922155552460252">Affichez et gérez l'activité Gemini, comme vos clavardages, vos commentaires et vos requêtes</translation>
 <translation id="3016518775797983090">Impossible de partager la page</translation>
@@ -593,7 +589,6 @@
 <translation id="323863549127671026">Les onglets et les groupes d'onglets actuellement ouverts</translation>
 <translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
 <translation id="3254806613790954367">Votre dernier onglet ouvert sur tous vos appareils</translation>
 <translation id="325717987950204592">Touchez « Confidentialité et sécurité »</translation>
@@ -1050,7 +1045,6 @@
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5020732097997376541">Touchez « Icône de Lentille »</translation>
 <translation id="5021500396464456616">Communiquez avec la personne qui a envoyé ce lien</translation>
-<translation id="5024511550058813796">Vous aurez accès à votre historique sur tous vos appareils synchronisés de sorte que vous pourrez reprendre le cours de vos activités</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5050810143224996149">Partager le mot de passe</translation>
 <translation id="5055015094595227120">Position exacte</translation>
@@ -1192,7 +1186,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5565871407246142825">Cartes de crédit</translation>
 <translation id="5567439033041178034">EN SAVOIR PLUS</translation>
-<translation id="5572648434713976849">Vous recevrez de meilleures suggestions dans la barre d'adresse</translation>
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Masquer la Liste de lecture</translation>
 <translation id="5581786858144165447">Mode Demander à l'IA</translation>
@@ -1318,7 +1311,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="598634819525651074">Zone</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
-<translation id="6001839398155993679">Accéder</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
@@ -1461,6 +1453,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6445981559479772097">Message envoyé</translation>
 <translation id="6449554712554071184">Cette action supprimera définitivement le groupe de votre appareil.</translation>
 <translation id="6452534462676960500">Nouvelle activité</translation>
+<translation id="6454311990702999318">Données incorrectes</translation>
 <translation id="6459411599807878608">Détails masqués</translation>
 <translation id="646394917185284261">Fichiers</translation>
 <translation id="6472069383518492189">Vous trouverez vos téléchargements ici</translation>
@@ -1494,6 +1487,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes provenant d'autres applications en navigation privée.</translation>
 <translation id="6583087784430677195">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" /> et accédez à remplissage automatique des mots de passe.</translation>
 <translation id="6585618849026997638">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
+<translation id="6589001036857939353">Fusionner les doublons</translation>
 <translation id="659407965921887085">Cette carte montre les baisses de prix sur le Web pour les produits que vous suivez actuellement</translation>
 <translation id="6596481460663245319">Rechercher l'image avec Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 mot de passe}one{# mot de passe}other{# mots de passe}}</translation>
@@ -1518,7 +1512,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6641465290890659327">Partager une copie de votre mot de passe</translation>
 <translation id="6642362222295953972">Passer à l'onglet déjà ouvert</translation>
 <translation id="6645899968535965230">Code QR : <ph name="PAGE_TITLE" /></translation>
-<translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659660757330712663">Vous pouvez faire glisser la barre d'outils pour basculer entre les onglets.</translation>
 <translation id="6663529247339810546">Impossible d'enregistrer l'image</translation>
@@ -1604,7 +1597,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6964760285928603117">Supprimer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Dossiers</translation>
-<translation id="69739764870135975">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6980507581230208647">Thème rose</translation>
@@ -1685,7 +1677,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7345061034321640811">Importation non autorisée</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
-<translation id="7363349185727752629">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
 <translation id="736564850024123010">Modifiez la position de votre barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
@@ -1844,7 +1835,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7882689957034389473">Prendre une photo</translation>
 <translation id="7883882164760409935">Vous avez des mots de passe réutilisés.</translation>
-<translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
 <translation id="7887198238286927132">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ.</translation>
 <translation id="7887552845761062935">Touchez deux fois et maintenez le doigt pour ouvrir plus d'options</translation>
 <translation id="7888562068293422208">Tout fermer?</translation>

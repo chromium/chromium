@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" />-н зөв бичгийн алдаа шалгах толь бичгийг татаж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="1078037449555275327">ChromeVox-н тохиргоо</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> шинэ цонх автоматаар нээнэ.</translation>
 <translation id="1079242569060319448">ПИН-ээ мартсан уу?</translation>
 <translation id="1079766198702302550">Камерын оролтыг үргэлж хориглож байх</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 таб}other{<ph name="GROUP_TITLE" /> - # таб}}</translation>
@@ -1012,6 +1013,7 @@
 <translation id="1668435968811469751">Гар аргаар бүртгүүлэх</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" />-д зориулж <ph name="BRAND" />-д хадгалах</translation>
 <translation id="1668979692599483141">Зөвлөмжийн талаар судлах</translation>
+<translation id="1670070366970670971">PDF-н дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Үндсэн</translation>
 <translation id="1671525612731130246">Драйвын бүртгэл сонгох</translation>
 <translation id="1671749176392751693">Хамгаалагдсан контент танигчийг зөвшөөрсөн</translation>
@@ -4137,6 +4139,7 @@
 <translation id="3785748905555897481">PIN-г амжилттай өөрчилсөн</translation>
 <translation id="3786224729726357296"><ph name="SITE" />-н сайтын өгөгдөл болон зөвшөөрлийг устгах</translation>
 <translation id="3786834302860277193">Найруулгын текстэд доогуур зураас харуулах</translation>
+<translation id="3786890785076278600">Статик мөр</translation>
 <translation id="3787434344076711519">Орчуулгыг хүлээж байна</translation>
 <translation id="3788301286821743879">Киоск аппликэйшнийг эхлүүлж чадсангүй.</translation>
 <translation id="3788401245189148511">Энэ нь:</translation>
@@ -4515,6 +4518,7 @@
 <translation id="4028467762035011525">Оруулах арга нэмэх</translation>
 <translation id="4029024445166427442">эхлүүлэгч + shift + ухраах</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> хуудаснаас буцах</translation>
+<translation id="4031178684547097947">5 мөр</translation>
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4031527940632463547">Мэдрэгчийг хориглосон</translation>
 <translation id="4033471457476425443">Шинэ фолдер нэмэх</translation>
@@ -5777,6 +5781,7 @@
 <translation id="4908811072292128752">Хоёр сайтыг зэрэг хөтлөхийн тулд шинэ таб нээх</translation>
 <translation id="4910241725741323970">Аппыг аль хэдийн суулгасан байна</translation>
 <translation id="4912643508233590958">Идэвхгүй байдлыг сэргээх</translation>
+<translation id="4912892750325639080">3 мөр</translation>
 <translation id="4913209098186576320">Энэ файл аюултай байж магадгүй<ph name="LINE_BREAK" />Энэ шалгалт ердийнхөөс удаж байна...</translation>
 <translation id="4913695564084524048">Аппын өгөгдлийг олох боломжгүй</translation>
 <translation id="4915961947098019832">Зураг харуулахыг зөвшөөрсөн</translation>
@@ -5877,6 +5882,7 @@
 <translation id="4989479404508898003">Та зөвхөн хуудасны гарчиг болон URL-д бус, хуудасны ерөнхий контентод тулгуурлан хөтчийн түүхээсээ хайх, сайжруулсан илэрцүүдийг харах боломжтой</translation>
 <translation id="49896407730300355">Цагийн зүүний эсрэг эргүүлэх</translation>
 <translation id="4989966318180235467">Дэвсгэр хуудсыг шалгах</translation>
+<translation id="499016799952867794">Энэ нь аппад зохих ёсоор ажиллах боломжийг олгоно.</translation>
 <translation id="4990673372047946816">Боломжтой камер байхгүй байна</translation>
 <translation id="4991420928586866460">Дээд эгнээний түлхүүрүүдийн үндсэн түлхүүр болгох</translation>
 <translation id="4991873517942703737">Энэ баримт бичгийн талаар асуух</translation>
@@ -7726,6 +7732,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - Баруун талын харагдах байдал</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 хуудас цаасны хязгаараас хэтэрсэн}other{{COUNT} хуудас цаасны хязгаараас хэтэрсэн}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />-с <ph name="EMBEDDED_SITE" />-г хасах</translation>
+<translation id="6282815764417508018">Хуваасан харагдах байдлыг бэхлэх</translation>
 <translation id="6283438600881103103">Таныг одоо автоматаар гаргана.
 <ph name="DOMAIN" /> таныг ухаалаг картаа оруулсан хэвээр байхыг шаардана.</translation>
 <translation id="628352644014831790">4 секунд</translation>
@@ -7756,6 +7763,7 @@
 <translation id="6301300352769835063">Google-д таны техник хангамжийн өгөгдлийг <ph name="DEVICE_OS" />-г сайжруулахад ашиглахыг зөвшөөрнө үү. Хэрэв та татгалзвал энэ өгөгдлийг Google рүү зохих шинэчлэлтүүдийг тодорхойлохын тулд илгээсэн хэвээр байх хэдий ч хадгалахгүй эсвэл өөрөөр ашиглахгүй. Ta g.co/flex/HWDataCollection дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6302661287897119265">Шүүлтүүр</translation>
 <translation id="630292539633944562">Хувийн мэдээллийн зөвлөмж</translation>
+<translation id="6303023592034094909">Энэ аппын шинэ хувилбар боломжтой байна</translation>
 <translation id="630308129961693966">Хаяг оруулах байрлалаа сонгох</translation>
 <translation id="6304017513498618504">Та мөн “хураангуйлах” зэрэг зүйлсийг хүсэх боломжтой</translation>
 <translation id="6305607932814307878">Олон улсын удирдамж:</translation>
@@ -9014,6 +9022,7 @@
 <translation id="7191159667348037">Тодорхойгүй хэвлэгч (USB)</translation>
 <translation id="7191631508323321927">Үүдний өрөө</translation>
 <translation id="7191632649590906354">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглах үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой. Тэдэнд нэвтрэхийн тулд <ph name="WEBSITE" /> руу оч гэж хэлнэ үү.</translation>
+<translation id="7192393330344360021">1 мөр</translation>
 <translation id="7193051357671784796">Энэ аппыг танай байгууллага нэмсэн байна. Аппыг суулгаж дуусгахын тулд дахин эхлүүлнэ үү.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-д хадгалсан нууц үг алга</translation>
 <translation id="7193663868864659844">Санал болгосон бүлгүүдэд санал хүсэлт илгээх</translation>
@@ -9158,6 +9167,7 @@
 <translation id="7293774463163321848">Хайлтын түүх, Gemini-н түүх, нууц үгийг удирдлагын тохиргооноос нь устгаж болно</translation>
 <translation id="7295614427631867477">Android, Play болон холбоотой аппууд нь өөрсдийн өгөгдлийн цуглуулга болон ашиглалтын удирдамжид захирагддаг болохыг анхаарна уу.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> фолдерыг сонгох</translation>
+<translation id="7297228218361240128">Үзсэн хуудаснуудаасаа Google Wallet-д мэдээлэл хадгалах</translation>
 <translation id="7297726121602187087">Бараан ногоон</translation>
 <translation id="7298195798382681320">Санал болгосон</translation>
 <translation id="7299515639584427954">Тусламж дэмжлэгийн холбоосын өгөгдмөл аппыг өөрчлөх үү?</translation>
@@ -9429,6 +9439,7 @@
 <translation id="7476454130948140105">Шинэчлэхэд батерейны түвшин хангалтгүй байна (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> болон бусад <ph name="COUNT" />-г автоматаар блоклосон</translation>
 <translation id="7477460499687558352">Татах eSIM профайл сонгох</translation>
+<translation id="7477483325563774744">Санал болгосон: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Санах ойн өндөр хэрэглээ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Энэ хуудсанд QR код үүсгэх</translation>
 <translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
@@ -10685,6 +10696,7 @@
 <translation id="8317671367883557781">Сүлжээний холболт нэмэх</translation>
 <translation id="8317965619823678157">нууц үгийг хуулах</translation>
 <translation id="8318266828739827371">Дэлгэцийнхээ томруулсан хэсгийг харахын тулд дэлгэцийг хуваах горимын харагдах байдлыг ашиглана уу. Суурилуулсан томруулагчийг асаах болон унтраахын тулд Search + Ctrl + D-г ашиглана уу.</translation>
+<translation id="8318680582681577962">Нууцлалтай PDF-н дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Өргөтгөсөн гол хэрэглээ</translation>
 <translation id="8320212361750431956">Саяхны үйл ажиллагаа</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
@@ -11120,6 +11132,7 @@
 <translation id="862750493060684461">CSS-ийн кэш</translation>
 <translation id="8627795981664801467">Зөвхөн аюулгүй холболтууд</translation>
 <translation id="8627804903623428808">Эдгээр нөхцөлийг шалгаж, хүүхдийнхээ өгөгдлийг хянана уу</translation>
+<translation id="8628674746770065790">Курсорыг дагах</translation>
 <translation id="862907440446514309">Танай администратор <ph name="APP0_NAME" />-р таны дэлгэцийг бичиж байна.</translation>
 <translation id="8630338733867813168">Цэнэглэх үед идэвхгүй болно</translation>
 <translation id="8631032106121706562">Petals</translation>
@@ -11318,6 +11331,7 @@
 <translation id="8742998548129056176">Энэ нь таны төхөөрөмжийн болон та түүнийг хэрхэн ашигладаг тухай (батарейн түвшин, систем болон аппын үйл ажиллагаа, алдаа зэрэг) ерөнхий мэдээлэл юм. Энэ өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд хуримтлуулсан зарим мэдээлэл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд апп болон бүтээгдэхүүнээ сайжруулахад нь мөн тусална.</translation>
 <translation id="8743357966416354615">Удирддаг хөгжүүлэлтийн орчин (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Ромажи</translation>
+<translation id="8744913471985800082">Шинэчлэхээсээ өмнө URL-н өөрчлөлтийг хянаж, танд тохиромжтой эсэхийг нягтлаарай.</translation>
 <translation id="8745034592125932220">Таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>
 <translation id="8746654918629346731">Та аль хэдийн "<ph name="EXTENSION_NAME" />" өргөтгөлийг суулгах хүсэлт тавьсан</translation>
 <translation id="874689135111202667">{0,plural, =1{Энэ сайтад нэг файл байршуулах уу?}other{Энэ сайтад # файл байршуулах уу?}}</translation>

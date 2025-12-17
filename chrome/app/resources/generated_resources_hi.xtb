@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> के लिए, स्पेलिंग जांच से जुड़े शब्दकोश को डाउनलोड नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="1078037449555275327">ChromeVox की सेटिंग</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> अपने-आप नई विंडो खोलता है.</translation>
 <translation id="1079242569060319448">क्या आपको पिन याद नहीं है?</translation>
 <translation id="1079766198702302550">कैमरा कभी भी ब्लॉक करने के लिए एक्सेस करें</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 टैब}one{<ph name="GROUP_TITLE" /> - # टैब}other{<ph name="GROUP_TITLE" /> - # टैब}}</translation>
@@ -1016,6 +1017,7 @@
 <translation id="1668435968811469751">मैन्युअल तरीके से नाम दर्ज करें</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> के लिए <ph name="BRAND" /> में सेव करें</translation>
 <translation id="1668979692599483141">सुझावों के बारे में जानें</translation>
+<translation id="1670070366970670971">PDF सबफ़्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">बुनियादी विकल्प</translation>
 <translation id="1671525612731130246">Drive खाता चुनें</translation>
 <translation id="1671749176392751693">सुरक्षित कॉन्टेंट दिखाने के लिए आइडेंटिफ़ायर इस्तेमाल करने की अनुमति दी गई</translation>
@@ -4993,7 +4995,7 @@
 <translation id="4369233657762989723">लिखवाने की सुविधा चालू/बंद है</translation>
 <translation id="436926121798828366"><ph name="SETTINGS_LINK" /> में जाकर, इसे कभी भी बदला जा सकता है</translation>
 <translation id="4370759810292068807">ये सुविधाएं एआई का इस्तेमाल करती हैं. इन पर अभी काम चल रहा है. इसलिए, यह ज़रूरी नहीं है कि ये हमेशा सही तरीके से काम करें</translation>
-<translation id="4370975561335139969">  डाले गए ईमेल और पासवर्ड का मिलान नहीं हो रहा</translation>
+<translation id="4370975561335139969">डाले गए ईमेल और पासवर्ड का मिलान नहीं हो रहा</translation>
 <translation id="4373418556073552953">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="4373973310429385827">लाइटहाउस</translation>
 <translation id="4374831787438678295">Linux इंस्टॉलर</translation>
@@ -5880,6 +5882,7 @@
 <translation id="4989479404508898003">अपना ब्राउज़िंग इतिहास, पेज के टाइटल और यूआरएल के साथ-साथ, पेज के सामान्य कॉन्टेंट के हिसाब से खोजा जा सकता है. इससे आपको बेहतर नतीजे मिलते हैं</translation>
 <translation id="49896407730300355">घड़ी की &amp;विपरीत दिशा में घुमाएं</translation>
 <translation id="4989966318180235467">निरीक्षण और पेजभूमि पेज</translation>
+<translation id="499016799952867794">इससे ऐप्लिकेशन उम्मीद के मुताबिक काम कर पाता है.</translation>
 <translation id="4990673372047946816">कोई कैमरा उपलब्ध नहीं</translation>
 <translation id="4991420928586866460">शीर्ष पंक्ति कुंजियों को फ़ंक्शन कुंजियों के रूप में मानें</translation>
 <translation id="4991873517942703737">इस दस्तावेज़ के बारे में पूछें</translation>
@@ -6957,7 +6960,7 @@
 <translation id="5757187557809630523">अगला ट्रैक</translation>
 <translation id="5758631781033351321">आपको अपनी, पढ़ने की चीज़ों की सूची यहां मिलेगी</translation>
 <translation id="5759397201362801675">मूड चुनें</translation>
-<translation id="5759728514498647443">  <ph name="APP_NAME" /> के माध्‍यम से प्रिंट करने के लिए भेजे जाने वाले दस्‍तावेज़ <ph name="APP_NAME" /> द्वारा पढ़े जा सकते हैं.</translation>
+<translation id="5759728514498647443"><ph name="APP_NAME" /> के माध्‍यम से प्रिंट करने के लिए भेजे जाने वाले दस्‍तावेज़ <ph name="APP_NAME" /> द्वारा पढ़े जा सकते हैं.</translation>
 <translation id="5760318332127300368">उस ब्राउज़िंग डेटा (<ph name="URL" />) को भी मिटाएं जिसकी वजह से आपको Google.com से साइन आउट किया जा सकता है. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Google खाते की जानकारी डालें</translation>
 <translation id="576283132499202180">अपने माता-पिता के चुने गए विकल्पों के साथ, ऑनलाइन सुरक्षित रहने के लिए, <ph name="USER_EMAIL" /> के तौर पर अपनी प्रोफ़ाइल में साइन इन करें</translation>
@@ -7728,6 +7731,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - राइट व्यू</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{काग़ज़ की 1 शीट से ज़्यादा प्रिंट नहीं कर सकते}one{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}other{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> से <ph name="EMBEDDED_SITE" /> हटाएं</translation>
+<translation id="6282815764417508018">स्प्लिट व्यू को पिन करें</translation>
 <translation id="6283438600881103103">अब आप अपने-आप साइन आउट हो जाएंगे.
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
 <translation id="628352644014831790">4 सेकंड</translation>
@@ -7758,6 +7762,7 @@
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> को बेहतर बनाने के लिए, Google को अपने हार्डवेयर का डेटा इस्तेमाल करने की अनुमति दें. आपकी अनुमति न मिलने पर भी Google को यह डेटा भेजा जाता है, ताकि आपके डिवाइस के हिसाब से सही अपडेट डिलीवर किए जा सकें. हालांकि, इस डेटा को न तो स्टोर किया जाता है और न ही इसे किसी और काम के लिए इस्तेमाल किया जाता है. ज़्यादा जानने के लिए, g.co/flex/HWDataCollection पर जाएं.</translation>
 <translation id="6302661287897119265">फ़िल्टर</translation>
 <translation id="630292539633944562">निजी जानकारी के सुझाव</translation>
+<translation id="6303023592034094909">इस ऐप्लिकेशन का नया वर्शन उपलब्ध है</translation>
 <translation id="630308129961693966">पता बार की जगह अडजस्ट करें</translation>
 <translation id="6304017513498618504">इस तरह के निर्देश भी दिए जा सकते हैं, जैसे कि “खास जानकारी दो”</translation>
 <translation id="6305607932814307878">वैश्विक नीति:</translation>
@@ -9163,6 +9168,7 @@
 <translation id="7293774463163321848">मैनेजमेंट सेटिंग में जाकर, अपना खोज इतिहास, Gemini पर की गई गतिविधि का डेटा, और पासवर्ड मिटाए जा सकते हैं</translation>
 <translation id="7295614427631867477">ध्यान रखें कि Android, Play और सहभागी ऐप्लिकेशन पर अपने ही डेटा संग्रह का नियंत्रण होता है. साथ ही, वे नीतियों का इस्तेमाल करते हैं.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> फ़ोल्डर चुनें</translation>
+<translation id="7297228218361240128">देखे गए पेजों की जानकारी को Google Wallet में सेव करें</translation>
 <translation id="7297726121602187087">गहरा हरा</translation>
 <translation id="7298195798382681320">सुझाए गए</translation>
 <translation id="7299515639584427954">क्या आप सहायता लिंक खोलने के लिए, डिफ़ॉल्ट ऐप्लिकेशन बदलना चाहते हैं?</translation>
@@ -9433,6 +9439,7 @@
 <translation id="7476454130948140105">अपडेट करने के लिए बैटरी बहुत कम है (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग को अपने-आप ब्लॉक किया गया</translation>
 <translation id="7477460499687558352">डाउनलोड करने के लिए कोई ई-सिम प्रोफ़ाइल चुनें</translation>
+<translation id="7477483325563774744">ऑफ़र करने वाला: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">ज़्यादा मेमोरी का इस्तेमाल: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">इस पेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
@@ -10691,6 +10698,7 @@
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोड़ें</translation>
 <translation id="8317965619823678157">पासवर्ड कॉपी करना</translation>
 <translation id="8318266828739827371">स्क्रीन का ज़ूम इन किया गया हिस्सा देखने के लिए, स्प्लिट स्क्रीन व्यू का इस्तेमाल करें. स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + D का इस्तेमाल करें.</translation>
+<translation id="8318680582681577962">गुप्त मोड में PDF सबफ़्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">विस्तृत कुंजी उपयोग</translation>
 <translation id="8320212361750431956">हाल की गतिविधि</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
@@ -11324,6 +11332,7 @@
 <translation id="8742998548129056176">यह आपके डिवाइस और इसके इस्तेमाल से जुड़ी सामान्य जानकारी है, जैसे कि जैसे कि बैटरी कितनी चार्ज है, सिस्टम और ऐप्लिकेशन की गतिविधि, और गड़बड़ियां. डिवाइस से जुड़े इस डेटा का इस्तेमाल Android काे बेहतर बनाने के लिए किया जाएगा. साथ ही, इकट्ठा की गई कुछ जानकारी की मदद से Android डेवलपर जैसे पार्टनर और Google के ऐप्लिकेशन अपने प्रॉडक्ट को बेहतर बना पाएंगे.</translation>
 <translation id="8743357966416354615">मैनेज किए जा रहे डेवलपमेंट एनवायरमेंट (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">रोमाजी</translation>
+<translation id="8744913471985800082">अपडेट करने से पहले, यूआरएल में किए गए बदलाव को देखें. इससे यह पक्का करने में मदद मिलेगी कि आपको यह बदलाव स्वीकार है.</translation>
 <translation id="8745034592125932220">इस साइट को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
 <translation id="8746654918629346731">आपने "<ph name="EXTENSION_NAME" />" का अनुरोध किया हुआ है</translation>
 <translation id="874689135111202667">{0,plural, =1{इस साइट पर एक फ़ाइल अपलोड करें?}one{इस साइट पर # फ़ाइलें अपलोड करें?}other{इस साइट पर # फ़ाइलें अपलोड करें?}}</translation>

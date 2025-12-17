@@ -4140,6 +4140,7 @@
 <translation id="3785748905555897481">PIN విజయవంతంగా మార్చబడింది</translation>
 <translation id="3786224729726357296"><ph name="SITE" />‌కు సంబంధించిన సైట్ డేటాను, అనుమతులను తొలగించండి</translation>
 <translation id="3786834302860277193">కంపోజిషన్ టెక్స్ట్ కోసం అండర్‌లైన్‌ను చూపించండి</translation>
+<translation id="3786890785076278600">స్టాటిక్ లైన్</translation>
 <translation id="3787434344076711519">అనువాదం కోసం వేచి ఉంది</translation>
 <translation id="3788301286821743879">కియోస్క్ యాప్‌ను ప్రారంభించడం సాధ్యపడలేదు.</translation>
 <translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
@@ -4519,6 +4520,7 @@
 <translation id="4028467762035011525">ఇన్‌పుట్ విధానాలను జోడించండి</translation>
 <translation id="4029024445166427442">లాంచర్ + shift + బ్యాక్‌స్పేస్</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> పేజీ నుండి వెనక్కి వెళ్ళు</translation>
+<translation id="4031178684547097947">5 లైన్లు</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4031527940632463547">సెన్సార్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="4033471457476425443">కొత్త ఫోల్డర్‌ను జోడించండి</translation>
@@ -5781,6 +5783,7 @@
 <translation id="4908811072292128752">ఒకేసారి రెండు సైట్‌లను బ్రౌజ్ చేయడానికి కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="4910241725741323970">యాప్ ఇప్పటికే ఇన్‌స్టాల్ అయింది</translation>
 <translation id="4912643508233590958">ఇన్‌యాక్టివ్‌ మేల్కొలుపులు</translation>
+<translation id="4912892750325639080">3 లైన్లు</translation>
 <translation id="4913209098186576320">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు<ph name="LINE_BREAK" />ఈ చెక్‌కు సాధారణం కంటే ఎక్కువ సమయం పడుతోంది...</translation>
 <translation id="4913695564084524048">యాప్ డేటా లభించలేదు</translation>
 <translation id="4915961947098019832">ఇమేజ్‌లను చూపించడానికి అనుమతించబడింది</translation>
@@ -9021,6 +9024,7 @@
 <translation id="7191159667348037">తెలియని ప్రింటర్ (USB)</translation>
 <translation id="7191631508323321927">హాల్‌వే</translation>
 <translation id="7191632649590906354">మీ ఫ్యామిలీ మెంబర్‌లు ఇప్పుడు Google Password Managerను ఉపయోగించినప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. సైన్ ఇన్ చేయడానికి <ph name="WEBSITE" />‌కి వెళ్లమని చెప్పండి.</translation>
+<translation id="7192393330344360021">1 లైన్</translation>
 <translation id="7193051357671784796">మీ సంస్థ ద్వారా ఈ యాప్ జోడించబడింది. యాప్‌ను పునఃప్రారంభించడం ద్వారా దీని ఇన్‌స్టాలేషన్‌ను పూర్తి చేయండి.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> కోసం పాస్‌వర్డ్‌లు సేవ్ చేయబడలేదు</translation>
 <translation id="7193663868864659844">సూచించిన Groupsకు ఫీడ్‌బ్యాక్ పంపండి</translation>
@@ -9165,6 +9169,7 @@
 <translation id="7293774463163321848">సెర్చ్ హిస్టరీని, Gemini హిస్టరీని, పాస్‌వర్డ్‌లను వాటి మేనేజ్‌మెంట్ సెట్టింగ్‌ల్లో తొలగించవచ్చు</translation>
 <translation id="7295614427631867477">Android, Play, అనుబంధిత యాప్‌లు వాటి స్వంత డేటా సేకరణ, వినియోగ విధానాల ప్రకారం పర్యవేక్షించబడతాయి.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ఫోల్డర్‌ను ఎంచుకోండి</translation>
+<translation id="7297228218361240128">మీరు చూసే పేజీల నుండి Google Walletకు సమాచారాన్ని సేవ్ చేయండి</translation>
 <translation id="7297726121602187087">ముదురు ఆకుపచ్చ రంగు</translation>
 <translation id="7298195798382681320">సిఫార్సు చేయబడినవి</translation>
 <translation id="7299515639584427954">సపోర్ట్ చేయబడిన లింక్‌ల కోసం ఆటోమేటిక్ యాప్‌ను మార్చాలా?</translation>
@@ -11128,6 +11133,7 @@
 <translation id="862750493060684461">CSS కాష్</translation>
 <translation id="8627795981664801467">సురక్షిత కనెక్షన్‌ల మాత్రమే</translation>
 <translation id="8627804903623428808">ఈ నియమాలను రివ్యూ చేయండి, మీ చిన్నారి డేటాను కంట్రోల్ చేయండి</translation>
+<translation id="8628674746770065790">కర్సర్‌ను ఫాలో అవ్వండి</translation>
 <translation id="862907440446514309">మీ అడ్మినిస్ట్రేటర్, <ph name="APP0_NAME" /> సహాయంతో మీ స్క్రీన్‌ను రికార్డ్ చేస్తున్నారు.</translation>
 <translation id="8630338733867813168">ఛార్జింగ్‌లో ఉన్నప్పుడు స్లీప్ మోడ్‌లో ఉండాలి</translation>
 <translation id="8631032106121706562">పూరేకులు</translation>

@@ -2140,7 +2140,6 @@
 <translation id="4409556632583862731">新しいスレッド</translation>
 <translation id="4412074349188076601">この構成はインストール可能と指定されていますが、このアーキテクチャのイメージが提供されていないため、インストールできません。</translation>
 <translation id="4412377069090572315">レビュー</translation>
-<translation id="4414452699610169758">Google パスワード マネージャーと Chrome 自動入力を使用して、パスワード、お支払い方法、住所を保存して入力します</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
 <translation id="4415156962929755728">プラスチック（高光沢）</translation>
 <translation id="4415426530740016218">受け取り場所の住所</translation>
@@ -2674,6 +2673,7 @@
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5308689395849655368">障害レポートが無効になっています。</translation>
+<translation id="5309562313526658209">移動</translation>
 <translation id="5314967030527622926">ブックレット メーカー</translation>
 <translation id="5316812925700871227">反時計回りに回転</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -3629,6 +3629,7 @@
 <translation id="6871813064737840684">このオプションのウェブ全体での価格の推移</translation>
 <translation id="6873456682041376666">上トレイ</translation>
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
+<translation id="6875873347995743859">アシスタントに送信</translation>
 <translation id="6875894866901426843">ローカル ファイル（ゴミ箱内のファイルを含む）は管理者によって <ph name="DATE_TIME" /> に削除されます。</translation>
 <translation id="6880941331070119097">高価格のオプション</translation>
 <translation id="6881240511396774766">新しい Google ドキュメントをすばやく作成します</translation>
@@ -4879,7 +4880,6 @@
 <translation id="8891031436559779793">値下げしたサイトがある場合に通知されます。</translation>
 <translation id="8891727572606052622">プロキシ モードが無効です。</translation>
 <translation id="8894794286471754040">長辺から</translation>
-<translation id="8895334001368918465">Chrome で別の自動入力サービスを使用するには、Android 設定とここでオンにします</translation>
 <translation id="8897221284075091877">このコンテンツを表示できるようにするには、Google アカウントで続行してください</translation>
 <translation id="8897428486789851669">水泳</translation>
 <translation id="8899807382908246773">煩わしい広告</translation>

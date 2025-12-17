@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">„Microsoft Internet Explorer“</translation>
 <translation id="1076882167394279216">Nepavyko atsisiųsti <ph name="LANGUAGE" /> rašybos tikrinimo žodyno. Bandykite dar kartą.</translation>
 <translation id="1078037449555275327">„ChromeVox“ nustatymai</translation>
+<translation id="1078497917067602920">„<ph name="APP_NAME" />“ automatiškai atidaro naujus langus.</translation>
 <translation id="1079242569060319448">Pamiršote PIN kodą?</translation>
 <translation id="1079766198702302550">Visada blokuoti prieigą prie fotoaparato</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{„<ph name="GROUP_TITLE" />“ – vienas skirtukas}one{„<ph name="GROUP_TITLE" />“ – # skirtukas}few{„<ph name="GROUP_TITLE" />“ – # skirtukai}many{„<ph name="GROUP_TITLE" />“ – # skirtuko}other{„<ph name="GROUP_TITLE" />“ – # skirtukų}}</translation>
@@ -1018,6 +1019,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1668435968811469751">Registruotis neautomatiškai</translation>
 <translation id="1668804837842452164">Išsaugoti paslaugoje „<ph name="BRAND" />“ (<ph name="EMAIL" />)</translation>
 <translation id="1668979692599483141">Sužinokite apie pasiūlymus</translation>
+<translation id="1670070366970670971">PDF antrinis rėmelis: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Bendrieji</translation>
 <translation id="1671525612731130246">Pasirinkite Disko paskyrą</translation>
 <translation id="1671749176392751693">Leidžiami apsaugoto turinio identifikatoriai</translation>
@@ -5884,6 +5886,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4989479404508898003">Naršymo istorijoje galite ieškoti pagal bendrąjį puslapio turinį, ne tik puslapio pavadinimą ir URL, bei matyti patobulintus rezultatus</translation>
 <translation id="49896407730300355">Sukti prieš l&amp;aikrodžio rodyklę</translation>
 <translation id="4989966318180235467">Tikrinti fono puslapį</translation>
+<translation id="499016799952867794">Tai leidžia programai veikti, kaip numatyta.</translation>
 <translation id="4990673372047946816">Nėra pasiekiamos vaizdo kameros</translation>
 <translation id="4991420928586866460">Viršutinės eilutės klavišus naudoti kaip funkcijų klavišus</translation>
 <translation id="4991873517942703737">Klausti apie šį dokumentą</translation>
@@ -7734,6 +7737,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6281553140495787606">„<ph name="WINDOW_TITLE" />“ – dešinysis rodinys</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Viršytas 1 popieriaus lapo apribojimas}one{Viršytas {COUNT} popieriaus lapo apribojimas}few{Viršytas {COUNT} popieriaus lapų apribojimas}many{Viršytas {COUNT} popieriaus lapo apribojimas}other{Viršytas {COUNT} popieriaus lapų apribojimas}}</translation>
 <translation id="6282490239556659745">Ištrinti <ph name="EMBEDDED_SITE" /> iš <ph name="SITE" />?</translation>
+<translation id="6282815764417508018">Prisegti išskaidyto ekrano rodinį</translation>
 <translation id="6283438600881103103">Būsite automatiškai atjungti.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
 <translation id="628352644014831790">4 sek.</translation>
@@ -7764,6 +7768,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6301300352769835063">Leiskite sistemai „Google“ naudoti jūsų aparatinės įrangos duomenis ir tobulinti „<ph name="DEVICE_OS" />“. Jei atsisakysite, duomenys vis tiek bus siunčiami sistemai „Google“, siekiant nustatyti, kurie naujiniai tinkami, tačiau jie nebus saugomi ar naudojami kitais būdais. Sužinokite daugiau adresu g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtras</translation>
 <translation id="630292539633944562">Asmens informacijos pasiūlymai</translation>
+<translation id="6303023592034094909">Pasiekiama nauja šios programos versija</translation>
 <translation id="630308129961693966">Adreso juostos pozicijos pasirinkimas</translation>
 <translation id="6304017513498618504">Taip pat galite klausti tokių dalykų kaip „apibendrinti“</translation>
 <translation id="6305607932814307878">Visuotinė politika:</translation>
@@ -9173,6 +9178,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7293774463163321848">Paieškos istoriją, „Gemini“ istoriją ir slaptažodžius galima ištrinti jų tvarkymo nustatymuose</translation>
 <translation id="7295614427631867477">Atminkite, kad „Android“, „Play“ ir susijusioms programoms taikoma atskira jų duomenų rinkimo ir naudojimo politika.</translation>
 <translation id="7296503797589217366">Pasirinkite aplanką „<ph name="FOLDER_TITLE" />“</translation>
+<translation id="7297228218361240128">Informacijos išsaugojimas „Google Wallet“ iš peržiūrimų puslapių</translation>
 <translation id="7297726121602187087">Tamsiai žalia</translation>
 <translation id="7298195798382681320">Rekomenduojama</translation>
 <translation id="7299515639584427954">Pakeisti numatytąją palaikomų nuorodų programą?</translation>
@@ -9444,6 +9450,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7476454130948140105">Akumuliatorius per daug išsikrovęs, kad būtų galima atnaujinti (<ph name="BATTERY_PERCENT" /> proc.)</translation>
 <translation id="7476989672001283112">Automatiškai užblokuota: <ph name="PERMISSION" /> ir dar <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Pasirinkite „eSIM“ kortelės profilį, kurį norite atsisiųsti</translation>
+<translation id="7477483325563774744">Pasiūlė: „<ph name="ENTERPRISE_NAME" />“</translation>
 <translation id="7477599578899108080">Didelės atminties sąnaudos: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Sukurti šio puslapio QR kodą</translation>
 <translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
@@ -10702,6 +10709,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8317671367883557781">Pridėti tinklo ryšį</translation>
 <translation id="8317965619823678157">kopijuoti slaptažodžius</translation>
 <translation id="8318266828739827371">Naudokite išskaidyto ekrano režimo rodinį, kad galėtumėte matyti padidintą ekrano sritį. Norėdami įjungti ar išjungti įstatomąjį didintuvą, naudokite paieškos klavišą + „Ctrl“ + D.</translation>
+<translation id="8318680582681577962">Inkognito PDF antrinis rėmelis: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Išplėstinis rakto naudojimas</translation>
 <translation id="8320212361750431956">Naujausia veikla</translation>
 <translation id="8321476692217554900">pranešimai</translation>
@@ -11335,6 +11343,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8742998548129056176">Tai yra bendroji informacija apie įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygis, sistemos ir programų veikla ir klaidos). Duomenys bus naudojami „Android“ sistemai tobulinti. Be to, tam tikra sukaupta informacija bus naudinga „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, tobulinant programas ir produktus.</translation>
 <translation id="8743357966416354615">Valdoma kūrimo aplinka („<ph name="GENERAL_NAME" />“)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Prieš atnaujindami peržiūrėkite URL pakeitimą, kad įsitikintumėte, jog esate juo patenkinti.</translation>
 <translation id="8745034592125932220">Neleidžiama išsaugoti duomenų įrenginyje</translation>
 <translation id="8746654918629346731">Jau pateikėte plėtinio „<ph name="EXTENSION_NAME" />“ užklausą</translation>
 <translation id="874689135111202667">{0,plural, =1{Įkelti vieną failą į šią svetainę?}one{Įkelti # failą į šią svetainę?}few{Įkelti # failus į šią svetainę?}many{Įkelti # failo į šią svetainę?}other{Įkelti # failų į šią svetainę?}}</translation>

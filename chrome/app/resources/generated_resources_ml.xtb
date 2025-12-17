@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ഭാഷയ്‌ക്ക് സ്പെൽ ചെക്ക് നിഘണ്ടു ഡൗൺലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1078037449555275327">ChromeVox ക്രമീകരണം</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> സ്വയമേവ പുതിയ വിൻഡോകൾ തുറക്കുന്നു.</translation>
 <translation id="1079242569060319448">പിൻ മറന്നോ?</translation>
 <translation id="1079766198702302550">എപ്പോഴും ക്യാമറ ആക്‌സസ് തടയുക</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ടാബ്}other{<ph name="GROUP_TITLE" /> - # ടാബുകൾ}}</translation>
@@ -1011,6 +1012,7 @@
 <translation id="1668435968811469751">നേരിട്ട് എൻറോൾ ചെയ്യുക</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> -നായി <ph name="BRAND" /> എന്നതിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="1668979692599483141">നിർദ്ദേശങ്ങളെക്കുറിച്ച് അറിയുക</translation>
+<translation id="1670070366970670971">PDF സബ്‌ഫ്രെയിം: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">അടിസ്ഥാനം</translation>
 <translation id="1671525612731130246">Drive അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1671749176392751693">പരിരക്ഷിത ഉള്ളടക്കത്തിന്റെ ഐഡന്റിഫയറുകൾ അനുവദിച്ചു</translation>
@@ -4124,6 +4126,7 @@
 <translation id="3785748905555897481">PIN മാറ്റി</translation>
 <translation id="3786224729726357296"><ph name="SITE" /> എന്ന സൈറ്റിനുള്ള സൈറ്റ് ഡാറ്റയും അനുമതികളും ഇല്ലാതാക്കുക</translation>
 <translation id="3786834302860277193">കോമ്പോസിഷൻ ടെക്‌സ്‌റ്റിന് അടിവര കാണിക്കുക</translation>
+<translation id="3786890785076278600">സ്റ്റാറ്റിക് ലൈൻ</translation>
 <translation id="3787434344076711519">വിവർത്തനത്തിനായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3788301286821743879">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യാനായില്ല.</translation>
 <translation id="3788401245189148511">ഇത് ആക്‌സ്സുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നത്:</translation>
@@ -4502,6 +4505,7 @@
 <translation id="4028467762035011525">ഇന്‍‌പുട്ട് രീതികൾ ചേർക്കുക</translation>
 <translation id="4029024445166427442">ലോഞ്ചർ + shift + ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> പേജിൽ നിന്ന് തിരികെ പോകുക</translation>
+<translation id="4031178684547097947">5 ലൈനുകൾ</translation>
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
 <translation id="4031527940632463547">സെൻസറുകൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="4033471457476425443">പുതിയ ഫോൾഡർ ചേർക്കുക</translation>
@@ -5764,6 +5768,7 @@
 <translation id="4908811072292128752">ഒരേസമയം രണ്ട് സൈറ്റുകൾ ബ്രൗസ് ചെയ്യാൻ ഒരു പുതിയ ടാബ് തുറക്കുക</translation>
 <translation id="4910241725741323970">ആപ്പ് ഇതിനകം ഇൻസ്റ്റാൾ ചെയ്‌തിട്ടുണ്ട്</translation>
 <translation id="4912643508233590958">നിഷ്‌ക്രിയാവസ്ഥയിൽ നിന്ന് സജീവമാകൽ</translation>
+<translation id="4912892750325639080">3 ലൈനുകൾ</translation>
 <translation id="4913209098186576320">ഈ ഫയൽ അപകടകരമായേക്കാം<ph name="LINE_BREAK" />ഈ പരിശോധനയ്ക്ക് പതിവിലുമധികം സമയമെടുക്കുന്നു...</translation>
 <translation id="4913695564084524048">ആപ്പ് ഡാറ്റ കണ്ടെത്താനാകുന്നില്ല</translation>
 <translation id="4915961947098019832">ചിത്രങ്ങൾ കാണിക്കാൻ അനുവദിക്കുന്നു</translation>
@@ -5864,6 +5869,7 @@
 <translation id="4989479404508898003">പേജിന്റെ പേരിനും URL-നും പുറമെ, പൊതുവായ പേജ് ഉള്ളടക്കത്തെ അടിസ്ഥാനമാക്കിയും നിങ്ങൾക്ക് നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം തിരയാം, അതുവഴി മെച്ചപ്പെട്ട ഫലങ്ങൾ കാണാനാകും</translation>
 <translation id="49896407730300355">എ&amp;തിർ ഘടികാരദിശയിൽ തിരിക്കുക</translation>
 <translation id="4989966318180235467">&amp;പശ്ചാത്തല പേജ് പരിശോധിക്കുക</translation>
+<translation id="499016799952867794">പ്രതീക്ഷിച്ച പോലെ റൺ ചെയ്യാൻ ഇത് ആപ്പിനെ അനുവദിക്കുന്നു.</translation>
 <translation id="4990673372047946816">ക്യാമറയൊന്നും ലഭ്യമല്ല</translation>
 <translation id="4991420928586866460">മുകളിലെ-വരി കീകൾ ഫംഗ്‌ഷൻ കീകളായി ഉപയോഗിക്കുക</translation>
 <translation id="4991873517942703737">ഈ ഡോക്യുമെന്റിനെ കുറിച്ച് ചോദിക്കുക</translation>
@@ -7713,6 +7719,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - വലതുവശത്തെ കാഴ്‌ച</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{ഒരു ഷീറ്റ് പേപ്പർ എന്ന പരിധി കവിഞ്ഞു}other{{COUNT} ഷീറ്റ് പേപ്പർ എന്ന പരിധി കവിഞ്ഞു}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> എന്ന സൈറ്റിൽ നിന്ന് <ph name="EMBEDDED_SITE" /> നീക്കം ചെയ്യുക</translation>
+<translation id="6282815764417508018">സ്പ്ലിറ്റ് വ്യൂ പിൻ ചെയ്യുക</translation>
 <translation id="6283438600881103103">നിങ്ങൾ ഇപ്പോൾ സ്വയമേവ സൈൻ ഔട്ട് ആകും.
 <ph name="DOMAIN" />-ൽ തുടരുന്നതിന് നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്ത നിലയിൽ തുടരേണ്ടതുണ്ട്.</translation>
 <translation id="628352644014831790">4 സെക്കൻഡ്</translation>
@@ -7743,6 +7750,7 @@
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> മെച്ചപ്പെടുത്തുന്നതിന് നിങ്ങളുടെ ഹാർഡ്‌വെയർ ഡാറ്റ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക. നിങ്ങൾ നിരസിച്ചാൽ, ശരിയായ അപ്ഡേറ്റുകൾ കണ്ടെത്താൻ Google-ന് ഈ ഡാറ്റ അയയ്ക്കുമെങ്കിലും മറ്റ് കാര്യങ്ങൾക്കായി സംഭരിക്കുകയോ ഉപയോഗിക്കുകയോ ഇല്ല. g.co/flex/HWDataCollection -ൽ കൂടുതലറിയുക.</translation>
 <translation id="6302661287897119265">ഫിൽട്ടർ</translation>
 <translation id="630292539633944562">വ്യക്തിപരമായ വിവരങ്ങളുടെ നിർദ്ദേശങ്ങൾ</translation>
+<translation id="6303023592034094909">ഈ ആപ്പിന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
 <translation id="630308129961693966">നിങ്ങളുടെ വിലാസ ബാർ സ്ഥാനം</translation>
 <translation id="6304017513498618504">നിങ്ങൾക്ക് “സംഗ്രഹിക്കുക” പോലുള്ള കാര്യങ്ങളും ചോദിക്കാം</translation>
 <translation id="6305607932814307878">ആഗോള നയം:</translation>
@@ -9002,6 +9010,7 @@
 <translation id="7191159667348037">അജ്ഞാത പ്രിന്‍റർ (USB)</translation>
 <translation id="7191631508323321927">ഹോൾവേ</translation>
 <translation id="7191632649590906354">Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="WEBSITE" /> എന്നതിലേക്ക് പോയി സൈൻ ഇൻ ചെയ്യാൻ അവരോട് പറയൂ.</translation>
+<translation id="7192393330344360021">1 ലൈൻ</translation>
 <translation id="7193051357671784796">നിങ്ങളുടെ സ്ഥാപനമാണ് ഈ ആപ്പ് ചേർത്തത്. ഇൻസ്‌റ്റാൾ ചെയ്യുന്നത് പൂർത്തിയാക്കാൻ ആപ്പ് റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-നായി പാസ്‌വേഡുകളൊന്നും സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="7193663868864659844">നിർദ്ദേശിച്ച ഗ്രൂപ്പുകൾക്ക് ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
@@ -9146,6 +9155,7 @@
 <translation id="7293774463163321848">തിരയൽ ചരിത്രം, Gemini ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവ അവയുടെ മാനേജ്‌മെന്റ് ക്രമീകരണത്തിൽ ഇല്ലാതാക്കാം</translation>
 <translation id="7295614427631867477">Android, Play, അനുബന്ധ ആപ്പുകൾ എന്നിവ നിയന്ത്രിക്കുന്നത് അവയുടെ തന്നെ ഡാറ്റ ശേഖരണവും ഉപയോഗ നയങ്ങളും ആണെന്ന കാര്യം ശ്രദ്ധിക്കുക.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> എന്ന ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7297228218361240128">നിങ്ങൾ കാണുന്ന പേജുകളിൽ നിന്ന് Google Wallet-ലേക്ക് വിവരങ്ങൾ സംരക്ഷിക്കുക</translation>
 <translation id="7297726121602187087">ഇരുണ്ട പച്ച</translation>
 <translation id="7298195798382681320">ശുപാർശചെയ്യുന്നത്</translation>
 <translation id="7299515639584427954">പിന്തുണാ ലിങ്കുകൾക്കുള്ള ഡിഫോൾട്ട് ആപ്പ് മാറ്റണോ?</translation>
@@ -9416,6 +9426,7 @@
 <translation id="7476454130948140105">അപ്‌ഡേറ്റ് ചെയ്യാൻ ബാറ്ററി ചാർജ്ജ് വളരെ കുറവാണ്. (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> എന്നതും മറ്റ് <ph name="COUNT" /> എണ്ണവും സ്വയമേവ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7477460499687558352">ഡൗൺലോഡ് ചെയ്യാൻ ഒരു eSIM പ്രൊഫൈൽ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7477483325563774744">നൽകുന്നത്: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">ഉയർന്ന മെമ്മറി ഉപയോഗം: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">ഈ പേജിന് QR കോഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
@@ -10674,6 +10685,7 @@
 <translation id="8317671367883557781">നെറ്റ്‌വർക്ക് കണക്ഷൻ ചേർക്കുക</translation>
 <translation id="8317965619823678157">പാസ്‌വേഡുകൾ പകർത്തുക</translation>
 <translation id="8318266828739827371">നിങ്ങളുടെ സ്‌ക്രീനിന്റെ മാഗ്നിഫൈ ചെയ്ത ഏരിയ കാണാൻ സ്‌ക്രീൻ വിഭജന മോഡ് കാഴ്‌ച ഉപയോഗിക്കുക. ഡോക്ക് ചെയ്ത മാഗ്നിഫയർ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + D ഉപയോഗിക്കുക.</translation>
+<translation id="8318680582681577962">അദൃശ്യ മോഡ് PDF സബ്‌ഫ്രെയിം: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">വിപുലീകരിച്ച കീ ഉപയോഗം</translation>
 <translation id="8320212361750431956">സമീപകാല ആക്റ്റിവിറ്റി</translation>
 <translation id="8321476692217554900">അറിയിപ്പുകൾ</translation>
@@ -11109,6 +11121,7 @@
 <translation id="862750493060684461">CSS കാഷേ</translation>
 <translation id="8627795981664801467">കണക്ഷനുകള്‍ മാത്രം സുരക്ഷിതമാക്കുക</translation>
 <translation id="8627804903623428808">ഈ നിബന്ധനകൾ അവലോകനം ചെയ്ത് നിങ്ങളുടെ കുട്ടിയുടെ ഡാറ്റ നിയന്ത്രിക്കുക</translation>
+<translation id="8628674746770065790">കഴ്‌സർ പിന്തുടരുക</translation>
 <translation id="862907440446514309"><ph name="APP0_NAME" /> ഉപയോഗിച്ച് അഡ്‌മിൻ നിങ്ങളുടെ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുകയാണ്.</translation>
 <translation id="8630338733867813168">ചാർജ് ചെയ്യുമ്പോൾ ഉറക്ക മോഡിലാക്കുക</translation>
 <translation id="8631032106121706562">പെറ്റൽസ്</translation>
@@ -11307,6 +11320,7 @@
 <translation id="8742998548129056176">നിങ്ങളുടെ ഉപകരണത്തെ കുറിച്ചും നിങ്ങൾ എങ്ങനെയത് ഉപയോഗിക്കുന്നു എന്നതിനെ കുറിച്ചുമുള്ള പൊതുവായ വിവരങ്ങൾ (ബാറ്ററി നില, സിസ്റ്റം ആക്‌റ്റിവിറ്റി, ആപ്പ് ആക്‌റ്റിവിറ്റി, പിശകുകൾ എന്നിവ പോലെ) ആണിത്. Android മെച്ചപ്പെടുത്താൻ ഈ ഡാറ്റ ഉപയോഗിക്കപ്പെടും, സംഗ്രഹിച്ച ചില വിവരങ്ങൾ, Google ആപ്പുകളെയും Android ഡെവലപ്പർമാർ പോലുള്ള പങ്കാളികളെയും അവരുടെ ആപ്പുകളും ഉൽപ്പന്നങ്ങളും മെച്ചപ്പെടുത്താനും സഹായിക്കും.</translation>
 <translation id="8743357966416354615">മാനേജ് ചെയ്യുന്ന ഡെവലപ്പ്‌മെന്റ് പരിതസ്ഥിതി (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">അപ്ഡേറ്റ് ചെയ്യുന്നതിന് മുമ്പ്, നിങ്ങൾക്ക് URL മാറ്റം തൃപ്തികരമാണെന്ന് ഉറപ്പാക്കാൻ അത് അവലോകനം ചെയ്യുക.</translation>
 <translation id="8745034592125932220">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് ഡാറ്റ സംരക്ഷിക്കാൻ അനുവാദമില്ല</translation>
 <translation id="8746654918629346731">നിങ്ങൾ മുമ്പേ "<ph name="EXTENSION_NAME" />" അഭ്യർത്ഥിച്ചിരിക്കുന്നു</translation>
 <translation id="874689135111202667">{0,plural, =1{ഈ സൈറ്റിലേക്ക് ഒരു ഫയൽ അപ്‌ലോഡ് ചെയ്യണോ?}other{ഈ സൈറ്റിലേക്ക് # ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യണോ?}}</translation>

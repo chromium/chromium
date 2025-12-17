@@ -114,7 +114,6 @@
 <translation id="1413446866325418126">Сохраните данные в аккаунте Google</translation>
 <translation id="1414919006379339073">Закрыть текущее окно</translation>
 <translation id="1416550906796893042">Версия приложения</translation>
-<translation id="1419753403124156396">Перезапустить Chrome?</translation>
 <translation id="1428770807407000502">Отключить синхронизацию?</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1435593198351412143">Открывать PDF-файлы автоматически</translation>
@@ -249,7 +248,6 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2088833076121753253">Чтобы завершить настройку автозаполнения, перезапустите Chrome. Ваши вкладки откроются снова автоматически.</translation>
 <translation id="2091863218454846791">Включен компактный вид</translation>
 <translation id="2093731487903423814">за последние 15 минут</translation>
 <translation id="2096577711562668473">Заменить сервис автозаполнения?</translation>
@@ -1721,6 +1719,7 @@
 <translation id="8137562778192957619">Вам не нужно запоминать этот пароль. Он будет сохранен в Google Менеджере паролей.</translation>
 <translation id="8152331954420209374">Открыть Объектив</translation>
 <translation id="8153206878708357851">Включить или отключить режим активного курсора</translation>
+<translation id="8154784523622173959">Персонализируйте фон этой страницы</translation>
 <translation id="8163820386638255770">Чтобы использовать и сохранять пароли в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) неактивный объект}one{(#) неактивный объект}few{(#) неактивных объекта}many{(#) неактивных объектов}other{(#) неактивного объекта}}</translation>
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>

@@ -114,7 +114,6 @@
 <translation id="1413446866325418126">നിങ്ങളുടെ Google Account-ൽ ഡാറ്റ സംരക്ഷിക്കുക</translation>
 <translation id="1414919006379339073">നിലവിലെ വിൻഡോ അടയ്‌ക്കുക</translation>
 <translation id="1416550906796893042">ആപ്പ് പതിപ്പ്</translation>
-<translation id="1419753403124156396">Chrome റീസ്‌റ്റാർട്ട് ചെയ്യണോ?</translation>
 <translation id="1428770807407000502">സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1435593198351412143">PDF-കൾ സ്വയമേവ തുറക്കുക</translation>
@@ -249,7 +248,6 @@
 <translation id="2067805253194386918">ടെക്‌സ്‌റ്റ്</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
-<translation id="2088833076121753253">സ്വയമേവ പൂരിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാൻ, ഇപ്പോൾ Chrome റീസ്റ്റാർട്ട് ചെയ്യുക. നിങ്ങളുടെ ടാബുകൾ സ്വയമേവ വീണ്ടും തുറക്കും.</translation>
 <translation id="2091863218454846791">കോംപാക്റ്റ് കാഴ്‌ച കാണിക്കുന്നു</translation>
 <translation id="2093731487903423814">കഴിഞ്ഞ 15 മിനിറ്റ്</translation>
 <translation id="2096577711562668473">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനം മാറ്റണോ?</translation>
@@ -1721,6 +1719,7 @@
 <translation id="8137562778192957619">നിങ്ങൾ ഈ പാസ്‌വേഡ് ഓർമ്മിക്കേണ്ടതില്ല. Google Password Manager-ൽ ഇത് സംരക്ഷിക്കും.</translation>
 <translation id="8152331954420209374">Lens-ലേക്ക് പോകുക</translation>
 <translation id="8153206878708357851">കാരറ്റ് ബ്രൗസിംഗ് ടോഗിൾ ചെയ്യുക</translation>
+<translation id="8154784523622173959">ഈ പേജിന്റെ പശ്ചാത്തലം വ്യക്തിപരമാക്കുക</translation>
 <translation id="8163820386638255770">നിങ്ങളുടെ Google Account-ലെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{നിഷ്ക്രിയമായ (1) ഇനം}other{നിഷ്ക്രിയമായ (#) ഇനങ്ങൾ}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ഫയലുകൾ ശേഷിക്കുന്നു</translation>

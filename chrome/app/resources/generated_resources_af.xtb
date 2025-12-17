@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Kon nie speltoetswoordeboek aflaai vir <ph name="LANGUAGE" /> nie. Probeer weer.</translation>
 <translation id="1078037449555275327">ChromeVox-instellings</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> maak outomaties nuwe vensters oop.</translation>
 <translation id="1079242569060319448">PIN vergeet?</translation>
 <translation id="1079766198702302550">Blokkeer altyd toegang tot kamera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 oortjie}other{<ph name="GROUP_TITLE" /> – # oortjies}}</translation>
@@ -1015,6 +1016,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1668435968811469751">Skryf self in</translation>
 <translation id="1668804837842452164">Stoor na <ph name="BRAND" /> vir <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Kom meer te wete oor voorstelle</translation>
+<translation id="1670070366970670971">PDF-subraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Basies</translation>
 <translation id="1671525612731130246">Kies Drive-rekening</translation>
 <translation id="1671749176392751693">Identifiseerders vir beskermde inhoud toegelaat</translation>
@@ -5881,6 +5883,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4989479404508898003">Jy kan jou blaaigeskiedenis op grond van algemene bladsy-inhoud soek, en nie net bladsytitel en -URL nie, en verbeterde resultate sien</translation>
 <translation id="49896407730300355">Draai antikloksgewys</translation>
 <translation id="4989966318180235467">Ondersoek agtergrondbladsy</translation>
+<translation id="499016799952867794">Dit laat die app toe om te loop soos verwag.</translation>
 <translation id="4990673372047946816">Geen kamera beskikbaar nie</translation>
 <translation id="4991420928586866460">Behandel sleutels in die boonste ry soos funksiesleutels</translation>
 <translation id="4991873517942703737">Vra oor hierdie dokument</translation>
@@ -7731,6 +7734,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – Regteraansig</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Oorskry limiet van 1 vel papier}other{Oorskry limiet van {COUNT} velle papier}}</translation>
 <translation id="6282490239556659745">Verwyder <ph name="EMBEDDED_SITE" /> uit <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Speld verdeelde aansig vas</translation>
 <translation id="6283438600881103103">Jy sal nou outomaties afgemeld word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
 <translation id="628352644014831790">4 sekondes</translation>
@@ -7761,6 +7765,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6301300352769835063">Laat Google jou hardewaredata gebruik om te help om <ph name="DEVICE_OS" /> beter te maak. As jy dit afwys, sal hierdie data nogtans na Google toe gestuur word om gepaste opdaterings te bepaal, maar dit sal nie geberg of andersins gebruik word nie. Kom meer te wete by g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtreer</translation>
 <translation id="630292539633944562">Voorstelle oor persoonlike inligting</translation>
+<translation id="6303023592034094909">’n Nuwe weergawe van hierdie app is beskikbaar</translation>
 <translation id="630308129961693966">Kies jou adresbalkposisie</translation>
 <translation id="6304017513498618504">Jy kan ook dinge soos “som op” vra</translation>
 <translation id="6305607932814307878">Globale beleid:</translation>
@@ -9163,6 +9168,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7293774463163321848">Soekgeskiedenis, Gemini-geskiedenis en wagwoorde kan in hul bestuurinstellings uitgevee word</translation>
 <translation id="7295614427631867477">Let daarop dat Android, Play en geassosieerde programme deur hul eie beleide vir data-insameling- en gebruik beheer word.</translation>
 <translation id="7296503797589217366">Kies vouer <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Stoor inligting in Google Wallet vanaf bladsye wat jy bekyk</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7298195798382681320">Aanbevole</translation>
 <translation id="7299515639584427954">Verander verstekprogram vir gesteunde skakels?</translation>
@@ -9434,6 +9440,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7476454130948140105">Die battery is te pap om op te dateer (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Het <ph name="PERMISSION" /> en nog <ph name="COUNT" /> outomaties geblokkeer</translation>
 <translation id="7477460499687558352">Kies ’n e-SIM-profiel om af te laai</translation>
+<translation id="7477483325563774744">Aangebied deur: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Hoë geheuegebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Skep QR-kode vir hierdie bladsy</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
@@ -10691,6 +10698,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8317671367883557781">Voeg netwerkverbinding by</translation>
 <translation id="8317965619823678157">kopieer wagwoorde</translation>
 <translation id="8318266828739827371">Gebruik ’n verdeeldeskermaansig om die vergrote area van jou skerm te sien. Gebruik Soek + Ctrl + D om die gedokte vergrootglas aan en af te skakel.</translation>
+<translation id="8318680582681577962">Incognito PDF-subraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Uitgebreide sleutelgebruik</translation>
 <translation id="8320212361750431956">Onlangse aktiwiteit</translation>
 <translation id="8321476692217554900">kennisgewings</translation>
@@ -11324,6 +11332,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8742998548129056176">Dit is algemene inligting oor jou toestel en hoe jy dit gebruik (soos batteryvlak, stelsel- en programaktiwiteit en foute). Die data sal gebruik word om Android beter te maak, en sekere saamgestelde inligting sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help om hul programme en produkte beter te maak.</translation>
 <translation id="8743357966416354615">Bestuurde ontwikkelingomgewing (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Gaan die URL-verandering na om seker te maak dat jy gemaklik is daarmee voordat jy opdateer.</translation>
 <translation id="8745034592125932220">Mag nie data op jou toestel stoor nie</translation>
 <translation id="8746654918629346731">Jy het reeds "<ph name="EXTENSION_NAME" />" versoek</translation>
 <translation id="874689135111202667">{0,plural, =1{Laai een lêer na hierdie werf op?}other{Laai # lêers na hierdie werf op?}}</translation>

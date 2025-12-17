@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> のスペルチェック辞書をダウンロードできませんでした。もう一度お試しください。</translation>
 <translation id="1078037449555275327">ChromeVox の設定</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> で新しいウィンドウを自動的に開きます。</translation>
 <translation id="1079242569060319448">PIN をお忘れの場合</translation>
 <translation id="1079766198702302550">カメラへのアクセスを常にブロックする</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
@@ -1013,6 +1014,7 @@
 <translation id="1668435968811469751">手動で登録</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> の <ph name="BRAND" /> に保存する</translation>
 <translation id="1668979692599483141">候補に関する詳細</translation>
+<translation id="1670070366970670971">PDF サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1671525612731130246">ドライブ アカウントを選択</translation>
 <translation id="1671749176392751693">保護されたコンテンツの識別子が許可されました</translation>
@@ -4119,6 +4121,7 @@
 <translation id="3785748905555897481">PIN を変更しました</translation>
 <translation id="3786224729726357296"><ph name="SITE" /> のサイトデータと権限を削除</translation>
 <translation id="3786834302860277193">コンポジション テキストに下線を表示</translation>
+<translation id="3786890785076278600">静的な行</translation>
 <translation id="3787434344076711519">翻訳中</translation>
 <translation id="3788301286821743879">キオスク アプリケーションを起動できませんでした。</translation>
 <translation id="3788401245189148511">次の権限へのアクセス要求:</translation>
@@ -4498,6 +4501,7 @@
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4029024445166427442">ランチャー+Shift+Backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ページから戻る</translation>
+<translation id="4031178684547097947">5 行</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
@@ -5757,6 +5761,7 @@
 <translation id="4908811072292128752">新しいタブを開いて 2 つのサイトを同時に閲覧できます</translation>
 <translation id="4910241725741323970">アプリはすでにインストールされています</translation>
 <translation id="4912643508233590958">アイドル状態からの復帰</translation>
+<translation id="4912892750325639080">3 行</translation>
 <translation id="4913209098186576320">このファイルは危険な可能性があります<ph name="LINE_BREAK" />確認に通常より時間がかかっています...</translation>
 <translation id="4913695564084524048">アプリデータが見つかりません</translation>
 <translation id="4915961947098019832">画像の表示を許可するサイト</translation>
@@ -5857,6 +5862,7 @@
 <translation id="4989479404508898003">ページのタイトルや URL だけでなく、ページの全般的な内容に基づいて閲覧履歴を検索し、検索結果の精度を向上できます</translation>
 <translation id="49896407730300355">反時計回りに回転(&amp;O)</translation>
 <translation id="4989966318180235467">バックグラウンド ページの検証(&amp;B)</translation>
+<translation id="499016799952867794">これにより、アプリは想定どおりに動作します。</translation>
 <translation id="4990673372047946816">使用できるカメラがありません</translation>
 <translation id="4991420928586866460">キーボードの最上段のキーをファンクション キーとして使用する</translation>
 <translation id="4991873517942703737">このドキュメントについて質問</translation>
@@ -7702,6 +7708,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - 右ビュー</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{上限（1 枚）を超えています}other{上限（{COUNT} 枚）を超えています}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> から <ph name="EMBEDDED_SITE" /> を削除</translation>
+<translation id="6282815764417508018">分割ビューを固定</translation>
 <translation id="6283438600881103103">今すぐ自動的にログアウトします。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="628352644014831790">4秒</translation>
@@ -7732,6 +7739,7 @@
 <translation id="6301300352769835063">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。詳しくは、g.co/flex/HWDataCollection をご覧ください。</translation>
 <translation id="6302661287897119265">フィルタ</translation>
 <translation id="630292539633944562">個人情報の候補</translation>
+<translation id="6303023592034094909">このアプリの新しいバージョンがあります</translation>
 <translation id="630308129961693966">アドレスバーの位置を選択</translation>
 <translation id="6304017513498618504">「要約」のように質問することもできます</translation>
 <translation id="6305607932814307878">グローバル ポリシー:</translation>
@@ -8989,6 +8997,7 @@
 <translation id="7191159667348037">不明なプリンタ（USB）</translation>
 <translation id="7191631508323321927">廊下</translation>
 <translation id="7191632649590906354">ファミリー メンバーが Google パスワード マネージャーを使用する際に、あなたのユーザー名とパスワードを使用できるようになりました。<ph name="WEBSITE" /> にアクセスしてログインするよう伝えてください。</translation>
+<translation id="7192393330344360021">1 行</translation>
 <translation id="7193051357671784796">このアプリは組織によって追加されました。インストールを完了するにはアプリを再起動してください。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 用に保存されているパスワードはありません</translation>
 <translation id="7193663868864659844">提案されたグループに関するフィードバックを送信する</translation>
@@ -9133,6 +9142,7 @@
 <translation id="7293774463163321848">検索履歴、Gemini の履歴、パスワードは管理設定で削除できます</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
+<translation id="7297228218361240128">表示したページ上の情報を Google ウォレットに保存</translation>
 <translation id="7297726121602187087">暗い緑</translation>
 <translation id="7298195798382681320">推奨</translation>
 <translation id="7299515639584427954">対応リンクを開くデフォルトのアプリを変更しますか？</translation>
@@ -9404,6 +9414,7 @@
 <translation id="7476454130948140105">更新するには電池残量が少なすぎます（<ph name="BATTERY_PERCENT" />%）</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を自動ブロックしました</translation>
 <translation id="7477460499687558352">ダウンロードする eSIM プロファイルを選択してください</translation>
+<translation id="7477483325563774744">提供元: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">メモリを大量に使用: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">このページの QR コードを作成</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
@@ -10661,6 +10672,7 @@
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8317965619823678157">パスワードをコピー</translation>
 <translation id="8318266828739827371">分割画面ビューを使用して、画面の拡大領域を表示できます。ドッキング拡大鏡をオンまたはオフにするには、検索+Ctrl+D キーを使用します。</translation>
+<translation id="8318680582681577962">シークレット モードの PDF サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -11096,6 +11108,7 @@
 <translation id="862750493060684461">CSS キャッシュ</translation>
 <translation id="8627795981664801467">セキュリティで保護された接続のみ</translation>
 <translation id="8627804903623428808">以下の利用規約を確認してお子様のデータをコントロールしてください</translation>
+<translation id="8628674746770065790">カーソルの後</translation>
 <translation id="862907440446514309">管理者が <ph name="APP0_NAME" /> を使用して画面を録画しています。</translation>
 <translation id="8630338733867813168">充電時のスリープ設定</translation>
 <translation id="8631032106121706562">デイジー</translation>
@@ -11294,6 +11307,7 @@
 <translation id="8742998548129056176">送信されるのは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。この情報は Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743357966416354615">管理対象の開発環境（<ph name="GENERAL_NAME" />）</translation>
 <translation id="8744641000906923997">ローマ字</translation>
+<translation id="8744913471985800082">更新する前に、URL の変更に問題がないことを確認してください。</translation>
 <translation id="8745034592125932220">デバイスへのデータの保存は許可されていません</translation>
 <translation id="8746654918629346731">「<ph name="EXTENSION_NAME" />」はリクエスト済みです</translation>
 <translation id="874689135111202667">{0,plural, =1{1 個のファイルをこのサイトにアップロードしますか？}other{# 個のファイルをこのサイトにアップロードしますか？}}</translation>

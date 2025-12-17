@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Nu s-a putut descărca dicționarul pentru verificarea ortografiei pentru <ph name="LANGUAGE" />. Încearcă din nou.</translation>
 <translation id="1078037449555275327">Setări ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> deschide automat ferestre noi.</translation>
 <translation id="1079242569060319448">Ai uitat codul PIN?</translation>
 <translation id="1079766198702302550">Blocați întotdeauna accesul la cameră</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – o filă}few{<ph name="GROUP_TITLE" /> – # file}other{<ph name="GROUP_TITLE" /> – # de file}}</translation>
@@ -1015,6 +1016,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1668435968811469751">Înregistrează-te manual</translation>
 <translation id="1668804837842452164">Salvează în <ph name="BRAND" /> pentru <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Află mai multe despre sugestii</translation>
+<translation id="1670070366970670971">Subcadru PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">De bază</translation>
 <translation id="1671525612731130246">Alege contul Drive</translation>
 <translation id="1671749176392751693">Sunt permiși identificatorii de conținut protejat</translation>
@@ -5867,6 +5869,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4989479404508898003">Poți să cauți în istoricul de navigare în funcție de conținutul general al paginii, nu doar de titlul și adresa URL, și să vezi rezultate îmbunătățite</translation>
 <translation id="49896407730300355">Rotiți în sens &amp;invers acelor de ceasornic</translation>
 <translation id="4989966318180235467">Inspectați pagina de fun&amp;dal</translation>
+<translation id="499016799952867794">Astfel, aplicația poate funcționa conform așteptărilor.</translation>
 <translation id="4990673372047946816">Nu este disponibilă nicio cameră foto</translation>
 <translation id="4991420928586866460">Tastele din rândul de sus sunt considerate taste pentru funcții</translation>
 <translation id="4991873517942703737">Întreabă despre acest document</translation>
@@ -7715,6 +7718,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – vedere din dreapta</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Depășește limita de o coală de hârtie}few{Depășește limita de {COUNT} coli de hârtie}other{Depășește limita de {COUNT} de coli de hârtie}}</translation>
 <translation id="6282490239556659745">Exclude <ph name="EMBEDDED_SITE" /> din <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Fixează afișarea împărțită</translation>
 <translation id="6283438600881103103">Vei fi deconectat(ă) automat.
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
 <translation id="628352644014831790">4 secunde</translation>
@@ -7745,6 +7749,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6301300352769835063">Permite ca Google să folosească datele despre hardware-ul tău pentru a îmbunătăți <ph name="DEVICE_OS" />. Chiar dacă refuzi, datele vor fi trimise la Google pentru a alege actualizările potrivite, dar nu vor fi stocate sau folosite în alte scopuri. Află mai multe la g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtrează</translation>
 <translation id="630292539633944562">Sugestii de informații cu caracter personal</translation>
+<translation id="6303023592034094909">Este disponibilă o nouă versiune a acestei aplicații</translation>
 <translation id="630308129961693966">Alege poziția barei de adrese</translation>
 <translation id="6304017513498618504">Poți și să soliciți lucruri precum „summarize” (rezumă)</translation>
 <translation id="6305607932814307878">Politică globală:</translation>
@@ -9150,6 +9155,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7293774463163321848">Istoricul căutărilor, istoricul Gemini și parolele se pot șterge din setările de gestionare</translation>
 <translation id="7295614427631867477">Reține că Android, Play și aplicațiile asociate sunt guvernate de propriile politici privind colectarea și utilizarea datelor.</translation>
 <translation id="7296503797589217366">Selectează dosarul <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Salvează informații în Portofel Google de pe paginile pe care le vezi</translation>
 <translation id="7297726121602187087">Verde închis</translation>
 <translation id="7298195798382681320">Recomandat</translation>
 <translation id="7299515639584427954">Schimbi aplicația prestabilită pentru linkurile acceptate?</translation>
@@ -9421,6 +9427,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7476454130948140105">Bateria este prea descărcată pentru actualizare (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Permisiuni blocate automat: <ph name="PERMISSION" /> și încă <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Alege un profil eSIM pentru descărcare</translation>
+<translation id="7477483325563774744">Oferit de: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Utilizare intensă a memoriei: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Creează un cod QR pentru această pagină</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
@@ -10679,6 +10686,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8317671367883557781">Adaugă o conexiune la rețea</translation>
 <translation id="8317965619823678157">copiază parolele</translation>
 <translation id="8318266828739827371">Folosește vizualizarea cu ecran împărțit pentru a vedea zona mărită a ecranului. Folosește tasta de căutare + Ctrl + D pentru a activa și a dezactiva lupa andocată.</translation>
+<translation id="8318680582681577962">Subcadru PDF incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Utilizare de cheie extinsă</translation>
 <translation id="8320212361750431956">Activitate recentă</translation>
 <translation id="8321476692217554900">Notificări</translation>
@@ -11312,6 +11320,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8742998548129056176">Acestea sunt informații generale despre dispozitiv și despre modul în care îl folosești (de exemplu, nivelul bateriei, activitatea pe sistem și în aplicații și erorile). Datele vor fi folosite pentru îmbunătățirea Android și unele informații cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android, să își îmbunătățească aplicațiile și produsele.</translation>
 <translation id="8743357966416354615">Mediu de dezvoltare gestionat (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Examinează modificarea adresei URL înainte de a actualiza, ca să te asiguri că te mulțumește.</translation>
 <translation id="8745034592125932220">Nu are permisiunea de a salva date pe dispozitiv</translation>
 <translation id="8746654918629346731">Ai solicitat deja „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="874689135111202667">{0,plural, =1{Încarci un fișier pe acest site?}few{Încarci # fișiere pe acest site?}other{Încarci # de fișiere pe acest site?}}</translation>

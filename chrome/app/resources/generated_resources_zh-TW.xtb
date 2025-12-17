@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">無法下載<ph name="LANGUAGE" />的拼字檢查字典，請再試一次。</translation>
 <translation id="1078037449555275327">ChromeVox 設定</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> 會自動開啟新視窗。</translation>
 <translation id="1079242569060319448">忘記 PIN 碼？</translation>
 <translation id="1079766198702302550">一律封鎖存取攝影機</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
@@ -1014,6 +1015,7 @@
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1668804837842452164">儲存至 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
+<translation id="1670070366970670971">PDF 子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1671525612731130246">選擇雲端硬碟帳戶</translation>
 <translation id="1671749176392751693">已允許受保護內容的 ID</translation>
@@ -5860,6 +5862,7 @@
 <translation id="4989479404508898003">你可以根據一般網頁內容搜尋瀏覽記錄，不限於網頁標題和網址，查看更精確的搜尋結果</translation>
 <translation id="49896407730300355">逆時針旋轉(&amp;O)</translation>
 <translation id="4989966318180235467">檢查背景頁面(&amp;B)</translation>
+<translation id="499016799952867794">這樣應用程式就能正常運作。</translation>
 <translation id="4990673372047946816">沒有可用的相機</translation>
 <translation id="4991420928586866460">使用最上方一排按鍵做為功能鍵</translation>
 <translation id="4991873517942703737">詢問與這份文件相關的問題</translation>
@@ -7704,6 +7707,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - 右側分頁</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出 1 張紙的限制}other{超出 {COUNT} 張紙的限制}}</translation>
 <translation id="6282490239556659745">從 <ph name="SITE" /> 移除 <ph name="EMBEDDED_SITE" /></translation>
+<translation id="6282815764417508018">固定分割畫面</translation>
 <translation id="6283438600881103103">系統會立即自動將你登出。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。</translation>
 <translation id="628352644014831790">4 秒</translation>
@@ -7734,6 +7738,7 @@
 <translation id="6301300352769835063">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。如要瞭解詳情，請前往 g.co/flex/HWDataCollection。</translation>
 <translation id="6302661287897119265">濾鏡</translation>
 <translation id="630292539633944562">個人資訊建議</translation>
+<translation id="6303023592034094909">這個應用程式已推出新版。</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
 <translation id="6304017513498618504">你也可以提出「生成摘要」等要求</translation>
 <translation id="6305607932814307878">全域政策：</translation>
@@ -9136,6 +9141,7 @@
 <translation id="7293774463163321848">搜尋記錄、Gemini 記錄和密碼可透過各自的管理設定刪除</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策規範。</translation>
 <translation id="7296503797589217366">選取資料夾：<ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">將瀏覽網頁中的資訊儲存至 Google 錢包</translation>
 <translation id="7297726121602187087">深綠色</translation>
 <translation id="7298195798382681320">建議採用</translation>
 <translation id="7299515639584427954">是否變更開啟支援連結的預設應用程式？</translation>
@@ -9407,6 +9413,7 @@
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">已自動封鎖：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
 <translation id="7477460499687558352">選擇要下載的 eSIM 設定檔</translation>
+<translation id="7477483325563774744">提供者：<ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">高記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">為這個頁面建立 QR 圖碼</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
@@ -10665,6 +10672,7 @@
 <translation id="8317671367883557781">新增網路連線</translation>
 <translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割畫面檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉置頂放大鏡。</translation>
+<translation id="8318680582681577962">無痕模式 PDF 子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -11298,6 +11306,7 @@
 <translation id="8742998548129056176">這個頁面會顯示裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="8743357966416354615">受管理的開發環境 (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">羅馬字</translation>
+<translation id="8744913471985800082">請先查看網址變更，確認沒問題再更新。</translation>
 <translation id="8745034592125932220">不允許將資料儲存到你的裝置</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>

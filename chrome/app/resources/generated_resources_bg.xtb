@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Изтеглянето на речника за проверка на правописа за <ph name="LANGUAGE" /> не бе успешно. Опитайте отново.</translation>
 <translation id="1078037449555275327">Настройки на ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> автоматично отваря нови прозорци.</translation>
 <translation id="1079242569060319448">Забравихте ПИН кода си?</translation>
 <translation id="1079766198702302550">Достъпът до камерата да се блокира винаги</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 раздел}other{<ph name="GROUP_TITLE" /> – # раздела}}</translation>
@@ -1012,6 +1013,7 @@
 <translation id="1668435968811469751">Ръчно записване</translation>
 <translation id="1668804837842452164">Запазване в(ъв) <ph name="BRAND" /> за <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Научете повече за предложенията</translation>
+<translation id="1670070366970670971">Подрамка за PDF файл: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Основни</translation>
 <translation id="1671525612731130246">Избиране на профил в Диск</translation>
 <translation id="1671749176392751693">Идентификаторите за защитено съдържание са разрешени</translation>
@@ -5878,6 +5880,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4989479404508898003">Можете да търсите в историята си на сърфиране въз основа на общото съдържание на страниците, а не само на заглавията и URL адресите им, и да виждате подобрени резултати</translation>
 <translation id="49896407730300355">Завъртане о&amp;братно на часовниковата стрелка</translation>
 <translation id="4989966318180235467">Инспектиране на &amp;фоновата страница</translation>
+<translation id="499016799952867794">Това дава възможност на приложението да се изпълнява според очакванията.</translation>
 <translation id="4990673372047946816">Няма налична камера</translation>
 <translation id="4991420928586866460">Третиране на клавишите от най-горния ред като функционални</translation>
 <translation id="4991873517942703737">Задайте въпрос за този документ</translation>
@@ -7728,6 +7731,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – десен изглед</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Надхвърля ограничението от 1 лист хартия}other{Надхвърля ограничението от {COUNT} листа хартия}}</translation>
 <translation id="6282490239556659745">Искате ли да премахнете <ph name="EMBEDDED_SITE" /> от <ph name="SITE" />?</translation>
+<translation id="6282815764417508018">Фиксиране на разделения изглед</translation>
 <translation id="6283438600881103103">Ще излезете автоматично от профила си сега.
 <ph name="DOMAIN" /> изисква да не изваждате смарткартата си.</translation>
 <translation id="628352644014831790">4 секунди</translation>
@@ -7758,6 +7762,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6301300352769835063">Позволете на Google да използва данните за хардуера ви с цел подобряване на <ph name="DEVICE_OS" />. Ако откажете, данните пак се изпращат до Google, за да се определят подходящите актуализации, но не се съхраняват и не се използват за други цели. Научете повече на адрес g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Филтър</translation>
 <translation id="630292539633944562">Предложения за лична информация</translation>
+<translation id="6303023592034094909">Налице е нова версия на това приложение</translation>
 <translation id="630308129961693966">Позиционирайте адресната лента</translation>
 <translation id="6304017513498618504">Можете също да кажете неща като „обобщи“</translation>
 <translation id="6305607932814307878">Глобално правило:</translation>
@@ -9161,6 +9166,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7293774463163321848">Историята в Търсене, историята в Gemini и паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="7295614427631867477">Обърнете внимание, че Android, Google Play и свързаните с тях приложения се управляват от своите собствени правила за събиране и използване на данни.</translation>
 <translation id="7296503797589217366">Избиране на папката „<ph name="FOLDER_TITLE" />“</translation>
+<translation id="7297228218361240128">Запазване на информация в Google Wallet от страниците, които преглеждате</translation>
 <translation id="7297726121602187087">Тъмнозелено</translation>
 <translation id="7298195798382681320">Препоръчително</translation>
 <translation id="7299515639584427954">Да се промени ли стандартното приложение за поддържаните връзки?</translation>
@@ -9432,6 +9438,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7476454130948140105">Батерията е твърде изтощена (<ph name="BATTERY_PERCENT" />%) за стартиране на актуализацията</translation>
 <translation id="7476989672001283112">Автоматично са блокирани „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Изберете потребителски профил за електронна SIM карта, който да бъде изтеглен</translation>
+<translation id="7477483325563774744">Предлага се от: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Голямо количество използвана памет: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Създаване на QR код за тази страница</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
@@ -10690,6 +10697,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8317965619823678157">копиране на паролите</translation>
 <translation id="8318266828739827371">Използвайте режима за разделен екран, за да виждате увеличената част от екрана. Ползвайте клавиша „търсене“ + Ctrl + D, за да включите или изключите лупата в прикрепен режим.</translation>
+<translation id="8318680582681577962">Подрамка за PDF файл в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Удължена употреба на ключа</translation>
 <translation id="8320212361750431956">Скорошна активност</translation>
 <translation id="8321476692217554900">известия</translation>
@@ -11323,6 +11331,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8742998548129056176">Това е обща информация за устройството ви и употребата му (например за нивото на батерията, активността на системата и приложенията, както и за грешките). Тези данни ще се използват за подобряването на Android, а част от обобщената информация ще помогне и на приложенията и партньорите ни, например програмисти за Android, да усъвършенстват приложенията и продуктите си.</translation>
 <translation id="8743357966416354615">Управлявана среда на програмиране (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Ромаджи</translation>
+<translation id="8744913471985800082">Прегледайте промяната на URL адреса, за да се уверите, че ви удовлетворява, преди да актуализирате.</translation>
 <translation id="8745034592125932220">Без разрешение за запазване на данни на устройството ви</translation>
 <translation id="8746654918629346731">Вече заявихте <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Искате ли да качите един файл на този сайт?}other{Искате ли да качите # файла на този сайт?}}</translation>

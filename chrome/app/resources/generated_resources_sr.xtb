@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Није успело преузимање речника за проверу правописа за <ph name="LANGUAGE" />. Пробајте поново.</translation>
 <translation id="1078037449555275327">Подешавања ChromeVox-а</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> аутоматски отвара нове прозоре.</translation>
 <translation id="1079242569060319448">Заборавили сте PIN?</translation>
 <translation id="1079766198702302550">Увек блокирај приступ камери</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 картица}one{<ph name="GROUP_TITLE" /> – # картица}few{<ph name="GROUP_TITLE" /> – # картице}other{<ph name="GROUP_TITLE" /> – # картица}}</translation>
@@ -1013,6 +1014,7 @@
 <translation id="1668435968811469751">Региструјте се ручно</translation>
 <translation id="1668804837842452164">Сачувај у <ph name="BRAND" /> за <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Сазнајте више о предлозима</translation>
+<translation id="1670070366970670971">Подоквир PDF-а: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Основна</translation>
 <translation id="1671525612731130246">Одабери налог Диска</translation>
 <translation id="1671749176392751693">Идентификатори заштићеног садржаја су дозвољени</translation>
@@ -5866,6 +5868,7 @@
 <translation id="4989479404508898003">Историју прегледања можете да претражујете на основу општег садржаја странице, а не само на основу наслова и URL-а странице, и да видите побољшане резултате</translation>
 <translation id="49896407730300355">Окрећи у с&amp;меру супротном од кретања казаљке на сату</translation>
 <translation id="4989966318180235467">Провери страницу &amp;позадине</translation>
+<translation id="499016799952867794">То омогућава да апликација ради на очекивани начин.</translation>
 <translation id="4990673372047946816">Нема доступних камера</translation>
 <translation id="4991420928586866460">Третирај тастере из горњег реда као функцијске тастере</translation>
 <translation id="4991873517942703737">Поставите питање о овом документу</translation>
@@ -7714,6 +7717,7 @@
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – Десни приказ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Премашује ограничење од 1 листа папира}one{Премашује ограничење од {COUNT} листа папира}few{Премашује ограничење од {COUNT} листа папира}other{Премашује ограничење од {COUNT} листова папира}}</translation>
 <translation id="6282490239556659745">Уклони <ph name="EMBEDDED_SITE" /> са <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Закачи подељени приказ</translation>
 <translation id="6283438600881103103">Сада ћете бити аутоматски одјављени.
 <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
 <translation id="628352644014831790">4 секунде</translation>
@@ -7744,6 +7748,7 @@
 <translation id="6301300352769835063">Дозволите Google-у да користи податке о хардверу како би побољшао <ph name="DEVICE_OS" />. Ако одбијете, ти подаци се ипак шаљу Google-у да би се утврдила одговарајућа ажурирања, али се не чувају нити користе на неки други начин. Сазнајте више на g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Филтрирај</translation>
 <translation id="630292539633944562">Предлози за личне податке</translation>
+<translation id="6303023592034094909">Доступна је нова верзија ове апликације</translation>
 <translation id="630308129961693966">Бирајте положај траке за адресу</translation>
 <translation id="6304017513498618504">Можете и да кажете „Резимирај“</translation>
 <translation id="6305607932814307878">Глобалне смернице:</translation>
@@ -9151,6 +9156,7 @@
 <translation id="7293774463163321848">Историја претраге, Gemini историја и лозинке могу да се бришу у подешавањима управљања</translation>
 <translation id="7295614427631867477">Имајте на уму да су Android, Play и повезане апликације регулисани сопственим смерницама за прикупљање података и коришћење.</translation>
 <translation id="7296503797589217366">Изаберите фолдер <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Сачувајте информације у Google новчанику са страница које прегледате</translation>
 <translation id="7297726121602187087">Тамнозелена</translation>
 <translation id="7298195798382681320">Препоручено</translation>
 <translation id="7299515639584427954">Желите да промените подразумевану апликацију за подржане линкове?</translation>
@@ -9422,6 +9428,7 @@
 <translation id="7476454130948140105">Ниво напуњености батерије је пренизак за ажурирање (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Аутоматски је блокирано: <ph name="PERMISSION" /> и још <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Одаберите eSIM профил за преузимање</translation>
+<translation id="7477483325563774744">Нуди <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Висока потрошња меморије: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Направи QR кôд за ову страницу</translation>
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
@@ -10680,6 +10687,7 @@
 <translation id="8317671367883557781">Додај мрежну везу</translation>
 <translation id="8317965619823678157">копира лозинке</translation>
 <translation id="8318266828739827371">Користите приказ подељеног екрана да бисте видели увећану област екрана. Користите тастер за претрагу + Ctrl + D да бисте укључили или искључили монтирану лупу екрана.</translation>
+<translation id="8318680582681577962">Подоквир PDF-а без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Употреба проширеног кључа</translation>
 <translation id="8320212361750431956">Недавна активност</translation>
 <translation id="8321476692217554900">обавештења</translation>
@@ -11313,6 +11321,7 @@
 <translation id="8742998548129056176">Ово су опште информације о уређају и начину на који га користите (попут нивоа напуњености батерије, активности система и апликација, и грешака). Подаци ће се користити за побољшање Android-а, а неке обједињене информације ће помоћи и Google апликацијама и партнерима, као што су Android програмери, да побољшају своје апликације и производе.</translation>
 <translation id="8743357966416354615">Управљано окружење за развој (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Ромађи</translation>
+<translation id="8744913471985800082">Прегледајте промену URL-а и уверите се да вам одговара пре ажурирања.</translation>
 <translation id="8745034592125932220">Чување података на уређају није дозвољено</translation>
 <translation id="8746654918629346731">Већ сте тражили „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="874689135111202667">{0,plural, =1{Желите ли да отпремите једну датотеку на овај сајт?}one{Желите ли да отпремите # датотеку на овај сајт?}few{Желите ли да отпремите # датотеке на овај сајт?}other{Желите ли да отпремите # датотека на овај сајт?}}</translation>

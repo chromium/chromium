@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Non se puido descargar o dicionario de <ph name="LANGUAGE" /> do corrector ortográfico. Téntao de novo.</translation>
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> abre automaticamente ventás novas.</translation>
 <translation id="1079242569060319448">Esqueciches o PIN?</translation>
 <translation id="1079766198702302550">Bloquear sempre o acceso á cámara</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestana)}other{<ph name="GROUP_TITLE" /> (# pestanas)}}</translation>
@@ -1013,6 +1014,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1668435968811469751">Inscrición manual</translation>
 <translation id="1668804837842452164">Gardar no <ph name="BRAND" /> de <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Máis información sobre as suxestións</translation>
+<translation id="1670070366970670971">Submarco de PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Opcións básicas</translation>
 <translation id="1671525612731130246">Seleccionar a conta de Drive</translation>
 <translation id="1671749176392751693">Identificadores de contido protexido permitidos</translation>
@@ -5870,6 +5872,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4989479404508898003">Podes facer buscas no teu historial de navegación en función do contido xeral da páxina e non só do seu título e URL, e consultar resultados mellorados</translation>
 <translation id="49896407730300355">Xirar cara á es&amp;querda</translation>
 <translation id="4989966318180235467">Inspeccionar &amp;páxina en segundo plano</translation>
+<translation id="499016799952867794">Isto permite que a aplicación se execute segundo o previsto.</translation>
 <translation id="4990673372047946816">Non hai ningunha cámara dispoñible</translation>
 <translation id="4991420928586866460">Tratar as teclas da fila superior como teclas de función</translation>
 <translation id="4991873517942703737">Fai unha pregunta sobre este documento</translation>
@@ -7716,6 +7719,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" />: vista dereita</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera o límite de 1 folla}other{Supera o límite de {COUNT} follas}}</translation>
 <translation id="6282490239556659745">Quitar <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Fixar vista dividida</translation>
 <translation id="6283438600881103103">Pecharase a túa sesión automaticamente agora.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.</translation>
 <translation id="628352644014831790">4 segundos</translation>
@@ -7746,6 +7750,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6301300352769835063">Permitir que Google use os datos do hardware para axudar a mellorar <ph name="DEVICE_OS" />. Se non dás o teu permiso, estes datos enviaránselle a Google de todas as formas co obxecto de determinar as actualizacións necesarias, pero non se almacenarán nin se utilizarán con outros fins. Máis información en g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtrar</translation>
 <translation id="630292539633944562">Suxestións de información persoal</translation>
+<translation id="6303023592034094909">Hai dispoñible unha nova versión desta aplicación</translation>
 <translation id="630308129961693966">Escolle a posición da túa barra de enderezos</translation>
 <translation id="6304017513498618504">Tamén podes pedir cousas como "resumir"</translation>
 <translation id="6305607932814307878">Política global:</translation>
@@ -9148,6 +9153,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7293774463163321848">O historial de busca, o historial de Gemini e os contrasinais poden eliminarse na configuración de xestión correspondente</translation>
 <translation id="7295614427631867477">Ten en conta que Android, Play e as aplicacións asociadas réxense polas súas propias políticas de recompilación e uso de datos.</translation>
 <translation id="7296503797589217366">Seleccionar o cartafol <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Garda información en Google Wallet a partir das páxinas que consultes</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299515639584427954">Queres cambiar a aplicación predeterminada para abrir as ligazóns compatibles?</translation>
@@ -9419,6 +9425,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7476454130948140105">O nivel de batería é demasiado baixo para realizar a actualización (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Bloqueáronse automaticamente os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
 <translation id="7477460499687558352">Selecciona un perfil de eSIM para descargalo</translation>
+<translation id="7477483325563774744">Aplicación ofrecida por: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Uso elevado da memoria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Crear código QR para esta páxina</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
@@ -10676,6 +10683,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8317671367883557781">Engadir conexión de rede</translation>
 <translation id="8317965619823678157">copiar os contrasinais</translation>
 <translation id="8318266828739827371">Utiliza unha vista de pantalla dividida para ver a área ampliada da pantalla. Para activar e desactivar a lupa ancorada, preme Buscar + Control + D.</translation>
+<translation id="8318680582681577962">Submarco de PDF do modo de incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Uso ampliado de claves</translation>
 <translation id="8320212361750431956">Actividade recente</translation>
 <translation id="8321476692217554900">notificacións</translation>
@@ -11309,6 +11317,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8742998548129056176">Trátase de información xeral acerca do teu dispositivo e do seu uso, como o nivel de batería, a actividade das aplicacións e do sistema, e os erros. Os datos utilizaranse coa finalidade de mellorar Android e algunha información agregada tamén axudará ás aplicacións de Google e aos socios, como os programadores de Android, a mellorar as súas aplicacións e produtos.</translation>
 <translation id="8743357966416354615">Contorno de desenvolvemento xestionado (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Revisa o cambio de URL para asegurarte de que é axeitado antes da actualización.</translation>
 <translation id="8745034592125932220">Permiso denegado para gardar datos no teu dispositivo</translation>
 <translation id="8746654918629346731">Xa solicitaches a extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Queres cargar un ficheiro neste sitio?}other{Queres cargar # ficheiros neste sitio?}}</translation>

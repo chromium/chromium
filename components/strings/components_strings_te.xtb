@@ -2135,7 +2135,6 @@
 <translation id="4409556632583862731">కొత్త థ్రెడ్</translation>
 <translation id="4412074349188076601">ఈ కాన్ఫిగరేషన్ ఇన్‌స్టాల్ చేయదగినదిగా మార్క్ చేయబడింది, కానీ ఈ ఆర్కిటెక్చర్‌కు ఇమేజ్ ఏదీ అందించబడలేదు, కాబట్టి దీనిని ఇన్‌స్టాల్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="4412377069090572315">వ్యక్తులు ఏమి అంటున్నారు</translation>
-<translation id="4414452699610169758">పాస్‌వర్డ్‌లను, పేమెంట్ ఆప్షన్‌లను, అడ్రస్‌లను సేవ్ చేసి, పూరించడానికి Google Password Managerను, ఇంకా Chrome ఆటోఫిల్‌ను ఉపయోగించండి</translation>
 <translation id="4414515549596849729">కుక్కీలు, సైట్ డేటా</translation>
 <translation id="4415156962929755728">ప్లాస్టిక్ (హై గ్లాస్)</translation>
 <translation id="4415426530740016218">పికప్ అడ్రస్‌</translation>
@@ -2669,6 +2668,7 @@
 <translation id="5307166000025436103">సరే</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
 <translation id="5308689395849655368">క్రాష్ రిపోర్ట్‌ నిలిపివేయ‌బడింది.</translation>
+<translation id="5309562313526658209">నావిగేట్ చేయండి</translation>
 <translation id="5314967030527622926">బుక్‌లెట్ తయారీ దారు</translation>
 <translation id="5316812925700871227">అపసవ్య దిశలో తిప్పు</translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
@@ -3624,6 +3624,7 @@
 <translation id="6871813064737840684">ఈ ఆప్షన్‌కు సంబంధించి వెబ్ అంతటా ఉన్న ధర హిస్టరీ</translation>
 <translation id="6873456682041376666">టాప్ ట్రే</translation>
 <translation id="6874604403660855544">&amp;జోడించడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="6875873347995743859">Assistantకు పంపండి</translation>
 <translation id="6875894866901426843">మీ అడ్మినిస్ట్రేటర్ ట్రాష్‌లోని ఏవైనా ఫైల్స్‌తో సహా మీ లోకల్ ఫైల్స్‌ను <ph name="DATE_TIME" /> తేదీన తొలగిస్తారు.</translation>
 <translation id="6880941331070119097">అధిక ధర ఉన్న ఆప్షన్</translation>
 <translation id="6881240511396774766">కొత్త Google డాక్‌ను త్వరగా క్రియేట్ చేయండి</translation>
@@ -4872,7 +4873,6 @@
 <translation id="8891031436559779793">ఏదైనా సైట్‌లో ధర తగ్గితే మీరు నోటిఫికేషన్‌ను పొందుతారు.</translation>
 <translation id="8891727572606052622">చెల్లని ప్రాక్సీ మోడ్.</translation>
 <translation id="8894794286471754040">పేజీని సాధారణంగా ప్రింట్ చేయి</translation>
-<translation id="8895334001368918465">Chromeలో వేరొక ఆటోఫిల్ సర్వీసును ఉపయోగించడానికి, దాన్ని Android సెట్టింగ్‌లలో, ఇంకా ఇక్కడ ఆన్ చేయండి</translation>
 <translation id="8897221284075091877">ఈ కంటెంట్‌ను చూడమని అడగడానికి, మీ Google ఖాతాతో కొనసాగించండి</translation>
 <translation id="8897428486789851669">ఈత</translation>
 <translation id="8899807382908246773">అనుచితమైన యాడ్‌లు</translation>

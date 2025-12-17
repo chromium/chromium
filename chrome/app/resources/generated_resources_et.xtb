@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Õigekirjakontrolli sõnastikku ei õnnestunud <ph name="LANGUAGE" /> keele jaoks alla laadida. Proovige uuesti.</translation>
 <translation id="1078037449555275327">ChromeVoxi seaded</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> avab automaatselt uued aknad.</translation>
 <translation id="1079242569060319448">Kas unustasite PIN-koodi?</translation>
 <translation id="1079766198702302550">Blokeeri alati juurdepääs kaamerale</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 vaheleht}other{<ph name="GROUP_TITLE" /> – # vahelehte}}</translation>
@@ -1015,6 +1016,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1668435968811469751">Registreeri käsitsi</translation>
 <translation id="1668804837842452164">Salvesta teenuses <ph name="BRAND" /> kontole <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Vaadake teavet soovituste kohta</translation>
+<translation id="1670070366970670971">PDF-i alamraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Põhiseaded</translation>
 <translation id="1671525612731130246">Valige Drive'i konto</translation>
 <translation id="1671749176392751693">Kaitstud sisu identifikaatorid on lubatud</translation>
@@ -5872,6 +5874,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4989479404508898003">Saate oma sirvimisajaloost otsida ka lehe üldise sisu, mitte ainult lehe pealkirja ja URL-i alusel, ning näha täiustatud tulemusi</translation>
 <translation id="49896407730300355">Pööra &amp;vastupäeva</translation>
 <translation id="4989966318180235467">Uuri &amp;taustalehte</translation>
+<translation id="499016799952867794">See võimaldab rakendusel ootuspäraselt töötada.</translation>
 <translation id="4990673372047946816">Ühtki kaamerat pole saadaval</translation>
 <translation id="4991420928586866460">Kasuta ülarea klahve funktsiooniklahvidena</translation>
 <translation id="4991873517942703737">Esitage selle dokumendi kohta küsimus</translation>
@@ -7721,6 +7724,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – parempoolne vaade</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Ületab 1 paberilehe piirangut}other{Ületab {COUNT} paberilehe piirangut}}</translation>
 <translation id="6282490239556659745">Eemalda saidilt <ph name="SITE" /> manustatud sait <ph name="EMBEDDED_SITE" /></translation>
+<translation id="6282815764417508018">Kinnita poolitatud vaade</translation>
 <translation id="6283438600881103103">Teid logitakse nüüd automaatselt välja.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.</translation>
 <translation id="628352644014831790">4 sekundit</translation>
@@ -7751,6 +7755,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6301300352769835063">Lubage Google'il kasutada teie riistvaraandmeid, et aidata operatsioonisüsteemi <ph name="DEVICE_OS" /> täiustada. Kui keeldute, saadetakse need andmed siiski Google'ile, et otsustada, millised on vajalikud värskendused, kuid neid andmeid ei talletata ega kasutata muul viisil. Lisateave: g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filter</translation>
 <translation id="630292539633944562">Isiklike andmete soovitused</translation>
+<translation id="6303023592034094909">Saadaval on selle rakenduse uus versioon</translation>
 <translation id="630308129961693966">Valige oma aadressiriba asukoht</translation>
 <translation id="6304017513498618504">Samuti saate paluda näiteks kokkuvõtte tegemist</translation>
 <translation id="6305607932814307878">Üldised eeskirjad:</translation>
@@ -9154,6 +9159,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7293774463163321848">Otsinguajaloo, Gemini ajaloo ja paroolid saab kustutada nende haldamise seadetes.</translation>
 <translation id="7295614427631867477">Pange tähele, et Androidi, Play ja seotud rakenduste puhul kehtivad nende enda andmete kogumise ja kasutamise eeskirjad.</translation>
 <translation id="7296503797589217366">Vali kaust <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Vaadatavatelt lehtedelt teabe salvestamine Google Walletisse</translation>
 <translation id="7297726121602187087">Tumeroheline</translation>
 <translation id="7298195798382681320">Soovitatud</translation>
 <translation id="7299515639584427954">Kas muuta toetatud linkide puhul vaikerakendust?</translation>
@@ -9425,6 +9431,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7476454130948140105">Aku on värskendamiseks liiga tühi (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Automaatselt on blokeeritud <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Valige allalaaditav eSIM-i profiil</translation>
+<translation id="7477483325563774744">Pakub: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Suur mälukasutus: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Loo selle lehe jaoks QR-kood</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
@@ -10683,6 +10690,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8317671367883557781">Lisa võrguühendus</translation>
 <translation id="8317965619823678157">kopeerida paroole</translation>
 <translation id="8318266828739827371">Kasutage ekraanikuva suurendatud ala vaatamiseks jagatud ekraanikuva vaadet. Dokitud luubi sisse- ja väljalülitamiseks kasutage klahvikombinatsiooni Otsing + Ctrl + D.</translation>
+<translation id="8318680582681577962">Inkognito PDF-i alamraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Laiendatud võtmekasutus</translation>
 <translation id="8320212361750431956">Hiljutised toimingud</translation>
 <translation id="8321476692217554900">märguanded</translation>
@@ -11316,6 +11324,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8742998548129056176">See on üldteave seadme ja selle kasutamise kohta (nt aku laetuse tase, süsteemi ja rakenduste tegevused ning vead). Neid andmeid kasutatakse Androidi täiustamiseks ning teatud koondandmed on abiks ka Google'i rakendustele ja partneritele (nt Androidi arendajatele), aidates neil rakendusi ning teenuseid paremaks muuta.</translation>
 <translation id="8743357966416354615">Hallatav arenduskeskkond (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Enne värskendamist vaadake URL-i muudatus üle, et veenduda, kas olete sellega nõus.</translation>
 <translation id="8745034592125932220">Pole lubatud teie seadmesse salvestada</translation>
 <translation id="8746654918629346731">Taotlesite juba laiendust „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="874689135111202667">{0,plural, =1{Kas laadida sellele saidile üles üks fail?}other{Kas laadida sellele saidile üles # faili?}}</translation>

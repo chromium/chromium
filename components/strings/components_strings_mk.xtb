@@ -2140,7 +2140,6 @@
 <translation id="4409556632583862731">Нова низа</translation>
 <translation id="4412074349188076601">Конфигурацијава е означена дека може да се инсталира, но не е дадена слика за архитектурава и затоа не може да се инсталира.</translation>
 <translation id="4412377069090572315">Што велат луѓето</translation>
-<translation id="4414452699610169758">Користете Google Password Manager и автоматско пополнување на Chrome за да зачувувате и да пополнувате лозинки, начини на плаќање и адреси</translation>
 <translation id="4414515549596849729">колачиња и податоци за сајтот</translation>
 <translation id="4415156962929755728">Пластика (висок сјај)</translation>
 <translation id="4415426530740016218">Адреса за подигнување</translation>
@@ -2674,6 +2673,7 @@
 <translation id="5307166000025436103">Во ред</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5308689395849655368">Пријавување пад е оневозможено.</translation>
+<translation id="5309562313526658209">Навигација</translation>
 <translation id="5314967030527622926">Производител на брошури</translation>
 <translation id="5316812925700871227">Ротирај налево</translation>
 <translation id="5317780077021120954">Зачувај</translation>
@@ -3629,6 +3629,7 @@
 <translation id="6871813064737840684">Историја на цени на интернет за опцијава</translation>
 <translation id="6873456682041376666">Горна фиока</translation>
 <translation id="6874604403660855544">&amp;Повтори додавање</translation>
+<translation id="6875873347995743859">Испрати до „Помошникот“</translation>
 <translation id="6875894866901426843">Администраторот ќе ги избрише вашите локални датотеки, заедно со датотеките во „Корпата“, на <ph name="DATE_TIME" />.</translation>
 <translation id="6880941331070119097">Опција со високи цени</translation>
 <translation id="6881240511396774766">Создајте нов документ на Google брзо</translation>
@@ -4876,7 +4877,6 @@
 <translation id="8891031436559779793">Ќе добиете известување ако се намалат цените на кој било сајт.</translation>
 <translation id="8891727572606052622">Неважечки режим на прокси.</translation>
 <translation id="8894794286471754040">Прво долгиот раб</translation>
-<translation id="8895334001368918465">За да користите друга услуга за автоматско пополнување во Chrome, вклучете ја во поставките за Android и овде</translation>
 <translation id="8897221284075091877">За да побарате да ги видите содржиниве, продолжете со вашата сметка на Google</translation>
 <translation id="8897428486789851669">Пливање</translation>
 <translation id="8899807382908246773">Нападни реклами</translation>

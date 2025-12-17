@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Não foi possível transferir o dicionário de verificação ortográfica de <ph name="LANGUAGE" />. Tente novamente.</translation>
 <translation id="1078037449555275327">Definições do ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> abre automaticamente novas janelas.</translation>
 <translation id="1079242569060319448">Esqueceu-se do PIN?</translation>
 <translation id="1079766198702302550">Bloquear sempre o acesso à câmara</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
@@ -1014,6 +1015,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1668435968811469751">Inscrever-se manualmente</translation>
 <translation id="1668804837842452164">Guardar no <ph name="BRAND" /> de <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
+<translation id="1670070366970670971">Subframe do PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1671525612731130246">Escolher conta do Drive</translation>
 <translation id="1671749176392751693">Identificadores de conteúdo protegido permitidos</translation>
@@ -1909,6 +1911,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2283599456633275070">Viagens</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Abrir todos num &amp;novo grupo de separadores}=1{Abrir num &amp;novo grupo de separadores}other{Abrir todos ({COUNT}) num &amp;novo grupo de separadores}}</translation>
 <translation id="2285942871162473373">Não foi possível reconhecer a sua impressão digital. Tente novamente.</translation>
+<translation id="2286840900796601828">Retroceder 10 segundos</translation>
 <translation id="2287617382468007324">Endereço IPP de impressão</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Para proteger os seus dados, foram removidas as autorizações de um site que não visitou recentemente}other{Para proteger os seus dados, foram removidas as autorizações de sites que não visitou recentemente}}</translation>
 <translation id="2287944065963043964">Ecrã de início de sessão</translation>
@@ -4128,6 +4131,7 @@ Quer pará-lo?</translation>
 <translation id="3785748905555897481">PIN alterado com sucesso</translation>
 <translation id="3786224729726357296">Eliminar os dados e as autorizações do site <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Mostrar sublinhado para o texto de composição</translation>
+<translation id="3786890785076278600">Linha estática</translation>
 <translation id="3787434344076711519">A aguardar tradução</translation>
 <translation id="3788301286821743879">Não foi possível iniciar a app de quiosque.</translation>
 <translation id="3788401245189148511">Esta poderia:</translation>
@@ -4507,6 +4511,7 @@ Quer pará-lo?</translation>
 <translation id="4028467762035011525">Adicionar métodos de introdução</translation>
 <translation id="4029024445166427442">Launcher + shift + retrocesso</translation>
 <translation id="4029556917477724407">Voltar à página <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 linhas</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
@@ -5769,6 +5774,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4908811072292128752">Abra um novo separador para navegar em dois sites em simultâneo</translation>
 <translation id="4910241725741323970">A app já está instalada</translation>
 <translation id="4912643508233590958">Reativações após inatividade</translation>
+<translation id="4912892750325639080">3 linhas</translation>
 <translation id="4913209098186576320">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />Esta verificação está a demorar mais do que o habitual…</translation>
 <translation id="4913695564084524048">Não é possível encontrar os dados de apps</translation>
 <translation id="4915961947098019832">Com autorização para mostrar imagens</translation>
@@ -5869,6 +5875,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4989479404508898003">Pode pesquisar o seu histórico de navegação com base no conteúdo geral da página e não apenas no URL e no título da página, e ver resultados melhorados</translation>
 <translation id="49896407730300355">Rodar para a &amp;esquerda</translation>
 <translation id="4989966318180235467">Inspecionar página de fundo</translation>
+<translation id="499016799952867794">Isto permite que a app seja executada conforme esperado.</translation>
 <translation id="4990673372047946816">Nenhuma câmara disponível</translation>
 <translation id="4991420928586866460">Tratar as teclas da linha superior como teclas de função</translation>
 <translation id="4991873517942703737">Faça perguntas acerca deste documento</translation>
@@ -7719,6 +7726,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – Vista direita</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Excede o limite de 1 folha de papel.}other{Excede o limite de {COUNT} folhas de papel.}}</translation>
 <translation id="6282490239556659745">Remover <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Fixar vista dividida</translation>
 <translation id="6283438600881103103">A sua sessão será terminada automaticamente agora.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.</translation>
 <translation id="628352644014831790">4 segundos</translation>
@@ -7749,6 +7757,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6301300352769835063">Permita que a Google use os dados do seu hardware para ajudar a melhorar o <ph name="DEVICE_OS" />. Se recusar, estes dados ainda são enviados para a Google para determinar quais são as atualizações adequadas, mas não são armazenados nem usados em qualquer outro local. Saiba mais em g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtrar</translation>
 <translation id="630292539633944562">Sugestões de informações pessoais</translation>
+<translation id="6303023592034094909">Está disponível uma nova versão desta aplicação.</translation>
 <translation id="630308129961693966">Escol. posição barra de endereço</translation>
 <translation id="6304017513498618504">Também pode pedir coisas como "resume"</translation>
 <translation id="6305607932814307878">Política Global:</translation>
@@ -9008,6 +9017,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
 <translation id="7191631508323321927">Corredor</translation>
 <translation id="7191632649590906354">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usam o Gestor de Palavras-passe da Google. Diga-lhes para acederem a <ph name="WEBSITE" /> para iniciar sessão.</translation>
+<translation id="7192393330344360021">1 linha</translation>
 <translation id="7193051357671784796">Esta aplicação foi adicionada pela sua organização. Reinicie a aplicação para concluir a instalação da mesma.</translation>
 <translation id="7193374945610105795">Sem palavras-passe guardadas para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envie feedback sobre os grupos sugeridos</translation>
@@ -9152,6 +9162,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7293774463163321848">Pode eliminar o histórico de pesquisas, o histórico do Gemini e as palavras-passe nas respetivas definições de gestão</translation>
 <translation id="7295614427631867477">Tenha em atenção que o Android, o Google Play e as aplicações associadas são regidos pelas suas próprias políticas de recolha e utilização de dados.</translation>
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Guarde informações das páginas que vê na Carteira do Google</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299515639584427954">Quer alterar a app predefinida para os links suportados?</translation>
@@ -9423,6 +9434,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7476454130948140105">Bateria demasiado fraca para atualizar (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Bloqueou automaticamente <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Escolha um perfil do eSIM para transferir</translation>
+<translation id="7477483325563774744">Disponibilizado por: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Utilização elevada da memória: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Criar código QR para esta página</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
@@ -10681,6 +10693,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>
 <translation id="8317965619823678157">copiar palavras-passe</translation>
 <translation id="8318266828739827371">Use uma vista de ecrã dividido para ver a área ampliada do ecrã. Use Pesquisa + Ctrl + D para ativar e desativar a lupa ancorada.</translation>
+<translation id="8318680582681577962">Subframe de PDF de Navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Utilização alargada da chave</translation>
 <translation id="8320212361750431956">Atividade recente</translation>
 <translation id="8321476692217554900">notificações</translation>
@@ -11116,6 +11129,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Apenas ligações seguras</translation>
 <translation id="8627804903623428808">Reveja estes termos e controle os dados da criança</translation>
+<translation id="8628674746770065790">Seguir cursor</translation>
 <translation id="862907440446514309">O seu administrador está a gravar o ecrã com a app <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Suspensão durante o carregamento</translation>
 <translation id="8631032106121706562">Pétalas</translation>
@@ -11314,6 +11328,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8742998548129056176">Estas são informações gerais acerca do seu dispositivo e de como o utiliza (como o nível da bateria, a atividade do sistema e das apps, e os erros). Os dados são utilizados para melhorar o Android, sendo que algumas informações agregadas também ajudam as apps e os parceiros Google, como os programadores Android, a melhorar as respetivas apps e produtos.</translation>
 <translation id="8743357966416354615">Ambiente de programação gerido (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Reveja a alteração do URL para se certificar de que concorda com esta antes de atualizar.</translation>
 <translation id="8745034592125932220">Sem autorização para guardar dados no seu dispositivo</translation>
 <translation id="8746654918629346731">Já solicitou a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Querr carregar um ficheiro para este site?}other{Quer carregar # ficheiros para este site?}}</translation>

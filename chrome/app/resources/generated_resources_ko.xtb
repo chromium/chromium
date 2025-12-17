@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> 맞춤법 검사 사전을 다운로드할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="1078037449555275327">ChromeVox 설정</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> 앱이 새 창을 자동으로 엽니다</translation>
 <translation id="1079242569060319448">PIN 찾기</translation>
 <translation id="1079766198702302550">카메라 액세스 항상 차단</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 탭 1개}other{<ph name="GROUP_TITLE" /> - 탭 #개}}</translation>
@@ -1015,6 +1016,7 @@
 <translation id="1668435968811469751">직접 등록</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" />의 <ph name="BRAND" />에 저장</translation>
 <translation id="1668979692599483141">추천에 관해 알아보기</translation>
+<translation id="1670070366970670971">PDF 서브프레임: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">기본</translation>
 <translation id="1671525612731130246">Drive 계정 선택</translation>
 <translation id="1671749176392751693">보호된 콘텐츠 식별자 허용됨</translation>
@@ -5882,6 +5884,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4989479404508898003">페이지 제목과 URL뿐만 아니라 일반 페이지 콘텐츠를 기준으로 방문 기록을 검색하고 개선된 결과를 확인할 수 있습니다.</translation>
 <translation id="49896407730300355">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="4989966318180235467">백그라운드 페이지 검사(&amp;B)</translation>
+<translation id="499016799952867794">이렇게 하면 앱이 예상대로 실행됩니다.</translation>
 <translation id="4990673372047946816">사용 가능한 카메라 없음</translation>
 <translation id="4991420928586866460">맨 위 키를 기능 키로 사용</translation>
 <translation id="4991873517942703737">이 문서에 관해 질문하기</translation>
@@ -7731,6 +7734,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - 오른쪽 뷰</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{용지 1장 제한 초과}other{용지 {COUNT}장 제한 초과}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />에서 <ph name="EMBEDDED_SITE" /> 삭제</translation>
+<translation id="6282815764417508018">분할 뷰 고정</translation>
 <translation id="6283438600881103103">지금 자동으로 로그아웃됩니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
 <translation id="628352644014831790">4초</translation>
@@ -7761,6 +7765,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> 개선을 위해 Google에서 하드웨어 데이터를 사용하도록 허용합니다. 거부하더라도 데이터가 Google에 전송되어 적절한 업데이트를 결정하는 데 사용되지만, 저장되거나 다른 용도로 사용되지는 않습니다. 다음 페이지에서 자세히 알아보세요. g.co/flex/HWDataCollection</translation>
 <translation id="6302661287897119265">필터</translation>
 <translation id="630292539633944562">개인정보 추천</translation>
+<translation id="6303023592034094909">앱의 새 버전이 출시되었습니다</translation>
 <translation id="630308129961693966">주소 표시줄 위치 선택</translation>
 <translation id="6304017513498618504">'요약'과 같은 명령어를 사용할 수도 있습니다.</translation>
 <translation id="6305607932814307878">전체 정책:</translation>
@@ -9164,6 +9169,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7293774463163321848">관리 설정에서 Google 검색 기록, Gemini 기록, 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="7295614427631867477">Android, Play 및 관련 앱은 각각의 데이터 수집 및 이용 정책을 따릅니다.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> 폴더 선택</translation>
+<translation id="7297228218361240128">조회한 페이지에서 Google 월렛에 정보 저장</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
 <translation id="7298195798382681320">권장</translation>
 <translation id="7299515639584427954">지원되는 링크에 사용할 기본 앱을 변경하시겠습니까?</translation>
@@ -9434,6 +9440,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 자동으로 차단됨</translation>
 <translation id="7477460499687558352">다운로드할 eSIM 프로필 선택</translation>
+<translation id="7477483325563774744">제공업체: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">메모리 사용량 많음: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">이 페이지의 QR 코드 생성</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
@@ -10693,6 +10700,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8317965619823678157">비밀번호 복사</translation>
 <translation id="8318266828739827371">화면 분할 뷰를 사용하여 화면의 확대 영역을 볼 수 있습니다. 고정 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + D를 사용하세요.</translation>
+<translation id="8318680582681577962">시크릿 모드 PDF 서브프레임: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">확장된 키 사용</translation>
 <translation id="8320212361750431956">최근 활동</translation>
 <translation id="8321476692217554900">알림</translation>
@@ -11326,6 +11334,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="8743357966416354615">관리형 개발 환경(<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">로마자(Romaji)</translation>
+<translation id="8744913471985800082">업데이트 전에 URL 변경사항을 검토하여 변경사항이 적용되어도 괜찮은지 확인하세요.</translation>
 <translation id="8745034592125932220">기기에 데이터를 저장할 수 없음</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>

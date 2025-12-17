@@ -452,23 +452,6 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="1340053691042184658">No permitir los accesos con la navegación como invitado</translation>
 <translation id="1342918903685430097">Configurar la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> para el dispositivo.</translation>
 <translation id="1343128241903870688">Inhabilitar los informes de apps del dispositivo</translation>
-<translation id="1345276795096570241">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidad que se muestran.
-
-Si agregas el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidad compatibles para SSO.
-
-Si agregas el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilita la compatibilidad con el inicio de sesión único para el proveedor de identidad en la nube de Microsoft® en Chrome.
-
-Si no estableces esta política, se habilitarán todos los proveedores de identidad que admita <ph name="PRODUCT_NAME" />.
-
-En el caso de los proveedores de identidad que están habilitados en <ph name="PRODUCT_NAME" /> y configurados en el dispositivo por el administrador, los usuarios que accedan a su cuenta con ese proveedor de identidad, en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, pueden acceder a las propiedades web con ese proveedor de identidad de forma automática. La información de autenticación del usuario se transmite al proveedor de identidad en la nube del usuario para cada evento de autenticación.
-
-Notas:
-
-<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o de invitado.
-
-<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidad: Microsoft.
-
-Esta función está disponible a partir de la versión 10.15 de <ph name="MAC_OS_NAME" />.</translation>
 <translation id="1347198119056266798">Esta política es obsoleta; usa las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> en su lugar. Se ignorará esta política si se configuran las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
 
       Esta configuración aplica el uso de la función SafeSearch para las consultas en Búsqueda web de Google y evita que los usuarios puedan cambiarla. Además, aplica el modo restringido moderado en YouTube.
@@ -715,6 +698,7 @@ Si habilitas esta política, el selector de emojis admitirá GIF de emojis.
 Si la inhabilitas o no la estableces, el selector de emojis no admitirá GIF de emojis.
 Si no estableces esta política, se habilitará el selector de emojis para los usuarios normales, pero se inhabilitará para los usuarios administrados.</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de acceso</translation>
+<translation id="1496845825930059227">Especifica una lista de dominios SaaS que se incluirán en el informe para el perfil administrado</translation>
 <translation id="1497797462580613666">El administrador de descargas tendrá una opción para guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1499129134689253257">Controlar el comportamiento nuevo de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Solo aplicar de manera forzosa accesos en línea a la pantalla de acceso</translation>
@@ -6716,6 +6700,7 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 
           Si la inhabilitas, se desactivará esta función de forma forzosa.
           </translation>
+<translation id="5433139124622290129">Especifica una lista de dominios SaaS que se informarán para el navegador administrado</translation>
 <translation id="5433865420958136693">Usar la aceleración de gráficos cuando esté disponible</translation>
 <translation id="5435888298115339571">Habilitar el uso compartido del escritorio en el cuadro multifunción y el menú de 3 puntos</translation>
 <translation id="5435967860403961472">Controla si las extensiones que se quitan debido a infracciones que no son de software malicioso aún se pueden instalar de forma forzosa en entornos de baja confianza.
@@ -8863,6 +8848,23 @@ Si habilitas la política, la función de actualización de GREASE de User-Agent
 <translation id="6682305153467826752">Habilitar la generación de informes para la identificación de máquinas</translation>
 <translation id="6684842561251679182">Cantidad de incrementos de claves del kernel de hitos retenidos</translation>
 <translation id="6685903773201985073">Permite la autenticación ambiental en sesiones comunes y de invitado.</translation>
+<translation id="668721405120274587">Esta política controla el uso compartido del contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo los usuarios pueden compartir información cuando usan <ph name="PRODUCT_NAME" />.
+
+0 o sin establecer = los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = los usuarios no pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Se inhabilitarán o se ocultarán los puntos de entrada para compartir contexto.
+
+Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el motor de búsqueda predeterminado de los usuarios, ya que la función estará inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede inhabilitar <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si no estableces esta política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6687291630099400188">No mostrar información del sistema en la pantalla de acceso</translation>
 <translation id="6689343802305995925">No ocurre ninguna acción</translation>
 <translation id="6689792153960219308">Informar estado de hardware</translation>
@@ -9191,6 +9193,15 @@ Si no estableces la política <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATI
 <translation id="6908640907898649429">Configura el proveedor de búsqueda predeterminado. Se puede especificar el proveedor de búsqueda predeterminado que el usuario usará u optar por inhabilitar la búsqueda predeterminada.</translation>
 <translation id="6910715067772088598">Inhabilitar los registros de la aplicación de kiosco</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a los dispositivos de transmisión en todas las direcciones IP</translation>
+<translation id="691374293559164968">Esta política controla el comportamiento de acceso del navegador. Te permite especificar si el usuario puede acceder a <ph name="PRODUCT_NAME" /> con su cuenta y usar servicios relacionados con ella, como la sincronización de <ph name="PRODUCT_NAME" />.
+
+      Si estableces la política con el valor "Inhabilitar el acceso en el navegador", el usuario no podrá acceder al navegador ni usar los servicios basados en su cuenta. Es este caso, las funciones del nivel del navegador, como la sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar y dejarán de estar disponibles. En <ph name="IOS_NAME" />, si el usuario accedió y se inhabilita la política, se saldrá de la cuenta de forma inmediata. En otras plataformas, se saldrá de la cuenta la siguiente vez que se ejecute <ph name="PRODUCT_NAME" />. En todas las plataformas, se preservarán los datos de perfil locales, como los favoritos, las contraseñas, etc., y seguirán siendo utilizables. El usuario aún podrá acceder a los servicios web de Google, como Gmail, y usarlos.
+
+      Si estableces la política con el valor "Habilitar el acceso en el navegador", el usuario podrá acceder al navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, el usuario accederá al navegador de forma automática cuando acceda a un servicio web de Google, como Gmail. Si se habilita el acceso al navegador, este guardará la información de la cuenta del usuario. Sin embargo, esto no implica que la sincronización de <ph name="PRODUCT_NAME" /> se activará de forma predeterminada; el usuario deberá habilitarla por separado. Si habilitas esta política, el usuario no podrá desactivar la configuración que permite el acceso al navegador. Para controlar la disponibilidad de la sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
+
+      Si estableces la política para que se fuerce el acceso al navegador, el usuario verá un diálogo de selección de cuenta; deberá elegir una cuenta y acceder a ella para usar el navegador. Esto asegura que se aplicarán las políticas asociadas a la cuenta para las cuentas administradas. Se inhabilitará el valor predeterminado de <ph name="GUEST_MODE_POLICY_NAME" />. Ten en cuenta que se bloquearán los perfiles a los que no se haya accedido y no se podrá acceder a ellos luego de que se habilite esta política. Para obtener más información, consulta este artículo del Centro de ayuda: https://support.google.com/chrome/?p=force_browser_signin. Esta opción no es compatible con <ph name="PRODUCT_OS_NAME" /> ni <ph name="ANDROID_NAME" />, donde se asignará el valor "Habilitar el acceso en el navegador" si se la usa.
+
+      Si no estableces esta política, el usuario podrá decidir si habilitar el acceso al navegador desde la configuración de <ph name="PRODUCT_NAME" /> y usarlo según su criterio.</translation>
 <translation id="6915493311660114995">Si habilitas la política, <ph name="PRODUCT_NAME" /> permitirá
 las solicitudes de autenticación web en sitios web que tengan certificados TLS con
 errores (es decir, sitios web considerados no seguros).
@@ -10316,6 +10327,21 @@ Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_PRINTING_SETTI
 Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="7615612213075471065">Esta política controla los informes de <ph name="PRODUCT_NAME" /> sobre las visitas a dominios SaaS y las transferencias de contenido para un navegador administrado.
+
+Si estableces la política, se usarán las URLs que coincidan con los dominios SaaS para generar el informe y subirlo. Se ignorarán las URLs que no coincidan.
+
+Si no estableces la política o la estableces como una lista vacía, no se generará ningún informe.
+
+Los patrones de coincidencia usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones, que se indican a continuación:
+
+ * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios SaaS.
+
+ * La ruta de URL debe comenzar con la ruta de acceso de la entrada de la lista de sitios SaaS coincidentes.
+
+ * El esquema, el puerto y la consulta de URL se ignoran durante el proceso de coincidencia.
+
+La infraestructura de políticas de la nube completa este valor de política y los administradores no pueden establecerlo directamente.</translation>
 <translation id="7616631530432070402">Se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="761788785484453836">Solicitar el aislamiento de sitios para todos los sitios web</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se usa para generar y verificar el código de acceso parental.
@@ -11839,6 +11865,23 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="8631437968147930597">Lista de apps para tomar notas permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Permitir que se incluyan de los datos de <ph name="PRODUCT_NAME" /> en las copias de seguridad</translation>
 <translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario (en caso de ser compatible)</translation>
+<translation id="8635783478441936474">Esta política controla los informes de <ph name="PRODUCT_NAME" /> sobre las visitas a dominios SaaS y las transferencias de contenido para un perfil administrado.
+
+Si estableces la política, se usarán las URLs que coincidan con los dominios SaaS para generar el informe y subirlo. Se ignorarán las URLs que no coincidan.
+
+Si no estableces la política o la estableces como una lista vacía, no se generará ningún informe.
+
+Los patrones de coincidencia usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones, que se indican a continuación:
+
+ * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios SaaS.
+
+ * La ruta de URL debe comenzar con la ruta de acceso de la entrada de la lista de sitios SaaS coincidentes.
+
+ * El esquema, el puerto y la consulta de URL se ignoran durante el proceso de coincidencia.
+
+Esta política solo se puede establecer como política del usuario en la nube.
+
+La infraestructura de políticas de la nube completa este valor de política y los administradores no pueden establecerlo directamente.</translation>
 <translation id="8637566476051166626">Puertos de red habilitados de forma explícita</translation>
 <translation id="8643838501942693770">Permite las cookies de terceros, pero también que el usuario cambie esta configuración</translation>
 <translation id="864611373241249369">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos migrar todos los datos.</translation>

@@ -440,23 +440,6 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
 <translation id="1340053691042184658">Không cho phép đăng nhập vào trình duyệt với tư cách khách</translation>
 <translation id="1342918903685430097">Có thể định cấu hình phiên bản <ph name="PRODUCT_OS_NAME" /> tối thiểu cho thiết bị này.</translation>
 <translation id="1343128241903870688">Tắt tính năng báo cáo thông tin về ứng dụng trên thiết bị</translation>
-<translation id="1345276795096570241">Tắt tính năng đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> đối với các nhà cung cấp dịch vụ danh tính có trong danh sách.
-
-Khi bạn thêm giá trị <ph name="POLICY_VALUE_ALL" />, tất cả các nhà cung cấp dịch vụ danh tính được hỗ trợ tính năng SSO sẽ bị tắt.
-
-Khi bạn thêm giá trị <ph name="POLICY_VALUE_MICROSOFT" />, nhà cung cấp dịch vụ danh tính trên đám mây của Microsoft® trong Chrome sẽ không được hỗ trợ tính năng đăng nhập một lần.
-
-Nếu bạn không đặt chính sách này, tất cả các nhà cung cấp dịch vụ danh tính được <ph name="PRODUCT_NAME" /> hỗ trợ sẽ được bật.
-
-Đối với nhà cung cấp dịch vụ danh tính được bật trong <ph name="PRODUCT_NAME" /> và được quản trị viên định cấu hình trên thiết bị, những người dùng từng đăng nhập bằng nhà cung cấp dịch vụ danh tính đó, trên bất kỳ ứng dụng nào hỗ trợ <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, đều có thể tự động đăng nhập vào các tài sản web bằng nhà cung cấp danh tính đó. Thông tin liên quan đến thông tin xác thực của người dùng được truyền đến nhà cung cấp dịch vụ danh tính trên đám mây của người dùng cho từng sự kiện xác thực.
-
-Lưu ý:
-
-<ph name="PRODUCT_NAME" /> không hỗ trợ tính năng Đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ở chế độ ẩn danh hoặc chế độ khách.
-
-<ph name="PRODUCT_NAME" /> chỉ hỗ trợ tính năng Đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> đối với các nhà cung cấp dịch vụ danh tính sau đây: Microsoft.
-
-Tính năng này có trên <ph name="MAC_OS_NAME" /> 10.15 trở lên.</translation>
 <translation id="1347198119056266798">Chính sách này không còn dùng nữa, thay vào đó hãy sử dụng <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> và <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Chính sách này sẽ bị bỏ qua nếu bạn đặt chính sách <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> hoặc <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (không dùng nữa).
 
       Buộc thực hiện các cụm từ tìm kiếm trong Google Web Search bằng cách đặt tính năng Tìm kiếm an toàn thành hoạt động và ngăn người dùng thay đổi tùy chọn cài đặt này. Tùy chọn cài đặt này cũng sẽ buộc bật Chế độ hạn chế trung bình trên YouTube.

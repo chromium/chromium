@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Fjalori i kontrollit drejtshkrimor për gjuhën <ph name="LANGUAGE" /> nuk mund të shkarkohej Provo përsëri.</translation>
 <translation id="1078037449555275327">Cilësimet e ChromeVox</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> hap automatikisht dritare të reja.</translation>
 <translation id="1079242569060319448">Harrove kodin PIN?</translation>
 <translation id="1079766198702302550">Blloko gjithmonë qasjen te kamera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 skedë}other{<ph name="GROUP_TITLE" /> - # skeda}}</translation>
@@ -1011,6 +1012,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1668435968811469751">Regjistrohu manualisht</translation>
 <translation id="1668804837842452164">Ruaj te "<ph name="BRAND" />" për <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Mëso për sugjerimet</translation>
+<translation id="1670070366970670971">Nënkuadri i PDF-së: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Themeloret</translation>
 <translation id="1671525612731130246">Zgjidh llogarinë e "Diskut"</translation>
 <translation id="1671749176392751693">Identifikuesit e përmbajtjeve të mbrojtura lejohen</translation>
@@ -5865,6 +5867,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4989479404508898003">Mund të kërkosh te historiku i shfletimit bazuar në përmbajtjen e përgjithshme të faqes, jo vetëm me URL-në dhe titullin e faqes, dhe të shikosh rezultate të përmirësuara</translation>
 <translation id="49896407730300355">Rrotullo k&amp;undër akrepave të orës</translation>
 <translation id="4989966318180235467">Inspekto &amp;faqen e sfondit</translation>
+<translation id="499016799952867794">Kjo lejon që aplikacioni të ekzekutohet siç pritet.</translation>
 <translation id="4990673372047946816">Nuk ka asnjë kamerë të disponueshme</translation>
 <translation id="4991420928586866460">Trajtoji tastet e rreshtit të sipërm si taste të funksioneve</translation>
 <translation id="4991873517942703737">Pyet rreth këtij dokumenti</translation>
@@ -7713,6 +7716,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - Pamja djathtas</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Tejkalon limitin prej 1 flete letre}other{Tejkalon limitin prej {COUNT} fletësh letre}}</translation>
 <translation id="6282490239556659745">Hiqe <ph name="EMBEDDED_SITE" /> nga <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Gozhdo "Pamjen e ndarë"</translation>
 <translation id="6283438600881103103">Do të dalësh automatikisht tani.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
 <translation id="628352644014831790">4 sekonda</translation>
@@ -7743,6 +7747,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6301300352769835063">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren. Mëso më shumë në g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtro</translation>
 <translation id="630292539633944562">Sugjerimet e informacionit personal</translation>
+<translation id="6303023592034094909">Ofrohet një version i ri i këtij aplikacioni</translation>
 <translation id="630308129961693966">Zgjidh pozicionin e shiritit të adresave</translation>
 <translation id="6304017513498618504">Mund të kërkosh gjithashtu gjëra të tilla si p.sh. “përmblidh”</translation>
 <translation id="6305607932814307878">Politika globale:</translation>
@@ -9145,6 +9150,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7293774463163321848">Historiku i kërkimeve, historiku i Gemini dhe fjalëkalimet mund të fshihen te cilësimet e tyre të menaxhimit</translation>
 <translation id="7295614427631867477">Ki parasysh se Android, Play dhe aplikacionet shoqëruese drejtohen nga politikat e tyre të mbledhjes dhe të përdorimit të të dhënave.</translation>
 <translation id="7296503797589217366">Zgjidh dosjen "<ph name="FOLDER_TITLE" />"</translation>
+<translation id="7297228218361240128">Ruaj informacionet te "Portofoli i Google" nga faqet që shikon</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
 <translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299515639584427954">Të ndryshohet aplikacioni i parazgjedhur për lidhjet e mbështetura?</translation>
@@ -9416,6 +9422,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7476454130948140105">Niveli i baterisë është shumë i ulët për përditësimin (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Të bllokuara automatikisht: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
 <translation id="7477460499687558352">Zgjidh një profil karte eSIM për ta shkarkuar</translation>
+<translation id="7477483325563774744">Ofruar nga: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Përdorim i lartë i memories: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Krijo kodin QR për këtë faqe</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
@@ -10673,6 +10680,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8317671367883557781">Shto lidhje rrjeti</translation>
 <translation id="8317965619823678157">të kopjojë fjalëkalimet</translation>
 <translation id="8318266828739827371">Përdor pamjen e ekranit të ndarë për të parë zonën e zmadhuar të ekranit. Përdor "Kërko" + Ctrl + D për të aktivizuar dhe çaktivizuar zmadhuesin e stacionuar.</translation>
+<translation id="8318680582681577962">Nënkuadri i PDF-së në modalitetin "I fshehtë": <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Përdorimi i zgjeruar i çelësit</translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>
 <translation id="8321476692217554900">njoftimet</translation>
@@ -11306,6 +11314,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8742998548129056176">Këto janë informacione të përgjithshme për pajisjen tënde dhe se si e përdor ti atë (si p.sh. niveli i baterisë, aktiviteti i sistemit dhe aplikacioneve dhe gabimet). Të dhënat do të përdoren për të përmirësuar Android dhe disa informacionet të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, të përmirësojnë aplikacionet dhe produktet e tyre.</translation>
 <translation id="8743357966416354615">Mjedisi i zhvillimit të menaxhuar (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Rishiko ndryshimin e URL-së për t'u siguruar që është i duhuri përpara se ta përditësosh.</translation>
 <translation id="8745034592125932220">Nuk lejohet të ruajë të dhëna në pajisjen tënde</translation>
 <translation id="8746654918629346731">Ke kërkuar tashmë "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Të ngarkohet një skedar në këtë sajt?}other{Të ngarkohen # skedarë në këtë sajt?}}</translation>

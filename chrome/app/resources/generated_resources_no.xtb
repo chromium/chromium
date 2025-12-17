@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Kunne ikke laste ned ordliste for stavekontroll for <ph name="LANGUAGE" />. Prøv på nytt.</translation>
 <translation id="1078037449555275327">ChromeVox-innstillinger</translation>
+<translation id="1078497917067602920"><ph name="APP_NAME" /> åpner nye vinduer automatisk.</translation>
 <translation id="1079242569060319448">Har du glemt PIN-koden?</translation>
 <translation id="1079766198702302550">Blokkér alltid bruk av kameraet</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 fane}other{<ph name="GROUP_TITLE" /> – # faner}}</translation>
@@ -1012,6 +1013,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1668435968811469751">Registrer manuelt</translation>
 <translation id="1668804837842452164">Lagre i <ph name="BRAND" /> for <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Finn ut mer om forslag</translation>
+<translation id="1670070366970670971">PDF-underramme: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Enkle</translation>
 <translation id="1671525612731130246">Velg Disk-konto</translation>
 <translation id="1671749176392751693">Identifikatorer for beskyttet innhold er tillatt</translation>
@@ -5872,6 +5874,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4989479404508898003">Du kan søke i nettleserloggen basert på generelt sideinnhold – ikke bare sidetitler og nettadresser – og få bedre resultater</translation>
 <translation id="49896407730300355">Rotér m&amp;ot klokken</translation>
 <translation id="4989966318180235467">Inspeksjons- og bakgrunnsside</translation>
+<translation id="499016799952867794">Dette gjør at appen kan kjøre som forventet.</translation>
 <translation id="4990673372047946816">Ingen kameraer er tilgjengelige</translation>
 <translation id="4991420928586866460">Behandle taster på øverste rad som funksjonstaster</translation>
 <translation id="4991873517942703737">Spør om dette dokumentet</translation>
@@ -7719,6 +7722,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – høyre visning</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overskrider grensen på 1 ark}other{Overskrider grensen på {COUNT} ark}}</translation>
 <translation id="6282490239556659745">Fjern <ph name="EMBEDDED_SITE" /> fra <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Fest delt visning</translation>
 <translation id="6283438600881103103">Du blir nå logget av automatisk.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
 <translation id="628352644014831790">4 sekunder</translation>
@@ -7749,6 +7753,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6301300352769835063">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser dette, blir dataene fremdeles sendt til Google for å fastslå hvilke oppdateringer enheten trenger, men de blir ikke lagret eller brukt ellers. Finn ut mer på g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filter</translation>
 <translation id="630292539633944562">Forslag til personopplysninger</translation>
+<translation id="6303023592034094909">En ny versjon av denne appen er tilgjengelig.</translation>
 <translation id="630308129961693966">Velg plassering for adressefelt</translation>
 <translation id="6304017513498618504">Du kan også be om ting som «oppsummer»</translation>
 <translation id="6305607932814307878">Globale retningslinjer:</translation>
@@ -9152,6 +9157,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7293774463163321848">Søkeloggen, Gemini-loggen og passord kan slettes i innstillingene for administrering</translation>
 <translation id="7295614427631867477">Merk at Android, Play og tilknyttede apper er styrt av sine egne retningslinjer for datainnsamling og bruk.</translation>
 <translation id="7296503797589217366">Velg mappen <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Lagre informasjon i Google Wallet fra sider du ser på</translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
 <translation id="7298195798382681320">Anbefalt</translation>
 <translation id="7299515639584427954">Vil du bytte standardapp for støttede linker?</translation>
@@ -9423,6 +9429,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Blokkerte automatisk <ph name="PERMISSION" /> og <ph name="COUNT" /> til</translation>
 <translation id="7477460499687558352">Velg e-SIM-kortprofilen du vil laste ned</translation>
+<translation id="7477483325563774744">Levert av: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Høy minnebruk: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Opprett en QR-kode for denne siden</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
@@ -10681,6 +10688,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8317671367883557781">Legg til nettverkstilkobling</translation>
 <translation id="8317965619823678157">kopiere passord</translation>
 <translation id="8318266828739827371">Bruk en delt skjermvisning for å se det forstørrede området på skjermen. Bruk søketasten + Ctrl + D for å slå på og av dokket lupe.</translation>
+<translation id="8318680582681577962">Inkognito-underramme for PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Utvidet bruk av nøkkel</translation>
 <translation id="8320212361750431956">Nylig aktivitet</translation>
 <translation id="8321476692217554900">varsler</translation>
@@ -11314,6 +11322,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8742998548129056176">Dette er generell informasjon om enheten din og hvordan du bruker den (for eksempel batterinivå, system- og appaktivitet og feil). Dataene brukes til å gjøre Android bedre, og noen aggregerte data hjelper også Google-apper og partnere, for eksempel Android-utviklere, med å gjøre apper og produkter bedre.</translation>
 <translation id="8743357966416354615">Administrert utviklingsmiljø (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Gjennomgå nettadresseendringen for å forsikre deg om at du er fornøyd med den, før du oppdaterer.</translation>
 <translation id="8745034592125932220">Nettsteder som ikke har lov til å lagre data på enheten din</translation>
 <translation id="8746654918629346731">Du har allerede forespurt «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="874689135111202667">{0,plural, =1{Vil du laste opp en fil til dette nettstedet?}other{Vil du laste opp # filer til dette nettstedet?}}</translation>

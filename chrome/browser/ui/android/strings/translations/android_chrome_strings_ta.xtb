@@ -114,7 +114,6 @@
 <translation id="1413446866325418126">உங்கள் Google கணக்கில் தரவைச் சேமியுங்கள்</translation>
 <translation id="1414919006379339073">தற்போதைய சாளரத்தை மூடுக</translation>
 <translation id="1416550906796893042">ஆப்ஸின் பதிப்பு</translation>
-<translation id="1419753403124156396">Chromeமை மீண்டும் தொடங்கவா?</translation>
 <translation id="1428770807407000502">ஒத்திசைவை முடக்கவா?</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1435593198351412143">PDF ஃபைல்களைத் தானாகத் திறத்தல்</translation>
@@ -249,7 +248,6 @@
 <translation id="2067805253194386918">உரை</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
-<translation id="2088833076121753253">தானாக நிரப்புதல் அமைவை நிறைவுசெய்ய Chromeமை இப்போது மீண்டும் தொடங்குங்கள். உங்கள் பக்கங்கள் தானாகவே மீண்டும் திறக்கப்படும்.</translation>
 <translation id="2091863218454846791">சுருக்கக் காட்சியில் காட்டுகிறது</translation>
 <translation id="2093731487903423814">கடந்த 15 நிமிடங்களில்</translation>
 <translation id="2096577711562668473">தன்னிரப்பிச் சேவையை மாற்ற வேண்டுமா?</translation>
@@ -1721,6 +1719,7 @@
 <translation id="8137562778192957619">இந்தக் கடவுச்சொல்லை நீங்கள் நினைவில் வைத்திருக்க வேண்டியதில்லை. Google Password Managerரில் இது சேமிக்கப்படும்.</translation>
 <translation id="8152331954420209374">Lensஸிற்குச் செல்லும்</translation>
 <translation id="8153206878708357851">கேரெட் பிரவுசிங்கை ஆன்/ஆஃப் செய்ய</translation>
+<translation id="8154784523622173959">இந்தப் பக்கத்தின் பின்னணியைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="8163820386638255770">உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களைப் பயன்படுத்தவும் சேமிக்கவும் இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) செயலில் இல்லை}other{(#) செயலில் இல்லை}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>

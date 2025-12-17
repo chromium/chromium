@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Não foi possível fazer o download do dicionário de verificação ortográfica de <ph name="LANGUAGE" />. Tente novamente.</translation>
 <translation id="1078037449555275327">Configurações do ChromeVox</translation>
+<translation id="1078497917067602920">O app <ph name="APP_NAME" /> abre novas janelas automaticamente.</translation>
 <translation id="1079242569060319448">Esqueceu o PIN?</translation>
 <translation id="1079766198702302550">Sempre bloquear o acesso à câmera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 guia}one{<ph name="GROUP_TITLE" />: # guia}other{<ph name="GROUP_TITLE" />: # guias}}</translation>
@@ -1016,6 +1017,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1668435968811469751">Registrar manualmente</translation>
 <translation id="1668804837842452164">Salvar no <ph name="BRAND" /> da conta <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
+<translation id="1670070366970670971">Subframe de PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1671525612731130246">Escolher conta do Drive</translation>
 <translation id="1671749176392751693">Identificadores de conteúdo protegido permitidos</translation>
@@ -5882,6 +5884,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4989479404508898003">Você pode pesquisar seu histórico de navegação com base no conteúdo geral da página, não apenas no título e no URL, para ver resultados melhores</translation>
 <translation id="49896407730300355">Girar no s&amp;entido anti-horário</translation>
 <translation id="4989966318180235467">Inspecionar página de &amp;fundo</translation>
+<translation id="499016799952867794">Isso permite que o app seja executado como esperado.</translation>
 <translation id="4990673372047946816">Nenhuma câmera disponível</translation>
 <translation id="4991420928586866460">Tratar teclas de linha superior como teclas de função</translation>
 <translation id="4991873517942703737">Perguntar sobre este documento</translation>
@@ -7732,6 +7735,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> – Visualização à direita</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Excede o limite de 1 folha de papel}one{Excede o limite de {COUNT} folha de papel}other{Excede o limite de {COUNT} folhas de papel}}</translation>
 <translation id="6282490239556659745">Remover <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
+<translation id="6282815764417508018">Fixar Visualização Dividida</translation>
 <translation id="6283438600881103103">Sua conta será desconectada automaticamente agora.
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
 <translation id="628352644014831790">4 segundos</translation>
@@ -7762,6 +7766,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6301300352769835063">Autorize o Google a usar seus dados de hardware para melhorar o <ph name="DEVICE_OS" />. Se você recusar, esses dados ainda serão enviados ao Google para determinar as atualizações adequadas, mas não vão ficar armazenados nem serão usados de outras maneiras. Saiba mais em g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtrar</translation>
 <translation id="630292539633944562">Sugestões de informações pessoais</translation>
+<translation id="6303023592034094909">Uma nova versão deste app está disponível</translation>
 <translation id="630308129961693966">Escolha a posição da barra de endereço</translation>
 <translation id="6304017513498618504">Você também pode pedir para resumir</translation>
 <translation id="6305607932814307878">Política global:</translation>
@@ -9167,6 +9172,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7293774463163321848">O histórico de pesquisa, do Gemini e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="7295614427631867477">O Android, o Google Play e os apps associados são regidos pelas próprias políticas de uso e de coleta de dados.</translation>
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">Salvar informações na Carteira do Google das páginas que você acessa</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299515639584427954">Mudar o app padrão dos links compatíveis?</translation>
@@ -9438,6 +9444,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7476454130948140105">Bateria muito fraca para atualizar (<ph name="BATTERY_PERCENT" />%</translation>
 <translation id="7476989672001283112">Bloqueados automaticamente: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Escolha um perfil de eSIM para fazer o download</translation>
+<translation id="7477483325563774744">Oferecido por: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Uso elevado da memória: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Criar QR code para esta página</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>
@@ -10696,6 +10703,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8317671367883557781">Adicionar conexão de rede</translation>
 <translation id="8317965619823678157">copiar as senhas</translation>
 <translation id="8318266828739827371">Use a tela dividida para ver a área ampliada da sua tela. Use Pesquisa + Ctrl + D para ativar e desativar a lupa em área fixa.</translation>
+<translation id="8318680582681577962">Subframe de PDF no modo de navegação anônima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Uso estendido de chave</translation>
 <translation id="8320212361750431956">Atividade recente</translation>
 <translation id="8321476692217554900">notificações</translation>
@@ -11329,6 +11337,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8742998548129056176">Estas são informações gerais sobre seu dispositivo e a forma como ele é usado (como nível da bateria, atividade de apps e do sistema e erros). Esses dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão os apps e parceiros do Google, como os desenvolvedores Android, a melhorar os apps e produtos deles.</translation>
 <translation id="8743357966416354615">Ambiente de desenvolvimento gerenciado (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Revise a mudança no URL para garantir que você concorda com ela antes de atualizar.</translation>
 <translation id="8745034592125932220">Sem permissão para salvar dados no seu dispositivo</translation>
 <translation id="8746654918629346731">Você já solicitou "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Fazer upload de um arquivo para este site?}one{Fazer upload de # arquivo para este site?}other{Fazer upload de # arquivos para este site?}}</translation>

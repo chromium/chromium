@@ -132,6 +132,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Hindi ma-download ang diksyunaryo ng pang-check ng pagbabaybay para sa <ph name="LANGUAGE" />. Subukan ulit.</translation>
 <translation id="1078037449555275327">Mga setting ng ChromeVox</translation>
+<translation id="1078497917067602920">Awtomatikong nagbubukas ng mga bagong window ang <ph name="APP_NAME" />.</translation>
 <translation id="1079242569060319448">Nakalimutan ang PIN?</translation>
 <translation id="1079766198702302550">Palaging i-block ang access sa camera</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Tab}one{<ph name="GROUP_TITLE" /> - # Tab}other{<ph name="GROUP_TITLE" /> - # na Tab}}</translation>
@@ -1016,6 +1017,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1668435968811469751">Magpa-enroll nang manual</translation>
 <translation id="1668804837842452164">I-save sa <ph name="BRAND" /> para sa <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Matuto tungkol sa mga suhestyon</translation>
+<translation id="1670070366970670971">Subframe ng PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="1670399744444387456">Pangunahin</translation>
 <translation id="1671525612731130246">Pumili ng Drive account</translation>
 <translation id="1671749176392751693">Pinapayagan ang mga identifier ng pinoprotektahang content</translation>
@@ -5882,6 +5884,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4989479404508898003">Puwede kang maghanap sa iyong history ng pag-browse batay sa pangkalahatang content ng page, hindi lang sa pamagat at URL ng page, at makakita ng mga pinahusay na resulta</translation>
 <translation id="49896407730300355">I-rotate p&amp;akaliwa</translation>
 <translation id="4989966318180235467">Siyasatin ang pahina ng &amp;background</translation>
+<translation id="499016799952867794">Nagbibigay-daan ito sa app para gumana gaya ng inaasahan.</translation>
 <translation id="4990673372047946816">Walang available na camera</translation>
 <translation id="4991420928586866460">Ituring ang mga top-row key bilang mga function key</translation>
 <translation id="4991873517942703737">Magtanong tungkol sa dokumentong ito</translation>
@@ -7731,6 +7734,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - View sa kanan</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Lumalampas sa limitasyong 1 pirasong papel}one{Lumalampas sa limitasyong {COUNT} pirasong papel}other{Lumalampas sa limitasyong {COUNT} na pirasong papel}}</translation>
 <translation id="6282490239556659745">Alisin ang <ph name="EMBEDDED_SITE" /> sa <ph name="SITE" /></translation>
+<translation id="6282815764417508018">I-pin ang Split View</translation>
 <translation id="6283438600881103103">Awtomatiko ka nang masa-sign out.
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.</translation>
 <translation id="628352644014831790">4 na segundo</translation>
@@ -7761,6 +7765,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6301300352769835063">Hayaan ang Google na gamitin ang data ng iyong hardware para makatulong na mapahusay ang <ph name="DEVICE_OS" />. Kung tatanggi ka, ipapadala pa rin ang data na ito sa Google para makatukoy ng mga angkop na update, pero hindi ito iso-store o gagamitin sa ibang paraan. Matuto pa sa g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">I-filter</translation>
 <translation id="630292539633944562">Mga suhestyon sa personal na impormasyon</translation>
+<translation id="6303023592034094909">May available na bagong bersyon ng app na ito</translation>
 <translation id="630308129961693966">Piliin ang address bar position</translation>
 <translation id="6304017513498618504">Puwede ka ring humiling ng mga bagay tulad ng “ibuod”</translation>
 <translation id="6305607932814307878">Pandaigdigang Patakaran:</translation>
@@ -9166,6 +9171,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7293774463163321848">Puwedeng i-delete ang history ng paghahanap, history ng Gemini, at mga password sa mga setting ng pamamahala ng mga ito</translation>
 <translation id="7295614427631867477">Tandaang ang Android, Play, at mga nauugnay na app ay nasasaklawan ng sari-sarili nitong mga patakaran sa pagkolekta at paggamit ng data.</translation>
 <translation id="7296503797589217366">Piliin ang folder na <ph name="FOLDER_TITLE" /></translation>
+<translation id="7297228218361240128">I-save ang impormasyon sa Google Wallet mula sa mga page na tinitingnan mo</translation>
 <translation id="7297726121602187087">Dark green</translation>
 <translation id="7298195798382681320">Inirerekomenda</translation>
 <translation id="7299515639584427954">Baguhin ang default na app para sa mga sinusuportahang link?</translation>
@@ -9437,6 +9443,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7476454130948140105">Masyadong kaunti ang baterya (<ph name="BATTERY_PERCENT" />%) para sa pag-update</translation>
 <translation id="7476989672001283112">Awtomatikong na-block ang <ph name="PERMISSION" /> at <ph name="COUNT" /> pa</translation>
 <translation id="7477460499687558352">Pumili ng profile ng eSIM na ida-download</translation>
+<translation id="7477483325563774744">Iniaalok ng: <ph name="ENTERPRISE_NAME" /></translation>
 <translation id="7477599578899108080">Mataas na paggamit ng memory: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Gumawa ng QR Code para sa page na ito</translation>
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
@@ -10695,6 +10702,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8317671367883557781">Idagdag ang koneksyon sa network</translation>
 <translation id="8317965619823678157">kopyahin ang mga password</translation>
 <translation id="8318266828739827371">Gumamit ng split-screen view para makita ang naka-magnify na bahagi ng iyong screen. Gamitin ang Search + Ctrl + D para i-on at i-off ang naka-dock na magnifier.</translation>
+<translation id="8318680582681577962">Subframe ng Incognito na PDF: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8319414634934645341">Extended na Paggamit ng Key</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
 <translation id="8321476692217554900">mga notification</translation>
@@ -11329,6 +11337,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8742998548129056176">Ito ay pangkalahatang impormasyon tungkol sa iyong device at kung paano mo ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para mapahusay ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang kanilang mga app at produkto.</translation>
 <translation id="8743357966416354615">Pinapamahalaang Environment sa Pag-develop (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
+<translation id="8744913471985800082">Suriin ang pagbabago sa URL para matiyak na kumportable ka rito bago mag-update.</translation>
 <translation id="8745034592125932220">Hindi pinapayagang i-save ang data sa iyong device</translation>
 <translation id="8746654918629346731">Nahiling mo na ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Mag-upload ng isang file sa site na ito?}one{Mag-upload ng # file sa site na ito?}other{Mag-upload ng # na file sa site na ito?}}</translation>
