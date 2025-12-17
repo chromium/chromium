@@ -610,11 +610,9 @@ HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
   if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
     std::string soc_allowlist =
         ::features::kWebViewADPFSocManufacturerAllowlist.Get();
-    std::string soc_blocklist =
-        ::features::kWebViewADPFSocManufacturerBlocklist.Get();
     std::string soc = base::SysInfo::SocManufacturer();
     report_rendering_threads_ =
-        ::features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
+        ::features::ShouldUseAdpfForSoc(soc_allowlist, soc);
   }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(

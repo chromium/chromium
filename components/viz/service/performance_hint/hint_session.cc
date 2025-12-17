@@ -431,9 +431,8 @@ bool IsAdpfEnabled() {
   }
 
   std::string soc_allowlist = features::kADPFSocManufacturerAllowlist.Get();
-  std::string soc_blocklist = features::kADPFSocManufacturerBlocklist.Get();
   std::string soc = base::SysInfo::SocManufacturer();
-  return features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
+  return features::ShouldUseAdpfForSoc(soc_allowlist, soc);
 }
 
 }  // namespace

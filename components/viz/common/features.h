@@ -81,8 +81,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPF);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kWebViewADPFSocManufacturerAllowlist;
-VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kWebViewADPFSocManufacturerBlocklist;
 #endif
 #if BUILDFLAG(IS_APPLE)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCALayerNewLimit);
@@ -108,8 +106,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerAllowlist;
-VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kADPFSocManufacturerBlocklist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableAdpfEfficiencyMode);
 enum class AdpfEfficiencyMode {
@@ -196,7 +192,6 @@ VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
 // is ignored in this case.
 // If the allowlist is empty, soc must be absent from the blocklist.
 VIZ_COMMON_EXPORT bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
-                                           std::string_view soc_blocklist,
                                            std::string_view soc);
 
 #endif  // BUILDFLAG(IS_ANDROID)

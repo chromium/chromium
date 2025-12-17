@@ -170,20 +170,16 @@ BASE_FEATURE(kUseSurfaceLayerForVideoDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebViewNewInvalidateHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled and the device's SOC manufacturer satisifes the allowlist and
-// blocklist rules, WebView reports the set of threads involved in frame
-// production to HWUI, and they're included in the HWUI ADPF session.
+// If enabled and the device's SOC manufacturer is in the allowlist, WebView
+// reports the set of threads involved in frame production to HWUI, and they're
+// included in the HWUI ADPF session.
 // If disabled, WebView never uses ADPF.
-// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
-// soc must be in the allowlist for WebView to use ADPF, and the blocklist is
-// ignored. If there's no allowlist, the soc must be absent from the blocklist.
 BASE_FEATURE(kWebViewEnableADPF, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The allowlist format is a "|" separated string, e.g. "A|B|XY" for allowing
+// SoC manufacturers A, B, and XY.
 const base::FeatureParam<std::string> kWebViewADPFSocManufacturerAllowlist{
     &kWebViewEnableADPF, "webview_soc_manufacturer_allowlist", "Google"};
-
-const base::FeatureParam<std::string> kWebViewADPFSocManufacturerBlocklist{
-    &kWebViewEnableADPF, "webview_soc_manufacturer_blocklist", ""};
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -239,18 +235,12 @@ BASE_FEATURE(kOnBeginFrameThrottleVideo,
 );
 
 // If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) if the
-// device's SOC manufacturer satisifes the allowlist and blocklist rules.
+// device's SOC manufacturer is in the allowlist.
 // If disabled, Chrome never uses ADPF.
-// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
-// soc must be in the allowlist for Chrome to use ADPF, and the blocklist is
-// ignored. If there's no allowlist, the soc must be absent from the blocklist.
 BASE_FEATURE(kAdpf, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kADPFSocManufacturerAllowlist{
     &kAdpf, "soc_manufacturer_allowlist", "Google"};
-
-const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
-    &kAdpf, "soc_manufacturer_blocklist", ""};
 
 // If enabled, Chrome includes the Renderer Main thread(s) into the
 // ADPF(Android Dynamic Performance Framework) hint session.
@@ -547,19 +537,9 @@ bool IsBrowserControlsInVizEnabled() {
 }
 
 bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
-                         std::string_view soc_blocklist,
                          std::string_view soc) {
   std::vector<std::string_view> allowlist = base::SplitStringPiece(
       soc_allowlist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
-  std::vector<std::string_view> blocklist = base::SplitStringPiece(
-      soc_blocklist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // If there's no allowlist, soc must be absent from the blocklist.
-  if (allowlist.empty()) {
-    return !base::Contains(blocklist, soc);
-  }
-  // If there's an allowlist, soc must be in the allowlist.
-  // Blocklist is ignored in this case.
   return base::Contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
