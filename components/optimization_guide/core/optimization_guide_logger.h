@@ -14,9 +14,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -77,12 +79,6 @@ class OptimizationGuideLogger {
     LogMessageBuilder& operator<<(const GURL& url);
     LogMessageBuilder& operator<<(
         optimization_guide::proto::RequestContext request_context);
-    LogMessageBuilder& operator<<(
-        optimization_guide::proto::OptimizationType optimization_type);
-    LogMessageBuilder& operator<<(optimization_guide::OptimizationTypeDecision
-                                      optimization_type_decision);
-    LogMessageBuilder& operator<<(optimization_guide::OptimizationGuideDecision
-                                      optimization_guide_decision);
     LogMessageBuilder& operator<<(
         optimization_guide::proto::OptimizationTarget optimization_target);
 

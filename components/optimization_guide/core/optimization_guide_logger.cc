@@ -9,7 +9,6 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace {
@@ -68,30 +67,6 @@ OptimizationGuideLogger::LogMessageBuilder::operator<<(
     optimization_guide::proto::RequestContext request_context) {
   messages_.push_back(
       optimization_guide::proto::RequestContext_Name(request_context));
-  return *this;
-}
-
-OptimizationGuideLogger::LogMessageBuilder&
-OptimizationGuideLogger::LogMessageBuilder::operator<<(
-    optimization_guide::proto::OptimizationType optimization_type) {
-  messages_.push_back(
-      optimization_guide::GetStringNameForOptimizationType(optimization_type));
-  return *this;
-}
-
-OptimizationGuideLogger::LogMessageBuilder&
-OptimizationGuideLogger::LogMessageBuilder::operator<<(
-    optimization_guide::OptimizationTypeDecision optimization_type_decision) {
-  messages_.push_back(
-      base::NumberToString(static_cast<int>(optimization_type_decision)));
-  return *this;
-}
-
-OptimizationGuideLogger::LogMessageBuilder&
-OptimizationGuideLogger::LogMessageBuilder::operator<<(
-    optimization_guide::OptimizationGuideDecision optimization_guide_decision) {
-  messages_.push_back(
-      GetStringForOptimizationGuideDecision(optimization_guide_decision));
   return *this;
 }
 
@@ -159,12 +134,14 @@ void OptimizationGuideLogger::OnLogMessageAdded(
   if (command_line_flag_enabled_) {
     recent_log_messages_.emplace_back(event_time, log_source, source_file,
                                       source_line, message);
-    if (recent_log_messages_.size() > kMaxRecentLogMessages)
+    if (recent_log_messages_.size() > kMaxRecentLogMessages) {
       recent_log_messages_.pop_front();
+    }
   }
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnLogMessageAdded(event_time, log_source, source_file, source_line,
                           message);
+  }
 }
 
 bool OptimizationGuideLogger::ShouldEnableDebugLogs() const {

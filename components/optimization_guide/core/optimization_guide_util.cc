@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -142,19 +141,6 @@ bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
     return false;
   }
   return true;
-}
-
-std::string GetStringForOptimizationGuideDecision(
-    OptimizationGuideDecision decision) {
-  switch (decision) {
-    case OptimizationGuideDecision::kUnknown:
-      return "Unknown";
-    case OptimizationGuideDecision::kTrue:
-      return "True";
-    case OptimizationGuideDecision::kFalse:
-      return "False";
-  }
-  NOTREACHED();
 }
 
 optimization_guide::proto::OriginInfo GetClientOriginInfo() {

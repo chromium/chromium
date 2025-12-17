@@ -87,10 +87,6 @@ std::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
   return std::nullopt;
 }
 
-// Returns a debug string for OptimizationGuideDecision.
-std::string GetStringForOptimizationGuideDecision(
-    OptimizationGuideDecision decision);
-
 // Returns client's origin info, including platform and milestone.
 proto::OriginInfo GetClientOriginInfo();
 

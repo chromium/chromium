@@ -119,6 +119,7 @@ source_set("hints") {
     "hints/memory_hint.cc",
     "hints/memory_hint.h",
     "hints/optimization_guide_decider.h",
+    "hints/optimization_guide_decision.cc",
     "hints/optimization_guide_decision.h",
     "hints/optimization_guide_navigation_data.cc",
     "hints/optimization_guide_navigation_data.h",
@@ -149,10 +150,6 @@ source_set("hints") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
-
-  # TODO: crbug.com/421262905 - Some utilities should be extracted from
-  # core_util files.
-  allow_circular_includes_from = [ ":core_util" ]
   visibility = [ ":*" ]
 }
 

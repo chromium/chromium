@@ -238,8 +238,12 @@ class ScopedCanApplyOptimizationLogger {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::HINTS,
         optimization_guide_logger_)
-        << "CanApplyOptimization: " << opt_type_ << "\nqueried on: " << url_
-        << "\nDecision: " << decision_ << "\nTypeDecision: " << type_decision_
+        << "CanApplyOptimization: "
+        << GetStringNameForOptimizationType(opt_type_)
+        << "\nqueried on: " << url_
+        << "\nDecision: " << GetStringForOptimizationGuideDecision(decision_)
+        << "\nTypeDecision: "
+        << base::NumberToString(static_cast<int>(type_decision_))
         << "\nHas Metadata: " << (has_metadata_ ? "True" : "False");
   }
 
@@ -605,7 +609,8 @@ void HintsManager::ProcessOptimizationFilterSet(
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_)
-          << "Loaded optimization filter for " << filter.optimization_type();
+          << "Loaded optimization filter for "
+          << GetStringNameForOptimizationType(filter.optimization_type());
       if (is_allowlist) {
         allowlist_optimization_filters_.insert(
             {filter.optimization_type(), std::move(optimization_filter)});
@@ -1129,7 +1134,8 @@ void HintsManager::RegisterOptimizationTypes(
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_)
-          << "Registered new OptimizationType: " << optimization_type;
+          << "Registered new OptimizationType: "
+          << GetStringNameForOptimizationType(optimization_type);
     }
 
     std::optional<double> value = previously_registered_opt_types->FindBool(
