@@ -2445,7 +2445,13 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"securityHttpsFirstModeStrictLabel",
        IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_LABEL},
       {"securityHttpsFirstModeStrictSublabel",
-       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_SUBLABEL}};
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_SUBLABEL},
+      {"securitySecureDnsTitle", IDS_SETTINGS_SECURITY_SECURE_DNS_TITLE},
+      {"securitySecureDnsDescription",
+       IDS_SETTINGS_SECURITY_SECURE_DNS_DESCRIPTION},
+      {"securitySecureDnsDefault", IDS_SETTINGS_SECURITY_SECURE_DNS_DEFAULT},
+      {"securitySecureDnsFallback", IDS_SETTINGS_SECURITY_SECURE_DNS_FALLBACK},
+      {"securitySecureDnsCustom", IDS_SETTINGS_SECURITY_SECURE_DNS_CUSTOM}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("cookiesSettingsHelpCenterURL",

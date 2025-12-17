@@ -259,7 +259,7 @@ export {CrLottieElement} from './privacy_page/security/cr_lottie.js';
 export {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, FingerprintProgressArcElement, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from './privacy_page/security/fingerprint_progress_arc.js';
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/security/secure_dns.js';
 export {SecureDnsInputElement} from './privacy_page/security/secure_dns_input.js';
-export {SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
+export {SecureDnsV2ResolverType, SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security/security_keys_browser_proxy.js';
 export type {SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy} from './privacy_page/security/security_keys_browser_proxy.js';

@@ -1,26 +1,26 @@
 <style include="cr-shared-style md-select">
-  /* TODO(crbug.com/349860796): Replace border override by instead removing
-     the "hr" class from the Secure DNS element once the new "Secure
-     connections" settings section ships by default. */
-  :host(.no-hr) settings-toggle-button.hr {
-    border-top: 0;
+  :host {
+    display: block;
   }
 
+  /* Indentation for the nested content of the 3rd radio button */
+  .settings-box.indent {
+    padding-inline-start: var(--cr-button-height);
+    padding-bottom: 12px;
+    padding-top: 0;
+  }
+
+  /* Make the dropdown take full width of its container */
   #resolverSelect {
-    width: inherit;
+    width: 100%;
   }
-
-  #resolverLabel {
-    flex: 1;
-   }
 
   #privacyPolicy {
     display: none;
-    padding: calc(var(--cr-section-padding) / 2) var(--cr-section-padding);
+    margin-top: 8px;
   }
 
-  /* Style the link appearing within the privacyPolicy's localized
-  content. */
+  /* Style the link appearing within the privacyPolicy's localized content. */
   #privacyPolicy a {
     color: var(--cr-link-color);
   }
@@ -28,49 +28,77 @@
   #secureDnsInputContainer {
     margin-top: calc(var(--cr-section-padding) / 2);
   }
+
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #secureDnsRadioGroup {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
 </style>
 
-<settings-toggle-button id="secureDnsToggle" class="hr"
+<security-page-feature-row
+    id="secureDnsToggle"
     pref="{{secureDnsToggle_}}"
-    label="$i18n{secureDns}"
-    sub-label="[[secureDnsDescription_]]"
-    on-change="onToggleChanged_">
-</settings-toggle-button>
-
-<div id="resolverOptions" hidden="[[!showSecureDnsOptions_]]">
-  <div class="cr-row continuation">
-    <div id="resolverLabel" class="flex cr-padded-text">
-      $i18n{secureDnsSecureDropdownModeDescription}
-    </div>
-
-    <select id="resolverSelect" class="md-select"
-        aria-labelledby="resolverLabel"
-        on-change="onDropdownSelectionChanged_">
-      <option value="[[resolverTypeEnum_.AUTOMATIC]]">
-        $i18n{secureDnsAutomaticModeDescription}
-      </option>
-      <option value="[[resolverTypeEnum_.CUSTOM]]">
-        $i18n{secureDnsCustomProviderDescription}
-      </option>
-      <template is="dom-repeat" items="[[resolverOptions_]]">
-        <option data-resolver-type$="[[resolverTypeEnum_.BUILT_IN]]"
-            value="[[index]]">
-          [[item.name]]
-        </option>
-      </template>
-    </select>
+    label="$i18n{securitySecureDnsTitle}"
+    sub-label="$i18n{securitySecureDnsDescription}"
+    on-change="onToggleChanged_"
+    numeric-unchecked-values="[[secureDnsModeUncheckedValues_]]">
+  <div slot="collapse">
+    <settings-radio-group id="secureDnsRadioGroup"
+        pref="{{prefs.dns_over_https.mode}}"
+        selectable-elements="controlled-radio-button"
+        selected="{{selectedMode_}}"
+        on-change="onSecureDnsRadioGroupChange_"
+        no-set-pref>
+      <controlled-radio-button
+          id="automaticRadioButton"
+          name="[[resolverTypeEnum_.AUTOMATIC]]"
+          pref="[[prefs.dns_over_https.mode]]"
+          label="$i18n{securitySecureDnsDefault}">
+      </controlled-radio-button>
+      <controlled-radio-button
+          id="fallbackRadioButton"
+          name="[[resolverTypeEnum_.FALLBACK]]"
+          pref="[[prefs.dns_over_https.automatic_mode_fallback_to_doh]]"
+          label="$i18n{securitySecureDnsFallback}">
+      </controlled-radio-button>
+      <controlled-radio-button
+          id="customRadioButton"
+          name="[[resolverTypeEnum_.CUSTOM]]"
+          pref="[[prefs.dns_over_https.templates]]"
+          label="$i18n{securitySecureDnsCustom}">
+        <div class="settings-box indent">
+          <div class="flex-column">
+            <select id="resolverSelect"
+                class="md-select"
+                aria-label="$i18n{secureDnsSecureDropdownModeDescription}"
+                on-change="onResolverSelectChange_">
+              <option value="[[resolverTypeEnum_.CUSTOM]]">
+                $i18n{secureDnsCustomProviderDescription}
+              </option>
+              <template is="dom-repeat" items="[[resolverOptions_]]">
+                <option data-resolver-type$="[[resolverTypeEnum_.CUSTOM]]"
+                    value="[[index]]">
+                  [[item.name]]
+                </option>
+              </template>
+            </select>
+            <div id="privacyPolicy" class="cr-secondary-text"
+                inner-h-t-m-l="[[privacyPolicyString_]]">
+            </div>
+            <div id="secureDnsInputContainer" hidden$="[[!showCustomInput_]]">
+              <secure-dns-input id="secureDnsInput"
+                  value="[[secureDnsInputValue_]]"
+                  on-value-update="onSecureDnsInputValueUpdate_">
+              </secure-dns-input>
+            </div>
+          </div>
+        </div>
+      </controlled-radio-button>
+    </settings-radio-group>
   </div>
-
-  <div id="privacyPolicy">
-    <div class="cr-secondary-text"
-        inner-h-t-m-l="[[privacyPolicyString_]]">
-    </div>
-  </div>
-
-  <div id="secureDnsInputContainer" class="cr-row continuation">
-    <secure-dns-input id="secureDnsInput"
-        value="[[secureDnsInputValue_]]"
-        on-value-update="onSecureDnsInputEvaluated_">
-    </secure-dns-input>
-  </div>
-</div>
+</security-page-feature-row>

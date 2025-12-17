@@ -15,6 +15,7 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
 import './security_page_feature_row.js';
+import './secure_dns_v2.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';

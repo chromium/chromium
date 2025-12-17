@@ -2056,6 +2056,21 @@
   <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE" desc="Label for a toggle that allows users to choose whether chrome should check if credentials have been part of a leak.">
     Compromised password detection
   </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_TITLE" desc="Name of Secure DNS security setting">
+    Secure DNS
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_DESCRIPTION" desc="Description of Secure DNS security setting">
+    Encrypts navigation requests so attackers on the same network can't see your traffic
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_DEFAULT" desc="Name of Secure DNS default option">
+    Use default if available
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_FALLBACK" desc="Name of Secure DNS fallback option">
+    Use default if available and Google DNS as backup
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_CUSTOM" desc="Name of Secure DNS custom option">
+    Use always with selected DNS over HTTPS provider
+  </message>
 
   <!-- Secure Connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_TITLE" desc="Title of the Secure Connections section in Security settings">
