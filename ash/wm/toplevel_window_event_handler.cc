@@ -76,10 +76,8 @@ bool CanStartOneFingerDrag(int window_component) {
 void ShowResizeShadow(aura::Window* window, int component) {
   // Don't show resize shadow if
   // 1) the window is not toplevel.
-  // 2) the device is in tablet mode.
-  // 3) the window is not resizable.
-  if (display::Screen::Get()->InTabletMode() ||
-      window != window->GetToplevelWindow() ||
+  // 2) the window is not resizable.
+  if (window != window->GetToplevelWindow() ||
       ((window->GetProperty(aura::client::kResizeBehaviorKey) &
         aura::client::kResizeBehaviorCanResize) == 0)) {
     return;
