@@ -179,7 +179,8 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         // Upload the attachment if it doesn't have a token
         @Nullable TabModelSelector selector = mTabModelSelectorSupplier.get();
         @Nullable Tab currentlySelectedTab = selector != null ? selector.getCurrentTab() : null;
-        if (!attachment.uploadToBackend(mComposeBoxQueryControllerBridge, currentlySelectedTab)) {
+        if (!attachment.uploadToBackend(
+                mComposeBoxQueryControllerBridge, currentlySelectedTab, false)) {
             // Upload failed, abandon session if we just started it
             if (isEmpty()) mComposeBoxQueryControllerBridge.notifySessionAbandoned();
             return false;
@@ -313,6 +314,11 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
             case FileUploadStatus.VALIDATION_FAILED:
             case FileUploadStatus.UPLOAD_FAILED:
             case FileUploadStatus.UPLOAD_EXPIRED:
+                if (pendingAttachment.retryUpload(
+                        mTabModelSelectorSupplier.get(),
+                        assumeNonNull(mComposeBoxQueryControllerBridge))) {
+                    break;
+                }
                 notifyAttachmentUploadFailed();
                 pendingAttachment.setUploadIsComplete();
                 remove(pendingAttachment);

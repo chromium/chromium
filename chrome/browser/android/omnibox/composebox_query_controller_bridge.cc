@@ -311,6 +311,10 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   // TODO(crbug.com/457869241): Merge this and the code in
   // TabContextualizationController.
   if (!page_context.has_value()) {
+    OnFileUploadStatusChanged(
+        context_token, lens::MimeType::kUnknown,
+        contextual_search::FileUploadStatus::kValidationFailed,
+        contextual_search::FileUploadErrorType::kBrowserProcessingError);
     return;
   }
 
