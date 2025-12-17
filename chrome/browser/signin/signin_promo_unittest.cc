@@ -226,6 +226,13 @@ class ShowPromoTest : public testing::Test {
     return extension_.get();
   }
 
+ protected:
+  void DisableSync() {
+    ON_CALL(*sync_service(), GetDisableReasons())
+        .WillByDefault(testing::Return(syncer::SyncService::DisableReasonSet(
+            {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -244,23 +251,16 @@ TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutExplicitSignIn) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-class ShowSyncPromoTest : public ShowPromoTest {
- protected:
-  void DisableSync() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
-  }
-};
-
 // Verifies that ShouldShowSyncPromo returns false if sync is disabled by
 // policy.
-TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncDisabled) {
+TEST_F(ShowPromoTest, DoNotShowSyncPromoWithSyncDisabled) {
   DisableSync();
   EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
 }
 
 // Verifies that ShouldShowSyncPromo returns true if all conditions to
 // show the promo are met.
-TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
+TEST_F(ShowPromoTest, ShouldShowSyncPromoSyncEnabled) {
 #if BUILDFLAG(IS_CHROMEOS)
   // No sync promo on Ash.
   EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
@@ -271,18 +271,18 @@ TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(ShowSyncPromoTest, ShowExtensionSyncPromoWithoutFeatureFlag) {
+TEST_F(ShowPromoTest, ShowExtensionSyncPromoWithoutFeatureFlag) {
   EXPECT_TRUE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
 }
 
-TEST_F(ShowSyncPromoTest, DoNotShowExtensionSyncPromoWithSyncDisabled) {
+TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithSyncDisabled) {
   DisableSync();
   ASSERT_FALSE(ShouldShowSyncPromo(*profile()));
 
   EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
 }
 
-TEST_F(ShowSyncPromoTest, DoNotShowExtensionSyncPromoWithUnpackedExtension) {
+TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithUnpackedExtension) {
   const extensions::Extension* unpacked_extension =
       CreateExtension(extensions::mojom::ManifestLocation::kUnpacked);
 
@@ -294,8 +294,7 @@ TEST_F(ShowSyncPromoTest, DoNotShowExtensionSyncPromoWithUnpackedExtension) {
   EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *unpacked_extension));
 }
 
-TEST_F(ShowSyncPromoTest,
-       DoNotShowExtensionSyncPromoWithSyncingExtensionsEnabled) {
+TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithSyncingExtensionsEnabled) {
   ON_CALL(*sync_service()->GetMockUserSettings(), GetSelectedTypes())
       .WillByDefault(testing::Return(syncer::UserSelectableTypeSet::All()));
   ASSERT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
@@ -303,7 +302,7 @@ TEST_F(ShowSyncPromoTest,
   EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
 }
 
-TEST_F(ShowSyncPromoTest,
+TEST_F(ShowPromoTest,
        DoNotShowExtensionSyncPromoWithExplicitBrowserSigninPref) {
   profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
@@ -314,13 +313,13 @@ TEST_F(ShowSyncPromoTest,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ShowSyncPromoTest, ShowPromoWithSignedInAccount) {
+TEST_F(ShowPromoTest, ShowSyncPromoWithSignedInAccount) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
                               ConsentLevel::kSignin);
   EXPECT_TRUE(ShouldShowSyncPromo(*profile()));
 }
 
-TEST_F(ShowSyncPromoTest, DoNotShowPromoWithSyncingAccount) {
+TEST_F(ShowPromoTest, DoNotShowSyncPromoWithSyncingAccount) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
                               ConsentLevel::kSync);
   EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
@@ -423,9 +422,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 TEST_F(ShowSigninPromoTestWithFeatureFlags, DoNotShowPromoWithoutSyncAllowed) {
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
-  ON_CALL(*sync_service(), GetDisableReasons())
-      .WillByDefault(testing::Return(syncer::SyncService::DisableReasonSet(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+  DisableSync();
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
