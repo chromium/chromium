@@ -16,6 +16,7 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
