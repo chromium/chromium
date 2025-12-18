@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 
 #import "base/metrics/field_trial_params.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"

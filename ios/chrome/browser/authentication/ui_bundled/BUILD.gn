@@ -202,7 +202,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/history_sync/public:pref_names",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",

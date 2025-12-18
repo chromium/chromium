@@ -16,7 +16,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
-  "+ios/chrome/browser/first_run/ui_bundled/first_run_util.h",
+  "+ios/chrome/browser/first_run/public/first_run_util.h",
   "+ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h",
   "+ios/chrome/browser/instructions_bottom_sheet/ui",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",

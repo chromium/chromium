@@ -7,7 +7,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 

@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"

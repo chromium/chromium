@@ -1,7 +1,8 @@
 include_rules = [
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
-  "+ios/chrome/browser/first_run/ui_bundled",
+  "+ios/chrome/browser/first_run/coordinator",
+  "+ios/chrome/browser/first_run/public",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/prerender/model",

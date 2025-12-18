@@ -10,7 +10,7 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/first_run/ui_bundled/animated_lens/resources:animation_files",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",

@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+components/policy/test_support/embedded_policy_test_server.h",
+  "+ios/chrome/browser/authentication/test/signin_earl_grey.h",
+  "+ios/chrome/browser/authentication/test/signin_matchers.h",
+  "+ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h",
+  # keep-sorted end
+]

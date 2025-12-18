@@ -19,3 +19,51 @@ source_set("best_features_item") {
     "//ui/strings",
   ]
 }
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/regional_capabilities",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "first_run_util.h",
+    "first_run_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/policy/core/common:common_constants",
+    "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public/thread",
+    "//ui/gfx",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "first_run_constants.h",
+    "first_run_constants.mm",
+  ]
+}
+
+source_set("screen_delegate") {
+  sources = [ "first_run_screen_delegate.h" ]
+}

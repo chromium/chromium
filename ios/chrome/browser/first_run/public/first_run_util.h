@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_UTIL_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_FIRST_RUN_PUBLIC_FIRST_RUN_UTIL_H_
+#define IOS_CHROME_BROWSER_FIRST_RUN_PUBLIC_FIRST_RUN_UTIL_H_
 
 #import <UIKit/UIKit.h>
 
@@ -40,4 +40,4 @@ bool HasFirstRunSentinel();
 // prefs, based on whether the consent checkbox should be selected by default.
 void RecordMetricsReportingDefaultState();
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_FIRST_RUN_PUBLIC_FIRST_RUN_UTIL_H_

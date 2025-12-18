@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
+#import "ios/chrome/browser/first_run/test/first_run_test_case_base.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
@@ -13,8 +13,8 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/public/first_run_constants.h"
+#import "ios/chrome/browser/first_run/test/first_run_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"

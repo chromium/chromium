@@ -38,6 +38,8 @@ include_rules = [
   "+ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h",
   "+ios/chrome/browser/find_bar/ui_bundled",
   "+ios/chrome/browser/find_in_page/model",
+  "+ios/chrome/browser/first_run/coordinator",
+  "+ios/chrome/browser/first_run/public",
   "+ios/chrome/browser/first_run/ui_bundled",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/google_one/coordinator",

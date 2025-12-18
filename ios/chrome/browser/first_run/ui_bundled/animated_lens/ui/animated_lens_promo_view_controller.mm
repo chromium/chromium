@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/animated_lens/ui/animated_lens_promo_view_controller.h"
 
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

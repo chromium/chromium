@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/first_run/test/first_run_app_interface.h"
 
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"

@@ -9,7 +9,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_app_interface.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

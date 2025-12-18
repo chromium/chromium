@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_TEST_CASE_BASE_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_TEST_CASE_BASE_H_
+#ifndef IOS_CHROME_BROWSER_FIRST_RUN_TEST_FIRST_RUN_TEST_CASE_BASE_H_
+#define IOS_CHROME_BROWSER_FIRST_RUN_TEST_FIRST_RUN_TEST_CASE_BASE_H_
 
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 
@@ -83,4 +83,4 @@ enum class FREDefaultBrowserIntent {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_TEST_CASE_BASE_H_
+#endif  // IOS_CHROME_BROWSER_FIRST_RUN_TEST_FIRST_RUN_TEST_CASE_BASE_H_

@@ -12,7 +12,7 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/ios_first_run_field_trials.h",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/authentication/account_menu",
-  "+ios/chrome/browser/first_run/ui_bundled/first_run_util.h",
+  "+ios/chrome/browser/first_run/public/first_run_util.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
   "+ios/chrome/browser/omnibox/ui",

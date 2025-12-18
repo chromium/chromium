@@ -13,7 +13,7 @@ specific_include_rules = {
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/variations/model",
     "+ios/chrome/browser/content_suggestions/ui_bundled",
-    "+ios/chrome/browser/first_run/ui_bundled",
+    "+ios/chrome/browser/first_run/coordinator",
     "+ios/chrome/browser/ntp/ui_bundled",
   ],
 }

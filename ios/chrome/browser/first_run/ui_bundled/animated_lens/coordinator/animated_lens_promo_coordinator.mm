@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/animated_lens/coordinator/animated_lens_promo_coordinator.h"
 
+#import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/animated_lens/ui/animated_lens_promo_view_controller.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 
 @implementation AnimatedLensPromoCoordinator {
   // Animated Lens Promo view controller.

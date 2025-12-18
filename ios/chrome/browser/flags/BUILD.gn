@@ -86,7 +86,7 @@ source_set("flags") {
     "//ios/chrome/browser/default_promo/ui_bundled:features",
     "//ios/chrome/browser/download/ui:features",
     "//ios/chrome/browser/drag_and_drop/model",
-    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens/ui_bundled:features",
