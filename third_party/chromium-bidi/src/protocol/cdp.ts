@@ -51,8 +51,8 @@ export interface SendCommandCommand {
 }
 
 export interface SendCommandParameters<
-  Command extends
-    keyof ProtocolMapping.Commands = keyof ProtocolMapping.Commands,
+  Command extends keyof ProtocolMapping.Commands =
+    keyof ProtocolMapping.Commands,
 > {
   method: Command;
   params?: ProtocolMapping.Commands[Command]['paramsType'][0];
