@@ -1062,8 +1062,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         }
         document->GetStyleEngine()
             .EnsureEnvironmentVariables()
-            .SetPreferredTextScale(
-                document->GetSettings()->GetAccessibilityFontScaleFactor());
+            .UpdatePreferredTextScaleFromDocument();
         if (document->TextScaleMetaTagPresent()) {
           document->GetStyleEngine().InitialStyleChanged();
         }

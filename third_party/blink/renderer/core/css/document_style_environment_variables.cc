@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 
+#include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -55,8 +56,7 @@ DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
     StyleEnvironmentVariables& parent,
     Document& document)
     : StyleEnvironmentVariables(parent), document_(&document) {
-  SetPreferredTextScale(
-      document_->GetSettings()->GetAccessibilityFontScaleFactor());
+  UpdatePreferredTextScaleFromDocument();
 }
 
 void DocumentStyleEnvironmentVariables::RecordVariableUsage(
@@ -93,42 +93,15 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
     // Do nothing if this is an unknown variable.
   }
 }
-namespace {
 
-double SnapToClosestFontScaleBucket(double raw_font_scale) {
-  static const std::array<double, 7> font_scale_buckets = {0.85, 1,   1.15, 1.3,
-                                                           1.5,  1.8, 2};
-
-  // Handle cases where the input value is outside the range of literals.
-  if (raw_font_scale <= font_scale_buckets.front()) {
-    return font_scale_buckets.front();
+void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
+  double combined_factor = FontSizeFunctions::SnapToClosestFontScaleBucket(
+      document_->GetSettings()->GetAccessibilityFontScaleFactor());
+  if (document_->TextScaleMetaTagPresent()) {
+    combined_factor *= document_->GetSettings()->GetDefaultFontSize() / 16.0;
   }
-  if (raw_font_scale >= font_scale_buckets.back()) {
-    return font_scale_buckets.back();
-  }
-
-  // std::lower_bound finds the first element >= raw_font_scale.
-  const auto it = std::lower_bound(font_scale_buckets.begin(),
-                                   font_scale_buckets.end(), raw_font_scale);
-
-  const double higher_candidate = *it;
-  // The element before 'it' is the other candidate.
-  // Safe because we handled edge cases above.
-  const double lower_candidate = *(it - 1);
-
-  const double diff_to_lower = std::abs(raw_font_scale - lower_candidate);
-  const double diff_to_higher = std::abs(raw_font_scale - higher_candidate);
-
-  return (diff_to_lower <= diff_to_higher) ? lower_candidate : higher_candidate;
-}
-
-}  // namespace
-
-void DocumentStyleEnvironmentVariables::SetPreferredTextScale(
-    double raw_font_scale_from_os) {
-  SetVariable(
-      UADefinedVariable::kPreferredTextScale,
-      String::Number(SnapToClosestFontScaleBucket(raw_font_scale_from_os)));
+  SetVariable(UADefinedVariable::kPreferredTextScale,
+              String::Number(combined_factor));
 }
 
 }  // namespace blink

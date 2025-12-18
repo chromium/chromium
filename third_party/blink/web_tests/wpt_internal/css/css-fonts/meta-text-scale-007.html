@@ -1,0 +1,31 @@
+<!doctype html>
+<html class="reftest-wait">
+<meta name="text-scale" content="scale">
+<meta name="assert" content="env(preferred-text-scale) reflects combined factor of OS-level font scale and UA-level font scale">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12380">
+<link rel="match" href="meta-text-scale-scaled-36px-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  #target {
+    font-size: calc(16px * env(preferred-text-scale));
+  }
+</style>
+<p style="font-size: 16px;">
+Hello and stuff (I am specified to be 16px)
+</p>
+<p id="target">
+Hello and stuff
+</p>
+<script>
+  if (window.internals) {
+    // 1.5 * (24/16) = 2.25. OS factor 1.5 is already a bucket, so it's not
+    // changed by snapping. UA factor is 1.5. Combined is 2.25.
+    internals.settings.setAccessibilityFontScaleFactor(1.5);
+    internals.settings.setDefaultFontSize(24);
+  } else {
+    document.body.appendChild(document.createTextNode("No window.internals? This test will fail."));
+  }
+
+  takeScreenshot();
+</script>
+</html>

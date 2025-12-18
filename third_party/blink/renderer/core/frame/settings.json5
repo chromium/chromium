@@ -110,7 +110,7 @@
     {
       name: "defaultFontSize",
       initial: 0,
-      invalidate: ["Style"],
+      invalidate: ["Style", "FontScaleFactor"],
       type: "int",
     },
     {
