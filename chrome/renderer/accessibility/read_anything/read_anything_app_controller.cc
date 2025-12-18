@@ -1177,15 +1177,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
       .SetProperty("isPhraseHighlightingEnabled",
                    &ReadAnythingAppController::IsPhraseHighlightingEnabled)
-      .SetProperty("undefinedPresentationState",
-                   &ReadAnythingAppController::UndefinedPresentationState)
-      .SetProperty("hiddenPresentationState",
-                   &ReadAnythingAppController::HiddenPresentationState)
-      .SetProperty("inSidePanelPresentationState",
-                   &ReadAnythingAppController::InSidePanelPresentationState)
-      .SetProperty(
-          "inImmersiveOverlayPresentationState",
-          &ReadAnythingAppController::InImmersiveOverlayPresentationState)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
@@ -1541,22 +1532,6 @@ int ReadAnythingAppController::LineFocusCursorLine() const {
 
 int ReadAnythingAppController::MaxLineWidth() const {
   return a11y::kMaxLineWidth;
-}
-
-int ReadAnythingAppController::UndefinedPresentationState() const {
-  return static_cast<int>(ReadAnythingPresentationState::kUndefined);
-}
-
-int ReadAnythingAppController::HiddenPresentationState() const {
-  return static_cast<int>(ReadAnythingPresentationState::kHidden);
-}
-
-int ReadAnythingAppController::InSidePanelPresentationState() const {
-  return static_cast<int>(ReadAnythingPresentationState::kInSidePanel);
-}
-
-int ReadAnythingAppController::InImmersiveOverlayPresentationState() const {
-  return static_cast<int>(ReadAnythingPresentationState::kInImmersiveOverlay);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(

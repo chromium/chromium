@@ -87,15 +87,6 @@ class ReadAnythingAppController
   static constexpr char kWordsHeardHistogramName[] =
       "Accessibility.ReadAnything.WordsHeard";
 
-  // TODO (crbug.com/460774262): Move ReadAnythingPresentationState enum to
-  // mojom file.
-  enum class ReadAnythingPresentationState {
-    kUndefined,
-    kHidden,
-    kInSidePanel,
-    kInImmersiveOverlay,
-  };
-
   static const int kMaxWordsConsumed = 25000;
   static const int kWordsConsumedBuckets = 100;
 
@@ -244,10 +235,6 @@ class ReadAnythingAppController
   int LineFocusStaticLine() const;
   int LineFocusCursorLine() const;
   int MaxLineWidth() const;
-  int UndefinedPresentationState() const;
-  int HiddenPresentationState() const;
-  int InSidePanelPresentationState() const;
-  int InImmersiveOverlayPresentationState() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
