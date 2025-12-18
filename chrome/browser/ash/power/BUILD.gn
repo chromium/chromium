@@ -31,7 +31,6 @@ static_library("power") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus",

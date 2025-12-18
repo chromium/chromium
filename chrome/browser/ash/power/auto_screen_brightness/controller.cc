@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/gaussian_trainer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader_impl.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller_impl.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/session_manager/core/session_manager.h"

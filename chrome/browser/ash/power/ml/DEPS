@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/component_updater",
   "+chrome/browser/profiles",
   "+chrome/browser/tab_contents",
@@ -29,7 +28,6 @@ include_rules = [
 specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
-    "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_window.h",
