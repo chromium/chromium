@@ -129,7 +129,7 @@ class DownloadTaskImpl : public DownloadTask {
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
   DownloadResult download_result_;
-  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
+  raw_ptr<WebState> web_state_ = nullptr;
 
   base::FilePath path_;
   bool owns_file_ = false;

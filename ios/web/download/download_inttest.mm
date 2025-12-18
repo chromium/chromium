@@ -64,6 +64,11 @@ class DownloadTest : public WebTestWithWebState {
     server_.RegisterRequestHandler(base::BindRepeating(&GetDownloadResponse));
   }
 
+  void TearDown() override {
+    delegate_.reset();
+    WebTestWithWebState::TearDown();
+  }
+
   DownloadController* download_controller() {
     return DownloadController::FromBrowserState(GetBrowserState());
   }

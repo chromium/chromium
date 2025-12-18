@@ -590,6 +590,11 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
         std::make_unique<FakeDownloadControllerDelegate>(download_controller());
   }
 
+  void TearDown() override {
+    download_delegate_.reset();
+    CRWWebControllerTest::TearDown();
+  }
+
   // Calls webView:decidePolicyForNavigationResponse:decisionHandler: callback
   // and waits for decision handler call. Returns false if decision handler call
   // times out.
