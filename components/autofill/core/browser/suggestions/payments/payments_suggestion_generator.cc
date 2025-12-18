@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -13,6 +15,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -20,6 +23,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
+using SuggestionData = SuggestionGenerator::SuggestionData;
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     AutofillClient& client,
@@ -74,36 +80,33 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   return suggestions;
 }
 
-std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
+std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+FetchCreditCardOrCvcFieldSuggestionDataSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    FieldType trigger_field_type,
-    bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary,
-    bool is_card_number_field_empty) {
+    CreditCardSuggestionSummary& summary) {
   // Early return if CVC suggestions are triggered but the client does not
   // support CVC saving (e.g., for iOS WebView). This avoids unnecessary
   // processing, which would ultimately result in an empty suggestion list
   // anyway.
   if (kCvcFieldTypes.contains(trigger_field_type) &&
       !client.IsCvcSavingSupported()) {
-    return {};
+    return {SuggestionDataSource::kCreditCard, {}};
   }
 
   if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
       !base::FeatureList::IsEnabled(
           features::
               kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)) {
-    return {};
+    return {SuggestionDataSource::kCreditCard, {}};
   }
 
   const bool allow_payment_swapping =
       trigger_field.is_autofilled() && IsPaymentsFieldSwappingEnabled();
 
-  std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(client);
   bool suppress_disused_cards =
       SanitizeCreditCardFieldValue(trigger_field.value()).empty();
   bool should_prefix_match = !allow_payment_swapping;
@@ -129,7 +132,37 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
 
   summary.metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
+
+  std::vector<SuggestionData> suggestion_data = base::ToVector(
+      cards_to_suggest,
+      [](auto& card) { return SuggestionData(std::move(card)); });
+  return {SuggestionDataSource::kCreditCard, suggestion_data};
+}
+
+std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool should_show_scan_credit_card,
+    CreditCardSuggestionSummary& summary,
+    bool is_card_number_field_empty,
+    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+        suggestion_data) {
   std::vector<Suggestion> suggestions;
+
+  std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
+      GetCardLinkedOffers(client);
+  const std::vector<SuggestionData>* credit_card_data =
+      base::FindOrNull(suggestion_data, SuggestionDataSource::kCreditCard);
+  if (!credit_card_data) {
+    return {};
+  }
+
+  std::vector<CreditCard> cards_to_suggest = base::ToVector(
+      *credit_card_data, [](const SuggestionData& suggestion_data) {
+        return std::get<CreditCard>(suggestion_data);
+      });
+
   for (const CreditCard& credit_card : cards_to_suggest) {
     Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
@@ -159,7 +192,28 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
           client, should_show_bnpl_suggestion, should_show_scan_credit_card,
           trigger_field.is_autofilled(), display_gpay_logo),
       std::back_inserter(suggestions));
+
   return suggestions;
+}
+
+std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+    FieldType trigger_field_type,
+    bool should_show_scan_credit_card,
+    CreditCardSuggestionSummary& summary,
+    bool is_card_number_field_empty) {
+  std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+      suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
+          client, trigger_field, trigger_field_type,
+          four_digit_combinations_in_dom,
+          autofilled_last_four_digits_in_form_for_filtering, summary);
+
+  return GenerateCreditCardOrCvcFieldSuggestionsSync(
+      client, trigger_field, trigger_field_type, should_show_scan_credit_card,
+      summary, is_card_number_field_empty, {suggestion_data});
 }
 
 std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
