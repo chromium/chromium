@@ -282,7 +282,6 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
           kNotifierType, notifier_id,
           ash::NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
-      // TODO(crbug.com/424104858): Make the notification do nothing on click.
       /*delegate=*/
       base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_system_notification_warning_level(
