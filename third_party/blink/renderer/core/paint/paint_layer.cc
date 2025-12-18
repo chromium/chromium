@@ -284,7 +284,6 @@ const PaintLayer* PaintLayer::ContainingScrollContainerLayer(
     }
     is_fixed = container->GetLayoutObject().IsFixedPositioned();
   }
-  DCHECK(IsRootLayer());
   if (is_fixed_to_view)
     *is_fixed_to_view = true;
   return nullptr;
@@ -777,9 +776,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
 
 void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     const ComputedStyle* old_style) {
-  if (!parent_)
-    return;
-
   if (old_style) {
     if (GetLayoutObject().IsStacked(*old_style))
       DirtyStackingContextZOrderLists();
@@ -800,17 +796,25 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
 
   PaintLayer* next_sib = NextSibling();
 
-  // Now walk our kids and reattach them to our parent.
+  // Now walk our kids to remove them, and potentially reattach to our parent.
+  //
+  // We might not have a parent if a layout-object is being reinserted into the
+  // layout-tree. This occurs if a layout-object undergoes a in-flow state
+  // change, and the children will be reattached within LayoutObject::AddLayers.
   PaintLayer* current = first_;
   while (current) {
     PaintLayer* next = current->NextSibling();
     RemoveChild(current);
-    parent_->AddChild(current, next_sib);
+    if (parent_) {
+      parent_->AddChild(current, next_sib);
+    }
     current = next;
   }
 
   // Remove us from the parent.
-  parent_->RemoveChild(this);
+  if (parent_) {
+    parent_->RemoveChild(this);
+  }
   layout_object_->DestroyLayer();
 }
 
