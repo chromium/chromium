@@ -13,7 +13,7 @@
   <message name="IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
     Give task back
   </message>
-  <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="false">
+  <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="true">
     Your task is still in progress
   </message>
   <message name="IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL" desc="Text show in a tab strip nudge informing the user that their task needs attention before it can procede." translateable="true">
