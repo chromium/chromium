@@ -927,9 +927,9 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();
 
-    assertEquals('', profileInfo.displayName);
+    assertEquals('Glic Testing', profileInfo.displayName);
     assertEquals('glic-test@example.com', profileInfo.email);
-    assertEquals('', profileInfo.givenName);
+    assertEquals('Glic', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
     // Can be 'Your Chrome' or 'Your Chromium'.
@@ -956,9 +956,9 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();
 
-    assertEquals('', profileInfo.displayName);
+    assertEquals('Glic Testing', profileInfo.displayName);
     assertEquals('glic-test@example.com', profileInfo.email);
-    assertEquals('', profileInfo.givenName);
+    assertEquals('Glic', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
   }
