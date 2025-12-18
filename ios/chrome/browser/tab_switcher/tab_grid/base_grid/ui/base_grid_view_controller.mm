@@ -1011,15 +1011,16 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       _isNewGroupShiftingToDifferentFinalIndexPath = YES;
     }
     _isGroupBeingCreatedFromDragAndDrop = YES;
-    TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
-    if (sourceItem.tabGroupItem) {
-      [self.mutator mergeGroup:sourceItem.tabGroupItem
+    if ([dropItem.dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+      [self.mutator mergeGroup:dropItem.dragItem.localObject
            intoDestinationItem:destinationItem];
     } else if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
+      TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
       [self.mutator addDroppedTab:tabInfo
                        sourceItem:sourceItem
                           toGroup:destinationItem.tabGroupItem.tabGroup];
     } else {
+      TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
       // If the index path of `sourceItem` < `destinationItem`, then the logic
       // will ensure that there is no animation for the replacement of
       // `destinationItem` into the new group. There is also logic ensure that

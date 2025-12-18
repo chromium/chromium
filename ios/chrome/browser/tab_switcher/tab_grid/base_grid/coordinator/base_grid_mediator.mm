@@ -1802,7 +1802,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   MoveTabToGroup(droppedTabID, group, _profile);
 }
 
-- (void)mergeGroup:(TabGroupItem*)droppedGroup
+- (void)mergeGroup:(TabGroupInfo*)droppedGroup
     intoDestinationItem:(GridItemIdentifier*)destinationItem {
   if (destinationItem.tabGroupItem) {
     // If `destinationItem` is a group, then move tabs in `droppedGroup` to it.
@@ -1843,7 +1843,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
       tabIndexes.insert(index);
     }
     tab_groups::TabGroupVisualData visualData = tab_groups::TabGroupVisualData(
-        base::SysNSStringToUTF16(droppedGroup.title),
+        droppedGroup.tabGroup->visual_data().title(),
         droppedGroup.tabGroup->visual_data().color());
     _webStateList->CreateGroup(tabIndexes, visualData,
                                tab_groups::TabGroupId::GenerateNew());
