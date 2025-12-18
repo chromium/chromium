@@ -58,6 +58,8 @@ class ContextualTasksEphemeralButtonController
   base::CallbackListSubscription RegisterShouldUpdateButtonVisibility(
       ShouldUpdateVisibilityCallbackList::CallbackType callback);
 
+  bool ShouldShowEphemeralButton();
+
  private:
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();

@@ -123,6 +123,7 @@ if (!is_android) {
       "contextual_tasks_ui.h",
       "contextual_tasks_ui_service.h",
       "contextual_tasks_ui_service_factory.h",
+      "entry_point_eligibility_manager.h",
       "task_info_delegate.h",
     ]
 
@@ -157,6 +158,7 @@ if (!is_android) {
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui_service.cc",
       "contextual_tasks_ui_service_factory.cc",
+      "entry_point_eligibility_manager.cc",
     ]
 
     deps = [
@@ -307,13 +309,13 @@ source_set("unit_tests") {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",
       "//components/passage_embeddings",
       "//components/tabs:test_support",
       "//components/variations:test_support",
-      "//chrome/browser/ui/webui:webui_util",
     ]
   }
 }

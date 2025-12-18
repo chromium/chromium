@@ -27,9 +27,12 @@ class ContextualTasksButton : public ToolbarButton {
   void OnButtonPress();
   void OnPinStateChanged();
   void OnShouldUpdateVisibility(bool should_show);
+  void OnEligibilityChange(bool is_eligible);
+  void MaybeUpdateVisibility();
 
   BooleanPrefMember pin_state_;
   base::CallbackListSubscription should_update_visibility_subscription_;
+  base::CallbackListSubscription eligibility_change_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 };
 

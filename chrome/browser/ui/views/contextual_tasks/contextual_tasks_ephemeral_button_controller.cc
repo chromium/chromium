@@ -125,6 +125,26 @@ ContextualTasksEphemeralButtonController::RegisterShouldUpdateButtonVisibility(
   return should_update_visibility_callbacks_.Add(std::move(callback));
 }
 
+bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
+  // TabInterface can be null on browser shutdown.
+  tabs::TabInterface* const tab_interface =
+      browser_window_interface_->GetActiveTabInterface();
+
+  if (!tab_interface) {
+    return false;
+  }
+
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      GetContextualTasksService()->GetContextualTaskForTab(
+          GetCurrentTabSessionId().value());
+
+  // The ephemeral toolbar button should show if the contextual task side panel
+  // was closed.
+  return current_task.has_value() &&
+         base::Contains(ephemeral_button_eligible_tasks_,
+                        current_task->GetTaskId());
+}
+
 contextual_tasks::ContextualTasksService*
 ContextualTasksEphemeralButtonController::GetContextualTasksService() {
   return contextual_tasks::ContextualTasksContextControllerFactory::
@@ -161,21 +181,5 @@ void ContextualTasksEphemeralButtonController::OnActiveTabChange(
 
 void ContextualTasksEphemeralButtonController::
     MaybeNotifyVisibilityShouldChange() {
-  // TabInterface can be null on browser shutdown.
-  tabs::TabInterface* const tab_interface =
-      browser_window_interface_->GetActiveTabInterface();
-
-  if (!tab_interface) {
-    return;
-  }
-
-  std::optional<contextual_tasks::ContextualTask> current_task =
-      GetContextualTasksService()->GetContextualTaskForTab(
-          GetCurrentTabSessionId().value());
-  // The ephemeral toolbar button should show if the contextual task side panel
-  // was closed.
-  should_update_visibility_callbacks_.Notify(
-      current_task.has_value() &&
-      base::Contains(ephemeral_button_eligible_tasks_,
-                     current_task->GetTaskId()));
+  should_update_visibility_callbacks_.Notify(ShouldShowEphemeralButton());
 }
