@@ -177,7 +177,7 @@ class TestAutofillClientTemplate : public T {
     mock_autofill_optimization_guide_decider_.reset();
   }
 
-  MockAutofillAiManager* GetAutofillAiManager() override {
+  AutofillAiManager* GetAutofillAiManager() override {
     return mock_autofill_ai_delegate_.get();
   }
 

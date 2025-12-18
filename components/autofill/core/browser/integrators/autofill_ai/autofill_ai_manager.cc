@@ -218,14 +218,7 @@ void AutofillAiManager::OnSuggestionsShown(
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
-  const DenseSet<EntityType> relevant_entities =
-      GetRelevantEntityTypesForFields(form.fields());
-  const EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (relevant_entities.empty() || !entity_manager) {
-    return;
-  }
-  logger_.OnFormHasDataToFill(form.global_id(), relevant_entities,
-                              entity_manager->GetEntityInstances());
+  UpdateLoggerReadinessData(form);
 }
 
 void AutofillAiManager::OnDidFillSuggestion(
@@ -253,6 +246,17 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
                                                 const AutofillField& field,
                                                 ukm::SourceId ukm_source_id) {
   logger_.OnEditedAutofilledField(form, field, ukm_source_id);
+}
+
+void AutofillAiManager::UpdateLoggerReadinessData(const FormStructure& form) {
+  const DenseSet<EntityType> relevant_entities =
+      GetRelevantEntityTypesForFields(form.fields());
+  const EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (relevant_entities.empty() || !entity_manager) {
+    return;
+  }
+  logger_.OnFormHasDataToFill(form.global_id(), relevant_entities,
+                              entity_manager->GetEntityInstances());
 }
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,

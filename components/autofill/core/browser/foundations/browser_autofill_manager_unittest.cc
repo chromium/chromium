@@ -844,6 +844,7 @@ class MockAutofillClient : public TestAutofillClient {
               (const std::string&, AutofillClient::EmailOverrideUndoCallback),
               (override));
   MOCK_METHOD(bool, IsActorTaskActive, (), (const override));
+  MOCK_METHOD(AutofillAiManager*, GetAutofillAiManager, (), (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -7611,12 +7612,94 @@ class BrowserAutofillManagerTest_AutofillAi
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
+    autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+
+    ai_manager_ =
+        std::make_unique<AutofillAiManager>(&autofill_client(),
+                                            /*strike_database=*/nullptr);
+    ON_CALL(autofill_client(), GetAutofillAiManager)
+        .WillByDefault(Return(ai_manager_.get()));
+  }
+  AutofillAiManager& ai_manager() { return *ai_manager_.get(); }
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWithDataSchema};
+  std::unique_ptr<AutofillAiManager> ai_manager_;
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
+};
+
+// Tests that readiness is logged correctly when the readiness information
+// doesn't get recorded at pageload but rather later during suggestion
+// generation.
+TEST_F(BrowserAutofillManagerTest_AutofillAi,
+       AutofillAiKeyMetrics_DelayedReadiness) {
+  constexpr EntityType kVehicleType = EntityType(EntityTypeName::kVehicle);
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
+      test::GetVehicleEntityInstance());
+  webdata_helper().WaitUntilIdle();
+
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FULL, .autocomplete_attribute = "name"},
+           {.label = u"Vehicle VIN"},
+       }});
+  // Simulate loading the form before figuring out the types of the field.
+  FormsSeen({form});
+
+  FormStructure* cached_form =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_EQ(cached_form->field(0)->Type().GetAutofillAiType(kVehicleType),
+            NAME_FULL);
+  ASSERT_EQ(cached_form->field(1)->Type().GetAutofillAiType(kVehicleType),
+            UNKNOWN_TYPE);
+
+  // Simulate that a server response set the type of the second field
+  // accurately.
+  cached_form->field(0)->SetTypeTo(
+      AutofillType(VEHICLE_VIN),
+      AutofillPredictionSource::kServerCrowdsourcing);
+
+  // This should update the readiness value, taking into consideration that the
+  // fields are now better classified.
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  base::HistogramTester histogram_tester;
+  FormSubmitted(form);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.KeyMetrics.FillingReadiness.Vehicle.Local", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.KeyMetrics.FillingReadiness.Vehicle", 1, 1);
+}
+
+class BrowserAutofillManagerTest_MockAutofillAi
+    : public BrowserAutofillManagerTest {
+ public:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    autofill_client().set_entity_data_manager(
+        std::make_unique<EntityDataManager>(
+            autofill_client().GetPrefs(),
+            autofill_client().GetIdentityManager(),
+            autofill_client().GetSyncService(),
+            webdata_helper_.autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*strike_database=*/nullptr));
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
         test::GetPassportEntityInstance());
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
         test::GetDriversLicenseEntityInstance());
     webdata_helper_.WaitUntilIdle();
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+
+    mock_ai_manager_ = std::make_unique<NiceMock<MockAutofillAiManager>>(
+        &autofill_client(),
+        /*strike_database=*/nullptr);
+    ON_CALL(autofill_client(), GetAutofillAiManager)
+        .WillByDefault(Return(mock_ai_manager_.get()));
 
     GenerateNewPassportForm(/*autocomplete_unrecognized=*/false);
   }
@@ -7692,22 +7775,24 @@ class BrowserAutofillManagerTest_AutofillAi
                     {.name = u"Passport issue date"}}});
   }
 
+  MockAutofillAiManager& mock_ai_manager() { return *mock_ai_manager_.get(); }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillAiWithDataSchema};
+  std::unique_ptr<NiceMock<MockAutofillAiManager>> mock_ai_manager_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   FormData passport_form_;
 };
 
 // Tests that Autofill AI suggestions are shown.
-TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowAutofillAiSuggestions) {
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi, ShowAutofillAiSuggestions) {
   SeeForm(/*may_run_model=*/false);
 
-  MockAutofillAiManager& delegate = *autofill_client().GetAutofillAiManager();
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kFillAutofillAi)};
-  EXPECT_CALL(delegate, GetSuggestions).WillOnce(Return(suggestions));
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
 
   OnAskForValuesToFill(
       passport_form(), passport_form().fields().front(),
@@ -7720,13 +7805,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowAutofillAiSuggestions) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests that no Autofill AI suggestions are shown if the autocomplete attribute
 // is unrecognized.
-TEST_F(BrowserAutofillManagerTest_AutofillAi,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        NoAutofillAiSuggestionsForAutocompleteUnrecognized) {
   GenerateNewPassportForm(/*autocomplete_unrecognized=*/true);
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(*autofill_client().GetAutofillAiManager(), GetSuggestions)
-      .Times(0);
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).Times(0);
   OnAskForValuesToFill(
       passport_form(), passport_form().fields().front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -7739,10 +7823,11 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 //
 // In particular, even if there are matching address suggestions, these are
 // ignored. See crbug.com/402397312 for a concrete example.
-TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       ShowNoSuggestionsIfCollision) {
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(*autofill_client().GetAutofillAiManager(), GetSuggestions)
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions)
       .WillOnce(Return(std::vector<Suggestion>{}));
 
   OnAskForValuesToFill(
@@ -7753,11 +7838,10 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, ShowNoSuggestionsIfCollision) {
 
 // Tests that the Autofill AI IPH is attempted to be shown if there are no
 // Autofill suggestions and the delegate returns that IPH should show.
-TEST_F(BrowserAutofillManagerTest_AutofillAi, AutofillAiIph) {
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi, AutofillAiIph) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-  ON_CALL(*autofill_client().GetAutofillAiManager(), ShouldDisplayIph)
-      .WillByDefault(Return(true));
+  ON_CALL(mock_ai_manager(), ShouldDisplayIph).WillByDefault(Return(true));
   personal_data().test_address_data_manager().ClearProfiles();
 
   EXPECT_CALL(autofill_client(),
@@ -7770,12 +7854,11 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi, AutofillAiIph) {
 
 // Tests that the Autofill AI IPH is not shown if there are Autofill
 // suggestions.
-TEST_F(BrowserAutofillManagerTest_AutofillAi,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        NoAutofillAiIphWhenThereAreAutofillSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
-  ON_CALL(*autofill_client().GetAutofillAiManager(), ShouldDisplayIph)
-      .WillByDefault(Return(false));
+  ON_CALL(mock_ai_manager(), ShouldDisplayIph).WillByDefault(Return(false));
   ASSERT_THAT(personal_data().test_address_data_manager().GetProfiles(),
               Not(IsEmpty()));
 
@@ -7790,7 +7873,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 
 // Tests that an Autofill profile is not imported into the address data manager
 // when the submitted form was imported by AutofillAI.
-TEST_F(BrowserAutofillManagerTest_AutofillAi,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        ProfileNotImportedOnSuccessfulAutofillAiImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
@@ -7808,15 +7891,14 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   // prediction improvements.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(*autofill_client().GetAutofillAiManager(), OnFormSubmitted)
-      .WillOnce(Return(true));
+  EXPECT_CALL(mock_ai_manager(), OnFormSubmitted).WillOnce(Return(true));
   FormSubmitted(response_data);
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
 
 // Tests that an Autofill profile is imported into the address data manager when
 // the submitted form was not imported by AutofillAI.
-TEST_F(BrowserAutofillManagerTest_AutofillAi,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        ProfileImportedOnFailedAutofillAiImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
@@ -7833,19 +7915,18 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
   // that the profile is imported again.
   adm.ClearProfiles();
   ASSERT_TRUE(adm.GetProfiles().empty());
-  EXPECT_CALL(*autofill_client().GetAutofillAiManager(), OnFormSubmitted)
-      .WillOnce(Return(false));
+  EXPECT_CALL(mock_ai_manager(), OnFormSubmitted).WillOnce(Return(false));
   FormSubmitted(response_data);
   EXPECT_FALSE(adm.GetProfiles().empty());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-class BrowserAutofillManagerTest_AutofillAi_WithModel
-    : public BrowserAutofillManagerTest_AutofillAi {
+class BrowserAutofillManagerTest_MockAutofillAi_WithModel
+    : public BrowserAutofillManagerTest_MockAutofillAi {
  public:
   void SetUp() override {
-    BrowserAutofillManagerTest_AutofillAi::SetUp();
+    BrowserAutofillManagerTest_MockAutofillAi::SetUp();
     ON_CALL(autofill_client(), GetAutofillAiModelCache)
         .WillByDefault(Return(&cache_));
     ON_CALL(autofill_client(), GetAutofillAiModelExecutor)
@@ -7863,7 +7944,7 @@ class BrowserAutofillManagerTest_AutofillAi_WithModel
 
 // Tests that the Autofill AI server model is run if cache and model are
 // available and the form is not contained in the cache.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        AutofillAiServerModelRun) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -7878,7 +7959,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
 
 // Tests that BAM requests annotated page content and passes it on to the
 // model executor if kAutofillAiServerModelSendPageContent is true.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        AutofillAiServerModelReceivesAnnotatedPageContent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -7895,7 +7976,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
 
 // Tests that the Autofill AI server model is not run if the form is already
 // contained in the cache.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        AutofillAiServerModelNotRunWhenInCache) {
   ON_CALL(cache(), Contains).WillByDefault(Return(true));
   EXPECT_CALL(executor(), GetPredictions).Times(0);
@@ -7904,7 +7985,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
 
 // Tests that the Autofill AI server model is not run if the form is not
 // eligible.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        AutofillAiServerModelNotRunWhenNotFormIneligible) {
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
   EXPECT_CALL(executor(), GetPredictions).Times(0);
@@ -7913,7 +7994,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
 
 // Tests that the Autofill AI server model is not run if the user does not have
 // model permissions.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        AutofillAiServerModelNotRunWhenNotUserIneligible) {
   autofill_client().SetCanUseModelExecutionFeatures(false);
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
@@ -7922,7 +8003,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
 }
 
 // Tests that cache results are used to populate field server types.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel, CacheResultUsed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAiServerModel,
@@ -7974,7 +8055,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
 
 // Tests that if the form has at least one existing AutofillAI prediction, then
 // the cache is not used for populating predictions.
-TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
        CacheResultsDoNotOverrideAiServerPredictions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

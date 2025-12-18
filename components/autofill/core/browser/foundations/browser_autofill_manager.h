@@ -392,8 +392,9 @@ class BrowserAutofillManager : public AutofillManager {
   void LogSubmissionMetrics(const FormStructure* submitted_form,
                             const base::TimeTicks& form_submitted_timestamp);
 
-  // Updates event loggers with information about data stored for Autofill.
-  void UpdateLoggersReadinessData();
+  // Updates event loggers with information about data stored for Autofill. Some
+  // loggers require a form of interest, and `form` specifies that.
+  void UpdateLoggersReadinessData(const FormStructure* form);
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload

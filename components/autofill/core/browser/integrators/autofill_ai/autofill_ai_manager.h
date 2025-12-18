@@ -79,6 +79,10 @@ class AutofillAiManager {
                                        const AutofillField& field,
                                        ukm::SourceId ukm_source_id);
 
+  // Updates `logger_`'s information about data stored for AutofillAi for
+  // `form`.
+  void UpdateLoggerReadinessData(const FormStructure& form);
+
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:

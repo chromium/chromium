@@ -1161,7 +1161,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  UpdateLoggersReadinessData();
+  UpdateLoggersReadinessData(form_structure);
 
   if (form_structure && autofill_field) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
@@ -2647,7 +2647,8 @@ void BrowserAutofillManager::Reset() {
   metrics_.emplace(this);
 }
 
-void BrowserAutofillManager::UpdateLoggersReadinessData() {
+void BrowserAutofillManager::UpdateLoggersReadinessData(
+    const FormStructure* form_structure) {
   if (!client().IsAutofillEnabled()) {
     return;
   }
@@ -2660,6 +2661,10 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
         .UpdateLoyaltyCardsAvailabilityForReadiness(
             valuables_manager->GetLoyaltyCards(),
             client().GetLastCommittedPrimaryMainFrameURL());
+  }
+  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
+      ai_manager && form_structure) {
+    ai_manager->UpdateLoggerReadinessData(*form_structure);
   }
 }
 
