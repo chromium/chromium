@@ -485,7 +485,6 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
-    // TODO(crbug.com/430058918): Reenable or add new test.
     @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testOffsetTagAndConstraintChanges() {
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
@@ -515,6 +514,38 @@ public class TopToolbarOverlayMediatorTest {
         mBrowserControlsObserverCaptor.getValue().onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertNull(mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
         assertEquals(offset, (int) mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
+    })
+    public void testOffsetTagAndConstraintChanges_topControlsRefactor() {
+        BrowserControlsOffsetTagsInfo originalOffsetTag = new BrowserControlsOffsetTagsInfo();
+        int offset = -10;
+        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
+
+        mMediator.updateOffsetTag(originalOffsetTag);
+
+        BrowserControlsOffsetTagsInfo newOffsetTag = new BrowserControlsOffsetTagsInfo();
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onOffsetTagsInfoChanged(null, newOffsetTag, 0, false);
+        assertEquals(
+                "Original offset tag should not changed by onOffsetTagsInfoChanged.",
+                originalOffsetTag.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onOffsetTagsInfoChanged(null, newOffsetTag, 0, false);
+        assertEquals(
+                "Offset tag should be changed by onOffsetTagsInfoChanged for bottom controls.",
+                newOffsetTag.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
     }
 
     @Test
@@ -572,7 +603,6 @@ public class TopToolbarOverlayMediatorTest {
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testContentOffset_topControlsRefactorEnabled_ControlsAtBottom() {
-
         float height = 700.0f;
         mMediator.setViewportHeight(height);
         mBottomToolbarControlsOffsetSupplier.set(0);
