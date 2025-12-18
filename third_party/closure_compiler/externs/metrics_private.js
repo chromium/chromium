@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,19 +56,14 @@ chrome.metricsPrivate.Histogram;
 
 /**
  * @enum {string}
- *
- * These actions are triggered by users interacting with the extension UI,
- * located to the right of the address bar. Actions include pinning/unpinning
- * extensions to the toolbar, enabling/disabling extensions, and interacting
- * with the context menu or extensions directly.
  */
 chrome.metricsPrivate.ExtensionUsageAction = {
-  PINNED: 'kPinned',
-  UNPINNED: 'kUnpinned',
-  CONTEXTMENUINIT: 'kContextMenuInit',
-  ACTIONCLICKED: 'kActionClicked',
-  ENABLED: 'kEnabled',
-  DISABLED: 'kDisabled',
+  K_PINNED: 'kPinned',
+  K_UNPINNED: 'kUnpinned',
+  K_CONTEXT_MENU_INIT: 'kContextMenuInit',
+  K_ACTION_CLICKED: 'kActionClicked',
+  K_ENABLED: 'kEnabled',
+  K_DISABLED: 'kDisabled',
 };
 
 /**
@@ -108,8 +103,7 @@ chrome.metricsPrivate.getVariationParams = function(name, callback) {};
 chrome.metricsPrivate.recordUserAction = function(name) {};
 
 /**
- * Records an extension usage UKM event when `ExtensionUsageAction`s occur in
- * extensions UI surfaces.
+ * Records an extension usage UKM event triggered by user UI actions.
  * @param {string} extensionId
  * @param {!chrome.metricsPrivate.ExtensionUsageAction} action
  */
