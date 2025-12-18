@@ -33,9 +33,11 @@ namespace autofill {
 AutofillAiSaveUpdateEntityPromptController::
     AutofillAiSaveUpdateEntityPromptController(
         std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
-        EntityTypeName entity_type_name)
+        EntityTypeName entity_type_name,
+        AutofillClient::EntityImportPromptResultCallback prompt_closed_callback)
     : prompt_view_(std::move(prompt_view)),
       entity_type_name_(entity_type_name),
+      prompt_closed_callback_(std::move(prompt_closed_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
           base::android::AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))) {
@@ -76,14 +78,28 @@ AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
 
 void AutofillAiSaveUpdateEntityPromptController::OnUserAccepted(JNIEnv* env) {
   had_user_interaction_ = true;
+  RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
 }
 
 void AutofillAiSaveUpdateEntityPromptController::OnUserDeclined(JNIEnv* env) {
   had_user_interaction_ = true;
+  RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleClosedReason::kCancelled);
 }
 
 void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
-    JNIEnv* env) {}
+    JNIEnv* env) {
+  RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted);
+}
+
+void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
+    AutofillClient::AutofillAiBubbleClosedReason decision) {
+  if (prompt_closed_callback_) {
+    std::move(prompt_closed_callback_).Run(decision);
+  }
+}
 
 }  // namespace autofill
 

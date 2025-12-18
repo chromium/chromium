@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 
@@ -26,7 +27,8 @@ class AutofillAiSaveUpdateEntityPromptController {
  public:
   AutofillAiSaveUpdateEntityPromptController(
       std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
-      const EntityTypeName entity_type_name);
+      const EntityTypeName entity_type_name,
+      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
   AutofillAiSaveUpdateEntityPromptController(
       const AutofillAiSaveUpdateEntityPromptController&) = delete;
   AutofillAiSaveUpdateEntityPromptController& operator=(
@@ -48,10 +50,15 @@ class AutofillAiSaveUpdateEntityPromptController {
   void OnPromptDismissed(JNIEnv* env);
 
  private:
+  void RunPromptClosedCallback(
+      AutofillClient::AutofillAiBubbleClosedReason decision);
+
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
   const EntityTypeName entity_type_name_;
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
+  // The callback to run when the user takes action on the prompt.
+  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
   // The corresponding Java SaveUpdateAddressProfilePromptController.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

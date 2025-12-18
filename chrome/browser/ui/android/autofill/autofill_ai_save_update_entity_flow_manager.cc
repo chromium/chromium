@@ -109,7 +109,8 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
           web_contents_);
   save_update_entity_prompt_controller_ =
       std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
-          std::move(prompt_view_android), entity.type().name());
+          std::move(prompt_view_android), entity.type().name(),
+          std::move(prompt_closed_callback_));
   save_update_entity_prompt_controller_->DisplayPrompt();
 }
 
@@ -135,7 +136,9 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed(
 
 void AutofillAiSaveUpdateEntityFlowManager::RunPromptClosedCallback(
     AutofillClient::AutofillAiBubbleClosedReason decision) {
-  std::move(prompt_closed_callback_).Run(decision);
+  if (prompt_closed_callback_) {
+    std::move(prompt_closed_callback_).Run(decision);
+  }
 }
 
 }  // namespace autofill
