@@ -28,7 +28,6 @@ group("build") {
     "chromevox/mv2:build",
     "chromevox/mv3:build",
     "common:build",
-    "enhanced_network_tts/mv2:build",
     "enhanced_network_tts/mv3:build",
     "select_to_speak/mv2:build",
     "select_to_speak/mv3:build",
