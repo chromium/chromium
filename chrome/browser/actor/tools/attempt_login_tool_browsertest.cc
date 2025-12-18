@@ -111,6 +111,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
          password_manager::features::
              kActorLoginPermissionsUseStrongAffiliations,
          password_manager::features::kActorLoginQualityLogs,
+         password_manager::features::kActorLoginGetCredentialsNoLoginForm,
          actor::kGlicEnableAutoLoginDialogs,
          actor::kGlicEnableAutoLoginPersistedPermissions},
         /*disabled_features=*/{});
@@ -291,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       NoCredentialsAvailableForLogin) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -304,8 +306,9 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kLoginNoCredentialsAvailable);
+  // If there are saved credentials, but none is available for login it means
+  // that there is no login form on the page.
+  ExpectErrorResult(result, mojom::ActionResultCode::kLoginNotLoginPage);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
