@@ -4797,6 +4797,10 @@
       status: "stable",
     },
     {
+      name: "SetHTMLCanRunScripts",
+      status: "experimental",
+    },
+    {
       name: "SetSequentialFocusStartingPoint",
       status: "experimental",
     },

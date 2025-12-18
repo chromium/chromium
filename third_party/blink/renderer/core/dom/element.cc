@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -8977,9 +8978,15 @@ void Element::SetInnerHTMLInternal(
     if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
       registry = template_element ? nullptr : customElementRegistry();
     }
+    const ParserContentPolicy content_policy =
+        (RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled() &&
+         std::holds_alternative<SetHTMLUnsafeOptions*>(options) &&
+         std::get<SetHTMLUnsafeOptions*>(options)->runScripts())
+            ? kAllowScriptingContentAndDoNotMarkAlreadyStarted
+            : kAllowScriptingContent;
+
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, kAllowScriptingContent, parse_declarative_shadows,
-            force_html,
+            html, this, content_policy, parse_declarative_shadows, force_html,
             std::holds_alternative<std::monostate>(options)
                 ? ForceInertTemplate::kDontForce
                 : ForceInertTemplate::kForce,

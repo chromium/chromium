@@ -35,6 +35,7 @@ dictionary SetHTMLOptions {
 };
 dictionary SetHTMLUnsafeOptions {
   (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer = {};
+  boolean runScripts = false;
 };
 
 // https://dom.spec.whatwg.org/#interface-element
