@@ -21,6 +21,8 @@ namespace {
 NSString* kErrorDomain = @"PageContextAppInterfaceError";
 NSInteger kPageContextWrapperErrorCode = 0;
 NSInteger kPageContextLocalStorageErrorCode = 1;
+NSUInteger kMaxUrlChars = 20;
+base::TimeDelta kPageLoadTimeout = base::Seconds(30);
 
 // Helper function to convert PageContextWrapperError enum to a readable string.
 NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
@@ -50,6 +52,8 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
 @property(nonatomic, assign) BOOL pageContextCaptureComplete;
 // The page context capture result.
 @property(nonatomic, strong) PageContextExtractionResult* pageContextResult;
+// The url of page context.
+@property(nonatomic, strong) NSString* url;
 @end
 
 @implementation PageContextAppInterface {
@@ -74,10 +78,11 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
   return instance;
 }
 
-+ (void)triggerPageContextCaptureWithConfig:
-    (PageContextExtractionConfig*)config {
++ (void)triggerPageContextCaptureWithConfig:(PageContextExtractionConfig*)config
+                                        url:(NSString*)url {
   [[PageContextAppInterface sharedInstance]
-      captureAnnotatedPageContextWithConfig:config];
+      captureAnnotatedPageContextWithConfig:config
+                                        url:url];
 }
 
 + (BOOL)isPageContextCaptureComplete {
@@ -91,9 +96,11 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
 #pragma mark - Helper
 
 - (void)captureAnnotatedPageContextWithConfig:
-    (PageContextExtractionConfig*)config {
+            (PageContextExtractionConfig*)config
+                                          url:(NSString*)url {
   [self reset];
   [self setConfig:config];
+  [self setUrl:url];
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -112,7 +119,7 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
                                    chrome_test_util::GetCurrentBrowser()
                                        ->GetWebStateList()
                                        ->GetActiveWebState(),
-                                   base::Seconds(30));
+                                   kPageLoadTimeout);
   });
 }
 
@@ -121,6 +128,7 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
   self.pageContextCaptureComplete = NO;
   self.pageContextResult = nil;
   self.config = nil;
+  self.url = nil;
 }
 
 - (void)pageContextResultCompleted {
@@ -151,9 +159,20 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
   NSError* pageContextStoreError = nil;
   // Optionally store page context to disk.
   if (self.config.shouldStorePageContextLocally) {
-    SavePageContextResult result =
-        SaveSerializedPageContextToDisk(*response.value());
-
+    SavePageContextResult result;
+    if (!self.config.outputDir) {
+      result = SaveSerializedPageContextToDisk(*response.value());
+    } else {
+      NSString* sanitizedUrl = SanitizeUrl(self.url);
+      // Prevent error from the file name being too long.
+      if ([sanitizedUrl length] > kMaxUrlChars) {
+        sanitizedUrl = [sanitizedUrl substringToIndex:kMaxUrlChars];
+      }
+      NSString* fileName = [sanitizedUrl stringByAppendingString:@".txtpb"];
+      result = SaveSerializedPageContextToDisk(
+          *response.value(), base::SysNSStringToUTF8(self.config.outputDir),
+          base::SysNSStringToUTF8(fileName));
+    }
     if (result.success) {
       filePath = base::SysUTF8ToNSString(result.file_path.value());
     } else {

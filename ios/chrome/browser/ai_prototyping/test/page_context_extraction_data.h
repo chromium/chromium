@@ -14,10 +14,11 @@
 // device.
 @property(nonatomic, assign) BOOL shouldStorePageContextLocally;
 
-// TODO(crbug.com/465016086): Add more configuration properties as needed.
+// Output directory where page context should be saved to.
+@property(nonatomic, copy, readonly) NSString* outputDir;
 
-- (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore;
-
+- (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
+                                            outputDir:(NSString*)outputDir;
 @end
 
 // Response containing the result of a page context capture.

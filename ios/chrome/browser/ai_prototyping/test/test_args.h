@@ -9,18 +9,20 @@
 
 static NSString* const kStorePageContextLocally =
     @"--save_page_context_locally";
-static NSString* const kInputDir = @"--input_dir=";
+static NSString* const kInputFile = @"--input_urls_file=";
+static NSString* const kOutputDirName = @"--output_dir=";
 
 // A helper class for reading test arguments.
 @interface TestArgs : NSObject
 
+// Input file containing list of urls to extract PageContext from.
++ (NSString*)readUrlListFilePathTestArgs;
+
 // Whether to store PageContext to disk.
 + (BOOL)shouldStorePageContextLocallyFromTestArgs;
 
-// Input directory for containing data required for PageContext extraction.
-+ (NSString*)readInputDirFromTestArgs;
-
-// TODO(crbug.com/465016086): Add more test args such as upload to MQLS.
+// Output directory name to save PageContext in.
++ (NSString*)readOutputDirNameFromTestArgs;
 
 @end
 

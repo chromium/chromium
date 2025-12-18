@@ -6,6 +6,10 @@
 
 @implementation TestArgs
 
++ (NSString*)readUrlListFilePathTestArgs {
+  return [TestArgs readTestArgument:kInputFile];
+}
+
 + (BOOL)shouldStorePageContextLocallyFromTestArgs {
   NSString* value = [TestArgs readTestArgument:kStorePageContextLocally];
   if (value == nil) {
@@ -14,8 +18,8 @@
   return YES;
 }
 
-+ (NSString*)readInputDirFromTestArgs {
-  return [TestArgs readTestArgument:kInputDir];
++ (NSString*)readOutputDirNameFromTestArgs {
+  return [TestArgs readTestArgument:kOutputDirName];
 }
 
 #pragma mark - Helper

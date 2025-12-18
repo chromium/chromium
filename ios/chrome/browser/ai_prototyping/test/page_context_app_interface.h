@@ -11,8 +11,8 @@
 @interface PageContextAppInterface : NSObject
 
 // Triggers the capture of the annotated page context with the given `config`.
-+ (void)triggerPageContextCaptureWithConfig:
-    (PageContextExtractionConfig*)config;
++ (void)triggerPageContextCaptureWithConfig:(PageContextExtractionConfig*)config
+                                        url:(NSString*)url;
 
 // Returns whether the page context capture has completed.
 + (BOOL)isPageContextCaptureComplete;

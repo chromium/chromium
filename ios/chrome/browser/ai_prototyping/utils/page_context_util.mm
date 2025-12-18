@@ -48,6 +48,71 @@ class SelfDestructivePageLoadObserver : public web::WebStateObserver {
   base::OnceClosure callback_;
 };
 
+SavePageContextResult SaveProtoToPath(
+    const optimization_guide::proto::PageContext& page_context,
+    const base::FilePath& file_path) {
+  SavePageContextResult result;
+
+  // Create the output directory if necessary.
+  NSString* dir = base::SysUTF8ToNSString(file_path.DirName().value());
+  if (![[NSFileManager defaultManager] createDirectoryAtPath:dir
+                                 withIntermediateDirectories:YES
+                                                  attributes:nil
+                                                       error:nil]) {
+    result.error_message = std::format("Could not create output directory",
+                                       file_path.DirName().value().c_str());
+  }
+
+  // Convert base::FilePath path to a C_style string for fopen.
+  const char* c_file_path = file_path.value().c_str();
+  if (c_file_path == nullptr) {
+    result.error_message = "Could not convert file path to C_style string.";
+    return result;
+  }
+
+  // Open the file for writing in binary mode and get the file descriptor.
+  FILE* fp = fopen(c_file_path, "wb");
+  if (fp == nullptr) {
+    result.error_message =
+        std::format("Could not open file {} for writing. Error: {}",
+                    c_file_path, strerror(errno));
+    return result;
+  }
+  // Get the file descriptor from the FILE pointer.
+  int fd = fileno(fp);
+  if (fd == -1) {
+    result.error_message =
+        std::format("Could not get file descriptor for {}. Error: {}",
+                    c_file_path, strerror(errno));
+    fclose(fp);
+    return result;
+  }
+
+  // Serialize and write the message to the file.
+  bool success = page_context.SerializeToFileDescriptor(fd);
+  // Close the file
+  if (fclose(fp) != 0) {
+    result.error_message =
+        std::format("Could not close file '{}' properly. Error: {}",
+                    c_file_path, strerror(errno));
+    return result;
+  }
+  if (!success) {
+    result.error_message =
+        std::format("Failed to serialize protobuf message to file: '{}'.",
+                    c_file_path, strerror(errno));
+    return result;
+  }
+  result.success = true;
+  result.file_path = file_path;
+  return result;
+}
+
+base::FilePath GetDirectoryPath() {
+  // Get the Documents directory path.
+  return base::apple::NSStringToFilePath([NSSearchPathForDirectoriesInDomains(
+      NSDocumentDirectory, NSAllDomainsMask, YES) firstObject]);
+}
 }  // namespace
 
 SavePageContextResult::SavePageContextResult() = default;
@@ -101,68 +166,33 @@ void PopulatePageContextWithTimeout(PageContextWrapper* wrapper,
 }
 
 SavePageContextResult SaveSerializedPageContextToDisk(
-    const optimization_guide::proto::PageContext& page_context) {
-  SavePageContextResult result;
-  // Get the Documents directory path and generate file name for `page_context`.
-  base::FilePath directory_path =
-      base::apple::NSStringToFilePath([NSSearchPathForDirectoriesInDomains(
-          NSDocumentDirectory, NSAllDomainsMask, YES) firstObject]);
+    const optimization_guide::proto::PageContext& page_context,
+    const std::string& dir_name,
+    const std::string& file_name) {
+  base::FilePath directory_path = GetDirectoryPath();
+  base::FilePath file_path = directory_path.Append(dir_name).Append(file_name);
+  return SaveProtoToPath(page_context, file_path);
+}
 
+SavePageContextResult SaveSerializedPageContextToDisk(
+    const optimization_guide::proto::PageContext& page_context) {
+  base::FilePath directory_path = GetDirectoryPath();
   std::string file_name = FileNameForPageContext(page_context);
   base::FilePath file_path = directory_path.Append(file_name);
-
-  // Convert base::FilePath path to a C_style string for fopen.
-  const char* c_file_path = file_path.value().c_str();
-  if (c_file_path == nullptr) {
-    result.error_message = "Could not convert file path to C_style string.";
-    return result;
-  }
-
-  // Open the file for writing in binary mode and get the file descriptor.
-  FILE* fp = fopen(c_file_path, "wb");
-  if (fp == nullptr) {
-    result.error_message =
-        std::format("Could not open file '%s' for writing. Error: %s",
-                    c_file_path, strerror(errno));
-    return result;
-  }
-  // Get the file descriptor from the FILE pointer.
-  int fd = fileno(fp);
-  if (fd == -1) {
-    result.error_message =
-        std::format("Could not get file descriptor for '%s'. Error: %s",
-                    c_file_path, strerror(errno));
-    fclose(fp);
-    return result;
-  }
-
-  // Serialize and write the message to the file.
-  bool success = page_context.SerializeToFileDescriptor(fd);
-  // Close the file
-  if (fclose(fp) != 0) {
-    result.error_message =
-        std::format("Could not close file '%s' properly. Error: %s",
-                    c_file_path, strerror(errno));
-    return result;
-  }
-  if (!success) {
-    result.error_message =
-        std::format("Failed to serialize protobuf message to file: '%s'.",
-                    c_file_path, strerror(errno));
-    return result;
-  }
-  result.success = true;
-  result.file_path = file_path;
-  return result;
+  return SaveProtoToPath(page_context, file_path);
 }
 
 std::string FileNameForPageContext(
     const optimization_guide::proto::PageContext& page_context) {
   NSString* urlString = base::SysUTF8ToNSString(page_context.url());
+  NSString* fileName =
+      [SanitizeUrl(urlString) stringByAppendingString:@".txtpb"];
+  return base::SysNSStringToUTF8(fileName);
+}
+
+NSString* SanitizeUrl(NSString* url) {
   NSCharacterSet* illegalFileNameCharacters =
       [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>:"];
-  NSString* fileName = [[[urlString
-      componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
-      componentsJoinedByString:@""] stringByAppendingString:@".txtpb"];
-  return base::SysNSStringToUTF8(fileName);
+  return [[url componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
+      componentsJoinedByString:@""];
 }
