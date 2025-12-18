@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
 
 namespace content {
 
@@ -44,7 +45,7 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
 
   // PipScreenCaptureCoordinatorImpl::Observer:
   void OnStateChanged(
-      std::optional<NativeWindowId> new_pip_window_id,
+      std::optional<DesktopMediaID::Id> new_pip_window_id,
       const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
       const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
           captures) override {
@@ -65,7 +66,7 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
 
 PipScreenCaptureCoordinatorProxyImpl::PipScreenCaptureCoordinatorProxyImpl(
     base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator,
-    std::optional<NativeWindowId> initial_pip_window_id,
+    std::optional<DesktopMediaID::Id> initial_pip_window_id,
     GlobalRenderFrameHostId initial_pip_owner_render_frame_host_id,
     const std::vector<CaptureInfo>& initial_captures)
     : coordinator_(std::move(coordinator)),
@@ -86,7 +87,7 @@ PipScreenCaptureCoordinatorProxyImpl::~PipScreenCaptureCoordinatorProxyImpl() {
   // `OnTaskRunnerDeleter`, which will unregister the observer.
 }
 
-std::optional<NativeWindowId>
+std::optional<DesktopMediaID::Id>
 PipScreenCaptureCoordinatorProxyImpl::PipWindowId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pip_window_id_;
@@ -104,7 +105,7 @@ PipScreenCaptureCoordinatorProxyImpl::Captures() const {
   return captures_;
 }
 
-std::vector<NativeWindowId>
+std::vector<DesktopMediaID::Id>
 PipScreenCaptureCoordinatorProxyImpl::WindowsToExclude(
     const DesktopMediaID& media_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -161,7 +162,7 @@ void PipScreenCaptureCoordinatorProxyImpl::RemoveObserver(Observer* observer) {
 }
 
 void PipScreenCaptureCoordinatorProxyImpl::UpdateState(
-    const std::optional<NativeWindowId>& new_pip_window_id,
+    const std::optional<DesktopMediaID::Id>& new_pip_window_id,
     const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
     const std::vector<CaptureInfo>& new_captures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

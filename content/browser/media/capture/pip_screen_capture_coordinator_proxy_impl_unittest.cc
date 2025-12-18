@@ -39,13 +39,13 @@ TEST_F(PipScreenCaptureCoordinatorProxyImplTest,
        WindowsToExcludeReturnsPipWindowWhenNoCaptures) {
   const GlobalRenderFrameHostId owner_render_frame_host_id(1, 1);
   const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures;
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
 
   auto proxy = std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
       nullptr, pip_window_id, owner_render_frame_host_id, captures);
 
   const DesktopMediaID media_id(DesktopMediaID::TYPE_SCREEN, 1);
-  std::vector<NativeWindowId> excluded_windows =
+  std::vector<DesktopMediaID::Id> excluded_windows =
       proxy->WindowsToExclude(media_id);
   ASSERT_EQ(1u, excluded_windows.size());
   EXPECT_EQ(pip_window_id, excluded_windows[0]);
@@ -57,12 +57,12 @@ TEST_F(PipScreenCaptureCoordinatorProxyImplTest,
   const DesktopMediaID media_id(DesktopMediaID::TYPE_SCREEN, 1);
   const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures = {
       {base::UnguessableToken::Create(), owner_render_frame_host_id, media_id}};
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
 
   auto proxy = std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
       nullptr, pip_window_id, owner_render_frame_host_id, captures);
 
-  std::vector<NativeWindowId> excluded_windows =
+  std::vector<DesktopMediaID::Id> excluded_windows =
       proxy->WindowsToExclude(media_id);
   ASSERT_EQ(1u, excluded_windows.size());
   EXPECT_EQ(pip_window_id, excluded_windows[0]);
@@ -75,7 +75,7 @@ TEST_F(PipScreenCaptureCoordinatorProxyImplTest,
   const DesktopMediaID media_id(DesktopMediaID::TYPE_SCREEN, 1);
   const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures = {
       {base::UnguessableToken::Create(), other_render_frame_host_id, media_id}};
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
 
   auto proxy = std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
       nullptr, pip_window_id, owner_render_frame_host_id, captures);

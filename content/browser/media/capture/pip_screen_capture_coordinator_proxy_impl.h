@@ -20,17 +20,17 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorProxyImpl
  public:
   PipScreenCaptureCoordinatorProxyImpl(
       base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator,
-      std::optional<NativeWindowId> initial_pip_window_id,
+      std::optional<DesktopMediaID::Id> initial_pip_window_id,
       GlobalRenderFrameHostId initial_pip_owner_render_frame_host_id,
       const std::vector<CaptureInfo>& initial_captures);
 
   ~PipScreenCaptureCoordinatorProxyImpl() override;
 
-  std::optional<NativeWindowId> PipWindowId() const override;
+  std::optional<DesktopMediaID::Id> PipWindowId() const override;
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const override;
   const std::vector<CaptureInfo>& Captures() const override;
 
-  std::vector<NativeWindowId> WindowsToExclude(
+  std::vector<DesktopMediaID::Id> WindowsToExclude(
       const DesktopMediaID& media_id) const override;
 
   void AddObserver(Observer* observer) override;
@@ -41,13 +41,13 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorProxyImpl
   friend class UiThreadObserver;
 
   void UpdateState(
-      const std::optional<NativeWindowId>& new_pip_window_id,
+      const std::optional<DesktopMediaID::Id>& new_pip_window_id,
       const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
       const std::vector<CaptureInfo>& new_captures);
 
   base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::optional<NativeWindowId> pip_window_id_
+  std::optional<DesktopMediaID::Id> pip_window_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
   GlobalRenderFrameHostId pip_owner_render_frame_host_id_
       GUARDED_BY_CONTEXT(sequence_checker_);

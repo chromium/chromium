@@ -124,10 +124,10 @@ gfx::Size CreateEvenSize(const gfx::Size& original_size) {
 API_AVAILABLE(macos(12.3))
 NSArray<SCWindow*>* ConvertWindowIDsToSCWindows(
     SCShareableContent* content,
-    const std::vector<content::NativeWindowId>& excluded_window_ids) {
+    const std::vector<content::DesktopMediaID::Id>& excluded_window_ids) {
   NSMutableArray<SCWindow*>* excluded_sc_windows =
       [[NSMutableArray alloc] init];
-  for (content::NativeWindowId excluded_id : excluded_window_ids) {
+  for (content::DesktopMediaID::Id excluded_id : excluded_window_ids) {
     for (SCWindow* window_to_check in content.windows) {
       if (window_to_check.windowID == excluded_id) {
         [excluded_sc_windows addObject:window_to_check];
@@ -302,7 +302,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
           // fallback. See https://crbug.com/325530044.
           if (source_.id == display.displayID ||
               source_.id == webrtc::kFullDesktopScreenId) {
-            std::vector<NativeWindowId> excluded_window_ids;
+            std::vector<DesktopMediaID::Id> excluded_window_ids;
             if (pip_screen_capture_coordinator_proxy_) {
               excluded_window_ids =
                   pip_screen_capture_coordinator_proxy_->WindowsToExclude(
@@ -571,7 +571,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       return;
     }
 
-    std::vector<NativeWindowId> excluded_window_ids;
+    std::vector<DesktopMediaID::Id> excluded_window_ids;
     if (pip_screen_capture_coordinator_proxy_) {
       excluded_window_ids =
           pip_screen_capture_coordinator_proxy_->WindowsToExclude(source_);
@@ -594,7 +594,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
   // PipScreenCaptureCoordinatorProxy::Observer:
   void OnStateChanged(
-      const std::optional<NativeWindowId>& new_pip_window_id,
+      const std::optional<DesktopMediaID::Id>& new_pip_window_id,
       const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
       const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
           captures) override {

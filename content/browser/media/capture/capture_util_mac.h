@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_CAPTURE_UTIL_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_CAPTURE_UTIL_MAC_H_
 
-#include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -23,10 +22,11 @@ CreateScreenCaptureKitDeviceMac(
     std::unique_ptr<PipScreenCaptureCoordinatorProxy>
         pip_screen_capture_coordinator_proxy);
 
-// Returns the windowNumber prorperty of the window associated to
+// Returns the windowNumber property of the window associated to
 // |web_contents| if there is an associated window with a positive
 // windowNumber, or nullopt otherwise.
-std::optional<NativeWindowId> GetNativeWindowIdMac(WebContents& web_contents);
+std::optional<DesktopMediaID::Id> GetNativeWindowIdMac(
+    WebContents& web_contents);
 
 }  // namespace content
 

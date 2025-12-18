@@ -2973,7 +2973,6 @@ source_set("browser") {
   # built depending on the available implementations for each platform.
   if (enable_screen_capture) {
     sources += [
-      "media/capture/capture_util.h",
       "media/capture/frame_sink_video_capture_device.cc",
       "media/capture/frame_sink_video_capture_device.h",
       "media/capture/pip_screen_capture_coordinator.cc",

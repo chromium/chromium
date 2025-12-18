@@ -15,7 +15,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using NativeWindowId = content::NativeWindowId;
 using testing::_;
 
 namespace content {
@@ -30,7 +29,7 @@ class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
   MOCK_METHOD(
       void,
       OnStateChanged,
-      (std::optional<NativeWindowId>,
+      (std::optional<DesktopMediaID::Id>,
        const GlobalRenderFrameHostId&,
        const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&),
       (override));
@@ -44,7 +43,7 @@ class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
   MOCK_METHOD(
       void,
       OnStateChanged,
-      ((const std::optional<NativeWindowId>&),
+      ((const std::optional<DesktopMediaID::Id>&),
        (const GlobalRenderFrameHostId&),
        (const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&)),
       (override));
@@ -53,20 +52,20 @@ class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
 void CallOnPipShownAndWaitUntilDone(
     content::BrowserTaskEnvironment& task_environment,
     PipScreenCaptureCoordinatorImpl* coordinator,
-    NativeWindowId window_id,
+    DesktopMediaID::Id window_id,
     const GlobalRenderFrameHostId& owner_id) {
   base::RunLoop run_loop;
   task_environment.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](PipScreenCaptureCoordinatorImpl* coordinator,
-             NativeWindowId window_id, const GlobalRenderFrameHostId& owner_id,
-             base::OnceClosure quit_closure) {
-            coordinator->OnPipShown(window_id, owner_id);
-            std::move(quit_closure).Run();
-          },
-          base::Unretained(coordinator), window_id, owner_id,
-          run_loop.QuitClosure()));
+      FROM_HERE, base::BindOnce(
+                     [](PipScreenCaptureCoordinatorImpl* coordinator,
+                        DesktopMediaID::Id window_id,
+                        const GlobalRenderFrameHostId& owner_id,
+                        base::OnceClosure quit_closure) {
+                       coordinator->OnPipShown(window_id, owner_id);
+                       std::move(quit_closure).Run();
+                     },
+                     base::Unretained(coordinator), window_id, owner_id,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -75,7 +74,8 @@ void CallOnPipClosedAndWaitForObserver(
     PipScreenCaptureCoordinatorImpl* coordinator,
     MockProxyObserver& observer) {
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnStateChanged(std::optional<NativeWindowId>(), _, _))
+  EXPECT_CALL(observer,
+              OnStateChanged(std::optional<DesktopMediaID::Id>(), _, _))
       .WillOnce([&run_loop](const auto&, const auto&, const auto&) {
         run_loop.Quit();
       });
@@ -92,7 +92,7 @@ void CallOnPipShownAndWaitForObserver(
     content::BrowserTaskEnvironment& task_environment,
     PipScreenCaptureCoordinatorImpl* coordinator,
     MockProxyObserver& observer,
-    const std::optional<NativeWindowId>& new_pip_window_id,
+    const std::optional<DesktopMediaID::Id>& new_pip_window_id,
     const GlobalRenderFrameHostId& new_pip_owner_id) {
   base::RunLoop run_loop;
   EXPECT_CALL(observer, OnStateChanged(new_pip_window_id, new_pip_owner_id, _))
@@ -103,7 +103,7 @@ void CallOnPipShownAndWaitForObserver(
       FROM_HERE,
       base::BindOnce(
           [](PipScreenCaptureCoordinatorImpl* coordinator,
-             NativeWindowId window_id,
+             DesktopMediaID::Id window_id,
              const GlobalRenderFrameHostId& owner_id) {
             coordinator->OnPipShown(window_id, owner_id);
           },
@@ -133,7 +133,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, PipStateAccessors) {
   EXPECT_EQ(coordinator_->GetPipOwnerRenderFrameHostId(),
             GlobalRenderFrameHostId());
 
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
   const GlobalRenderFrameHostId pip_owner_id(1, 1);
   coordinator_->OnPipShown(pip_window_id, pip_owner_id);
   EXPECT_EQ(coordinator_->PipWindowId(), pip_window_id);
@@ -149,7 +149,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, OnPipShownNotifiesObservers) {
   MockObserver observer;
   coordinator_->AddObserver(&observer);
 
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
   const GlobalRenderFrameHostId pip_owner_id(1, 1);
   EXPECT_CALL(observer, OnStateChanged(std::make_optional(pip_window_id),
                                        pip_owner_id, _));
@@ -168,7 +168,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, OnPipClosedNotifiesObservers) {
   MockObserver observer;
   coordinator_->AddObserver(&observer);
 
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
   const GlobalRenderFrameHostId pip_owner_id(1, 1);
   EXPECT_CALL(observer, OnStateChanged(std::make_optional(pip_window_id),
                                        pip_owner_id, _));
@@ -189,7 +189,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveObserver) {
   coordinator_->AddObserver(&observer1);
   coordinator_->AddObserver(&observer2);
 
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
   const GlobalRenderFrameHostId pip_owner_id(1, 1);
   EXPECT_CALL(observer1, OnStateChanged(std::make_optional(pip_window_id),
                                         pip_owner_id, _));
@@ -201,7 +201,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveObserver) {
 
   coordinator_->RemoveObserver(&observer1);
 
-  const NativeWindowId new_pip_window_id = 456;
+  const DesktopMediaID::Id new_pip_window_id = 456;
   const GlobalRenderFrameHostId new_pip_owner_id(2, 2);
   EXPECT_CALL(observer1, OnStateChanged(_, _, _)).Times(0);
   EXPECT_CALL(observer2, OnStateChanged(std::make_optional(new_pip_window_id),
@@ -213,7 +213,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveObserver) {
 
 TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
   // The proxy should start with the current ID.
-  const NativeWindowId pip_window_id = 123;
+  const DesktopMediaID::Id pip_window_id = 123;
   const GlobalRenderFrameHostId pip_owner_id(1, 1);
   CallOnPipShownAndWaitUntilDone(task_environment_, coordinator_, pip_window_id,
                                  pip_owner_id);
@@ -227,7 +227,7 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
   EXPECT_EQ(proxy->GetPipOwnerRenderFrameHostId(), pip_owner_id);
 
   // The proxy should be updated when the ID changes.
-  const std::optional<NativeWindowId> new_pip_window_id = 456;
+  const std::optional<DesktopMediaID::Id> new_pip_window_id = 456;
   const GlobalRenderFrameHostId new_pip_owner_id(2, 2);
   CallOnPipShownAndWaitForObserver(task_environment_, coordinator_, observer,
                                    new_pip_window_id, new_pip_owner_id);

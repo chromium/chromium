@@ -7,9 +7,9 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -29,7 +29,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
    public:
     // Called when the state of the coordinator changes.
     virtual void OnStateChanged(
-        std::optional<NativeWindowId> new_pip_window_id,
+        std::optional<DesktopMediaID::Id> new_pip_window_id,
         const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
         const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
             captures) = 0;
@@ -50,10 +50,10 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
   std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy() override;
 
   void OnPipShown(
-      NativeWindowId pip_window_id,
+      DesktopMediaID::Id pip_window_id,
       const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
 
-  std::optional<NativeWindowId> PipWindowId() const;
+  std::optional<DesktopMediaID::Id> PipWindowId() const;
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> Captures() const;
 
@@ -70,7 +70,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
   friend class base::NoDestructor<PipScreenCaptureCoordinatorImpl>;
   PipScreenCaptureCoordinatorImpl();
 
-  std::optional<NativeWindowId> pip_window_id_;
+  std::optional<DesktopMediaID::Id> pip_window_id_;
   GlobalRenderFrameHostId pip_owner_render_frame_host_id_;
   base::ObserverList<Observer> observers_;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures_;
