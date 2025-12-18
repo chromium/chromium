@@ -1250,8 +1250,6 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/au
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-lr.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-rl.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/row-minimum-contribution-baseline-shim.html [ Failure ]
-# Grid Lanes dense-packing failures
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/item-placement/row-reverse-dense-packing-multi-span-001.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]

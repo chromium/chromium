@@ -259,7 +259,9 @@ bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
         std::min(previous_track_opening_end_position,
                  current_track_opening.end_position);
     const LayoutUnit overlap_range_size =
-        overlap_end_position - overlap_start_position;
+        overlap_start_position > overlap_end_position
+            ? LayoutUnit::Min()
+            : overlap_end_position - overlap_start_position;
 
     if (overlap_range_size >= item_stacking_axis_contribution) {
       // If this is the last track we needed to check, we can return the current
@@ -284,6 +286,8 @@ bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
           eligible_track_opening_result.start_position = overlap_start_position;
         }
         eligible_track_opening_result.track_opening_indices.emplace_back(i);
+        eligible_track_opening_result.starting_track_index =
+            track_to_check_for_openings;
         break;
       }
     }
@@ -363,19 +367,28 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
         /*track_to_check_for_openings=*/current_track,
         eligible_track_opening_result);
 
-    // TODO(celestepan): Ensure that we only place items into track openings
-    // that, if at the same running position, appear in an earlier track than
-    // where the item is auto-placed.
-    //
     // Starting at `current_track`, find a series of adjacent track openings
     // that the item could be placed into starting at this line.  If there is
-    // not previous result for the highest eligible path of openings OR the
-    // series of adjacent track openings is higher than the previous highest
-    // series of adjacent track openings found, store the result in
+    // no previous result for the highest eligible path of openings, the series
+    // of adjacent track openings is higher than the previous highest series of
+    // adjacent track openings found or are in the same running position but an
+    // earlier track, store the result in
     // `highest_eligible_track_opening_result`.
+    const bool is_in_earlier_track =
+        is_reverse_direction_
+            ? eligible_track_opening_result.starting_track_index >
+                  highest_eligible_track_opening_result.starting_track_index
+            : eligible_track_opening_result.starting_track_index <
+                  highest_eligible_track_opening_result.starting_track_index;
+    const bool
+        track_opening_is_same_running_position_earlier_track_than_auto_placed =
+            (eligible_track_opening_result.start_position ==
+             highest_eligible_track_opening_result.start_position) &&
+            is_in_earlier_track;
     if (eligible_track_opening_result.IsValid() &&
-        (eligible_track_opening_result.start_position <
-         highest_eligible_track_opening_result.start_position)) {
+        ((eligible_track_opening_result.start_position <
+          highest_eligible_track_opening_result.start_position) ||
+         track_opening_is_same_running_position_earlier_track_than_auto_placed)) {
       highest_eligible_track_opening_result = eligible_track_opening_result;
       highest_eligible_track_opening_result.starting_track_index =
           current_track;
