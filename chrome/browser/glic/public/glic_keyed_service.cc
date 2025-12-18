@@ -557,16 +557,9 @@ void GlicKeyedService::CreateActorTab(
                                       std::move(callback));
 }
 
-base::CallbackListSubscription GlicKeyedService::AddTabDataChangedCallback(
-    TabDataChangedCallback callback) {
-  return tab_data_observer_->AddTabDataChangedCallback(std::move(callback));
-}
-
 void GlicKeyedService::OnTabAddedToTask(
     actor::TaskId task_id,
-    const tabs::TabInterface::Handle& tab_handle) {
-  tab_data_observer_->ObserveTabData(tab_handle);
-}
+    const tabs::TabInterface::Handle& tab_handle) {}
 
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
   user_input_submitted_callback_list_.Notify();

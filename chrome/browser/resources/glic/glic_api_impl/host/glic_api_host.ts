@@ -20,8 +20,8 @@ import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from 
 import {HOST_REQUEST_TYPES, requestTypeToHistogramSuffix} from './../request_types.js';
 import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';
+import {HostMessageHandler, TabDataHandlerSet} from './host_from_client.js';
 import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
-import {HostMessageHandler} from './host_from_client.js';
 import type {HostBackgroundResponse, HostBackgroundResponseDoes, HostBackgroundResponseReturns} from './types.js';
 import {BACKGROUND_RESPONSES} from './types.js';
 
@@ -188,6 +188,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   // Present while the client is monitoring pin candidates.
   pinCandidatesObserver?: PinCandidatesObserverImpl;
   captureRegionObserver?: CaptureRegionObserverImpl;
+  tabDataHandlerSet: TabDataHandlerSet;
 
   constructor(
       private browserProxy: BrowserProxy, communicator: GlicApiCommunicator,
@@ -203,6 +204,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
       }
     });
     this.handler.$.close();
+    this.tabDataHandlerSet =
+        new TabDataHandlerSet(communicator.postMessageSender, this.handler);
     this.browserProxy.pageHandler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =

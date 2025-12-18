@@ -389,13 +389,9 @@ export declare interface GlicBrowserHost {
 
   /**
    * Returns the observable state of TabData for the given tab.
-   * Note that updates are only sent for a subset of changes to the tab.
    *
-   * WARNING: The current implementation within Chrome makes this unsuitable
-   * for general use. Only tabs involved with actor tasks are supported. The
-   * observable remains open even if there's no tab.
-   * @todo Generalize this to work with non-actor tabs.
-   * @todo Complete the observable when tabs are removed.
+   * The returned observable is completed when the tab is destroyed, or one is
+   * not found with the given ID.
    */
   getTabById?(tabId: string): ObservableValue<TabData>;
 

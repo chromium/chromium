@@ -199,15 +199,6 @@ export class WebClientImpl implements WebClientInterface {
         {taskId, state: clientState});
   }
 
-  notifyTabDataChanged(tabData: TabDataMojo): void {
-    const extras = new ResponseExtras();
-    this.sender.requestNoResponse(
-        'glicWebClientNotifyTabDataChanged', {
-          tabData: tabDataToClient(tabData, extras),
-        },
-        extras.transfers);
-  }
-
   requestViewChange(requestMojo: ViewChangeRequestMojo): void {
     let request: ViewChangeRequest|undefined;
     if (requestMojo.details.actuation) {

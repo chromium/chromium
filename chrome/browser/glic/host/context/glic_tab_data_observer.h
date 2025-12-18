@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -30,26 +31,26 @@ class GlicTabDataObserver {
   GlicTabDataObserver(const GlicTabDataObserver&) = delete;
   GlicTabDataObserver& operator=(const GlicTabDataObserver&) = delete;
 
-  using TabDataChangedCallback =
-      base::RepeatingCallback<void(const TabDataChange&)>;
-  base::CallbackListSubscription AddTabDataChangedCallback(
-      TabDataChangedCallback callback);
+  // Request receiving updates for tab data. The remote receives updates as
+  // long as the mojo pipe is open. The pipe is automatically closed when
+  // the subscribed tab no longer exists.
+  void SubscribeToTabData(int32_t tab_id,
+                          mojo::PendingRemote<mojom::TabDataHandler> remote);
 
-  // TODO(mcnee): This is called manually by actor code. Observation should be
-  // started in response to the getTabById glic API itself.
-  void ObserveTabData(tabs::TabHandle tab_handle);
+  // For internal use.
+  void ScheduleCleanupForTab(tabs::TabHandle tab_handle);
 
  private:
   class TabObserver;
 
+  void DoCleanup();
   void OnTabWillClose(tabs::TabHandle tab_handle);
   void OnTabDataChanged(TabDataChange tab_data);
-
-  // Callbacks to invoke when the tab data for a tab changes.
-  base::RepeatingCallbackList<void(const TabDataChange&)>
-      tab_data_changed_callback_list_;
+  void OnObserverUnused(tabs::TabHandle tab_handle);
 
   std::map<tabs::TabHandle, std::unique_ptr<TabObserver>> observers_;
+  std::set<tabs::TabHandle> pending_cleanup_;
+  base::OneShotTimer cleanup_timer_;
 };
 
 }  // namespace glic

@@ -218,6 +218,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SubscribeToCaptureRegion"/>
     <variant name="SubscribeToPageMetadata"/>
     <variant name="SubscribeToPinCandidates"/>
+    <variant name="SubscribeToTabData"/>
     <variant name="SwitchConversation"/>
     <variant name="UninterruptActorTask"/>
     <variant name="UnpinAllTabs"/>

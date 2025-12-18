@@ -44,6 +44,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
@@ -714,12 +715,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         sharing_manager().AddPinnedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnPinnedTabDataChanged,
                                 base::Unretained(this)));
-
-    if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
-      tab_data_changed_subscription_ =
-          glic_service_->AddTabDataChangedCallback(base::BindRepeating(
-              &GlicWebClientHandler::OnTabDataChanged, base::Unretained(this)));
-    }
 
     focus_data_changed_subscription_ =
         sharing_manager().AddFocusedTabDataChangedCallback(
@@ -1741,13 +1736,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPinnedTabDataChanged(change.tab_data->Clone());
   }
 
-  void OnTabDataChanged(const TabDataChange& change) {
-    if (!change.tab_data) {
-      return;
-    }
-    web_client_->NotifyTabDataChanged(change.tab_data->Clone());
-  }
-
   void NotifyZeroStateSuggestionsChanged(
       glic::mojom::ZeroStateSuggestionsV2Ptr suggestions,
       mojom::ZeroStateSuggestionsOptionsPtr options) {
@@ -1761,6 +1749,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void NotifyActOnWebCapabilityChanged(bool can_act_on_web) {
     web_client_->NotifyActOnWebCapabilityChanged(can_act_on_web);
+  }
+
+  void SubscribeToTabData(
+      int32_t tab_id,
+      ::mojo::PendingRemote<mojom::TabDataHandler> receiver) override {
+    glic_service_->tab_data_observer().SubscribeToTabData(tab_id,
+                                                          std::move(receiver));
   }
 
  private:

@@ -2514,6 +2514,49 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testGetTabById() {
+    assertDefined(this.host.getTabById);
+
+    // Observe an invalid tab id.
+    {
+      const seq = observeSequence(this.host.getTabById('notA_TabId'));
+      await seq.completed;
+      assertTrue(seq.isEmpty());
+    }
+
+    // Observe a valid tab id that is not found.
+    {
+      const seq = observeSequence(this.host.getTabById('31415926'));
+      await seq.completed;
+      assertTrue(seq.isEmpty());
+    }
+
+    // Observe a valid tab id.
+    {
+      const tabId = this.testParams as string;
+      const obs = this.host.getTabById(tabId);
+      assertUndefined(obs.getCurrentValue());
+      const sequence = observeSequence(obs);
+      const tabData = await sequence.next();
+      assertEquals(tabId, tabData.tabId);
+      assertTrue(
+          tabData.url.endsWith('test.html'), `unexpected url: ${tabData.url}`);
+
+      // Navigate the tab in C++.
+      await this.advanceToNextStep();
+      await sequence.waitFor(tabData => tabData.url.endsWith('test.html?q=hi'));
+
+      // Close the tab in C++.
+      await this.advanceToNextStep();
+      await sequence.waitForComplete();
+
+      // A new subscription should complete without receiving anything.
+      const newSeq = observeSequence(this.host.getTabById(tabId));
+      await newSeq.waitForComplete();
+      assertTrue(newSeq.isEmpty());
+    }
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();

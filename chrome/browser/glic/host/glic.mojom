@@ -1032,6 +1032,16 @@ interface WebClientHandler {
 
   // Called when the user has completed the onboarding flow.
   SetOnboardingCompleted();
+
+  // Request updates from a tab. The receiver is closed when the tab is closed,
+  // or if the tab is not found.
+  SubscribeToTabData(int32 tab_id, pending_remote<TabDataHandler> receiver);
+};
+
+// Receives updates for a specific tab.
+interface TabDataHandler {
+  // Tab data has changed for this tab.
+  OnTabDataChanged(TabData tab_data);
 };
 
 // Information about a conversation.
@@ -1322,9 +1332,6 @@ interface WebClient {
   // Notify that the actor task with the given id has changed to the indicated
   // state.
   NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
-
-  // Notify that state relating to the tab has changed.
-  NotifyTabDataChanged(TabData tab_data);
 
   // Called when the browser wants the web client to change its view to match
   // the requested change (e.g., because the user clicked a UI element to toggle

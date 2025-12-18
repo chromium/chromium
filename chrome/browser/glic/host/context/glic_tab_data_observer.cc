@@ -4,10 +4,16 @@
 
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace glic {
 
@@ -17,6 +23,8 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
       : content::WebContentsObserver(tab->GetContents()),
         owner_observer_(owner_observer),
         tab_(tab) {
+    tab_data_receivers_.set_disconnect_handler(base::BindRepeating(
+        &TabObserver::Disconnected, base::Unretained(this)));
     did_insert_subscription_ = tab_->RegisterDidInsert(
         base::BindRepeating(&TabObserver::OnDidInsert, base::Unretained(this)));
     will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
@@ -29,17 +37,29 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
             &TabObserver::HandleTabActivatedChange, base::Unretained(this)));
     tab_data_observer_ = std::make_unique<TabDataObserver>(
         tab_, tab_->GetContents(),
-        base::BindRepeating(&TabObserver::TabDataChanged,
-                            base::Unretained(this)));
+        base::BindRepeating(&TabObserver::SendTabData, base::Unretained(this)));
 
     UpdateWindowObservations();
-
-    TabDataChanged(TabDataChange{/*causes=*/{}, CreateTabData(web_contents())});
   }
 
   ~TabObserver() override = default;
 
+  void Subscribe(::mojo::PendingRemote<mojom::TabDataHandler> receiver) {
+    mojo::Remote<mojom::TabDataHandler> new_remote;
+    new_remote.Bind(std::move(receiver));
+    new_remote->OnTabDataChanged(CreateTabData(tab_->GetContents()));
+    tab_data_receivers_.Add(std::move(new_remote));
+  }
+
+  bool HasReceivers() const { return !tab_data_receivers_.empty(); }
+
  private:
+  void Disconnected(mojo::RemoteSetElementId element_id) {
+    if (tab_data_receivers_.empty()) {
+      owner_observer_->ScheduleCleanupForTab(tab_->GetHandle());
+    }
+  }
+
   void UpdateWindowObservations() {
     BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
     window_did_become_active_subscription_ =
@@ -63,14 +83,14 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   // Runs asynchronously after HandleTabActivatedChange, once the changes
   // actually take effect.
   void NotifyTabInfoChangeAfterTabActivatedChange() {
-    TabDataChanged(TabDataChange{{TabDataChangeCause::kVisibility},
-                                 CreateTabData(web_contents())});
+    SendTabData(TabDataChange{{TabDataChangeCause::kVisibility},
+                              CreateTabData(web_contents())});
   }
 
   // Callback for BrowserWindowInterface activated changes.
   void HandleWindowActivatedChange(BrowserWindowInterface* browser_window) {
-    TabDataChanged(TabDataChange{{TabDataChangeCause::kVisibility},
-                                 CreateTabData(web_contents())});
+    SendTabData(TabDataChange{{TabDataChangeCause::kVisibility},
+                              CreateTabData(web_contents())});
   }
 
   void OnDidInsert(tabs::TabInterface* tab) { UpdateWindowObservations(); }
@@ -83,18 +103,18 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
     }
   }
 
-  void TabDataChanged(TabDataChange tab_data) {
-    SendTabData(std::move(tab_data));
-  }
-
   void SendTabData(TabDataChange tab_data) {
-    owner_observer_->OnTabDataChanged(std::move(tab_data));
+    for (auto& receiver : tab_data_receivers_) {
+      receiver->OnTabDataChanged(tab_data.tab_data->Clone());
+    }
   }
 
   // Owns this.
   raw_ptr<GlicTabDataObserver> owner_observer_;
 
   raw_ptr<tabs::TabInterface> tab_;
+
+  mojo::RemoteSet<mojom::TabDataHandler> tab_data_receivers_;
 
   base::CallbackListSubscription did_insert_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
@@ -115,31 +135,52 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
 GlicTabDataObserver::GlicTabDataObserver() = default;
 GlicTabDataObserver::~GlicTabDataObserver() = default;
 
-base::CallbackListSubscription GlicTabDataObserver::AddTabDataChangedCallback(
-    TabDataChangedCallback callback) {
-  return tab_data_changed_callback_list_.Add(std::move(callback));
-}
-
-void GlicTabDataObserver::ObserveTabData(tabs::TabHandle tab_handle) {
-  if (!base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
-    return;
-  }
-  auto* tab = tab_handle.Get();
-  if (!tab) {
-    return;
-  }
-
-  if (!observers_.contains(tab_handle)) {
-    observers_.insert({tab_handle, std::make_unique<TabObserver>(this, tab)});
-  }
-}
-
 void GlicTabDataObserver::OnTabWillClose(tabs::TabHandle tab_handle) {
   observers_.erase(tab_handle);
 }
 
-void GlicTabDataObserver::OnTabDataChanged(TabDataChange tab_data) {
-  tab_data_changed_callback_list_.Notify(tab_data);
+void GlicTabDataObserver::SubscribeToTabData(
+    int32_t tab_id,
+    mojo::PendingRemote<mojom::TabDataHandler> remote) {
+  tabs::TabInterface::Handle handle(tab_id);
+  tabs::TabInterface* tab = handle.Get();
+  if (!tab) {
+    remote.reset();
+    return;
+  }
+  TabObserver* observer_ptr = nullptr;
+  auto iter = observers_.find(handle);
+  if (iter != observers_.end()) {
+    observer_ptr = iter->second.get();
+  } else {
+    auto observer = std::make_unique<TabObserver>(this, tab);
+    observer_ptr = observer.get();
+    observers_.insert({handle, std::move(observer)});
+  }
+  observer_ptr->Subscribe(std::move(remote));
+}
+
+// Schedules deleting the tab observer later. This isn't done immediately
+// to avoid teardown if the observer is used again quickly.
+void GlicTabDataObserver::ScheduleCleanupForTab(tabs::TabHandle tab_handle) {
+  pending_cleanup_.insert(tab_handle);
+  if (cleanup_timer_.IsRunning()) {
+    return;
+  }
+  cleanup_timer_.Start(
+      FROM_HERE, base::Seconds(5),
+      base::BindOnce(&GlicTabDataObserver::DoCleanup, base::Unretained(this)));
+}
+
+void GlicTabDataObserver::DoCleanup() {
+  for (tabs::TabHandle handle : std::exchange(pending_cleanup_, {})) {
+    auto iter = observers_.find(handle);
+    if (iter != observers_.end()) {
+      if (!iter->second->HasReceivers()) {
+        observers_.erase(iter);
+      }
+    }
+  }
 }
 
 }  // namespace glic

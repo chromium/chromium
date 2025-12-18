@@ -9,12 +9,13 @@ import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientReceiver} from '../../glic.mojom-webui.js';
+import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
 import type {ActorTaskPauseReason, ActorTaskStopReason, CaptureRegionErrorReason, ConversationInfo, DraggableArea, GetPinCandidatesOptions, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, TabContextOptions, TaskOptions, UnpinTabsOptions, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
+import type {PostMessageRequestSender} from '../post_message_transport.js';
 import type {HostRequestTypes, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TransferableException, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 
@@ -871,6 +872,16 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
     return Promise.reject(new Error('Not implemented'));
   }
+
+  glicBrowserSubscribeToTabData(
+      payload: {tabId: string, observationId: number, cancel: boolean}): void {
+    if (payload.cancel) {
+      this.host.tabDataHandlerSet.remove(payload.observationId);
+    } else {
+      this.host.tabDataHandlerSet.create(
+          idFromClient(payload.tabId), payload.observationId);
+    }
+  }
 }
 
 
@@ -927,6 +938,63 @@ export class CaptureRegionObserverImpl implements CaptureRegionObserver {
       });
       this.destroy();
     }
+  }
+}
+
+export class TabDataHandlerSet {
+  handlersByObservation: Map<number, TabDataHandlerImpl> = new Map();
+
+  constructor(
+      private sender: PostMessageRequestSender,
+      private webClientHandler: WebClientHandlerInterface) {}
+  create(tabId: number, observationId: number): void {
+    const handler = new TabDataHandlerImpl(
+        tabId, this.webClientHandler, this.sender, this, observationId);
+    this.handlersByObservation.set(observationId, handler);
+  }
+  remove(observationId: number): void {
+    const handler = this.handlersByObservation.get(observationId);
+    if (!handler) {
+      return;
+    }
+    handler.destroy();
+    this.handlersByObservation.delete(observationId);
+  }
+}
+
+class TabDataHandlerImpl implements TabDataHandlerInterface {
+  receiver?: TabDataHandlerReceiver;
+
+  constructor(
+      tabId: number, handler: WebClientHandlerInterface,
+      private sender: PostMessageRequestSender, handlerSet: TabDataHandlerSet,
+      public readonly observationId: number) {
+    this.receiver = new TabDataHandlerReceiver(this);
+    this.receiver.onConnectionError.addListener(() => {
+      handlerSet.remove(this.observationId);
+    });
+    handler.subscribeToTabData(
+        tabId, this.receiver.$.bindNewPipeAndPassRemote());
+  }
+  destroy() {
+    if (!this.receiver) {
+      return;
+    }
+    this.receiver.$.close();
+    this.receiver = undefined;
+    this.sender.requestNoResponse(
+        'glicWebClientTabDataChanged',
+        // Omitting tab data signals completion.
+        {observationId: this.observationId});
+  }
+  onTabDataChanged(tabData: TabDataMojoType): void {
+    const extras = new ResponseExtras();
+    this.sender.requestNoResponse(
+        'glicWebClientTabDataChanged', {
+          tabData: tabDataToClient(tabData, extras),
+          observationId: this.observationId,
+        },
+        extras.transfers);
   }
 }
 

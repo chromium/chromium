@@ -562,6 +562,14 @@ export declare type HostRequestTypes = ValidateRequestMap<{
   glicBrowserSetOnboardingCompleted: {
     backgroundAllowed: true,
   },
+  glicBrowserSubscribeToTabData: {
+    request: {
+      tabId: string,
+      observationId: number,
+      cancel: boolean,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -699,12 +707,6 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
-  glicWebClientNotifyTabDataChanged: {
-    request: {
-      tabData: TabDataPrivate,
-    },
-    backgroundAllowed: true,
-  },
   glicWebClientPageMetadataChanged: {
     request: {
       tabId: string,
@@ -767,6 +769,14 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
   glicWebClientOnboardingCompletedChanged: {
     request: {
       completed: boolean,
+    },
+    backgroundAllowed: true,
+  },
+  glicWebClientTabDataChanged: {
+    request: {
+      // If not present, the tab no longer exists and no more updates will be
+      // received.
+      tabData?: TabDataPrivate, observationId: number,
     },
     backgroundAllowed: true,
   },
@@ -865,6 +875,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OpenPasswordManagerSettingsPage: 78,
         LoadAndExtractContent: 79,
         SetOnboardingCompleted: 80,
+        SubscribeToTabData: 81,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();
