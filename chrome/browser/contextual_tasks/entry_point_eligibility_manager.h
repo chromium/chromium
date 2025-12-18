@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -46,10 +47,12 @@ class EntryPointEligibilityManager : public signin::IdentityManager::Observer {
       EntryPointEligibilityChangeCallbackList::CallbackType callback);
 
  private:
+  void OnAimPolicyChanged();
   void MaybeNotifyEntryPointEligibilityChanged();
 
   bool entry_points_are_eligible_ = false;
   raw_ptr<Profile> profile_ = nullptr;
+  IntegerPrefMember aim_policy_;
   ui::ScopedUnownedUserData<EntryPointEligibilityManager>
       scoped_unowned_user_data_;
   base::CallbackListSubscription aim_eligibility_callback_subscription_;
