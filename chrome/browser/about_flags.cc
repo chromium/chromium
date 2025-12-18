@@ -326,6 +326,7 @@
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/win/mica_titlebar.h"
 #include "components/stylus_handwriting/win/features.h"
+#include "content/common/features.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -13584,6 +13585,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReportOmniboxAutofocusHeaderName,
      flag_descriptions::kReportOmniboxAutofocusHeaderDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(variations::kReportOmniboxAutofocusHeader)},
+#endif
+
+#if BUILDFLAG(IS_WIN)
+    {"enable-arabic-indic-digit-input",
+     flag_descriptions::kArabicIndicDigitInputName,
+     flag_descriptions::kArabicIndicDigitInputDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kArabicIndicDigitInput)},
 #endif
 
     // Add new entries above this line.

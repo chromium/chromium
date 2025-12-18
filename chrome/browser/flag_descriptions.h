@@ -6264,6 +6264,11 @@ inline constexpr char
 
 // Windows ---------------------------------------------------------------------
 
+inline constexpr char kArabicIndicDigitInputName[] = "Arabic-Indic Digit Input";
+inline constexpr char kArabicIndicDigitInputDescription[] =
+    "Enable/Disable Arabic-Indic digit input while holding right alt or "
+    "ctrl+alt on Arabic 101 keyboard layout.";
+
 inline constexpr char kEnableMediaFoundationVideoCaptureName[] =
     "MediaFoundation Video Capture";
 inline constexpr char kEnableMediaFoundationVideoCaptureDescription[] =

@@ -3082,6 +3082,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-arabic-indic-digit-input",
+    "owners": [ "johna@microsoft.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "enable-assistant-aec",
     "owners": [ "croissant-eng@chromium.org" ],
     "expiry_milestone": 88

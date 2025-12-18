@@ -11023,6 +11023,7 @@ from previous Chrome versions.
   <int value="-1168123287" label="WebRTC-FrameBuffer3:disabled"/>
   <int value="-1168016146" label="AndroidWebAppMenuButton:enabled"/>
   <int value="-1167992523" label="DesktopPWAsCustomTabUI:disabled"/>
+  <int value="-1167865881" label="ArabicIndicDigitInput:disabled"/>
   <int value="-1167716837"
       label="VisitedURLRankingHistoryVisibilityScoreFilter:enabled"/>
   <int value="-1166745977"
@@ -12528,6 +12529,7 @@ from previous Chrome versions.
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-643187834" label="OmniboxContextualSearchActionsAtTop:disabled"/>
   <int value="-643105409" label="PickerGifs:enabled"/>
+  <int value="-642973094" label="ArabicIndicDigitInput:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
   <int value="-641820371" label="EnableCustomMacPaperSizes:enabled"/>

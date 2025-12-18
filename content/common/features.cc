@@ -28,9 +28,9 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
 BASE_FEATURE(kAndroidDragDropOopif, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Flag guard for Windows Arabic digit substitution workaround.
+// Flag guard for Windows Arabic Indic digit input solution.
 // crbug.com/440381284
-BASE_FEATURE(kArabicDigitSubstitution, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kArabicIndicDigitInput, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Synchronously continuing with navigation can lead to trying to start another

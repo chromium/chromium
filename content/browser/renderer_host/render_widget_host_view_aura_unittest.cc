@@ -5176,14 +5176,14 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
 // forwarding NativeWebKeyboardEvents with Arabic-Indic digit in InsertChar
 // upon receipt of a KeyEvent containing an ASCII digit.
 // This test verifies that behavior.
-TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitSubstitutionRightAlt) {
-  ResetArabicDigitSubStateForTesting();
+TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputRightAlt) {
+  ResetArabicIndicDigitInputStateForTesting();
 
   InitViewForFrame(nullptr);
   view_->Show();
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kArabicDigitSubstitution);
+  scoped_feature_list.InitAndEnableFeature(features::kArabicIndicDigitInput);
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ARABIC);
 
   // Calling ActivateKeyboardLayout does not trigger
@@ -5216,14 +5216,14 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitSubstitutionRightAlt) {
   ASSERT_TRUE(SetKeyboardState(keyboard_state));
 }
 
-TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitSubstitutionCtrlAndAlt) {
-  ResetArabicDigitSubStateForTesting();
+TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputCtrlAndAlt) {
+  ResetArabicIndicDigitInputStateForTesting();
 
   InitViewForFrame(nullptr);
   view_->Show();
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kArabicDigitSubstitution);
+  scoped_feature_list.InitAndEnableFeature(features::kArabicIndicDigitInput);
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ARABIC);
 
   // Calling ActivateKeyboardLayout does not trigger

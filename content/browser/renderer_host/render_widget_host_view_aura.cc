@@ -169,48 +169,56 @@ BASE_FEATURE(kRenderWidgetHostHiddenCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 const std::wstring_view kArabic101KeyboardLayoutName = L"00000401";
 
 // This state helps relieve unnecessary calls to GetKeyboardLayoutName() and
-// IsEnabled(features::kArabicDigitSubstitution) for the purposes of Arabic
-// digit substitution. Declared static because keyboard layout state is
+// IsEnabled(features::kArabicIndicDigitInput) for the purposes of
+// Arabic-Indic digit input. Declared static because keyboard layout state is
 // per-thread and RWHVA is only allocated on the UI thread.
-struct ArabicDigitSubstitutionState {
+struct ArabicIndicDigitInputState {
   HKL curr_hkl = nullptr;
   bool is_arabic_101_kl = false;
-  bool is_digit_sub_feature_enabled = false;
+  bool feature_enabled = false;
   bool feature_initialized = false;
 };
-ArabicDigitSubstitutionState arabic_digit_sub_state;
+ArabicIndicDigitInputState arabic_indic_digit_input_state;
 
-void UpdateArabicDigitSubStateIfNecessary() {
-  if (!arabic_digit_sub_state.feature_initialized) {
-    arabic_digit_sub_state.is_digit_sub_feature_enabled =
-        base::FeatureList::IsEnabled(features::kArabicDigitSubstitution);
-    arabic_digit_sub_state.feature_initialized = true;
+void UpdateArabicIndicDigitInputStateIfNecessary() {
+  if (!arabic_indic_digit_input_state.feature_initialized) {
+    arabic_indic_digit_input_state.feature_enabled =
+        base::FeatureList::IsEnabled(features::kArabicIndicDigitInput);
+    arabic_indic_digit_input_state.feature_initialized = true;
   }
 
   HKL curr_hkl = ::GetKeyboardLayout(0 /* thread id */);
-  if (curr_hkl != arabic_digit_sub_state.curr_hkl) {
-    arabic_digit_sub_state.curr_hkl = curr_hkl;
+  if (curr_hkl != arabic_indic_digit_input_state.curr_hkl) {
+    arabic_indic_digit_input_state.curr_hkl = curr_hkl;
     wchar_t kl_name[KL_NAMELENGTH];
-    arabic_digit_sub_state.is_arabic_101_kl =
+    arabic_indic_digit_input_state.is_arabic_101_kl =
         ::GetKeyboardLayoutName(kl_name) &&
         kl_name == kArabic101KeyboardLayoutName;
   }
 }
 
-bool ShouldSubstituteArabicDigits(const ui::KeyEvent& event) {
-  return arabic_digit_sub_state.is_arabic_101_kl &&
-         arabic_digit_sub_state.is_digit_sub_feature_enabled &&
+// Windows Arabic keyboard layouts do not provide native Arabic-Indic digit
+// input. To support this for web input, we intercept ASCII digit key events and
+// forward equivalent Arabic-Indic digits to the renderer. We do this when
+// Ctrl+Alt or Right Alt (AltGr) is held and a top-row digit key is pressed,
+// simulating AltGr-based input behavior. This is only done for Arabic 101.
+// Arabic 102 and Arabic 102 AZERTY already have defined AltGr behavior in the
+// top-row digit keys and AZERTY is primarily used in locales that do not often
+// use Arabic-Indic digits.
+bool ShouldInputArabicIndicDigits(const ui::KeyEvent& event) {
+  return arabic_indic_digit_input_state.is_arabic_101_kl &&
+         arabic_indic_digit_input_state.feature_enabled &&
          event.type() == ui::EventType::kKeyPressed &&
          // Check for VKEY_0 to VKEY_9 because we should not perform
-         // substitution for numpad digits.
+         // arabic-indic input for numpad digits.
          event.key_code() >= ui::VKEY_0 && event.key_code() <= ui::VKEY_9;
 }
 #endif  // BUILDFLAG(IS_WIN)
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
-void ResetArabicDigitSubStateForTesting() {
-  arabic_digit_sub_state = {nullptr, false, false, false};
+void ResetArabicIndicDigitInputStateForTesting() {
+  arabic_indic_digit_input_state = {nullptr, false, false, false};
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -364,7 +372,7 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
   }
 
 #if BUILDFLAG(IS_WIN)
-  UpdateArabicDigitSubStateIfNecessary();
+  UpdateArabicIndicDigitInputStateIfNecessary();
 #endif  // BUILDFLAG(IS_WIN)
 
   host()->render_frame_metadata_provider()->AddObserver(this);
@@ -1521,16 +1529,7 @@ void RenderWidgetHostViewAura::InsertChar(const ui::KeyEvent& event) {
   if (event_handler_->accept_return_character() ||
       event.GetCharacter() != ui::VKEY_RETURN) {
 #if BUILDFLAG(IS_WIN)
-    // Arabic keyboard layouts on Windows do not natively support Arabic-Indic
-    // digit input. We can work around this for web page input
-    // scenarios by converting ASCII digits to Arabic-Indic here before
-    // they are sent to the renderer. We do this when Ctrl+Alt or Right Alt are
-    // held and a top row digit key is pressed. This simulates the behavior
-    // of an AltGr key.
-    // This is only done for Arabic 101. Arabic 102 and Arabic 102 AZERTY
-    // already have defined AltGr behavior in the top-row digit keys and AZERTY
-    // is primarily used in locales that do not often use Arabic-Indic digits.
-    if (ShouldSubstituteArabicDigits(event) && ui::win::IsAltRightPressed()) {
+    if (ShouldInputArabicIndicDigits(event) && ui::win::IsAltRightPressed()) {
       ForwardArabicIndicCharEventWithLatencyInfo(event, event.GetCharacter());
     } else
 #endif  // BUILDFLAG(IS_WIN)
@@ -1895,7 +1894,7 @@ void RenderWidgetHostViewAura::OnInputMethodChanged() {
   // TextEvent.
 
 #if BUILDFLAG(IS_WIN)
-  UpdateArabicDigitSubStateIfNecessary();
+  UpdateArabicIndicDigitInputStateIfNecessary();
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -2355,7 +2354,7 @@ void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
   // generates a WM_SYSCHAR so that is handled in InsertChar.
   constexpr ui::EventFlags kCtrlAndAltPressed =
       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
-  if (ShouldSubstituteArabicDigits(*event) &&
+  if (ShouldInputArabicIndicDigits(*event) &&
       ((event->flags() & kCtrlAndAltPressed) == kCtrlAndAltPressed)) {
     const char16_t ascii_digit_char = event->key_code() - ui::VKEY_0 + u'0';
     ForwardArabicIndicCharEventWithLatencyInfo(*event, ascii_digit_char);
@@ -2654,7 +2653,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
     // When keyboard layout is updated while a window from a different thread
     // has focus, Windows will not call TSFTextStore::OnLanguageChanged. So we
     // need to check if the keyboard layout changed whenever we regain focus.
-    UpdateArabicDigitSubStateIfNecessary();
+    UpdateArabicIndicDigitInputStateIfNecessary();
 #endif  // BUILDFLAG(IS_WIN)
     return;
   }
