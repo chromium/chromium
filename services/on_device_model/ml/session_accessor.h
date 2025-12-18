@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/constraint_factory.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace ml {
@@ -38,9 +39,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   Ptr Clone();
   ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
                           ChromeMLContextSavedFn context_saved_fn);
-  ChromeMLCancelFn Generate(on_device_model::mojom::GenerateOptionsPtr options,
-                            ChromeMLConstraint constraint,
-                            ChromeMLExecutionOutputFn output_fn);
+  ChromeMLCancelFn Generate(
+      on_device_model::mojom::GenerateOptionsPtr options,
+      ConstraintFactory* constraint_factory,
+      const std::optional<std::string>& model_response_prefix,
+      ChromeMLExecutionOutputFn output_fn);
   void Score(const std::string& text, ChromeMLScoreFn score_fn);
   void GetProbabilitiesBlocking(const std::string& input,
                                 ChromeMLGetProbabilitiesBlockingFn get_prob_fn);
@@ -67,7 +70,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
                       scoped_refptr<Canceler> canceler);
   void GenerateInternal(
       on_device_model::mojom::GenerateOptionsPtr generate_options,
-      ChromeMLConstraint constraint,
+      ConstraintFactory* constraint_factory,
+      std::optional<std::string> model_response_prefix,
       ChromeMLExecutionOutputFn output_fn,
       scoped_refptr<Canceler> canceler);
   void ScoreInternal(const std::string& text, ChromeMLScoreFn score_fn);

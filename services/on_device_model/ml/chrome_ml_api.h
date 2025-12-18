@@ -152,6 +152,9 @@ enum class ChromeMLGenerateStatus {
   // Generation either completed normally or was cancelled. This is the
   // last output.
   kComplete,
+
+  // Generation failed because there was an error creating the constraint.
+  kInvalidConstraint,
 };
 using ChromeMLExecutionStatus = ChromeMLGenerateStatus;
 

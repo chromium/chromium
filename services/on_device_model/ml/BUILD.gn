@@ -37,6 +37,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
   component("ml_no_internal") {
     public = [
       "chrome_ml.h",
+      "constraint_factory.h",
       "gpu_blocklist.h",
       "on_device_model_executor.h",
       "performance_class.h",
@@ -48,6 +49,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
 
     sources = [
       "chrome_ml.cc",
+      "constraint_factory.cc",
       "on_device_model_executor.cc",
       "performance_class.cc",
       "session_accessor.cc",
