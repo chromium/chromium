@@ -28,6 +28,8 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /**
  * Creates and owns all elements which are part of the accessory sheet component. It's part of the
  * controller but will mainly forward events (like showing the sheet) and handle communication with
@@ -106,6 +108,14 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
 
     public void setTabs(KeyboardAccessoryData.Tab[] tabs) {
         mMediator.setTabs(tabs);
+    }
+
+    public void setStyle(boolean isDocked) {
+        mMediator.setStyle(isDocked);
+    }
+
+    public void setContentOffsetSupplier(Supplier<Integer> contentOffsetSupplier) {
+        mMediator.setContentOffsetSupplier(contentOffsetSupplier);
     }
 
     public RecyclerView.OnScrollListener getScrollListener() {

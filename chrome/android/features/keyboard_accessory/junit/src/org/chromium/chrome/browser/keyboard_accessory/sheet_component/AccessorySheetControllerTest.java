@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,14 +16,23 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BACKGROUND;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BAR_SHADOW_VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ELEVATION;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HORIZONTAL_PADDING;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.MAX_WIDTH;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,6 +52,7 @@ import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
@@ -68,6 +80,8 @@ public class AccessorySheetControllerTest {
     @Mock private SheetVisibilityDelegate mSheetVisibilityDelegate;
     @Mock private AccessorySheetVisualStateProvider.Observer mVisualObserver;
 
+    private static final int TEST_CONTENT_OFFSET = 10;
+
     private final Tab[] mTabs =
             new Tab[] {
                 new Tab("Passwords", null, null, 0, 0, null),
@@ -86,10 +100,13 @@ public class AccessorySheetControllerTest {
         when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
         mCoordinator =
                 new AccessorySheetCoordinator(
-                        null, new FakeViewProvider<>(mMockView), mSheetVisibilityDelegate);
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        new FakeViewProvider<>(mMockView),
+                        mSheetVisibilityDelegate);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
         mMediator.addObserver(mVisualObserver);
+        mMediator.setContentOffsetSupplier(() -> TEST_CONTENT_OFFSET);
     }
 
     @Test
@@ -228,6 +245,40 @@ public class AccessorySheetControllerTest {
 
         keyboardCallback.run();
         verify(mSheetVisibilityDelegate, times(1)).onCloseAccessorySheet();
+    }
+
+    @Test
+    public void testUndockedStyle() {
+        Resources res = RuntimeEnvironment.application.getApplicationContext().getResources();
+        int maxWidth =
+                res.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_sheet_dynamic_positioning_max_width);
+        int horizontalPadding =
+                res.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_sheet_dynamic_positioning_padding);
+        int elevation = res.getDimensionPixelSize(R.dimen.keyboard_accessory_elevation);
+        int insetOverlap = res.getDimensionPixelSize(R.dimen.keyboard_accessory_top_inset_overlap);
+
+        mCoordinator.setStyle(/* isDocked= */ false);
+        assertThat(mModel.get(MAX_WIDTH), is(maxWidth));
+        assertThat(mModel.get(HORIZONTAL_PADDING), is(horizontalPadding));
+        assertThat(mModel.get(GRAVITY), is(Gravity.CENTER | Gravity.TOP));
+        assertThat(mModel.get(ELEVATION), is(elevation));
+        assertThat(mModel.get(TOP_OFFSET), is(TEST_CONTENT_OFFSET - insetOverlap));
+        assertThat(mModel.get(BACKGROUND), is(R.drawable.keyboard_accessory_shadow_shape));
+        assertThat(mModel.get(BAR_SHADOW_VISIBLE), is(false));
+    }
+
+    @Test
+    public void testDockedStyle() {
+        mCoordinator.setStyle(/* isDocked= */ true);
+        assertThat(mModel.get(MAX_WIDTH), is(nullValue()));
+        assertThat(mModel.get(HORIZONTAL_PADDING), is(0));
+        assertThat(mModel.get(GRAVITY), is(Gravity.START | Gravity.BOTTOM));
+        assertThat(mModel.get(ELEVATION), is(0));
+        assertThat(mModel.get(TOP_OFFSET), is(0));
+        assertThat(mModel.get(BACKGROUND), is(R.color.default_bg_color_baseline));
+        assertThat(mModel.get(BAR_SHADOW_VISIBLE), is(true));
     }
 
     private int getTriggerMetricsCount(@AccessorySheetTrigger int bucket) {

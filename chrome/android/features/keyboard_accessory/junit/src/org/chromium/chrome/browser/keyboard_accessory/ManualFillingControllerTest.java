@@ -1499,6 +1499,34 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testLargeFormSheetShownWithUndockedStyle() {
+        updateConfiguration(/* widthDp= */ 1600, /* heightDp= */ 2560);
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+
+        verify(mMockAccessorySheet).show();
+        verify(mMockAccessorySheet).setStyle(/* isDocked= */ false);
+    }
+
+    @Test
+    public void testNonLargeFormSheetShownWithDockedStyle() {
+        updateConfiguration(/* widthDp= */ 320, /* heightDp= */ 470);
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+
+        verify(mMockAccessorySheet).show();
+        verify(mMockAccessorySheet).setStyle(/* isDocked= */ true);
+    }
+
+    @Test
     public void testLargeFormAccessoryWithDynamicPositioningPositionBelowField() {
         final int density = 2;
         final int paddingForNotch = 5;

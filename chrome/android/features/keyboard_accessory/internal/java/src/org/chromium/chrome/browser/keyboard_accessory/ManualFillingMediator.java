@@ -226,6 +226,9 @@ class ManualFillingMediator
         mAccessorySheet = accessorySheet;
         mKeyboardAccessoryVisualStateSupplier.set(mKeyboardAccessory);
         mAccessorySheetVisualStateSupplier.set(mAccessorySheet);
+        if (controlsManager != null) {
+            mAccessorySheet.setContentOffsetSupplier(controlsManager::getContentOffset);
+        }
         mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
         mApplicationViewportInsetTracker =
@@ -866,19 +869,29 @@ class ManualFillingMediator
         return (int) (MAXIMUM_BAR_WIDTH_PERCENTAGE * screenWidth);
     }
 
+    // TODO(crbug.com/469956054): Make this method more readable.
     private void updateStyleAndControlSpaceForState(int extensionState) {
         if (extensionState == WAITING_TO_REPLACE) return; // Don't change yet.
 
         int newControlsOffset = 0;
         if (isLargeFormFactor()
-                && requiresVisibleBar(extensionState)
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
-            mKeyboardAccessory.setStyle(
-                    new KeyboardAccessoryStyle(
-                            false, getHorizontalOffset(), getTopOffset(), getMaxWidth()));
-            mBottomInsetSupplier.set(0);
-            return;
+            if (requiresVisibleBar(extensionState)) {
+                mKeyboardAccessory.setStyle(
+                        new KeyboardAccessoryStyle(
+                                false, getHorizontalOffset(), getTopOffset(), getMaxWidth()));
+                mBottomInsetSupplier.set(0);
+                return;
+            }
+            if (requiresVisibleSheet(extensionState)
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList
+                                    .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+                mAccessorySheet.setStyle(/* isDocked= */ false);
+                mBottomInsetSupplier.set(0);
+                return;
+            }
         }
 
         int newControlsHeight = 0;
@@ -904,6 +917,7 @@ class ManualFillingMediator
                                     .getResources()
                                     .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             newControlsOffset += mAccessorySheet.getHeight();
+            mAccessorySheet.setStyle(/* isDocked= */ true);
         }
         if (requiresVisibleBar(extensionState)) {
             mKeyboardAccessory.setStyle(

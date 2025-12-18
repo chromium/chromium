@@ -31,6 +31,8 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_sheet_padding">8dp</dimen>
     <dimen name="keyboard_accessory_sheet_top_margin">16dp</dimen>
     <dimen name="keyboard_accessory_sheet_bottom_margin">8dp</dimen>
+    <dimen name="keyboard_accessory_sheet_dynamic_positioning_max_width">448dp</dimen>
+    <dimen name="keyboard_accessory_sheet_dynamic_positioning_padding">20dp</dimen>
     <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
     <dimen name="keyboard_accessory_chip_start_padding_redesign">6dp</dimen>
     <dimen name="keyboard_accessory_chip_increased_start_padding_redesign">8dp</dimen>
