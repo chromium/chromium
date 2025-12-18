@@ -6371,8 +6371,10 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(enterprise_auth::kOktaSSO)) {
+    // WARNING: This factory blocks certain requests from going out via the
+    // final network bound factory.
     enterprise_auth::ProxyingURLLoaderFactory::MaybeProxyRequest(
-        request_initiator, factory_builder);
+        request_initiator, type, factory_builder);
   }
 #endif
 
