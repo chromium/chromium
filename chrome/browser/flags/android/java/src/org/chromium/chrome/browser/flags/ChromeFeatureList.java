@@ -456,8 +456,6 @@ public abstract class ChromeFeatureList {
     public static final String HEADLESS_TAB_MODEL = "HeadlessTabModel";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
-    public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
-            "HomepageIsNewTabPagePolicyAndroid";
     public static final String HOME_MODULE_PREF_REFACTOR = "HomeModulePrefRefactor";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String HUB_BACK_BUTTON = "HubBackButton";
@@ -924,8 +922,6 @@ public abstract class ChromeFeatureList {
                     HISTORY_PANE_ANDROID,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
-            newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, true);
     public static final CachedFlag sIncognitoThemeOverlayTesting =
             newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
@@ -1190,7 +1186,6 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherSurfaceColorUpdate,
                     sGridTabSwitcherUpdate,
                     sHistoryPaneAndroid,
-                    sHomepageIsNewTabPagePolicyAndroid,
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
                     sLoadAllTabsAtStartup,
