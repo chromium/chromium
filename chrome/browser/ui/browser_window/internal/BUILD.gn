@@ -28,6 +28,8 @@ source_set("internal") {
     ]
     deps += [
       ":jni",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//ui/android",
     ]

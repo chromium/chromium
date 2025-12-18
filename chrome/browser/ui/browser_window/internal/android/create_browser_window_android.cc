@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindowCreateParamsImpl_jni.h"
 #include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowCreatorBridge_jni.h"
@@ -59,6 +61,12 @@ void CreateBrowserWindow(
 BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
     Profile& profile) {
   if (profile.ShutdownStarted()) {
+    return BrowserWindowInterface::CreationStatus::kErrorShuttingDown;
+  }
+
+  if (!IncognitoModePrefs::CanOpenBrowser(&profile) ||
+      !profile.AllowsBrowserWindows() ||
+      IsProfileDirectoryMarkedForDeletion(profile.GetPath())) {
     return BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable;
   }
 
