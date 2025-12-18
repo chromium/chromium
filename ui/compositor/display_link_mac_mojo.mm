@@ -190,6 +190,13 @@ void DisplayLinkMacMojo::SetPreferredInterval(base::TimeDelta interval) {}
 void DisplayLinkMacMojo::OnDisplayLinkVSyncCallback(int64_t display_id,
                                                     VSyncParamsMac params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
+
+  // |external_begin_frame_controller_| becomes unbound when it was deleted and
+  // is not yet created in OnGpuProcessLost().
+  if (!external_begin_frame_controller_.is_bound()) {
+    return;
+  }
+
   // With the delay from OnDisplaysRemoved() to DisplaysRemovedOnVSyncThread()
   // or just the delay in CoreAnimation CADisplayLink, we might receive a VSync
   // callback after the display is removed in a rare case, But this is fine. We
