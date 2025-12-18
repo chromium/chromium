@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY;
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_ALWAYS;
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP;
@@ -39,6 +40,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
@@ -168,7 +170,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private class PendingTabClosureDelegateImpl implements PendingTabClosureDelegate {
         @Override
         public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
-            insertUndoneTabClosureAtInternal(tab, insertIndex);
+            try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+                insertUndoneTabClosureAtInternal(tab, insertIndex);
+            }
         }
 
         private void insertUndoneTabClosureAtInternal(Tab tab, int insertIndex) {
@@ -521,7 +525,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void cancelTabClosure(@TabId int tabId) {
         if (!supportsPendingClosures()) return;
 
-        mPendingTabClosureManager.cancelTabClosure(tabId);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mPendingTabClosureManager.cancelTabClosure(tabId);
+        }
     }
 
     @Override
@@ -538,7 +544,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void openMostRecentlyClosedEntry() {
         assertOnUiThread();
-        openMostRecentlyClosedEntryInternal();
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            openMostRecentlyClosedEntryInternal();
+        }
     }
 
     @Override
@@ -555,7 +563,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void setIndex(int i, @TabSelectionType int type) {
         assertOnUiThread();
-        setIndexInternal(i, type);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            setIndexInternal(i, type);
+        }
     }
 
     @Override
@@ -584,13 +594,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // cast in C++ otherwise results in the tab going to the end of the list which is not
         // intended.
         newIndex = Math.max(0, newIndex);
-        moveTabInternal(
-                tab,
-                currentIndex,
-                newIndex,
-                tab.getTabGroupId(),
-                tab.getIsPinned(),
-                /* isDestinationTab= */ false);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            moveTabInternal(
+                    tab,
+                    currentIndex,
+                    newIndex,
+                    tab.getTabGroupId(),
+                    tab.getIsPinned(),
+                    /* isDestinationTab= */ false);
+        }
     }
 
     @Override
@@ -634,19 +646,26 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void moveTabToWindow(Tab tab, Activity activity, int newIndex) {
-        mModelDelegate.moveTabToWindow(tab, activity, newIndex);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mModelDelegate.moveTabToWindow(tab, activity, newIndex);
+        }
     }
 
     @Override
     public void moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
-        mModelDelegate.moveTabGroupToWindow(tabGroupId, activity, newIndex, isIncognito());
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mModelDelegate.moveTabGroupToWindow(tabGroupId, activity, newIndex, isIncognito());
+        }
     }
 
     @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         assertOnUiThread();
-        addTabInternal(tab, index, type, creationState);
+
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            addTabInternal(tab, index, type, creationState);
+        }
     }
 
     @Override
@@ -703,7 +722,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public boolean closeTabs(TabClosureParams params) {
         assertOnUiThread();
-        return closeTabsInternal(params);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            return closeTabsInternal(params);
+        }
     }
 
     // TabModelInternal overrides.
@@ -729,12 +750,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void removeTab(Tab tab) {
-        removeTabsAndSelectNext(
-                Collections.singletonList(tab),
-                /* recommendedNextTab= */ null,
-                TabSelectionType.FROM_CLOSE,
-                /* isUndoable= */ false,
-                TabCloseType.SINGLE);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            removeTabsAndSelectNext(
+                    Collections.singletonList(tab),
+                    /* recommendedNextTab= */ null,
+                    TabSelectionType.FROM_CLOSE,
+                    /* isUndoable= */ false,
+                    TabCloseType.SINGLE);
+        }
 
         for (TabModelObserver obs : mTabModelObservers) obs.tabRemoved(tab);
     }
@@ -817,7 +840,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     protected @Nullable Token addTabsToGroup(@Nullable Token tabGroupId, List<Tab> tabs) {
         assertOnUiThread();
-        return addTabsToGroupInternal(tabGroupId, tabs);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            return addTabsToGroupInternal(tabGroupId, tabs);
+        }
     }
 
     // TabGroupModelFilter overrides.
@@ -972,7 +997,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void moveRelatedTabs(@TabId int id, int newIndex) {
         assertOnUiThread();
-        moveRelatedTabsInternal(id, newIndex);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            moveRelatedTabsInternal(id, newIndex);
+        }
     }
 
     @Override
@@ -986,16 +1013,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assertOnUiThread();
         assert tab.getTabGroupId() == null;
 
-        mergeListOfTabsToGroup(
-                Collections.singletonList(tab), tab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mergeListOfTabsToGroup(
+                    Collections.singletonList(tab), tab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
+        }
     }
 
     @Override
     public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
         if (tabs.isEmpty()) return;
 
-        mergeListOfTabsToGroupInternal(
-                tabs, tabs.get(0), /* notify= */ DONT_NOTIFY, /* indexInGroup= */ null, tabGroupId);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mergeListOfTabsToGroupInternal(
+                    tabs,
+                    tabs.get(0),
+                    /* notify= */ DONT_NOTIFY,
+                    /* indexInGroup= */ null,
+                    tabGroupId);
+        }
     }
 
     @Override
@@ -1017,10 +1052,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // TODO(crbug.com/441933200): skipUpdateTabModel should be renamed to "notify" to match the
         // signature of mergeListOfTabsToGroupInternal(). It is no longer used to skip updating the
         // tab model as that often left the tab model in an invalid intermediate state.
-        mergeListOfTabsToGroup(
-                tabsToMerge,
-                destinationTab,
-                skipUpdateTabModel ? DONT_NOTIFY : NOTIFY_IF_NOT_NEW_GROUP);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mergeListOfTabsToGroup(
+                    tabsToMerge,
+                    destinationTab,
+                    skipUpdateTabModel ? DONT_NOTIFY : NOTIFY_IF_NOT_NEW_GROUP);
+        }
     }
 
     @Override
@@ -1029,12 +1066,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             Tab destinationTab,
             @Nullable Integer indexInGroup,
             @MergeNotificationType int notify) {
-        mergeListOfTabsToGroupInternal(
-                tabs,
-                destinationTab,
-                notify,
-                /* indexInGroup= */ indexInGroup,
-                /* tabGroupIdForNewGroup= */ null);
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            mergeListOfTabsToGroupInternal(
+                    tabs,
+                    destinationTab,
+                    notify,
+                    /* indexInGroup= */ indexInGroup,
+                    /* tabGroupIdForNewGroup= */ null);
+        }
     }
 
     @Override
@@ -1045,7 +1084,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
         assertOnUiThread();
-        performUndoGroupOperationInternal((UndoGroupMetadataImpl) undoGroupMetadata);
+
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            performUndoGroupOperationInternal((UndoGroupMetadataImpl) undoGroupMetadata);
+        }
     }
 
     @Override
@@ -1246,7 +1288,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void moveTabOutOfGroupInDirection(@TabId int sourceTabId, boolean trailing) {
         assertOnUiThread();
-        moveTabOutOfGroupInDirectionInternal(sourceTabId, trailing);
+
+        try (ScopedStorageBatch ignored = createBatch(getProfile())) {
+            moveTabOutOfGroupInDirectionInternal(sourceTabId, trailing);
+        }
     }
 
     private void addTabInternal(

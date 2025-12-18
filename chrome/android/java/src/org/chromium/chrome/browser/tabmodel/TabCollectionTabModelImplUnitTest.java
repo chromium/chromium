@@ -35,9 +35,12 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionType;
@@ -71,6 +74,8 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabModelObserver mTabModelObserver;
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
+    @Mock private TabStateStorageService mTabStateStorageService;
+    @Mock private ScopedStorageBatch mScopedStorageBatch;
 
     private TabCollectionTabModelImpl mTabModel;
 
@@ -96,6 +101,9 @@ public class TabCollectionTabModelImplUnitTest {
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
         when(mTabCollectionTabModelImplJni.init(any(), eq(mProfile)))
                 .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
+
+        TabStateStorageServiceFactory.setForTesting(mTabStateStorageService);
+        when(mTabStateStorageService.createBatch()).thenReturn(mScopedStorageBatch);
 
         mTabModel =
                 new TabCollectionTabModelImpl(
@@ -173,6 +181,7 @@ public class TabCollectionTabModelImplUnitTest {
                 TabCreationState.LIVE_IN_FOREGROUND);
 
         assertEquals(tab, mTabModel.getTabById(tabId));
+        verifyBatchedAndReset();
     }
 
     @Test
@@ -185,6 +194,8 @@ public class TabCollectionTabModelImplUnitTest {
                 /* index= */ 0,
                 TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
+
         assertThrows(
                 AssertionError.class,
                 () ->
@@ -193,6 +204,8 @@ public class TabCollectionTabModelImplUnitTest {
                                 /* index= */ 1,
                                 TabLaunchType.FROM_CHROME_UI,
                                 TabCreationState.LIVE_IN_FOREGROUND));
+        verify(mTabStateStorageService, atLeastOnce()).createBatch();
+        verify(mScopedStorageBatch, atLeastOnce()).close();
     }
 
     @Test
@@ -208,6 +221,7 @@ public class TabCollectionTabModelImplUnitTest {
                                 /* index= */ 1,
                                 TabLaunchType.FROM_CHROME_UI,
                                 TabCreationState.LIVE_IN_FOREGROUND));
+        verifyBatchedAndReset();
     }
 
     @Test
@@ -339,6 +353,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         model.setIndex(0, TabSelectionType.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ false);
+        verifyBatchedAndReset();
 
         // Simulate an incognito Profile.
         doReturn(true).when(mProfile).isOffTheRecord();
@@ -349,6 +364,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         incognitoModel.setIndex(0, TabSelectionType.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ true);
+        verifyBatchedAndReset();
 
         // Simulate an ephemeral profile.
         doReturn(true).when(mProfile).isOffTheRecord();
@@ -359,6 +375,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         ephemeralModel.setIndex(0, TabSelectionType.FROM_USER);
         verify(mTabModelDelegate).selectModel(/* incognito= */ true);
+        verifyBatchedAndReset();
     }
 
     @Test
@@ -415,6 +432,7 @@ public class TabCollectionTabModelImplUnitTest {
         incognitoModel.addTab(
                 tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         verify(mOrderController).willOpenInForeground(TabLaunchType.FROM_CHROME_UI, true);
+        verifyBatchedAndReset();
     }
 
     @Test
@@ -424,6 +442,7 @@ public class TabCollectionTabModelImplUnitTest {
         when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any())).thenReturn(0);
         mTabModel.addTab(
                 tabToClose, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
 
         MockTab nextTab = MockTab.createAndInitialize(456, mOtrProfile);
         nextTab.setIsInitialized(true);
@@ -438,6 +457,7 @@ public class TabCollectionTabModelImplUnitTest {
                         .recommendedNextTab(nextTab)
                         .build());
         verify(mTabModelDelegate).getModel(true);
+        verifyBatchedAndReset();
     }
 
     @Test
@@ -480,6 +500,14 @@ public class TabCollectionTabModelImplUnitTest {
         // Without pending closures, should return model delegate's time.
         mTabModel.setPendingTabClosureManagerForTesting(null);
         assertEquals(5L, mTabModel.getMostRecentClosureTime());
+    }
+
+    private void verifyBatchedAndReset() {
+        verify(mTabStateStorageService).createBatch();
+        verify(mScopedStorageBatch).close();
+
+        reset(mTabStateStorageService, mScopedStorageBatch);
+        when(mTabStateStorageService.createBatch()).thenReturn(mScopedStorageBatch);
     }
 
     private static TabCollectionTabModelImpl getModel(
