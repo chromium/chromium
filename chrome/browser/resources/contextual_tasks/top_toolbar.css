@@ -32,8 +32,8 @@
   box-sizing: border-box;
   display: inline-block;
   margin: 0 12px 0 8px;
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 22px;
+  min-height: 22px;
 }
 
 .rightSide {
