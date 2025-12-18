@@ -225,11 +225,19 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     }
 
     // Check account capabilities.
+    //
+    // TODO(crbug.com/470004757): when cleaning up the
+    // kGlicEligibilitySeparateAccountCapability feature, also remove the
+    // fallback to can_use_model_execution_features().
     signin::Tribool capability_value =
-        base::FeatureList::IsEnabled(
-            switches::kGlicEligibilitySeparateAccountCapability)
-            ? primary_account.capabilities.can_use_gemini_in_chrome()
-            : primary_account.capabilities.can_use_model_execution_features();
+        primary_account.capabilities.can_use_model_execution_features();
+    if (base::FeatureList::IsEnabled(
+            switches::kGlicEligibilitySeparateAccountCapability) &&
+        (primary_account.capabilities.can_use_gemini_in_chrome() !=
+         signin::Tribool::kUnknown)) {
+      capability_value =
+          primary_account.capabilities.can_use_gemini_in_chrome();
+    }
     result.primary_account_not_capable =
         (capability_value != signin::Tribool::kTrue);
 

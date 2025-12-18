@@ -192,6 +192,30 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                 kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
+                       SeparateAccountCapabilityUnknownTest) {
+  // Sign in with a different account (this resets all account capabilities to
+  // unknown).
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "glic-test-2@example.com",
+      signin::ConsentLevel::kSignin);
+  account_info.full_name = "Glic 2 Testing";
+  account_info.given_name = "Glic 2";
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // If the "can_use_gemini_in_chrome" capability is unknown, we should fall
+  // back to the legacy "can_use_model_execution_features" capability.
+  //
+  // This is important during rollout, where existing users may not yet hav
+  // fetched the new capability and it would be undesirable to disable GLIC for
+  // them.
+  SetLegacyAccountCapability(true);
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+}
+
 IN_PROC_BROWSER_TEST_F(
     GlicEnablingWithSeparateAccountCapabilityTest,
     AffectedUserAddedToSyntheticFieldTrial_EligibilityChanges) {
