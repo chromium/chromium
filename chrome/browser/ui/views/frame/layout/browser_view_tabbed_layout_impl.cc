@@ -335,9 +335,19 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(views().projects_panel_container, projects_panel_bounds);
   }
 
-  // When the tabstrip isn't at the top, the top container is laid out before
-  // all side panels.
-  if (tab_strip_type != TabStripType::kHorizontal &&
+  // When the tabstrip isn't at the top or in constrained widths, the top
+  // container is laid out before all side panels.
+  const int min_width_for_toolbar_and_toolbar_height_size_panel =
+      (views().toolbar_height_side_panel &&
+               views().toolbar_height_side_panel->GetVisible()
+           ? views().toolbar_height_side_panel->GetMinimumSize().width()
+           : 0) +
+      views().toolbar->GetMinimumSize().width();
+  const bool layout_top_container_before_side_panels =
+      tab_strip_type != TabStripType::kHorizontal ||
+      params.visual_client_area.width() <
+          min_width_for_toolbar_and_toolbar_height_size_panel;
+  if (layout_top_container_before_side_panels &&
       IsParentedTo(views().top_container, views().browser_view)) {
     auto& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
@@ -459,8 +469,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                   show_shadow_overlay);
 
   // Lay out top container. The top container is laid out after the
-  // toolbar-height side panel with a horizontal tabstrip.
-  if (tab_strip_type == TabStripType::kHorizontal &&
+  // toolbar-height side panel with a horizontal tabstrip if the browser is wide
+  // enough.
+  if (!layout_top_container_before_side_panels &&
       IsParentedTo(views().top_container, views().browser_view)) {
     auto& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
