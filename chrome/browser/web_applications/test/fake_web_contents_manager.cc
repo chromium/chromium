@@ -318,15 +318,20 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
 
+    auto manifest = ResolveManifest(page, url);
+
+    // The on_manifest_fetch callback below may end up destroying `this` as well
+    // as invalidate `page`, so don't access any more member variables or call
+    // other methods after this.
+    auto valid_manifest_for_web_app = page.valid_manifest_for_web_app;
+    auto error_code = page.error_code;
     if (page.on_manifest_fetch) {
       std::move(page.on_manifest_fetch).Run();
     }
-    auto manifest = ResolveManifest(page, url);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(manifest),
-                       page.valid_manifest_for_web_app, page.error_code));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(manifest),
+                                  valid_manifest_for_web_app, error_code));
   }
 
   void GetPrimaryPageFirstSpecifiedManifest(
@@ -359,10 +364,13 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
                       std::vector<blink::mojom::ManifestErrorPtr>()))));
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
+    // The on_manifest_fetch callback below may end up destroying `this` as well
+    // as invalidate `page`, so don't access any more member variables or call
+    // other methods after this.
+    auto manifest = ResolveManifest(page, url);
     if (page.on_manifest_fetch) {
       std::move(page.on_manifest_fetch).Run();
     }
-    auto manifest = ResolveManifest(page, url);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

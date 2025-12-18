@@ -655,13 +655,7 @@ TEST_P(InstallFromSyncTest, TwoInstalls) {
                           webapps::InstallResultCode::kSuccessNewInstall));
 }
 
-// TODO(crbug.com/453907861): Disabled on Linux UBSan due to failures.
-#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
-#define MAYBE_Shutdown DISABLED_Shutdown
-#else
-#define MAYBE_Shutdown Shutdown
-#endif
-TEST_P(InstallFromSyncTest, MAYBE_Shutdown) {
+TEST_P(InstallFromSyncTest, Shutdown) {
   const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest, but have the manifest fetch cause the system to shut
