@@ -16,6 +16,8 @@ source_set("ios") {
     "passkey_java_script_feature.mm",
     "passkey_request_params.h",
     "passkey_request_params.mm",
+    "passkey_request_parser.h",
+    "passkey_request_parser.mm",
     "passkey_tab_helper.h",
     "passkey_tab_helper.mm",
   ]
