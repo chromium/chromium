@@ -170,6 +170,10 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return network::mojom::PermissionsPolicyFeature::kWebAppInstallation;
     case PermissionType::LOCAL_NETWORK_ACCESS:
       return network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess;
+    case PermissionType::LOCAL_NETWORK:
+      return network::mojom::PermissionsPolicyFeature::kLocalNetwork;
+    case PermissionType::LOOPBACK_NETWORK:
+      return network::mojom::PermissionsPolicyFeature::kLoopbackNetwork;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:
@@ -185,10 +189,6 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::NOTIFICATIONS:
     case PermissionType::KEYBOARD_LOCK:
     case PermissionType::POINTER_LOCK:
-    // TODO(crbug.com/465491626): Implement permission policy feature for both
-    // LOCAL_NETWORK and LOOPBACK_NETWORK
-    case PermissionType::LOCAL_NETWORK:
-    case PermissionType::LOOPBACK_NETWORK:
       return std::nullopt;
 
     case PermissionType::NUM:

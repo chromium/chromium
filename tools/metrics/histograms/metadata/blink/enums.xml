@@ -6556,6 +6556,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="141" label="DigitalCredentialsCreate"/>
   <int value="142" label="MulticastInDirectSockets"/>
   <int value="143" label="ManualText"/>
+  <int value="144" label="LocalNetwork"/>
+  <int value="145" label="LoopbackNetwork"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->

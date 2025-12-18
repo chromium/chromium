@@ -232,12 +232,17 @@ update enum
 2. In [permissions_policy_features.json5](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/cpp/permissions_policy/permissions_policy_features.json5)
 update `data` array with the new policy. Also update PermissionPolicyFeature
 enum in
-[browser_protocol.pdl](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+[third_party/blink/public/devtools_protocol/domains/Page.pdl](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/devtools_protocol/domains/Page.pdl)
 
 5. Update [feature-policy-features-expected.txt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt)
 6. In the `<PermissionName>PermissionContext`, make sure to initialize the permission policy variable
 [permissions_policy_feature_](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_context_base.h;l=223;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
 in the class ctor.
+
+7. In [third_party/blink/common/permissions/permission_utils.cc](
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/common/permissions/permission_utils.cc)
+update PermissionTypeToPermissionsPolicyFeature
+
 
 ### Optional: Enterprise policies
 Permissions infrastructure has its own provider for storing policies

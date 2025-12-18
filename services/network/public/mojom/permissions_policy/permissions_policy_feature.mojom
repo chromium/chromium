@@ -317,6 +317,9 @@ enum PermissionsPolicyFeature {
 
   // Allows a site to make local network access requests.
   // See: https://wicg.github.io/local-network-access/
+  //
+  // This is being deprecated in favor of LNA split permissions (see
+  // kLocalNetwork and kLoopbackNetwork later in this file)
   kLocalNetworkAccess = 136,
 
   // Controls Protected Audience API's view and click functionality.
@@ -346,8 +349,18 @@ enum PermissionsPolicyFeature {
   // a field with the main frame's origin.
   kManualText = 143,
 
+  // Allows a site to make local network access requests.
+  // See: https://wicg.github.io/local-network-access/
+  //
+  // kLocalNetwork is for connections to IPs in the local address space.
+  // kLoopbackNetwork is for connections to localhost.
+  //
+  // This replaces kLocalNetworkAccess
+  kLocalNetwork= 144,
+  kLoopbackNetwork = 145,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
-  // Also, run update_permissions_policy_enum.py in
-  // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
+  // Run tools/metrics/histograms/update_permissions_policy_enum.py to update
+  // the UMA mapping.
 };

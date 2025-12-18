@@ -415,9 +415,19 @@
       depends_on: ["FontAccess"],
     },
     {
+      name: "LocalNetwork",
+      permissions_policy_name: "local-network",
+      depends_on: [ "LocalNetworkAccessSplitPermissions" ],
+    },
+    {
       name: "LocalNetworkAccess",
       permissions_policy_name: "local-network-access",
       depends_on: [ "LocalNetworkAccessPermissionPolicy" ],
+    },
+    {
+      name: "LoopbackNetwork",
+      permissions_policy_name: "loopback-network",
+      depends_on: [ "LocalNetworkAccessSplitPermissions" ],
     },
     {
       name: "Magnetometer",
