@@ -294,9 +294,28 @@ public class SettingsIndexData {
      */
     public void addEntryForKey(
             String prefFragment, String key, String title, @Nullable String summary) {
+        addEntryForKey(prefFragment, key, title, summary, /* extras= */ null);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     * @param extras Extra bundle to pass to the Fragment.
+     */
+    public void addEntryForKey(
+            String prefFragment,
+            String key,
+            String title,
+            @Nullable String summary,
+            @Nullable Bundle extras) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
         var builder = new Entry.Builder(id, key, title, prefFragment);
         if (summary != null) builder.setSummary(summary);
+        if (extras != null) builder.setArguments(extras);
         addEntry(id, builder.build());
     }
 

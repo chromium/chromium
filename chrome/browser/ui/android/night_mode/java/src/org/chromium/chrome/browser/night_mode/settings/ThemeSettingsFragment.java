@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.night_mode.settings;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -15,8 +16,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
+import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -24,12 +27,15 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Fragment to manage the theme user settings. */
 @NullMarked
 public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
         implements CustomDividerFragment {
     static final String PREF_UI_THEME_PREF = "ui_theme_pref";
+    private static final String PREF_UI_THEME_PREF_LIGHT = "ui_theme_pref_light";
+    private static final String PREF_UI_THEME_PREF_DARK = "ui_theme_pref_dark";
 
     public static final String KEY_THEME_SETTINGS_ENTRY = "theme_settings_entry";
 
@@ -102,8 +108,30 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
         return "ui_theme";
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(
-                    ThemeSettingsFragment.class.getName(), R.xml.theme_preferences);
+            new ChromeBaseSearchIndexProvider(ThemeSettingsFragment.class.getName(), 0) {
+
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    String prefFragment = ThemeSettingsFragment.class.getName();
+                    Bundle extras = new Bundle();
+                    extras.putInt(
+                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                            ThemeSettingsEntry.SETTINGS);
+                    String defaultTitle =
+                            NightModeUtils.getThemeSettingTitle(context, ThemeType.SYSTEM_DEFAULT);
+                    String defaultSummary =
+                            context.getString(R.string.themes_system_default_summary);
+                    indexData.addEntryForKey(
+                            prefFragment, PREF_UI_THEME_PREF, defaultTitle, defaultSummary, extras);
+
+                    String lightTitle =
+                            NightModeUtils.getThemeSettingTitle(context, ThemeType.LIGHT);
+                    indexData.addEntryForKey(
+                            prefFragment, PREF_UI_THEME_PREF_LIGHT, lightTitle, null, extras);
+                    String darkTitle = NightModeUtils.getThemeSettingTitle(context, ThemeType.DARK);
+                    indexData.addEntryForKey(
+                            prefFragment, PREF_UI_THEME_PREF_DARK, darkTitle, null, extras);
+                }
+            };
 }
