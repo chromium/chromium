@@ -527,6 +527,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1690248410" label="photos (deprecated)"/>
   <int value="-1421889245" label="microsoft_files"/>
   <int value="-1057474133" label="tab_resumption"/>
+  <int value="-831419666" label="tab_groups"/>
   <int value="-829949732" label="microsoft_authentication"/>
   <int value="-505117227" label="dummy2"/>
   <int value="-350308324" label="outlook_calendar"/>
