@@ -216,15 +216,11 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
       summary, is_card_number_field_empty, {suggestion_data});
 }
 
-std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
+std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
-    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
-        virtual_card_guid_to_last_four_map) {
-  // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
-  // duplicate logic to helper functions.
-  std::vector<Suggestion> suggestions;
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       client, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
@@ -232,6 +228,33 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
       /*include_virtual_cards=*/false);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
+
+  std::vector<SuggestionData> suggestion_data = base::ToVector(
+      cards_to_suggest,
+      [](auto& card) { return SuggestionData(std::move(card)); });
+  return {SuggestionDataSource::kVirtualStandaloneCvc, suggestion_data};
+}
+
+std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    const base::flat_map<std::string,
+                         VirtualCardUsageData::VirtualCardLastFour>&
+        virtual_card_guid_to_last_four_map,
+    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+        suggestion_data) {
+  std::vector<Suggestion> suggestions;
+
+  const std::vector<SuggestionData>* credit_card_data = base::FindOrNull(
+      suggestion_data, SuggestionDataSource::kVirtualStandaloneCvc);
+  if (!credit_card_data) {
+    return {};
+  }
+
+  std::vector<CreditCard> cards_to_suggest = base::ToVector(
+      *credit_card_data, [](const SuggestionData& suggestion_data) {
+        return std::get<CreditCard>(suggestion_data);
+      });
 
   for (const CreditCard& credit_card : cards_to_suggest) {
     auto it = virtual_card_guid_to_last_four_map.find(credit_card.guid());
@@ -281,6 +304,23 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
       std::back_inserter(suggestions));
 
   return suggestions;
+}
+
+std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+        virtual_card_guid_to_last_four_map) {
+  // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
+  // duplicate logic to helper functions.
+  std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+      suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+          client, trigger_field, metadata_logging_context);
+
+  return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+      client, trigger_field, virtual_card_guid_to_last_four_map,
+      {suggestion_data});
 }
 
 }  // namespace autofill
