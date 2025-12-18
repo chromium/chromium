@@ -18,6 +18,10 @@ source_set("glic") {
   sources = [
     "host/auth_controller.h",
     "host/glic_cookie_synchronizer.h",
+    "public/glic_instance.h",
+    "service/glic_instance_helper.cc",
+    "service/glic_instance_helper.h",
+    "service/metrics/glic_instance_helper_metrics.h",
   ]
   if (!is_android) {
     sources += [
@@ -54,11 +58,8 @@ source_set("glic") {
       "host/host_metrics.h",
       "public/context/glic_sharing_manager.h",
       "public/glic_enabling.h",
-      "public/glic_instance.h",
       "public/glic_keyed_service.h",
       "public/glic_keyed_service_factory.h",
-      "service/glic_instance_helper.h",
-      "service/metrics/glic_instance_helper_metrics.h",
       "widget/glic_view.h",
       "widget/glic_window_controller.h",
       "widget/local_hotkey_manager.h",
@@ -82,6 +83,7 @@ source_set("glic") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/tabs:public",
     "//components/variations",
     "//content/public/browser",
     "//google_apis/common",
@@ -204,7 +206,6 @@ source_set("impl") {
       "public/glic_keyed_service_factory.cc",
       "service/glic_instance_coordinator_impl.cc",
       "service/glic_instance_coordinator_impl.h",
-      "service/glic_instance_helper.cc",
       "service/glic_instance_impl.cc",
       "service/glic_instance_impl.h",
       "service/glic_state_tracker.cc",
