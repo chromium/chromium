@@ -479,6 +479,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_profile_garbage_collection_service_factory.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/bound_session_credentials/dice_bound_session_cookie_service_factory.h"
@@ -1411,6 +1412,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   TurnSyncOnHelper::EnsureFactoryBuilt();
+#endif
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  unexportable_keys::UnexportableKeyProfileGarbageCollectionServiceFactory::
+      GetInstance();
 #endif
   UnifiedConsentServiceFactory::GetInstance();
   RevokedPermissionsServiceFactory::GetInstance();

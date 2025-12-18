@@ -123,6 +123,24 @@ TEST_F(UnexportableKeyServiceImplTest, IsUnexportableKeyProviderSupported) {
   EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
 }
 
+TEST_F(UnexportableKeyServiceImplTest,
+       IsStatefulUnexportableKeyProviderSupported) {
+  EXPECT_FALSE(
+      UnexportableKeyServiceImpl::IsStatefulUnexportableKeyProviderSupported(
+          crypto::UnexportableKeyProvider::Config()));
+
+  // Test that the service returns a `ServiceError::kOperationNotSupported`
+  // error.
+  base::test::TestFuture<ServiceErrorOr<size_t>> future;
+  service().DeleteAllKeysSlowlyAsync(kTaskPriority, future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationNotSupported));
+
+  SwitchToMockKeyProvider();
+  EXPECT_TRUE(
+      UnexportableKeyServiceImpl::IsStatefulUnexportableKeyProviderSupported(
+          crypto::UnexportableKeyProvider::Config()));
+}
+
 TEST_F(UnexportableKeyServiceImplTest, GenerateKey) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,

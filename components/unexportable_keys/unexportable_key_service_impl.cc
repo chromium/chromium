@@ -100,6 +100,15 @@ bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported(
              std::move(config)) != nullptr;
 }
 
+// static
+bool UnexportableKeyServiceImpl::IsStatefulUnexportableKeyProviderSupported(
+    crypto::UnexportableKeyProvider::Config config) {
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+      UnexportableKeyTaskManager::GetUnexportableKeyProvider(std::move(config));
+  return provider != nullptr &&
+         provider->AsStatefulUnexportableKeyProvider() != nullptr;
+}
+
 void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,

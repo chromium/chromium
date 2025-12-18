@@ -4,8 +4,11 @@
 
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 
+#include <cstddef>
+
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -150,6 +153,26 @@ TEST_F(UnexportableKeyServiceFactoryTest, DifferentPurposes) {
   EXPECT_TRUE(lst_config.application_tag.ends_with("lst"));
   EXPECT_TRUE(dbsc_config.application_tag.ends_with("dbsc"));
 #endif  // BUILDFLAG(IS_MAC)
+}
+
+TEST_F(UnexportableKeyServiceFactoryTest,
+       CreateForGarbageCollectionReturnsNonNullForNonNullFactories) {
+  EXPECT_NE(UnexportableKeyServiceFactory::CreateForGarbageCollection(
+                unexportable_keys::GetDefaultConfig()),
+            nullptr);
+}
+
+TEST_F(UnexportableKeyServiceFactoryTest,
+       CreateForGarbageCollectionReturnsNullForNullFactories) {
+  UnexportableKeyServiceFactory::GetInstance()->SetServiceFactoryForTesting(
+      base::BindRepeating(
+          [](crypto::UnexportableKeyProvider::Config)
+              -> std::unique_ptr<unexportable_keys::UnexportableKeyService> {
+            return nullptr;
+          }));
+  EXPECT_EQ(UnexportableKeyServiceFactory::CreateForGarbageCollection(
+                unexportable_keys::GetDefaultConfig()),
+            nullptr);
 }
 
 }  // namespace

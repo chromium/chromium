@@ -7827,7 +7827,10 @@ test("unit_tests") {
     }
 
     if (is_mac) {
-      sources += [ "../browser/signin/bound_session_credentials/unexportable_key_provider_config_mac_unittest.cc" ]
+      sources += [
+        "../browser/signin/bound_session_credentials/unexportable_key_profile_garbage_collection_service_factory_mac_unittest.cc",
+        "../browser/signin/bound_session_credentials/unexportable_key_provider_config_mac_unittest.cc",
+      ]
     }
   }
 
