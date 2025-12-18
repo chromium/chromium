@@ -481,6 +481,18 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
   BrowserAccessibilityCocoa* native_node =
       base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
           node.GetNativeViewAccessible().Get());
+  // The native node should not be null, but could theoretically be null if
+  // events fire during tree mutations before platform nodes are fully
+  // initialized. Events can fire early in AXTree::Unserialize via
+  // AXTree::NotifyNodeWillBeReparentedOrDeleted, but platform node
+  // initialization happens later via
+  // BrowserAccessibilityManager::OnAtomicUpdateFinished. DCHECK to catch if
+  // this occurs.
+  DCHECK(native_node);
+  if (!native_node) {
+    return;
+  }
+
   // TODO(accessibility) We should look into why background tabs return null for
   // GetWindow. Is it safe to fire notifications when there is no window? We've
   // had trouble in the past with "Chrome is not responding" lockups in AppKit
