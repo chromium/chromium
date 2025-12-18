@@ -19,13 +19,14 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 namespace {
@@ -84,6 +85,7 @@ void SetOriginStatusFromHostContentSettingsMap(HostContentSettingsMap* hcsm,
       base::Value(std::move(dict)));
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void SetOriginStatus(Profile* profile,
                      const GURL& origin,
                      const OriginStatus& status) {
@@ -92,7 +94,6 @@ void SetOriginStatus(Profile* profile,
       status);
 }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void RevokePermission(const GURL& origin, Profile* profile) {
   if (base::FeatureList::IsEnabled(
           safe_browsing::kShowManualNotificationRevocationsSafetyHub)) {
