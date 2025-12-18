@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -28,7 +27,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ReadAnythingController;
-class TabStripModel;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured
@@ -83,13 +81,13 @@ class ReadAnythingControllerGlue
 //
 // It acts as the primary entry point for all Reading Mode commands and is
 // responsible for orchestrating the display of the Reading Mode UI.
-class ReadAnythingController : public TabStripModelObserver {
+class ReadAnythingController {
  public:
   using Observer = ReadAnythingLifecycleObserver;
 
   ReadAnythingController(const ReadAnythingController&) = delete;
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
-  ~ReadAnythingController() override;
+  ~ReadAnythingController();
 
   using PresentationState = read_anything::mojom::ReadAnythingPresentationState;
 
@@ -149,13 +147,6 @@ class ReadAnythingController : public TabStripModelObserver {
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           web_ui_wrapper);
 
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection_change) override;
-
   // Called by other host views of the Reading Mode WebUI to return ownership of
   // the WebUIContentsWrapper to this controller.
   void TransferWebUiOwnership(
@@ -167,9 +158,9 @@ class ReadAnythingController : public TabStripModelObserver {
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
   // Called when the tab is activated.
-  void OnTabActivated();
+  void OnTabActivated(tabs::TabInterface* tab);
   // Called when the tab is backgrounded.
-  void OnTabBackgrounded();
+  void OnTabBackgrounded(tabs::TabInterface* tab);
 
   std::unique_ptr<WebContentsObserverInstance> main_page_observer_;
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;

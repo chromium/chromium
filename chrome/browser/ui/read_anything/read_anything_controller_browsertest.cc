@@ -56,15 +56,19 @@ class ReadAnythingControllerTestBase
     return side_panel_view->web_contents();
   }
 
-  views::View* GetImmersiveOverlay() {
+  views::View* GetImmersiveOverlay(Browser* browser_ptr = nullptr) {
+    if (!browser_ptr) {
+      browser_ptr = browser();
+    }
     BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
+        BrowserView::GetBrowserViewForBrowser(browser_ptr);
     return browser_view->GetWidget()->GetContentsView()->GetViewByID(
         VIEW_ID_READ_ANYTHING_OVERLAY);
   }
 
-  content::WebContents* GetImmersiveWebContents() {
-    views::View* overlay_view = GetImmersiveOverlay();
+  content::WebContents* GetImmersiveWebContents(
+      Browser* browser_ptr = nullptr) {
+    views::View* overlay_view = GetImmersiveOverlay(browser_ptr);
     if (!overlay_view || !overlay_view->GetVisible() ||
         overlay_view->children().empty()) {
       return nullptr;
@@ -771,4 +775,41 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerTestBase,
 
   // Verify the same WebUI is used in the side panel
   EXPECT_EQ(immersive_ui_web_contents, GetSidePanelWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerTestBase,
+    DetachAndAttachToNewWindow_PreservesWebUI_AndTabSwitchObserver) {
+  // 1. Open IRM in initial window
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  content::WebContents* initial_web_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(initial_web_contents);
+
+  // 2. Create new window
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // 3. Detach tab and attach to new window
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+  new_browser->tab_strip_model()->AppendTab(std::move(detached_tab), true);
+
+  // 4. Open IRM in new window
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // 5. Verify same WebContents
+  content::WebContents* new_web_contents =
+      GetImmersiveWebContents(new_browser);
+  EXPECT_EQ(initial_web_contents, new_web_contents);
+
+  // 6. Open new tab in new window and verify IRM closes, confirming that we're
+  // still tracking tab switches in the new window.
+  chrome::AddTabAt(new_browser, GURL("about:blank"), -1, true);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
+  EXPECT_FALSE(GetImmersiveWebContents(new_browser));
 }

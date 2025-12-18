@@ -78,14 +78,13 @@ ReadAnythingController::ReadAnythingController(
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
 
-  if (tab_->GetBrowserWindowInterface() &&
-      tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
-    tab_->GetBrowserWindowInterface()->GetTabStripModel()->AddObserver(this);
-  }
-
   tab_subscriptions_.push_back(
       tab_->RegisterWillDetach(base::BindRepeating(
           &ReadAnythingController::TabWillDetach, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(base::BindRepeating(
+      &ReadAnythingController::OnTabActivated, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(base::BindRepeating(
+      &ReadAnythingController::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
 
   main_page_observer_ = std::make_unique<WebContentsObserverInstance>(
       /*web_contents=*/tab_->GetContents(),
@@ -108,11 +107,6 @@ ReadAnythingController::~ReadAnythingController() {
   // doesn't seem to be reliably called when a tab is closed, so we need to do
   // this here too.
   ReleaseMainContentsCapture();
-
-  if (tab_->GetBrowserWindowInterface() &&
-      tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
-    tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
-  }
 
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
@@ -148,27 +142,12 @@ void ReadAnythingController::TabWillDetach(
   observers_.Notify(&Observer::OnTabWillDetach);
 }
 
-void ReadAnythingController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection_change) {
-  if (selection_change.active_tab_changed()) {
-    // Handle when this controller's tab becomes active, or when this
-    // controller's tab is the previous active tab.
+
+void ReadAnythingController::OnTabActivated(tabs::TabInterface* tab) {
     // TODO(crbug.com/462754391): Check whether we should show IRM if tab is
     // visible as part of a split view, even if it's not the active tab.
     // Similarly, make sure not to hide IRM if the tab is visible in a split
     // view, even it's become inactive.
-    if (tab_->GetContents() == selection_change.new_contents) {
-      OnTabActivated();
-    } else if (tab_->GetContents() == selection_change.old_contents &&
-               change.type() != TabStripModelChange::kRemoved) {
-      OnTabBackgrounded();
-    }
-  }
-}
-
-void ReadAnythingController::OnTabActivated() {
   if (should_show_immersive_on_tab_reactivate_) {
     ShowImmersiveUI(ReadAnythingOpenTrigger::kTabSwitch);
     // Reset value now that the tab is active
@@ -176,7 +155,7 @@ void ReadAnythingController::OnTabActivated() {
   }
 }
 
-void ReadAnythingController::OnTabBackgrounded() {
+void ReadAnythingController::OnTabBackgrounded(tabs::TabInterface* tab) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI(/*closed_by_tab_switch=*/true);
   }
