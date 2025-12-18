@@ -4,8 +4,10 @@
 
 #include "services/device/public/cpp/geolocation/location_manager_delegate.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 @implementation LocationManagerDelegate
@@ -58,7 +60,11 @@
   position.longitude = location.coordinate.longitude;
   position.timestamp = base::Time::FromSecondsSinceUnixEpoch(
       location.timestamp.timeIntervalSince1970);
-  position.altitude = location.altitude;
+  if (base::FeatureList::IsEnabled(features::kEllipsoidalAltitude)) {
+    position.altitude = location.ellipsoidalAltitude;
+  } else {
+    position.altitude = location.altitude;
+  }
   position.accuracy = location.horizontalAccuracy;
   position.altitude_accuracy = location.verticalAccuracy;
   position.speed = location.speed;

@@ -63,6 +63,9 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialSplitDtrAndRts);
 
 #if BUILDFLAG(IS_MAC)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kHidReportRequestExactLength);
+// Controls whether to use the ellipsoidal altitude from Core Location
+// instead of the default altitude attribute.
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEllipsoidalAltitude);
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features
