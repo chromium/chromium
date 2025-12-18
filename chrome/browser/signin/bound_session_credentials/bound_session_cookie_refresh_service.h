@@ -100,7 +100,7 @@ class BoundSessionCookieRefreshService
  private:
   friend class RendererUpdater;
   friend class BoundSessionCookieRefreshServiceImplBrowserTest;
-  friend class BoundSessionOAuthMultiloginTest;
+  friend class BoundSessionOAuthMultiloginPrototypeTest;
 
   // `RendererUpdater` class that is responsible for pushing updates to all
   // renderers calls this setter to subscribe for bound session throttler params

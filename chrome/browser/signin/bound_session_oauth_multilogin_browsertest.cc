@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -28,7 +30,10 @@
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/features.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,9 +41,11 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 using ::testing::Values;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
@@ -48,6 +55,61 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 constexpr std::string_view k1PSIDTSCookieName = "__Secure-1PSIDTS";
 constexpr std::string_view k3PSIDTSCookieName = "__Secure-3PSIDTS";
+
+const std::vector<base::test::FeatureRef>& GetPrototypeFeatures() {
+  static const base::NoDestructor<std::vector<base::test::FeatureRef>>
+      kPrototypeFeatures({switches::kEnableBoundSessionCredentials,
+                          switches::kEnableOAuthMultiloginCookiesBinding});
+  return *kPrototypeFeatures;
+}
+
+const std::vector<base::test::FeatureRef>& GetStandardFeatures() {
+  static const base::NoDestructor<std::vector<base::test::FeatureRef>>
+      kStandardFeatures(
+          {net::features::kDeviceBoundSessions,
+           switches::kEnableOAuthMultiloginStandardCookiesBinding,
+           // This is required to ensure both the browser and the network
+           // processes share the same underlying crypto implementation.
+           // Otherwise, mocking `crypto::GetUnexportableKeyProvider` in the
+           // tests (e.g. `crypto::ScopedFakeUnexportableKeyProvider`) would
+           // not have any effect in the network process due to process
+           // isolation.
+           network::features::kUseUnexportableKeyServiceInBrowserProcess});
+  return *kStandardFeatures;
+}
+
+class DeviceBoundSessionAccessObserver
+    : public network::mojom::DeviceBoundSessionAccessObserver {
+ public:
+  explicit DeviceBoundSessionAccessObserver(
+      network::mojom::DeviceBoundSessionManager& device_bound_session_manager,
+      base::RepeatingCallback<void(
+          const net::device_bound_sessions::SessionAccess&)> on_access_callback)
+      : on_access_callback_(std::move(on_access_callback)) {
+    device_bound_session_manager.AddObserver(
+        GURL(GaiaUrls::GetInstance()->gaia_url()),
+        receiver_.BindNewPipeAndPassRemote());
+  }
+
+  // network::mojom::DeviceBoundSessionAccessObserver:
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionAccess& access) override {
+    on_access_callback_.Run(access);
+  }
+
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+          observer) override {
+    NOTREACHED();
+  }
+
+ private:
+  base::RepeatingCallback<void(
+      const net::device_bound_sessions::SessionAccess&)>
+      on_access_callback_;
+  mojo::Receiver<network::mojom::DeviceBoundSessionAccessObserver> receiver_{
+      this};
+};
 
 bound_session_credentials::Credential CreateCookieCredential(
     std::string_view name) {
@@ -75,18 +137,23 @@ bound_session_credentials::BoundSessionParams CreateSIDTSBoundSessionParams(
 
 }  // namespace
 
-class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
+class BoundSessionOAuthMultiloginBaseTest
+    : public MixinBasedInProcessBrowserTest {
  public:
-  BoundSessionOAuthMultiloginTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
-                              switches::kEnableChromeRefreshTokenBinding,
-                              switches::kEnableOAuthMultiloginCookiesBinding},
-        /*disabled_features=*/{
-            switches::kEnableOAuthMultiloginStandardCookiesBinding});
+  // Enables `enabled_features` and disables `disabled_features`.
+  //
+  // `switches::kEnableChromeRefreshTokenBinding` is enabled by default for all
+  // tests being a prerequisite for any (prototype and standard) OAML cookie
+  // binding.
+  BoundSessionOAuthMultiloginBaseTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    std::vector<base::test::FeatureRef> all_enabled_features = enabled_features;
+    all_enabled_features.push_back(switches::kEnableChromeRefreshTokenBinding);
+    feature_list_.InitWithFeatures(all_enabled_features, disabled_features);
   }
 
-  ~BoundSessionOAuthMultiloginTest() override = default;
+  ~BoundSessionOAuthMultiloginBaseTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
@@ -119,11 +186,6 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
         IdentityManagerFactory::GetForProfile(browser()->profile()));
   }
 
-  BoundSessionCookieRefreshService& bound_session_cookie_refresh_service() {
-    return CHECK_DEREF(BoundSessionCookieRefreshServiceFactory::GetForProfile(
-        browser()->profile()));
-  }
-
   unexportable_keys::UnexportableKeyId GenerateNewKey() {
     base::test::TestFuture<
         unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
@@ -149,11 +211,6 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
     return *wrapped_key;
   }
 
-  void SetBoundSessionParamsUpdatedCallback(base::RepeatingClosure callback) {
-    bound_session_cookie_refresh_service()
-        .SetBoundSessionParamsUpdatedCallbackForTesting(std::move(callback));
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -161,7 +218,27 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginTest, ReuseExistingSession) {
+class BoundSessionOAuthMultiloginPrototypeTest
+    : public BoundSessionOAuthMultiloginBaseTest {
+ public:
+  BoundSessionOAuthMultiloginPrototypeTest()
+      : BoundSessionOAuthMultiloginBaseTest(GetPrototypeFeatures(),
+                                            GetStandardFeatures()) {}
+
+ protected:
+  BoundSessionCookieRefreshService& bound_session_cookie_refresh_service() {
+    return CHECK_DEREF(BoundSessionCookieRefreshServiceFactory::GetForProfile(
+        browser()->profile()));
+  }
+
+  void SetBoundSessionParamsUpdatedCallback(base::RepeatingClosure callback) {
+    bound_session_cookie_refresh_service()
+        .SetBoundSessionParamsUpdatedCallbackForTesting(std::move(callback));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
+                       ReuseExistingSession) {
   base::HistogramTester histogram_tester;
 
   const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
@@ -273,11 +350,11 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginTest, ReuseExistingSession) {
       /*expected_count=*/0);
 }
 
-class BoundSessionOAuthMultiloginNewSessionTest
-    : public BoundSessionOAuthMultiloginTest,
+class BoundSessionOAuthMultiloginPrototypeNewSessionTest
+    : public BoundSessionOAuthMultiloginPrototypeTest,
       public testing::WithParamInterface<bool> {};
 
-IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginNewSessionTest,
+IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        StartsNewBoundSession) {
   const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
@@ -349,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginNewSessionTest,
       SizeIs(1));
 }
 
-IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginNewSessionTest,
+IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        OverrideExistingSession) {
   base::HistogramTester histogram_tester;
 
@@ -449,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginNewSessionTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         BoundSessionOAuthMultiloginNewSessionTest,
+                         BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "SpecCompliantServerResponse"
@@ -457,7 +534,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 class BoundSessionOAuthMultiloginPersistentErrorTest
-    : public BoundSessionOAuthMultiloginTest,
+    : public BoundSessionOAuthMultiloginPrototypeTest,
       public testing::WithParamInterface<OAuthMultiloginResponseStatus> {};
 
 IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
@@ -617,3 +694,107 @@ INSTANTIATE_TEST_SUITE_P(,
                          BoundSessionOAuthMultiloginPersistentErrorTest,
                          Values(OAuthMultiloginResponseStatus::kInvalidInput,
                                 OAuthMultiloginResponseStatus::kError));
+
+class BoundSessionOAuthMultiloginStandardTest
+    : public BoundSessionOAuthMultiloginBaseTest {
+ public:
+  BoundSessionOAuthMultiloginStandardTest()
+      : BoundSessionOAuthMultiloginBaseTest(GetStandardFeatures(),
+                                            GetPrototypeFeatures()) {}
+
+ protected:
+  network::mojom::DeviceBoundSessionManager& device_bound_session_manager() {
+    return CHECK_DEREF(ChromeSigninClientFactory::GetForProfile(GetProfile())
+                           ->GetDeviceBoundSessionManager());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
+                       StartsNewBoundSession) {
+  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  signin::MakeAccountAvailable(
+      &identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
+          .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
+          .WithRefreshTokenBindingKey(wrapped_key)
+          .Build(FakeGaiaMixin::kFakeUserEmail));
+
+  ASSERT_TRUE(
+      identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager().GetWrappedBindingKey(), wrapped_key);
+
+  {
+    // Verify that there are no bound sessions before OAML.
+    base::test::TestFuture<
+        const std::vector<net::device_bound_sessions::SessionKey>&>
+        sessions_future;
+    device_bound_session_manager().GetAllSessions(
+        sessions_future.GetCallback());
+    ASSERT_THAT(sessions_future.Get(), IsEmpty());
+  }
+
+  // This makes sure that eventually OAML will return bound cookies, at the same
+  // time `/ListAccounts` WON'T return primary account triggering OAML - it
+  // simulates similar scenario to cookies being cleared.
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  FakeGaia::Configuration config;
+  config.session_sid_cookie = "fake_sid";
+  config.session_lsid_cookie = "fake_lsid";
+  config.session_1p_sidts_cookie = "fake_1p_sidts";
+  config.session_3p_sidts_cookie = "fake_3p_sidts";
+  fake_gaia().SetConfiguration(config);
+
+  base::RunLoop run_loop;
+  DeviceBoundSessionAccessObserver observer(
+      device_bound_session_manager(),
+      base::IgnoreArgs<const net::device_bound_sessions::SessionAccess&>(
+          run_loop.QuitClosure()));
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  // Wait until the observer receives the notification about the new session.
+  run_loop.Run();
+
+  base::queue<FakeGaia::MultiloginCall> multilogin_calls =
+      fake_gaia().GetAndResetMultiloginCalls();
+
+  ASSERT_THAT(multilogin_calls, SizeIs(2));
+
+  const auto& first_call = multilogin_calls.front();
+  // OAML first returns the challenge to sign.
+  ASSERT_EQ(first_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBindingChallenge);
+  multilogin_calls.pop();
+
+  // After the challenge is received and signed, OAML returns the bound
+  // cookies.
+  const auto& second_call = multilogin_calls.front();
+  ASSERT_EQ(second_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
+
+  // Verify that the challenge was signed correctly.
+  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
+  ASSERT_TRUE(header.has_value());
+  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      header->account_requests().at(0).token_binding_assertion(),
+      *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      sessions_future;
+  device_bound_session_manager().GetAllSessions(sessions_future.GetCallback());
+  EXPECT_THAT(
+      sessions_future.Get(),
+      UnorderedElementsAre(AllOf(
+          Field(&net::device_bound_sessions::SessionKey::id,
+                net::device_bound_sessions::SessionKey::Id("sidts_session")),
+          Field(&net::device_bound_sessions::SessionKey::site,
+                net::SchemefulSite::Deserialize("https://google.com")))));
+}
