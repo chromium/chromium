@@ -136,8 +136,7 @@ class FakeMidiManagerClient : public MidiManagerClient {
     std::move(on_session_start_cb_).Run();
   }
   void ReceiveMidiData(uint32_t port_index,
-                       const uint8_t* data,
-                       size_t size,
+                       base::span<const uint8_t> data,
                        base::TimeTicks timestamp) override {}
   void AccumulateMidiBytesSent(size_t size) override {}
   void Detach() override {}

@@ -919,8 +919,17 @@ void MidiManagerAlsa::ProcessSingleEvent(snd_seq_event_t* event,
     uint32_t source = source_it->second;
     if (event->type == SND_SEQ_EVENT_SYSEX) {
       // Special! Variable-length sysex.
-      ReceiveMidiData(source, static_cast<const uint8_t*>(event->data.ext.ptr),
-                      event->data.ext.len, timestamp);
+      ReceiveMidiData(
+          source,
+          // SAFETY: ProcessSingleEvent is called by the EventLoop
+          // which creates the `event` struct. `event->data.ext.ptr` is a
+          // pointer to the data and `event->data.ext.len` the length of the
+          // data. For more details see
+          // https://www.alsa-project.org/alsa-doc/alsa-lib/seq__event_8h_source.html#:~:text=struct-,snd_seq_ev_ext,-%7B
+          UNSAFE_BUFFERS(
+              base::span(static_cast<const uint8_t*>(event->data.ext.ptr),
+                         event->data.ext.len)),
+          timestamp);
     } else {
       // Otherwise, decode this and send that on.
       unsigned char buf[12];
@@ -934,7 +943,9 @@ void MidiManagerAlsa::ProcessSingleEvent(snd_seq_event_t* event,
           // TODO(agoode): Record this failure.
         }
       } else {
-        ReceiveMidiData(source, buf, count, timestamp);
+        ReceiveMidiData(source,
+                        base::span(buf).first(static_cast<size_t>(count)),
+                        timestamp);
       }
     }
   }

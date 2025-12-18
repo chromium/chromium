@@ -318,8 +318,13 @@ void MidiManagerMac::ReadMidiDispatch(const MIDIPacketList* packet_list,
     // Each packet contains MIDI data for one or more messages (like note-on).
     base::TimeTicks timestamp = MIDITimeStampToTimeTicks(packet->timeStamp);
 
-    manager->ReceiveMidiData(port_index, packet->data, packet->length,
-                             timestamp);
+    manager->ReceiveMidiData(
+        // SAFETY: `packet->data` is a variable-length stream of MIDI messages.
+        // `packet->length` is the number of valid MIDI data bytes in this
+        // packet. For more details, see:
+        // https://developer.apple.com/documentation/coremidi/midipacket?language=objc
+        port_index, UNSAFE_BUFFERS(base::span(packet->data, packet->length)),
+        timestamp);
 
     packet = MIDIPacketNext(packet);
   }

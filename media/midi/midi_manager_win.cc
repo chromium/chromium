@@ -809,7 +809,7 @@ void MidiManagerWin::OnDevicesChanged(
 void MidiManagerWin::ReceiveMidiData(uint32_t index,
                                      const std::vector<uint8_t>& data,
                                      base::TimeTicks time) {
-  MidiManager::ReceiveMidiData(index, data.data(), data.size(), time);
+  MidiManager::ReceiveMidiData(index, data, time);
 }
 
 void MidiManagerWin::PostTask(base::OnceClosure task) {

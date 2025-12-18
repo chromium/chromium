@@ -109,12 +109,11 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
 }
 
 void MidiManagerAndroid::OnReceivedData(MidiInputPortAndroid* port,
-                                        const uint8_t* data,
-                                        size_t size,
+                                        base::span<const uint8_t> data,
                                         base::TimeTicks timestamp) {
   const auto i = input_port_to_index_.find(port);
   DCHECK(input_port_to_index_.end() != i);
-  ReceiveMidiData(i->second, data, size, timestamp);
+  ReceiveMidiData(i->second, data, timestamp);
 }
 
 void MidiManagerAndroid::OnInitialized(JNIEnv* env,

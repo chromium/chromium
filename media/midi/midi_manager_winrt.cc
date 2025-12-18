@@ -739,7 +739,7 @@ class MidiManagerWinrt::MidiInPortManager final
     MidiPort<Win::Devices::Midi::IMidiInPort>* port = GetPortByDeviceId(dev_id);
     CHECK(port);
 
-    midi_manager_->ReceiveMidiData(port->index, &data[0], data.size(), time);
+    midi_manager_->ReceiveMidiData(port->index, data, time);
   }
 };
 

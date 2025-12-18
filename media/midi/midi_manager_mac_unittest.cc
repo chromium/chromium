@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/task_environment.h"
@@ -67,8 +68,7 @@ class FakeMidiManagerClient : public MidiManagerClient {
   }
 
   void ReceiveMidiData(uint32_t port_index,
-                       const uint8_t* data,
-                       size_t size,
+                       base::span<const uint8_t> data,
                        base::TimeTicks timestamp) override {}
   void AccumulateMidiBytesSent(size_t size) override {}
   void Detach() override {}

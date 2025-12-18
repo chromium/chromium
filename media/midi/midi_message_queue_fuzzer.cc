@@ -13,8 +13,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto queue_running = std::make_unique<midi::MidiMessageQueue>(true);
   auto queue_normal = std::make_unique<midi::MidiMessageQueue>(false);
 
-  queue_running->Add(data, size);
-  queue_normal->Add(data, size);
+  // SAFETY: `data` is a fuzzer input and should have valid size.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+  queue_running->Add(data_span);
+  queue_normal->Add(data_span);
 
   std::vector<uint8_t> message;
   while (true) {

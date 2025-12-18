@@ -47,7 +47,7 @@ const uint8_t kReservedMessage1WithDataBytes[] = {0xf4, 0x01, 0x01,
 
 template <typename T, size_t N>
 void Add(MidiMessageQueue* queue, const T(&array)[N]) {
-  queue->Add(array, N);
+  queue->Add(array);
 }
 
 template <typename T, size_t N>
