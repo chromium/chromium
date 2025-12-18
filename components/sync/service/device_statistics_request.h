@@ -42,27 +42,38 @@ class DeviceStatisticsRequest {
  public:
   enum class State { kNotStarted, kInProgress, kComplete, kFailed };
 
+  virtual ~DeviceStatisticsRequest() = default;
+
+  // Tells the request to begin. Must only be called once. `callback` will run
+  // once the request completes (i.e. GetState() will be kComplete or kFailed).
+  // If the request object gets destroyed before it completes, the callback
+  // will not run.
+  virtual void Start(base::OnceClosure callback) = 0;
+
+  virtual State GetState() const = 0;
+  virtual const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults()
+      const = 0;
+};
+
+class DeviceStatisticsRequestImpl : public DeviceStatisticsRequest {
+ public:
   // Constructs a request for the given account (which does not have to be the
   // primary account). `identity_manager` and `url_loader_factory` must not be
   // null.
-  DeviceStatisticsRequest(
+  DeviceStatisticsRequestImpl(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view user_agent,
       const CoreAccountInfo& account,
       const GURL& url);
-  DeviceStatisticsRequest(const DeviceStatisticsRequest&) = delete;
-  DeviceStatisticsRequest(DeviceStatisticsRequest&&) = delete;
-  ~DeviceStatisticsRequest();
+  DeviceStatisticsRequestImpl(const DeviceStatisticsRequestImpl&) = delete;
+  DeviceStatisticsRequestImpl(DeviceStatisticsRequestImpl&&) = delete;
+  ~DeviceStatisticsRequestImpl() override;
 
-  // Tells the request to begin. Must only be called once. `callback` will run
-  // once the request completes (i.e. GetState() will be kComplete or kFailed).
-  // If `this` gets destroyed before the request completes, the callback will
-  // not run.
-  void Start(base::OnceClosure callback);
+  void Start(base::OnceClosure callback) override;
 
-  State GetState() const;
-  const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults() const;
+  State GetState() const override;
+  const std::vector<sync_pb::DeviceInfoSpecifics>& GetResults() const override;
 
  private:
   void AccessTokenFetchComplete(GoogleServiceAuthError error,

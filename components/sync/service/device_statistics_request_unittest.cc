@@ -71,9 +71,9 @@ class DeviceStatisticsRequestTest : public testing::Test {
 TEST_F(DeviceStatisticsRequestTest, ShouldSucceed) {
   SetOkResponse("test_client");
 
-  DeviceStatisticsRequest request(identity_test_env_.identity_manager(),
-                                  shared_url_loader_factory_, "user_agent",
-                                  account_info_, GURL(kTestUrl));
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
 
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());
@@ -89,9 +89,9 @@ TEST_F(DeviceStatisticsRequestTest, ShouldSucceed) {
 }
 
 TEST_F(DeviceStatisticsRequestTest, ShouldHandleAuthError) {
-  DeviceStatisticsRequest request(identity_test_env_.identity_manager(),
-                                  shared_url_loader_factory_, "user_agent",
-                                  account_info_, GURL(kTestUrl));
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
 
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());
@@ -110,9 +110,9 @@ TEST_F(DeviceStatisticsRequestTest, ShouldHandleNetworkError) {
   test_url_loader_factory_.AddResponse(GURL(kTestUrl), std::move(head), "",
                                        status);
 
-  DeviceStatisticsRequest request(identity_test_env_.identity_manager(),
-                                  shared_url_loader_factory_, "user_agent",
-                                  account_info_, GURL(kTestUrl));
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
 
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());
@@ -125,9 +125,9 @@ TEST_F(DeviceStatisticsRequestTest, ShouldHandleNetworkError) {
 }
 
 TEST_F(DeviceStatisticsRequestTest, ShouldRetryOnUnauthorized) {
-  DeviceStatisticsRequest request(identity_test_env_.identity_manager(),
-                                  shared_url_loader_factory_, "user_agent",
-                                  account_info_, GURL(kTestUrl));
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
 
   // First response is "unauthorized".
   SetUnauthorizedResponse();
@@ -160,9 +160,9 @@ TEST_F(DeviceStatisticsRequestTest, ShouldRetryOnlyOnceOnUnauthorized) {
   // The server always responds "unauthorized".
   SetUnauthorizedResponse();
 
-  DeviceStatisticsRequest request(identity_test_env_.identity_manager(),
-                                  shared_url_loader_factory_, "user_agent",
-                                  account_info_, GURL(kTestUrl));
+  DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
+                                      shared_url_loader_factory_, "user_agent",
+                                      account_info_, GURL(kTestUrl));
 
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());

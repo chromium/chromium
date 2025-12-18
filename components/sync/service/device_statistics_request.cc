@@ -25,7 +25,7 @@
 
 namespace syncer {
 
-DeviceStatisticsRequest::DeviceStatisticsRequest(
+DeviceStatisticsRequestImpl::DeviceStatisticsRequestImpl(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view user_agent,
@@ -45,9 +45,9 @@ DeviceStatisticsRequest::DeviceStatisticsRequest(
   CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-DeviceStatisticsRequest::~DeviceStatisticsRequest() = default;
+DeviceStatisticsRequestImpl::~DeviceStatisticsRequestImpl() = default;
 
-void DeviceStatisticsRequest::Start(base::OnceClosure callback) {
+void DeviceStatisticsRequestImpl::Start(base::OnceClosure callback) {
   CHECK(callback);
   CHECK_EQ(state_, State::kNotStarted);
 
@@ -59,21 +59,21 @@ void DeviceStatisticsRequest::Start(base::OnceClosure callback) {
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_.account_id,
       signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics,
-      base::BindOnce(&DeviceStatisticsRequest::AccessTokenFetchComplete,
+      base::BindOnce(&DeviceStatisticsRequestImpl::AccessTokenFetchComplete,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
-DeviceStatisticsRequest::State DeviceStatisticsRequest::GetState() const {
+DeviceStatisticsRequest::State DeviceStatisticsRequestImpl::GetState() const {
   return state_;
 }
 
 const std::vector<sync_pb::DeviceInfoSpecifics>&
-DeviceStatisticsRequest::GetResults() const {
+DeviceStatisticsRequestImpl::GetResults() const {
   return results_;
 }
 
-void DeviceStatisticsRequest::AccessTokenFetchComplete(
+void DeviceStatisticsRequestImpl::AccessTokenFetchComplete(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
@@ -179,11 +179,11 @@ void DeviceStatisticsRequest::AccessTokenFetchComplete(
   // any in-flight operations.
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&DeviceStatisticsRequest::SimpleLoaderComplete,
+      base::BindOnce(&DeviceStatisticsRequestImpl::SimpleLoaderComplete,
                      base::Unretained(this), access_token_info));
 }
 
-void DeviceStatisticsRequest::SimpleLoaderComplete(
+void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
     signin::AccessTokenInfo access_token_info,
     std::optional<std::string> response_body) {
   int response_code = -1;
@@ -231,7 +231,7 @@ void DeviceStatisticsRequest::SimpleLoaderComplete(
   // members below here.
 }
 
-void DeviceStatisticsRequest::UpdateStateAndNotify(State state) {
+void DeviceStatisticsRequestImpl::UpdateStateAndNotify(State state) {
   CHECK(state == State::kComplete || state == State::kFailed);
   CHECK(callback_);
   state_ = state;
