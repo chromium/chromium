@@ -142,8 +142,6 @@ public class AutofillImageFetcher {
                     continue;
                 }
                 String resolvedUrl = iconSpecs.getResolvedIconUrl(url).getSpec();
-                // TODO: crbug.com/404437211 - Make sure the valuable images are post-processed
-                // properly.
                 Callback<ImageFetchResult> onImageFetched =
                         bitmapFetchResult ->
                                 treatAndCacheImage(
