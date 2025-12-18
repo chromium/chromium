@@ -75,6 +75,9 @@ class TabStripServiceMojoHandler
   void UpdateTabGroupVisual(const tabs_api::NodeId& id,
                             const tab_groups::TabGroupVisualData& visual_data,
                             UpdateTabGroupVisualCallback) override;
+  void ShowTabContextMenu(const tabs_api::NodeId& tab_id,
+                          const gfx::Point& location,
+                          ShowTabContextMenuCallback callback) override;
 
   // tabs_api::observation::TabStripApiBatchedObserver overrides
   void OnTabEvents(

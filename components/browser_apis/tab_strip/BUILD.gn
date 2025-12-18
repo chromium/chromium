@@ -11,7 +11,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom_experiment") {
   sources = [ "tab_strip_experiment_api.mojom" ]
 
-  deps = [ ":mojom" ]
+  deps = [
+    ":mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 
   webui_module_path = "/"
   visibility = [

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace tabs_api {
 
@@ -57,6 +58,9 @@ class TabStripServiceImpl : public TabStripService {
   UpdateTabGroupVisual(
       const tabs_api::NodeId& id,
       const tab_groups::TabGroupVisualData& visual_data) override;
+  mojom::TabStripExperimentService::ShowTabContextMenuResult ShowTabContextMenu(
+      const tabs_api::NodeId& tab_id,
+      const gfx::Point& location) override;
 
   void AddObserver(observation::TabStripApiBatchedObserver* observer) override;
   void RemoveObserver(

@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
 // TODO(ffred): refactor this stuff. Maybe it makes more sense to have an
@@ -811,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
 
   base::RunLoop create_loop;
   remote->CreateTabAt(std::nullopt,
-                      std::make_optional(GURL("http://somwewhere.nowhere")),
+                      std::make_optional(GURL("http://somewhere.nowhere")),
                       base::BindLambdaForTesting(
                           [&](TabStripService::CreateTabAtResult result) {
                             ASSERT_TRUE(result.has_value());
@@ -849,4 +850,38 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
 
   ASSERT_EQ(expected_title, updated_data->title());
   ASSERT_EQ(tab_groups::TabGroupColorId::kRed, updated_data->color());
+}
+
+// Tests ShowTabContextMenu() api. Currently it only verifies that the api
+// call succeeds.
+// TODO(crbug.com/470136275): verifies that the context menu is actually shown.
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
+  mojo::Remote<TabStripService> remote;
+  mojo::Remote<TabStripExperimentService> experiment_remote;
+  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_mojo_handler_->AcceptExperimental(
+      experiment_remote.BindNewPipeAndPassReceiver());
+
+  tabs_api::NodeId created_id;
+  base::RunLoop create_loop;
+  remote->CreateTabAt(std::nullopt,
+                      std::make_optional(GURL("http://somewhere.nowhere")),
+                      base::BindLambdaForTesting(
+                          [&](TabStripService::CreateTabAtResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            created_id = result.value()->id;
+                            create_loop.Quit();
+                          }));
+  create_loop.Run();
+
+  base::RunLoop run_loop;
+  experiment_remote->ShowTabContextMenu(
+      created_id, gfx::Point(100, 100),
+      base::BindLambdaForTesting(
+          [&](TabStripExperimentService::ShowTabContextMenuResult result) {
+            ASSERT_TRUE(result.has_value())
+                << "ShowTabContextMenu failed: " << result.error()->message;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }

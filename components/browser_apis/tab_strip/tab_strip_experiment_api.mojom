@@ -8,6 +8,7 @@ import "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom";
 import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // TabStripExperimentService is a staging area that allows for rapid prototyping
 // and iteration. It is intentionally separate from the core, stable level
@@ -17,5 +18,11 @@ interface TabStripExperimentService {
   // Update the TabGroup visual data. This is a last-one-wins update mutation
   // and may be subject to race conditions.
   UpdateTabGroupVisual(NodeId id, TabGroupVisualData visual_data)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Shows the context menu for the tab identified by `tab_id` at the given
+  // location. Depending on the browser type (e.g., BrowserView or WebUI
+  // Browser), the `location` will have different origins.
+  ShowTabContextMenu(NodeId tab_id, gfx.mojom.Point location)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };

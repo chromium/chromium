@@ -378,6 +378,34 @@ TabStripServiceImpl::UpdateTabGroupVisual(
   return std::monostate();
 }
 
+mojom::TabStripExperimentService::ShowTabContextMenuResult
+TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
+                                        const gfx::Point& location) {
+  auto session = session_controller_->CreateSession();
+
+  if (tab_id.Type() != tabs_api::NodeId::Type::kContent) {
+    return base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "only a content tab id can be provided"));
+  }
+
+  int32_t handle_id;
+  if (!base::StringToInt(tab_id.Id(), &handle_id)) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "id is malformed"));
+  }
+
+  auto maybe_idx =
+      tab_strip_model_adapter_->GetIndexForHandle(tabs::TabHandle(handle_id));
+  if (!maybe_idx.has_value()) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kNotFound, "tab not found"));
+  }
+
+  // TODO(crbug.com/470136275): Implement context menu logic.
+  return std::monostate();
+}
+
 void TabStripServiceImpl::AddObserver(
     observation::TabStripApiBatchedObserver* observer) {
   observers_.AddObserver(observer);
