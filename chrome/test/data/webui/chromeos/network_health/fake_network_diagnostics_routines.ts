@@ -120,6 +120,10 @@ export class FakeNetworkDiagnostics implements
     return this.wrapResult_('arcPingProblems');
   }
 
+  runGoogleServicesConnectivity(): Promise<RunRoutineResponse> {
+    return this.wrapResult_('googleServicesConnectivityProblems');
+  }
+
   /**
    * NOT IMPLEMENTED: getResult API is not currently used in the UI.
    */

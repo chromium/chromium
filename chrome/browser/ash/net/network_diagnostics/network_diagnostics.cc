@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_ping_routine.h"
@@ -256,6 +257,21 @@ void NetworkDiagnostics::RunArcPing(
   }
   auto routine = std::make_unique<ArcPingRoutine>(src);
   RunRoutine(std::move(routine), std::move(callback));
+}
+
+void NetworkDiagnostics::RunGoogleServicesConnectivity(
+    std::optional<chromeos::network_diagnostics::mojom::RoutineCallSource>
+        source,
+    RunGoogleServicesConnectivityCallback callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+
+  chromeos::network_diagnostics::mojom::RoutineResult result;
+  result.verdict =
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kNotRun;
+  result.source = source.value_or(
+      chromeos::network_diagnostics::mojom::RoutineCallSource::kUnknown);
+  result.timestamp = base::Time::Now();
+  std::move(callback).Run(result.Clone());
 }
 
 void NetworkDiagnostics::Request(

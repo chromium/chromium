@@ -149,6 +149,27 @@ std::string GetProblemsString(
     case RoutineProblems::Tag::kArcPingProblems:
       problemsStr = ProblemsToStr(problems->get_arc_ping_problems());
       break;
+    case RoutineProblems::Tag::kGoogleServicesConnectivityProblems: {
+      std::ostringstream output;
+      const auto& google_problems =
+          problems->get_google_services_connectivity_problems();
+      for (size_t i = 0; i < google_problems.size(); i++) {
+        const auto& problem = google_problems[i];
+        if (problem->is_connection_error()) {
+          output << problem->get_connection_error()->problem_type;
+        } else if (problem->is_proxy_connection_error()) {
+          output << problem->get_proxy_connection_error()->problem_type;
+        } else {
+          // NoValidProxyError has implicit problem type.
+          output << "kNoValidProxy";
+        }
+        if (i != google_problems.size() - 1) {
+          output << ", ";
+        }
+      }
+      problemsStr = output.str();
+      break;
+    }
   }
   return problemsStr;
 }

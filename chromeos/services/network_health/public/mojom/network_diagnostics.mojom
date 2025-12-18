@@ -31,6 +31,7 @@ enum RoutineType {
   kArcHttp,
   kArcDnsResolution,
   kArcPing,
+  kGoogleServicesConnectivity,
 };
 
 // Each routine can result in one of the possible verdicts.
@@ -240,6 +241,115 @@ enum ArcPingProblem {
   kNonDefaultNetworksAboveLatencyThreshold,
 };
 
+// Problem types for general connection errors (excludes proxy-specific errors
+// and kNoValidProxy which use separate union variants).
+// NextMinVersion: 1, NextIndex: 9
+[Stable, Extensible]
+enum GoogleServicesConnectivityProblemType {
+  // The routine failed due to internal reasons,
+  // which does not indicate any problems with hosts'
+  // connectivity. See `error_message` for more details.
+  [Default] kInternalError = 0,
+  // The tool was unable to determine the problem.
+  kUnknownError = 1,
+  // General connectivity error, when the tool is unable to determine the
+  // reason of failure.
+  kConnectionFailure = 2,
+  // Operation timed out during connection to host.
+  kConnectionTimeout = 3,
+  // Unable to resolve hostname.
+  kDnsResolutionError = 4,
+  // Failed to establish SSL/TLS connection.
+  kSSLConnectionError = 5,
+  // Peer certificate cannot be authenticated with
+  // known CA certificates
+  kPeerCertificateError = 6,
+  // Failures on http response.
+  kHttpError = 7,
+  // The network was disconnected during the time of the test.
+  kNoNetworkError = 8,
+};
+
+// Problem types for proxy-specific connection errors (proxy is always present).
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+enum GoogleServicesConnectivityProxyProblemType {
+  // Unable to resolve proxy.
+  [Default] kProxyDnsResolutionError = 0,
+  // Unable to establish connection to proxy.
+  kProxyConnectionFailure = 1,
+};
+
+// Common error details shared by all Google Services connectivity problems.
+[Stable]
+struct GoogleServicesConnectivityErrorDetails {
+  // The specific, detailed error message describing the failure.
+  string error_message;
+  // Human-readable suggestion for resolving the issue, intended for enterprise
+  // admins, CaPSE, or Tech Support personnel. Always in English (no i18n).
+  string? resolution_message;
+};
+
+// Common fields for connection errors (shared by regular and proxy errors).
+[Stable]
+struct GoogleServicesConnectivityConnectionErrorInfo {
+  // Hostname that was tested.
+  string hostname;
+  // Common error details.
+  GoogleServicesConnectivityErrorDetails error_details;
+  // UTC Timestamp that represents the start of the connectivity test.
+  mojo_base.mojom.Time? timestamp_start;
+  // UTC Timestamp that represents the end of the connectivity test.
+  mojo_base.mojom.Time? timestamp_end;
+};
+
+// Connection error - proxy is optional (may or may not have been used).
+[Stable]
+struct GoogleServicesConnectivityConnectionError {
+  // The specific error type.
+  GoogleServicesConnectivityProblemType problem_type;
+  // The proxy used for this test. Not set if no proxy was used.
+  string? proxy;
+  // Common connection error info.
+  GoogleServicesConnectivityConnectionErrorInfo connection_info;
+};
+
+// Proxy connection error - proxy is always present.
+[Stable]
+struct GoogleServicesConnectivityProxyConnectionError {
+  // The specific proxy error type.
+  GoogleServicesConnectivityProxyProblemType problem_type;
+  // The proxy that failed.
+  string proxy;
+  // Common connection error info.
+  GoogleServicesConnectivityConnectionErrorInfo connection_info;
+};
+
+// No valid proxy error - no timestamps since connection was never attempted.
+// Problem type is implicit (always kNoValidProxy, which is not in any enum).
+[Stable]
+struct GoogleServicesConnectivityNoValidProxyError {
+  // Hostname for which proxy couldn't be determined (system proxy mode).
+  // Not set if user provided an invalid proxy URL directly.
+  string? hostname;
+  // The invalid proxy URL (user-provided proxy mode).
+  // Not set if using system proxy and proxy couldn't be determined.
+  string? proxy;
+  // Common error details.
+  GoogleServicesConnectivityErrorDetails error_details;
+};
+
+// Union of connectivity problems - enforces correct field availability.
+[Stable]
+union GoogleServicesConnectivityProblem {
+  // Connection was attempted but failed (non-proxy errors).
+  GoogleServicesConnectivityConnectionError connection_error;
+  // Connection to proxy failed.
+  GoogleServicesConnectivityProxyConnectionError proxy_connection_error;
+  // Proxy validation failed before connection could be attempted.
+  GoogleServicesConnectivityNoValidProxyError no_valid_proxy_error;
+};
+
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
 [Stable]
@@ -259,6 +369,7 @@ union RoutineProblems {
   array<ArcHttpProblem> arc_http_problems;
   array<ArcDnsResolutionProblem> arc_dns_resolution_problems;
   array<ArcPingProblem> arc_ping_problems;
+  array<GoogleServicesConnectivityProblem> google_services_connectivity_problems;
 };
 
 // Result values specific to HttpsLatency routine.
@@ -293,7 +404,7 @@ struct RoutineResult {
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
 // a few). The bound implementation is intended to live in the browser process.
 // Deprecated Methods: 1 - 11
-// Next Method ID: 29
+// Next Method ID: 30
 [Stable]
 interface NetworkDiagnosticsRoutines {
   // Returns the most recent result for the specified routine type, if it has
@@ -374,5 +485,9 @@ interface NetworkDiagnosticsRoutines {
   // Tests whether ARC can make successful DNS queries to the hostnames
   // needed during the ARC Provisioning step.
   RunArcDnsResolution@26([MinVersion=2] RoutineCallSource? source)
+    => (RoutineResult result);
+
+  // Tests whether Google Services can be successfully reached.
+  RunGoogleServicesConnectivity@29([MinVersion=2] RoutineCallSource? source)
     => (RoutineResult result);
 };

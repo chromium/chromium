@@ -103,6 +103,10 @@ class NetworkDiagnostics
       std::optional<chromeos::network_diagnostics::mojom::RoutineCallSource>
           source,
       RunArcPingCallback callback) override;
+  void RunGoogleServicesConnectivity(
+      std::optional<chromeos::network_diagnostics::mojom::RoutineCallSource>
+          source,
+      RunGoogleServicesConnectivityCallback callback) override;
 
  private:
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
