@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -150,20 +153,9 @@
       IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE);
   NSString* message = l10n_util::GetNSString(
       IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE);
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                           title:title
-                         message:message];
-  __weak id<CredentialImportCoordinatorDelegate> weakDelegate = _delegate;
-  __weak __typeof(self) weakSelf = self;
-  [_alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_CLOSE)
-                action:^{
-                  [weakDelegate credentialImportCoordinatorDidFinish:weakSelf];
-                }
-                 style:UIAlertActionStyleCancel];
-  [_alertCoordinator start];
+  [self showAlertWithTitle:title
+                   message:message
+        baseViewController:self.baseViewController];
 }
 
 - (void)showConflictResolutionScreenWithPasswords:
@@ -328,7 +320,12 @@
 - (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys {
   [_navigationController popToViewController:_viewController animated:YES];
   if (trustedVaultKeys.count == 0) {
-    // TODO(crbug.com/450982128): Handle error.
+    NSString* title =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
+    [self showAlertWithTitle:title
+                     message:nil
+          baseViewController:_viewController];
+    NOTREACHED(base::NotFatalUntil::M150);
     return;
   }
 
@@ -365,6 +362,27 @@
                            authOnStart:NO];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];
+}
+
+// Starts the alert coordinator with `title` and `message` and initializes it
+// with `baseViewController`.
+- (void)showAlertWithTitle:(NSString*)title
+                   message:(NSString*)message
+        baseViewController:(UIViewController*)baseViewController {
+  _alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:baseViewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+  __weak id<CredentialImportCoordinatorDelegate> weakDelegate = _delegate;
+  __weak __typeof(self) weakSelf = self;
+  [_alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CLOSE)
+                action:^{
+                  [weakDelegate credentialImportCoordinatorDidFinish:weakSelf];
+                }
+                 style:UIAlertActionStyleCancel];
+  [_alertCoordinator start];
 }
 
 @end
