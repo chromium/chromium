@@ -28,11 +28,11 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -178,7 +178,8 @@ class ScreenRotationAnimatorSlowAnimationTest : public AshTestBase {
 
   std::unique_ptr<ScreenRotationAnimatorTestApi> test_api_;
 
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
+      non_zero_duration_mode_;
 };
 
 void ScreenRotationAnimatorSlowAnimationTest::SetUp() {
@@ -193,8 +194,8 @@ void ScreenRotationAnimatorSlowAnimationTest::SetUp() {
   test_api_ = std::make_unique<ScreenRotationAnimatorTestApi>(animator_.get());
   test_api()->DisableAnimationTimers();
   non_zero_duration_mode_ =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 }
 
 void ScreenRotationAnimatorSlowAnimationTest::TearDown() {
@@ -255,7 +256,8 @@ class ScreenRotationAnimatorSmoothAnimationTest
 
   std::unique_ptr<ScreenRotationAnimatorTestApi> test_api_;
 
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
+      non_zero_duration_mode_;
 };
 
 void ScreenRotationAnimatorSmoothAnimationTest::RemoveSecondaryDisplay(
@@ -280,8 +282,8 @@ void ScreenRotationAnimatorSmoothAnimationTest::SetUp() {
                             run_loop_->QuitWhenIdleClosure(),
                             run_loop_->QuitWhenIdleClosure());
   non_zero_duration_mode_ =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 }
 
 void ScreenRotationAnimatorSmoothAnimationTest::TearDown() {
@@ -425,14 +427,14 @@ TEST_F(ScreenRotationAnimatorSlowAnimationTest,
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   // Long duration for hide animation, to allow it to be interrupted.
-  ui::ScopedAnimationDurationScaleMode hide_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode hide_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   GetTray()->SetVisiblePreferred(false);
 
   // ScreenRotationAnimator copies the current layers, and deletes them upon
   // completion. Allow its animation to complete first.
-  ui::ScopedAnimationDurationScaleMode rotate_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode rotate_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   SetDisplayRotation(display_id(), display::Display::ROTATE_0);
   animator()->Rotate(display::Display::ROTATE_90,
                      display::Display::RotationSource::USER,
@@ -579,8 +581,8 @@ TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalSecondaryDisplayBeforeSecondCopyCallback) {
   {
     // Disable wallpaper animation on a secondary display.
-    ui::ScopedAnimationDurationScaleMode disable(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     UpdateDisplay("640x480," + GetDisplaySpec(800, 600));
   }
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
@@ -664,13 +666,13 @@ TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   // Long duration for hide animation, to allow it to be interrupted.
-  ui::ScopedAnimationDurationScaleMode hide_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode hide_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   GetTray()->SetVisiblePreferred(false);
 
   // Allow ScreenRotationAnimator animation to complete first.
-  ui::ScopedAnimationDurationScaleMode rotate_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode rotate_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   int64_t display_id = display_manager()->GetDisplayAt(0).id();
   SetScreenRotationAnimator(
       Shell::GetRootWindowForDisplayId(display_id),

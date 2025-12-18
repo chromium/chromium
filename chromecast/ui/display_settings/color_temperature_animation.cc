@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #if defined(USE_AURA)
 #include "chromecast/browser/cast_display_configurator.h"
@@ -57,8 +57,8 @@ void ColorTemperatureAnimation::AnimateToNewValue(float new_target_temperature,
   start_temperature_ = current_temperature_;
   target_temperature_ = std::clamp(new_target_temperature, 1000.0f, 20000.0f);
 
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Animations are disabled. Apply the target temperature directly to the
     // compositor.
     current_temperature_ = target_temperature_;

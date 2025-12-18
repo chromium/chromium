@@ -72,7 +72,6 @@ component("compositor") {
     "presentation_time_recorder.cc",
     "presentation_time_recorder.h",
     "property_change_reason.h",
-    "scoped_animation_duration_scale_mode.h",
     "scoped_layer_animation_settings.cc",
     "scoped_layer_animation_settings.h",
     "total_animation_throughput_reporter.cc",

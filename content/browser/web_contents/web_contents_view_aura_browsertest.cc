@@ -51,11 +51,11 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace content {
 
@@ -510,8 +510,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   // This test triggers a large number of animations. Speed them up to ensure
   // the test completes within its time limit.
-  ui::ScopedAnimationDurationScaleMode fast_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode fast_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Make sure the page has both back/forward history.
   ASSERT_TRUE(content::ExecJs(main_frame, "navigate_next()"));

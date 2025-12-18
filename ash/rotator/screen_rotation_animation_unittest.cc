@@ -13,9 +13,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -33,14 +33,15 @@ class ScreenRotationAnimationTest : public AshTestBase {
   void SetUp() override;
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
+      non_zero_duration_mode_;
 };
 
 void ScreenRotationAnimationTest::SetUp() {
   AshTestBase::SetUp();
   non_zero_duration_mode_ =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 }
 
 TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
