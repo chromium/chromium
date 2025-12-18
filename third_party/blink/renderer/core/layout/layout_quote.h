@@ -27,7 +27,9 @@
 
 namespace blink {
 
-class StyleContainmentScope;
+template <typename T>
+class OrderedScope;
+
 class LayoutTextFragment;
 class PseudoElement;
 
@@ -52,11 +54,11 @@ class LayoutQuote final : public LayoutInline {
     NOT_DESTROYED();
     return !!scope_;
   }
-  StyleContainmentScope* GetScope() const {
+  OrderedScope<LayoutQuote>* GetScope() const {
     NOT_DESTROYED();
     return scope_.Get();
   }
-  void SetScope(StyleContainmentScope* scope) {
+  void SetScope(OrderedScope<LayoutQuote>* scope) {
     NOT_DESTROYED();
     scope_ = scope;
   }
@@ -116,7 +118,7 @@ class LayoutQuote final : public LayoutInline {
   Member<PseudoElement> owning_pseudo_;
 
   // The contain style scope this quote belongs to.
-  Member<StyleContainmentScope> scope_;
+  Member<OrderedScope<LayoutQuote>> scope_;
 
   // Cached text for this quote.
   String text_;

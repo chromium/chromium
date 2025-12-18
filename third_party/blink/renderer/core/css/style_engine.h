@@ -81,7 +81,6 @@ class AnchorEvaluator;
 class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
-class StyleContainmentScopeTree;
 class CSSFontSelector;
 class CSSPropertyValueSet;
 class CSSStyleSheet;
@@ -91,6 +90,7 @@ class ElementRuleCollector;
 class Font;
 class FontSelector;
 class HTMLBodyElement;
+class LayoutQuote;
 class MediaQueryEvaluator;
 class MediaQuerySet;
 class Node;
@@ -115,6 +115,10 @@ class ViewportStyleResolver;
 class SelectorFilter;
 struct LogicalSize;
 struct MixinMap;
+
+template <typename T>
+class OrderedScopeTree;
+using StyleContainmentScopeTree = OrderedScopeTree<LayoutQuote>;
 
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 

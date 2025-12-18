@@ -95,7 +95,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -9940,7 +9940,7 @@ void Element::UpdateFirstLetterPseudoElement(
   // first letter element update.
   if (StyleContainmentScopeTree* tree =
           GetDocument().GetStyleEngine().GetStyleContainmentScopeTree()) {
-    tree->UpdateQuotes();
+    tree->UpdateItems();
   }
 
   PseudoElement* element = GetPseudoElement(kPseudoIdFirstLetter);

@@ -69,7 +69,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -3739,7 +3739,7 @@ void StyleEngine::PostInterleavedRecalcUpdate(
     const Element& interleaving_root) {
   // Update quotes only if there are any scopes marked dirty.
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-    tree->UpdateQuotes();
+    tree->UpdateItems();
   }
   GetDocument().InvalidatePendingSVGResources();
   GetDocument().UpdateScrollTargetGroupRelations();
@@ -4108,7 +4108,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     }
     // Update quotes only if there are any scopes marked dirty.
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-      tree->UpdateQuotes();
+      tree->UpdateItems();
     }
     UpdateCounters();
     GetDocument().UpdateScrollTargetGroupRelations();

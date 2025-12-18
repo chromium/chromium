@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
@@ -609,8 +609,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
             GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
         StyleContainmentScope* scope =
             tree.FindOrCreateEnclosingScopeForElement(*this);
-        scope->AttachQuote(*To<LayoutQuote>(child));
-        tree.UpdateOutermostQuotesDirtyScope(scope);
+        scope->AttachItem(*To<LayoutQuote>(child));
+        tree.UpdateOutermostDirtyScope(scope);
       }
       if (auto* layout_counter = DynamicTo<LayoutCounter>(child)) {
         if (context.counters_context.AttachmentRootIsDocumentElement()) {
