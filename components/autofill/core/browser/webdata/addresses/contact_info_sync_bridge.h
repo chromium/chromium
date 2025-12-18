@@ -82,6 +82,15 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
       const std::string& storage_key);
 
+  // To ensures that metadata and model data is committed in a single
+  // transaction, `CreateMetadataChangeList()` is implemented using an
+  // `InMemoryMetadataChangeList`. This function transfers the changes from the
+  // `metadata_change_list` to `GetSyncMetadataStore()`. It assumes that
+  // `metadata_change_list` was created using the bridge's
+  // `CreateMetadataChangeList()`.
+  std::optional<syncer::ModelError> ApplyMetadataChanges(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
+
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 
