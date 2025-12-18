@@ -593,6 +593,7 @@ void SavedPasswordsPresenter::OnPasskeysChanged(
 }
 
 void SavedPasswordsPresenter::OnPasskeyModelShuttingDown() {
+  passkey_store_ = nullptr;
   passkey_store_observation_.Reset();
 }
 
