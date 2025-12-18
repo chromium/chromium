@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
@@ -125,8 +126,9 @@ class SidePanelBorder : public views::Border {
 
     gfx::RectF scaled_contents_bounds_f = scaled_view_bounds_f;
     const float corner_radius =
-        dsf * view.GetLayoutProvider()->GetCornerRadiusMetric(
-                  views::ShapeContextTokens::kSidePanelContentRadius);
+        dsf * view.GetLayoutProvider()->GetDistanceMetric(
+                  ChromeDistanceMetric::
+                      DISTANCE_CONTENT_HEIGHT_SIDE_PANEL_CONTENT_RADIUS);
     const gfx::InsetsF insets_in_pixels(
         gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_contents_bounds_f.Inset(insets_in_pixels);
@@ -263,14 +265,15 @@ class ContentParentView : public views::View, public views::ViewObserver {
   }
 
   gfx::RoundedCornersF GetRoundedCorners() {
+    ChromeDistanceMetric corner_radius =
+        type_ == SidePanelEntry::PanelType::kToolbar
+            ? ChromeDistanceMetric::
+                  DISTANCE_TOOLBAR_HEIGHT_SIDE_PANEL_CONTENT_RADIUS
+            : ChromeDistanceMetric::
+                  DISTANCE_CONTENT_HEIGHT_SIDE_PANEL_CONTENT_RADIUS;
     return should_round_corners_ && GetLayoutProvider()
                ? gfx::RoundedCornersF(
-                     GetLayoutProvider()->GetCornerRadiusMetric(
-                         type_ == SidePanelEntry::PanelType::kToolbar
-                             ? views::ShapeContextTokens::
-                                   kToolbarHeightSidePanelContentRadius
-                             : views::ShapeContextTokens::
-                                   kSidePanelContentRadius))
+                     GetLayoutProvider()->GetDistanceMetric(corner_radius))
                : gfx::RoundedCornersF();
   }
 

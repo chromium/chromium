@@ -177,8 +177,6 @@ enum class ShapeContextTokens {
   kMenuTouchRadius,
   kOmniboxExpandedRadius,
   kTextfieldRadius,
-  kToolbarHeightSidePanelContentRadius,
-  kSidePanelContentRadius,
   kContentSeparatorRadius,
 };
 
