@@ -74,6 +74,10 @@ build_webui("build") {
 
   icons_html_files = [ "shared_icons.html" ]
 
+  if (is_chrome_branded) {
+    icons_html_files += [ "internal/icons.html" ]
+  }
+
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
