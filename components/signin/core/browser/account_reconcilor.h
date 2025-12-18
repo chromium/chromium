@@ -457,7 +457,7 @@ class AccountReconcilor
       identity_manager_observer_{this};
 
   // The SigninClient associated with this reconcilor.
-  raw_ptr<SigninClient, DanglingUntriaged> client_;
+  raw_ptr<SigninClient> client_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   PrefChangeRegistrar pref_observer_;

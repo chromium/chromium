@@ -249,6 +249,7 @@ void AccountReconcilor::Shutdown() {
   }
   was_shut_down_ = true;
   DisableReconcile(false /* logout_all_accounts */);
+  client_ = nullptr;
   delegate_.reset();
   DCHECK(WasShutDown());
   identity_manager_observer_.Reset();
