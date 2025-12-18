@@ -323,8 +323,9 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
   return file_info->request_id;
 }
 
-GURL ComposeboxQueryController::CreateSearchUrl(
-    std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
+void ComposeboxQueryController::CreateSearchUrl(
+    std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+    base::OnceCallback<void(GURL)> callback) {
   latest_interaction_request_data_.reset();
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value() &&
@@ -367,7 +368,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
         bool should_send_lns_surface =
             send_lns_surface_ &&
             (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
-        return GetUrlForMultimodalSearch(
+        std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_,
             /*is_aim_search=*/search_url_request_info->search_url_type ==
                 SearchUrlType::kAim,
@@ -376,7 +377,8 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             cluster_info_->search_session_id(), std::move(contextual_inputs),
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
-            std::move(search_url_request_info->additional_params));
+            std::move(search_url_request_info->additional_params)));
+        return;
       }
     } else {
       // When multi-context input flow is not enabled, only one file is
@@ -413,7 +415,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             send_lns_surface_ &&
             (!suppress_lns_surface_param_if_no_image_ ||
              MediaTypeHasImage(last_file->request_id.media_type()));
-        return GetUrlForMultimodalSearch(
+        std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_,
             /*is_aim_search=*/search_url_request_info->search_url_type ==
                 SearchUrlType::kAim,
@@ -426,7 +428,8 @@ GURL ComposeboxQueryController::CreateSearchUrl(
             last_file->mime_type,
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
-            std::move(search_url_request_info->additional_params));
+            std::move(search_url_request_info->additional_params)));
+        return;
       }
     }
   }
@@ -435,11 +438,11 @@ GURL ComposeboxQueryController::CreateSearchUrl(
   // contextual inputs, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
-  return GetUrlForAim(template_url_service_,
-                      search_url_request_info->aim_entry_point,
-                      search_url_request_info->query_start_time,
-                      base::UTF8ToUTF16(search_url_request_info->query_text),
-                      std::move(search_url_request_info->additional_params));
+  std::move(callback).Run(GetUrlForAim(
+      template_url_service_, search_url_request_info->aim_entry_point,
+      search_url_request_info->query_start_time,
+      base::UTF8ToUTF16(search_url_request_info->query_text),
+      std::move(search_url_request_info->additional_params)));
 }
 
 lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(

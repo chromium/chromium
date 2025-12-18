@@ -1087,14 +1087,6 @@ class AutocompleteMediator
 
             url = updateSuggestionUrlIfNeeded(suggestion, url);
 
-            url =
-                    switch (mFuseboxCoordinator.getAutocompleteRequestTypeSupplier().get()) {
-                        case AutocompleteRequestType.AI_MODE -> mFuseboxCoordinator.getAimUrl(url);
-                        case AutocompleteRequestType.IMAGE_GENERATION ->
-                                mFuseboxCoordinator.getImageGenerationUrl(url);
-                        default -> url;
-                    };
-
             // loadUrl modifies AutocompleteController's state clearing the native
             // AutocompleteResults needed by onSuggestionsSelected. Therefore,
             // loadUrl should should be invoked last.
@@ -1116,35 +1108,63 @@ class AutocompleteMediator
                 mDelegate.maybeShowDefaultBrowserPromo();
             }
 
-            // Kick off an action to clear focus and dismiss the suggestions list.
-            // This normally happens when the target site loads and focus is moved to the
-            // webcontents. On Android T we occasionally observe focus events to be lost, resulting
-            // with Suggestions list obscuring the view.
-            var autocompleteLoadCallback =
-                    new AutocompleteLoadCallback() {
-                        @Override
-                        public void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult) {
-                            if (loadUrlResult.navigationHandle != null) {
-                                if (mAutocomplete != null) {
-                                    mAutocomplete.createNavigationObserver(
-                                            loadUrlResult.navigationHandle, suggestion);
-                                }
-                            }
-                        }
+            final int finalTransition = transition;
+            Callback<GURL> onUrlReady =
+                    (finalUrl) -> {
+                        finishLoadUrlForOmniboxMatch(
+                                suggestion,
+                                finalUrl,
+                                inputStart,
+                                openInNewTab,
+                                openInNewWindow,
+                                finalTransition);
                     };
 
-            mDelegate.loadUrl(
-                    new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
-                            .setInputStartTimestamp(inputStart)
-                            .setPostData(suggestion.getPostData())
-                            .setOpenInNewTab(openInNewTab)
-                            .setOpenInNewWindow(openInNewWindow)
-                            .setExtraHeaders(suggestion.getExtraHeaders())
-                            .setAutocompleteLoadCallback(autocompleteLoadCallback)
-                            .build());
-
-            mHandler.post(this::finishInteraction);
+            switch (mFuseboxCoordinator.getAutocompleteRequestTypeSupplier().get()) {
+                case AutocompleteRequestType.AI_MODE ->
+                        mFuseboxCoordinator.getAimUrl(url, onUrlReady);
+                case AutocompleteRequestType.IMAGE_GENERATION ->
+                        mFuseboxCoordinator.getImageGenerationUrl(url, onUrlReady);
+                default -> onUrlReady.onResult(url);
+            }
         }
+    }
+
+    private void finishLoadUrlForOmniboxMatch(
+            AutocompleteMatch suggestion,
+            GURL url,
+            long inputStart,
+            boolean openInNewTab,
+            boolean openInNewWindow,
+            int transition) {
+        // Kick off an action to clear focus and dismiss the suggestions list.
+        // This normally happens when the target site loads and focus is moved to the
+        // webcontents. On Android T we occasionally observe focus events to be lost, resulting
+        // with Suggestions list obscuring the view.
+        var autocompleteLoadCallback =
+                new AutocompleteLoadCallback() {
+                    @Override
+                    public void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult) {
+                        if (loadUrlResult.navigationHandle != null) {
+                            if (mAutocomplete != null) {
+                                mAutocomplete.createNavigationObserver(
+                                        loadUrlResult.navigationHandle, suggestion);
+                            }
+                        }
+                    }
+                };
+
+        mDelegate.loadUrl(
+                new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
+                        .setInputStartTimestamp(inputStart)
+                        .setPostData(suggestion.getPostData())
+                        .setOpenInNewTab(openInNewTab)
+                        .setOpenInNewWindow(openInNewWindow)
+                        .setExtraHeaders(suggestion.getExtraHeaders())
+                        .setAutocompleteLoadCallback(autocompleteLoadCallback)
+                        .build());
+
+        mHandler.post(this::finishInteraction);
     }
 
     /**

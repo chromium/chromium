@@ -523,9 +523,16 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
 
-    OpenUrl(contextual_session_handle->CreateSearchUrl(
-                std::move(search_url_request_info)),
-            disposition);
+    contextual_session_handle->CreateSearchUrl(
+        std::move(search_url_request_info),
+        base::BindOnce(
+            [](base::WeakPtr<ContextualSearchboxHandler> self,
+               WindowOpenDisposition disposition, GURL url) {
+              if (self) {
+                self->OpenUrl(url, disposition);
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr(), disposition));
 
     file_info_list =
         contextual_session_handle->GetController()->GetFileInfoList();

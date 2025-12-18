@@ -29,9 +29,10 @@ class MockContextualSearchContextController
   ~MockContextualSearchContextController() override = default;
 
   MOCK_METHOD(void, InitializeIfNeeded, (), (override));
-  MOCK_METHOD(GURL,
+  MOCK_METHOD(void,
               CreateSearchUrl,
-              (std::unique_ptr<CreateSearchUrlRequestInfo>),
+              (std::unique_ptr<CreateSearchUrlRequestInfo>,
+               base::OnceCallback<void(GURL)>),
               (override));
   MOCK_METHOD(lens::ClientToAimMessage,
               CreateClientToAimRequest,

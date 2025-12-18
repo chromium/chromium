@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -449,10 +450,12 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
-  EXPECT_CALL(*router.mock_session_handle(),
-              CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
-                  expected_request_info.get())))
-      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  EXPECT_CALL(
+      *router.mock_session_handle(),
+      CreateSearchUrl(
+          CreateSearchUrlRequestInfoMatches(expected_request_info.get()), _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          GURL("https://www.google.com/search?q=test")));
   auto* service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));
@@ -495,10 +498,12 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Assert: Create expectation to call CreateSearchUrl.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
-  EXPECT_CALL(*router.mock_session_handle(),
-              CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
-                  expected_request_info.get())))
-      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  EXPECT_CALL(
+      *router.mock_session_handle(),
+      CreateSearchUrl(
+          CreateSearchUrlRequestInfoMatches(expected_request_info.get()), _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          GURL("https://www.google.com/search?q=test")));
   auto* service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));
@@ -571,10 +576,12 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
   EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
-  EXPECT_CALL(*router.mock_session_handle(),
-              CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
-                  expected_request_info.get())))
-      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  EXPECT_CALL(
+      *router.mock_session_handle(),
+      CreateSearchUrl(
+          CreateSearchUrlRequestInfoMatches(expected_request_info.get()), _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          GURL("https://www.google.com/search?q=test")));
   auto* service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));

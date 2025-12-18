@@ -9,6 +9,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -113,12 +114,13 @@ public class ComposeBoxQueryControllerBridge {
                 .addTabContextFromCache(mNativeInstance, tabId);
     }
 
-    GURL getAimUrl(GURL url) {
-        return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, url);
+    void getAimUrl(GURL url, Callback<GURL> callback) {
+        ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, url, callback);
     }
 
-    GURL getImageGenerationUrl(GURL url) {
-        return ComposeBoxQueryControllerBridgeJni.get().getImageGenerationUrl(mNativeInstance, url);
+    void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
+        ComposeBoxQueryControllerBridgeJni.get()
+                .getImageGenerationUrl(mNativeInstance, url, callback);
     }
 
     /** Remove the given file from the current session. */
@@ -172,12 +174,16 @@ public class ComposeBoxQueryControllerBridge {
         @Nullable String addTabContextFromCache(long nativeInstance, long tabId);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
-        @JniType("GURL")
-        GURL getAimUrl(long nativeInstance, @JniType("GURL") GURL url);
+        void getAimUrl(
+                long nativeInstance,
+                @JniType("GURL") GURL url,
+                Callback<@JniType("GURL") GURL> callback);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
-        @JniType("GURL")
-        GURL getImageGenerationUrl(long nativeInstance, @JniType("GURL") GURL url);
+        void getImageGenerationUrl(
+                long nativeInstance,
+                @JniType("GURL") GURL url,
+                Callback<@JniType("GURL") GURL> callback);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         void removeAttachment(long nativeInstance, @JniType("std::string") String token);

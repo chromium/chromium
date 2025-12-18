@@ -339,8 +339,10 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = kQueryText;
   search_url_request_info->query_start_time = base::Time::Now();
-  GURL expected_url =
-      query_controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> future;
+  query_controller().CreateSearchUrl(std::move(search_url_request_info),
+                                     future.GetCallback());
+  GURL expected_url = future.Take();
   GURL actual_url =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
 
@@ -415,8 +417,10 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
   search_url_request_info->query_text = kQueryText;
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->file_tokens.push_back(token);
-  GURL expected_url =
-      query_controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> future;
+  query_controller().CreateSearchUrl(std::move(search_url_request_info),
+                                     future.GetCallback());
+  GURL expected_url = future.Take();
   GURL actual_url =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
 

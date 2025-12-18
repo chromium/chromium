@@ -429,21 +429,14 @@ CreateInputDataFromAnnotatedPageContent(
     search_url_request_info->additional_params["imgn"] = "1";
   }
 
-  GURL URL = _contextualSearchSession->CreateSearchUrl(
-      std::move(search_url_request_info));
-  // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
-  if ([_modeHolder isRegularSearch]) {
-    URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
-  }
+  __weak __typeof(self) weakSelf = self;
+  auto callback =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(^(GURL URL) {
+        [weakSelf didCreateSearchURL:URL];
+      }));
 
-  UrlLoadParams params = CreateOmniboxUrlLoadParams(
-      URL, /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED,
-      /*destination_url_entered_without_scheme=*/false, _isIncognito);
-
-  _inNavigation = YES;
-
-  [self.URLLoader loadURLParams:params];
+  _contextualSearchSession->CreateSearchUrl(std::move(search_url_request_info),
+                                            std::move(callback));
 }
 
 #pragma mark - ComposeboxModeObserver
@@ -829,6 +822,23 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+- (void)didCreateSearchURL:(GURL)URL {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
+  if ([_modeHolder isRegularSearch]) {
+    URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
+  }
+
+  UrlLoadParams params = CreateOmniboxUrlLoadParams(
+      URL, /*post_content=*/nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED,
+      /*destination_url_entered_without_scheme=*/false, _isIncognito);
+
+  _inNavigation = YES;
+
+  [self.URLLoader loadURLParams:params];
+}
 
 // Records whether the session resulted in navigation.
 - (void)recordNavigationResult {

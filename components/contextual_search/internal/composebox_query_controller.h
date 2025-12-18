@@ -79,8 +79,9 @@ class ComposeboxQueryController
 
   // ContextualSearchContextController:
   void InitializeIfNeeded() override;
-  GURL CreateSearchUrl(std::unique_ptr<CreateSearchUrlRequestInfo>
-                           search_url_request_info) override;
+  void CreateSearchUrl(std::unique_ptr<CreateSearchUrlRequestInfo>
+                           search_url_request_info,
+                       base::OnceCallback<void(GURL)> callback) override;
   lens::ClientToAimMessage CreateClientToAimRequest(
       std::unique_ptr<CreateClientToAimRequestInfo>
           create_client_to_aim_request_info) override;

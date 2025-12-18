@@ -200,17 +200,20 @@ void ContextualSearchSessionHandle::ClearFiles() {
   uploaded_context_tokens_.clear();
 }
 
-GURL ContextualSearchSessionHandle::CreateSearchUrl(
+void ContextualSearchSessionHandle::CreateSearchUrl(
     std::unique_ptr<contextual_search::ContextualSearchContextController::
-                        CreateSearchUrlRequestInfo> search_url_request_info) {
+                        CreateSearchUrlRequestInfo> search_url_request_info,
+    base::OnceCallback<void(GURL)> callback) {
   auto* context_controller = GetController();
   if (!context_controller) {
-    return GURL();
+    std::move(callback).Run(GURL());
+    return;
   }
 
   auto* metrics_recorder = GetMetricsRecorder();
   if (!metrics_recorder) {
-    return GURL();
+    std::move(callback).Run(GURL());
+    return;
   }
 
   metrics_recorder->NotifySessionStateChanged(
@@ -221,8 +224,8 @@ GURL ContextualSearchSessionHandle::CreateSearchUrl(
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
   search_url_request_info->file_tokens = uploaded_context_tokens_;
-  return context_controller->CreateSearchUrl(
-      std::move(search_url_request_info));
+  context_controller->CreateSearchUrl(std::move(search_url_request_info),
+                                      std::move(callback));
 }
 
 lens::ClientToAimMessage
