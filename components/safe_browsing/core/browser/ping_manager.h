@@ -9,7 +9,6 @@
 // servers.
 
 #include <memory>
-#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +20,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/types/optional_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -35,6 +33,10 @@
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
+
+namespace net {
+class HttpResponseHeaders;
+}
 
 namespace safe_browsing {
 
@@ -227,15 +229,17 @@ class PingManager : public KeyedService {
   void OnReadPersistedReportsDone(std::vector<std::string> serialized_reports);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
-                           base::optional_ref<std::string> response_body);
+                           scoped_refptr<net::HttpResponseHeaders> headers);
+
   void OnSafeBrowsingHitURLLoaderComplete(
       network::SimpleURLLoader* source,
-      std::optional<std::string> response_body);
+      scoped_refptr<net::HttpResponseHeaders> headers);
+
   void OnThreatDetailsReportURLLoaderComplete(
       network::SimpleURLLoader* source,
       bool has_access_token,
       ClientSafeBrowsingReportRequest::ReportType report_type,
-      std::optional<std::string> response_body);
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.

@@ -5,7 +5,6 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -28,7 +28,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/types/optional_ref.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -335,7 +334,7 @@ PingManager::~PingManager() = default;
 // All SafeBrowsing request responses are handled here.
 void PingManager::OnURLLoaderComplete(
     network::SimpleURLLoader* source,
-    base::optional_ref<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   auto it = safebrowsing_reports_.find(source);
   CHECK(it != safebrowsing_reports_.end());
   safebrowsing_reports_.erase(it);
@@ -346,23 +345,19 @@ void PingManager::OnURLLoaderComplete(
 
 void PingManager::OnSafeBrowsingHitURLLoaderComplete(
     network::SimpleURLLoader* source,
-    std::optional<std::string> response_body) {
-  int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
-                          ? source->ResponseInfo()->headers->response_code()
-                          : 0;
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  int response_code = headers ? headers->response_code() : 0;
   RecordHttpResponseOrErrorCode("SafeBrowsing.HitReport.NetworkResult",
                                 source->NetError(), response_code);
-  OnURLLoaderComplete(source, response_body);
+  OnURLLoaderComplete(source, std::move(headers));
 }
 
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
     ClientSafeBrowsingReportRequest::ReportType report_type,
-    std::optional<std::string> response_body) {
-  int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
-                          ? source->ResponseInfo()->headers->response_code()
-                          : 0;
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  int response_code = headers ? headers->response_code() : 0;
   std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
   std::string access_token_suffix =
       (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
@@ -387,7 +382,7 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
         ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
   }
 
-  OnURLLoaderComplete(source, response_body);
+  OnURLLoaderComplete(source, std::move(headers));
 }
 
 // Sends a SafeBrowsing "hit" report.
@@ -413,7 +408,7 @@ void PingManager::ReportSafeBrowsingHit(
     report_ptr->AttachStringForUpload(hit_report->post_data, "text/plain");
   }
 
-  report_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  report_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnSafeBrowsingHitURLLoaderComplete,
                      base::Unretained(this), report_ptr.get()));
@@ -565,7 +560,7 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
 
   loader->AttachStringForUpload(serialized_report, "application/octet-stream");
 
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  loader->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnThreatDetailsReportURLLoaderComplete,
                      base::Unretained(this), loader.get(),

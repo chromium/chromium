@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -379,19 +381,19 @@ void NotificationTelemetryService::OnNewNotificationServiceWorkerSubscription(
   url_loader_->AttachStringForUpload(post_data, "application/octet-stream");
   // Using base::Unretained is safe here as Network Telemetry Service owns
   // `url_loader_`.
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  url_loader_->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&NotificationTelemetryService::UploadComplete,
                      base::Unretained(this)));
 }
 
 void NotificationTelemetryService::UploadComplete(
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   // Take ownership of the loader in this scope.
   std::unique_ptr<network::SimpleURLLoader> url_loader(std::move(url_loader_));
   int response_code = 0;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
-    response_code = url_loader->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
   }
   RecordHttpResponseOrErrorCode(
       "SafeBrowsing.NotificationTelemetry.NetworkResult",
