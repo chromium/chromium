@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class ConflictItemIdentifier;
+
 /// Returns the accessibility identifier to set on a `ImportDataItemTableView`.
 NSString* GetImportDataItemTableViewAccessibilityIdentifier();
 
@@ -15,14 +17,14 @@ NSString* GetImportDataItemTableViewAccessibilityIdentifier();
 NSString* GetImportDataItemTableViewCellAccessibilityIdentifier(
     NSUInteger cell_index);
 
-/// Returns the accessibility identifier to set on the table view for password
+/// Returns the accessibility identifier to set on the table view for credential
 /// conflict resolution.
-NSString* GetPasswordConflictResolutionTableViewAccessibilityIdentifier();
+NSString* GetCredentialConflictResolutionTableViewAccessibilityIdentifier();
 
 /// Returns the accessibility identifier to set on a cell in the table view for
-/// password conflict resolution.
-NSString* GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index);
+/// credential conflict resolution.
+NSString* GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+    ConflictItemIdentifier* identifier);
 
 /// Returns the accessibility identifier to set on the table view for the list
 /// of invalid passwords.

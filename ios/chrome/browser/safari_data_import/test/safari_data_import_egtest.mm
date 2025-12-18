@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
@@ -304,12 +305,16 @@ NSString* const kInvalidPasswordUsername = @"Superman";
                        IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
         performAction:grey_tap()];
     id<GREYMatcher> conflictResolutionTable = grey_accessibilityID(
-        GetPasswordConflictResolutionTableViewAccessibilityIdentifier());
+        GetCredentialConflictResolutionTableViewAccessibilityIdentifier());
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:conflictResolutionTable];
     /// Tests password reveal.
+    ConflictItemIdentifier* identifier = [[ConflictItemIdentifier alloc]
+        initWithType:CredentialConflictType::kPassword
+               index:1];
     id<GREYMatcher> row2 = grey_accessibilityID(
-        GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(1));
+        GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+            identifier));
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
                                      grey_ancestor(row2),

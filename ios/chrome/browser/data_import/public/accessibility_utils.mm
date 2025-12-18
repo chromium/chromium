@@ -4,12 +4,18 @@
 
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 
+#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+
 namespace {
 
 /// Accessibility identifier prefixes.
 NSString* const kImportDataItemTableViewAXidPrefix = @"ImportDataItemTableView";
-NSString* const kSafariDataImportPasswordConflictResolutionAXidPrefix =
-    @"SafariDataImportPasswordConflictResolution";
+NSString* const kDataImportCredentialConflictResolutionAXidPrefix =
+    @"DataImportCredentialConflictResolution";
+NSString* const kDataImportPasskeyConflictResolutionAXidPrefix =
+    @"DataImportPasskeyConflictResolution";
+NSString* const kDataImportPasswordConflictResolutionAXidPrefix =
+    @"DataImportPasswordConflictResolution";
 NSString* const kSafariDataImportInvalidPasswordsAXidPrefix =
     @"SafariDataImportInvalidPasswords";
 
@@ -27,21 +33,21 @@ NSString* GetImportDataItemTableViewCellAccessibilityIdentifier(
                                  cell_index];
 }
 
-NSString* GetPasswordConflictResolutionTableViewAccessibilityIdentifier() {
+NSString* GetCredentialConflictResolutionTableViewAccessibilityIdentifier() {
   return [NSString
       stringWithFormat:@"%@%@",
-                       kSafariDataImportPasswordConflictResolutionAXidPrefix,
+                       kDataImportCredentialConflictResolutionAXidPrefix,
                        @"AccessibilityIdentifier"];
 }
 
 /// Returns the accessibility identifier to set on a cell in the table view for
 /// password conflict resolution.
-NSString* GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index) {
-  return [NSString
-      stringWithFormat:@"%@-%ld",
-                       kSafariDataImportPasswordConflictResolutionAXidPrefix,
-                       cell_index];
+NSString* GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+    ConflictItemIdentifier* identifier) {
+  NSString* prefix = identifier.type == CredentialConflictType::kPassword
+                         ? kDataImportPasswordConflictResolutionAXidPrefix
+                         : kDataImportPasskeyConflictResolutionAXidPrefix;
+  return [NSString stringWithFormat:@"%@-%ld", prefix, identifier.index];
 }
 
 NSString* GetInvalidPasswordsTableViewAccessibilityIdentifier() {

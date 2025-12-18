@@ -80,7 +80,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   self.tableView.separatorInset =
       GetDataImportSeparatorInset(/*multiSelectionMode=*/YES);
   self.tableView.accessibilityIdentifier =
-      GetPasswordConflictResolutionTableViewAccessibilityIdentifier();
+      GetCredentialConflictResolutionTableViewAccessibilityIdentifier();
   self.tableView.delegate = self;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.editing = YES;
@@ -206,29 +206,30 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ConflictItemIdentifier*)identifier {
   UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
+  CredentialImportItemCellContentConfiguration* config;
+  CredentialImportItem* item;
 
   /// Populate cell with information.
   if (identifier.type == CredentialConflictType::kPasskey) {
-    PasskeyImportItem* item = _passkeyConflicts[identifier.index];
-    CredentialImportItemCellContentConfiguration* config =
-        [CredentialImportItemCellContentConfiguration
-            cellConfigurationForPasskey:item];
-    cell.contentConfiguration = config;
-    return cell;
+    PasskeyImportItem* passkeyItem = _passkeyConflicts[identifier.index];
+    config = [CredentialImportItemCellContentConfiguration
+        cellConfigurationForPasskey:passkeyItem];
+    item = passkeyItem;
+  } else {
+    PasswordImportItem* passwordItem = _passwordConflicts[identifier.index];
+    if (_shouldUnmaskPasswordAtIndex[identifier.index].boolValue) {
+      config = [CredentialImportItemCellContentConfiguration
+          cellConfigurationForUnmaskPassword:passwordItem];
+    } else {
+      config = [CredentialImportItemCellContentConfiguration
+          cellConfigurationForMaskPassword:passwordItem];
+    }
+    item = passwordItem;
   }
 
-  PasswordImportItem* item = _passwordConflicts[identifier.index];
   cell.accessibilityIdentifier =
-      GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(
-          identifier.index);
-  CredentialImportItemCellContentConfiguration* config;
-  if (_shouldUnmaskPasswordAtIndex[identifier.index].boolValue) {
-    config = [CredentialImportItemCellContentConfiguration
-        cellConfigurationForUnmaskPassword:item];
-  } else {
-    config = [CredentialImportItemCellContentConfiguration
-        cellConfigurationForMaskPassword:item];
-  }
+      GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+          identifier);
   if (item.faviconAttributes) {
     config.faviconAttributes = item.faviconAttributes;
   } else {

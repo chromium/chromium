@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -149,8 +150,12 @@ void ExpectImportTableHasRowCount(int expected_count) {
 }
 
 void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected) {
+  ConflictItemIdentifier* identifier = [[ConflictItemIdentifier alloc]
+      initWithType:CredentialConflictType::kPassword
+             index:idx];
   id<GREYMatcher> row = grey_accessibilityID(
-      GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(idx));
+      GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+          identifier));
   [[EarlGrey selectElementWithMatcher:grey_allOf(grey_ancestor(row),
                                                  grey_selected(), nil)]
       assertWithMatcher:selected ? grey_sufficientlyVisible() : grey_nil()];

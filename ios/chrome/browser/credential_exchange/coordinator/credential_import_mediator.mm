@@ -112,9 +112,13 @@
                                          passkeys:(NSArray<PasskeyImportItem*>*)
                                                       passkeys {
   CHECK(passwords.count > 0ul || passkeys.count > 0ul);
-  [_delegate showConflictResolutionScreenWithPasswords:
-                 [self passwordItemsWithFaviconDataSource:passwords]
-                                              passkeys:passkeys];
+  NSArray<PasswordImportItem*>* passwordsWithFaviconDataSource =
+      [self passwordItemsWithFaviconDataSource:passwords];
+  NSArray<PasskeyImportItem*>* passkeysWithFaviconDataSource =
+      [self passkeyItemsWithFaviconDataSource:passkeys];
+  [_delegate
+      showConflictResolutionScreenWithPasswords:passwordsWithFaviconDataSource
+                                       passkeys:passkeysWithFaviconDataSource];
 }
 
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
@@ -206,6 +210,16 @@
     password.faviconDataSource = self;
   }
   return newPasswords;
+}
+
+// Attach favicon loader to each element in `passkeys`.
+- (NSArray<PasskeyImportItem*>*)passkeyItemsWithFaviconDataSource:
+    (NSArray<PasskeyImportItem*>*)passkeys {
+  NSArray<PasskeyImportItem*>* newPasskeys = [NSArray arrayWithArray:passkeys];
+  for (PasskeyImportItem* passkey in newPasskeys) {
+    passkey.faviconDataSource = self;
+  }
+  return newPasskeys;
 }
 
 @end
