@@ -32,6 +32,8 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kActorBypassTOUValidationForGuestView,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorLoginPermissionsUseStrongAffiliations,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicExternalProtocolActionResultCode,

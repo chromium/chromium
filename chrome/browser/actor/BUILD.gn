@@ -159,6 +159,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
+    "//chrome/browser/affiliations",
     "//chrome/browser/autofill/glic",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
@@ -174,6 +175,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
+    "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/content_settings/core/common",
     "//components/favicon/core",
@@ -392,8 +394,10 @@ source_set("browser_tests") {
       "tools/window_management_tool_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/affiliations",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
+      "//components/affiliations/core/browser:test_support",
       "//components/page_load_metrics/browser:test_support",
       "//pdf:features",
       "//ui/base:ozone_buildflags",

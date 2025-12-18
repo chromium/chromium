@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -19,7 +20,9 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
@@ -67,6 +70,16 @@ const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
   return bitmap;
 }
 
+std::unique_ptr<KeyedService> CreateMockAffiliationService(
+    content::BrowserContext* context) {
+  auto service = std::make_unique<
+      testing::NiceMock<affiliations::MockAffiliationService>>();
+  ON_CALL(*service, GetAffiliationsAndBranding(_, _))
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+          std::vector<affiliations::Facet>(), /*success=*/true));
+  return service;
+}
+
 class MockExecutionEngine : public ExecutionEngine {
  public:
   explicit MockExecutionEngine(Profile* profile) : ExecutionEngine(profile) {}
@@ -93,15 +106,28 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
  public:
   ActorAttemptLoginToolTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kActorLogin,
-                              password_manager::features::
-                                  kActorLoginQualityLogs,
-                              actor::kGlicEnableAutoLoginDialogs,
-                              actor::kGlicEnableAutoLoginPersistedPermissions},
+        /*enabled_features=*/
+        {password_manager::features::kActorLogin,
+         password_manager::features::kActorLoginQualityLogs,
+         actor::kGlicEnableAutoLoginDialogs,
+         actor::kGlicEnableAutoLoginPersistedPermissions,
+         actor::kActorLoginPermissionsUseStrongAffiliations},
         /*disabled_features=*/{});
   }
 
   ~ActorAttemptLoginToolTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ActorToolsTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  AffiliationServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating(&CreateMockAffiliationService));
+                }));
+  }
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
@@ -143,6 +169,11 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
     return static_cast<MockExecutionEngine&>(execution_engine());
   }
 
+  affiliations::MockAffiliationService* mock_affiliation_service() {
+    return static_cast<affiliations::MockAffiliationService*>(
+        AffiliationServiceFactory::GetForProfile(GetProfile()));
+  }
+
   optimization_guide::TestModelQualityLogsUploaderService*
   test_mqls_uploader() {
     return static_cast<
@@ -160,6 +191,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
  private:
   MockActorLoginService mock_login_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
@@ -336,6 +368,116 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
   EXPECT_TRUE(RequiresPageStabilization(*result.Get<2>().back().result));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       UsesStrongAffiliationsForAutoSelect) {
+  const GURL url_a =
+      embedded_https_test_server().GetURL("a.com", "/actor/blank.html");
+  const GURL url_b =
+      embedded_https_test_server().GetURL("b.com", "/actor/blank.html");
+
+  // User logs into Site A
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  // Site A and B are strongly affiliated.
+  affiliations::FacetURI facet_a =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          url_a.GetWithEmptyPath().spec());
+  affiliations::FacetURI facet_b =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          url_b.GetWithEmptyPath().spec());
+  std::vector<affiliations::Facet> facets = {affiliations::Facet(facet_a),
+                                             affiliations::Facet(facet_b)};
+  EXPECT_CALL(*mock_affiliation_service(),
+              GetAffiliationsAndBranding(facet_a, _))
+      .WillOnce(base::test::RunOnceCallback<1>(facets, /*success=*/true));
+
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username_shared", url_a, /*immediately_available_to_login=*/true));
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeAttemptLoginRequest(*active_tab());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+  }
+
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  actor_login::Credential::Id first_login_cred_id =
+      mock_login_service().last_credential_used()->id;
+
+  // User attempts login on Site B
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_b));
+
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential).Times(0);
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeAttemptLoginRequest(*active_tab());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+  }
+
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(first_login_cred_id,
+            mock_login_service().last_credential_used()->id);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       UsesStrongAffiliationsIgnoresAndroidFacets) {
+  const GURL source_url =
+      embedded_https_test_server().GetURL("a.com", "/actor/blank.html");
+  const GURL web_affiliate_url =
+      embedded_https_test_server().GetURL("b.com", "/actor/blank.html");
+  const std::string android_facet_spec = "android://hash@com.example.android";
+
+  affiliations::Facet web_facet(
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          web_affiliate_url.GetWithEmptyPath().spec()));
+  affiliations::Facet android_facet(
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(android_facet_spec));
+
+  EXPECT_CALL(*mock_affiliation_service(),
+              GetAffiliationsAndBranding(
+                  affiliations::FacetURI::FromPotentiallyInvalidSpec(
+                      source_url.GetWithEmptyPath().spec()),
+                  _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<affiliations::Facet>{web_facet, android_facet},
+          /*success=*/true));
+
+  // Navigate to source URL
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), source_url));
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username", source_url, /*immediately_available_to_login=*/true));
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // Run the tool and check that the map of affiliations does not include
+  // android facets.
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeAttemptLoginRequest(*active_tab());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+  }
+
+  const auto& affiliated_map =
+      mock_execution_engine().GetAffiliatedOriginMapForTesting();
+
+  url::Origin web_origin = url::Origin::Create(web_affiliate_url);
+  url::Origin source_origin = url::Origin::Create(source_url);
+
+  ASSERT_TRUE(affiliated_map.contains(web_origin));
+  EXPECT_EQ(affiliated_map.at(web_origin), source_origin);
+
+  url::Origin android_origin = url::Origin::Create(GURL(android_facet_spec));
+  EXPECT_FALSE(affiliated_map.contains(android_origin));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {

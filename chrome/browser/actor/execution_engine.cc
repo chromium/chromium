@@ -37,6 +37,7 @@
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -49,6 +50,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -943,19 +945,76 @@ void ExecutionEngine::PromptToSelectCredential(
 }
 
 void ExecutionEngine::SetUserSelectedCredential(
-    const ToolDelegate::CredentialWithPermission& credential_with_permission) {
-  user_selected_credentials_[credential_with_permission.credential
-                                 .request_origin] = credential_with_permission;
+    const ToolDelegate::CredentialWithPermission& credential_with_permission,
+    base::OnceClosure affiliations_fetched) {
+  url::Origin origin = credential_with_permission.credential.request_origin;
+  user_selected_credentials_[origin] = credential_with_permission;
+
+  affiliations::AffiliationService* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(profile_);
+  // Fetch strongly affiliated domains, in order to be able to reuse the
+  // permission for sites that do not have the exact same origin but are
+  // strongly affiliated.
+  if (base::FeatureList::IsEnabled(
+          actor::kActorLoginPermissionsUseStrongAffiliations) &&
+      affiliation_service) {
+    affiliation_service->GetAffiliationsAndBranding(
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(
+            origin.GetURL().GetWithEmptyPath().spec()),
+        base::BindOnce(&ExecutionEngine::OnAffiliationsReceived, GetWeakPtr(),
+                       origin, std::move(affiliations_fetched)));
+  } else {
+    std::move(affiliations_fetched).Run();
+  }
+}
+
+void ExecutionEngine::OnAffiliationsReceived(
+    const url::Origin& source_origin,
+    base::OnceClosure affiliations_fetched,
+    const std::vector<affiliations::Facet>& results,
+    bool success) {
+  if (success) {
+    for (const auto& facet : results) {
+      // Iterate through results to find Web facets (format:
+      // https://<host>[:<port>]) required for actor login. Android facets are
+      // ignored.
+      if (!facet.uri.IsValidWebFacetURI()) {
+        continue;
+      }
+
+      GURL url(facet.uri.canonical_spec());
+      url::Origin affiliated_origin = url::Origin::Create(url);
+      if (!affiliated_origin.IsSameOriginWith(source_origin)) {
+        affiliated_origin_map_[affiliated_origin] = source_origin;
+      }
+    }
+  }
+  std::move(affiliations_fetched).Run();
 }
 
 const std::optional<ToolDelegate::CredentialWithPermission>
 ExecutionEngine::GetUserSelectedCredential(
     const url::Origin& request_origin) const {
+  // Try exact match first.
   auto it = user_selected_credentials_.find(request_origin);
-  if (it == user_selected_credentials_.end()) {
-    return std::nullopt;
+  if (it != user_selected_credentials_.end()) {
+    return it->second;
   }
-  return it->second;
+
+  if (base::FeatureList::IsEnabled(
+          actor::kActorLoginPermissionsUseStrongAffiliations)) {
+    // Check if the current origin is affiliated with a previously encountered
+    // one within the current task.
+    auto aff_it = affiliated_origin_map_.find(request_origin);
+    if (aff_it != affiliated_origin_map_.end()) {
+      auto original_cred_it = user_selected_credentials_.find(aff_it->second);
+      if (original_cred_it != user_selected_credentials_.end()) {
+        return original_cred_it->second;
+      }
+    }
+  }
+
+  return std::nullopt;
 }
 
 void ExecutionEngine::RequestToShowAutofillSuggestions(

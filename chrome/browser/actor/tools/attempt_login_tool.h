@@ -57,6 +57,9 @@ class AttemptLoginTool : public Tool {
                      GURL origin,
                      const favicon_base::FaviconImageResult& result);
   void OnAllIconsFetched();
+  void OnCredentialCachingDone(
+      actor_login::Credential selected_credential,
+      webui::mojom::UserGrantedPermissionDuration permission_duration);
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
   void OnAttemptLogin(actor_login::Credential selected_credential,
