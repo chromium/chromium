@@ -79,7 +79,7 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
  private:
   void ProcessPasswordStoreResults();
 
-  const raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
+  const raw_ptr<PasswordStoreInterface> store_;
   raw_ptr<Consumer> consumer_;
 
   // |ProcessPasswordStoreResults| requires that both |OnHSTSQueryResult| and

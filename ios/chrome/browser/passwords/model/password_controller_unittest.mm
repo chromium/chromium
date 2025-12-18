@@ -518,10 +518,10 @@ class PasswordControllerTest : public PlatformTest {
   // FormInputAccessoryMediatorfor testing.
   FormInputAccessoryMediator* accessoryMediator_;
 
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
+
   // PasswordController for testing.
   PasswordController* passwordController_;
-
-  scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
 
   raw_ptr<MockPasswordManagerClient> weak_client_;
 };
