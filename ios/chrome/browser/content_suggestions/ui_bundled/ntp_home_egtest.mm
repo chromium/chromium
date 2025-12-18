@@ -1153,6 +1153,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the Magic Stack feature swipeable when there are multiple modules.
 - (void)testMagicStack {
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/469975824): Reenable this test.
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device.");
+  }
+#endif
   // Enable relevant preferences for the test, and intentionally forces a Safety
   // Check error to ensure module visibility in the Magic Stack.
   [ChromeEarlGrey
