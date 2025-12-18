@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 
 #import "base/apple/foundation_util.h"
 

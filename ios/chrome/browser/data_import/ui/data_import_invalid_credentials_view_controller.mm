@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
+#import "ios/chrome/browser/data_import/ui/data_import_invalid_credentials_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
-#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"

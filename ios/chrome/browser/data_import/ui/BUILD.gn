@@ -9,8 +9,8 @@ source_set("ui") {
     "data_import_credential_conflict_resolution_view_controller.mm",
     "data_import_credential_conflict_resolution_view_controller_delegate.h",
     "data_import_import_stage_transition_handler.h",
-    "data_import_invalid_passwords_view_controller.h",
-    "data_import_invalid_passwords_view_controller.mm",
+    "data_import_invalid_credentials_view_controller.h",
+    "data_import_invalid_credentials_view_controller.mm",
     "import_data_item_table_view.h",
     "import_data_item_table_view.mm",
   ]

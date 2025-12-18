@@ -7,7 +7,7 @@
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
-#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 #import "ios/chrome/browser/data_import/public/metrics.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"

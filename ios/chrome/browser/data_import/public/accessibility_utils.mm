@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 
-#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 
 namespace {
 
