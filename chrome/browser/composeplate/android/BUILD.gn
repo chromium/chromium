@@ -42,6 +42,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/composeplate_button_foreground.xml",
     "java/res/layout/composeplate_view_layout.xml",
     "java/res/layout/composeplate_view_layout_v2.xml",
     "java/res/values/dimens.xml",

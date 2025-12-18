@@ -11,7 +11,7 @@ found in the LICENSE file.
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/home_surface_search_box_background</item>
-        <item name="android:foreground">@drawable/rounded_rectangle_ripple_100</item>
+        <item name="android:foreground">@drawable/composeplate_button_foreground</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
         <item name="android:scaleType">center</item>
