@@ -19,12 +19,28 @@ AutoPictureInPictureTabObserverHelperBase::Create(
       web_contents, std::move(callback));
 }
 
+namespace {
+
+class TabAndroidDelegate
+    : public AutoPictureInPictureTabModelObserverHelper::Delegate {
+ public:
+  bool IsTabDragging(content::WebContents* web_contents) const override {
+    auto* tab = TabAndroid::FromWebContents(web_contents);
+    return tab && tab->IsDragging();
+  }
+};
+
+}  // namespace
+
 AutoPictureInPictureTabModelObserverHelper::
     AutoPictureInPictureTabModelObserverHelper(
         content::WebContents* web_contents,
-        ActivatedChangedCallback callback)
+        ActivatedChangedCallback callback,
+        std::unique_ptr<Delegate> delegate)
     : AutoPictureInPictureTabObserverHelperBase(web_contents,
-                                                std::move(callback)) {}
+                                                std::move(callback)),
+      delegate_(delegate ? std::move(delegate)
+                         : std::make_unique<TabAndroidDelegate>()) {}
 
 AutoPictureInPictureTabModelObserverHelper::
     ~AutoPictureInPictureTabModelObserverHelper() {
@@ -83,10 +99,16 @@ AutoPictureInPictureTabModelObserverHelper::GetActiveWebContents() const {
 void AutoPictureInPictureTabModelObserverHelper::DidSelectTab(
     TabAndroid* tab,
     TabModel::TabSelectionType type) {
-  // TODO(crbug.com/468078464): utilize the upcoming `isDragging` api to
-  // debounce the DidSelectTab event on the secondary tab when the primary tab
-  // is being dragged between windows.
-  ReevaluateObservedModelAndState();
+  // When a tab is dragged out of a window, two consecutive `DidSelectTab`
+  // events are triggered: one for the primary tab being dragged and another
+  // for the secondary tab that replaces it. To prevent the second event from
+  // incorrectly triggering Auto-PiP by marking the primary tab as inactive,
+  // we debounce the active status check if the observed tab is being dragged.
+  bool is_tab_dragging = delegate_->IsTabDragging(GetObservedWebContents());
+
+  // Update the observed tab active status only when it's not being dragged.
+  ReevaluateObservedModelAndState(
+      /* check_tab_activation= */ !is_tab_dragging);
 }
 
 void AutoPictureInPictureTabModelObserverHelper::TabRemoved(TabAndroid* tab) {
