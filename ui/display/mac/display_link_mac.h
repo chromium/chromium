@@ -72,6 +72,11 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   // only be accessed on the thread on which it was retrieved.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
+  static bool SupportsDisplayLinkMacInBrowser();
+
+  // For CADisplayLink and CVDisplayLink in GPU, always return true;
+  // For ExternalDisplayLinkMac, check whether the display id has been added in
+  // AddSupportedDisplayLinkId().
   static bool IsDisplayLinkAllowed(int64_t display_id);
 
   // Register an observer callback.

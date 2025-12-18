@@ -20,19 +20,19 @@ BASE_FEATURE(kCADisplayLinkinGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 // DisplayLinkMac
 
 // Static
-bool DisplayLinkMac::IsDisplayLinkAllowed(int64_t display_id) {
-  // For CADisplayLink and CVDisplayLink in GPU, always return true;
-  // For ExternalDisplayLinkMac, check the configuration set by
-  // DisplayLinkMacMojo in the browser process.
-  if (@available(macos 14.0, *)) {
-    if (base::FeatureList::IsEnabled(kCADisplayLinkinGpu)) {
-      return true;
-    }
+bool DisplayLinkMac::SupportsDisplayLinkMacInBrowser() {
+  if (!@available(macos 14.0, *)) {
+    return false;
+  }
 
-    if (base::FeatureList::IsEnabled(
-            display::features::kCADisplayLinkInBrowser)) {
-      return ExternalDisplayLinkMac::IsDisplayLinkSupported(display_id);
-    }
+  return base::FeatureList::IsEnabled(
+      display::features::kCADisplayLinkInBrowser);
+}
+
+// Static
+bool DisplayLinkMac::IsDisplayLinkAllowed(int64_t display_id) {
+  if (DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return ExternalDisplayLinkMac::IsDisplayLinkSupported(display_id);
   }
 
   return true;
@@ -53,11 +53,10 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     if (base::FeatureList::IsEnabled(kCADisplayLinkinGpu)) {
       return CADisplayLinkMac::GetForDisplay(display_id);
     }
+  }
 
-    if (base::FeatureList::IsEnabled(
-            display::features::kCADisplayLinkInBrowser)) {
-      return ExternalDisplayLinkMac::GetForDisplay(display_id);
-    }
+  if (SupportsDisplayLinkMacInBrowser()) {
+    return ExternalDisplayLinkMac::GetForDisplay(display_id);
   }
 
   return CVDisplayLinkMac::GetForDisplay(display_id);

@@ -18,17 +18,6 @@
 
 namespace ui {
 
-// static
-bool DisplayLinkMacMojo::SupportsDisplayLinkMacInBrowser() {
-  // CADisplayLink is available only on MacOS 14.0+.
-  if (!@available(macos 14.0, *)) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(
-      display::features::kCADisplayLinkInBrowser);
-}
-
 DisplayLinkMacMojo::DisplayLinkMacMojo(
     viz::HostFrameSinkManager* host_frame_sink_manager)
     : base::Thread("VSyncThread") {

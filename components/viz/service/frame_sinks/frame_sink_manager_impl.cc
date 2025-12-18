@@ -115,8 +115,11 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          display::features::kCADisplayLinkInBrowser)) {
+  // The VSyncProviderMac must execute on the Viz thread.
+  // As VSyncProviderMac::GetInstance() can be invoked from either the Viz
+  // thread or the GPU thread, it is called here to ensure the Viz task runner
+  // is saved for VSyncProviderMac.
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
     ui::VSyncProviderMac::GetInstance();
   }
 #endif

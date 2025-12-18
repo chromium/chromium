@@ -56,6 +56,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/compositor/display_link_mac_mojo.h"
+#include "ui/display/mac/display_link_mac.h"
 #endif
 
 namespace content {
@@ -202,7 +203,7 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
   // (use_external_begin_frame_control()).
   if (!compositor->use_external_begin_frame_control() &&
       !display_link_mac_mojo_ &&
-      ui::DisplayLinkMacMojo::SupportsDisplayLinkMacInBrowser()) {
+      ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
     display_link_mac_mojo_ =
         std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
   }

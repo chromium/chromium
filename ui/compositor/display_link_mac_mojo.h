@@ -64,8 +64,6 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
       viz::HostFrameSinkManager* host_frame_sink_manager);
   ~DisplayLinkMacMojo() override;
 
-  static bool SupportsDisplayLinkMacInBrowser();
-
   // base::Thread implementation.
   void CleanUp() override;
 
