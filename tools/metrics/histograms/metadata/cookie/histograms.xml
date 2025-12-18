@@ -701,6 +701,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.Parse.EmptyName" enum="Boolean"
+    expires_after="2026-02-15">
+  <owner>morlovich@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Whether a site tried to set a cookie with an empty name.
+
+    Recorded when creating a cookie from a parseable set-cookie string.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Parse.EmptyNameAmbiguousValue" enum="Boolean"
+    expires_after="2026-02-15">
+  <owner>morlovich@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Whether a site tried to set a cookie with an empty name and a value
+    containing =, which can result in parsing ambiguity on Cookie: headers.
+
+    Recorded when creating a cookie from a parseable set-cookie string whose
+    name is empty.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.PartitionCount" units="partitions"
     expires_after="2026-05-24">
   <owner>dylancutler@google.com</owner>

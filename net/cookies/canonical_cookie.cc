@@ -395,6 +395,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
             !base::IsStringASCII(parsed_cookie.Domain().value()));
   }
 
+  UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyName", parsed_cookie.Name().empty());
+  if (parsed_cookie.Name().empty()) {
+    UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyNameAmbiguousValue",
+                          base::Contains(parsed_cookie.Value(), '='));
+  }
+
   std::optional<std::string> cookie_domain =
       cookie_util::GetCookieDomainWithString(
           url, parsed_cookie.Domain().value_or(""), *status);

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -126,6 +127,38 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
   run_loop.Run();
   return net::CanonicalCookie::BuildCookieLine(result);
 }
+
+class UseCounterTrackingContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  ~UseCounterTrackingContentBrowserClient() override = default;
+
+  void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
+                                   blink::mojom::WebFeature feature) override {
+    if (feature == blink::mojom::WebFeature::kSetCookieWithEmptyName) {
+      ++cookie_set_has_empty_name_;
+    } else if (feature == blink::mojom::WebFeature::
+                              kSetCookieWithEmptyNameAndAmbiguousValue) {
+      ++cookie_set_has_empty_name_and_ambiguous_value_;
+    } else if (feature ==
+               blink::mojom::WebFeature::kCookieInsecureAndSameSiteNone) {
+      ++cookie_same_site_none_insecure_;
+    }
+  }
+
+  int cookie_set_has_empty_name() const { return cookie_set_has_empty_name_; }
+  int cookie_set_has_empty_name_and_ambiguous_value() const {
+    return cookie_set_has_empty_name_and_ambiguous_value_;
+  }
+  int cookie_same_site_none_insecure() const {
+    return cookie_same_site_none_insecure_;
+  }
+
+ private:
+  int cookie_set_has_empty_name_ = 0;
+  int cookie_set_has_empty_name_and_ambiguous_value_ = 0;
+  int cookie_same_site_none_insecure_ = 0;
+};
 
 }  // namespace
 
@@ -637,6 +670,43 @@ class RestrictedCookieManagerInterceptor
   mojo::Receiver<network::mojom::RestrictedCookieManager> receiver_;
   mojo::Remote<network::mojom::RestrictedCookieManager> real_rcm_;
 };
+
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, NoNameCookieMetrics) {
+  UseCounterTrackingContentBrowserClient content_browser_client;
+
+  // Same-Site:none w/o Secure cookies are used to count cookie sets.
+  GURL https_url =
+      https_server_.GetURL("a.test", "/set-cookie?a=b;SameSite=none");
+  EXPECT_TRUE(NavigateToURL(shell(), https_url));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content_browser_client.cookie_same_site_none_insecure() == 1;
+  }));
+  EXPECT_EQ(content_browser_client.cookie_set_has_empty_name(), 0);
+  EXPECT_EQ(
+      content_browser_client.cookie_set_has_empty_name_and_ambiguous_value(),
+      0);
+
+  https_url = https_server_.GetURL("a.test", "/set-cookie?a;SameSite=none");
+  EXPECT_TRUE(NavigateToURL(shell(), https_url));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content_browser_client.cookie_same_site_none_insecure() == 2;
+  }));
+  EXPECT_EQ(content_browser_client.cookie_set_has_empty_name(), 1);
+  EXPECT_EQ(
+      content_browser_client.cookie_set_has_empty_name_and_ambiguous_value(),
+      0);
+
+  https_url = https_server_.GetURL("a.test", "/set-cookie?=a=b;SameSite=none");
+  EXPECT_TRUE(NavigateToURL(shell(), https_url));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content_browser_client.cookie_same_site_none_insecure() == 3;
+  }));
+  EXPECT_EQ(content_browser_client.cookie_set_has_empty_name(), 2);
+  EXPECT_EQ(
+      content_browser_client.cookie_set_has_empty_name_and_ambiguous_value(),
+      1);
+}
 
 class CookieStoreContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {

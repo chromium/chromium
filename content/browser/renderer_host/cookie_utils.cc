@@ -377,6 +377,9 @@ void EmitCookieWarningsAndMetrics(
 
   bool cookie_has_domain_non_ascii = false;
 
+  bool cookie_set_has_empty_name = false;
+  bool cookie_set_has_empty_name_and_ambiguous_value = false;
+
   int cookies_exempted_by_top_level_storage_access = 0;
 
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
@@ -503,6 +506,15 @@ void EmitCookieWarningsAndMetrics(
       cookie_has_not_been_refreshed_in_351_to_400_days |=
           days_since_refresh > 350 && days_since_refresh <= 400;
     }
+
+    if (cookie_details->type == CookieAccessDetails::Type::kChange &&
+        cookie->cookie_or_line->is_cookie() &&
+        cookie->cookie_or_line->get_cookie().Name().empty()) {
+      cookie_set_has_empty_name = true;
+      if (base::Contains(cookie->cookie_or_line->get_cookie().Value(), '=')) {
+        cookie_set_has_empty_name_and_ambiguous_value = true;
+      }
+    }
   }
 
   if (samesite_treated_as_lax_cookies) {
@@ -557,6 +569,17 @@ void EmitCookieWarningsAndMetrics(
   if (cookie_has_domain_non_ascii) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCookieDomainNonASCII);
+  }
+
+  if (cookie_set_has_empty_name) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kSetCookieWithEmptyName);
+  }
+
+  if (cookie_set_has_empty_name_and_ambiguous_value) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kSetCookieWithEmptyNameAndAmbiguousValue);
   }
 
   if (cookies_exempted_by_top_level_storage_access) {

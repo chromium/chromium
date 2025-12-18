@@ -3771,6 +3771,45 @@ TEST(CanonicalCookieTest, TestHasNonASCIIHistograms) {
   check_histograms();
 }
 
+TEST(CanonicalCookieTest, TestEmptyNameHistograms) {
+  const char kEmptyNameHistogram[] = "Cookie.Parse.EmptyName";
+  const char kEmptyNameAmbiguousValue[] =
+      "Cookie.Parse.EmptyNameAmbiguousValue";
+
+  base::Time creation_time = base::Time::Now();
+  std::optional<base::Time> server_time = std::nullopt;
+  std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt;
+  CookieSourceType source_type = CookieSourceType::kHTTP;
+  CookieInclusionStatus status;
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "A=B", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, false, 1);
+    histograms.ExpectTotalCount(kEmptyNameAmbiguousValue, 0);
+  }
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "A", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, true, 1);
+    histograms.ExpectUniqueSample(kEmptyNameAmbiguousValue, false, 1);
+  }
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "=A=B", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, true, 1);
+    histograms.ExpectUniqueSample(kEmptyNameAmbiguousValue, true, 1);
+  }
+}
+
 TEST(CanonicalCookieTest, BuildCookieLine) {
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
   GURL url("https://example.com/");

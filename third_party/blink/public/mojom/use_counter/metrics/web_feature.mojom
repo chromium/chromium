@@ -5084,6 +5084,8 @@ enum WebFeature {
   kDigitalCredentialsProtocolOrgIsoMdoc = 5768,
   kDigitalCredentialsProtocolOpenId4Vci = 5769,
   kDigitalCredentialsProtocolUnknown = 5770,
+  kSetCookieWithEmptyName = 5771,
+  kSetCookieWithEmptyNameAndAmbiguousValue = 5772,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
