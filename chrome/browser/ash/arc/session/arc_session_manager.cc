@@ -45,8 +45,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -514,11 +512,15 @@ class ArcSessionManager::ScopedOptInFlowTracker {
 };
 
 ArcSessionManager::ArcSessionManager(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
         adb_sideloading_availability_delegate,
     ArcDlcInstaller* arc_dlc_installer)
-    : arc_session_runner_(std::move(arc_session_runner)),
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
       android_management_checker_factory_(
@@ -833,8 +835,8 @@ std::string ArcSessionManager::GetSerialNumber() const {
   if (arc::IsArcVmEnabled()) {
     const std::string chromeos_user =
         cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
-    serialno = GetOrCreateSerialNumber(g_browser_process->local_state(),
-                                       chromeos_user, *arc_salt_on_disk_);
+    serialno = GetOrCreateSerialNumber(&local_state_.get(), chromeos_user,
+                                       *arc_salt_on_disk_);
   }
   return serialno;
 }
@@ -1648,10 +1650,7 @@ void ArcSessionManager::StartArc() {
     VLOG(1) << "Locale and preferred languages are fixed to " << locale << ","
             << preferred_languages << ".";
   } else {
-    // TODO(crbug.com/404130092): Remove g_browser_process usage.
-    const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
-        g_browser_process->GetFeatures()->application_locale_storage());
-    GetLocaleAndPreferredLanguages(application_locale_storage, profile_,
+    GetLocaleAndPreferredLanguages(application_locale_storage_.get(), profile_,
                                    &locale, &preferred_languages);
   }
 

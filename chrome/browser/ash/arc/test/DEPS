@@ -16,3 +16,10 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc/session",
 ]
+
+specific_include_rules = {
+  "test_arc_session_manager\\.cc": [
+    "+chrome/browser/global_features.h",
+    "+chrome/test/base/testing_browser_process.h",
+  ],
+}

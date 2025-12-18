@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -143,7 +144,11 @@ constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
 ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 
+// `local_state` and `application_locale_storage` must be non-null and must
+// outlive the returned object.
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
@@ -157,18 +162,25 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
                             scheduler_configuration_manager, delegate.get()));
   }
   return std::make_unique<ArcSessionManager>(
-      std::move(runner), std::move(delegate), arc_dlc_installer);
+      local_state, application_locale_storage, std::move(runner),
+      std::move(delegate), arc_dlc_installer);
 }
 
 }  // namespace
 
 ArcServiceLauncher::ArcServiceLauncher(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
-    : arc_service_manager_(std::make_unique<ArcServiceManager>()),
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      arc_service_manager_(std::make_unique<ArcServiceManager>()),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>()),
       arc_session_manager_(
-          CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
+          CreateArcSessionManager(&local_state_.get(),
+                                  &application_locale_storage_.get(),
+                                  arc_service_manager_->arc_bridge_service(),
                                   ash::GetChannel(),
                                   scheduler_configuration_manager,
                                   arc_dlc_installer_.get())) {
@@ -430,6 +442,7 @@ void ArcServiceLauncher::ResetForTesting() {
   // may be referred from existing KeyedService, so destoying it would cause
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
+      &local_state_.get(), &application_locale_storage_.get(),
       arc_service_manager_->arc_bridge_service(), ash::GetChannel(),
       scheduler_configuration_manager_, arc_dlc_installer_.get());
 }

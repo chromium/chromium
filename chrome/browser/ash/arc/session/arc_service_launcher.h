@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -17,6 +18,8 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
+class ApplicationLocaleStorage;
+class PrefService;
 class Profile;
 
 namespace ash {
@@ -43,8 +46,12 @@ class BrowserUrlOpener;
 // Detects ARC availability and launches ARC bridge service.
 class ArcServiceLauncher {
  public:
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   // |scheduler_configuration_manager| must outlive |this| object.
-  explicit ArcServiceLauncher(
+  ArcServiceLauncher(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
       ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager);
 
   ArcServiceLauncher(const ArcServiceLauncher&) = delete;
@@ -119,6 +126,9 @@ class ArcServiceLauncher {
   // successfully. This function is called after OnPrepareArcDlc() has
   // successfully configured Upstart jobs and bind-mounted the DLC image.
   void OnDlcImageBindMountArcPath(bool result);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   // |scheduler_configuration_manager_| outlives |this|.

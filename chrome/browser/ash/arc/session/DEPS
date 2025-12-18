@@ -29,8 +29,6 @@ include_rules = [
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/consent_auditor",
   "+chrome/browser/global_features.h",
   "+chrome/browser/lifetime",
@@ -51,12 +49,18 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "arc_requirement_checker\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+
   "arc_service_launcher\\.cc": [
     "+chrome/browser/web_applications/web_app_utils.h",
   ],
 
   "arc_session_manager_browsertest\.cc": [
     "+chrome/browser/ash/test",
+    "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser_window.h",
   ]
 }
