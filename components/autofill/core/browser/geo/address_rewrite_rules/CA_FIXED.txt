@@ -14,7 +14,7 @@
 \bprince\s+edward\s+island\b	pe
 \bforest\s+service\s+road\b	fsr
 \bfrench\s+village\s+york\b	french village
-\bhead\s+of\s+bay\s+despoir\b	head bay d'espoir
+\bhead\s+of\s+bay\s+despoir\b	head bay d espoir
 \bterritoire\s+du\s+yukon\b	yt
 \bnouveau\s+brunswick\b	nb
 \bbritish\s+columbia\b	bc
@@ -41,14 +41,12 @@
 \bconcession\b	conc
 \bcrossroads\b	croisement
 \bcul\s+de\s+sac\b	cds
-\bcul\-de\-sac\b	cds
 \bde\s+riviere\b	riviere
 \bexpressway\b	expy
 \bmackinnons\b	mckinnons
 \bnorth\s+side\b	northside
 \bpine\s+ridge\b	pineridge
 \brond\s+point\b	rdpt
-\brond\-point\b	rdpt
 \balternate\b	alt
 \bautoroute\b	aut
 \bboulevard\b	blvd
@@ -61,8 +59,12 @@
 \bhalf\s+moon\b	halfmoon
 \bhighlands\b	hghlds
 \bkuskonook\b	kuskanook
+\bnortheast\b	ne
+\bnorthwest\b	nw
 \bpromenade\b	prom
 \bside\s+road\b	sideroad
+\bsoutheast\b	se
+\bsouthwest\b	sw
 \bturnabout\b	trnabt
 \bbusiness\b	bus
 \bcrescent\b	cr
@@ -113,7 +115,7 @@
 \bcounty\b	c
 \bharbor\b	harbr
 \bisland\b	ile
-\bl'isle\b	isle
+\bl\s+isle\b	isle
 \blimits\b	lmts
 \bmackay\b	mckay
 \bmcgrey\b	mcgray

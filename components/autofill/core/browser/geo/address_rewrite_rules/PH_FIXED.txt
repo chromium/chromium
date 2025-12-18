@@ -27,7 +27,7 @@
 \bavenue\b	av
 \bdoctor\b	dr
 \bhi\s+way\b	hwy
-\bnumber\b	#
+\bnumber\b	 
 \bstreet\b	st
 \bblock\b	b
 \bd\s+r\s+t\b	drt
@@ -35,6 +35,8 @@
 \bhiway\b	hwy
 \bnorth\b	n
 \bphase\b	p
+\bsanta\b	sta
+\bsanto\b	sto
 \bsouth\b	s
 \bblck\b	b
 \bblok\b	b
@@ -46,7 +48,7 @@
 \bave\b	av
 \bblk\b	b
 \blot\b	l
-\bnum\b	#
+\bnum\b	 
 \blt\b	l
-\bno\b	#
+\bno\b	 
 \bph\b	p

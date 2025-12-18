@@ -29,6 +29,7 @@
       <include name="IDR_ADDRESS_REWRITER_BR_RULES" file="address_rewrite_rules/BR.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_BR_RULES_UPDATED" file="address_rewrite_rules/BR_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_BY_RULES" file="address_rewrite_rules/BY.txt" type="BINDATA" compress="gzip"/>
+      <include name="IDR_ADDRESS_REWRITER_BY_RULES_UPDATED" file="address_rewrite_rules/BY_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_BZ_RULES" file="address_rewrite_rules/BZ.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_CA_RULES" file="address_rewrite_rules/CA.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_CA_RULES_UPDATED" file="address_rewrite_rules/CA_FIXED.txt" type="BINDATA" compress="gzip"/>
@@ -114,6 +115,7 @@
       <include name="IDR_ADDRESS_REWRITER_RO_RULES" file="address_rewrite_rules/RO.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_RO_RULES_UPDATED" file="address_rewrite_rules/RO_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_RU_RULES" file="address_rewrite_rules/RU.txt" type="BINDATA" compress="gzip"/>
+      <include name="IDR_ADDRESS_REWRITER_RU_RULES_UPDATED" file="address_rewrite_rules/RU_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_SA_RULES" file="address_rewrite_rules/SA.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_SE_RULES" file="address_rewrite_rules/SE.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_SE_RULES_UPDATED" file="address_rewrite_rules/SE_FIXED.txt" type="BINDATA" compress="gzip"/>
@@ -132,6 +134,7 @@
       <include name="IDR_ADDRESS_REWRITER_TT_RULES" file="address_rewrite_rules/TT.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_TW_RULES" file="address_rewrite_rules/TW.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_UA_RULES" file="address_rewrite_rules/UA.txt" type="BINDATA" compress="gzip"/>
+      <include name="IDR_ADDRESS_REWRITER_UA_RULES_UPDATED" file="address_rewrite_rules/UA_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_UG_RULES" file="address_rewrite_rules/UG.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_UG_RULES_UPDATED" file="address_rewrite_rules/UG_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_US_RULES" file="address_rewrite_rules/US.txt" type="BINDATA" compress="gzip"/>

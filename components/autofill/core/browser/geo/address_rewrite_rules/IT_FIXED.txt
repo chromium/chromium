@@ -206,7 +206,7 @@
 \bsouth\b	s
 \bterni\b	tr
 \budine\b	ud
-\bviale\b	c so
+\bviale\b	via
 \basti\b	at
 \bbari\b	ba
 \bcomo\b	co

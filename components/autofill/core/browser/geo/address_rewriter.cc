@@ -193,7 +193,7 @@ std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
   }
 
   // Collapse whitespace before returning the final value.
-  return base::UTF8ToUTF16(base::CollapseWhitespaceASCII(utf8_text, true));
+  return base::CollapseWhitespace(base::UTF8ToUTF16(utf8_text), true);
 }
 
 }  // namespace autofill

@@ -64,7 +64,6 @@
 \bnew\s+hampshire\b	nh
 \bnew\s+york\s+city\b	ny
 \btownship\s+road\b	tr
-\btownship_road\b	tr
 \bunited\s+states\b	us
 \bwashington\s+dc\b	dc
 \bwest\s+virginia\b	wv
@@ -144,7 +143,7 @@
 \bfreestone\b	f
 \bhawthorne\b	hawthorn
 \bhighlands\b	hlds
-\bho'olehua\b	hoolehua
+\bho\s+olehua\b	hoolehua
 \bhomestead\b	hmstd
 \bjunctions\b	jt
 \blexington\b	lxngtn
@@ -152,10 +151,14 @@
 \bmilwaukee\b	milw
 \bminnesota\b	mn
 \bmountains\b	mnt
+\bnortheast\b	ne
+\bnorthwest\b	nw
 \bnys\s+route\b	sr
 \bpeninsula\b	penisula
 \bpennisula\b	penisula
 \brichfield\b	richfld
+\bsoutheast\b	se
+\bsouthwest\b	sw
 \bstravenue\b	stra
 \btennessee\b	tn
 \btown\s+line\b	t l
@@ -181,6 +184,7 @@
 \bhartford\b	hartfrd
 \billinois\b	il
 \bjunction\b	jt
+\bjunction\b	jct
 \bkentucky\b	ky
 \bla\s+salle\b	lasalle
 \bmaryland\b	md
@@ -200,6 +204,7 @@
 \brichland\b	richlnd
 \btownline\b	t l
 \btownship\b	tp
+\btownship\b	twp
 \bturnpike\b	tpk
 \bvillages\b	vil
 \bvilliage\b	vil
@@ -234,6 +239,7 @@
 \bharbors\b	hbr
 \bharbour\b	hbr
 \bheights\b	ht
+\bheights\b	hts
 \bhighway\b	hw
 \bhollows\b	hllw
 \bindiana\b	in
@@ -255,6 +261,7 @@
 \branches\b	rch
 \branchos\b	rch
 \bsprings\b	spg
+\bsprings\b	spgs
 \bsquares\b	sq
 \bstation\b	sta
 \bstraven\b	stra
@@ -305,6 +312,7 @@
 \bfields\b	fld
 \bforest\b	frst
 \bforges\b	frg
+\bfourth\b	4th
 \bfreewy\b	fwy
 \bgarden\b	gdn
 \bgatewy\b	gtwy
@@ -353,6 +361,7 @@
 \brapids\b	rpd
 \bridges\b	rdg
 \bschool\b	sch
+\bsecond\b	2nd
 \bsenior\b	sr
 \bshoals\b	shl
 \bshoars\b	shr
@@ -419,7 +428,10 @@
 \bfalls\b	fls
 \bferry\b	fry
 \bfield\b	fld
+\bfifth\b	5th
+\bfirst\b	1st
 \bflats\b	flt
+\bfloor\b	fl
 \bfords\b	frd
 \bforge\b	frg
 \bforks\b	fks
@@ -436,6 +448,7 @@
 \bharbr\b	hbr
 \bhaven\b	hvn
 \bhills\b	hl
+\bhills\b	hls
 \bhiway\b	hw
 \bholws\b	hllw
 \bhouse\b	hse
@@ -457,7 +470,7 @@
 \bm\s+l\s+k\b	mlk
 \bmaine\b	me
 \bmanor\b	mnr
-\bmem'l\b	mem
+\bmem\s+l\b	mem
 \bmills\b	ml
 \bmissn\b	msn
 \bmntns\b	mnt
@@ -493,6 +506,7 @@
 \bshoal\b	shl
 \bshoar\b	shr
 \bshore\b	shr
+\bsixth\b	6th
 \bsouth\b	s
 \bspace\b	sp
 \bspngs\b	spg
@@ -505,6 +519,7 @@
 \bsuite\b	ste
 \bsumit\b	smt
 \btexas\b	tx
+\bthird\b	3rd
 \btrace\b	trce
 \btrack\b	trk
 \btrail\b	tr
@@ -533,6 +548,8 @@
 \bbend\b	bnd
 \bblfs\b	blf
 \bbluf\b	blf
+\bblvd\b	bl
+\bblvd\b	blv
 \bboul\b	blvd
 \bbrks\b	brk
 \bbuoy\b	bouy
