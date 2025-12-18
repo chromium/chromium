@@ -81,6 +81,7 @@ static_library("search_engines") {
     "//components/database_utils",
     "//components/infobars/core",
     "//components/lens:features",
+    "//components/lens:lens_url_utils",
     "//components/lens:mime_type",
     "//components/lens/proto/server:proto",
     "//components/metrics",

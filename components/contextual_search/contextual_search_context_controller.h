@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
@@ -124,6 +125,9 @@ class ContextualSearchContextController {
 
     // The selection type corresponding to the interaction.
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type;
+
+    // The invocation source of the interaction.
+    std::optional<lens::LensOverlayInvocationSource> invocation_source;
 
     // The image crop corresponding to the interaction. This should only be set
     // if the selection type is set for an interaction.

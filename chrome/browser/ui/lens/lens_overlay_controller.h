@@ -534,7 +534,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
-      std::map<std::string, std::string> additional_query_params);
+      std::map<std::string, std::string> additional_query_params,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   // Issues a contextual text request to the query controller.
   void IssueContextualTextRequest(
@@ -903,7 +904,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
-      std::map<std::string, std::string> additional_query_params);
+      std::map<std::string, std::string> additional_query_params,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   // Launches the Lens overlay HaTS survey if eligible.
   void MaybeLaunchSurvey();

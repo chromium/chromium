@@ -68,14 +68,16 @@ class LensQueryFlowRouter
       lens::mojom::CenterRotatedBoxPtr region,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
-      std::optional<SkBitmap> region_bytes);
+      std::optional<SkBitmap> region_bytes,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Sends a text-only interaction. Expected to be called multiple times.
   void SendTextOnlyQuery(
       base::Time query_start_time,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
-      std::map<std::string, std::string> additional_search_query_params);
+      std::map<std::string, std::string> additional_search_query_params,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Sends a text query interaction contextualized to the current page. Expected
   // to be called multiple times.
@@ -83,7 +85,8 @@ class LensQueryFlowRouter
       base::Time query_start_time,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
-      std::map<std::string, std::string> additional_search_query_params);
+      std::map<std::string, std::string> additional_search_query_params,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Sends a multimodal interaction. Expected to be called multiple times.
   void SendMultimodalRequest(
@@ -92,7 +95,8 @@ class LensQueryFlowRouter
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
-      std::optional<SkBitmap> region_bytes);
+      std::optional<SkBitmap> region_bytes,
+      lens::LensOverlayInvocationSource invocation_source);
 
  protected:
   // Creates a contextual search session handle. Virtual for testing.
@@ -177,7 +181,8 @@ class LensQueryFlowRouter
       std::optional<std::string> query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
-      base::Time query_start_time);
+      base::Time query_start_time,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Returns the contextual search session handle for the query router if it
   // exists.

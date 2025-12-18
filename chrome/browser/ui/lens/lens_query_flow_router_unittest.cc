@@ -330,7 +330,8 @@ TEST_F(LensQueryFlowRouterTest, SendRegionSearch_RoutesToLensQueryController) {
 
   // Act: Call the method.
   router.SendRegionSearch(query_start_time, std::move(region), selection_type,
-                          additional_params, region_bytes);
+                          additional_params, region_bytes,
+                          lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterTest, SendTextOnlyQuery_RoutesToLensQueryController) {
@@ -353,7 +354,8 @@ TEST_F(LensQueryFlowRouterTest, SendTextOnlyQuery_RoutesToLensQueryController) {
 
   // Act: Call the method.
   router.SendTextOnlyQuery(query_start_time, query_text, selection_type,
-                           additional_params);
+                           additional_params,
+                           lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterTest, GetSuggestInputs_RoutesToLensQueryController) {
@@ -416,7 +418,8 @@ TEST_F(LensQueryFlowRouterTest,
 
   // Act: Call the method.
   router.SendContextualTextQuery(query_start_time, query_text, selection_type,
-                                 additional_params);
+                                 additional_params,
+                                 lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterTest,
@@ -444,7 +447,8 @@ TEST_F(LensQueryFlowRouterTest,
 
   // Act: Call the method.
   router.SendMultimodalRequest(query_start_time, std::move(region), query_text,
-                               selection_type, additional_params, region_bytes);
+                               selection_type, additional_params, region_bytes,
+                               lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 class LensQueryFlowRouterContextualTaskEnabledTest
@@ -598,7 +602,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act: Call the method.
   router.SendRegionSearch(query_start_time, std::move(region), selection_type,
-                          additional_params, region_bytes);
+                          additional_params, region_bytes,
+                          lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
@@ -660,7 +665,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act: Call the method.
   router.SendTextOnlyQuery(query_start_time, query_text, selection_type,
-                           additional_params);
+                           additional_params,
+                           lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
@@ -719,7 +725,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act: Call the method.
   router.SendContextualTextQuery(query_start_time, query_text, selection_type,
-                                 additional_params);
+                                 additional_params,
+                                 lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
@@ -782,7 +789,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act: Call the method.
   router.SendMultimodalRequest(query_start_time, std::move(region), query_text,
-                               selection_type, additional_params, region_bytes);
+                               selection_type, additional_params, region_bytes,
+                               lens::LensOverlayInvocationSource::kAppMenu);
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,

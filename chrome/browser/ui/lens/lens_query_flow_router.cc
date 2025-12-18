@@ -147,11 +147,13 @@ void LensQueryFlowRouter::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
-    std::optional<SkBitmap> region_bytes) {
+    std::optional<SkBitmap> region_bytes,
+    lens::LensOverlayInvocationSource invocation_source) {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         std::move(region), std::move(region_bytes), /*query_text=*/std::nullopt,
-        lens_selection_type, additional_search_query_params, query_start_time));
+        lens_selection_type, additional_search_query_params, query_start_time,
+        invocation_source));
     return;
   }
 
@@ -164,11 +166,13 @@ void LensQueryFlowRouter::SendTextOnlyQuery(
     base::Time query_start_time,
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         /*region=*/nullptr, /*region_bytes=*/std::nullopt, query_text,
-        lens_selection_type, additional_search_query_params, query_start_time));
+        lens_selection_type, additional_search_query_params, query_start_time,
+        invocation_source));
     return;
   }
 
@@ -181,11 +185,13 @@ void LensQueryFlowRouter::SendContextualTextQuery(
     base::Time query_start_time,
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
     auto request_info = CreateSearchUrlRequestInfoFromInteraction(
         /*region=*/nullptr, /*region_bytes=*/std::nullopt, query_text,
-        lens_selection_type, additional_search_query_params, query_start_time);
+        lens_selection_type, additional_search_query_params, query_start_time,
+        invocation_source);
     request_info->search_url_type = SearchUrlType::kAim;
     SendInteractionToContextualTasks(std::move(request_info));
     return;
@@ -202,11 +208,13 @@ void LensQueryFlowRouter::SendMultimodalRequest(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
-    std::optional<SkBitmap> region_bytes) {
+    std::optional<SkBitmap> region_bytes,
+    lens::LensOverlayInvocationSource invocation_source) {
   if (contextual_tasks::GetEnableLensInContextualTasks()) {
     SendInteractionToContextualTasks(CreateSearchUrlRequestInfoFromInteraction(
         std::move(region), std::move(region_bytes), query_text,
-        lens_selection_type, additional_search_query_params, query_start_time));
+        lens_selection_type, additional_search_query_params, query_start_time,
+        invocation_source));
     return;
   }
 
@@ -363,7 +371,8 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
     std::optional<std::string> query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
-    base::Time query_start_time) {
+    base::Time query_start_time,
+    lens::LensOverlayInvocationSource invocation_source) {
   auto request_info = std::make_unique<CreateSearchUrlRequestInfo>();
   request_info->search_url_type = SearchUrlType::kStandard;
   if (query_text.has_value()) {
@@ -372,6 +381,7 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
   request_info->query_start_time = query_start_time;
   request_info->lens_overlay_selection_type = lens_selection_type;
   request_info->additional_params = additional_search_query_params;
+  request_info->invocation_source = invocation_source;
 
   if (region) {
     auto client_logs =

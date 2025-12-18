@@ -443,6 +443,7 @@ void ComposeboxQueryController::CreateSearchUrl(
             search_url_request_info->aim_entry_point,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(), std::move(contextual_inputs),
+            search_url_request_info->invocation_source,
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
@@ -492,7 +493,7 @@ void ComposeboxQueryController::CreateSearchUrl(
             request_id_generator_.GetNextRequestId(
                 lens::RequestIdUpdateMode::kSearchUrl,
                 last_file->request_id.media_type()),
-            last_file->mime_type,
+            last_file->mime_type, search_url_request_info->invocation_source,
             should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
@@ -1567,8 +1568,8 @@ void ComposeboxQueryController::AddEncodedVisualSearchInteractionLogDataParam(
     const std::optional<std::string>& query_text,
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
     std::map<std::string, std::string>& url_params_map) {
-  if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
-                          file_info->upload_status)) {
+  if (!file_info ||
+      !IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status)) {
     return;
   }
 
