@@ -30,7 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_server_prediction.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/history/core/browser/history_service.h"
@@ -977,23 +977,27 @@ void ClientSideDetectionHost::OnAfterFocusOnFormField(
     return;
   }
 
-  // Do nothing if the form is not a credit card form.
+  // Determine whether the field was detected as a credit card field using
+  // either server or local heuristics.
   const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
-  if (!form ||
-      !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
+  if (!form) {
     return;
   }
-
+  const autofill::AutofillField* field = form->GetFieldById(field_id);
+  if (!field) {
+    return;
+  }
   credit_card_form::FieldDetectionHeuristic field_heuristic =
       credit_card_form::kNoDetectionHeuristic;
-  if (form &&
-      !form->GetServerPredictions(base::span_from_ref(field_id)).empty()) {
+  if (autofill::GroupTypeOfFieldType(field->server_type()) ==
+      autofill::FieldTypeGroup::kCreditCard) {
     field_heuristic = credit_card_form::kAutofillServer;
-  } else if (form && !form->GetHeuristicPredictions(
-                              autofill::GetActiveHeuristicSource(),
-                              base::span_from_ref(field_id))
-                          .empty()) {
+  } else if (autofill::GroupTypeOfFieldType(field->heuristic_type()) ==
+             autofill::FieldTypeGroup::kCreditCard) {
     field_heuristic = credit_card_form::kAutofillLocal;
+  } else {
+    // Do nothing if the field is not a credit card type.
+    return;
   }
 
   // Site visit count is needed as part of determining whether to send
