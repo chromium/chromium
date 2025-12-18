@@ -32,7 +32,7 @@ class TemplatedClass {
   void anotherMethod() { T::staticMethodTemplate(123); }
 };
 
-}  // not_blink
+}  // namespace not_blink
 
 namespace blink {
 
@@ -110,7 +110,7 @@ void Run() {
   enum E { A };
   BasedOnSubType<E>(HasAMember<E>());
 }
-}
+}  // namespace test_member_in_template
 
 namespace test_template_arg_is_function {
 
@@ -165,7 +165,7 @@ namespace test_template_arg_is_function_template {
 namespace nested {
 template <typename T>
 void F(T) {}
-}
+}  // namespace nested
 
 template <typename T, void g(T)>
 void H(T x) {
@@ -200,7 +200,7 @@ void Test() {
   H<int, not_blink::Class::staticMethodTemplate>(1);
 }
 
-}  // test_template_arg_is_method_template_in_non_member_context
+}  // namespace test_template_arg_is_method_template_in_non_member_context
 
 namespace test_inherited_field {
 
@@ -255,7 +255,7 @@ class Class {
 };
 
 template <typename T>
-void Class<T>::F(int data_size){};
+void Class<T>::F(int data_size) {};
 
 void Foo() {
   Class<char>().F(123);
@@ -276,8 +276,9 @@ class Vector {
   // https://crbug.com/582315: |Allocator::method| is a
   // CXXDependentScopeMemberExpr.
   void AnotherMethod() {
-    if (std::is_class<Allocator>::value)  // Shouldn't rename |value|
-      Allocator::Method();                // Should rename |method| -> |Method|.
+    if (std::is_class<Allocator>::value) {  // Shouldn't rename |value|
+      Allocator::Method();  // Should rename |method| -> |Method|.
+    }
   }
 };
 
@@ -285,13 +286,14 @@ template <typename Allocator = PartitionAllocator>
 void Test() {
   // https://crbug.com/582315: |Allocator::method| is a
   // DependentScopeDeclRefExpr.
-  if (std::is_class<Allocator>::value)  // Shouldn't rename |value|.
-    Allocator::Method();                // Should rename |method|.
+  if (std::is_class<Allocator>::value) {  // Shouldn't rename |value|.
+    Allocator::Method();                  // Should rename |method|.
+  }
 }
 
 class InterceptingCanvasBase : public ::not_blink::Class {
  public:
-  virtual void VirtualMethodInBlink(){};
+  virtual void VirtualMethodInBlink() {};
 };
 
 template <typename DerivedCanvas>

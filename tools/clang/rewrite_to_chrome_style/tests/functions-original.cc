@@ -25,8 +25,9 @@ int testFunctionThatTakesTwoInts(int x, int y, int z);
 
 // Test that the actual function definition is also updated.
 int testFunctionThatTakesTwoInts(int x, int y) {
-  if (x == 0)
+  if (x == 0) {
     return y;
+  }
   // Calls to the function also need to be updated.
   return testFunctionThatTakesTwoInts(x - 1, y + 1);
 }

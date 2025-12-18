@@ -79,7 +79,7 @@ void Task::DoTheWork() {
 template <typename T>
 class Testable {
  public:
-  typedef T Testable::*UnspecifiedBoolType;
+  typedef T Testable::* UnspecifiedBoolType;
   // This method has a reference to a member in a "member context" and a
   // "non-member context" to verify both are rewritten.
   operator UnspecifiedBoolType() { return ptr_ ? &Testable::ptr_ : 0; }
@@ -266,7 +266,7 @@ class Foo {
 void Begin(int x) {}
 void swap(Foo& x, Foo& y) {}
 
-}  // blocklisting_of_method_and_function_names
+}  // namespace blocklisting_of_method_and_function_names
 
 }  // namespace blink
 

@@ -11,8 +11,9 @@ bool IsInBounds(From value) {
 
 template <typename To, typename From>
 To SafeCast(From value) {
-  if (!IsInBounds<To>(value))
+  if (!IsInBounds<To>(value)) {
     return 0;
+  }
   return static_cast<To>(value);
 }
 
@@ -21,10 +22,12 @@ class Checked {
  public:
   template <typename U, typename V>
   Checked(const Checked<U, V>& rhs) {
-    if (rhs.HasOverflowed())
+    if (rhs.HasOverflowed()) {
       this->Overflowed();
-    if (!IsInBounds<T>(rhs.value_))
+    }
+    if (!IsInBounds<T>(rhs.value_)) {
       this->Overflowed();
+    }
     value_ = static_cast<T>(rhs.value_);
   }
 
