@@ -481,6 +481,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kRelatedWebsiteSetsUi,
     &privacy_sandbox::kRollBackModeB,
     &safe_browsing::kAutoRevokeSuspiciousNotification,
+    &safe_browsing::kExtendedReportingRemovePrefDependency,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &safe_browsing::kMaliciousApkDownloadCheck,
     &safe_browsing::kReportNotificationContentDetectionData,
