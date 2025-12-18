@@ -66,8 +66,9 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/navigate_button"
-        android:layout_width="@dimen/fusebox_button_size"
-        android:layout_height="@dimen/fusebox_button_size"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginEnd="4dp"
         android:visibility="gone"
         android:src="@drawable/ic_arrow_forward_blue_24dp"
         android:clickable="true"
@@ -75,6 +76,7 @@ found in the LICENSE file.
         android:scaleType="centerInside"
         android:background="@drawable/oval_baseline_primary_50"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"
+        app:layout_constraintTop_toBottomOf="@id/url_bar"/>
 
 </merge>
