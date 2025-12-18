@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -183,6 +184,27 @@ base::expected<paint_preview::RedactionParams, std::string> GetRedactionParams(
   NOTREACHED();
 }
 
+SkBitmap RedactScreenshotOnWorkerThread(
+    const SkBitmap& bitmap,
+    std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction) {
+  if (visible_bounding_boxes_for_password_redaction.empty()) {
+    return bitmap;
+  }
+
+  SkBitmap redacted_bitmap;
+  redacted_bitmap.setInfo(bitmap.info());
+  redacted_bitmap.allocPixels();
+
+  SkCanvas canvas(redacted_bitmap);
+  SkPaint black;
+  black.setColor(SkColors::kBlack);
+  for (const auto& rect : visible_bounding_boxes_for_password_redaction) {
+    canvas.drawRect(RectToSkRect(rect), black);
+  }
+
+  return redacted_bitmap;
+}
+
 // Combination of tracked states for when a PDF contents request is made.
 // Must be kept in sync with PdfRequestStates in
 // src/tools/metrics/histograms/metadata/glic/enums.xml.
@@ -278,6 +300,10 @@ class PageContextFetcher : public content::WebContentsObserver {
       if (progress_listener_) {
         progress_listener_->BeginAPC();
       }
+      ai_page_content_options->include_passwords_for_redaction =
+          base::FeatureList::IsEnabled(kGlicScreenshotPasswordRedaction);
+      screenshot_needs_password_redaction_ =
+          ai_page_content_options->include_passwords_for_redaction;
       optimization_guide::GetAIPageContent(
           web_contents(), std::move(ai_page_content_options),
           base::BindOnce(&PageContextFetcher::ReceivedAnnotatedPageContent,
@@ -427,53 +453,91 @@ class PageContextFetcher : public content::WebContentsObserver {
       const SkBitmap* bitmap = bitmap_result.value();
       pending_result_->screenshot_result.emplace(
           gfx::SkISizeToSize(bitmap->dimensions()));
+      screenshot_bitmap_ = *bitmap;
+
       base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
                               elapsed_timer_.Elapsed());
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(
-              [](const SkBitmap& bitmap) {
-                std::optional<std::vector<uint8_t>> encoded;
-                switch (GetScreenshotImageType()) {
-                  case ScreenshotImageType::kJpeg:
-                    encoded = gfx::JPEGCodec::Encode(
-                        bitmap, GetScreenshotJpegQuality());
-                    break;
-                  case ScreenshotImageType::kPng:
-                    if (ShouldPngScreenshotBeLowQuality()) {
-                      encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
-                          bitmap, /*discard_transparency=*/true);
-                    } else {
-                      encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
-                          bitmap, /*discard_transparency=*/true);
-                    }
-                    break;
-                  case ScreenshotImageType::kWebp:
-                    encoded = gfx::WebpCodec::Encode(
-                        bitmap, GetScreenshotWebPQuality());
-                    break;
-                  default:
-                    break;
-                }
-                base::expected<std::vector<uint8_t>, std::string> reply;
-                if (encoded) {
-                  reply.emplace(std::move(encoded.value()));
-                } else {
-                  reply = base::unexpected("JPEGCodec failed to encode");
-                }
-                return reply;
-              },
-              *bitmap),
-          base::BindOnce(
-              EmitTimingHistogram<std::vector<uint8_t>, std::string>,
-              "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
-              elapsed_timer_)
-              .Then(
-                  base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
-                                 GetWeakPtr())));
+      RedactAndEncodeScreenshotIfNeeded();
     } else {
       ReceivedEncodedScreenshot(base::unexpected(bitmap_result.error()));
     }
+  }
+
+  void RedactAndEncodeScreenshot(
+      std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction) {
+    CHECK(screenshot_bitmap_);
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(
+            [](const SkBitmap& bitmap,
+               std::vector<gfx::Rect>
+                   visible_bounding_boxes_for_password_redaction) {
+              SkBitmap redacted_bitmap = RedactScreenshotOnWorkerThread(
+                  bitmap, visible_bounding_boxes_for_password_redaction);
+              std::optional<std::vector<uint8_t>> encoded;
+              switch (GetScreenshotImageType()) {
+                case ScreenshotImageType::kJpeg:
+                  encoded = gfx::JPEGCodec::Encode(redacted_bitmap,
+                                                   GetScreenshotJpegQuality());
+                  break;
+                case ScreenshotImageType::kPng:
+                  if (ShouldPngScreenshotBeLowQuality()) {
+                    encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
+                        redacted_bitmap, /*discard_transparency=*/true);
+                  } else {
+                    encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
+                        redacted_bitmap, /*discard_transparency=*/true);
+                  }
+                  break;
+                case ScreenshotImageType::kWebp:
+                  encoded = gfx::WebpCodec::Encode(redacted_bitmap,
+                                                   GetScreenshotWebPQuality());
+                  break;
+                default:
+                  break;
+              }
+              base::expected<std::vector<uint8_t>, std::string> reply;
+              if (encoded) {
+                reply.emplace(std::move(encoded.value()));
+              } else {
+                reply = base::unexpected("JPEGCodec failed to encode");
+              }
+              return reply;
+            },
+            *screenshot_bitmap_,
+            std::move(visible_bounding_boxes_for_password_redaction)),
+        base::BindOnce(
+            EmitTimingHistogram<std::vector<uint8_t>, std::string>,
+            "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
+            elapsed_timer_)
+            .Then(base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
+                                 GetWeakPtr())));
+    screenshot_bitmap_.reset();
+  }
+
+  void RedactAndEncodeScreenshotIfNeeded() {
+    if (!screenshot_bitmap_) {
+      return;
+    }
+
+    if (!screenshot_needs_password_redaction_) {
+      RedactAndEncodeScreenshot({});
+      return;
+    }
+
+    // We need APC to determine if redaction is necessary.
+    if (!annotated_page_content_done_) {
+      return;
+    }
+
+    // If APC extraction is done and we've determined password redaction is
+    // needed, it implies we have a result with bounding boxes to redact.
+    CHECK(pending_result_);
+    CHECK(pending_result_->annotated_page_content_result.has_value());
+    RedactAndEncodeScreenshot(
+        pending_result_->annotated_page_content_result
+            ->visible_bounding_boxes_for_password_redaction);
   }
 
   // content::WebContentsObserver impl.
@@ -556,9 +620,13 @@ class PageContextFetcher : public content::WebContentsObserver {
     if (has_result) {
       pending_result_->annotated_page_content_result.emplace(
           std::move(content.value()));
+      screenshot_needs_password_redaction_ =
+          !pending_result_->annotated_page_content_result
+               ->visible_bounding_boxes_for_password_redaction.empty();
     } else {
       pending_result_->annotated_page_content_result =
           base::unexpected(content.error());
+      screenshot_needs_password_redaction_ = false;
     }
     annotated_page_content_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
@@ -609,6 +677,10 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   uint32_t inner_text_bytes_limit_ = 0;
 
+  // screenshot processing dependencies.
+  std::optional<SkBitmap> screenshot_bitmap_;
+  bool screenshot_needs_password_redaction_ = false;
+
   // Intermediate results:
 
   // Whether work is complete for each task, does not imply success.
@@ -642,6 +714,9 @@ std::string ToString(FetchPageContextError error) {
 }
 
 BASE_FEATURE(kGlicTabScreenshotExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicScreenshotPasswordRedaction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_width", 0};

@@ -157,6 +157,9 @@ using FetchPageContextResultCallbackArg =
 // Controls scaling and quality of tab screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotExperiment);
 
+// Controls whether password fields are redacted from screenshots.
+BASE_DECLARE_FEATURE(kGlicScreenshotPasswordRedaction);
+
 extern const base::FeatureParam<int> kMaxScreenshotWidthParam;
 
 extern const base::FeatureParam<int> kMaxScreenshotHeightParam;

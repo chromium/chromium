@@ -554,6 +554,10 @@ struct AIPageContent {
   // The frame-level information which is common to both main and embedded
   // frames.
   AIPageContentFrameData frame_data;
+
+  // The bounding boxes for rendered passwords. This data is for client-side
+  // use only.
+  array<gfx.mojom.Rect> visible_bounding_boxes_for_password_redaction;
 };
 
 enum AIPageContentMode {
@@ -592,6 +596,9 @@ struct AIPageContentOptions {
   // Note: View here implies the browser window rendering the main frame. It
   // includes the browser UI in the window.
   gfx.mojom.Rect main_frame_view_rect_in_dips;
+
+  // Whether to include data for visible passwords.
+  bool include_passwords_for_redaction = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the
