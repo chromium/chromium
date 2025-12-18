@@ -82,7 +82,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             // If user enters page info via the store icon in omnibox, highlight the "Store info"
             // row.
             if (mPageInfoOpenedFromStoreIcon) {
-                rowParams.rowTint = R.color.iph_highlight_blue;
+                rowParams.rowTint = R.color.iph_highlight_color;
             }
             rowParams.clickCallback =
                     () -> {

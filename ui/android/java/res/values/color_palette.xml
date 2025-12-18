@@ -14,7 +14,6 @@ found in the LICENSE file.
     <color name="baseline_primary_80">#A8C7FA</color>
     <color name="baseline_primary_80_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
     <color name="baseline_primary_80_alpha_20">#33A8C7FA</color>
-    <color name="baseline_primary_80_alpha_50">#80A8C7FA</color>
     <color name="baseline_primary_70">#7CACF8</color>
     <color name="baseline_primary_60">#4C8DF6</color>
     <color name="baseline_primary_50">#1B6EF3</color>

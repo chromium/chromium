@@ -964,7 +964,7 @@ public class PageInfoViewTest {
                 PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         onView(withId(R.id.page_info_permissions_row))
                 .inRoot(isDialog())
-                .check(matches(not(hasBackgroundColor(R.color.iph_highlight_blue))));
+                .check(matches(not(hasBackgroundColor(R.color.iph_highlight_color))));
     }
 
     /**
@@ -978,7 +978,7 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfoWithPermission(
                 mTestServerRule.getServer().getURL(sSimpleHtml), getGeolocationType());
         onView(withId(R.id.page_info_permissions_row))
-                .check(matches(hasBackgroundColor(R.color.iph_highlight_blue)));
+                .check(matches(hasBackgroundColor(R.color.iph_highlight_color)));
     }
 
     /** Tests the location permission subpage of the PageInfo UI. */
@@ -1023,7 +1023,7 @@ public class PageInfoViewTest {
                                                 context.getString(
                                                         R.string
                                                                 .website_settings_device_location)))))
-                .check(matches(hasBackgroundColor(R.color.iph_highlight_blue)));
+                .check(matches(hasBackgroundColor(R.color.iph_highlight_color)));
     }
 
     /**

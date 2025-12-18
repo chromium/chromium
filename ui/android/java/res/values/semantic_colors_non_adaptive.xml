@@ -95,10 +95,6 @@ found in the LICENSE file.
 
     <color name="incognito_card_bg_color">@color/gm3_baseline_surface_container_dark</color>
 
-    <!-- IPH Highlight Colors -->
-    <color name="iph_highlight_blue_dark">@color/baseline_primary_40_alpha_10</color>
-    <color name="iph_highlight_blue_light">@color/baseline_primary_80_alpha_50</color>
-
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <!-- Same as ?attr/colorPrimary. -->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/baseline_primary_40</color>
