@@ -20,21 +20,18 @@ struct IgnoringAsciiCaseHash {
     if (string.ContainsOnlyASCIIOrEmpty() && string.IsLowerASCII()) {
       return HashTraits<String>::GetHash(string);
     }
+    base::span<const char> bytes = base::as_chars(string.RawByteSpan());
     if (string.Is8Bit()) {
-      auto span = string.Span8();
       return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(base::as_chars(span).data(),
-                                       span.size());
+          AsciiLowerHashReader<LChar>>(bytes.data(), bytes.size());
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      auto span = string.Span16();
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiConvertTo8AndLowerHashReader>(base::as_chars(span).data(),
-                                             span.size());
+      using Reader = AsciiConvertTo8AndLowerHashReader;
+      return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+          bytes.data(), bytes.size() / Reader::kCompressionFactor);
     }
-    auto span = string.RawByteSpan();
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(base::as_chars(span).data(), span.size());
+        AsciiLowerHashReader<UChar>>(bytes.data(), bytes.size());
   }
 
   static unsigned GetHash(const AtomicString& string) {
@@ -74,21 +71,18 @@ struct IgnoringAsciiCaseHashTranslator {
     if (string.SharedImpl()) {
       return IgnoringAsciiCaseHash::GetHash(string.ToString());
     }
+    base::span<const char> bytes = base::as_chars(string.RawByteSpan());
     if (string.Is8Bit()) {
-      auto span = string.Span8();
       return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(base::as_chars(span).data(),
-                                       span.size());
+          AsciiLowerHashReader<LChar>>(bytes.data(), bytes.size());
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      auto span = string.Span16();
-      return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiConvertTo8AndLowerHashReader>(base::as_chars(span).data(),
-                                             span.size());
+      using Reader = AsciiConvertTo8AndLowerHashReader;
+      return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+          bytes.data(), bytes.size() / Reader::kCompressionFactor);
     }
-    auto span = string.RawByteSpan();
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(base::as_chars(span).data(), span.size());
+        AsciiLowerHashReader<UChar>>(bytes.data(), bytes.size());
   }
 
   static bool Equal(const String& a, StringView b) {

@@ -30,17 +30,19 @@ class UCharBuffer {
   ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8Bits(
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding) {
+    base::span<const char> bytes = base::as_chars(chars);
     if (encoding == AtomicStringUCharEncoding::kIs8Bit ||
         (encoding == AtomicStringUCharEncoding::kUnknown &&
          IsOnly8Bit(chars))) {
+      using Reader = ConvertTo8BitHashReader;
       // This is a very common case from HTML parsing, so we take
       // the size penalty from inlining.
-      return StringHasher::ComputeHashAndMaskTop8BitsInline<
-          ConvertTo8BitHashReader>(UNSAFE_TODO(
-          {reinterpret_cast<const uint8_t*>(chars.data()), chars.size()}));
+      return StringHasher::ComputeHashAndMaskTop8BitsInline<Reader>(
+          UNSAFE_TODO({base::as_bytes(bytes).data(),
+                       bytes.size() / Reader::kCompressionFactor}));
     } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits(
-          reinterpret_cast<const char*>(chars.data()), chars.size() * 2);
+      return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(),
+                                                      bytes.size());
     }
   }
 
@@ -94,15 +96,17 @@ struct StringViewLookupTranslator {
       return shared_impl->GetHash();
     }
 
+    base::span<const char> bytes = base::as_chars(buf.RawByteSpan());
     if (buf.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits(
-          base::as_chars(buf.Span8()).data(), buf.length());
+      return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(),
+                                                      bytes.size());
     } else if (IsOnly8Bit(buf.Span16())) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-          base::as_chars(buf.RawByteSpan()).data(), buf.length());
+      using Reader = ConvertTo8BitHashReader;
+      return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+          bytes.data(), bytes.size() / Reader::kCompressionFactor);
     } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits(
-          base::as_chars(buf.RawByteSpan()).data(), buf.length() * 2);
+      return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(),
+                                                      bytes.size());
     }
   }
 
@@ -122,20 +126,19 @@ class HashTranslatorLowercaseBuffer {
     // We expect already lowercase strings to take another path in
     // Element::WeakLowercaseIfNecessary.
     DCHECK(!impl_->IsLowerASCII());
+    base::span<const char> bytes = base::as_chars(impl->RawByteSpan());
     if (impl_->Is8Bit()) {
       hash_ =
           StringHasher::ComputeHashAndMaskTop8Bits<AsciiLowerHashReader<LChar>>(
-              (const char*)UNSAFE_TODO(impl_->Characters8()), impl_->length());
+              bytes.data(), bytes.size());
     } else {
       if (IsOnly8Bit(impl_->Span16())) {
-        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            AsciiConvertTo8AndLowerHashReader>(
-            (const char*)UNSAFE_TODO(impl_->Characters16()), impl_->length());
+        using Reader = AsciiConvertTo8AndLowerHashReader;
+        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+            bytes.data(), bytes.size() / Reader::kCompressionFactor);
       } else {
         hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
-            AsciiLowerHashReader<UChar>>(
-            (const char*)UNSAFE_TODO(impl_->Characters16()),
-            impl_->length() * 2);
+            AsciiLowerHashReader<UChar>>(bytes.data(), bytes.size());
       }
     }
   }
