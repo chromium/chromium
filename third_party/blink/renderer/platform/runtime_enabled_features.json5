@@ -1782,7 +1782,7 @@
       // appearance:base-select for <select multiple> and <select size=n>
       // https://issues.chromium.org/issues/357649033
       name: "CustomizableSelectListbox",
-      status: "experimental",
+      status: "stable",
       depends_on: ["SelectMobileDesktopParity"],
     },
     {
