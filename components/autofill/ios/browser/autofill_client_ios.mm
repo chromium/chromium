@@ -5,6 +5,7 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 
 #import "base/containers/flat_set.h"
+#import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -21,14 +22,14 @@ class AutofillClientIOSHandle
  public:
   ~AutofillClientIOSHandle() override {}
 
-  AutofillClientIOS* client() { return client_; }
+  AutofillClientIOS* client() { return client_.get(); }
 
  private:
   friend class web::WebStateUserData<AutofillClientIOSHandle>;
   AutofillClientIOSHandle(web::WebState* web_state, AutofillClientIOS* client)
-      : client_(client) {}
+      : client_(client ? client->AsWeakPtr() : nullptr) {}
 
-  raw_ptr<AutofillClientIOS, DanglingUntriaged> client_;
+  base::WeakPtr<AutofillClientIOS> client_;
 };
 
 }  // namespace
@@ -59,6 +60,10 @@ AutofillClientIOS::~AutofillClientIOS() {
 
 AutofillDriverIOSFactory& AutofillClientIOS::GetAutofillDriverFactory() {
   return autofill_driver_factory_;
+}
+
+base::WeakPtr<AutofillClientIOS> AutofillClientIOS::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill
