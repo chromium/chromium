@@ -240,7 +240,7 @@ mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,
         base::SysCFStringRefToUTF8(destination_format.value().get()));
   }
   if (destination_location.value()) {
-    dialog_data.Set(kMacSystemPrintDialogDataDestinationLocation,
+    dialog_data.Set(kMacSystemPrintDialogDataDestinationFileUrl,
                     base::SysCFStringRefToUTF8(
                         CFURLGetString(destination_location.value().get())));
   }
@@ -342,7 +342,7 @@ mojom::ResultCode ApplySystemDestination(
           kMacSystemPrintDialogDataDestinationFormat);
   const std::string* destination_location_str =
       system_print_dialog_data.FindString(
-          kMacSystemPrintDialogDataDestinationLocation);
+          kMacSystemPrintDialogDataDestinationFileUrl);
 
   base::apple::ScopedCFTypeRef<CFStringRef> destination_format;
   if (destination_format_str) {
@@ -352,11 +352,10 @@ mojom::ResultCode ApplySystemDestination(
 
   base::apple::ScopedCFTypeRef<CFURLRef> destination_location;
   if (destination_location_str) {
-    destination_location.reset(CFURLCreateWithFileSystemPath(
+    destination_location.reset(CFURLCreateWithString(
         kCFAllocatorDefault,
         base::SysUTF8ToCFStringRef(*destination_location_str).get(),
-        kCFURLPOSIXPathStyle,
-        /*isDirectory=*/FALSE));
+        /*baseURL=*/nullptr));
   }
 
   base::apple::ScopedCFTypeRef<CFStringRef> destination_name(

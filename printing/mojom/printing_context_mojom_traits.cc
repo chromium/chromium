@@ -282,7 +282,7 @@ bool StructTraits<
       ++dictionary_entries;
     }
     const base::Value* destination_location = system_print_dialog_data.Find(
-        printing::kMacSystemPrintDialogDataDestinationLocation);
+        printing::kMacSystemPrintDialogDataDestinationFileUrl);
     if (destination_location) {
       if (!destination_location->is_string()) {
         return false;

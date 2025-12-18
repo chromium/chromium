@@ -45,7 +45,7 @@ inline constexpr char kMacSystemPrintDialogDataDestinationType[] =
     "destination_type";
 inline constexpr char kMacSystemPrintDialogDataDestinationFormat[] =
     "destination_format";
-inline constexpr char kMacSystemPrintDialogDataDestinationLocation[] =
+inline constexpr char kMacSystemPrintDialogDataDestinationFileUrl[] =
     "destination_location";
 inline constexpr char kMacSystemPrintDialogDataPageFormat[] = "page_format";
 inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =

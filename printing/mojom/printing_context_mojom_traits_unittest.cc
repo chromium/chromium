@@ -77,7 +77,8 @@ base::Value::Dict GenerateSampleSystemPrintDialogData(
            base::Value::BlobStorage({0x00, 0x01}));
   if (include_optional_data) {
     data.Set(kMacSystemPrintDialogDataDestinationFormat, "application/pdf");
-    data.Set(kMacSystemPrintDialogDataDestinationLocation, "/foo/bar.pdf");
+    data.Set(kMacSystemPrintDialogDataDestinationFileUrl,
+             "file:///foo/bar.pdf");
   }
 
 #elif BUILDFLAG(IS_LINUX)
@@ -863,7 +864,7 @@ TEST(
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for destination location.
-  data.Set(kMacSystemPrintDialogDataDestinationLocation, 0xBAD);
+  data.Set(kMacSystemPrintDialogDataDestinationFileUrl, 0xBAD);
   input.set_system_print_dialog_data(std::move(data));
 
   PrintSettings output;
