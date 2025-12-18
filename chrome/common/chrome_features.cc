@@ -308,6 +308,10 @@ BASE_FEATURE(kGlicHandoffButtonShowInImmersiveMode,
 BASE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, hide handoff button when omnibox popup is opened.
+BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the magic cursor in the actor overlay is shown.
 BASE_FEATURE(kGlicActorUiOverlayMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 

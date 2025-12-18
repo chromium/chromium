@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/actor_overlay_resources.h"
 #include "chrome/grit/actor_overlay_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 

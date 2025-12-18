@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
@@ -1785,6 +1786,14 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       base::BindOnce(&LocationBarView::ClearInPopupStateTransition,
                      weak_factory_.GetWeakPtr()),
       base::Milliseconds(100));
+
+  if (browser_ && base::FeatureList::IsEnabled(
+                      features::kGlicHandoffButtonHideWhenOmniboxPopupOpened)) {
+    if (auto* window_controller = ActorUiWindowController::From(browser_)) {
+      window_controller->OnOmniboxPopupStateChanged(new_state !=
+                                                    OmniboxPopupState::kNone);
+    }
+  }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (new_state != OmniboxPopupState::kNone) {

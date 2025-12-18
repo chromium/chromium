@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -68,6 +69,9 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // Called by the WindowController when the omnibox popup visibility changes.
+  void NotifyWindowOmniboxPopupVisibilityChanged();
+
   // Called by the WindowController when Immersive state changes.
   void NotifyTabControllerOnImmersiveModeChanged();
 
@@ -82,6 +86,7 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   // Gets the ActorUiTabController associated with the contentsContainer's
   // webcontents.
   ActorUiTabControllerInterface* GetActorUiTabController();
+
   // Notifies the respective tab controller that a new web contents has been
   // attached.
   void NotifyTabControllerOnWebContentsAttached();
@@ -128,6 +133,10 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   actor::ui::ActorUiContentsContainerController* GetControllerForWebContents(
       content::WebContents* web_contents);
 
+  void OnOmniboxPopupStateChanged(bool is_open);
+  // Called by ActorUiTabController to check if any omnibox's popup is open.
+  bool IsAnyOmniboxPopupOpened() const;
+
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
@@ -143,6 +152,8 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   void InitializeImmersiveModeObserver();
   void NotifyControllersOfImmersiveChange();
   void OnImmersiveFullscreenToolbarPrefChanged();
+
+  bool is_omnibox_popup_open_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
 

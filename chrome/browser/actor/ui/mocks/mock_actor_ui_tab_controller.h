@@ -51,6 +51,7 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(void, OnHandoffButtonHoverStatusChanged, (), (override));
   MOCK_METHOD(void, OnHandoffButtonFocusStatusChanged, (), (override));
 
+  MOCK_METHOD(void, OnWindowOmniboxPopupVisibilityChanged, (), (override));
   MOCK_METHOD(base::ScopedClosureRunner,
               RegisterHandoffButtonController,
               (HandoffButtonController * controller),

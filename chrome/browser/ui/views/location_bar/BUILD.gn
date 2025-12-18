@@ -98,6 +98,7 @@ source_set("impl") {
       "//chrome/app:generated_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:primitives",
+      "//chrome/browser/actor/ui",
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",

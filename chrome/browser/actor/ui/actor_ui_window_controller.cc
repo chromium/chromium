@@ -30,6 +30,7 @@ ActorUiContentsContainerController::ActorUiContentsContainerController(
       overlay_(actor_overlay_web_view),
       window_controller_(window_controller) {
   CHECK(contents_container_view_);
+  CHECK(window_controller_);
   if (features::kGlicActorUiHandoffButton.Get()) {
     handoff_button_controller_ = std::make_unique<HandoffButtonController>(
         contents_container_view_, window_controller);
@@ -178,6 +179,13 @@ void ActorUiContentsContainerController::OnActorOverlayBackgroundChange(
   overlay_->SetOverlayBackground(is_visible);
 }
 
+void ActorUiContentsContainerController::
+    NotifyWindowOmniboxPopupVisibilityChanged() {
+  if (auto* tab_controller = GetActorUiTabController()) {
+    tab_controller->OnWindowOmniboxPopupVisibilityChanged();
+  }
+}
+
 void ActorUiContentsContainerController::OnOverlayStateChanged(
     bool is_visible,
     ActorOverlayState state,
@@ -262,6 +270,17 @@ ActorUiWindowController::GetControllerForWebContents(
     }
   }
   return nullptr;
+}
+
+bool ActorUiWindowController::IsAnyOmniboxPopupOpened() const {
+  return is_omnibox_popup_open_;
+}
+
+void ActorUiWindowController::OnOmniboxPopupStateChanged(bool is_open) {
+  is_omnibox_popup_open_ = is_open;
+  for (const auto& container : contents_container_controllers_) {
+    container->NotifyWindowOmniboxPopupVisibilityChanged();
+  }
 }
 
 void ActorUiWindowController::InitializeImmersiveModeObserver() {
