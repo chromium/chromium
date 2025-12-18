@@ -172,6 +172,14 @@ std::vector<OmniboxContextMenuController::TabInfo>
 OmniboxContextMenuController::GetRecentTabs() {
   std::vector<OmniboxContextMenuController::TabInfo> tabs;
 
+  std::vector<contextual_search::FileInfo> uploaded_file_infos;
+  auto* session_handle = GetOmniboxPopupUI()
+                             ? GetOmniboxPopupUI()->GetContextualSessionHandle()
+                             : nullptr;
+  if (session_handle) {
+    uploaded_file_infos = session_handle->GetUploadedContextFileInfos();
+  }
+
   // Iterate through the tab strip model.
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
@@ -182,6 +190,11 @@ OmniboxContextMenuController::GetRecentTabs() {
         TabRendererData::FromTabInModel(tab_strip_model, i);
     const auto& last_committed_url = tab_renderer_data.last_committed_url;
     if (!IsValidTab(last_committed_url)) {
+      continue;
+    }
+    if (std::ranges::any_of(uploaded_file_infos, [&](const auto& info) {
+          return last_committed_url == info.tab_url;
+        })) {
       continue;
     }
 
