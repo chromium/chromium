@@ -76,6 +76,7 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
                     ContextualSearchPolicy.setContextualSearchState(profile, (boolean) newValue);
                     ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
                     seeBetterResultsSwitch.setVisible((boolean) newValue);
+                    notifyPreferencesUpdated();
                     updateSeeBetterResultsVisibility((boolean) newValue);
                     return true;
                 });
