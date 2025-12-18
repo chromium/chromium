@@ -338,7 +338,7 @@
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
 <translation id="3702842351052426940">Dit SIM-kort eller din eSIM-kortprofil deaktiveres muligvis. Prøv at udskifte dit SIM-kort eller skifte eSIM-kortprofil.</translation>
-<translation id="3722341589402358578">Der opstod en fejl. Nogle elementer er muligvis ikke smidt i papirkurven.</translation>
+<translation id="3722341589402358578">Der opstod en fejl. Nogle elementer er muligvis ikke flyttet til papirkurven.</translation>
 <translation id="3726463242007121105">Denne enhed kan ikke åbnes, fordi dens filsystem ikke understøttes.</translation>
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
 <translation id="3737576078404241332">Fjern fra sidebjælke</translation>
