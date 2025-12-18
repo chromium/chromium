@@ -142,6 +142,19 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
 
+void PredictionModelHandlerProvider::Shutdown() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // LINT.IfChange(Shutdown)
+  notification_prediction_model_handler_.reset();
+  geolocation_prediction_model_handler_.reset();
+  notification_aiv3_handler_.reset();
+  geolocation_aiv3_handler_.reset();
+  notification_aiv4_handler_.reset();
+  geolocation_aiv4_handler_.reset();
+  // LINT.ThenChange(//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h:ModelHandlers)
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PredictionModelHandlerProvider::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {

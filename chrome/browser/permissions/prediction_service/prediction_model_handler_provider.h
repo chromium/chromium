@@ -35,6 +35,12 @@ class PredictionModelHandlerProvider
   PredictionModelHandlerProvider& operator=(
       const PredictionModelHandlerProvider&) = delete;
 
+  // KeyedService:
+  // Any new model handlers added to this class must also be reset in
+  // `Shutdown` to ensure they are destroyed before their dependencies
+  // (like OptimizationGuideKeyedService) are shut down.
+  void Shutdown() override;
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   static bool IsAIv4FeatureEnabled();
@@ -60,6 +66,7 @@ class PredictionModelHandlerProvider
       passage_embeddings::EmbedderMetadata metadata) override;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // LINT.IfChange(ModelHandlers)
   std::unique_ptr<PredictionModelHandler>
       notification_prediction_model_handler_;
   std::unique_ptr<PredictionModelHandler> geolocation_prediction_model_handler_;
@@ -67,6 +74,8 @@ class PredictionModelHandlerProvider
   std::unique_ptr<PermissionsAiv3Handler> geolocation_aiv3_handler_;
   std::unique_ptr<PermissionsAiv4Handler> notification_aiv4_handler_;
   std::unique_ptr<PermissionsAiv4Handler> geolocation_aiv4_handler_;
+  // LINT.ThenChange(//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.cc:Shutdown)
+
   // This embedder is required to preprocess the inner_text to create the
   // embeddings we use for the AIv4 tflite model as input.
   raw_ptr<passage_embeddings::Embedder> passage_embedder_;
