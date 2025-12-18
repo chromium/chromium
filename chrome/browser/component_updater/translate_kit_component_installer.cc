@@ -22,6 +22,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/paths.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
@@ -165,8 +166,7 @@ void TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded(
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(
-      on_device_translation::kTranslateKitBinaryInstallationRelativeDir);
+  return on_device_translation::GetBinaryRelativeInstallDir();
 }
 
 void TranslateKitComponentInstallerPolicy::GetHash(

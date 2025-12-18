@@ -20,6 +20,7 @@
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_translation/public/paths.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -87,10 +88,8 @@ void TranslateKitLanguagePackComponentInstallerPolicy::ComponentReady(
 base::FilePath
 TranslateKitLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(on_device_translation::
-                            kTranslateKitLanguagePackInstallationRelativeDir)
-      .AppendASCII(
-          on_device_translation::GetPackageInstallDirName(language_pack_key_));
+  return on_device_translation::GetLanguagePackRelativeInstallDir().AppendASCII(
+      on_device_translation::GetPackageInstallDirName(language_pack_key_));
 }
 
 void TranslateKitLanguagePackComponentInstallerPolicy::GetHash(

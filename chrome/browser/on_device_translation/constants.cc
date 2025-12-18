@@ -10,16 +10,6 @@
 
 namespace on_device_translation {
 
-// The installation location of the TranslateKit binary component relative to
-// the User Data directory.
-constexpr base::FilePath::CharType
-    kTranslateKitBinaryInstallationRelativeDir[] =
-        FILE_PATH_LITERAL("TranslateKit/lib");
-
-constexpr base::FilePath::CharType
-    kTranslateKitLanguagePackInstallationRelativeDir[] =
-        FILE_PATH_LITERAL("TranslateKit/models");
-
 const size_t kMaxPendingTaskCount = 1024;
 
 }  // namespace on_device_translation

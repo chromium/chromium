@@ -19,6 +19,8 @@ source_set("on_device_translation") {
 
 source_set("public") {
   sources = [
+    "public/paths.cc",
+    "public/paths.h",
     "public/supported_languages.cc",
     "public/supported_languages.h",
   ]

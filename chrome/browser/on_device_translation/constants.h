@@ -9,16 +9,6 @@
 
 namespace on_device_translation {
 
-// The installation location of the TranslateKit binary component relative to
-// the User Data directory.
-extern const base::FilePath::CharType
-    kTranslateKitBinaryInstallationRelativeDir[];
-
-// The installation location of the TranslateKit langaage package component
-// relative to the User Data directory.
-extern const base::FilePath::CharType
-    kTranslateKitLanguagePackInstallationRelativeDir[];
-
 // The maximum number of pending tasks in the task queue in
 // OnDeviceTranslationServiceController. When the number of pending tasks will
 // exceed this limit, the request will fail.

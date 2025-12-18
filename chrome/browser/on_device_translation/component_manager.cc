@@ -20,6 +20,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/paths.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -87,7 +88,7 @@ class ComponentManagerImpl : public ComponentManager {
     base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                            &components_dir);
     CHECK(!components_dir.empty());
-    return components_dir.Append(kTranslateKitBinaryInstallationRelativeDir);
+    return components_dir.Append(GetBinaryRelativeInstallDir());
   }
 
  private:
