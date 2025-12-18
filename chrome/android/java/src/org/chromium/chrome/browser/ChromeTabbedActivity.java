@@ -690,7 +690,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             setHasIncognitoExtra(getIntent());
         }
         super.attachBaseContext(newBase);
-        IncognitoUtils.initializeTabletStatus(this);
     }
 
     @Override
