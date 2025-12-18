@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "4b37d91ab2fd865995118a715eedefbea8dc2785",
+    libcxx_revision == "6b58037bab22440b868fd1e62eeb9324319a1b9d",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -544,6 +544,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__locale_dir/num.h",
   "//third_party/libc++/src/include/__locale_dir/pad_and_output.h",
   "//third_party/libc++/src/include/__locale_dir/scan_keyword.h",
+  "//third_party/libc++/src/include/__locale_dir/support/aix.h",
   "//third_party/libc++/src/include/__locale_dir/support/apple.h",
   "//third_party/libc++/src/include/__locale_dir/support/bsd_like.h",
   "//third_party/libc++/src/include/__locale_dir/support/freebsd.h",
