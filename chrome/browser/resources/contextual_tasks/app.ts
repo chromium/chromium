@@ -60,7 +60,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor contextTabs_: Tab[] = [];
   protected accessor showComposebox_: boolean = true;
   private listenerIds_: number[] = [];
-  private oauthToken_: string = '';
+  // The OAuth token to use for embedded page requests. Null if not yet set.
+  // Can be empty if the user is not signed in or the token couldn't be fetched.
+  private oauthToken_: string|null = null;
   private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
 
@@ -174,8 +176,11 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private maybeLoadPendingUrl_() {
     // If all the data needed to make the initial request is available, load the
-    // pending URL.
-    if (this.pendingUrl_ && this.oauthToken_ && this.commonSearchParams_) {
+    // pending URL. If the OAuth token is empty, that signifies that the user is
+    // not signed in, so the URL can still be loaded. If the OAuth token is
+    // null, and therefore not yet set, do not load the URL.
+    if (this.pendingUrl_ && this.commonSearchParams_ &&
+        this.oauthToken_ != null) {
       this.threadUrl_ = this.pendingUrl_;
       this.pendingUrl_ = '';
     }
