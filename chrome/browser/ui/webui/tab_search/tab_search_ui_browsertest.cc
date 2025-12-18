@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_SwitchToTabAction) {
   ASSERT_EQ(tab_id, GetActiveTab()->GetHandle());
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
+// TODO(https://crbug.com/401303184): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_CloseTabAction) {
   ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
 
   tabs::TabHandle tab_id =
