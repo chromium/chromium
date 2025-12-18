@@ -1981,6 +1981,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
+        pattern=r'/(nlohmann::)?json::parse\b',
+        explanation=
+        ('Do not use nlohmann::json::parse directly. Instead, use the safe ',
+         'parsing functions in "base/json/json_reader.h" (base::JSONReader).'),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
         pattern='BrowserWithTestWindowTest',
         explanation=
         ('Do not use BrowserWithTestWindowTest. By instantiating an instance '

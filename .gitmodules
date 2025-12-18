@@ -275,6 +275,9 @@
 	path = third_party/javalang/src
 	url = https://chromium.googlesource.com/external/github.com/c2nes/javalang
 	gclient-condition = checkout_android
+[submodule "third_party/nlohmann_json/src"]
+	path = third_party/nlohmann_json/src
+	url = https://chromium.googlesource.com/external/github.com/nlohmann/json
 [submodule "third_party/jsoncpp/source"]
 	path = third_party/jsoncpp/source
 	url = https://chromium.googlesource.com/external/github.com/open-source-parsers/jsoncpp

@@ -2296,6 +2296,9 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/nlohmann_json/src':
+    Var('chromium_git') + '/external/github.com/nlohmann/json.git'+ '@' + '75d9166a68355d2cd5a98bfd1a75a3a3dae8f071',
+
   'src/third_party/jsoncpp/source':
     Var('chromium_git') + '/external/github.com/open-source-parsers/jsoncpp.git'
       + '@' + '42e892d96e47b1f6e29844cc705e148ec4856448', # release 1.9.4
