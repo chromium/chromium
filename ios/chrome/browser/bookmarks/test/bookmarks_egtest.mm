@@ -55,16 +55,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Reopen bookmarks after it has been dismissed in the same test case.
 - (void)reopenBookmarks {
-  __block BOOL reset;
-  [ChromeCoordinatorAppInterface resetWithCompletion:^{
-    reset = YES;
-  }];
-  ConditionBlock condition = ^{
-    return reset;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
-             @"Chrome coordinator app interface reset incomplete.");
+  [ChromeCoordinatorAppInterface stopCoordinator];
+  [ChromeEarlGreyUI waitForAppToIdle];
   [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 }
 
