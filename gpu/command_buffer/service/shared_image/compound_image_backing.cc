@@ -519,6 +519,33 @@ class WrappedWebNNTensorCompoundImageRepresentation
   std::unique_ptr<WebNNTensorRepresentation> wrapped_;
 };
 
+class WrappedMemoryCompoundImageRepresentation
+    : public MemoryImageRepresentation {
+ public:
+  WrappedMemoryCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<MemoryImageRepresentation> wrapped)
+      : MemoryImageRepresentation(manager, backing, tracker),
+        wrapped_(std::move(wrapped)) {
+    CHECK(wrapped_);
+  }
+
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  SkPixmap BeginReadAccess() override {
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
+                                          AccessMode::kRead);
+    return wrapped_->BeginReadAccess();
+  }
+
+ private:
+  std::unique_ptr<MemoryImageRepresentation> wrapped_;
+};
+
 // static
 bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     const gfx::Size& size,
@@ -1097,6 +1124,23 @@ CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
   }
 
   return std::make_unique<WrappedWebNNTensorCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
+}
+
+std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kMemory);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceMemory(manager, tracker);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedMemoryCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 

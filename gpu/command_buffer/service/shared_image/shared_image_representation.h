@@ -1103,6 +1103,8 @@ class GPU_GLES2_EXPORT MemoryImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
+  friend class WrappedMemoryCompoundImageRepresentation;
+
   virtual SkPixmap BeginReadAccess() = 0;
 };
 

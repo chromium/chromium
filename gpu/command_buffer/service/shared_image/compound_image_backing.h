@@ -188,6 +188,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
+  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
  private:
   friend class CompoundImageBackingTest;
