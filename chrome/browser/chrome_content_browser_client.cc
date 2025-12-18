@@ -8566,7 +8566,8 @@ void ChromeContentBrowserClient::BindTranslationManager(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
   on_device_translation::TranslationManagerImpl::Bind(
-      host, browser_context, context_user_data, origin, std::move(receiver));
+      host, browser_context, context_user_data, origin,
+      g_browser_process->component_updater(), std::move(receiver));
 }
 #endif
 

@@ -140,8 +140,12 @@ void MockComponentManager::InstallMockLanguagePackLater(
 MockTranslationManagerImpl::MockTranslationManagerImpl(
     content::RenderProcessHost* process_host,
     content::BrowserContext* browser_context,
-    const url::Origin& origin)
-    : TranslationManagerImpl(process_host, browser_context, origin),
+    const url::Origin& origin,
+    component_updater::ComponentUpdateService* component_update_service)
+    : TranslationManagerImpl(process_host,
+                             browser_context,
+                             origin,
+                             component_update_service),
       mock_translation_manager_impl_(
           TranslationManagerImpl::SetForTesting(this)) {}
 
@@ -237,6 +241,10 @@ void TestTranslationAvailable(Browser* browser,
                                       sourceLang, targetLang))
                 .ExtractString(),
             result);
+}
+
+bool MockTranslationManagerImpl::CrashesAllowed() {
+  return crashes_allowed_;
 }
 
 }  // namespace on_device_translation

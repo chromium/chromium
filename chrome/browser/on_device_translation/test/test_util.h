@@ -104,21 +104,17 @@ class MockComponentManager : public ComponentManager {
 
 class MockTranslationManagerImpl : public TranslationManagerImpl {
  public:
-  explicit MockTranslationManagerImpl(content::RenderProcessHost* process_host,
-                                      content::BrowserContext* browser_context,
-                                      const url::Origin& origin);
+  explicit MockTranslationManagerImpl(
+      content::RenderProcessHost* process_host,
+      content::BrowserContext* browser_context,
+      const url::Origin& origin,
+      component_updater::ComponentUpdateService* component_update_service);
   ~MockTranslationManagerImpl() override;
 
   MockTranslationManagerImpl(const MockTranslationManagerImpl&) = delete;
   MockTranslationManagerImpl& operator=(const MockTranslationManagerImpl&) =
       delete;
-
-  MOCK_METHOD(component_updater::ComponentUpdateService*,
-              GetComponentUpdateService,
-              (),
-              (override));
-
-  bool CrashesAllowed() override { return crashes_allowed_; }
+  bool CrashesAllowed() override;
 
   void SetCrashesAllowed(bool allow) { crashes_allowed_ = allow; }
 

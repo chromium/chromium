@@ -29,6 +29,10 @@
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 #include "url/origin.h"
 
+namespace component_updater {
+class ComponentUpdateService;
+}  // namespace component_updater
+
 namespace on_device_translation {
 
 class OnDeviceTranslationServiceController;
@@ -39,10 +43,12 @@ class OnDeviceTranslationServiceController;
 class TranslationManagerImpl : public base::SupportsUserData::Data,
                                public blink::mojom::TranslationManager {
  public:
-  TranslationManagerImpl(base::PassKey<TranslationManagerImpl>,
-                         content::RenderProcessHost* process_host,
-                         content::BrowserContext* browser_context,
-                         const url::Origin& origin);
+  TranslationManagerImpl(
+      base::PassKey<TranslationManagerImpl>,
+      content::RenderProcessHost* process_host,
+      content::BrowserContext* browser_context,
+      const url::Origin& origin,
+      component_updater::ComponentUpdateService* component_update_service);
   TranslationManagerImpl(const TranslationManagerImpl&) = delete;
   TranslationManagerImpl& operator=(const TranslationManagerImpl&) = delete;
 
@@ -57,12 +63,15 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       const url::Origin& origin,
+      component_updater::ComponentUpdateService* component_update_service,
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
 
  protected:
-  TranslationManagerImpl(content::RenderProcessHost* process_host,
-                         content::BrowserContext* browser_context,
-                         const url::Origin& origin);
+  TranslationManagerImpl(
+      content::RenderProcessHost* process_host,
+      content::BrowserContext* browser_context,
+      const url::Origin& origin,
+      component_updater::ComponentUpdateService* component_update_service);
 
   content::BrowserContext* browser_context() { return browser_context_.get(); }
   content::RenderProcessHost* process_host() { return process_host_.get(); }
@@ -74,13 +83,11 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       content::RenderProcessHost* process_host,
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
-      const url::Origin& origin);
+      const url::Origin& origin,
+      component_updater::ComponentUpdateService* component_update_service);
 
   std::optional<std::string> GetBestFitLanguageCode(
       std::string requested_language);
-
-  virtual component_updater::ComponentUpdateService*
-  GetComponentUpdateService();
 
   // Returns whether the "crash" language code is allowed. This is used for
   // testing.
@@ -151,8 +158,9 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   scoped_refptr<OnDeviceTranslationServiceController> service_controller_;
   mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
   mojo::ReceiverSet<blink::mojom::TranslationManager> receiver_set_;
-  on_device_ai::AIModelDownloadProgressManager model_download_progress_manager_;
+  raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
 
+  on_device_ai::AIModelDownloadProgressManager model_download_progress_manager_;
   base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};
 };
 

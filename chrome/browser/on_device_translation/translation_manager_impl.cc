@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ai/ai_crx_component.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/on_device_translation/translation_manager_util.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -80,15 +80,24 @@ TranslationManagerImpl::TranslationManagerImpl(
     base::PassKey<TranslationManagerImpl>,
     RenderProcessHost* process_host,
     BrowserContext* browser_context,
-    const url::Origin& origin)
-    : TranslationManagerImpl(process_host, browser_context, origin) {}
+    const url::Origin& origin,
+    component_updater::ComponentUpdateService* component_update_service)
+    : TranslationManagerImpl(process_host,
+                             browser_context,
+                             origin,
+                             component_update_service) {}
 
-TranslationManagerImpl::TranslationManagerImpl(RenderProcessHost* process_host,
-                                               BrowserContext* browser_context,
-                                               const url::Origin& origin)
+TranslationManagerImpl::TranslationManagerImpl(
+    RenderProcessHost* process_host,
+    BrowserContext* browser_context,
+    const url::Origin& origin,
+    component_updater::ComponentUpdateService* component_update_service)
     : process_host_(process_host),
       browser_context_(browser_context->GetWeakPtr()),
-      origin_(origin) {}
+      origin_(origin) {
+  CHECK(component_update_service);
+  component_update_service_ = component_update_service;
+}
 
 TranslationManagerImpl::~TranslationManagerImpl() = default;
 
@@ -105,9 +114,10 @@ void TranslationManagerImpl::Bind(
     BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
     const url::Origin& origin,
+    component_updater::ComponentUpdateService* component_update_service,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
-  auto* manager =
-      GetOrCreate(process_host, browser_context, context_user_data, origin);
+  auto* manager = GetOrCreate(process_host, browser_context, context_user_data,
+                              origin, component_update_service);
   CHECK(manager);
   CHECK_EQ(manager->origin_, origin);
   manager->receiver_set_.Add(manager, std::move(receiver));
@@ -118,7 +128,8 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
     RenderProcessHost* process_host,
     BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    component_updater::ComponentUpdateService* component_update_service) {
   // Use the testing instance of `TranslationManagerImpl*`, if it exists.
   if (translation_manager_for_test_) {
     return translation_manager_for_test_;
@@ -132,7 +143,7 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
   }
   auto manager = std::make_unique<TranslationManagerImpl>(
       base::PassKey<TranslationManagerImpl>(), process_host, browser_context,
-      origin);
+      origin, component_update_service);
   auto* manager_ptr = manager.get();
   context_user_data->SetUserData(kTranslationManagerUserDataKey,
                                  std::move(manager));
@@ -223,11 +234,6 @@ std::optional<std::string> TranslationManagerImpl::GetBestFitLanguageCode(
       SwitchLanguageCodeToIwIfHe(std::move(requested_language));
   return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
                                        std::move(best_fit));
-}
-
-component_updater::ComponentUpdateService*
-TranslationManagerImpl::GetComponentUpdateService() {
-  return g_browser_process->component_updater();
 }
 
 bool TranslationManagerImpl::CrashesAllowed() {
@@ -332,7 +338,7 @@ void TranslationManagerImpl::CreateTranslator(
     model_download_progress_manager_.AddObserver(
         std::move(options->observer_remote),
         on_device_ai::AICrxComponent::FromComponentIds(
-            GetComponentUpdateService(), std::move(component_ids)));
+            component_update_service_, std::move(component_ids)));
   }
 
   GetServiceController().CreateTranslator(
