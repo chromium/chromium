@@ -1072,9 +1072,6 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
-
-  // TODO(crbug.com/330588494): Add tests with `pattern` once parameter is
-  // added.
 }
 
 // Tests extension can add a host access request for a host where it has
