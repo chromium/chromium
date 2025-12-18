@@ -27,7 +27,6 @@
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
 #import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
@@ -114,7 +113,6 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     std::vector<JavaScriptFeature*> features = {
-        FormUtilJavaScriptFeature::GetInstance(),
         FormHandlersJavaScriptFeature::GetInstance(),
         AutofillJavaScriptFeature::GetInstance(),
         ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),
@@ -831,7 +829,6 @@ class FormSubmittedHookTest : public FormActivityTabHelperTest {
         autofill::test::CreateRendererIdTestJavaScriptFeature();
 
     web_client->SetJavaScriptFeatures({
-        FormUtilJavaScriptFeature::GetInstance(),
         feature_container_.form_handlers_java_script_feature(),
         feature_container_.autofill_java_script_feature(),
         ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),

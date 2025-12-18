@@ -19,29 +19,12 @@ source_set("form_util") {
   ]
   deps = [
     ":child_frame_registrar",
-    ":form_util_feature",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-source_set("form_util_feature") {
-  sources = [
-    "form_util_java_script_feature.h",
-    "form_util_java_script_feature.mm",
-  ]
-  deps = [
-    ":autofill_form_features",
-    ":form_lib_js",
-    "//base",
-    "//components/autofill/ios/common",
-    "//ios/web/public/js_messaging",
-    "//ios/web/public/js_messaging:content_world_header",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -56,7 +39,6 @@ source_set("form_handler_feature") {
     ":child_frame_registration_lib_js",
     ":form_handlers_js",
     ":form_util",
-    ":form_util_feature",
     ":frame_registration_feature",
     ":register_remote_frame_token_js",
     "//base",
@@ -191,23 +173,6 @@ optimize_ts("form_util_test_js") {
   ]
 }
 
-compile_ts("form_js") {
-  sources = [ "resources/form.ts" ]
-  deps = [
-    ":fill_js_dependencies",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
-}
-
-optimize_js("form_lib_js") {
-  deps = [ ":form_js" ]
-  _script = filter_include(get_target_outputs(":form_js"), [ "*form.js" ])
-  primary_script = _script[0]
-  sources = _script
-  output_name = "form_lib_js"
-}
-
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
@@ -250,7 +215,6 @@ source_set("programmatic_form_submission_handler_feature") {
   deps = [
     ":autofill_form_features",
     ":form_util",
-    ":form_util_feature",
     ":programatic_form_submission_js",
     "//base",
     "//components/autofill/ios/common",
@@ -282,7 +246,6 @@ source_set("test_support") {
   deps = [
     ":form_handler_feature",
     ":form_util",
-    ":form_util_feature",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
@@ -357,9 +320,7 @@ source_set("unit_tests") {
     ":child_frame_registrar",
     ":fill_util_test_js",
     ":form_handler_feature",
-    ":form_lib_js",
     ":form_util",
-    ":form_util_feature",
     ":form_util_test_js",
     ":programmatic_form_submission_handler_feature",
     ":renderer_id_test",

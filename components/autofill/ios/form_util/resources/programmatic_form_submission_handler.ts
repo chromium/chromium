@@ -10,8 +10,8 @@
 
 // Requires functions from fill.ts, form.ts, and autofill_form_features.ts.
 
+import {formSubmitted} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 //
 ///**
@@ -38,7 +38,7 @@ HTMLFormElement.prototype.submit = function() {
   // Put the formSubmitted in a try catch to ensure the original function
   // is always called.
   try {
-    gCrWebLegacy.form.formSubmitted(
+    formSubmitted(
         this, /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
         /* programmaticSubmission= */ true,
         /* includeRemoteFrameToken= */ true);

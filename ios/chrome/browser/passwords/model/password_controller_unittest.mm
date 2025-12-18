@@ -30,7 +30,6 @@
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -1284,8 +1283,7 @@ class PasswordControllerTestSimple : public PlatformTest {
 
     web::test::OverrideJavaScriptFeatures(
         profile_.get(),
-        {autofill::FormUtilJavaScriptFeature::GetInstance(),
-         password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+        {password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
     web::ContentWorld content_world =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance()

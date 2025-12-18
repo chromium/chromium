@@ -12,7 +12,6 @@
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -76,7 +75,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
               autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
-              autofill::FormUtilJavaScriptFeature::GetInstance(),
               RemoteFrameRegistrationJavaScriptFeature::GetInstance(),
           }) {}
 
@@ -111,7 +109,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
           GetFeatureScripts(),
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
-              FormUtilJavaScriptFeature::GetInstance(),
               remote_frame_registration_java_script_feature,
           }) {}
 

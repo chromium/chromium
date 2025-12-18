@@ -10,7 +10,6 @@
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_manager_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -97,7 +96,6 @@ PasswordManagerJavaScriptFeature::PasswordManagerJavaScriptFeature()
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
-              autofill::FormUtilJavaScriptFeature::GetInstance(),
           }) {}
 
 PasswordManagerJavaScriptFeature::~PasswordManagerJavaScriptFeature() = default;

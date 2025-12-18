@@ -10,10 +10,14 @@ import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fi
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 if (typeof document.__gCrWasEditedByUserMap === 'undefined') {
   document.__gCrWasEditedByUserMap = new WeakMap();
+}
+
+if (typeof document.__gCrFormSubmissionRegistry === 'undefined') {
+  document.__gCrFormSubmissionRegistry = new WeakSet();
 }
 
 /**
@@ -149,8 +153,7 @@ export function webFormElementToFormData(
  * @param field Field to fill in the element information.
  */
 export function webFormControlElementToFormField(
-    element: fillConstants.FormControlElement,
-    field: fillUtil.AutofillFormFieldData) {
+    element: FormControlElement, field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
     return;
   }
@@ -433,8 +436,7 @@ export function formOrFieldsetsToFormData(
  *     form.
  */
 export function unownedFormElementsAndFieldSetsToFormData(
-    frame: Window, fieldsets: Element[],
-    controlElements: fillConstants.FormControlElement[],
+    frame: Window, fieldsets: Element[], controlElements: FormControlElement[],
     iframeElements: HTMLIFrameElement[],
     restrictUnownedFieldsToFormlessCheckout: boolean,
     form: fillUtil.AutofillFormData): boolean {
@@ -479,8 +481,7 @@ export function unownedFormElementsAndFieldSetsToFormData(
 
   // Since it's not a checkout flow, only add fields that have a non-"off"
   // autocomplete attribute to the formless autofill.
-  const controlElementsWithAutocomplete: fillConstants.FormControlElement[] =
-      [];
+  const controlElementsWithAutocomplete: FormControlElement[] = [];
   for (const controlElement of controlElements) {
     if (controlElement.hasAttribute('autocomplete') &&
         controlElement.getAttribute('autocomplete') !== 'off') {
@@ -736,4 +737,109 @@ export function fieldWasEditedByUser(element: Element) {
   return !autofillFormFeaturesApi.getFunction(
              'isAutofillCorrectUserEditedBitInParsedField')() ||
       (wasEditedByUser.get(element) ?? false);
+}
+
+/**
+ * @param originalURL A string containing a URL (absolute, relative...)
+ * @return A string containing a full URL (absolute with scheme)
+ */
+function getFullyQualifiedUrl(originalURL: string): string {
+  // A dummy anchor (never added to the document) is used to obtain the
+  // fully-qualified URL of `originalURL`.
+  const anchor = document.createElement('a');
+  anchor.href = originalURL;
+  return anchor.href;
+}
+
+// Send the form data to the browser.
+export function formSubmittedInternal(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  if (autofillFormFeaturesApi.getFunction(
+          'isAutofillDedupeFormSubmissionEnabled')()) {
+    // Handle deduping when the feature allows it.
+    if (document.__gCrFormSubmissionRegistry.has(form)) {
+      // Do not double submit the same form.
+      return;
+    }
+    document.__gCrFormSubmissionRegistry.add(form);
+  }
+
+  // Default URL for action is the document's URL.
+  const action = form.getAttribute('action') || document.URL;
+
+  const message = {
+    command: 'form.submit',
+    frameID: gCrWeb.getFrameId(),
+    formName: getFormIdentifier(form),
+    href: getFullyQualifiedUrl(action),
+    formData: autofillSubmissionData(form),
+    remoteFrameToken: includeRemoteFrameToken ? fillUtil.getRemoteFrameToken() :
+                                                undefined,
+    programmaticSubmission: programmaticSubmission,
+  };
+
+  sendWebKitMessage(messageHandler, message);
+}
+
+/**
+ * Sends the form data to the browser. Errors that are caught via the try/catch
+ * are reported to the browser. This is done before the error bubbles above
+ * `formSubmitted()` so the generic JS errors wrapper doesn't intercept the
+ * error before this custom error handler.
+ *
+ * @param form The form that was submitted.
+ * @param messageHandler The name of the message handler to send the message to.
+ * @param programmaticSubmission True if the form submission is programmatic.
+ * @includeRemoteFrameToken True if the remote frame token should be included
+ *   in the payload of the message sent to the browser.
+ */
+export function formSubmitted(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  try {
+    formSubmittedInternal(
+        form, messageHandler, programmaticSubmission, includeRemoteFrameToken);
+  } catch (error) {
+    if (autofillFormFeaturesApi.getFunction(
+            'isAutofillReportFormSubmissionErrorsEnabled')()) {
+      reportFormSubmissionError(error, programmaticSubmission, messageHandler);
+    } else {
+      // Just let the error go through if not reported.
+      throw error;
+    }
+  }
+}
+
+/**
+ * Reports a form submission error to the browser.
+ * @param error Object that holds information on the error.
+ * @param programmaticSubmission True if the submission that errored was
+ *   programmatic.
+ * @param handler The name of the handler to send the error message to.
+ */
+export function reportFormSubmissionError(
+    error: any, programmaticSubmission: boolean, handler: string) {
+  let errorMessage = '';
+  let errorStack = '';
+  if (error && error instanceof Error) {
+    errorMessage = error.message;
+    if (error.stack) {
+      errorStack = error.stack;
+    }
+  }
+
+  const message = {
+    command: 'form.submit.error',
+    errorStack,
+    errorMessage,
+    programmaticSubmission,
+  };
+  sendWebKitMessage(handler, message);
 }

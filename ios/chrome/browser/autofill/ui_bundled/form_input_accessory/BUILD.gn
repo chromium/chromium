@@ -91,7 +91,6 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/test/ios",
     "//ios/chrome/browser/autofill/model:features",

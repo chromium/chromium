@@ -16,8 +16,9 @@
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -74,9 +75,9 @@ class FillJsTest : public web::WebTestWithWebState {
 
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
-    OverrideJavaScriptFeatures({FormUtilJavaScriptFeature::GetInstance(),
-                                GetDummyPageContentWorldFeature(),
-                                GetDummyIsolatedWorldFeature()});
+    OverrideJavaScriptFeatures(
+        {AutofillFormFeaturesJavaScriptFeature::GetInstance(),
+         GetDummyPageContentWorldFeature(), GetDummyIsolatedWorldFeature()});
   }
 
   void TearDown() override {

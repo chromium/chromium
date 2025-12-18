@@ -44,7 +44,6 @@
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/prefs/pref_service.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -130,8 +129,7 @@ class AutofillAgentTests : public web::WebTest {
 
     OverrideJavaScriptFeatures(
         {autofill::AutofillJavaScriptFeature::GetInstance(),
-         autofill::FormHandlersJavaScriptFeature::GetInstance(),
-         autofill::FormUtilJavaScriptFeature::GetInstance()});
+         autofill::FormHandlersJavaScriptFeature::GetInstance()});
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetContentIsHTML(true);

@@ -8,13 +8,10 @@
  * Autofill keyboard accessory.
  */
 
-// Requires functions from fill.ts, form.ts, autofill_form_features.ts and
-// child_frame_registration_lib.ts.
-
 import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {formSubmitted, reportFormSubmissionError, wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFieldIdentifier, getFormIdentifier, reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -209,7 +206,7 @@ function submitHandler(evt: Event): void {
     return;
   }
 
-  gCrWebLegacy.form.formSubmitted(
+  formSubmitted(
       evt.target as HTMLFormElement,
       /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
       /* programmaticSubmission= */ false);
@@ -217,7 +214,7 @@ function submitHandler(evt: Event): void {
 
 /**
  * A wrapper around `submitHandler()` that catches and reports errors that
- * happen before calling gCrWebLegacy.form.formSubmitted().
+ * happen before calling utility function formSubmitted().
  */
 function submitHandlerWithErrorWrapper(evt: Event): void {
   reportDetectedFormSubmission(
@@ -226,7 +223,7 @@ function submitHandlerWithErrorWrapper(evt: Event): void {
     submitHandler(evt);
   } catch (error) {
     if (autofillFormFeaturesApi.getFunction('isAutofillReportFormSubmissionErrorsEnabled')()) {
-      gCrWebLegacy.form.reportFormSubmissionError(
+      reportFormSubmissionError(
           error, /*programmaticSubmission=*/ false,
           /*handler=*/ NATIVE_MESSAGE_HANDLER);
     } else {
@@ -332,7 +329,7 @@ function attachListeners(): void {
         // is always called.
 
         try {
-          gCrWebLegacy.form.formSubmitted(
+          formSubmitted(
               this,
               /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
               /* programmaticSubmission= */ true);

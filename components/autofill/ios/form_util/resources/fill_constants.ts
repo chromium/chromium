@@ -18,6 +18,15 @@ declare global {
     __gCrElementMap: Map<any, any>;
     __gCrWasEditedByUserMap: WeakMap<any, any>;
     __gCrWebURLNormalizer: HTMLAnchorElement;
+
+    /**
+     * Registry that tracks the forms that were submitted during the frame's
+     * lifetime. Elements that are garbage collected will be removed from the
+     * registry so this can't memory leak. In the worst case the registry will
+     * get as big as the number of submitted forms that aren't yet deleted and
+     * we don't expect a lot of those.
+     */
+    __gCrFormSubmissionRegistry: WeakSet<any>;
   }
 }
 

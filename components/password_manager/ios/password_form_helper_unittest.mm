@@ -23,7 +23,6 @@
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
@@ -90,7 +89,6 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
         autofill::test::CreateRendererIdTestJavaScriptFeature();
     web_client->SetJavaScriptFeatures(
         {autofill::FormHandlersJavaScriptFeature::GetInstance(),
-         autofill::FormUtilJavaScriptFeature::GetInstance(),
          autofill::AutofillJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
          renderer_id_feature_.get()});

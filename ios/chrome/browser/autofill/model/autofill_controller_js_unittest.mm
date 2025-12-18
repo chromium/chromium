@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -822,7 +821,6 @@ class AutofillControllerJsTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddUserScript(@"form");
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
 

@@ -53,7 +53,6 @@ source_set("browser") {
     "//components/autofill/ios/form_util:autofill_form_features_injector",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/feature_engagement/public",
     "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser/resources/strings",
@@ -100,7 +99,6 @@ optimize_js("autofill_js") {
   deps = [
     "//components/autofill/ios/form_util:fill_js_constants",
     "//components/autofill/ios/form_util:fill_js_dependencies",
-    "//components/autofill/ios/form_util:form_js",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -110,7 +108,7 @@ optimize_ts("suggestion_controller_js") {
   sources = [ "resources/suggestion_controller.ts" ]
 
   deps = [
-    "//components/autofill/ios/form_util:form_js",
+    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
@@ -142,7 +140,6 @@ source_set("test_support") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/form_util:form_handler_feature",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/leveldb_proto",
     "//ios/web/public",
@@ -178,7 +175,6 @@ source_set("unit_tests") {
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/prefs:test_support",
     "//ios/testing:embedded_test_server_support",

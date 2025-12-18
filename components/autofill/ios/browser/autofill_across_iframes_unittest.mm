@@ -38,7 +38,6 @@
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -423,7 +422,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
         {AutofillJavaScriptFeature::GetInstance(),
-         FormUtilJavaScriptFeature::GetInstance(),
          FormHandlersJavaScriptFeature::GetInstance()});
 
     // We need an AutofillAgent to exist or else the form will never get parsed.

@@ -208,8 +208,6 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:autofill_form_features_ts",
     "//components/autofill/ios/form_util:child_frame_registration_test_ts",
     "//components/autofill/ios/form_util:fill_util_test_js",
-    "//components/autofill/ios/form_util:form_lib_js",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/feature_engagement/public",

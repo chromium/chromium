@@ -12,6 +12,8 @@ import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/u
  * Retrieves the registered 'autofill_form_features' CrWebApi
  * instance for use in this file.
  */
+// TODO: crbug.com/448990422 - Remove all utility functions
+// from the gCrWeb object.
 const autofillFormFeaturesApi =
     gCrWeb.getRegisteredApi('autofill_form_features');
 
