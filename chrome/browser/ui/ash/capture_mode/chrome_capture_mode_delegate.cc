@@ -83,6 +83,7 @@
 #include "content/public/browser/video_capture_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -1110,7 +1111,7 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch(
     CHECK(url_loader_factory_);
   }
 
-  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(
           &ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch,
@@ -1155,7 +1156,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
     const int request_id,
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
@@ -1173,9 +1174,8 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // We only consider the request a success if we both get a response and the
   // header is present, otherwise it's a failure.
   int response_code = kHttpPostFailNoConnection;
-  if (simple_url_loader->ResponseInfo() &&
-      simple_url_loader->ResponseInfo()->headers) {
-    response_code = simple_url_loader->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
   }
 
   // If the response code is not a success, return early and let the user know
