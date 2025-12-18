@@ -17,13 +17,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -46,9 +45,7 @@ const char kNotifierId[] = "arc_boot_error";
 void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   // We suppress the low-disk notification when there are multiple users on an
   // enterprise managed device. crbug.com/656788.
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged() &&
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
       user_manager::UserManager::Get()->GetPersistedUsers().size() > 1) {
     LOG(WARNING) << "ARC booting is aborted due to low disk space, but the "
                  << "notification was suppressed on a managed device.";
