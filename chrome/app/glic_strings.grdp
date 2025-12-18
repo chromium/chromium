@@ -238,11 +238,18 @@
     Conversations about shared tabs may be seen by human reviewers to improve Gemini.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL" desc="Description for the Gemini personal context linkout.">
-      View and manage your personal context
+      Manage the information Gemini can use to personalize your experience
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context section in Other Data.">
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context linkout.">
       Personal context
   </message>
+  <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON" desc="Title for the Gemini instructions linkout.">
+     Instructions for Gemini
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON_SUBLABEL" desc="Description for the Gemini instructions linkout.">
+    Customize how Gemini responds to you
+  </message>
+
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" desc="First point in 'when on' column of the 'let Gemini browse for you' expands">
     Gemini can help you book appointments, create shopping carts, or do other tasks you give it.
   </message>

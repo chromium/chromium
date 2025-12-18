@@ -139,6 +139,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
       },
 
+      showGlicInstructionLink_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showInstructionLink'),
+      },
+
+
       showGlicKeepSidepanelOpenOnNewTabsSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -283,6 +289,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
+  declare private showGlicInstructionLink_: boolean;
   declare private showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
