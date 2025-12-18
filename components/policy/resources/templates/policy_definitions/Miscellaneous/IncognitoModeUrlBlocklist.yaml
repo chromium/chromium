@@ -1,6 +1,6 @@
 caption: Block access to a list of URLs in Incognito mode.
 desc: |-
-  Setting the <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME">IncognitoModeBlocklist</ph> policy stops web pages with prohibited URLs from loading in Incognito mode. Administrators can specify the list of URL patterns to be blocked. If left unset, no URLs are blocked in the Incognito mode. Up to 1,000 exceptions can be defined in <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME">IncognitoModeAllowlist</ph>. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+  Setting the <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> policy stops web pages with prohibited URLs from loading in Incognito mode. Administrators can specify the list of URL patterns to be blocked. If left unset, no URLs are blocked in the Incognito mode. Up to 1,000 exceptions can be defined in <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph>. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
   This policy only affects Incognito mode. To block URLs for all user profiles, please use the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy.
 example_value:
