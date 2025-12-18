@@ -1144,6 +1144,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_file_handling_browsertest.cc",
     "isolated_web_apps/isolated_web_app_install_prepare_apply_update_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_trust_checker_browsertest.cc",
     "isolated_web_apps/isolated_web_app_uninstall_browsertest.cc",
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "isolated_web_apps/key_distribution/iwa_key_distribution_component_installer_browsertest.cc",

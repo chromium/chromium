@@ -80,11 +80,18 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
         const web_package::SignedWebBundleId& web_bundle_id);
     ScopedIwaRuntimeDataUpdate& SetBlocklist(Blocklist blocklist);
 
+    ScopedIwaRuntimeDataUpdate& AddToUserInstallAllowlist(
+        const web_package::SignedWebBundleId& web_bundle_id,
+        const UserInstallAllowlistItemData& data);
+    ScopedIwaRuntimeDataUpdate& SetUserInstallAllowlist(
+        UserInstallAllowlist user_install_allowlist);
+
    private:
     ManagedAllowlist managed_allowlist_;
     Blocklist blocklist_;
     KeyRotations key_rotations_;
     SpecialPermissions special_permissions_;
+    UserInstallAllowlist user_install_allowlist_;
 
     const raw_ref<FakeIwaRuntimeDataProvider> data_provider_;
   };

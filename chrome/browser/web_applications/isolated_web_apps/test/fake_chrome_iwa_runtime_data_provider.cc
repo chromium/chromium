@@ -50,6 +50,7 @@ ScopedIwaRuntimeDataUpdate::ScopedIwaRuntimeDataUpdate(
       blocklist_(provider.blocklist_),
       key_rotations_(provider.key_rotations_),
       special_permissions_(provider.special_permissions_),
+      user_install_allowlist_(provider.user_install_allowlist_),
       data_provider_(provider) {}
 
 ScopedIwaRuntimeDataUpdate::~ScopedIwaRuntimeDataUpdate() {
@@ -57,6 +58,7 @@ ScopedIwaRuntimeDataUpdate::~ScopedIwaRuntimeDataUpdate() {
   data_provider_->blocklist_ = std::move(blocklist_);
   data_provider_->key_rotations_ = std::move(key_rotations_);
   data_provider_->special_permissions_ = std::move(special_permissions_);
+  data_provider_->user_install_allowlist_ = std::move(user_install_allowlist_);
   data_provider_->DispatchRuntimeDataUpdate();
 }
 
@@ -108,6 +110,20 @@ ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::AddToSpecialPermissions(
 ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetSpecialPermissions(
     SpecialPermissions special_permissions) {
   special_permissions_ = std::move(special_permissions);
+  return *this;
+}
+
+ScopedIwaRuntimeDataUpdate&
+ScopedIwaRuntimeDataUpdate::AddToUserInstallAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const UserInstallAllowlistItemData& data) {
+  user_install_allowlist_.insert_or_assign(web_bundle_id.id(), data);
+  return *this;
+}
+
+ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetUserInstallAllowlist(
+    UserInstallAllowlist user_install_allowlist) {
+  user_install_allowlist_ = std::move(user_install_allowlist);
   return *this;
 }
 
