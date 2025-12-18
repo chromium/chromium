@@ -452,9 +452,8 @@ int BrowserFrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
   // When the window is restored (and not in tablet split-view mode) we want a
   // large click target above the tabs to drag the window, so redirect clicks in
   // the tab's shadow to caption.
-  if (hit_test == HTCLIENT && !browser_widget()->IsMaximized() &&
-      !browser_widget()->IsFullscreen() &&
-      !display::Screen::Get()->InTabletMode()) {
+  if (hit_test == HTCLIENT &&
+      chromeos::ShouldShowResizeBorder(GetWidget()->GetNativeWindow())) {
     // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);

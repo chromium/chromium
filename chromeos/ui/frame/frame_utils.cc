@@ -40,11 +40,8 @@ int FrameBorderNonClientHitTest(views::FrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  bool in_tablet_mode = display::Screen::Get()->InTabletMode();
-  // Ignore the resize border when maximized or full screen or in (split view)
-  // tablet mode.
   const bool has_resize_border =
-      !widget->IsMaximized() && !widget->IsFullscreen() && !in_tablet_mode;
+      ShouldShowResizeBorder(widget->GetNativeWindow());
   const int resize_border_size =
       has_resize_border ? chromeos::kResizeInsideBoundsSize : 0;
 
@@ -98,6 +95,29 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
     return false;
 
   return true;
+}
+
+bool ShouldShowResizeBorder(const aura::Window* window) {
+  static std::array<chromeos::WindowStateType, 3> blocklist_clamshell_states{
+      chromeos::WindowStateType::kFullscreen,
+      chromeos::WindowStateType::kMaximized,
+      chromeos::WindowStateType::kMinimized};
+  static std::array<chromeos::WindowStateType, 2>
+      additional_blocklist_tablet_states{
+          chromeos::WindowStateType::kPrimarySnapped,
+          chromeos::WindowStateType::kSecondarySnapped};
+
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
+  const auto window_state_type =
+      window->GetProperty(chromeos::kWindowStateTypeKey);
+  if (in_tablet_mode) {
+    return !base::Contains(blocklist_clamshell_states, window_state_type) &&
+           !base::Contains(additional_blocklist_tablet_states,
+                           window_state_type);
+
+  } else {
+    return !base::Contains(blocklist_clamshell_states, window_state_type);
+  }
 }
 
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
