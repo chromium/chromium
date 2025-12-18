@@ -64,7 +64,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   GetSupportedProfiles(ID3D12VideoDevice3* video_device);
 
   explicit D3D12VideoEncodeH265Delegate(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device);
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~D3D12VideoEncodeH265Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;

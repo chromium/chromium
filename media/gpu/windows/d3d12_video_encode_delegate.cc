@@ -194,8 +194,10 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
 }
 
 D3D12VideoEncodeDelegate::D3D12VideoEncodeDelegate(
-    Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device)
-    : video_device_(std::move(video_device)) {
+    Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    : video_device_(std::move(video_device)),
+      gpu_workarounds_(gpu_workarounds) {
   CHECK(video_device_);
 }
 

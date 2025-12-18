@@ -69,7 +69,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
 
   explicit D3D12VideoEncodeH264Delegate(
       Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
-      bool disable_non_reference_frames);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~D3D12VideoEncodeH264Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
@@ -99,7 +99,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
   H264SPS ToSPS() const;
   H264PPS ToPPS(const H264SPS& sps) const;
 
-  bool disable_non_reference_frames_;
   uint32_t max_num_ref_frames_ = 0;
 
   D3D12_VIDEO_ENCODER_SUPPORT_FLAGS encoder_support_flags_{};

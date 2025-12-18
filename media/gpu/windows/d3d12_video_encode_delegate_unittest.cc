@@ -26,8 +26,9 @@ namespace {
 class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
  public:
   explicit MockD3D12VideoEncodeDelegate(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device)
-      : D3D12VideoEncodeDelegate(std::move(video_device)) {}
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+      : D3D12VideoEncodeDelegate(std::move(video_device), gpu_workarounds) {}
   ~MockD3D12VideoEncodeDelegate() override = default;
 
   size_t GetMaxNumOfRefFrames() const override { return 8; }
@@ -188,8 +189,9 @@ class D3D12VideoEncodeDelegateTest : public D3D12VideoEncodeDelegateTestBase {
         .WillByDefault(SetComPointeeAndReturnOk<1>(device_.Get()));
     ON_CALL(*video_device3_.Get(), QueryInterface(IID_ID3D12VideoDevice1, _))
         .WillByDefault(SetComPointeeAndReturnOk<1>(video_device3_.Get()));
-    encoder_delegate_ =
-        std::make_unique<MockD3D12VideoEncodeDelegate>(video_device3_);
+    gpu::GpuDriverBugWorkarounds gpu_workarounds{};
+    encoder_delegate_ = std::make_unique<MockD3D12VideoEncodeDelegate>(
+        video_device3_, gpu_workarounds);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));

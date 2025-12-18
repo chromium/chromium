@@ -100,15 +100,16 @@ class VideoEncodeDelegateFactory
       VideoCodecProfile profile) override {
     switch (VideoCodecProfileToVideoCodec(profile)) {
       case VideoCodec::kH264:
-        return std::make_unique<D3D12VideoEncodeH264Delegate>(
-            video_device,
-            gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames);
+        return std::make_unique<D3D12VideoEncodeH264Delegate>(video_device,
+                                                              gpu_workarounds_);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case VideoCodec::kHEVC:
-        return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device);
+        return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device,
+                                                              gpu_workarounds_);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case VideoCodec::kAV1:
-        return std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device);
+        return std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device,
+                                                             gpu_workarounds_);
       default:
         return nullptr;
     }

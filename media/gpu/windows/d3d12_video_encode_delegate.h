@@ -39,7 +39,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs);
 
   explicit D3D12VideoEncodeDelegate(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device);
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   virtual ~D3D12VideoEncodeDelegate();
 
   virtual EncoderStatus Initialize(VideoEncodeAccelerator::Config config);
@@ -179,6 +180,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   std::optional<SVCLayers> svc_layers_;
   // The metadata of the bitstream buffer for the last encode request.
   BitstreamBufferMetadata metadata_;
+
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
  private:
   // The video processor factory that may be changed for testing.
