@@ -231,6 +231,11 @@ class BASE_EXPORT AccessToken {
   // Get whether the token is elevated.
   bool IsElevated() const;
 
+  // Returns `true` if the token is a split UAC token. It will return true for
+  // both unelevated UAC and also elevated UAC. This function does not indicate
+  // whether the token is admin or not, merely that it is split.
+  bool IsSplitToken() const;
+
   // Checks if the sid is a member of the token's groups. The token must be
   // an impersonation token rather than a primary token. If the token is not an
   // impersonation token then it returns false and the Win32 last error will be

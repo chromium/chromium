@@ -118,6 +118,15 @@ void CompareElevated(const AccessToken& token,
   EXPECT_EQ(token.IsElevated(), !!elevation.TokenIsElevated);
 }
 
+void CompareSplitTokens(const AccessToken& token,
+                        const ATL::CAccessToken& atl_token) {
+  TOKEN_ELEVATION_TYPE elevation_type;
+  DWORD size = sizeof(elevation_type);
+  ASSERT_TRUE(::GetTokenInformation(atl_token.GetHandle(), TokenElevationType,
+                                    &elevation_type, size, &size));
+  EXPECT_EQ(token.IsSplitToken(), elevation_type != TokenElevationTypeDefault);
+}
+
 bool GetLinkedToken(const ATL::CAccessToken& token,
                     ATL::CAccessToken* linked_token) {
   TOKEN_LINKED_TOKEN value;
@@ -207,6 +216,7 @@ void CompareTokens(const AccessToken& token,
   EXPECT_EQ(token.SessionId(), session_id);
   CompareIntegrityLevel(token, atl_token);
   CompareElevated(token, atl_token);
+  CompareSplitTokens(token, atl_token);
   EXPECT_EQ(token.IsRestricted(), atl_token.IsTokenRestricted());
   TOKEN_TYPE token_type;
   ASSERT_TRUE(atl_token.GetType(&token_type));

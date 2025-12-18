@@ -610,6 +610,15 @@ bool AccessToken::IsElevated() const {
   return !!value->TokenIsElevated;
 }
 
+bool AccessToken::IsSplitToken() const {
+  std::optional<TOKEN_ELEVATION_TYPE> value =
+      GetTokenInfoFixed<TOKEN_ELEVATION_TYPE>(token_.get(), TokenElevationType);
+  if (!value) {
+    return false;
+  }
+  return value != TokenElevationTypeDefault;
+}
+
 bool AccessToken::IsMember(const Sid& sid) const {
   BOOL is_member = FALSE;
   return ::CheckTokenMembership(token_.get(), sid.GetPSID(), &is_member) &&
