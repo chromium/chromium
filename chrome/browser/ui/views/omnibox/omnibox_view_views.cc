@@ -2469,18 +2469,18 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
-  // `AIM` and `Keyword` placeholders are applied when the omnibox has focus.
-  // They are dimmed to differentiate them from the user input.
-  // `DSE` and `Contextual Task` placeholders are applied when the omnibox is
-  // unfocused so there's less risk of confusion with user input. Additionally,
-  // not dimming the placeholder text helps draw attention to the omnibox.
+  // AIM placeholder text, contextual tasks placeholder text, and keyword
+  // placeholders are dim to differentiate from user input. DSE placeholders are
+  // not dim to draw attention to the omnibox and because the omnibox is
+  // unfocused so there's less risk of confusion with user input.
   // Null in tests.
   if (!GetColorProvider()) {
     return;
   }
   bool dse_placeholder_installed =
       controller()->edit_model()->keyword_placeholder().empty() &&
-      !ShouldInstallAimPlaceholderText();
+      !ShouldInstallAimPlaceholderText() &&
+      !ShouldInstallContextualTasksPlaceholderText();
   set_placeholder_text_color(GetColorProvider()->GetColor(
       dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
