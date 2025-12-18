@@ -21,7 +21,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
-BASE_DECLARE_FEATURE(kActorLoginPermissionsUseStrongAffiliations);
 
 BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
 
