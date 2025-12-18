@@ -9978,6 +9978,12 @@ crbug.com/452729239 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Cras
 crbug.com/446272167 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Crash Failure Pass Timeout ]
 crbug.com/452628516 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Crash Failure Pass Timeout ]
 crbug.com/453103188 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass Timeout ]
+
+crbug.com/41187256 http/tests/devtools/console/console-functions.js [ Failure Pass ]
+crbug.com/41187256 http/tests/devtools/console/console-dir.js [ Failure Pass ]
+crbug.com/41187256 http/tests/devtools/console/console-big-array.js [ Failure Pass ]
+crbug.com/41187256 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
+
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
 crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
 
