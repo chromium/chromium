@@ -782,6 +782,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail {
   [self.omniboxCoordinator updateOmniboxState];
+  if (IsComposeboxIOSEnabled() && _locationBarModel) {
+    [self.viewController
+        updateOmniboxTextHiddenLabel:base::SysUTF16ToNSString(
+                                         _locationBarModel
+                                             ->GetFormattedFullURL())];
+  }
   [self.viewController updateLocationText:text clipTail:clipTail];
   [self.viewController updateForNTP:NO];
   [self.mediator locationUpdated];

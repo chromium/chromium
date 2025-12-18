@@ -84,6 +84,19 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // the white space on top.
 const CGFloat kShareIconBalancingHeightPadding = 1;
 
+// Returns a UILabel used to contain the text that the omnibox will display when
+// focused. See crbug.com/465394669 for rationale.
+// TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+UILabel* OmniboxTextHiddenLabel() {
+  UILabel* label = [[UILabel alloc] init];
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.accessibilityIdentifier = kOmniboxTextHiddenLabelIdentifier;
+  label.isAccessibilityElement = YES;
+  label.accessibilityElementsHidden = YES;
+  label.hidden = YES;
+  return label;
+}
+
 }  // namespace
 
 @interface LocationBarViewController () <TextFieldViewContainingHeightDelegate,
@@ -160,6 +173,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   // The placeholder view that holds the DSE icon.
   UIImageView* _defaultSearchEngineIconView;
+
+  // Hidden label for omnibox text. See crbug.com/465394669 for rationale.
+  // TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+  UILabel* _omniboxTextHiddenLabel;
 }
 
 #pragma mark - public
@@ -344,6 +361,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [self.view addSubview:self.editView];
     self.editView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self.editView, self.view);
+  } else {
+    _omniboxTextHiddenLabel = OmniboxTextHiddenLabel();
+    [self.view addSubview:_omniboxTextHiddenLabel];
   }
 
   [self.view addSubview:self.locationBarSteadyView];
@@ -810,6 +830,12 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   } else {
     return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   }
+}
+
+// TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+- (void)updateOmniboxTextHiddenLabel:(NSString*)text {
+  _omniboxTextHiddenLabel.text = text;
+  _omniboxTextHiddenLabel.accessibilityLabel = text;
 }
 
 #pragma mark - UIContextMenuInteractionDelegate

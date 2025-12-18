@@ -228,6 +228,11 @@ class Tracker;
 // Creates a visual copy of the location bar steady view.
 - (UIView*)locationBarSteadyViewVisualCopy;
 
+// Updates the text in the OmniboxTextHiddenLabel.
+// See crbug.com/465394669 for rationale.
+// TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+- (void)updateOmniboxTextHiddenLabel:(NSString*)text;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_VIEW_CONTROLLER_H_

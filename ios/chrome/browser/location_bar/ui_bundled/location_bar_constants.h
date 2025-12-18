@@ -25,4 +25,9 @@ extern NSString* const kOmniboxShareButtonIdentifier;
 // Accessibility identifier of the voice search button.
 extern NSString* const kOmniboxVoiceSearchButtonIdentifier;
 
+// Accessibility identifier of the hidden label used to match omnibox text.
+// See crbug.com/465394669 for rationale.
+// TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+extern NSString* const kOmniboxTextHiddenLabelIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSTANTS_H_

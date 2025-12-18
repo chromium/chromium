@@ -575,7 +575,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omniboxText:(NSString*)text {
-  GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
+  GREYElementMatcherBlock* omniboxTextInputMatcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
         id<OmniboxTextInput> omnibox =
             base::apple::ObjCCast<OmniboxTextFieldIOS>(element)
@@ -587,7 +587,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
             appendText:[NSString stringWithFormat:@"Omnibox contains text '%@'",
                                                   text]];
       }];
-  return matcher;
+
+  // Transitioning from OmniboxText to waitForWebStateVisibleURL for URL
+  // verification. As an interim solution during test migration, we are matching
+  // against a hidden label that mirrors the omnibox text. crbug.com/465394669.
+  // TODO(crbug.com/465030009): Remove the hidden omnibox text label.
+  id<GREYMatcher> omniboxTextHiddenLabelMatcher =
+      grey_allOf(grey_accessibilityID(kOmniboxTextHiddenLabelIdentifier),
+                 grey_accessibilityLabel(text), nil);
+
+  return grey_anyOf(omniboxTextHiddenLabelMatcher,
+                    omniboxTextInputMatcher, nil);
 }
 
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text {
