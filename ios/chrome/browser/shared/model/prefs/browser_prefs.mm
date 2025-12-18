@@ -1074,7 +1074,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
   registry->RegisterBooleanPref(prefs::kAIHubEligibilityTriggered, false);
 
-  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
+  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeUrlBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
 
   // Prefs for the Synced Set Up Feature.

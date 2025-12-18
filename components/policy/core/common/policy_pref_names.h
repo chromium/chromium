@@ -242,8 +242,8 @@ inline constexpr char kBuiltInAIAPIsEnabled[] =
     "policy.built_in_ai_apis_enabled";
 
 // Blocks access to the listed host patterns for incognito mode.
-inline constexpr char kIncognitoModeBlocklist[] =
-    "policy.incognito_mode_blocklist";
+inline constexpr char kIncognitoModeUrlBlocklist[] =
+    "policy.incognito_mode_url_blocklist";
 
 // Allows access to the listed host patterns for incognito mode.
 inline constexpr char kIncognitoModeAllowlist[] =

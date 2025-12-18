@@ -4,7 +4,7 @@
      "ios"
    ],
    "simple_policy_pref_mapping_test": {
-      "pref_name": "policy.incognito_mode_blocklist",
+      "pref_name": "policy.incognito_mode_url_blocklist",
       "default_value": [],
       "values_to_test": [
         [

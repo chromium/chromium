@@ -39,7 +39,7 @@ PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
   if (profile->IsOffTheRecord()) {
     incognito_url_blocklist_manager =
         std::make_unique<policy::URLBlocklistManager>(
-            prefs, policy::policy_prefs::kIncognitoModeBlocklist,
+            prefs, policy::policy_prefs::kIncognitoModeUrlBlocklist,
             policy::policy_prefs::kIncognitoModeAllowlist);
   }
   return std::make_unique<PolicyBlocklistService>(

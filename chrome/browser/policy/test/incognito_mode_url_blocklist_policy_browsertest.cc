@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest, IncognitoBlocklist) {
   base::Value::List blocklist;
   blocklist.Append("aaa.com");
   PolicyMap policies;
-  policies.Set(key::kIncognitoModeBlocklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
   UpdateProviderPolicy(policies);
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   base::Value::List blocklist;
   blocklist.Append("*");
   PolicyMap policies;
-  policies.Set(key::kIncognitoModeBlocklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
 
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   blocklist.Append("blocked2.com");
   blocklist.Append("allowed.com");
   PolicyMap policies;
-  policies.Set(key::kIncognitoModeBlocklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
 
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   base::Value::List incognito_blocklist;
   incognito_blocklist.Append("blockincognito.com");
   PolicyMap policies;
-  policies.Set(key::kIncognitoModeBlocklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(incognito_blocklist)), nullptr);
 
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   base::Value::List incognito_blocklist;
   incognito_blocklist.Append("blockedincognito.com");
   incognito_blocklist.Append("blockedboth.com");
-  policies.Set(key::kIncognitoModeBlocklist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(incognito_blocklist)), nullptr);
 

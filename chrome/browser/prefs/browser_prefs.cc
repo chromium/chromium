@@ -2059,7 +2059,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
   // TODO(crbug.com/442891187): Move these to appropriate manager files when
   // the policies logic is implemented.
-  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
+  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeUrlBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
 
   registry->RegisterBooleanPref(
