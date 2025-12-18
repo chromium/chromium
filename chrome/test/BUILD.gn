@@ -4364,6 +4364,7 @@ if (!is_android) {
         "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
         "../browser/ui/color/win/native_chrome_color_mixer_win_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
+        "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
       ]
@@ -4572,7 +4573,6 @@ if (!is_android) {
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
-        "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
         "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",

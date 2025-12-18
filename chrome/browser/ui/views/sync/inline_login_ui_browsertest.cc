@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -73,10 +74,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -257,13 +254,8 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
 
 class InlineLoginUIBrowserTest : public InProcessBrowserTest {};
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // crbug.com/422868
-#define MAYBE_DifferentStorageId DISABLED_DifferentStorageId
-#else
-#define MAYBE_DifferentStorageId DifferentStorageId
-#endif
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
+IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, DSABLED_DifferentStorageId) {
   ContentInfo info = NavigateAndGetInfo(browser(), GetSigninPromoURL(),
                                         WindowOpenDisposition::CURRENT_TAB);
   WaitUntilUIReady(browser());
@@ -630,14 +622,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
-// https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, MAYBE_InvokeUi_default) {
+// https://crbug.com/1271819
+IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
@@ -703,16 +690,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
       ui_test_utils::NavigateToURL(browser(), content::GetWebUIURL("foo/")));
 }
 
-// Flaky on MacOS - crbug.com/1021209
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NoWebUIInIframe DISABLED_NoWebUIInIframe
-#else
-#define MAYBE_NoWebUIInIframe NoWebUIInIframe
-#endif
 // Make sure that the foo webui handler does not get created when we try to
 // load it inside the iframe of the login ui.
-IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
-                       MAYBE_NoWebUIInIframe) {
+IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, NoWebUIInIframe) {
   GURL url = GetSigninPromoURL().Resolve(
       "?source=0&access_point=0&reason=5&frameUrl=chrome://foo");
   EXPECT_CALL(foo_provider(), NewWebUI(_, _)).Times(0);
@@ -740,7 +720,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_WIN)
 // Tracks the URLs requested while running a browser test and returns a default
 // empty html page as a result. Each URL + path tracks all the query params
 // requested to this endpoint for validation later on.
@@ -874,4 +853,3 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   EXPECT_TRUE(tracker_.PageRequested(
       gaia_url, {{"flow", "reauth"}, {"Email", email}, {"show_tos", "1"}}));
 }
-#endif
