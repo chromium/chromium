@@ -11,17 +11,6 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-source_set("tab_manager_features") {
-  public = [ "tab_manager_features.h" ]
-
-  sources = [ "tab_manager_features.cc" ]
-
-  deps = [
-    "//base",
-    "//chrome/common:chrome_features",
-  ]
-}
-
 source_set("resource_coordinator") {
   sources = []
   public_deps = []

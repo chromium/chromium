@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/network_service_instance.h"
@@ -44,12 +43,12 @@ class TabLoaderDelegateImpl
 
   // TabLoaderDelegate:
   base::TimeDelta GetFirstTabLoadingTimeout() const override {
-    return resource_coordinator::GetTabLoadTimeout(first_timeout_);
+    return first_timeout_;
   }
 
   // TabLoaderDelegate:
   base::TimeDelta GetTimeoutBeforeLoadingNextTab() const override {
-    return resource_coordinator::GetTabLoadTimeout(timeout_);
+    return timeout_;
   }
 
   // TabLoaderDelegate:

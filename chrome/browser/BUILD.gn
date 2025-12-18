@@ -1941,7 +1941,6 @@ static_library("browser") {
     "//chrome/browser/reading_list",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
-    "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resources/accessibility:resources",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:advanced_protection",

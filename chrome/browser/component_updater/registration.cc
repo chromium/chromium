@@ -72,6 +72,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/system/sys_info.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

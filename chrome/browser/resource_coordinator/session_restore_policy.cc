@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/graph/graph.h"

@@ -13,7 +13,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/ui/tabs/tab_model.h"

@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 
 namespace content {
 class WebContents;
