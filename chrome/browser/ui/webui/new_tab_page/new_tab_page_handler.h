@@ -225,6 +225,12 @@ class NewTabPageHandler
 
   void SetModuleHidden(const std::string& module_id, bool hidden);
 
+  // Returns a list of module ids that are eligible for removal, which is
+  // determined the module staleness and the staleness threshold.
+  std::vector<std::string> GetModulesEligibleForRemoval() const;
+  void SetStaleModulesDisabled(const std::vector<std::string>& module_ids,
+                               bool disabled);
+
   // Synchronizes Microsoft module enablement with their current authentication
   // state. The return value indicates whether the modules should be considered
   // loadable.

@@ -761,6 +761,12 @@ void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
 }
 
 void NewTabPageHandler::GetModulesIdNames(GetModulesIdNamesCallback callback) {
+  std::vector<std::string> modules_eligible_for_removal =
+      GetModulesEligibleForRemoval();
+  if (!modules_eligible_for_removal.empty()) {
+    SetStaleModulesDisabled(modules_eligible_for_removal, /*disabled=*/true);
+  }
+
   std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
   for (const auto& module_id_detail : *module_id_details_) {
     auto module_id_name = new_tab_page::mojom::ModuleIdName::New();
@@ -1341,6 +1347,76 @@ void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
     }
   } else {
     list.EraseValue(module_id_value);
+  }
+}
+
+std::vector<std::string> NewTabPageHandler::GetModulesEligibleForRemoval()
+    const {
+  // (1) Skip modules removal if the feature flag is not enabled.
+  std::vector<std::string> removal_eligible_module_ids;
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpFeatureOptimizationModuleRemoval)) {
+    return removal_eligible_module_ids;
+  }
+
+  // (2) Skip modules removal if it's a managed preference.
+  if (profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
+    return removal_eligible_module_ids;
+  }
+
+  // (3) Skip modules removal if it's force disabled for all modules.
+  const base::Value::Dict& module_removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  const bool is_all_module_removal_disabled =
+      module_removal_disabled_dict.FindBool(ntp_modules::kAllModulesId)
+          .value_or(false);
+
+  if (is_all_module_removal_disabled) {
+    return removal_eligible_module_ids;
+  }
+
+  // (4) Otherwise, we check for each module if the module auto removal is not
+  // force disabled and if the staleness count is above the threshold.
+  const int staleness_threshold =
+      ntp_features::kStaleModulesCountThreshold.Get();
+  const base::Value::Dict& staleness_counts_dict =
+      profile_->GetPrefs()->GetDict(ntp_prefs::kNtpModuleStalenessCountDict);
+
+  for (const auto& module_id_detail : *module_id_details_) {
+    const bool is_module_removal_disabled =
+        module_removal_disabled_dict.FindBool(module_id_detail.id_)
+            .value_or(false);
+    const int staleness_count =
+        staleness_counts_dict.FindInt(module_id_detail.id_).value_or(0);
+    const bool is_above_threshold = staleness_count >= staleness_threshold;
+    if (!is_module_removal_disabled && is_above_threshold) {
+      removal_eligible_module_ids.push_back(module_id_detail.id_);
+    }
+  }
+
+  return removal_eligible_module_ids;
+}
+
+void NewTabPageHandler::SetStaleModulesDisabled(
+    const std::vector<std::string>& module_ids,
+    bool disabled) {
+  if (module_ids.empty()) {
+    return;
+  }
+
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& list = update.Get();
+  for (const auto& module_id : module_ids) {
+    base::Value module_id_value(module_id);
+    if (disabled) {
+      if (!base::Contains(list, module_id_value)) {
+        list.Append(std::move(module_id_value));
+      }
+    } else {
+      list.EraseValue(module_id_value);
+    }
+    DisableModuleAutoRemoval(profile_, module_id);
   }
 }
 
