@@ -21,7 +21,7 @@ group("build") {
 }
 
 enhanced_network_tts_dir =
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv3"
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
@@ -44,7 +44,7 @@ ts_library("ts_build") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
-  deps = [ "../../common:ts_build" ]
+  deps = [ "../common:ts_build" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -53,20 +53,20 @@ ts_library("ts_build") {
 
   definitions = [
     "mojo_bindings_externs.d.ts",
-    "../../definitions/extensions.d.ts",
-    "../../definitions/extension_types.d.ts",
-    "../../definitions/offscreen.d.ts",
-    "../../definitions/runtime.d.ts",
-    "../../definitions/tabs.d.ts",
-    "../../definitions/tts.d.ts",
-    "../../definitions/tts_engine.d.ts",
-    "../../definitions/windows.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/offscreen.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
+    "../definitions/tts_engine.d.ts",
+    "../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
   ]
 
   in_files = ts_modules
 
-  tsconfig_base = "../../tsconfig.base.json"
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 bundle_js("bundle_js") {
@@ -82,7 +82,7 @@ bundle_js("bundle_js") {
 
   deps = [
     ":ts_build",
-    "../../common:copied_files",
+    "../common:copied_files",
   ]
 }
 
@@ -122,11 +122,11 @@ source_set("browser_tests") {
   deps = [ ":enhanced_network_tts_extjs_tests" ]
 
   data = [
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv3/background.html",
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv3/background.js",
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv3/enhanced_network_tts.js",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/background.html",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/background.js",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/enhanced_network_tts.js",
     "//chrome/browser/resources/chromeos/accessibility/common/",
-    "//chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/mv3/",
+    "//chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/",
   ]
   data += js2gtest_js_libraries
 }
@@ -138,8 +138,8 @@ js2gtest("enhanced_network_tts_extjs_tests") {
     "error_handling_unittest.js",
   ]
   gen_include_files = [
-    "../../common/testing/accessibility_test_base.js",
-    "../../common/testing/e2e_test_base.js",
+    "../common/testing/accessibility_test_base.js",
+    "../common/testing/e2e_test_base.js",
     "enhanced_network_tts_e2e_test_base.js",
     "mock_mojo_private.js",
   ]

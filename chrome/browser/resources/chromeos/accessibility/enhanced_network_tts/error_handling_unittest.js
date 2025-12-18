@@ -7,7 +7,7 @@ GEN_INCLUDE(['enhanced_network_tts_e2e_test_base.js']);
 /**
  * Test fixture for error_handling_unittest.js.
  */
-Mv3EnhancedNetworkTtsErrorHandlingUnitTest =
+EnhancedNetworkTtsErrorHandlingUnitTest =
     class extends EnhancedNetworkTE2ETestBase {
   /** @override */
   testGenPreamble() {
@@ -18,7 +18,7 @@ Mv3EnhancedNetworkTtsErrorHandlingUnitTest =
 };
 
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsErrorHandlingUnitTest',
+    'EnhancedNetworkTtsErrorHandlingUnitTest',
     'onSpeakWithAudioStreamEventMojoPrivateFailed', async function() {
       // This makes chrome.mojoPrivate.requireAsync(string) returns a failed
       // promise.
@@ -39,7 +39,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsErrorHandlingUnitTest',
+    'EnhancedNetworkTtsErrorHandlingUnitTest',
     'onSpeakWithAudioStreamEventErrorCodeReceived', async function() {
       // Prepare the mockTtsApi to respond with error code 1.
       const mockTtsApi = MockTtsApi;
@@ -63,7 +63,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsErrorHandlingUnitTest', 'DecodeAudioDataFailed',
+    'EnhancedNetworkTtsErrorHandlingUnitTest', 'DecodeAudioDataFailed',
     async function() {
       sampleRate = 10000;
       audioBuffer =

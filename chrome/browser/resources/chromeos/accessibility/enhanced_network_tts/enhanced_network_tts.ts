@@ -70,7 +70,7 @@ export class EnhancedNetworkTts {
    */
   private async ensureOffscreenReady_(): Promise<void> {
     const offscreenUrl =
-        chrome.runtime.getURL('enhanced_network_tts/mv3/offscreen.html');
+        chrome.runtime.getURL('enhanced_network_tts/offscreen.html');
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
       documentUrls: [offscreenUrl],

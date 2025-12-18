@@ -7,7 +7,7 @@ GEN_INCLUDE(['enhanced_network_tts_e2e_test_base.js']);
 /**
  * Test fixture for enhanced_network_tts_unittest.js.
  */
-Mv3EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
+EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
@@ -17,7 +17,7 @@ Mv3EnhancedNetworkTtsUnitTest = class extends EnhancedNetworkTE2ETestBase {
 };
 
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsUnitTest', 'onSpeakWithAudioStreamEventSucceed',
+    'EnhancedNetworkTtsUnitTest', 'onSpeakWithAudioStreamEventSucceed',
     async function() {
       // Prepare the mockTtsApi to respond with audio data that corresponds to a
       // 0.2135s playback containing "Hello world".
@@ -90,47 +90,46 @@ SYNC_TEST_F(
           utterance, options, audioStreamOptions, sendTtsAudio);
     });
 
+SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
+  let utterance = 'name and lang should be specified together';
+  let options = {voiceName: 'test name', lang: 'en'};
+  let request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+
+  utterance = 'name without lang will be ignored';
+  options = {voiceName: 'test name'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'lang without name will be ignored';
+  options = {lang: 'en'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'only lang code (e.g., en) will be used';
+  options = {voiceName: 'test name', lang: 'en_US'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
+
+  utterance = 'utterance without options can proceed';
+  options = {};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
+
+  utterance = 'Rate will be sent along with the request';
+  options = {rate: 3.0};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(
+      request, {utterance, rate: 3.0, voice: undefined, lang: undefined});
+});
+
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
-      let utterance = 'name and lang should be specified together';
-      let options = {voiceName: 'test name', lang: 'en'};
-      let request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
-
-      utterance = 'name without lang will be ignored';
-      options = {voiceName: 'test name'};
-      request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
-
-      utterance = 'lang without name will be ignored';
-      options = {lang: 'en'};
-      request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
-
-      utterance = 'only lang code (e.g., en) will be used';
-      options = {voiceName: 'test name', lang: 'en_US'};
-      request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 1.0, voice: 'test name', lang: 'en'});
-
-      utterance = 'utterance without options can proceed';
-      options = {};
-      request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 1.0, voice: undefined, lang: undefined});
-
-      utterance = 'Rate will be sent along with the request';
-      options = {rate: 3.0};
-      request = EnhancedNetworkTts.generateRequest(utterance, options);
-      assertEqualsJSON(
-          request, {utterance, rate: 3.0, voice: undefined, lang: undefined});
-    });
-
-SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
+    'EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
     async function() {
       const testAudioLengthInSeconds = 0.2135;
       const testAudio = generateTestAudioBuffer();
@@ -167,7 +166,7 @@ SYNC_TEST_F(
       assertBufferIsCorrectLength(audioBuffer, sampleRate);
     });
 
-SYNC_TEST_F('Mv3EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
+SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
   const sampleArray = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   let subarray = EnhancedNetworkTts.subarrayFrom(
       sampleArray, 0 /* startIdx */, 5 /* subarraySize */);
@@ -189,8 +188,7 @@ SYNC_TEST_F('Mv3EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
 });
 
 SYNC_TEST_F(
-    'Mv3EnhancedNetworkTtsUnitTest', 'SendAudioDataInBuffers',
-    async function() {
+    'EnhancedNetworkTtsUnitTest', 'SendAudioDataInBuffers', async function() {
       // Prepare the decodedAudioData for testing. The data corresponds to a
       // 0.2135s playback.
       const testAudioLengthInSeconds = 0.2135;
