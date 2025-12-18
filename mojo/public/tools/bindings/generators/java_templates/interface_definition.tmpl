@@ -109,10 +109,10 @@ try {
     if (header.hasFlag(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
         flags = flags | org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG;
     }
-    if (!header.validateHeader(flags)) {
+    if (!header.hasExactFlags(flags)) {
         return false;
     }
-    switch(header.getType()) {
+    switch(header.getMethodId()) {
 {%   if with_response %}
         case org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants.RUN_MESSAGE_ID:
             return org.chromium.mojo.bindings.InterfaceControlMessagesHelper.handleRun(
@@ -203,6 +203,7 @@ class {{interface|name}}_Internal {
                     _message.serializeWithHeader(
                             getProxyHandler().getCore(),
                             new org.chromium.mojo.bindings.MessageHeader(
+                                    org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                     {{method|method_ordinal_name}},
                                     {{flags_for_method(method, True)}},
                                     0)),
@@ -211,7 +212,9 @@ class {{interface|name}}_Internal {
             getProxyHandler().getMessageReceiver().accept(
                     _message.serializeWithHeader(
                             getProxyHandler().getCore(),
-                            new org.chromium.mojo.bindings.MessageHeader({{method|method_ordinal_name}})));
+                            new org.chromium.mojo.bindings.MessageHeader(
+                                org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                                {{method|method_ordinal_name}})));
 {%   endif %}
         }
 {% endfor %}
@@ -282,8 +285,10 @@ class {{interface|name}}_Internal {
                 org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
                         message.asServiceMessage();
                 org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                if (!header.validateHeader({{method|method_ordinal_name}},
-                                           {{flags_for_method(method, False)}})) {
+                if (header.getMethodId() != {{method|method_ordinal_name}}) {
+                    return false;
+                }
+                if (!header.hasExactFlags({{flags_for_method(method, False)}})) {
                     return false;
                 }
 {%   if method.response_parameters|length %}
@@ -341,6 +346,7 @@ class {{interface|name}}_Internal {
                     _response.serializeWithHeader(
                             mCore,
                             new org.chromium.mojo.bindings.MessageHeader(
+                                    org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                     {{method|method_ordinal_name}},
                                     {{flags_for_method(method, False)}},
                                     mRequestId));

@@ -23,9 +23,15 @@ public class MessageHeader {
             new DataHeader(MESSAGE_WITH_REQUEST_ID_SIZE, MESSAGE_WITH_REQUEST_ID_VERSION);
 
     private static final int INTERFACE_ID_OFFSET = 8;
-    private static final int TYPE_OFFSET = 12;
+    private static final int METHOD_ID_OFFSET = 12;
     private static final int FLAGS_OFFSET = 16;
     private static final int REQUEST_ID_OFFSET = 24;
+
+    // TODO(crbug.com/469861566): get rid of this temp interface id once we are
+    // properly keeping track of interfaces. Must be set to '0', because we are
+    // currently expecting only one interface per-channel, which will always have
+    // the id '0'.
+    public static final int TEMPORARY_DEFAULT_INTERFACE_ID = 0;
 
     /** Flag for a header of a simple message. */
     public static final int NO_FLAG = 0;
@@ -40,23 +46,26 @@ public class MessageHeader {
     public static final int MESSAGE_IS_SYNC_FLAG = 1 << 2;
 
     private final DataHeader mDataHeader;
-    private final int mType;
+    private final int mInterfaceId;
+    private final int mMethodId;
     private final int mFlags;
     private long mRequestId;
 
     /** Constructor for the header of a message which does not have a response. */
-    public MessageHeader(int type) {
+    public MessageHeader(int interfaceId, int methodId) {
         mDataHeader = SIMPLE_MESSAGE_STRUCT_INFO;
-        mType = type;
+        mInterfaceId = interfaceId;
+        mMethodId = methodId;
         mFlags = 0;
         mRequestId = 0;
     }
 
     /** Constructor for the header of a message which have a response or being itself a response. */
-    public MessageHeader(int type, int flags, long requestId) {
+    public MessageHeader(int interfaceId, int methodId, int flags, long requestId) {
         assert mustHaveRequestId(flags);
         mDataHeader = MESSAGE_WITH_REQUEST_ID_STRUCT_INFO;
-        mType = type;
+        mInterfaceId = interfaceId;
+        mMethodId = methodId;
         mFlags = flags;
         mRequestId = requestId;
     }
@@ -71,14 +80,15 @@ public class MessageHeader {
         validateDataHeader(mDataHeader);
 
         // Currently associated interfaces are not supported.
-        int interfaceId = decoder.readInt(INTERFACE_ID_OFFSET);
-        if (interfaceId != 0) {
+        mInterfaceId = decoder.readInt(INTERFACE_ID_OFFSET);
+        // TODO(crbug.com/469861566): remove this check.
+        if (mInterfaceId != TEMPORARY_DEFAULT_INTERFACE_ID) {
             throw new DeserializationException(
                     "Non-zero interface ID, expecting zero since "
                             + "associated interfaces are not yet supported.");
         }
 
-        mType = decoder.readInt(TYPE_OFFSET);
+        mMethodId = decoder.readInt(METHOD_ID_OFFSET);
         mFlags = decoder.readInt(FLAGS_OFFSET);
         if (mustHaveRequestId(mFlags)) {
             if (mDataHeader.size < MESSAGE_WITH_REQUEST_ID_SIZE) {
@@ -99,9 +109,14 @@ public class MessageHeader {
         return mDataHeader.size;
     }
 
-    /** Returns the type of the message. */
-    public int getType() {
-        return mType;
+    /** Returns the interface id of the message. */
+    public int getInterfaceId() {
+        return mInterfaceId;
+    }
+
+    /** Returns the method id of the message. */
+    public int getMethodId() {
+        return mMethodId;
     }
 
     /** Returns the flags associated to the message. */
@@ -131,8 +146,8 @@ public class MessageHeader {
     public void encode(Encoder encoder) {
         encoder.encode(mDataHeader);
         // Set the interface ID field to 0.
-        encoder.encode(0, INTERFACE_ID_OFFSET);
-        encoder.encode(getType(), TYPE_OFFSET);
+        encoder.encode(getInterfaceId(), INTERFACE_ID_OFFSET);
+        encoder.encode(getMethodId(), METHOD_ID_OFFSET);
         encoder.encode(getFlags(), FLAGS_OFFSET);
         if (hasRequestId()) {
             encoder.encode(getRequestId(), REQUEST_ID_OFFSET);
@@ -140,24 +155,13 @@ public class MessageHeader {
     }
 
     /**
-     * Returns true if the header has the expected flags. Only considers flags this class knows
-     * about in order to allow this class to work with future version of the header format.
-     */
-    public boolean validateHeader(int expectedFlags) {
-        int knownFlags =
-                getFlags()
-                        & (MESSAGE_EXPECTS_RESPONSE_FLAG
-                                | MESSAGE_IS_RESPONSE_FLAG
-                                | MESSAGE_IS_SYNC_FLAG);
-        return knownFlags == expectedFlags;
-    }
-
-    /**
-     * Returns true if the header has the expected type and flags. Only consider flags this class
+     * Returns true if the header has exactly the expected flags. Only considers flags this class
      * knows about in order to allow this class to work with future version of the header format.
      */
-    public boolean validateHeader(int expectedType, int expectedFlags) {
-        return getType() == expectedType && validateHeader(expectedFlags);
+    public boolean hasExactFlags(int expectedFlags) {
+        int knownFlags =
+                (MESSAGE_EXPECTS_RESPONSE_FLAG | MESSAGE_IS_RESPONSE_FLAG | MESSAGE_IS_SYNC_FLAG);
+        return (getFlags() & knownFlags) == expectedFlags;
     }
 
     /**
@@ -165,13 +169,7 @@ public class MessageHeader {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((mDataHeader == null) ? 0 : mDataHeader.hashCode());
-        result = prime * result + mFlags;
-        result = prime * result + (int) (mRequestId ^ (mRequestId >>> 32));
-        result = prime * result + mType;
-        return result;
+        return java.util.Objects.hash(mDataHeader, mInterfaceId, mMethodId, mFlags, mRequestId);
     }
 
     /**
@@ -183,10 +181,11 @@ public class MessageHeader {
         if (!(object instanceof MessageHeader)) return false;
 
         MessageHeader other = (MessageHeader) object;
-        return (BindingsHelper.equals(mDataHeader, other.mDataHeader)
+        return BindingsHelper.equals(mDataHeader, other.mDataHeader)
+                && mInterfaceId == other.mInterfaceId
+                && mMethodId == other.mMethodId
                 && mFlags == other.mFlags
-                && mRequestId == other.mRequestId
-                && mType == other.mType);
+                && mRequestId == other.mRequestId;
     }
 
     /** Set the request id on the message contained in the given buffer. */

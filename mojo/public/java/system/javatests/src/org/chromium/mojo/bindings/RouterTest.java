@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.mojo.MojoTestRule;
 import org.chromium.mojo.bindings.BindingsTestUtils.CapturingErrorHandler;
 import org.chromium.mojo.bindings.BindingsTestUtils.RecordingMessageReceiverWithResponder;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 
 /** Testing {@link Router} */
 @RunWith(BaseJUnit4ClassRunner.class)
+@DoNotBatch(reason = "relies on mojo global singleton")
 public class RouterTest {
     @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
@@ -58,13 +60,16 @@ public class RouterTest {
     @Test
     @SmallTest
     public void testSendingToRouterWithResponse() {
-        final int requestMessageType = 0xdead;
-        final int responseMessageType = 0xbeaf;
+        final int requestMethodId = 0xdead;
+        final int responseMethodId = 0xbeaf;
 
         // Sending a message expecting a response.
         MessageHeader header =
                 new MessageHeader(
-                        requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0);
+                        MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                        requestMethodId,
+                        MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
+                        0);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         header.encode(encoder);
         mRouter.acceptWithResponder(encoder.getMessage(), mReceiver);
@@ -77,14 +82,15 @@ public class RouterTest {
                         .asServiceMessage()
                         .getHeader();
 
-        Assert.assertEquals(header.getType(), receivedHeader.getType());
+        Assert.assertEquals(header.getMethodId(), receivedHeader.getMethodId());
         Assert.assertEquals(header.getFlags(), receivedHeader.getFlags());
         Assert.assertTrue(receivedHeader.getRequestId() != 0);
 
         // Sending the response.
         MessageHeader responseHeader =
                 new MessageHeader(
-                        responseMessageType,
+                        MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                        responseMethodId,
                         MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
                         receivedHeader.getRequestId());
         encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
@@ -108,14 +114,17 @@ public class RouterTest {
      * Sends a message to the Router.
      *
      * @param messageIndex Used when sending multiple messages to indicate the index of this
-     * message.
-     * @param requestMessageType The message type to use in the header of the sent message.
+     *     message.
+     * @param requestMethodId The message type to use in the header of the sent message.
      * @param requestId The requestId to use in the header of the sent message.
      */
-    private void sendMessageToRouter(int messageIndex, int requestMessageType, int requestId) {
+    private void sendMessageToRouter(int messageIndex, int requestMethodId, int requestId) {
         MessageHeader header =
                 new MessageHeader(
-                        requestMessageType, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, requestId);
+                        MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                        requestMethodId,
+                        MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
+                        requestId);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         header.encode(encoder);
         Message headerMessage = encoder.getMessage();
@@ -134,11 +143,11 @@ public class RouterTest {
     /**
      * Sends a response message from the Router.
      *
-     * @param messageIndex Used when sending responses to multiple messages to indicate the index
-     * of the message that this message is a response to.
-     * @param responseMessageType The message type to use in the header of the response message.
+     * @param messageIndex Used when sending responses to multiple messages to indicate the index of
+     *     the message that this message is a response to.
+     * @param responseMethodId The message type to use in the header of the response message.
      */
-    private void sendResponseFromRouter(int messageIndex, int responseMessageType) {
+    private void sendResponseFromRouter(int messageIndex, int responseMethodId) {
         Pair<Message, MessageReceiver> receivedMessage =
                 mReceiver.messagesWithReceivers.get(messageIndex);
 
@@ -146,7 +155,10 @@ public class RouterTest {
 
         MessageHeader responseHeader =
                 new MessageHeader(
-                        responseMessageType, MessageHeader.MESSAGE_IS_RESPONSE_FLAG, requestId);
+                        MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                        responseMethodId,
+                        MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
+                        requestId);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), responseHeader.getSize());
         responseHeader.encode(encoder);
         Message message = encoder.getMessage();
@@ -197,15 +209,15 @@ public class RouterTest {
     @Test
     @SmallTest
     public void testReceivingViaRouterWithResponse() {
-        final int requestMessageType = 0xdead;
-        final int responseMessageType = 0xbeef;
+        final int requestMethodId = 0xdead;
+        final int responseMethodId = 0xbeef;
         final int requestId = 0xdeadbeaf;
 
         // Send a message expecting a response.
-        sendMessageToRouter(0, requestMessageType, requestId);
+        sendMessageToRouter(0, requestMethodId, requestId);
 
         // Sending the response.
-        sendResponseFromRouter(0, responseMessageType);
+        sendResponseFromRouter(0, responseMethodId);
     }
 
     /**

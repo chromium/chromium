@@ -65,6 +65,7 @@ public class InterfaceControlMessagesHelper {
                 params.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
                                 MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
                                 0));
@@ -78,6 +79,7 @@ public class InterfaceControlMessagesHelper {
                 params.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID));
         receiver.accept(message);
     }
@@ -101,6 +103,7 @@ public class InterfaceControlMessagesHelper {
                 response.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
                                 MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
                                 message.getHeader().getRequestId())));
