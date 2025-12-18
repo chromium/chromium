@@ -330,22 +330,6 @@ raw_ptr<OmniboxPopupUI> OmniboxContextMenuController::GetOmniboxPopupUI()
   return nullptr;
 }
 
-void OmniboxContextMenuController::SetPreserveContextOnCloseIfAimPopupIsOpen(
-    bool preserve_context_on_close) {
-  auto omnibox_controller = GetOmniboxController();
-  if (!omnibox_controller ||
-      omnibox_controller->popup_state_manager()->popup_state() !=
-          OmniboxPopupState::kAim) {
-    return;
-  }
-
-  if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
-    if (auto* handler = omnibox_popup_ui->popup_aim_handler()) {
-      handler->SetPreserveContextOnClose(preserve_context_on_close);
-    }
-  }
-}
-
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   // Add tab context if tab is selected.
   if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
@@ -357,19 +341,35 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       AddTabContext(tab_info);
     }
   } else {
+    auto omnibox_controller = GetOmniboxController();
+    bool is_aim_popup_open =
+        omnibox_controller &&
+        omnibox_controller->popup_state_manager()->popup_state() ==
+            OmniboxPopupState::kAim;
+
+    bool is_file_upload_command = id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
+                                  id == IDC_OMNIBOX_CONTEXT_ADD_FILE;
+
+    if (is_aim_popup_open && is_file_upload_command) {
+      auto omnibox_popup_ui = GetOmniboxPopupUI();
+      if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+        omnibox_popup_ui->popup_aim_handler()->SetPreserveContextOnClose(true);
+      }
+    }
+
     switch (id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
-        SetPreserveContextOnCloseIfAimPopupIsOpen(true);
-        file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                             /*is_image=*/true, GetEditModel(),
-                                             CreateImageEncodingOptions());
+        file_selector_->OpenFileUploadDialog(
+            web_contents_.get(),
+            /*is_image=*/true, GetEditModel(), CreateImageEncodingOptions(),
+            /*was_ai_mode_open=*/is_aim_popup_open);
         break;
       }
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-        SetPreserveContextOnCloseIfAimPopupIsOpen(true);
-        file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                             /*is_image=*/false, GetEditModel(),
-                                             CreateImageEncodingOptions());
+        file_selector_->OpenFileUploadDialog(
+            web_contents_.get(),
+            /*is_image=*/false, GetEditModel(), CreateImageEncodingOptions(),
+            /*was_ai_mode_open=*/is_aim_popup_open);
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         UpdateSearchboxContext(

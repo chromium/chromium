@@ -105,6 +105,7 @@ class MockOmniboxEditModel : public OmniboxEditModel {
 
   // OmniboxEditModel:
   MOCK_METHOD(void, SetUserText, (const std::u16string&), (override));
+  MOCK_METHOD(void, OpenAiMode, (bool, bool), (override));
 };
 
 class MockLensSearchboxClient : public LensSearchboxClient {

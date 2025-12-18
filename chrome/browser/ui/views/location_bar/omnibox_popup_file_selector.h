@@ -48,7 +48,8 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       content::WebContents* web_contents,
       bool is_image,
       OmniboxEditModel* edit_model,
-      std::optional<lens::ImageEncodingOptions> image_encoding_options);
+      std::optional<lens::ImageEncodingOptions> image_encoding_options,
+      bool was_ai_mode_open);
 
   void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
@@ -69,6 +70,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   raw_ptr<OmniboxEditModel> edit_model_;
   std::optional<lens::ImageEncodingOptions> image_encoding_options_;
   gfx::NativeWindow owning_window_;
+  bool was_ai_mode_open_ = false;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };

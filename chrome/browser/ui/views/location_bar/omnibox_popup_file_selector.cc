@@ -41,10 +41,12 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
     content::WebContents* web_contents,
     bool is_image,
     OmniboxEditModel* edit_model,
-    std::optional<lens::ImageEncodingOptions> image_encoding_options) {
+    std::optional<lens::ImageEncodingOptions> image_encoding_options,
+    bool was_ai_mode_open) {
   web_contents_ = web_contents;
   edit_model_ = edit_model;
   image_encoding_options_ = image_encoding_options;
+  was_ai_mode_open_ = was_ai_mode_open;
   file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
@@ -90,7 +92,11 @@ void OmniboxPopupFileSelector::FileSelected(const ui::SelectedFileInfo& file,
   file_dialog_.reset();
 }
 
-void OmniboxPopupFileSelector::FileSelectionCanceled() {}
+void OmniboxPopupFileSelector::FileSelectionCanceled() {
+  if (was_ai_mode_open_) {
+    edit_model_->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
+  }
+}
 
 void OmniboxPopupFileSelector::OnFileDataReady(
     std::unique_ptr<FileData> file_data) {
