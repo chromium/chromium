@@ -372,7 +372,7 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
 
 #if BUILDFLAG(IS_MAC)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
-  begin_frame_source()->SetVSyncDisplayID(display_id);
+  begin_frame_source()->SetVSyncDisplayID(display_id, /*force_update=*/false);
 }
 #endif
 

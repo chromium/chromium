@@ -155,8 +155,8 @@ void DisplayLinkMacMojo::NeedsBeginFrameWithId(int64_t display_id,
 
   auto found = display_links_.find(display_id);
   if (found == display_links_.end()) {
-    DLOG(ERROR) << "DisplayLinkMacMojo::NeedsBeginFrameWithId() Display id "
-                << display_id << " not found! Skip needs_begin_frames().";
+    DLOG(WARNING) << "DisplayLinkMacMojo::NeedsBeginFrameWithId() Display id "
+                  << display_id << " not found! Skip needs_begin_frames().";
     return;
   }
 

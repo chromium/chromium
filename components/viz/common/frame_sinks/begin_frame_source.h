@@ -222,7 +222,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
 
   // Update the display ID for the source. This can change, e.g, as a window
   // moves across displays.
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
 
 #if BUILDFLAG(IS_MAC)
   // Connect to a new DisplayLinkMac, the VSync source, if needed.

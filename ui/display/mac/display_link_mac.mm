@@ -10,6 +10,7 @@
 #include "ui/display/mac/ca_display_link_mac.h"
 #include "ui/display/mac/cv_display_link_mac.h"
 #include "ui/display/mac/external_display_link_mac.h"
+#include "ui/display/types/display_constants.h"
 
 namespace ui {
 
@@ -41,7 +42,7 @@ bool DisplayLinkMac::IsDisplayLinkAllowed(int64_t display_id) {
 // static
 scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     int64_t vsync_display_id) {
-  if (!vsync_display_id) {
+  if (vsync_display_id == display::kInvalidDisplayId) {
     return nullptr;
   }
 

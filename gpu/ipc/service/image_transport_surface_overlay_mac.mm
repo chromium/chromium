@@ -293,8 +293,7 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if ((!display_link_mac_ || display_id != display_id_) &&
-      display_id != display::kInvalidDisplayId) {
+  if (!display_link_mac_ || display_id != display_id_) {
     vsync_callback_mac_ = nullptr;
 
     // Commit all pending frames before switching to the new monitor.
