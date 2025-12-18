@@ -17,6 +17,10 @@ namespace ui {
 // ships.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 
+// Feature controlling whether higher quality favicons are shown in
+// the Android history pane.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHistoryPaneFavicons);
+
 // Feature controlling how to compute work area on Android.
 // TODO(crbug.com/372385871): Cleanup flag after investigating nothing is broken
 // after changing the default behavior for

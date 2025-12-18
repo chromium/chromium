@@ -29,6 +29,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
     &ui::kAndroidTouchpadOverscrollHistoryNavigation,
+    &ui::kAndroidHistoryPaneFavicons,
 };
 
 // static

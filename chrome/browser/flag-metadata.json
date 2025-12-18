@@ -302,6 +302,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "android-history-pane-favicons",
+    "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-hub-search-tab-groups",
     "owners": [ "wylieb@google.com", "bjfong@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 147

@@ -10914,6 +10914,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
 
+    {"android-history-pane-favicons",
+     flag_descriptions::kAndroidHistoryPaneFaviconsName,
+     flag_descriptions::kAndroidHistoryPaneFaviconsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kAndroidHistoryPaneFavicons)},
+
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,
      flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,

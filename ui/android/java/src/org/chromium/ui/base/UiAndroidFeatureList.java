@@ -66,6 +66,10 @@ public class UiAndroidFeatureList {
                     UiAndroidFeatures.ANDROID_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION,
                     /* defaultValue= */ true);
 
+    public static final MutableFlagWithSafeDefault sAndroidHistoryPaneFavicons =
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.ANDROID_HISTORY_PANE_FAVICONS, /* defaultValue= */ false);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidUseCorrectWindowBounds,

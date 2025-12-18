@@ -5074,6 +5074,11 @@ inline constexpr char kAndroidWebAppMenuButtonDescription[] =
     "Display minimal ui menu button for PWAs on devices that support "
     "desktop windowing.";
 
+inline constexpr char kAndroidHistoryPaneFaviconsName[] =
+    "Android History Pane Favicons";
+inline constexpr char kAndroidHistoryPaneFaviconsDescription[] =
+    "Enable better favicons in the Android history pane.";
+
 inline constexpr char kAndroidZoomIndicatorName[] = "Android Zoom Indicator";
 inline constexpr char kAndroidZoomIndicatorDescription[] =
     "Enable zoom indicator on Android.";
