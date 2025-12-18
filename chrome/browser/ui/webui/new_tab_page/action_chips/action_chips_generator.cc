@@ -166,7 +166,7 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kImage;
   chip->title =
-      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING);
+      l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_CREATE_IMAGES);
   chip->suggestion =
       !suggestion.empty()
           ? suggestion
