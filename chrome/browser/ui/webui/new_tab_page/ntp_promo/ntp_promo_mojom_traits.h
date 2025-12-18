@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NTP_PROMO_NTP_PROMO_MOJOM_TRAITS_H_
 
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-data-view.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

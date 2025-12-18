@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_mojom_traits.h"
 
-#include "base/notreached.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-data-view.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
 namespace mojo {

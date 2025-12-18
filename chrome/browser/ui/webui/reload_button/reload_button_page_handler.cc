@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-data-view.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"

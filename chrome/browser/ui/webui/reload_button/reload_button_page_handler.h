@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom-data-view.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
