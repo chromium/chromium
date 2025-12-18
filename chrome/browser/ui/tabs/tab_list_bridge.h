@@ -61,6 +61,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
   std::vector<tabs::TabInterface*> GetAllTabs() override;
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;
+  bool ContainsTabGroup(tab_groups::TabGroupId group_id) override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;

@@ -102,6 +102,9 @@ class TabListInterface {
   // in moving the tab if necessary.
   virtual void UnpinTab(tabs::TabHandle tab) = 0;
 
+  // Returns true if this tab list contains a tab group with `group_id`.
+  virtual bool ContainsTabGroup(tab_groups::TabGroupId group_id) = 0;
+
   // Adds `tabs` to the `group_id` if provided or creates a new tab group.
   // Returns the tab group ID of the created or added to group. Tabs will be
   // moved as necessary to make the group contiguous. Pinned tabs will no longer

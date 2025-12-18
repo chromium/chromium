@@ -12,6 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/common/extensions/api/tab_groups.h"
+#include "components/tab_groups/tab_group_color.h"  // nogncheck
+#include "components/tab_groups/tab_group_id.h"     // nogncheck
 #include "components/tabs/public/split_tab_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
@@ -19,10 +22,7 @@
 // TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/values.h"
-#include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
-#include "components/tab_groups/tab_group_color.h"  // nogncheck
-#include "components/tab_groups/tab_group_id.h"     // nogncheck
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #endif
 
@@ -218,10 +218,10 @@ class ExtensionTabUtil {
   // Gets the extensions-specific split view ID.
   static int GetSplitId(const split_tabs::SplitTabId& id);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Gets the window ID that the group belongs to.
   static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
   // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
   // within the function if so.
@@ -232,6 +232,7 @@ class ExtensionTabUtil {
                            tab_groups::TabGroupId* id,
                            const tab_groups::TabGroupVisualData** visual_data,
                            std::string* error);
+#endif
 
   // Returns whether the group is shared or not.
   static bool GetSharedStateOfGroup(const tab_groups::TabGroupId& id);
@@ -243,8 +244,10 @@ class ExtensionTabUtil {
   static api::tab_groups::TabGroup CreateTabGroupObject(
       const tab_groups::TabGroupId& id,
       const tab_groups::TabGroupVisualData& visual_data);
+#if !BUILDFLAG(IS_ANDROID)
   static std::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
       const tab_groups::TabGroupId& id);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Conversions between the api::tab_groups::Color enum and the TabGroupColorId
   // enum.
@@ -252,7 +255,6 @@ class ExtensionTabUtil {
       const tab_groups::TabGroupColorId& color_id);
   static tab_groups::TabGroupColorId ColorToColorId(
       api::tab_groups::Color color);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns all active web contents for the given `browser_context`.
   static std::vector<content::WebContents*> GetAllActiveWebContentsForContext(

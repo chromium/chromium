@@ -237,8 +237,6 @@ api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
       api::windows::WindowType::kNormal, api::windows::WindowState::kNormal);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405219902): Support tab groups on desktop Android.
 api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
     const sessions::tab_restore::Group& group) {
   DCHECK(!group.tabs.empty());
@@ -246,7 +244,6 @@ api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
   return ExtensionTabUtil::CreateTabGroupObject(group.group_id,
                                                 group.visual_data);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
     const sessions::tab_restore::Entry& entry) {
@@ -263,14 +260,8 @@ api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
           static_cast<const sessions::tab_restore::Window&>(entry));
       break;
     case sessions::tab_restore::Type::GROUP:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       group = CreateGroupModel(
           static_cast<const sessions::tab_restore::Group&>(entry));
-#else
-      // TODO(crbug.com/405219902): Support tab groups on desktop Android.
-      NOTIMPLEMENTED();
-      break;
-#endif
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
                                   std::move(window), std::move(group));

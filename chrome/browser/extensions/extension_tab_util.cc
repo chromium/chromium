@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -32,9 +33,13 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tab_groups/tab_group_id.h"  // nogncheck
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/favicon_status.h"
@@ -63,7 +68,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"                             // nogncheck
 #include "chrome/browser/ui/browser_finder.h"                      // nogncheck
 #include "chrome/browser/ui/browser_window.h"                      // nogncheck
@@ -76,10 +80,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"                      // nogncheck
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
-#include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/public/tab_group_sync_service.h"
-#include "components/tab_groups/tab_group_id.h"  // nogncheck
-#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #endif
@@ -248,6 +248,18 @@ std::optional<GURL> GetOptionsPageUrlToNavigate(const Extension* extension) {
     replacements.SetQueryStr(query);
     return GURL(chrome::kChromeUIExtensionsURL).ReplaceComponents(replacements);
   }
+}
+
+// Returns the browser that contains the tab group with `id` or null if none is
+// found.
+BrowserWindowInterface* FindBrowserWithGroup(const tab_groups::TabGroupId& id) {
+  for (BrowserWindowInterface* const bwi : GetAllBrowserWindowInterfaces()) {
+    TabListInterface* const tab_list = TabListInterface::From(bwi);
+    if (tab_list && tab_list->ContainsTabGroup(id)) {
+      return bwi;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -774,16 +786,16 @@ int ExtensionTabUtil::GetSplitId(const split_tabs::SplitTabId& id) {
   return std::abs(static_cast<int>(hash));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 int ExtensionTabUtil::GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
-  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
-  if (browser) {
-    return browser->session_id().id();
+  if (BrowserWindowInterface* const browser = FindBrowserWithGroup(id);
+      browser) {
+    return browser->GetSessionID().id();
   }
   return -1;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::GetGroupById(
     int group_id,
@@ -847,6 +859,7 @@ bool ExtensionTabUtil::GetGroupById(
 
   return false;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 api::tab_groups::TabGroup ExtensionTabUtil::CreateTabGroupObject(
@@ -869,19 +882,26 @@ bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
     return false;
   }
 
-  Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  BrowserWindowInterface* browser = FindBrowserWithGroup(id);
   if (!browser) {
     return false;
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
   if (!tab_group_service) {
     return false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TabGroupService uses a different type on Android.
+  const base::Token local_id = id.token();
+#else
+  const tab_groups::TabGroupId local_id = id;
+#endif
   std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(id);
+      tab_group_service->GetGroup(local_id);
   if (!saved_group) {
     return false;
   }
@@ -889,6 +909,7 @@ bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
   return saved_group->is_shared_tab_group();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
@@ -906,6 +927,7 @@ std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
 
   return CreateTabGroupObject(id, *visual_data);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 api::tab_groups::Color ExtensionTabUtil::ColorIdToColor(
@@ -964,7 +986,6 @@ tab_groups::TabGroupColorId ExtensionTabUtil::ColorToColorId(
 
   NOTREACHED();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 std::vector<content::WebContents*>

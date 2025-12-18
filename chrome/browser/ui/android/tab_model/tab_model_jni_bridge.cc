@@ -578,6 +578,12 @@ void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
   Java_TabModelJniBridge_unpinTab(env, jobj, tab_android);
 }
 
+bool TabModelJniBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  // TODO(crbug.com/405219902): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {

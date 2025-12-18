@@ -193,6 +193,11 @@ void TestTabModel::UnpinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
+bool TestTabModel::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 std::optional<tab_groups::TabGroupId> TestTabModel::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
@@ -438,6 +443,11 @@ void OwningTestTabModel::PinTab(tabs::TabHandle tab) {
 
 void OwningTestTabModel::UnpinTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
+}
+
+bool OwningTestTabModel::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 std::optional<tab_groups::TabGroupId> OwningTestTabModel::AddTabsToGroup(

@@ -175,6 +175,10 @@ void TabListBridge::UnpinTab(tabs::TabHandle tab) {
   tab_strip_->SetTabPinned(index, false);
 }
 
+bool TabListBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  return tab_strip_->group_model()->ContainsTabGroup(group_id);
+}
+
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
