@@ -18,7 +18,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/chromeos/reporting/local_state_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
-#include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
@@ -35,6 +33,8 @@
 
 namespace reporting {
 
+class AppUsageObserver;
+class WebsiteUsageObserver;
 class MetricEventObserver;
 class MetricEventObserverManager;
 class MetricReportQueue;
