@@ -1035,7 +1035,6 @@
 <translation id="1679810534535368772">Вийти?</translation>
 <translation id="167983332380191032">Сервіс керування надіслав помилку HTTP.</translation>
 <translation id="167997285881077031">Налаштування голосу для синтезу мовлення</translation>
-<translation id="1680849702532889074">Під час встановлення додатка Linux сталася помилка.</translation>
 <translation id="1682195225331129001">Спробувати</translation>
 <translation id="1682548588986054654">Нове анонімне вікно</translation>
 <translation id="1682696837763999627">Великий курсор миші</translation>
@@ -1670,7 +1669,6 @@
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2104166991923847969">Вимикати точку доступу автоматично</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
-<translation id="2106439768713835453">Також надати доступ до аудіо з додатка</translation>
 <translation id="2107359546799360577">Оптимізацію JavaScript вимкнено.</translation>
 <translation id="2108204112555497972">Перевірено <ph name="NUM_DAYS_HOURS_MINUTES" /> тому</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
@@ -2685,7 +2683,6 @@
 <translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783952358106015700">Використовуйте ключ безпеки з додатком <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Перевірка паролів</translation>
 <translation id="2785279781154577715">Вигляд картки попереднього перегляду вкладки</translation>
@@ -4145,6 +4142,7 @@
 <translation id="3785748905555897481">PIN-код змінено</translation>
 <translation id="3786224729726357296">Видалити дані й дозволи для сайту <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Показувати підкреслення під час введення тексту</translation>
+<translation id="3786890785076278600">Статична лінія</translation>
 <translation id="3787434344076711519">Очікує на переклад</translation>
 <translation id="3788301286821743879">Не вдалося запустити додаток-термінал.</translation>
 <translation id="3788401245189148511">Зможе:</translation>
@@ -4524,6 +4522,7 @@
 <translation id="4028467762035011525">Додати методи введення</translation>
 <translation id="4029024445166427442">клавіша Панелі запуску + Shift + backspace</translation>
 <translation id="4029556917477724407">Повернутися назад зі сторінки "<ph name="PAGE_TITLE" />"</translation>
+<translation id="4031178684547097947">5 рядків</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4031527940632463547">Датчики заблоковано</translation>
 <translation id="4033471457476425443">Додати нову папку</translation>
@@ -4894,7 +4893,6 @@
 <translation id="4293219510510666933">Шукайте інформацію в історії вебперегляду й знаходьте відвідані вебсайти за допомогою запитів розмовною мовою. Ви також можете ставити запитання й отримувати відповіді на основі історії вебперегляду. Це налаштування ввімкнено.</translation>
 <translation id="429344752071832554">Скасувати виділення групи</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" видалено з історії завантажень, але він досі зберігається на вашому пристрої</translation>
-<translation id="4295072614469448764">Додаток доступний у терміналі. Також може бути значок на панелі запуску.</translation>
 <translation id="4295979599050707005">Увійдіть в обліковий запис <ph name="USER_EMAIL" /> знову, щоб підтвердити, що його можна використовувати з веб-сайтами, додатками й розширеннями в Chrome і Google Play. Крім того, ви можете видалити цей обліковий запис. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Додатки, які встановлено локально і які транслюються з віддаленого пристрою через <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Вихідний пароль для цього сайту було розкрито через порушення безпеки даних. <ph name="DATE" /> ви попросили <ph name="BRAND" /> автоматично змінити його.</translation>
@@ -5001,7 +4999,6 @@
 <translation id="4370975561335139969">Введені електронна адреса та пароль не збігаються</translation>
 <translation id="4373418556073552953">Вхід в обліковий запис за допомогою телефона Android</translation>
 <translation id="4373973310429385827">Маяк</translation>
-<translation id="4374831787438678295">Файл встановлення Linux</translation>
 <translation id="4375035964737468845">Відкривати завантажені файли</translation>
 <translation id="4376226992615520204">Визначення місцезнаходження вимкнено</translation>
 <translation id="4377363674125277448">Виникла проблема із сертифікатом сервера.</translation>
@@ -5785,6 +5782,7 @@
 <translation id="4908811072292128752">Щоб одночасно переглядати два сайти, відкрийте нову вкладку</translation>
 <translation id="4910241725741323970">Додаток уже встановлено</translation>
 <translation id="4912643508233590958">Вихід зі стану неактивності</translation>
+<translation id="4912892750325639080">3 рядки</translation>
 <translation id="4913209098186576320">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Перевірка триває довше, ніж зазвичай…</translation>
 <translation id="4913695564084524048">Не вдалося знайти дані додатка</translation>
 <translation id="4915961947098019832">Дозволено показувати зображення</translation>
@@ -6279,7 +6277,6 @@
 <translation id="5263656105659419083">Щоб легко повернутися на бічну панель, угорі праворуч натисніть "Закріпити".</translation>
 <translation id="5264148714798105376">Це може зайняти близько хвилини.</translation>
 <translation id="5264252276333215551">Щоб запустити програму в режимі термінала, під’єднайтеся до Інтернету.</translation>
-<translation id="5265797726250773323">Помилка під час встановлення</translation>
 <translation id="526622169288322445">Додаткові дії з адресою "<ph name="ADDRESS_SUMMARY" />"</translation>
 <translation id="5267572070504076962">Увімкніть Безпечний перегляд, щоб покращити захист від небезпечних сайтів</translation>
 <translation id="5269659747698455324">Розблокувати ключі доступу</translation>
@@ -7652,7 +7649,6 @@
 <translation id="623261264391834964">Натисніть правою кнопкою миші в текстовому полі, щоб скористатися функцією "Допомога з текстом"</translation>
 <translation id="6233154960150021497">За умовчанням використовувати голосові команди замість клавіатури</translation>
 <translation id="6234108445915742946">31 березня змінюються Умови використання Chrome</translation>
-<translation id="6234474535228214774">Очікується встановлення</translation>
 <translation id="6235208551686043831">Камеру пристрою ввімкнено. Наведіть її на QR-код eSIM-карти.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> група "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Додаток для створення нотаток за допомогою стилуса</translation>
@@ -8340,7 +8336,6 @@
 <translation id="6713668088933662563">Мови, з яких ніколи не потрібно пропонувати переклад</translation>
 <translation id="6714871567554212732">Докладніше про групу "<ph name="GROUP_NAME" />"</translation>
 <translation id="6715735940363172819">Вебсайтам заборонено використовувати ваш мікрофон</translation>
-<translation id="6715803357256707211">Під час встановлення додатка Linux сталася помилка. Щоб дізнатися більше, натисніть сповіщення.</translation>
 <translation id="6716049856796700977">Сервіси не мають доступу до ваших геоданих. Однак додатки й вебсайти все одно можуть визначати ваше місцезнаходження за IP-адресою. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">З’єднання з мережею втрачено. Перевірте з’єднання або під’єднайтеся до іншої мережі Wi-Fi.</translation>
 <translation id="671928215901716392">Блокування екрана</translation>
@@ -9028,6 +9023,7 @@
 <translation id="7191159667348037">Невідомий принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
 <translation id="7191632649590906354">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль у Google Менеджері паролів. Попросіть їх відкрити сторінку <ph name="WEBSITE" />, щоб увійти в обліковий запис.</translation>
+<translation id="7192393330344360021">1 рядок</translation>
 <translation id="7193051357671784796">Цей додаток вніс адміністратор вашої організації. Щоб завершити встановлення, перезапустіть його.</translation>
 <translation id="7193374945610105795">Немає збережених паролів для <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Надіслати відгук про запропоновані групи</translation>
@@ -11138,6 +11134,7 @@
 <translation id="862750493060684461">Кеш CSS</translation>
 <translation id="8627795981664801467">Лише захищені з’єднання</translation>
 <translation id="8627804903623428808">Перегляньте ці умови та керуйте даними дитини</translation>
+<translation id="8628674746770065790">Слідувати за курсором</translation>
 <translation id="862907440446514309">Адміністратор записує вміст вашого екрана за допомогою додатка <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Пристрій у режимі сну та заряджається</translation>
 <translation id="8631032106121706562">Ромашка</translation>
@@ -12157,7 +12154,6 @@
 <translation id="992592832486024913">Вимкнути ChromeVox (голосові підказки)</translation>
 <translation id="992653586748191655">Запропоновано груп вкладок: <ph name="NUM" /></translation>
 <translation id="992778845837390402">Триває резервне копіювання Linux</translation>
-<translation id="993540765962421562">Триває встановлення</translation>
 <translation id="994087375490600917">Бічні панелі</translation>
 <translation id="994289308992179865">&amp;Безперервно</translation>
 <translation id="995755448277384931">Додати номер IBAN</translation>

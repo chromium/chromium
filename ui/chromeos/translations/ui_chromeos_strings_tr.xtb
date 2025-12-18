@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Hizmetler</translation>
 <translation id="181434555916624618">Şu anda kişileri içeren sonuçlar gösterilmiyor. Başka bir istem deneyin.</translation>
 <translation id="1829129547161959350">Penguen</translation>
-<translation id="183183971458492120">Bilgiler yükleniyor...</translation>
 <translation id="1832073788765803750">Yarı genişlikte katakana</translation>
 <translation id="1834290891154666894">Alternatif konu adı eşleşme girişi geçersiz</translation>
 <translation id="1838709767668011582">Google sitesi</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> miktar</translation>
 <translation id="2198315389084035571">Basitleştirilmiş Çince</translation>
 <translation id="22085916256174561">Korece</translation>
-<translation id="2208919847696382164">Linux ile yükle</translation>
 <translation id="2215692307449050019">Pil seviyesi düşük. Dosya senkronizasyonu, güç kaynağına bağlandığınızda devam edecek.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> öğeyi silmek istediğiniz emin misiniz?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" klasörü oluşturulamıyor. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="2663066752008346276">Myansan klavye ile Burmaca/Myanmar</translation>
 <translation id="2664412712123763093">Dosya konumu</translation>
-<translation id="2718540689505416944">Uygulamayı Linux ile yükle</translation>
 <translation id="2719020180254996569">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ayrıntılar</translation>
 <translation id="2724954091494693138">F klavye ile Türkçe</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> paylaşımını yönet</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Google Workspace bireysel depolama alanınızın tamamını kullandınız.</translation>
 <translation id="2771816809568414714">Peynir</translation>
 <translation id="2781645665747935084">Belçika dili</translation>
-<translation id="2782104745158847185">Linux uygulaması yüklenirken hata oluştu</translation>
 <translation id="2802583107108007218">Bu kısıtlamalar hakkında daha fazla bilgi</translation>
 <translation id="2803375539583399270">PIN girin</translation>
 <translation id="2819519502129272135">Dosya senkronizasyonu devre dışı</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Çevrimdışısınız</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3793469551756281394">Yaklaşık <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> kaldı</translation>
-<translation id="3798449238516105146">Sürüm</translation>
 <translation id="3801082500826908679">Faroece</translation>
 <translation id="3809272675881623365">Tavşan</translation>
 <translation id="3810973564298564668">Yönet</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
-<translation id="3866249974567520381">Açıklama</translation>
 <translation id="3899991606604168269">Fransızca (Kanada), Çok Dilli klavye</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ağına bağlanılıyor</translation>
 <translation id="3906232975181435906">Mobil profil, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> ağ, <ph name="NETWORK_NAME" /> yükleniyor</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgarca fonetik</translation>
 <translation id="4508265954913339219">Etkinleştirme başarısız oldu</translation>
 <translation id="4509667233588080747">Workman Uluslararası klavye ile İngilizce (ABD)</translation>
-<translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4527800702232535228">Bu klasör Parallels Desktop ile paylaşılıyor</translation>
 <translation id="4552678318981539154">Daha fazla depolama alanı satın alın</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> adlı ağ, %<ph name="SIGNAL_STRENGTH" /> sinyal gücü</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Dinle</translation>
 <translation id="5650895901941743674">APN yapılandırmanızı kontrol edin</translation>
 <translation id="5669691691057771421">Yeni PIN'i girin</translation>
-<translation id="5678784840044122290">Linux uygulaması sizin Terminalinizde mevcut. Ayrıca Başlatıcınızda bir simgesini görebilirsiniz.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arşivle veya sanal diskle olan bağlantı kesilemiyor<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Arşivdeki veya sanal diskteki tüm dosyaları kapattıktan sonra tekrar deneyin.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Oyuncu</translation>
 <translation id="5864471791310927901">DHCP araması başarısız oldu</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
-<translation id="5911887972742538906">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu.</translation>
 <translation id="5912396950572065471">Biçim</translation>
 <translation id="5918480239180455431">Yeni arama özellikleri mevcut</translation>
 <translation id="5926082595146149752">ABD Uluslararası PC klavyesiyle Felemenkçe (Hollanda)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Sürücü adı</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Ayrıntılar</translation>
 <translation id="7246947237293279874">FTP Proxy'si</translation>
-<translation id="7248671827512403053">Uygulama</translation>
 <translation id="7256405249507348194">Tanınmayan hata: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Kullanılabilir hizmetler</translation>
 <translation id="7291818353625820805">Tuşların tekrarlanmasını ister misiniz? Klavye ayarlarından aksan işaretlerini kapatın</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Yapılandır</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 hata.}other{# hata.}}</translation>
 <translation id="8154842056504218462">Tüm girişler seçildi.</translation>
-<translation id="8157684860301034423">Uygulama bilgileri alınamadı.</translation>
 <translation id="8175731104491895765">Fransızca (Belçika)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive dosyası senkronize ediliyor</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9189836632794948435">Kazakça</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarıldı.</translation>
-<translation id="9213073329713032541">Yükleme işlemi başarıyla başlatıldı.</translation>
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="9219908252191632183">Ay</translation>
 <translation id="931652069802536959">Ağ, politika tarafından engellendi</translation>

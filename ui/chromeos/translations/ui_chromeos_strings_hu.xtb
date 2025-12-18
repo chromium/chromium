@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Szolgáltatások</translation>
 <translation id="181434555916624618">Személyeket tartalmazó találatok egyelőre nem jelennek meg. Próbálkozzon másik utasítással.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
-<translation id="183183971458492120">Adatok betöltése…</translation>
 <translation id="1832073788765803750">Félszélességű katakana</translation>
 <translation id="1834290891154666894">Érvénytelen bejegyzés: Tárgy alternatív egyéb neve – egyezés</translation>
 <translation id="1838709767668011582">Google-webhely</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> felhasználva</translation>
 <translation id="2198315389084035571">Egyszerűsített kínai</translation>
 <translation id="22085916256174561">koreai</translation>
-<translation id="2208919847696382164">Telepítés Linux segítségével</translation>
 <translation id="2215692307449050019">Az akkumulátor töltöttsége alacsony. A fájlszinkronizálás folytatódik, amint az eszköz áramforráshoz csatlakozik.</translation>
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
 <translation id="2230062665678605299">Nem sikerült létrehozni a(z) "<ph name="FOLDER_NAME" />" könyvtárat. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="2663066752008346276">burmai (Mianmar), myansan billentyűzettel</translation>
 <translation id="2664412712123763093">Fájl helye</translation>
-<translation id="2718540689505416944">Alkalmazás telepítése a Linux segítségével</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, részletek</translation>
 <translation id="2724954091494693138">török, F-billentyűzettel</translation>
 <translation id="2732288874651063549">A(z) <ph name="VM_NAME" />-megosztás kezelése</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Felhasználta Google Workspace-tárhelyét.</translation>
 <translation id="2771816809568414714">Sajt</translation>
 <translation id="2781645665747935084">belga</translation>
-<translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
 <translation id="2802583107108007218">További információ ezekről a korlátozásokról</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
 <translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Ön jelenleg offline állapotban van</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3793469551756281394">Fennmaradó idő kb. <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />…</translation>
-<translation id="3798449238516105146">Verzió</translation>
 <translation id="3801082500826908679">feröer-szigeteki</translation>
 <translation id="3809272675881623365">Nyúl</translation>
 <translation id="3810973564298564668">Kezelés</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3855472144336161447">német Neo 2</translation>
 <translation id="3858860766373142691">Név</translation>
-<translation id="3866249974567520381">Leírás</translation>
 <translation id="3899991606604168269">francia (Kanada), többnyelvű billentyűzettel</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil telepítése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">bolgár fonetikus</translation>
 <translation id="4508265954913339219">Aktiválás sikertelen</translation>
 <translation id="4509667233588080747">angol (USA) billentyűzet nemzetközi Workman kiosztással</translation>
-<translation id="4522570452068850558">Részletek</translation>
 <translation id="4527800702232535228">Ez a mappa meg van osztva a Parallels Desktop rendszerrel</translation>
 <translation id="4552678318981539154">További tárhely vásárlása</translation>
 <translation id="4552759165874948005">Hálózat: <ph name="NETWORK_TYPE" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Meghallgatás</translation>
 <translation id="5650895901941743674">Az APN-konfiguráció ellenőrzése</translation>
 <translation id="5669691691057771421">Új PIN-kód megadása</translation>
-<translation id="5678784840044122290">A Linux-alkalmazás rendelkezésre áll majd a terminálból, valamint az ikonja is megjelenhet az Indítóban.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nem sikerült az archívum vagy virtuális lemez leválasztása<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Zárjon be minden fájlt az archívumban vagy a virtuális lemezen, majd próbálja újra.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Játékos</translation>
 <translation id="5864471791310927901">DHCP-keresés sikertelen</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
-<translation id="5911887972742538906">Hiba történt a Linux-alkalmazás telepítése során.</translation>
 <translation id="5912396950572065471">Formázás</translation>
 <translation id="5918480239180455431">Új keresési funkciók állnak rendelkezésre</translation>
 <translation id="5926082595146149752">holland (Hollandia), amerikai nemzetközi PC-billentyűzettel</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Meghajtó neve</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, részletek</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
-<translation id="7248671827512403053">Alkalmazás</translation>
 <translation id="7256405249507348194">Ismeretlen hiba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Igénybe vehető szolgáltatások</translation>
 <translation id="7291818353625820805">Szeretne ismétlődő billentyűlenyomást? Kapcsolja ki az ékezeteket a billentyűzet beállításaiban.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigurálás</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 hiba.}other{# hiba.}}</translation>
 <translation id="8154842056504218462">Összes bejegyzés kijelölve.</translation>
-<translation id="8157684860301034423">Nem sikerült lehívni az alkalmazásadatokat.</translation>
 <translation id="8175731104491895765">francia (Belgium)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-fájl szinkronizálása</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9189836632794948435">kazah</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elem kinyerve.</translation>
-<translation id="9213073329713032541">Telepítés sikeresen megkezdve.</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219908252191632183">Hold</translation>
 <translation id="931652069802536959">A hálózatot házirend tiltja</translation>

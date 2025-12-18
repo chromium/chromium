@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Fet</translation>
 <translation id="2577522251608256362">Veïnat</translation>
 <translation id="2579713773888829241">Unitats compartides</translation>
+<translation id="2580306219079937316">Obre la configuració de traducció</translation>
 <translation id="2583688836549072561">Grup de pestanyes, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanyes, activitat nova.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Fes un seguiment de les baixades de preu dels productes</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3254806613790954367">La darrera pestanya oberta en tots els teus dispositius</translation>
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
+<translation id="3266338926702638258">Mostra l'historial de preus d'aquest producte</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
@@ -1934,6 +1936,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8221665793629393739">Recordatori per tornar a visitar</translation>
 <translation id="8232956427053453090">Conserva les dades</translation>
 <translation id="8233237502828137700">Tanca la promoció del bàner</translation>
+<translation id="823339794112333264">Activa el micròfon</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8258734532103758067">He exportat les meves dades</translation>
 <translation id="8258999165172757081">S'ha afegit</translation>
@@ -2039,6 +2042,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8611922158252451755">Tothom que tingui l'enllaç podrà editar totes les pestanyes, així que comparteix el grup amb seny. L'enllaç caducarà d'aquí a 48 hores.</translation>
 <translation id="8614671330774943747">Ves al selector de pestanyes</translation>
 <translation id="8620640915598389714">Edita</translation>
+<translation id="862367213447108001">Mostra sempre les finestres emergents en aquest lloc web</translation>
 <translation id="8625706492572042370">Edita la pantalla d'inici</translation>
 <translation id="8631370184731241854">Pestanyes d'incògnit bloquejades</translation>
 <translation id="8633025649649592204">Activitat recent</translation>
@@ -2135,6 +2139,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestionat per la teva organització, està seleccionat actualment. Tria un compte.</translation>
 <translation id="894191600409472540">Crea contrasenyes segures</translation>
 <translation id="8943780400130412484">Vols iniciar una baixada nova?</translation>
+<translation id="8947838125864566256">Desactiva el micròfon</translation>
 <translation id="8953046091948372197">Trobaràs les contrasenyes aquí</translation>
 <translation id="8953602327115378731">{count,plural, =1{Hi ha {count} opció de compleció automàtica disponible a sobre del teclat.}other{Hi ha {count} opcions de compleció automàtica disponibles a sobre del teclat.}}</translation>
 <translation id="895541991026785598">Informa d'un problema</translation>

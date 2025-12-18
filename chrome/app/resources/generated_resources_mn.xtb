@@ -1029,7 +1029,6 @@
 <translation id="1679810534535368772">Та эндээс гарахдаа итгэлтэй байна уу?</translation>
 <translation id="167983332380191032">Менежментийн үйлчилгээ HTTP-н алдааг илгээсэн.</translation>
 <translation id="167997285881077031">Текстийг-яриа-болгох дуу хоолойн тохиргоо</translation>
-<translation id="1680849702532889074">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="1682195225331129001">Одоо турших</translation>
 <translation id="1682548588986054654">Шинэ нууцлалтай цонх</translation>
 <translation id="1682696837763999627">Том хулганын курсор</translation>
@@ -1664,7 +1663,6 @@
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2104166991923847969">Сүлжээний цэгийг автоматаар унтраана</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" />-г нуусан</translation>
-<translation id="2106439768713835453">Мөн аппликейшны аудиог хуваалцах</translation>
 <translation id="2107359546799360577">JavaScript-н оновчлолыг идэвхгүй болгосон.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" />-н өмнө шалгасан</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Утасны дугаар}other{# утасны дугаар}}</translation>
@@ -2679,7 +2677,6 @@
 <translation id="2778471504622896352">ChromeOS эхлүүлэгч рүү алсын удирдлагын аппуудыг нэмнэ үү</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2783952358106015700">Аюулгүй байдлын түлхүүрээ <ph name="APP_NAME" />-д ашиглах</translation>
 <translation id="2785267875302712148">Нууц үгний хяналт</translation>
 <translation id="2785279781154577715">Таб дээр курсорыг зөөхөд урьдчилан үзүүлэх картын харагдах байдал</translation>
@@ -4889,7 +4886,6 @@
 <translation id="4293219510510666933">Хөтчийн түүхээсээ хайх, зочилсон сайтуудаа олоход өдөр тутмын хэрэглээний хэл ашиглаарай. Та мөн асуулт асууж, хөтчийн түүхдээ тулгуурласан хариулт авах боломжтой. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="429344752071832554">Бүлгийн сонголтыг болиулах</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" />-г таталтын түүхээс устгасан хэдий ч энэ нь таны төхөөрөмжид байсаар байна</translation>
-<translation id="4295072614469448764">Апп таны терминалд боломжтой боллоо. Түүнчлэн, таны Эхлүүлэгчид дүрс тэмдэг харагдаж болзошгүй.</translation>
 <translation id="4295979599050707005">Chrome болон Google Play-н вебсайт, апп болон өргөтгөл дээр таны <ph name="USER_EMAIL" /> бүртгэлийг ашиглах боломжтой болохыг баталгаажуулахын тулд дахин нэвтэрнэ үү. Мөн та энэ бүртгэлийг устгаж болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" />-с суулгаж, дамжуулсан аппликэйшнүүд</translation>
 <translation id="4296632172536745000">Таны энэ сайтын эх нууц үгийг олон нийтийн өгөгдлийн зөрчлөөс оллоо. Та <ph name="DATE" />-нд <ph name="BRAND" />-с танд зориулж нууц үгийг тань автоматаар өөрчлөхийг хүссэн.</translation>
@@ -4996,7 +4992,6 @@
 <translation id="4370975561335139969">Таны оруулсан имэйл болон нууц үг таарахгүй байна</translation>
 <translation id="4373418556073552953">Android утсаараа нэвтрэх</translation>
 <translation id="4373973310429385827">Гэрэлт цамхаг</translation>
-<translation id="4374831787438678295">Linux суулгагч</translation>
 <translation id="4375035964737468845">Татаж авсан файлуудыг нээх</translation>
 <translation id="4376226992615520204">Байршил унтраалттай байна</translation>
 <translation id="4377363674125277448">Серверийн сертификат асуудалтай байсан.</translation>
@@ -6276,7 +6271,6 @@
 <translation id="5263656105659419083">Хажуугийн самбар луу хялбархан буцахын тулд баруун дээд талын Бэхлэхийг товшино уу</translation>
 <translation id="5264148714798105376">Үүнд нэг эсвэл хоёр минут шаардлагатай.</translation>
 <translation id="5264252276333215551">Програмаа kiosk горимд эхлүүлэхийн тулд интернетэд холбогдоно уу.</translation>
-<translation id="5265797726250773323">Суулгах явцад алдаа гарлаа</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-н бусад үйлдэл</translation>
 <translation id="5267572070504076962">Аюултай сайтуудын эсрэг хамгаалалт авахын тулд Safe Browsing-г асаана уу</translation>
 <translation id="5269659747698455324">Нэвтрэх түлхүүрийнхээ түгжээг тайлах</translation>
@@ -7653,7 +7647,6 @@
 <translation id="623261264391834964">Надад бичихэд тусал онцлогийг ашиглахын тулд текстийн хайрцаг дээр хулганын баруун талыг товшино уу</translation>
 <translation id="6233154960150021497">Гарын оронд дуу хоолой ашиглах өгөгдмөлийг тохируулах</translation>
 <translation id="6234108445915742946">Chrome-н Үйлчилгээний нөхцөлийг гуравдугаар сарын 31-ний өдөр өөрчилнө</translation>
-<translation id="6234474535228214774">Суулгалт хүлээгдэж байна</translation>
 <translation id="6235208551686043831">Төхөөрөмжийн камерыг асаалаа. Камерын урд eSIM-н QR кодоо байрлуулна уу.</translation>
 <translation id="6237342324375264347"><ph name="GROUP_NAME" /> <ph name="SHARE_STATE" /> бүлэг - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Мэдрэгч үзгээр тэмдэглэл хөтлөх апп</translation>
@@ -8335,7 +8328,6 @@
 <translation id="6713668088933662563">Эдгээр хэлээр орчуулахыг хэзээ ч бүү санал болго</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" />-н талаарх дэлгэрэнгүй мэдээллийг харах</translation>
 <translation id="6715735940363172819">Вебсайтуудад таны микрофоныг ашиглахыг зөвшөөрөөгүй</translation>
-<translation id="6715803357256707211">Таны Linux аппликэйшнийг суулгах явцад алдаа гарлаа. Дэлгэрэнгүй мэдээлэл авах бол мэдэгдэл дээр товшино уу.</translation>
 <translation id="6716049856796700977">Юу ч таны байршлыг ашиглах боломжгүй. Гэсэн хэдий ч таны байршил IP хаягаар тань дамжуулан апп болон вебсайтуудад харагдсан хэвээр байж магадгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Сүлжээний холболт тасарлаа. Сүлжээний холболтоо шалгах эсвэл өөр Wi-Fi сүлжээг туршиж үзнэ үү.</translation>
 <translation id="671928215901716392">Дэлгэцийг түгжих</translation>
@@ -12147,7 +12139,6 @@
 <translation id="992592832486024913">ChromeVox-ыг идэвхгүй болгох (дуут санал хүсэлт)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> табын бүлгийг санал болгосон</translation>
 <translation id="992778845837390402">Linux-г одоогоор нөөцөлж байна</translation>
-<translation id="993540765962421562">Суулгаж байна</translation>
 <translation id="994087375490600917">Хажуугийн самбар</translation>
 <translation id="994289308992179865">&amp; Гогцоо</translation>
 <translation id="995755448277384931">Олон улсын банк акаунтны дугаар нэмэх</translation>

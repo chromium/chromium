@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">完成</translation>
 <translation id="2577522251608256362">街区</translation>
 <translation id="2579713773888829241">共享云端硬盘</translation>
+<translation id="2580306219079937316">打开翻译设置</translation>
 <translation id="2583688836549072561">标签页分组“<ph name="GROUP_TITLE" />”，<ph name="TABS_NUMBER" /> 个标签页，有新活动。</translation>
 <translation id="2593272815202181319">等宽</translation>
 <translation id="2601778637777010194">跟踪商品降价情况</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">无法保存您的更改。</translation>
 <translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
+<translation id="3266338926702638258">显示此商品的历史价格</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">打造您的专属主屏幕</translation>
 <translation id="3277021493514034324">已复制网站地址</translation>
@@ -1934,6 +1936,7 @@
 <translation id="8221665793629393739">重新访问提醒</translation>
 <translation id="8232956427053453090">保留数据</translation>
 <translation id="8233237502828137700">关闭横幅宣传内容</translation>
+<translation id="823339794112333264">开启麦克风</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8258734532103758067">数据已导出</translation>
 <translation id="8258999165172757081">已添加</translation>
@@ -2039,6 +2042,7 @@
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
 <translation id="8614671330774943747">打开标签页切换器</translation>
 <translation id="8620640915598389714">修改</translation>
+<translation id="862367213447108001">始终允许此网站显示弹出式窗口</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>
@@ -2135,6 +2139,7 @@
 <translation id="8928426232677696166">目前选择的是 <ph name="EMAIL" />，该账号由组织管理。请选择一个账号。</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="8943780400130412484">开始重新下载？</translation>
+<translation id="8947838125864566256">关闭麦克风</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="8953602327115378731">{count,plural, =1{键盘上方显示了 {count} 个自动补全选项。}other{键盘上方显示了 {count} 个自动补全选项。}}</translation>
 <translation id="895541991026785598">报告问题</translation>

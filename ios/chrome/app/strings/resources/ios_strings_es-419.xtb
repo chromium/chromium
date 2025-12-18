@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Listo</translation>
 <translation id="2577522251608256362">Colonia</translation>
 <translation id="2579713773888829241">Unidades compartidas</translation>
+<translation id="2580306219079937316">Abrir la configuración de traducción</translation>
 <translation id="2583688836549072561">Grupo de pestañas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestañas, actividad nueva.</translation>
 <translation id="2593272815202181319">Monoespaciada</translation>
 <translation id="2601778637777010194">Hacer un seguimiento de las reducciones de precio en los productos</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">No se pudo guardar el cambio.</translation>
 <translation id="3254806613790954367">La última pestaña que abriste en todos tus dispositivos</translation>
 <translation id="325717987950204592">Presiona "Privacidad y seguridad".</translation>
+<translation id="3266338926702638258">Mostrar el historial de precios de este producto</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla principal</translation>
 <translation id="3277021493514034324">Se copió la dirección del sitio</translation>
@@ -1934,6 +1936,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8221665793629393739">Recordatorio para volver a visitar</translation>
 <translation id="8232956427053453090">Conservar los datos</translation>
 <translation id="8233237502828137700">Cerrar banner promocional</translation>
+<translation id="823339794112333264">Activar micrófono</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8258734532103758067">Exporté mis datos</translation>
 <translation id="8258999165172757081">Agregado</translation>
@@ -2039,6 +2042,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8611922158252451755">Cualquier persona que tenga el vínculo puede editar todas las pestañas, así que compártelo con cuidado. El vínculo vence dentro de 48 horas.</translation>
 <translation id="8614671330774943747">Ir al Alternador de pestañas</translation>
 <translation id="8620640915598389714">Editar</translation>
+<translation id="862367213447108001">Mostrar siempre ventanas emergentes en este sitio</translation>
 <translation id="8625706492572042370">Edita la pantalla de inicio</translation>
 <translation id="8631370184731241854">Pestañas de incógnito bloqueadas</translation>
 <translation id="8633025649649592204">Actividad reciente</translation>
@@ -2135,6 +2139,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8928426232677696166"><ph name="EMAIL" />, administrada por tu organización, está seleccionada actualmente. Elige una cuenta.</translation>
 <translation id="894191600409472540">Crea contraseñas seguras</translation>
 <translation id="8943780400130412484">¿Quieres comenzar una descarga nueva?</translation>
+<translation id="8947838125864566256">Desactivar micrófono</translation>
 <translation id="8953046091948372197">Aquí encontrarás tus contraseñas</translation>
 <translation id="8953602327115378731">{count,plural, =1{Hay {count} opción de autocompletar disponible arriba del teclado.}other{Hay {count} opciones de autocompletar disponibles arriba del teclado.}}</translation>
 <translation id="895541991026785598">Informar un problema</translation>

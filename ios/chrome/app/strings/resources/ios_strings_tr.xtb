@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Bitti</translation>
 <translation id="2577522251608256362">Mahalle</translation>
 <translation id="2579713773888829241">Paylaşılan Drive'lar</translation>
+<translation id="2580306219079937316">Çeviri ayarlarını aç</translation>
 <translation id="2583688836549072561">Sekme grubu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> sekme, yeni etkinlik.</translation>
 <translation id="2593272815202181319">Sabit boşluklu</translation>
 <translation id="2601778637777010194">Ürünlerdeki fiyat düşüşlerini takip edin</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Yaptığınız değişiklik kaydedilemedi.</translation>
 <translation id="3254806613790954367">Tüm cihazlarınızda en son açtığınız sekme</translation>
 <translation id="325717987950204592">"Gizlilik ve Güvenlik"e dokunun.</translation>
+<translation id="3266338926702638258">Bu ürünün fiyat geçmişini göster</translation>
 <translation id="3272527697863656322">İptal</translation>
 <translation id="3273510436356991673">Ana ekranınızı özelleştirme</translation>
 <translation id="3277021493514034324">Site adresi kopyalandı</translation>
@@ -1934,6 +1936,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8221665793629393739">Tekrar ziyaret etmeniz için hatırlatıcı</translation>
 <translation id="8232956427053453090">Verileri koru</translation>
 <translation id="8233237502828137700">Banner tanıtımı kapat</translation>
+<translation id="823339794112333264">Mikrofonu aç</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8258734532103758067">Verilerimi dışa aktardım</translation>
 <translation id="8258999165172757081">Eklendi</translation>
@@ -2039,6 +2042,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8611922158252451755">Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir. Bu nedenle paylaşım yaparken dikkatli olun. Bağlantı 48 saat süreyle geçerlidir.</translation>
 <translation id="8614671330774943747">Sekme Değiştirici'ye gidin</translation>
 <translation id="8620640915598389714">Düzenle</translation>
+<translation id="862367213447108001">Bu sitede pop-up'ları her zaman göster</translation>
 <translation id="8625706492572042370">Ana ekranı düzenleyin</translation>
 <translation id="8631370184731241854">Kilitli gizli sekmeler</translation>
 <translation id="8633025649649592204">Son işlem</translation>
@@ -2135,6 +2139,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8928426232677696166">Kuruluşunuz tarafından yönetilen <ph name="EMAIL" /> şu anda seçili. Bir hesap seçin.</translation>
 <translation id="894191600409472540">Güçlü şifreler oluşturun</translation>
 <translation id="8943780400130412484">Yeni indirme işlemi başlatılsın mı?</translation>
+<translation id="8947838125864566256">Mikrofonu kapat</translation>
 <translation id="8953046091948372197">Şifreleriniz burada gösterilir</translation>
 <translation id="8953602327115378731">{count,plural, =1{Klavyenizin üzerinde {count} tane otomatik tamamlama seçeneği mevcut.}other{Klavyenizin üzerinde {count} tane otomatik tamamlama seçeneği mevcut.}}</translation>
 <translation id="895541991026785598">Sorun Bildir</translation>

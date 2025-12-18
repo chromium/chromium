@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Tjänster</translation>
 <translation id="181434555916624618">Just nu visas inga resultat med personer. Testa en annan prompt.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
-<translation id="183183971458492120">Läser in information …</translation>
 <translation id="1832073788765803750">Katakana med halvbredd</translation>
 <translation id="1834290891154666894">Ogiltig inmatning för matchning av ämnets andra namn</translation>
 <translation id="1838709767668011582">Google-webbplats</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> används</translation>
 <translation id="2198315389084035571">kinesiska (förenklad)</translation>
 <translation id="22085916256174561">koreanska</translation>
-<translation id="2208919847696382164">Installera med Linux</translation>
 <translation id="2215692307449050019">Batterinivån är låg. Filsynkroniseringen återupptas när du ansluter till en strömkälla.</translation>
 <translation id="2225536596944493418">Vill du ta bort <ph name="NUMBER_OF_ITEMS" /> objekt?</translation>
 <translation id="2230062665678605299">Det går inte att skapa mappen <ph name="FOLDER_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="2663066752008346276">burmesiska/Myanmar med myansan-tangentbord</translation>
 <translation id="2664412712123763093">Filens plats</translation>
-<translation id="2718540689505416944">Installera appen med Linux</translation>
 <translation id="2719020180254996569">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, information</translation>
 <translation id="2724954091494693138">turkiskt tangentbord (F)</translation>
 <translation id="2732288874651063549">Hantera delning med <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Du har använt hela ditt individuella lagringsutrymme i Google Workspace.</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgiska</translation>
-<translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
 <translation id="2802583107108007218">Läs mer om dessa begränsningar</translation>
 <translation id="2803375539583399270">Ange pinkod</translation>
 <translation id="2819519502129272135">Filsynkronisering har inaktiverats</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Du är offline</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3793469551756281394">Cirka <ph name="REMAINING_TIME_HOUR" /> och <ph name="REMAINING_TIME_MINUTE" /> kvar</translation>
-<translation id="3798449238516105146">Version</translation>
 <translation id="3801082500826908679">färöiska</translation>
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3855472144336161447">Tyska (neo 2)</translation>
 <translation id="3858860766373142691">Namn</translation>
-<translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3899991606604168269">franska (Kanada) med flerspråkigt tangentbord</translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installerar mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgariska (fonetiskt)</translation>
 <translation id="4508265954913339219">Aktiveringen misslyckades</translation>
 <translation id="4509667233588080747">engelska (USA) med Workman International-tangentbord</translation>
-<translation id="4522570452068850558">Detaljer</translation>
 <translation id="4527800702232535228">Den här mappen delas med Parallels Desktop</translation>
 <translation id="4552678318981539154">Köp mer lagringsutrymme</translation>
 <translation id="4552759165874948005">Nätverkstyp: <ph name="NETWORK_TYPE" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Lyssna</translation>
 <translation id="5650895901941743674">Kontrollera din APN-konfiguration</translation>
 <translation id="5669691691057771421">Ange en ny pinkod</translation>
-<translation id="5678784840044122290">Linux-programmet blir tillgängligt via terminalen och det kan också finnas en ikon för det i startprogrammet.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Det gick inte att koppla från ett arkiv eller en virtuell hårddisk<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Stäng alla filer i arkivet eller på den virtuella hårddisken och försök igen.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Spelare</translation>
 <translation id="5864471791310927901">DHCP-förfrågan misslyckades</translation>
 <translation id="5896749729057314184">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
-<translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Det finns nya sökfunktioner</translation>
 <translation id="5926082595146149752">nederländska (Nederländerna) med internationellt PC-tangentbord för USA</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Enhetens namn</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, information</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
-<translation id="7248671827512403053">Program</translation>
 <translation id="7256405249507348194">Okänt fel: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tillgängliga tjänster</translation>
 <translation id="7291818353625820805">Vill du att tangenterna ska upprepas? Inaktivera accenttecken i tangentbordsinställningarna</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigurera</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fel.}other{# fel.}}</translation>
 <translation id="8154842056504218462">Alla poster har markerats.</translation>
-<translation id="8157684860301034423">Det gick inte att hämta information om appen.</translation>
 <translation id="8175731104491895765">franska (Belgien)</translation>
 <translation id="8175799081768705361">Synkroniserar <ph name="NUMBER_OF_FILES_SYNCING" /> filer på Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Dokument</translation>
 <translation id="9189836632794948435">kazakiska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> objekt har extraherats</translation>
-<translation id="9213073329713032541">Installationen har påbörjats.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Måne</translation>
 <translation id="931652069802536959">Nätverket blockeras av en princip</translation>

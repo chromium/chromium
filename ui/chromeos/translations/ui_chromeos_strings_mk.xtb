@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Услуги</translation>
 <translation id="181434555916624618">Засега, резултатите со луѓе нема да се прикажуваат. Обидете се со друго барање.</translation>
 <translation id="1829129547161959350">Пингвин</translation>
-<translation id="183183971458492120">Се вчитуваат информации…</translation>
 <translation id="1832073788765803750">катакана со половина ширина</translation>
 <translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
 <translation id="1838709767668011582">Сајт на Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Искористено: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">поедноставен кинески</translation>
 <translation id="22085916256174561">корејски</translation>
-<translation id="2208919847696382164">Инсталирај со Linux</translation>
 <translation id="2215692307449050019">Батеријата е речиси празна. Синхронизацијата на датотеките ќе продолжи кога ќе се поврзете на струја.</translation>
 <translation id="2225536596944493418">Дали сигурно сакате да избришете <ph name="NUMBER_OF_ITEMS" /> ставки?</translation>
 <translation id="2230062665678605299">Не може да се создаде папка „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="2663066752008346276">бурмански (Мјанмар) со тастатура Myansan</translation>
 <translation id="2664412712123763093">Локација на датотеката</translation>
-<translation id="2718540689505416944">Инсталирајте ја апликацијата со Linux</translation>
 <translation id="2719020180254996569">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, детали</translation>
 <translation id="2724954091494693138">турски со F-тастатура</translation>
 <translation id="2732288874651063549">Управувајте со споделувањето со <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Го искористивте целиот ваш индивидуален капацитет на Google Workspace.</translation>
 <translation id="2771816809568414714">Сирење</translation>
 <translation id="2781645665747935084">Белгиски</translation>
-<translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2802583107108007218">Дознајте повеќе за ограничувањава</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
 <translation id="2819519502129272135">Синхронизацијата на датотеките е исклучена</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Офлајн сте</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3793469551756281394">Преостануваат околу <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Верзија</translation>
 <translation id="3801082500826908679">Фарски</translation>
 <translation id="3809272675881623365">Зајак</translation>
 <translation id="3810973564298564668">Управувај</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Германска Neo 2</translation>
 <translation id="3858860766373142691">Име</translation>
-<translation id="3866249974567520381">Опис</translation>
 <translation id="3899991606604168269">француски (Канада) со повеќејазична тастатура</translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">бугарска фонетска</translation>
 <translation id="4508265954913339219">Активирањето не успеа</translation>
 <translation id="4509667233588080747">англиски (САД) со меѓународна тастатура Workman</translation>
-<translation id="4522570452068850558">Детали</translation>
 <translation id="4527800702232535228">Папкава е споделена со Parallels Desktop</translation>
 <translation id="4552678318981539154">Купете поголем простор за складирање</translation>
 <translation id="4552759165874948005">Мрежа со <ph name="NETWORK_TYPE" />, јачина на сигнал <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Слушај</translation>
 <translation id="5650895901941743674">Проверете ја вашата APN-конфигурација</translation>
 <translation id="5669691691057771421">Внесете го новиот PIN</translation>
-<translation id="5678784840044122290">Апликацијата за Linux ќе биде достапна во вашиот терминал, а може да се прикаже икона и во „Стартерот“.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се исклучи од архива или виртуелен диск<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Затворете ги сите датотеки од архивата или виртуелниот диск, а потоа обидете се повторно.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Гејмер</translation>
 <translation id="5864471791310927901">Барањето за DHCP не успеа.</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
-<translation id="5911887972742538906">Дојде до грешка при инсталирањето на вашата апликација за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5918480239180455431">Достапни се нови функции за пребарување</translation>
 <translation id="5926082595146149752">холандски (Холандија) со американска меѓународна компјутерска тастатура</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Име на USB-диск</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, детали</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
-<translation id="7248671827512403053">Апликација</translation>
 <translation id="7256405249507348194">Непрепознаена грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Достапни услуги</translation>
 <translation id="7291818353625820805">Дали сакате да се повторуваат копчињата? Исклучете ги ознаките за акцент во поставките за тастатурата</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Конфигурирај</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}one{# грешка.}other{# грешки.}}</translation>
 <translation id="8154842056504218462">Избрани се сите записи.</translation>
-<translation id="8157684860301034423">Не успеа да вчита информации за апликацијата.</translation>
 <translation id="8175731104491895765">француски (Белгија)</translation>
 <translation id="8175799081768705361">Се синхронизираат <ph name="NUMBER_OF_FILES_SYNCING" /> датотеки на Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">казашки</translation>
 <translation id="9200427192836333033">Отпакувани се <ph name="NUMBER_OF_ITEMS" /> ставки.</translation>
-<translation id="9213073329713032541">Инсталирањето успешно започна.</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219908252191632183">Месечина</translation>
 <translation id="931652069802536959">Мрежата е блокирана со правило</translation>

@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Tapos na</translation>
 <translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2579713773888829241">Mga Shared Drive</translation>
+<translation id="2580306219079937316">Buksan ang mga setting ng Translate</translation>
 <translation id="2583688836549072561">Grupo ng tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> (na) tab, bagong aktibidad.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Subaybayan ang mga pagbaba ng presyo ng mga produkto</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Hindi ma-save ang iyong pagbabago.</translation>
 <translation id="3254806613790954367">Ang iyong huling nakabukas na tab sa lahat ng device mo</translation>
 <translation id="325717987950204592">I-tap ang "Privacy at Seguridad"</translation>
+<translation id="3266338926702638258">Ipakita ang history ng presyo para sa produktong ito</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
@@ -1934,6 +1936,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8221665793629393739">Ang iyong paalalang bumisita ulit</translation>
 <translation id="8232956427053453090">Panatilihin ang data</translation>
 <translation id="8233237502828137700">Isara ang banner ng promo</translation>
+<translation id="823339794112333264">I-on ang mikropono</translation>
 <translation id="8250920743982581267">Mga Dokumento</translation>
 <translation id="8258734532103758067">Na-export ko na ang aking data</translation>
 <translation id="8258999165172757081">Naidagdag</translation>
@@ -2039,6 +2042,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8611922158252451755">Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pag-share. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="8614671330774943747">Pumunta sa Tab Switcher</translation>
 <translation id="8620640915598389714">I-edit</translation>
+<translation id="862367213447108001">Palaging magpakita ng mga pop-up sa site na ito</translation>
 <translation id="8625706492572042370">I-edit ang Home Screen</translation>
 <translation id="8631370184731241854">Mga naka-lock na tab na Incognito</translation>
 <translation id="8633025649649592204">Kamakailang aktibidad</translation>
@@ -2136,6 +2140,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8928426232677696166"><ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon, kasalukuyang pinili. Pumili ng account.</translation>
 <translation id="894191600409472540">Gumawa ng malalakas na password</translation>
 <translation id="8943780400130412484">Magsimula ng bagong pag-download?</translation>
+<translation id="8947838125864566256">I-off ang mikropono</translation>
 <translation id="8953046091948372197">Makikita mo rito ang iyong mga password</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opsyon sa autocomplete ang available sa itaas ng iyong keyboard.}one{{count} opsyon sa autocomplete ang available sa itaas ng iyong keyboard.}other{{count} na opsyon sa autocomplete ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="895541991026785598">Mag-ulat ng Isyu</translation>

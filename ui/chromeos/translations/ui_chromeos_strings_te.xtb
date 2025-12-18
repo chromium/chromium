@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">సర్వీసులు</translation>
 <translation id="181434555916624618">ప్రస్తుతానికి, వ్యక్తులకు సంబంధించిన ఫలితాలు చూపబడవు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="1829129547161959350">పెంగ్విన్</translation>
-<translation id="183183971458492120">సమాచారాన్ని లోడ్ చేస్తోంది...</translation>
 <translation id="1832073788765803750">సగం వెడల్పు కటకానా</translation>
 <translation id="1834290891154666894">చెల్లని సబ్జెక్ట్ ప్రత్యామ్నాయ పేరుకు సంబంధించిన మ్యాచ్ ఎంటర్ చేయబడింది</translation>
 <translation id="1838709767668011582">Google సైట్</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> ఉపయోగించారు</translation>
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
 <translation id="22085916256174561">కొరియన్</translation>
-<translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2215692307449050019">బ్యాటరీ తక్కువగా ఉంది. మీరు పవర్‌కు కనెక్ట్ చేసినప్పుడు ఫైల్ సింక్ చేయడం మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="2663066752008346276">మయన్‌సన్ కీబోర్డ్‌తో బర్మీస్/మయన్మార్</translation>
 <translation id="2664412712123763093">ఫైల్ లొకేషన్</translation>
-<translation id="2718540689505416944">Linuxతో యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, వివరాలు</translation>
 <translation id="2724954091494693138">F-కీబోర్డ్‌తో టర్కిష్</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />‌తో షేర్ చేసిన వాటిని మేనేజ్ చేయండి</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">మీరు మీ వ్యక్తిగత Google Workspace స్టోరేజ్ మొత్తాన్ని ఉపయోగించారు.</translation>
 <translation id="2771816809568414714">జున్ను</translation>
 <translation id="2781645665747935084">బెల్జియన్</translation>
-<translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2802583107108007218">ఈ పరిమితుల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2803375539583399270">PINను నమోదు చేయండి</translation>
 <translation id="2819519502129272135">ఫైల్ సింక్ ఆఫ్ చేయబడింది</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3793469551756281394">దాదాపు <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> సమయం మిగిలి ఉంది</translation>
-<translation id="3798449238516105146">వెర్షన్</translation>
 <translation id="3801082500826908679">ఫారోస్</translation>
 <translation id="3809272675881623365">కుందేలు</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3855472144336161447">జర్మన్ నియో 2</translation>
 <translation id="3858860766373142691">పేరు</translation>
-<translation id="3866249974567520381">వివరణ</translation>
 <translation id="3899991606604168269">బహుభాషా కీబోర్డ్‌తో ఫ్రెంచ్ (కెనడా)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
 <translation id="3906232975181435906"><ph name="NETWORK_NAME" />నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">బల్గేరియన్ ఫోనెటిక్</translation>
 <translation id="4508265954913339219">సక్రియం  చేయడం విఫలమైంది</translation>
 <translation id="4509667233588080747">Workman అంతర్జాతీయ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
-<translation id="4522570452068850558">వివరాలు</translation>
 <translation id="4527800702232535228">ఈ ఫోల్డర్ Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="4552678318981539154">మరింత నిల్వను కొనుగోలు చేయండి</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">వినండి</translation>
 <translation id="5650895901941743674">మీ APN కాన్ఫిగరేషన్‌ను చెక్ చేయండి</translation>
 <translation id="5669691691057771421">కొత్త PINని నమోదు చేయండి</translation>
-<translation id="5678784840044122290">Linux అప్లికేషన్ మీ టెర్మినల్‌లో అందుబాటులో ఉంటుంది మరియు మీ లాంచర్‌లో ఒక చిహ్నం కూడా చూపవచ్చు.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ఆర్కైవ్ లేదా వర్చువల్ డిస్క్ నుండి డిస్‌కనెక్ట్ చేయడం సాధ్యం కాదు<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    ఆర్కైవ్ లేదా వర్చువల్ డిస్క్‌లో అన్ని ఫైళ్లను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">గేమర్</translation>
 <translation id="5864471791310927901">DHCP లుక్‌అప్ విఫలమైంది</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" />‌లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" /> యాక్టివేట్ చేయబడలేదు, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
-<translation id="5911887972742538906">మీ Linux అప్లికేషన్ యొక్క ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5912396950572065471">ఫార్మాట్</translation>
 <translation id="5918480239180455431">కొత్త సెర్చ్ ఫీచర్‌లు అందుబాటులో ఉన్నాయి</translation>
 <translation id="5926082595146149752">US అంతర్జాతీయ PC కీబోర్డ్‌తో డచ్ (నెదర్లాండ్స్)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">డ్రైవ్ పేరు</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, వివరాలు</translation>
 <translation id="7246947237293279874">FTP ప్రాక్సీ</translation>
-<translation id="7248671827512403053">అప్లికేషన్‌</translation>
 <translation id="7256405249507348194">గుర్తించబడని ఎర్రర్: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">అందుబాటులో ఉన్న సేవలు</translation>
 <translation id="7291818353625820805">రిపీట్ చేయడానికి కీలు అవసరమా? కీబోర్డ్ సెట్టింగ్‌లలో యాక్సెంట్ మార్క్‌లను ఆఫ్ చేయండి</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">కాన్ఫిగర్ చేయి</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ఎర్రర్.}other{# ఎర్రర్‌లు.}}</translation>
 <translation id="8154842056504218462">అన్ని నమోదులు ఎంపిక చేయబడ్డాయి.</translation>
-<translation id="8157684860301034423">యాప్ సమాచారాన్ని తిరిగి పొందడంలో విఫలమైంది.</translation>
 <translation id="8175731104491895765">ఫ్రెంచ్ (బెల్జియం)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ఫైల్స్‌ను సింక్ చేస్తోంది</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">కజక్</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు సంగ్రహించబడ్డాయి.</translation>
-<translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
 <translation id="931652069802536959">నెట్‌వర్క్‌ను పాలసీ బ్లాక్ చేసింది</translation>

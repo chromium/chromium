@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">서비스</translation>
 <translation id="181434555916624618">현재는 인물이 포함된 결과가 표시되지 않습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="1829129547161959350">펭귄</translation>
-<translation id="183183971458492120">정보 로드 중...</translation>
 <translation id="1832073788765803750">반각 가타카나</translation>
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
 <translation id="1838709767668011582">Google 사이트</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> 사용 중</translation>
 <translation id="2198315389084035571">중국어(간체)</translation>
 <translation id="22085916256174561">한국어</translation>
-<translation id="2208919847696382164">Linux 앱 설치</translation>
 <translation id="2215692307449050019">배터리가 부족합니다. 전원에 연결되면 파일 동기화가 재개됩니다.</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="2663066752008346276">버마어(미얀마, 미얀산 키보드)</translation>
 <translation id="2664412712123763093">파일 위치</translation>
-<translation id="2718540689505416944">Linux 앱 설치</translation>
 <translation id="2719020180254996569">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 세부정보</translation>
 <translation id="2724954091494693138">터키어(F 키보드)</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> 공유 관리</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">개인 Google Workspace 저장용량을 모두 사용했습니다.</translation>
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2781645665747935084">벨기에어</translation>
-<translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
 <translation id="2802583107108007218">제한사항에 관해 자세히 알아보기</translation>
 <translation id="2803375539583399270">PIN 입력</translation>
 <translation id="2819519502129272135">파일 동기화 사용 중지됨</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">오프라인 상태입니다.</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3793469551756281394">약 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> 남음</translation>
-<translation id="3798449238516105146">버전</translation>
 <translation id="3801082500826908679">페로스어</translation>
 <translation id="3809272675881623365">토끼</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
-<translation id="3866249974567520381">설명</translation>
 <translation id="3899991606604168269">프랑스어(캐나다, 다국어 키보드)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
 <translation id="3906232975181435906">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">불가리아어 표음</translation>
 <translation id="4508265954913339219">활성화 실패</translation>
 <translation id="4509667233588080747">영어(미국, 워크맨 국제 키보드)</translation>
-<translation id="4522570452068850558">세부정보</translation>
 <translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> 네트워크, 신호 강도 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">듣기</translation>
 <translation id="5650895901941743674">APN 구성을 확인하세요.</translation>
 <translation id="5669691691057771421">새 PIN 입력</translation>
-<translation id="5678784840044122290">단말기 내에서 Linux 애플리케이션을 사용할 수 있게 되며 런처에 아이콘이 표시될 수도 있습니다.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />아카이브 또는 가상 디스크의 연결을 해제할 수 없습니다.<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    아카이브 또는 가상 디스크에 있는 모든 파일을 닫은 다음 다시 시도해 보세요.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">게이머</translation>
 <translation id="5864471791310927901">DHCP 조회 실패</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
-<translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
 <translation id="5918480239180455431">새로운 검색결과 기능 사용 가능</translation>
 <translation id="5926082595146149752">네덜란드어(네덜란드, 미국 국제 PC 키보드)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">드라이브 이름</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, 세부정보</translation>
 <translation id="7246947237293279874">FTP 프록시</translation>
-<translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7256405249507348194">알 수 없는 오류(<ph name="DESC" />)입니다.</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
 <translation id="7291818353625820805">키를 반복하고 싶으신가요? 키보드 설정에서 악센트 표시를 사용 중지하세요.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{오류 1개}other{오류 #개}}</translation>
 <translation id="8154842056504218462">모든 항목이 선택되었습니다.</translation>
-<translation id="8157684860301034423">앱 정보를 가져오지 못했습니다.</translation>
 <translation id="8175731104491895765">프랑스어(벨기에)</translation>
 <translation id="8175799081768705361">Drive 파일 <ph name="NUMBER_OF_FILES_SYNCING" />개 동기화 중</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">카자흐어</translation>
 <translation id="9200427192836333033">항목 <ph name="NUMBER_OF_ITEMS" />개가 추출되었습니다.</translation>
-<translation id="9213073329713032541">설치가 시작되었습니다.</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219908252191632183">달</translation>
 <translation id="931652069802536959">정책에 따라 네트워크가 차단됨</translation>

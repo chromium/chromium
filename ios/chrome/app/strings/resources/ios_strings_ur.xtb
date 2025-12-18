@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">ہو گیا</translation>
 <translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2579713773888829241">مشترکہ ڈرائیوز</translation>
+<translation id="2580306219079937316">ترجمہ کی ترتیبات کھولیں</translation>
 <translation id="2583688836549072561">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز، نئی سرگرمی۔</translation>
 <translation id="2593272815202181319">مونو اسپیس</translation>
 <translation id="2601778637777010194">پروڈکٹس کی قیمتوں میں کمی کو ٹریک کریں</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">آپ کی تبدیلی محفوظ نہیں ہو سکی۔</translation>
 <translation id="3254806613790954367">آپ کے تمام آلات پر کھلا ہوا آخری ٹیب</translation>
 <translation id="325717987950204592">"رازداری اور سیکیورٹی" پر تھپتھپائیں</translation>
+<translation id="3266338926702638258">اس پروڈکٹ کے لیے قیمت کی سرگزشت دکھائیں</translation>
 <translation id="3272527697863656322">منسوخ کریں</translation>
 <translation id="3273510436356991673">اپنی ہوم اسکرین کو حسب ضرورت بنائیں</translation>
 <translation id="3277021493514034324">سائٹ کا پتہ کاپی ہو گیا</translation>
@@ -1934,6 +1936,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8221665793629393739">دوبارہ ملاحظہ کرنے کیلئے آپ کی یاد دہانی</translation>
 <translation id="8232956427053453090">ڈیٹا برقرار رکھیں</translation>
 <translation id="8233237502828137700">بینر پرومو بند کریں</translation>
+<translation id="823339794112333264">مائیکروفون آن کریں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="8258734532103758067">میں نے اپنا ڈیٹا ایکسپورٹ کر لیا ہے</translation>
 <translation id="8258999165172757081">شامل کر دیا گیا</translation>
@@ -2039,6 +2042,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8611922158252451755">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے، لہذا سمجھداری سے اشتراک کریں۔ لنک کی معیاد 48 گھنٹے میں ختم ہو جائے گی۔</translation>
 <translation id="8614671330774943747">ٹیب سوئچر پر جائیں</translation>
 <translation id="8620640915598389714">ترمیم کریں</translation>
+<translation id="862367213447108001">اس سائٹ پر ہمیشہ پاپ اپس دکھائیں</translation>
 <translation id="8625706492572042370">ہوم اسکرین میں ترمیم کریں</translation>
 <translation id="8631370184731241854">مقفل کردہ پوشیدگی ٹیبز</translation>
 <translation id="8633025649649592204">حالیہ سرگرمی</translation>
@@ -2135,6 +2139,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8928426232677696166">آپ کی تنظیم کے زیر انتظام <ph name="EMAIL" /> فی الوقت منتخب ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="894191600409472540">مضبوط پاس ورڈز تخلیق کریں</translation>
 <translation id="8943780400130412484">نیا ڈاؤن لوڈ شروع کریں؟</translation>
+<translation id="8947838125864566256">مائیکروفون آف کریں</translation>
 <translation id="8953046091948372197">آپ کو اپنے پاس ورڈ یہاں ملیں گے</translation>
 <translation id="8953602327115378731">{count,plural, =1{آپ کے کی بورڈ کے اوپر خودکار تکمیل کے لیے {count} اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر خودکار تکمیل کے لیے {count} اختیارات دستیاب ہیں۔}}</translation>
 <translation id="895541991026785598">ایک مسئلہ کی اطلاع دیں</translation>

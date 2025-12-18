@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">சேவைகள்</translation>
 <translation id="181434555916624618">தற்போது, மனிதர்கள் இருக்கும் முடிவுகள் காட்டப்படுவதில்லை. வேறொரு ப்ராம்ப்ட்டைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="1829129547161959350">பென்குயின்</translation>
-<translation id="183183971458492120">தகவலை ஏற்றுகிறது...</translation>
 <translation id="1832073788765803750">அரை அகலக் கட்டகானா எழுத்து</translation>
 <translation id="1834290891154666894">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம் தவறாக உள்ளது</translation>
 <translation id="1838709767668011582">Google தளம்</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> பயன்படுத்தப்பட்டது</translation>
 <translation id="2198315389084035571">எளிய சீன மொழி</translation>
 <translation id="22085916256174561">கொரியன்</translation>
-<translation id="2208919847696382164">Linux தொகுப்பை நிறுவு</translation>
 <translation id="2215692307449050019">பேட்டரி குறைவாக உள்ளது. நீங்கள் பவர் பிளக் உடன் இணைத்ததும் ஃபைல் ஒத்திசைவு மீண்டும் தொடங்கும்.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ஃபோல்டரை உருவாக்க முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> வாய்ப்புகள் மீதமுள்ளன.</translation>
 <translation id="2663066752008346276">பர்மீஸ்/மியான்மர் - மியான்சன் கீபோர்டு</translation>
 <translation id="2664412712123763093">ஃபைலின் இடம்</translation>
-<translation id="2718540689505416944">Linux ஆப்ஸை நிறுவுதல்</translation>
 <translation id="2719020180254996569">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, விவரங்கள்</translation>
 <translation id="2724954091494693138">டர்கிஷ் (F-கீபோர்டு)</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> பகிர்தலை நிர்வகியுங்கள்</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">தனிப்பட்ட Google Workspace சேமிப்பகத்தை முழுமையாகப் பயன்படுத்திவிட்டீர்கள்.</translation>
 <translation id="2771816809568414714">பாலாடைக் கட்டி</translation>
 <translation id="2781645665747935084">பெல்ஜியன்</translation>
-<translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
 <translation id="2802583107108007218">இந்தக் கட்டுப்பாடுகள் குறித்து மேலும் அறிக</translation>
 <translation id="2803375539583399270">பின்னை உள்ளிடவும்</translation>
 <translation id="2819519502129272135">ஃபைல் ஒத்திசைவு முடக்கப்பட்டது</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">ஆஃப்லைனில் உள்ளீர்கள்</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="3793469551756281394">சுமார் <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> மீதமுள்ளது</translation>
-<translation id="3798449238516105146">பதிப்பு</translation>
 <translation id="3801082500826908679">ஃபாரோயீஸ்</translation>
 <translation id="3809272675881623365">முயல்</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
 <translation id="3858860766373142691">பெயர்</translation>
-<translation id="3866249974567520381">விவரம்</translation>
 <translation id="3899991606604168269">ஃபிரெஞ்சு (கனடா) பன்மொழி கீபோர்டு</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> க்கு இணைக்கிறது</translation>
 <translation id="3906232975181435906">மொபைல் சுயவிவரத்தை நிறுவுகிறது: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
 <translation id="4508265954913339219">செயலாக்கம் தோல்வியுற்றது</translation>
 <translation id="4509667233588080747">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் சர்வதேசக் கீபோர்டு</translation>
-<translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4527800702232535228">Parallels Desktopபுடன் இந்த ஃபோல்டர் பகிரப்பட்டுள்ளது</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> நெட்வொர்க், சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">கேள்</translation>
 <translation id="5650895901941743674">உங்கள் APN உள்ளமைவைச் சரிபார்க்கவும்</translation>
 <translation id="5669691691057771421">புதிய பின்னை உள்ளிடவும்</translation>
-<translation id="5678784840044122290">இந்த Linux ஆப்ஸ் உங்கள் முனையத்திற்குள் இருக்கும், அத்துடன் உங்கள் தொடக்கியிலும் ஒரு ஐகான் காண்பிக்கப்படலாம்.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />காப்பகம் அல்லது விர்ச்சுவல் வட்டிலிருந்து இணைப்பை நீக்க முடியவில்லை<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    காப்பகம் அல்லது விர்ச்சுவல் வட்டிலுள்ள எல்லாக் கோப்புகளையும் மூடி, மீண்டும் முயலவும்.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">கேமர்</translation>
 <translation id="5864471791310927901">DHCP பார்வையிடுதல் தோல்வி</translation>
 <translation id="5896749729057314184">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
-<translation id="5911887972742538906">உங்கள் Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="5912396950572065471">ஃபார்மேட்</translation>
 <translation id="5918480239180455431">புதிய தேடல் அம்சங்கள் உள்ளன</translation>
 <translation id="5926082595146149752">டச்சு (நெதர்லாந்து) - யூஎஸ் சர்வதேச PC கீபோர்டு</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">இயக்ககத்தின் பெயர்</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, விவரங்கள்</translation>
 <translation id="7246947237293279874">FTP ப்ராக்ஸி</translation>
-<translation id="7248671827512403053">ஆப்ஸ்</translation>
 <translation id="7256405249507348194">அறியப்படாத பிழை: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
 <translation id="7291818353625820805">பட்டன்களுக்கான செயல்பாடு மீண்டும் மீண்டும் நிகழ வேண்டுமா? கீபோர்டு அமைப்புகளில் ஆக்ஸண்ட் குறிகளை முடக்கவும்</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">உள்ளமை</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 பிழை.}other{# பிழைகள்.}}</translation>
 <translation id="8154842056504218462">அனைத்து உள்ளீடுகளும் தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
-<translation id="8157684860301034423">ஆப்ஸ் தகவலை மீட்டெடுக்க முடியவில்லை.</translation>
 <translation id="8175731104491895765">ஃபிரெஞ்சு (பெல்ஜியம்)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ஃபைல்களை ஒத்திசைக்கிறது</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">கஸக்</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள்/டைரக்டரிகள் பிரிக்கப்பட்டன.</translation>
-<translation id="9213073329713032541">நிறுவல் தொடங்கியது.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">லூனார்</translation>
 <translation id="931652069802536959">கொள்கையின் மூலம் நெட்வொர்க் தடுக்கப்பட்டுள்ளது</translation>

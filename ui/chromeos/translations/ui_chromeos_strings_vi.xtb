@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Dịch vụ</translation>
 <translation id="181434555916624618">Hiện tại, các kết quả về con người sẽ không hiển thị. Hãy thử một câu lệnh khác.</translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
-<translation id="183183971458492120">Đang tải thông tin...</translation>
 <translation id="1832073788765803750">Chữ Katakana nửa chiều rộng</translation>
 <translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
 <translation id="1838709767668011582">Trang web Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Đã dùng <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Tiếng Trung giản thể</translation>
 <translation id="22085916256174561">Tiếng Hàn</translation>
-<translation id="2208919847696382164">Cài đặt Linux</translation>
 <translation id="2215692307449050019">Pin yếu. Quá trình đồng bộ hoá tệp sẽ tiếp tục khi thiết bị kết nối với nguồn điện.</translation>
 <translation id="2225536596944493418">Bạn có chắc chắn muốn xóa <ph name="NUMBER_OF_ITEMS" /> mục không?</translation>
 <translation id="2230062665678605299">Không thể tạo thư mục "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="2663066752008346276">Tiếng Miến Điện/Myanmar bằng bàn phím Myansan</translation>
 <translation id="2664412712123763093">Vị trí tệp</translation>
-<translation id="2718540689505416944">Cài đặt ứng dụng Linux</translation>
 <translation id="2719020180254996569">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Thông tin chi tiết</translation>
 <translation id="2724954091494693138">Tiếng Thổ Nhĩ Kỳ bằng bàn phím F</translation>
 <translation id="2732288874651063549">Quản lý nội dung được chia sẻ với <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Bạn đã dùng hết bộ nhớ cá nhân trên Google Workspace.</translation>
 <translation id="2771816809568414714">Pho mát</translation>
 <translation id="2781645665747935084">Tiếng Bỉ</translation>
-<translation id="2782104745158847185">Lỗi khi cài đặt ứng dụng Linux</translation>
 <translation id="2802583107108007218">Tìm hiểu thêm về những hạn chế này</translation>
 <translation id="2803375539583399270">Nhập mã PIN</translation>
 <translation id="2819519502129272135">Tính năng đồng bộ hoá tệp đã tắt</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Bạn đang ngoại tuyến</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3793469551756281394">Còn khoảng <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> nữa</translation>
-<translation id="3798449238516105146">Phiên bản</translation>
 <translation id="3801082500826908679">Tiếng Faroe</translation>
 <translation id="3809272675881623365">Con thỏ</translation>
 <translation id="3810973564298564668">Quản lý</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3855472144336161447">Neo 2 tiếng Đức</translation>
 <translation id="3858860766373142691">Tên</translation>
-<translation id="3866249974567520381">Mô tả</translation>
 <translation id="3899991606604168269">Tiếng Pháp (Canada) bằng bàn phím Đa ngôn ngữ</translation>
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Ngữ âm tiếng Bungary</translation>
 <translation id="4508265954913339219">Kích hoạt không thành công</translation>
 <translation id="4509667233588080747">Tiếng Anh (Mỹ) bằng bàn phím quốc tế Workman</translation>
-<translation id="4522570452068850558">Chi tiết</translation>
 <translation id="4527800702232535228">Thư mục này được chia sẻ với Parallels Desktop</translation>
 <translation id="4552678318981539154">Mua thêm dung lượng lưu trữ</translation>
 <translation id="4552759165874948005">Mạng <ph name="NETWORK_TYPE" />, cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Nghe</translation>
 <translation id="5650895901941743674">Hãy kiểm tra cấu hình APN của bạn</translation>
 <translation id="5669691691057771421">Nhập mã PIN mới</translation>
-<translation id="5678784840044122290">Ứng dụng Linux sẽ có trong Thiết bị của bạn và cũng có thể hiển thị một biểu tượng trong Trình chạy.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Không thể ngắt kết nối khỏi vùng lưu trữ hoặc ổ đĩa ảo<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Đóng tất cả các tệp trên vùng lưu trữ hoặc ổ đĩa ảo, sau đó thử lại.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Người chơi trò chơi điện tử</translation>
 <translation id="5864471791310927901">Không thể tra cứu DHCP</translation>
 <translation id="5896749729057314184">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
-<translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="5912396950572065471">Định dạng</translation>
 <translation id="5918480239180455431">Hiện đã có các tính năng tìm kiếm mới</translation>
 <translation id="5926082595146149752">Tiếng Hà Lan (Hà Lan) bằng bàn phím quốc tế Hoa Kỳ cho máy tính để bàn</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Tên ổ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Thông tin chi tiết</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
-<translation id="7248671827512403053">Ứng dụng</translation>
 <translation id="7256405249507348194">Lỗi không xác định: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dịch vụ khả dụng</translation>
 <translation id="7291818353625820805">Bạn muốn lặp lại các phím? Tắt dấu nhấn trọng âm trong Cài đặt bàn phím</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Định cấu hình</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 lỗi.}other{# lỗi.}}</translation>
 <translation id="8154842056504218462">Đã chọn tất cả các mục.</translation>
-<translation id="8157684860301034423">Không truy xuất được thông tin ứng dụng.</translation>
 <translation id="8175731104491895765">Tiếng Pháp (Bỉ)</translation>
 <translation id="8175799081768705361">Đang đồng bộ hoá <ph name="NUMBER_OF_FILES_SYNCING" /> tệp trên Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Tài liệu</translation>
 <translation id="9189836632794948435">Tiếng Kazakh</translation>
 <translation id="9200427192836333033">Đã giải nén <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
-<translation id="9213073329713032541">Đã bắt đầu thành công quá trình cài đặt.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219908252191632183">Hình lưỡi liềm</translation>
 <translation id="931652069802536959">Mạng bị chặn theo chính sách</translation>

@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Eginda</translation>
 <translation id="2577522251608256362">Auzoa</translation>
 <translation id="2579713773888829241">Partekatutako unitateak</translation>
+<translation id="2580306219079937316">Ireki Translate-ren ezarpenak</translation>
 <translation id="2583688836549072561">Fitxa taldea, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> fitxa, jarduera berria.</translation>
 <translation id="2593272815202181319">Tarte bakarrekoak</translation>
 <translation id="2601778637777010194">Egin produktuen prezio-jaitsieren jarraipena</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Ezin izan da gorde aldaketa.</translation>
 <translation id="3254806613790954367">Gailu guztien artean azkenekoz ireki duzun fitxa</translation>
 <translation id="325717987950204592">Sakatu "Pribatutasuna eta segurtasuna".</translation>
+<translation id="3266338926702638258">Erakutsi produktu honen prezioen historia</translation>
 <translation id="3272527697863656322">Utzi</translation>
 <translation id="3273510436356991673">Pertsonalizatu orri nagusia</translation>
 <translation id="3277021493514034324">Kopiatu da webgunearen helbidea</translation>
@@ -1934,6 +1936,7 @@
 <translation id="8221665793629393739">Berriro bisitatzeko gogorarazpena</translation>
 <translation id="8232956427053453090">Gorde datuak</translation>
 <translation id="8233237502828137700">Itxi promozioaren iragarki-banda</translation>
+<translation id="823339794112333264">Piztu mikrofonoa</translation>
 <translation id="8250920743982581267">Dokumentuak</translation>
 <translation id="8258734532103758067">Esportatu ditut nire datuak</translation>
 <translation id="8258999165172757081">Gehitu da</translation>
@@ -2039,6 +2042,7 @@
 <translation id="8611922158252451755">Esteka duten guztiek fitxa guztiak edita ditzakete; beraz, parteka itzazu arduraz. 48 ordu barru iraungiko da esteka.</translation>
 <translation id="8614671330774943747">Joan fitxa-aldatzailera</translation>
 <translation id="8620640915598389714">Editatu</translation>
+<translation id="862367213447108001">Erakutsi beti leiho gainerakorrak webgune honetan</translation>
 <translation id="8625706492572042370">Editatu orri nagusia</translation>
 <translation id="8631370184731241854">Ezkutuko moduko fitxa blokeatuak</translation>
 <translation id="8633025649649592204">Azkenaldiko jarduerak</translation>
@@ -2135,6 +2139,7 @@
 <translation id="8928426232677696166"><ph name="EMAIL" /> hautatuta dago. Erakundeak kudeatzen du. Aukeratu kontu bat.</translation>
 <translation id="894191600409472540">Sortu pasahitz konplexuak</translation>
 <translation id="8943780400130412484">Beste deskarga bat hasi nahi duzu?</translation>
+<translation id="8947838125864566256">Itzali mikrofonoa</translation>
 <translation id="8953046091948372197">Hemen dituzu pasahitzak</translation>
 <translation id="8953602327115378731">{count,plural, =1{Automatikoki osatzeko aukera {count} dago erabilgarri teklatuaren gainean.}other{Automatikoki osatzeko {count} aukera daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="895541991026785598">Jakinarazi arazo bat</translation>

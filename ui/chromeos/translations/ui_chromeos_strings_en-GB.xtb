@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="181434555916624618">For now, results with people won't be shown. Try another prompt.</translation>
 <translation id="1829129547161959350">Penguin</translation>
-<translation id="183183971458492120">Loading information...</translation>
 <translation id="1832073788765803750">Half width katakana</translation>
 <translation id="1834290891154666894">Invalid subject alternative name match entry</translation>
 <translation id="1838709767668011582">Google site</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> used</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
-<translation id="2208919847696382164">Install with Linux</translation>
 <translation id="2215692307449050019">Battery is low. File sync will resume when you are connected to power.</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="2663066752008346276">Burmese/Myanmar with Myansan keyboard</translation>
 <translation id="2664412712123763093">File location</translation>
-<translation id="2718540689505416944">Install app with Linux</translation>
 <translation id="2719020180254996569">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, details</translation>
 <translation id="2724954091494693138">Turkish with F-keyboard</translation>
 <translation id="2732288874651063549">Manage <ph name="VM_NAME" /> sharing</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">You’ve used all of your individual Google Workspace storage.</translation>
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2781645665747935084">Belgian</translation>
-<translation id="2782104745158847185">Error installing Linux application</translation>
 <translation id="2802583107108007218">Learn more about these restrictions</translation>
 <translation id="2803375539583399270">Enter PIN</translation>
 <translation id="2819519502129272135">File sync turned off</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">You are offline</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3793469551756281394">About <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> remaining</translation>
-<translation id="3798449238516105146">Version</translation>
 <translation id="3801082500826908679">Faroese</translation>
 <translation id="3809272675881623365">Rabbit</translation>
 <translation id="3810973564298564668">Manage</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Back</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3866249974567520381">Description</translation>
 <translation id="3899991606604168269">French (Canada) with multilingual keyboard</translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
 <translation id="4508265954913339219">Activation failed</translation>
 <translation id="4509667233588080747">English (US) with Workman International keyboard</translation>
-<translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">This folder is shared with Parallels Desktop</translation>
 <translation id="4552678318981539154">Buy more storage</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> network, signal strength <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Listen</translation>
 <translation id="5650895901941743674">Check your APN configuration</translation>
 <translation id="5669691691057771421">Enter new PIN</translation>
-<translation id="5678784840044122290">The Linux application will be available within your Terminal and may also show an icon in your Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Can't disconnect from an archive or virtual disk<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Close all files on the archive or virtual disk, then try again.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP look-up failed</translation>
 <translation id="5896749729057314184">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
-<translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">New search features available</translation>
 <translation id="5926082595146149752">Dutch (Netherlands) with US International PC keyboard</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Drive name</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
-<translation id="7248671827512403053">Application</translation>
 <translation id="7256405249507348194">Unrecognised error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Available services</translation>
 <translation id="7291818353625820805">Want keys to repeat? Turn off accent marks in Keyboard settings</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Configure</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{One error.}other{# errors.}}</translation>
 <translation id="8154842056504218462">Selected all entries.</translation>
-<translation id="8157684860301034423">Failed to retrieve app info.</translation>
 <translation id="8175731104491895765">French (Belgium)</translation>
 <translation id="8175799081768705361">Syncing <ph name="NUMBER_OF_FILES_SYNCING" /> Drive files</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items extracted.</translation>
-<translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Lunar</translation>
 <translation id="931652069802536959">Network is blocked by policy</translation>

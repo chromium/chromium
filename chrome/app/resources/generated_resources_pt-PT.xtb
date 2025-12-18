@@ -1031,7 +1031,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1679810534535368772">Tem a certeza de que quer sair?</translation>
 <translation id="167983332380191032">Ocorreu um erro com o HTTP enviado pelo serviço de gestão.</translation>
 <translation id="167997285881077031">Definições de voz para a conversão de texto em voz</translation>
-<translation id="1680849702532889074">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="1682195225331129001">Experimentar agora</translation>
 <translation id="1682548588986054654">Nova janela de navegação anónima</translation>
 <translation id="1682696837763999627">Cursor do rato grande</translation>
@@ -1657,7 +1656,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2104166991923847969">Desativar a zona Wi-Fi automaticamente</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
-<translation id="2106439768713835453">Partilhar também o áudio da aplicação</translation>
 <translation id="2107359546799360577">As otimizações de JavaScript estão desativadas.</translation>
 <translation id="2108204112555497972">Última verificação há <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}other{# números de telefone}}</translation>
@@ -2670,7 +2668,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2778471504622896352">Adicionar apps remotas ao Launcher do Chrome OS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Ocorreu um erro ao instalar a aplicação para Linux.</translation>
 <translation id="2783952358106015700">Usar a chave de segurança com a aplicação <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Verificação de Palavra-passe</translation>
 <translation id="2785279781154577715">Aspeto do cartão de pré-visualização de sobreposição de separadores</translation>
@@ -4882,7 +4879,6 @@ Quer pará-lo?</translation>
 <translation id="4293219510510666933">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou. Também pode fazer perguntas e receber respostas com base no seu histórico de navegação. Esta definição está ativada.</translation>
 <translation id="429344752071832554">Retirar foco do grupo</translation>
 <translation id="4294392694389031609">Eliminou o ficheiro <ph name="FILE_NAME" /> do histórico de transferências, mas este ainda está no seu dispositivo</translation>
-<translation id="4295072614469448764">A aplicação está disponível no terminal. Também pode existir um ícone no Launcher.</translation>
 <translation id="4295979599050707005">Inicie sessão novamente para confirmar que a sua conta <ph name="USER_EMAIL" /> pode ser utilizada com Websites, aplicações e extensões no Chrome e no Google Play. Também pode remover esta conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicações que a app <ph name="APP_NAME" /> instalou e das quais fez stream</translation>
 <translation id="4296632172536745000">A palavra-passe original para este site foi encontrada numa violação de dados pública. A <ph name="DATE" />, pediu ao <ph name="BRAND" /> para alterar automaticamente a sua palavra-passe.</translation>
@@ -4989,7 +4985,6 @@ Quer pará-lo?</translation>
 <translation id="4370975561335139969">O email e a palavra-passe introduzidos não coincidem.</translation>
 <translation id="4373418556073552953">Inicie sessão com o seu telemóvel Android</translation>
 <translation id="4373973310429385827">Farol</translation>
-<translation id="4374831787438678295">Instalador para o Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros transferidos</translation>
 <translation id="4376226992615520204">Localização desativada</translation>
 <translation id="4377363674125277448">Ocorreu um problema com o certificado do servidor.</translation>
@@ -6269,7 +6264,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5263656105659419083">Para voltar facilmente ao painel lateral, clique em Fixar no canto superior direito</translation>
 <translation id="5264148714798105376">Esta ação pode demorar cerca de um minuto.</translation>
 <translation id="5264252276333215551">Ligue-se à Internet para iniciar a aplicação no modo quiosque.</translation>
-<translation id="5265797726250773323">Ocorreu um erro ao instalar</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para se proteger contra sites perigosos</translation>
 <translation id="5269659747698455324">Desbloquear chaves de acesso</translation>
@@ -7647,7 +7641,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="623261264391834964">Clique com o botão direito do rato numa caixa de texto para usar a funcionalidade Ajuda-me a escrever</translation>
 <translation id="6233154960150021497">Predefinir para utilizar a voz em vez do teclado</translation>
 <translation id="6234108445915742946">Os Termos de Utilização do Chrome vão ser alterados a 31 de março</translation>
-<translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmara do dispositivo foi ativada. Coloque o código QR do seu eSIM à frente da câmara.</translation>
 <translation id="6237342324375264347">Grupo <ph name="SHARE_STATE" /> <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App para tirar notas com a caneta stylus</translation>
@@ -8329,7 +8322,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6713668088933662563">Nunca se disponibilizar para traduzir estes idiomas</translation>
 <translation id="6714871567554212732">Ver mais detalhes sobre o grupo <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Os Websites não têm autorização para usar o microfone</translation>
-<translation id="6715803357256707211">Ocorreu um erro durante a instalação da sua aplicação para Linux. Clique na notificação para obter detalhes.</translation>
 <translation id="6716049856796700977">Nada pode usar a sua localização. No entanto, a sua localização pode continuar visível para as apps e os Websites através do seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">A ligação de rede falhou. Verifique-a ou experimente outra rede Wi-Fi.</translation>
 <translation id="671928215901716392">Ecrã de bloqueio</translation>
@@ -12146,7 +12138,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="992592832486024913">Desativar o ChromeVox (respostas faladas)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> grupos de separadores sugeridos</translation>
 <translation id="992778845837390402">Neste momento, está a decorrer a cópia de segurança do Linux.</translation>
-<translation id="993540765962421562">Instalação em curso</translation>
 <translation id="994087375490600917">Painéis laterais</translation>
 <translation id="994289308992179865">&amp;Ciclo</translation>
 <translation id="995755448277384931">Adicione o IBAN</translation>

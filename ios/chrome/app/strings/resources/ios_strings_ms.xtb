@@ -404,6 +404,7 @@
 <translation id="2479148705183875116">Pergi ke Tetapan</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2484459871750294497">Bagaimanakah boleh saya dayakan ciri ini?</translation>
+<translation id="2485534095078940149">Fail {title} yang dilampirkan</translation>
 <translation id="2493269659028026145">Kunci dengan serta-merta menggunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Sejarah penyemakan imbas</translation>
 <translation id="2496626742194544812">Pergi ke Tab Pertama</translation>
@@ -1034,6 +1035,7 @@
 <translation id="496392417432935267">Dibuka pada tempat lain</translation>
 <translation id="4970724460420203313">Penggunaan Chrome dengan akaun terurus anda membantu anda meneruskan penyemakan imbas berkaitan dengan organisasi anda (termasuk tab, sejarah dan kata laluan) berasingan daripada penyemakan imbas anda yang lain</translation>
 <translation id="4971735654804503942">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya. Memberi anda amaran tentang pelanggaran kata laluan. Menghendaki data semakan imbas dihantar kepada Google.</translation>
+<translation id="4977176874984951085">Buka menu tindakan halaman</translation>
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
 <translation id="4985921635659180565">Setelah fail dijadualkan untuk dipadamkan, tindakan tersebut tidak boleh dibatalkan.</translation>
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
@@ -1119,6 +1121,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}other{Beberapa medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}}</translation>
 <translation id="5271549068863921519">Simpan kata laluan</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) mahu anda menyertai kumpulan tab. Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab, maka sertailah kumpulan dengan berhati-hati. Pautan akan tamat tempoh selepas 48 jam.</translation>
+<translation id="5275953427913009986">Tab {title} yang dilampirkan</translation>
 <translation id="5282340693022193851">Untuk mendapatkan pemberitahuan penjejakan harga, hidupkan pemberitahuan dalam Tetapan iOS anda.</translation>
 <translation id="528857768909044842">Kumpulan tab disimpan di sini</translation>
 <translation id="5294624619177114121">Pemberitahuan mudah alih</translation>
@@ -1192,6 +1195,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5579012242779565775">Sembunyikan Senarai bacaan</translation>
 <translation id="5581786858144165447">Tanya Mod AI</translation>
 <translation id="5585019845078534178">Kad</translation>
+<translation id="5589976607021609750">Imej yang dilampirkan</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="559567008082979829">Tetapkan muat turun anda untuk dipadamkan selepas sebulan.</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
@@ -1875,6 +1879,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8005666035647241369">Kepada Pengurus Kata Laluan Google pada peranti ini</translation>
 <translation id="8010488806779226127">Terokai ciri yang boleh membantu anda melakukan lebih banyak perkara sambil anda menyemak imbas</translation>
 <translation id="8011489434346330032">Pemeriksa Web</translation>
+<translation id="8015826420689927262">Padamkan lampiran</translation>
 <translation id="8017015647846870183">Daripada Google Password Manager, termasuk kata laluan dan kunci laluan</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8023170444051056234">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
@@ -2230,6 +2235,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="956218893102219091">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>
 <translation id="963102227019621224">Aktiviti Web &amp; Apl</translation>
+<translation id="965879457362663186">Tambahkan lampiran</translation>
 <translation id="966593914872420832">Carian suara</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Sertai kumpulan tab bersama <ph name="OWNER_NAME" />}=1{Sertai kumpulan tab bersama <ph name="OWNER_NAME" /> dan {COUNT} ahli yang lain}other{Sertai kumpulan tab bersama <ph name="OWNER_NAME" /> dan {COUNT} ahli yang lain}}</translation>
 <translation id="973493300226275298">Jejaki harga produk merentas kedai dalam talian. Anda akan menerima makluman jika harga produk tersebut turun.</translation>

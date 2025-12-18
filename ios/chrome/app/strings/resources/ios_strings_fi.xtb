@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Valmis</translation>
 <translation id="2577522251608256362">Naapurusto</translation>
 <translation id="2579713773888829241">Jaetut Drivet</translation>
+<translation id="2580306219079937316">Avaa Kääntäjän asetukset</translation>
 <translation id="2583688836549072561">Välilehtiryhmä, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> välilehteä, uutta toimintaa.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Seuraa tuotteiden hinnanlaskuja</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Muutosta ei voitu tallentaa.</translation>
 <translation id="3254806613790954367">Viimeinen avoin välilehti kaikilla laitteillasi</translation>
 <translation id="325717987950204592">Valitse "Yksityisyys ja turvallisuus"</translation>
+<translation id="3266338926702638258">Näytä tämän tuotteen hintahistoria</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3273510436356991673">Muokkaa aloitusnäyttöä</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
@@ -1934,6 +1936,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8221665793629393739">Muistutus palata sivulle</translation>
 <translation id="8232956427053453090">Säilytä data</translation>
 <translation id="8233237502828137700">Sulje banneripromo</translation>
+<translation id="823339794112333264">Käynnistä mikrofoni</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8258734532103758067">Olen vienyt datani</translation>
 <translation id="8258999165172757081">Lisätty</translation>
@@ -2039,6 +2042,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8611922158252451755">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten ne kannattaa jakaa harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
 <translation id="8614671330774943747">Siirry Välilehtien vaihtajaan</translation>
 <translation id="8620640915598389714">Muokkaa</translation>
+<translation id="862367213447108001">Näytä aina ponnahdusikkunat tällä sivustolla</translation>
 <translation id="8625706492572042370">Aloitusnäytön muokkaaminen</translation>
 <translation id="8631370184731241854">Lukitut incognito-välilehdet</translation>
 <translation id="8633025649649592204">Uusimmat tapahtumat</translation>
@@ -2135,6 +2139,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8928426232677696166"><ph name="EMAIL" />, organisaatiosi hallinnoima, tällä hetkellä valittuna Valitse tili.</translation>
 <translation id="894191600409472540">Luo vahvoja salasanoja</translation>
 <translation id="8943780400130412484">Aloitetaanko uusi lataus?</translation>
+<translation id="8947838125864566256">Sammuta mikrofoni</translation>
 <translation id="8953046091948372197">Näet kirjanmerkkisi täällä</translation>
 <translation id="8953602327115378731">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} automaattisen täydennyksen vaihtoehto.}other{Näppäimistön yläpuolella on saatavilla {count} automaattisen täydennyksen vaihtoehtoa.}}</translation>
 <translation id="895541991026785598">Ilmoita ongelmasta</translation>

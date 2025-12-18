@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="181434555916624618">Resultaten met mensen worden op dit moment niet getoond. Probeer een andere prompt.</translation>
 <translation id="1829129547161959350">Pinguïn</translation>
-<translation id="183183971458492120">Informatie laden…</translation>
 <translation id="1832073788765803750">Katakana op halve breedte</translation>
 <translation id="1834290891154666894">Ongeldige invoer voor overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="1838709767668011582">Google-site</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> gebruikt</translation>
 <translation id="2198315389084035571">Vereenvoudigd Chinees</translation>
 <translation id="22085916256174561">Koreaans</translation>
-<translation id="2208919847696382164">Installeren met Linux</translation>
 <translation id="2215692307449050019">De batterij is bijna leeg. Bestandssynchronisatie wordt hervat als je het apparaat op de stroomvoorziening aansluit.</translation>
 <translation id="2225536596944493418">Weet je zeker dat je <ph name="NUMBER_OF_ITEMS" /> items wilt verwijderen?</translation>
 <translation id="2230062665678605299">Kan map '<ph name="FOLDER_NAME" />' niet maken. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="2663066752008346276">Birmaans (Myanmar) met MyanSan-toetsenbord</translation>
 <translation id="2664412712123763093">Bestandslocatie</translation>
-<translation id="2718540689505416944">App installeren met Linux</translation>
 <translation id="2719020180254996569">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, details</translation>
 <translation id="2724954091494693138">Turks met F-toetsenbord</translation>
 <translation id="2732288874651063549">Delen met <ph name="VM_NAME" /> beheren</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Je persoonlijke Google Workspace-opslag is helemaal vol.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgisch</translation>
-<translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2802583107108007218">Meer informatie over deze beperkingen</translation>
 <translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2819519502129272135">Bestandssynchronisatie staat uit</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Je bent offline</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3793469551756281394">Ongeveer <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> resterend</translation>
-<translation id="3798449238516105146">Versie</translation>
 <translation id="3801082500826908679">Faeröers</translation>
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3810973564298564668">Beheren</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Terug</translation>
 <translation id="3855472144336161447">Duits Neo 2</translation>
 <translation id="3858860766373142691">Naam</translation>
-<translation id="3866249974567520381">Beschrijving</translation>
 <translation id="3899991606604168269">Frans (Canada) met meertalig toetsenbord</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobiel profiel installeren, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgaars fonetisch</translation>
 <translation id="4508265954913339219">Activering mislukt</translation>
 <translation id="4509667233588080747">Engels (VS) met Workman International-toetsenbord</translation>
-<translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">Deze map is gedeeld met Parallels Desktop</translation>
 <translation id="4552678318981539154">Meer opslagruimte kopen</translation>
 <translation id="4552759165874948005">Netwerk: <ph name="NETWORK_TYPE" />, signaalsterkte: <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -604,7 +597,6 @@
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5650895901941743674">Check je APN-configuratie</translation>
 <translation id="5669691691057771421">Nieuwe pincode invoeren</translation>
-<translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Sluit alle bestanden op de archiveringsschijf of virtuele schijf en probeer het opnieuw.</translation>
@@ -639,7 +631,6 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Opzoeken van DHCP mislukt</translation>
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
-<translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
 <translation id="5918480239180455431">Nieuwe zoekfuncties beschikbaar</translation>
 <translation id="5926082595146149752">Nederlands (Nederland) met Amerikaans pc-toetsenbord (internationaal)</translation>
@@ -808,7 +799,6 @@
 <translation id="7238097264433196391">Drive-naam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
-<translation id="7248671827512403053">Applicatie</translation>
 <translation id="7256405249507348194">Onbekende fout: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beschikbare services</translation>
 <translation id="7291818353625820805">Wil je dat toetsen worden herhaald? Zet accenttekens uit in de toetsenbordinstellingen.</translation>
@@ -935,7 +925,6 @@
 <translation id="8151638057146502721">Configureren</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fout.}other{# fouten.}}</translation>
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
-<translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-bestanden synchroniseren</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1079,7 +1068,6 @@
 <translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9189836632794948435">Kazaks</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items geëxtraheerd.</translation>
-<translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>
 <translation id="931652069802536959">Netwerk is geblokkeerd door beleid</translation>

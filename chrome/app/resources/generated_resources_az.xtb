@@ -1031,7 +1031,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1679810534535368772">Çıxmaq istədiyinizə əminsiniz?</translation>
 <translation id="167983332380191032">İdarəetmə xidməti HTTP xətası göndərdi.</translation>
 <translation id="167997285881077031">Mətndən-nitqə səs ayarları</translation>
-<translation id="1680849702532889074">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="1682195225331129001">İndi sınayın</translation>
 <translation id="1682548588986054654">Yeni Anonim Pəncərə</translation>
 <translation id="1682696837763999627">Böyük maus kursoru</translation>
@@ -1657,7 +1656,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2102495993840063010">Android tətbiqləri</translation>
 <translation id="2104166991923847969">Hotspot avtomatik deaktiv edilsin</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> gizlədilib</translation>
-<translation id="2106439768713835453">Həmçinin tətbiq audiosunu paylaşın</translation>
 <translation id="2107359546799360577">JavaScript optimallaşdırmaları deaktiv edilib.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> əvvəl yoxlanıb</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon nömrəsi}other{# telefon nömrəsi}}</translation>
@@ -2672,7 +2670,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2778471504622896352">Uzaqdan tətbiqləri ChromeOS başladıcıya əlavə edin</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
 <translation id="2783952358106015700">Təhlükəsizlik açarını <ph name="APP_NAME" /> ilə istifadə edin</translation>
 <translation id="2785267875302712148">Parol Yoxlanışı</translation>
 <translation id="2785279781154577715">Tabda mausla tuşlama ilə önizləmə kartının görünüşü</translation>
@@ -4132,6 +4129,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3785748905555897481">PIN dəyişdirildi</translation>
 <translation id="3786224729726357296"><ph name="SITE" /> üçün sayt datasını və icazələri silin</translation>
 <translation id="3786834302860277193">Yazı mətni üçün altdan xətt göstərilsin</translation>
+<translation id="3786890785076278600">Statik sətir</translation>
 <translation id="3787434344076711519">Tərcümə gözlənilir</translation>
 <translation id="3788301286821743879">Köşk tətbiqini işə salmaq mümkün olmadı.</translation>
 <translation id="3788401245189148511">Edə bilərdi:</translation>
@@ -4511,6 +4509,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4028467762035011525">Daxiletmə metodlarını əlavə edin</translation>
 <translation id="4029024445166427442">başladıcı + shift + geri düyməsi</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> səhifəsindən geri qayıdın</translation>
+<translation id="4031178684547097947">5 sətir</translation>
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4031527940632463547">Sensorlar blok edilib</translation>
 <translation id="4033471457476425443">Yeni qovluq əlavə edin</translation>
@@ -4879,7 +4878,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4293219510510666933">Brauzer tarixçəsində axtarmaq və daxil olduğunuz saytları tapmaq üçün gündəlik danışıqdan istifadə edin. Brauzer tarixçənizə əsasən suallar verə və cavab ala bilərsiniz. Bu ayar aktivdir.</translation>
 <translation id="429344752071832554">Qrupu fokusdan çıxarın</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> endirmə tarixçəsindən silindi, lakin hələ də cihazdadır</translation>
-<translation id="4295072614469448764">Terminalda tətbiq əlçatandır. Başladıcınızda da işarə görünə bilər.</translation>
 <translation id="4295979599050707005"><ph name="USER_EMAIL" /> hesabının Chrome və Google Play'də veb sayt, tətbiq və artırmalar ilə istifadə edilə biləcəyini təsdiq etmək üçün yenidən daxil olun. Həmçinin bu hesabı silə bilərsiniz. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> tətbiqindən quraşdırılan və yayımlanan tətbiqlər</translation>
 <translation id="4296632172536745000">Bu sayt üçün orijinal parolunuz ictimai data pozuntusunda tapıldı. <ph name="DATE" /> tarixində <ph name="BRAND" /> brendindən parolunuzu sizin üçün avtomatik dəyişməsini istədiniz.</translation>
@@ -4986,7 +4984,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4370975561335139969">Daxil etdiyiniz e-poçt və parol uyğun gəlmir</translation>
 <translation id="4373418556073552953">Android telefonu ilə daxil olun</translation>
 <translation id="4373973310429385827">Lighthouse</translation>
-<translation id="4374831787438678295">Linux quraşdırıcısı</translation>
 <translation id="4375035964737468845">Endirilmiş faylları açın</translation>
 <translation id="4376226992615520204">Məkan deaktiv edildi</translation>
 <translation id="4377363674125277448">Serverin sertifikatı ilə bağlı problem oldu.</translation>
@@ -5771,6 +5768,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4908811072292128752">Eyni anda iki saytı axtarmaq üçün yeni tab açın</translation>
 <translation id="4910241725741323970">Tətbiq artıq quraşdırılıb</translation>
 <translation id="4912643508233590958">İnaktiv oyanışlar</translation>
+<translation id="4912892750325639080">3 sətir</translation>
 <translation id="4913209098186576320">Bu fayl təhlükəli ola bilər<ph name="LINE_BREAK" />Bu yoxlama həmişəkindən uzun çəkir...</translation>
 <translation id="4913695564084524048">Tətbiq datası tapılmır</translation>
 <translation id="4915961947098019832">Şəkilləri göstərmək icazəsi verilib</translation>
@@ -6265,7 +6263,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5263656105659419083">Yan panelə asanlıqla qayıtmaq üçün yuxarı sağ tərəfdə Bərkidin üzərinə klikləyin</translation>
 <translation id="5264148714798105376">Bu, bir və ya iki dəqiqə çəkə bilər.</translation>
 <translation id="5264252276333215551">Tətbiqinizi kiosk rejimində işlətmək üçün internetə qoşulun.</translation>
-<translation id="5265797726250773323">Quraşdıran zaman xəta baş verdi</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> üçün digər əməliyyatlar</translation>
 <translation id="5267572070504076962">Təhlükəli saytlardan qorunmaq üçün Güvənli Baxışı aktiv edin</translation>
 <translation id="5269659747698455324">Giriş açarlarını kiliddən çıxarın</translation>
@@ -7640,7 +7637,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="623261264391834964">Yazmağa kömək funksiyasından istifadə üçün mətn qutusuna sağ düymə ilə toxunun</translation>
 <translation id="6233154960150021497">Klaviatura əvəzinə səsdən istifadə üçün defolt</translation>
 <translation id="6234108445915742946">Chrome’un Xidmət Şərtləri 31 martda dəyişəcək</translation>
-<translation id="6234474535228214774">Quraşdırma gözlənilir</translation>
 <translation id="6235208551686043831">Cihaz kamerası aktiv edilib. eSIM QR kodunuzu kameranın qarşısına tutun.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> qrup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Stilus qeyd aparma tətbiqi</translation>
@@ -8322,7 +8318,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6713668088933662563">Heç vaxt bu dilləri tərcümə etməyi təklif etməyin</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> haqqında ətraflı məlumata baxın</translation>
 <translation id="6715735940363172819">Veb-saytlara mikrofonunuzdan istifadə etmək icazəsi verilməyib</translation>
-<translation id="6715803357256707211">Linux tətbiqi quraşdırılan zaman xəta baş verdi. Detallar üçün bildirişə toxunun.</translation>
 <translation id="6716049856796700977">Məkan istifadə edilmir. Lakin məkan IP ünvanı vasitəsilə tətbiq və veb-saytlara görünə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Şəbəkə bağlantısı itdi. Şəbəkə bağlantısını yoxlayın və ya digər Wi-Fi şəbəkəsinə qoşulun.</translation>
 <translation id="671928215901716392">Ekranı kilidləyin</translation>
@@ -9009,6 +9004,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7191159667348037">Naməlum Printer (USB)</translation>
 <translation id="7191631508323321927">Dəhliz</translation>
 <translation id="7191632649590906354">Ailə üzvləri Google Parol Menecerindən istifadə etdikdə istifadəçi adı və parolunuzdan istifadə edə bilərlər. Giriş üçün <ph name="WEBSITE" /> veb-saytına daxil olmaq lazımdır.</translation>
+<translation id="7192393330344360021">1 sətir</translation>
 <translation id="7193051357671784796">Bu tətbiqi təşkilatınız əlavə edib. Quraşdırmanı tamamlamaq üçün tətbiqi yenidən başladın.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> ünvanında heç bir parol yadda saxlanmadı</translation>
 <translation id="7193663868864659844">Təklif edilən qruplar üçün rəy göndərin</translation>
@@ -11119,6 +11115,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="862750493060684461">CSS keşi</translation>
 <translation id="8627795981664801467">Yalnız bağlantıları güvənli edin</translation>
 <translation id="8627804903623428808">Bu şərtləri nəzərdən keçirin və uşağınızın datasına nəzarət edin</translation>
+<translation id="8628674746770065790">Kursoru izləyin</translation>
 <translation id="862907440446514309">Administrator ekranınızı <ph name="APP0_NAME" /> ilə qeydə alır.</translation>
 <translation id="8630338733867813168">Doldurma zamanı yuxu rejimi</translation>
 <translation id="8631032106121706562">Ləçəklər</translation>
@@ -12133,7 +12130,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="992592832486024913">ChromeVox'u (şifahi geri əlaqə) deaktiv edin</translation>
 <translation id="992653586748191655"><ph name="NUM" /> tab qrupu təklif edildi</translation>
 <translation id="992778845837390402">Linux hazırda yedəklənir</translation>
-<translation id="993540765962421562">Quraşdırma davam edir</translation>
 <translation id="994087375490600917">Yan panellər</translation>
 <translation id="994289308992179865">&amp;Dövr</translation>
 <translation id="995755448277384931">IBAN əlavə edin</translation>

@@ -1031,7 +1031,6 @@
 <translation id="1679810534535368772">ნამდვილად გსურთ გასვლა?</translation>
 <translation id="167983332380191032">მართვის სერვისმა გამოაგზავნა შეტყობინება HTTP შეცდომის შესახებ.</translation>
 <translation id="167997285881077031">ტექსტის გახმოვანების ხმის პარამეტრები</translation>
-<translation id="1680849702532889074">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="1682195225331129001">ახლავე ცდა</translation>
 <translation id="1682548588986054654">ახალი ინკოგნიტო ფანჯარა</translation>
 <translation id="1682696837763999627">მაუსის დიდი კურსორი</translation>
@@ -1657,7 +1656,6 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2104166991923847969">უსადენო ქსელის ავტოგამორთვა</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> დამალულია</translation>
-<translation id="2106439768713835453">გაზიარდეს აპლიკაციის აუდიოც</translation>
 <translation id="2107359546799360577">JavaScript-ის ოპტიმიზაციები გათიშულია.</translation>
 <translation id="2108204112555497972">შემოწმებიდან გავიდა <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
@@ -1911,6 +1909,7 @@
 <translation id="2283599456633275070">მოგზაურობა</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{ყველას გახსნა ჩანართების ა&amp;ხალ ჯგუფში}=1{ჩანართების ა&amp;ხალ ჯგუფში გახსნა}other{{COUNT}-ვეს გახსნა ჩანართების ა&amp;ხალ ჯგუფში}}</translation>
 <translation id="2285942871162473373">თითის ანაბეჭდის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
+<translation id="2286840900796601828">10 წამით უკან გადახვევა</translation>
 <translation id="2287617382468007324">ბეჭდვის IPP მისამართი</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{თქვენი მონაცემების დასაცავად საიტს, რომელიც ბოლო დროს არ მოგინახულებიათ, ნებართვები გაუუქმდა}other{თქვენი მონაცემების დასაცავად საიტებს, რომლებიც ბოლო დროს არ მოგინახულებიათ, ნებართვები გაუუქმდა}}</translation>
 <translation id="2287944065963043964">შესვლის ეკრანი</translation>
@@ -2669,7 +2668,6 @@
 <translation id="2778471504622896352">დისტანციური აპების დამატება ChromeOS გამშვებში</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">შეცდომა Linux აპლიკაციის ინსტალაციისას</translation>
 <translation id="2783952358106015700">უსაფრთხოების გასაღების გამოყენება <ph name="APP_NAME" />-ის მეშვეობით</translation>
 <translation id="2785267875302712148">პაროლის შემოწმება</translation>
 <translation id="2785279781154577715">გადახედვის ბარათის იერსახე ჩანართზე კურსორის გადატარებისას</translation>
@@ -4129,6 +4127,7 @@
 <translation id="3785748905555897481">PIN წარმატებით შეიცვალა</translation>
 <translation id="3786224729726357296">საიტის მონაცემებისა და ნებართვების წაშლა <ph name="SITE" />-ისთვის</translation>
 <translation id="3786834302860277193">ხაზგასმის ჩვენება შედგენილი ტექსტისთვის</translation>
+<translation id="3786890785076278600">სტატიკური ხაზი</translation>
 <translation id="3787434344076711519">ველოდებით თარგმნის დასრულებას</translation>
 <translation id="3788301286821743879">სამწუხაროდ, კიოსკის აპლიკაციის გაშვება ვერ მოხერხდა.</translation>
 <translation id="3788401245189148511">შესაძლებლობები:</translation>
@@ -4508,6 +4507,7 @@
 <translation id="4028467762035011525">შეყვანის მეთოდების დამატება</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407">დაბრუნება გვერდიდან <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 ხაზი</translation>
 <translation id="4031179711345676612">მიკროფონი დაშვებულია</translation>
 <translation id="4031527940632463547">სენსორების გამოყენება აკრძალულია</translation>
 <translation id="4033471457476425443">ახალი საქაღალდის დამატება</translation>
@@ -4878,7 +4878,6 @@
 <translation id="4293219510510666933">გამოიყენეთ სალაპარაკო ენა, რომ დათვალიერების ისტორიაში მოძებნოთ უკვე მონახულებული ვებსაიტები. შეგიძლიათ, დასვათ შეკითხვებიც და მიიღოთ პასუხები თქვენი დათვალიერების ისტორიის საფუძველზე. ეს პარამეტრი ჩართულია.</translation>
 <translation id="429344752071832554">ჯგუფზე ფოკუსის მოხსნა</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> წაიშალა ჩამოტვირთვების ისტორიიდან, თუმცა ის კვლავ თქვენს მოწყობილობაზეა</translation>
-<translation id="4295072614469448764">აპი ხელმისაწვდომია თქვენს ტერმინალში. გარდა ამისა, გამშვებში შეიძლება ხატულაც იყოს.</translation>
 <translation id="4295979599050707005">გთხოვთ, ხელახლა შეხვიდეთ სისტემაში იმის დასადასტურებლად, რომ თქვენი ანგარიშის (<ph name="USER_EMAIL" />) გამოყენება შესაძლებელია Chrome-სა და Google Play-ში არსებულ ვებსაიტებთან, აპებთან და გაფართოებებთან. ამას გარდა, შეგიძლიათ აღნიშნული ანგარიშის ამოშლა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" />-დან დაინსტალირებული და სტრიმინგით გამოყენებული აპები</translation>
 <translation id="4296632172536745000">თქვენი ორიგინალი პაროლი ამ საიტისთვის საჯარო მონაცემთა დარღვევის დროს აღმოჩნდა. <ph name="DATE" />-ში თქვენ თხოვეთ <ph name="BRAND" />-ს, ავტომატურად შეეცვალა პაროლი თქვენთვის.</translation>
@@ -4985,7 +4984,6 @@
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
 <translation id="4373418556073552953">შედით თქვენი Android ტელეფონით</translation>
 <translation id="4373973310429385827">შუქურა</translation>
-<translation id="4374831787438678295">Linux ინსტალატორი</translation>
 <translation id="4375035964737468845">გახსენით გადმოწერილი ფაილი</translation>
 <translation id="4376226992615520204">მდებარეობა გამორთულია</translation>
 <translation id="4377363674125277448">არსებობდა სერვერის პრობლემა სერვერის სერთიფიკატი.</translation>
@@ -5770,6 +5768,7 @@
 <translation id="4908811072292128752">ორი საიტის ერთდროულად დასათვალიერებლად გახსენით ახალი ჩანართი</translation>
 <translation id="4910241725741323970">აპი უკვე დაინსტალირებულია</translation>
 <translation id="4912643508233590958">უმოქმედობისას გააქტიურება</translation>
+<translation id="4912892750325639080">3 ხაზი</translation>
 <translation id="4913209098186576320">ეს ფაილი, შესაძლოა, სახიფათო იყოს<ph name="LINE_BREAK" />შემოწმებას მოსალოდნელზე მეტი დრო სჭირდება...</translation>
 <translation id="4913695564084524048">აპის მონაცემები არ იძებნება</translation>
 <translation id="4915961947098019832">სურათების ჩვენება დაშვებულია</translation>
@@ -6264,7 +6263,6 @@
 <translation id="5263656105659419083">გვერდით პანელზე მარტივად რომ დაბრუნდეთ, დააწკაპუნეთ „ჩამაგრებას“ ზედა მარჯვენა ნაწილში</translation>
 <translation id="5264148714798105376">ამას შეიძლება ერთ წუთამდე დასჭირდეს.</translation>
 <translation id="5264252276333215551">დაუკავშირდით ინტერნეტს პროგრამის კიოსკის რეჟიმში გასაშვებად.</translation>
-<translation id="5265797726250773323">შეცდომა ინსტალაციისას</translation>
 <translation id="526622169288322445">სხვა ქმედებები „<ph name="ADDRESS_SUMMARY" />“-სთვის</translation>
 <translation id="5267572070504076962">ჩართეთ Safe Browsing, სახიფათო საიტებისგან დაცვით რომ ისარგებლოთ</translation>
 <translation id="5269659747698455324">თქვენი წვდომის გასაღებების განბლოკვა</translation>
@@ -7641,7 +7639,6 @@
 <translation id="623261264391834964">გამოიყენეთ მარჯვენა დაწკაპუნება ტექსტის ველში, „დაწერაში დახმარებით“ რომ ისარგებლოთ</translation>
 <translation id="6233154960150021497">კლავიატურის ნაცვლად ნაგულისხმევად ხმის გამოყენება</translation>
 <translation id="6234108445915742946">Chrome-ის მომსახურების პირობები შეიცვლება 31 მარტს</translation>
-<translation id="6234474535228214774">ინსტალაცია მოლოდინის რეჟიმშია</translation>
 <translation id="6235208551686043831">მოწყობილობის კამერა ჩაირთო. მოათავსეთ თქვენი eSIM-ის QR კოდი კამერის წინ.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> ჯგუფი „<ph name="GROUP_NAME" />“ — <ph name="GROUP_CONTENTS" /> — <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">სტილუსით ჩანიშვნის აპი</translation>
@@ -8323,7 +8320,6 @@
 <translation id="6713668088933662563">არასოდეს შემომთავაზოთ ამ ენების თარგმა</translation>
 <translation id="6714871567554212732">მეტი დეტალის ნახვა <ph name="GROUP_NAME" />-ის შესახებ</translation>
 <translation id="6715735940363172819">ვებსაიტებს არ აქვს თქვენი მიკროფონის გამოყენების უფლება</translation>
-<translation id="6715803357256707211">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა. დეტალური ინფორმაციისთვის დააწკაპუნეთ შეტყობინებაზე.</translation>
 <translation id="6716049856796700977">თქვენი მდებარეობის გამოყენების უფლება არაფერს აქვს. ამის მიუხედავად, თქვენი მდებარეობა, შესაძლოა, მაინც ხილული იყოს აპებისა და ვებსაიტებისთვის თქვენი IP მისამართის საფუძველზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ქსელთან კავშირი გაწყდა. შეამოწმეთ კავშირი ქსელთან ან ცადეთ სხვა Wi-Fi ქსელის გამოყენება.</translation>
 <translation id="671928215901716392">ჩაკეტილი ეკრანი</translation>
@@ -9010,6 +9006,7 @@
 <translation id="7191159667348037">უცნობი პრინტერი (USB)</translation>
 <translation id="7191631508323321927">დერეფანი</translation>
 <translation id="7191632649590906354">თქვენს ოჯახის წევრებს ახლა შეუძლიათ თქვენი მომხმარებლის სახლისა და პაროლის გამოყენება, როცა Google პაროლების მმართველით ისარგებლებენ. აცნობეთ მათ, რომ სისტემაში შესასვლელად <ph name="WEBSITE" /> გამოიყენონ.</translation>
+<translation id="7192393330344360021">1 ხაზი</translation>
 <translation id="7193051357671784796">ეს აპი დაამატა თქვენმა ორგანიზაციამ. ინსტალაციის დასასრულებლად საჭიროა მისი გადატვირთვა.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-სთვის შენახული პაროლები არ არის</translation>
 <translation id="7193663868864659844">გამოგვეხმაურეთ შემოთავაზებულ ჯგუფებთან დაკავშირებით</translation>
@@ -11119,6 +11116,7 @@
 <translation id="862750493060684461">CSS ქეში</translation>
 <translation id="8627795981664801467">მხოლოდ დაცული კავშირები</translation>
 <translation id="8627804903623428808">გაეცანით ამ პირობებს და აკონტროლეთ თქვენი ბავშვის მონაცემები</translation>
+<translation id="8628674746770065790">კურსორის მიდევნება</translation>
 <translation id="862907440446514309">თქვენი ადმინისტრატორი იწერს თქვენს ეკრანს <ph name="APP0_NAME" />-ის მეშვეობით.</translation>
 <translation id="8630338733867813168">ძილი დატენის დროს</translation>
 <translation id="8631032106121706562">ფურცლები</translation>
@@ -12135,7 +12133,6 @@
 <translation id="992592832486024913">ChromeVox-ის გამორთვა (ხმოვანი შეფასება)</translation>
 <translation id="992653586748191655">შემოთავაზებულია ჩანართების <ph name="NUM" /> ჯგუფი</translation>
 <translation id="992778845837390402">ამჟამად მიმდინარეობს Linux სარეზერვო კოპირება</translation>
-<translation id="993540765962421562">მიმდინარეობს ინსტალაცია</translation>
 <translation id="994087375490600917">გვერდითი პანელები</translation>
 <translation id="994289308992179865">&amp;ციკლი</translation>
 <translation id="995755448277384931">IBAN-ის დამატება</translation>

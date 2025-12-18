@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Fine</translation>
 <translation id="2577522251608256362">Quartiere</translation>
 <translation id="2579713773888829241">Drive condivisi</translation>
+<translation id="2580306219079937316">Apri le impostazioni di traduzione</translation>
 <translation id="2583688836549072561">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede, nuova attività.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Monitora i cali di prezzo dei prodotti</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3254806613790954367">L'ultima scheda aperta su tutti i tuoi dispositivi</translation>
 <translation id="325717987950204592">Tocca "Privacy e sicurezza"</translation>
+<translation id="3266338926702638258">Mostra la cronologia dei prezzi per questo prodotto</translation>
 <translation id="3272527697863656322">Annulla</translation>
 <translation id="3273510436356991673">Personalizza la schermata Home</translation>
 <translation id="3277021493514034324">Indirizzo del sito copiato</translation>
@@ -1934,6 +1936,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8221665793629393739">Il tuo promemoria per rivedere</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>
 <translation id="8233237502828137700">Chiudi banner promozionale</translation>
+<translation id="823339794112333264">Attiva microfono</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8258734532103758067">Ho esportato i miei dati</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
@@ -2039,6 +2042,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8611922158252451755">Chiunque abbia il link può modificare tutte le schede, quindi condividilo con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="8614671330774943747">Vai al Selettore di schede</translation>
 <translation id="8620640915598389714">Modifica</translation>
+<translation id="862367213447108001">Mostra sempre i popup su questo sito</translation>
 <translation id="8625706492572042370">Modifica la schermata Home</translation>
 <translation id="8631370184731241854">Schede di navigazione in incognito bloccate</translation>
 <translation id="8633025649649592204">Attività recente</translation>
@@ -2135,6 +2139,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestito dalla tua organizzazione, attualmente selezionato. Scegli un account.</translation>
 <translation id="894191600409472540">Crea password efficaci</translation>
 <translation id="8943780400130412484">Iniziare un nuovo download?</translation>
+<translation id="8947838125864566256">Disattiva microfono</translation>
 <translation id="8953046091948372197">Qui troverai le tue password</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opzione per il completamento automatico disponibile sopra la tastiera.}other{{count} opzioni per il completamento automatico disponibili sopra la tastiera.}}</translation>
 <translation id="895541991026785598">Segnala un problema</translation>

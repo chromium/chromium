@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Kész</translation>
 <translation id="2577522251608256362">Környék</translation>
 <translation id="2579713773888829241">Megosztott meghajtók</translation>
+<translation id="2580306219079937316">Fordítási beállítások megnyitása</translation>
 <translation id="2583688836549072561">Lapcsoport, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> lap, új tevékenység.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Termékek árcsökkenésének nyomon követése</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Nem sikerült menteni a módosítást.</translation>
 <translation id="3254806613790954367">A legutóbb megnyitott lap az összes eszközén</translation>
 <translation id="325717987950204592">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
+<translation id="3266338926702638258">A termék árelőzményeinek megjelenítése</translation>
 <translation id="3272527697863656322">Mégse</translation>
 <translation id="3273510436356991673">A kezdőképernyő személyre szabása</translation>
 <translation id="3277021493514034324">Webhely címe másolva</translation>
@@ -1934,6 +1936,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8221665793629393739">Emlékeztető visszatérésre</translation>
 <translation id="8232956427053453090">Adatok megőrzése</translation>
 <translation id="8233237502828137700">Üzenetszalagos promóció bezárása</translation>
+<translation id="823339794112333264">Mikrofon bekapcsolása</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="8258734532103758067">Exportáltam az adataimat</translation>
 <translation id="8258999165172757081">Hozzáadva</translation>
@@ -2039,6 +2042,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8611922158252451755">A link birtokában bárki szerkesztheti az összes lapot, ezért legyen körültekintő a megosztáskor. A link 48 óra múlva lejár.</translation>
 <translation id="8614671330774943747">Ugrás a Lapváltóhoz</translation>
 <translation id="8620640915598389714">Szerkesztés</translation>
+<translation id="862367213447108001">Mindig jelenjenek meg az előugró ablakok ezen a webhelyen</translation>
 <translation id="8625706492572042370">Főképernyő szerkesztése</translation>
 <translation id="8631370184731241854">Zárolt inkognitó lapok</translation>
 <translation id="8633025649649592204">Legutóbbi tevékenységek</translation>
@@ -2135,6 +2139,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8928426232677696166"><ph name="EMAIL" />, a szervezete által kezelt, jelenleg kijelölve. Válasszon fiókot.</translation>
 <translation id="894191600409472540">Hozzon létre erős jelszavakat</translation>
 <translation id="8943780400130412484">Elindítja az új letöltést?</translation>
+<translation id="8947838125864566256">Mikrofon kikapcsolása</translation>
 <translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} automatikus kiegészítési lehetőség áll rendelkezésre a billentyűzet felett.}other{{count} automatikus kiegészítési lehetőség áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="895541991026785598">Hibabejelentés</translation>

@@ -2935,6 +2935,7 @@
 <translation id="5730040223043577876">如果您已在其他網站上重用密碼，Chrome 建議您重設密碼。</translation>
 <translation id="5732392974455271431">您的家長可以為您解除封鎖此網站</translation>
 <translation id="573555826359077410">建立表格按鈕，啟動之後就可以喺喺「Google 表格」度快速建立新表格</translation>
+<translation id="5737022235680044108">你的機構禁止在無痕模式下瀏覽 <ph name="HOST_NAME" />。</translation>
 <translation id="5738385766833540397">管理如何接收已追蹤產品的減價通知</translation>
 <translation id="5739619009927381786">在下一個步驟中解鎖螢幕，通常是使用指紋。你亦可<ph name="BEGIN_LINK" />透過其他方法驗證<ph name="END_LINK" />。</translation>
 <translation id="573974402615125334">如要分享、加入分頁群組和協作，請同步處理記錄和分頁</translation>
@@ -3616,6 +3617,7 @@
 <translation id="6844998850832008753">今次允許用手勢追蹤功能</translation>
 <translation id="6849023911358004088">管理安全設定按鈕，啟動之後就可以喺 Chrome 設定度管理安全瀏覽功能之類嘅功能</translation>
 <translation id="6850286078059909152">文字顏色</translation>
+<translation id="685163597635765693">你的機構禁止在無痕模式下瀏覽「<ph name="HOST_NAME" />」連結。</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6854691830678097752">在帳戶 <ph name="ACCOUNT_EMAIL" /> 中儲存此 CVC 可加快結帳速度</translation>
 <translation id="6857776781123259569">管理密碼…</translation>
@@ -3886,6 +3888,7 @@
 <translation id="7273111226200291353">你下載的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7275808129217605899">健康飲食</translation>
+<translation id="7282894295403887199">你無法在無痕模式下瀏覽此頁面</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以改 Google 帳戶密碼</translation>
 <translation id="7286908876112207905">不允許將此內容貼到此網站</translation>
 <translation id="7291578327729322058">新増駕駛執照</translation>

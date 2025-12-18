@@ -1031,7 +1031,6 @@
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">管理服務傳回了 HTTP 錯誤。</translation>
 <translation id="167997285881077031">文字轉語音的聲音設定</translation>
-<translation id="1680849702532889074">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="1682195225331129001">立即嘗試</translation>
 <translation id="1682548588986054654">新增無痕視窗</translation>
 <translation id="1682696837763999627">大型滑鼠游標</translation>
@@ -1657,7 +1656,6 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
-<translation id="2106439768713835453">一併分享應用程式音訊</translation>
 <translation id="2107359546799360577">JavaScript 最佳化功能已停用。</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
@@ -2669,7 +2667,6 @@
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />，<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783952358106015700">透過「<ph name="APP_NAME" />」使用安全金鑰</translation>
 <translation id="2785267875302712148">密碼安全檢查</translation>
 <translation id="2785279781154577715">分頁懸停預覽資訊卡外觀</translation>
@@ -4126,6 +4123,7 @@
 <translation id="3785748905555897481">已成功變更 PIN 碼</translation>
 <translation id="3786224729726357296">刪除 <ph name="SITE" /> 的網站資料和權限</translation>
 <translation id="3786834302860277193">輸入組合文字時顯示底線</translation>
+<translation id="3786890785076278600">靜態行</translation>
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
 <translation id="3788401245189148511">要求下列權限：</translation>
@@ -4349,7 +4347,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">顯示和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">可將網址傳送至安全瀏覽功能進行檢查。同時也會傳送少量網頁、下載內容、擴充功能活動及系統資訊，以協助找出新的威脅。當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各項 Google 應用程式時提供保護。</translation>
-<translation id="3924788966103416622">為了進行偵錯，外部應用程式想要完全掌控這個 Chrome 工作階段，包括存取你儲存的資料、Cookie 和網站資料，以及前往任何網址。</translation>
+<translation id="3924788966103416622">為進行偵錯，外部應用程式要求取得這個 Chrome 工作階段的完整權限，包括存取你儲存的資料、Cookie 和網站資料，以及前往任何網址。</translation>
 <translation id="3925573269917483990">相機：</translation>
 <translation id="3925926055063465902">這部裝置的其他使用者也可以使用這個網路</translation>
 <translation id="3926002189479431949">Smart Lock 手機已變更</translation>
@@ -4487,7 +4485,7 @@
 <translation id="4015250302257349679">按下 <ph name="ACCELERATOR" /> 鍵可聚焦這個泡泡，再次按下即可聚焦泡泡指向的元素。</translation>
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為這個連結建立 QR 圖碼</translation>
-<translation id="4018953474106733212">這項功能只有網頁程式開發人員可以開啟，而且只能搭配可信任的應用程式使用。</translation>
+<translation id="4018953474106733212">只建議由網頁程式開發人員開啟這項功能，請先確認應用程式的可信度再授權。</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
 <translation id="4020701737692625681">管理員可以錄製你的螢幕內容</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4504,6 +4502,7 @@
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4029024445166427442">啟動鍵 + Shift 鍵 + Backspace 鍵</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
+<translation id="4031178684547097947">5 行</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
 <translation id="4031527940632463547">禁止使用感應器</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
@@ -4874,7 +4873,6 @@
 <translation id="4293219510510666933">使用日常用語搜尋瀏覽記錄，找出造訪過的網站。你也可以提出問題，系統會根據瀏覽記錄提供解答。這項設定已開啟。</translation>
 <translation id="429344752071832554">將焦點移出群組</translation>
 <translation id="4294392694389031609">已從下載記錄中刪除「<ph name="FILE_NAME" />」，但這個檔案仍保存在你的裝置上</translation>
-<translation id="4295072614469448764">應用程式已出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="4295979599050707005">請再次登入，並確認你的帳戶 (<ph name="USER_EMAIL" />) 可用於 Chrome 和 Google Play 的網站、應用程式與擴充功能。你也可以移除這個帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">已透過「<ph name="APP_NAME" />」安裝及串流的應用程式</translation>
 <translation id="4296632172536745000">原本在這個網站使用的密碼已在公開的資料侵害事件中外洩。你曾在 <ph name="DATE" />要求 <ph name="BRAND" />自動變更密碼。</translation>
@@ -4981,7 +4979,6 @@
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
 <translation id="4373973310429385827">燈塔</translation>
-<translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案。</translation>
 <translation id="4376226992615520204">已關閉定位功能</translation>
 <translation id="4377363674125277448">伺服器憑證有問題。</translation>
@@ -5762,6 +5759,7 @@
 <translation id="4908811072292128752">開啟新分頁即可一次瀏覽兩個網站</translation>
 <translation id="4910241725741323970">已安裝應用程式</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
+<translation id="4912892750325639080">3 行</translation>
 <translation id="4913209098186576320">這個檔案可能含有危險內容<ph name="LINE_BREAK" />這項檢查超出正常所需時間...</translation>
 <translation id="4913695564084524048">找不到應用程式資料</translation>
 <translation id="4915961947098019832">可以顯示圖片</translation>
@@ -6256,7 +6254,6 @@
 <translation id="5263656105659419083">如要輕鬆返回側邊面板，請按一下右上方的「固定」</translation>
 <translation id="5264148714798105376">請稍候片刻。</translation>
 <translation id="5264252276333215551">如要以 Kiosk 模式啟動你的應用程式，請連線至網際網路。</translation>
-<translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5269659747698455324">解鎖密碼金鑰</translation>
@@ -7628,7 +7625,6 @@
 <translation id="623261264391834964">在文字方塊中按一下滑鼠右鍵，即可使用「幫我寫」功能</translation>
 <translation id="6233154960150021497">預設使用語音，而不使用鍵盤</translation>
 <translation id="6234108445915742946">Chrome《服務條款》將於 3 月 31 日變更</translation>
-<translation id="6234474535228214774">等待安裝中</translation>
 <translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 的 QR 圖碼。</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" />群組「<ph name="GROUP_NAME" />」- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
@@ -8310,7 +8306,6 @@
 <translation id="6713668088933662563">一律不顯示翻譯以下語言的選項</translation>
 <translation id="6714871567554212732">查看「<ph name="GROUP_NAME" />」的詳細資訊</translation>
 <translation id="6715735940363172819">未授權網站使用麥克風</translation>
-<translation id="6715803357256707211">安裝 Linux 應用程式的過程中發生錯誤。如需詳細資料，請按一下通知。</translation>
 <translation id="6716049856796700977">所有應用程式、網站和系統服務都無法使用你的位置資訊。不過，應用程式和網站仍可透過 IP 位址取得你的位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
@@ -8997,6 +8992,7 @@
 <translation id="7191159667348037">不明的印表機 (USB)</translation>
 <translation id="7191631508323321927">走廊</translation>
 <translation id="7191632649590906354">現在起，家庭成員可以透過 Google 密碼管理工具使用你的使用者名稱和密碼。你可以請對方前往 <ph name="WEBSITE" /> 登入帳戶。</translation>
+<translation id="7192393330344360021">1 行</translation>
 <translation id="7193051357671784796">這個應用程式是由貴機構新增。請重新啟動應用程式以完成安裝。</translation>
 <translation id="7193374945610105795">系統沒有儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="7193663868864659844">提供關於分頁群組建議的意見</translation>
@@ -11108,6 +11104,7 @@
 <translation id="862750493060684461">CSS 快取</translation>
 <translation id="8627795981664801467">僅傳送安全性連線的 Cookie</translation>
 <translation id="8627804903623428808">請詳閱以下條款，並控管貴子女的資料</translation>
+<translation id="8628674746770065790">跟隨游標</translation>
 <translation id="862907440446514309">管理員正在使用「<ph name="APP0_NAME" />」錄製螢幕畫面。</translation>
 <translation id="8630338733867813168">充電時進入休眠狀態</translation>
 <translation id="8631032106121706562">朵朵</translation>
@@ -12124,7 +12121,6 @@
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> 個建議的分頁群組</translation>
 <translation id="992778845837390402">目前正在執行 Linux 備份作業</translation>
-<translation id="993540765962421562">正在進行安裝程序</translation>
 <translation id="994087375490600917">側邊面板</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
 <translation id="995755448277384931">新增 IBAN</translation>

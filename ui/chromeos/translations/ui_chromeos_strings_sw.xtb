@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Huduma</translation>
 <translation id="181434555916624618">Kwa sasa, matokeo yenye picha za watu hayataonyeshwa. Jaribu kidokezo kingine.</translation>
 <translation id="1829129547161959350">Ngwini</translation>
-<translation id="183183971458492120">Inapakia maelezo...</translation>
 <translation id="1832073788765803750">Fonti ya Katakana kwa nusu upana</translation>
 <translation id="1834290891154666894">Jina mbadala la kichwa linalolingana si sahihi</translation>
 <translation id="1838709767668011582">Tovuti ya Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Umetumia <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Kichina Kilichorahisishwa</translation>
 <translation id="22085916256174561">Kikorea</translation>
-<translation id="2208919847696382164">Sakinisha ukitumia Linux</translation>
 <translation id="2215692307449050019">Chaji ya betri imepungua. Usawazishaji wa faili utaendelea utakapounganisha kwenye nishati.</translation>
 <translation id="2225536596944493418">Je, una uhakika ungependa kufuta vipengee <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Haiwezi kuunda folda "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Kibama (Myama) kwenye kibodi ya Myansan</translation>
 <translation id="2664412712123763093">Mahali faili ilipo</translation>
-<translation id="2718540689505416944">Sakinisha programu ukitumia Linux</translation>
 <translation id="2719020180254996569">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Maelezo</translation>
 <translation id="2724954091494693138">Kituruki kwenye kibodi ya muundo wa F</translation>
 <translation id="2732288874651063549">Dhibiti kushiriki na <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Umetumia nafasi yako yote ya hifadhi binafsi ya Google Workspace.</translation>
 <translation id="2771816809568414714">Jibini</translation>
 <translation id="2781645665747935084">Kibelgiji</translation>
-<translation id="2782104745158847185">Hitilafu imetokea wakati wa kusakinisha programu ya Linux</translation>
 <translation id="2802583107108007218">Pata maelezo zaidi kuhusu vizuizi hivi</translation>
 <translation id="2803375539583399270">Weka PIN</translation>
 <translation id="2819519502129272135">Kipengele cha kusawazisha faili kimezimwa</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Uko nje ya mtandao</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3793469551756281394">Zimesalia takribani <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Toleo</translation>
 <translation id="3801082500826908679">Kifaroe</translation>
 <translation id="3809272675881623365">Sungura</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3855472144336161447">Kijerumani Neo 2</translation>
 <translation id="3858860766373142691">Jina</translation>
-<translation id="3866249974567520381">Maelezo</translation>
 <translation id="3899991606604168269">Kifaransa (Kanada) kwenye kibodi ya Lugha Nyingi</translation>
 <translation id="3901991538546252627">Inaunganisha kwenye <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Inasakinisha maelezo ya eSIM ya vifaa vya mkononi, Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Fonetiki ya Kibulgaria</translation>
 <translation id="4508265954913339219">Uamilisho umeshindikana</translation>
 <translation id="4509667233588080747">Kiingereza (Marekani) kwenye kibodi ya Workman ya Kimataifa</translation>
-<translation id="4522570452068850558">Maelezo</translation>
 <translation id="4527800702232535228">Umeshiriki folda hii na Parallels Desktop</translation>
 <translation id="4552678318981539154">Nunua hifadhi zaidi</translation>
 <translation id="4552759165874948005">Mtandao wa <ph name="NETWORK_TYPE" />, uthabiti wa mtandao <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Sikiliza</translation>
 <translation id="5650895901941743674">Angalia mipangilio ya APN yako</translation>
 <translation id="5669691691057771421">Weka PIN mpya</translation>
-<translation id="5678784840044122290">Programu ya Linux itapatikana kwenye Kituo chako na huenda pia ikaonyesha aikoni kwenye Kifungua programu chako.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Imeshindwa kutenganishwa kwenye kumbukumbu au diski pepe<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Funga faili zote kwenye kumbukumbu au diski pepe, kisha ujaribu tena.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Mchezaji</translation>
 <translation id="5864471791310927901">Mwonekano wa DHCP umeshindikana</translation>
 <translation id="5896749729057314184">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Haijawashwa, Uthabiti wa Mtandao, asilimia <ph name="SIGNAL_STRENGTH" />, Maelezo</translation>
-<translation id="5911887972742538906">Hitilafu imetokea wakati wa kusakinisha programu yako ya Linux.</translation>
 <translation id="5912396950572065471">Muundo</translation>
 <translation id="5918480239180455431">Vipengele vipya vya utafutaji vinapatikana</translation>
 <translation id="5926082595146149752">Kiholanzi (Uholanzi) kwenye kibodi ya Kimataifa ya Marekani (PC)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Jina la Hifadhi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Maelezo</translation>
 <translation id="7246947237293279874">Seva Mbadala ya FTP</translation>
-<translation id="7248671827512403053">Programu</translation>
 <translation id="7256405249507348194">Hitilafu isiyotambulika: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Huduma zinazopatikana</translation>
 <translation id="7291818353625820805">Je, ungependa vitufe vijirudie? Zima alama za jinsi herufi zinavyotamkwa kwenye Mipangilio ya Kibodi</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Sanidi</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{Hitilafu 1.}other{Hitilafu #.}}</translation>
 <translation id="8154842056504218462">Umechagua vipengee vyote.</translation>
-<translation id="8157684860301034423">Imeshindwa kuleta maelezo ya programu.</translation>
 <translation id="8175731104491895765">Kifaransa (Ubelgiji)</translation>
 <translation id="8175799081768705361">Inasawazisha faili <ph name="NUMBER_OF_FILES_SYNCING" /> za Hifadhi</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Hati za Google</translation>
 <translation id="9189836632794948435">Kikazaki</translation>
 <translation id="9200427192836333033">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimetolewa.</translation>
-<translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219908252191632183">Mandhari ya mwezi mwandamo</translation>
 <translation id="931652069802536959">Mtandao umezuiwa na sera</translation>

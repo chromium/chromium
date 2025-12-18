@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">সেৱা</translation>
 <translation id="181434555916624618">এতিয়াৰ বাবে, লোকৰ সৈতে ওলোৱা ফলাফল দেখুওৱা নহ’ব। আন এটা প্ৰ’ম্পট্‌ ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="1829129547161959350">পেংগুইন</translation>
-<translation id="183183971458492120">তথ্য ল’ড কৰি থকা হৈছে...</translation>
 <translation id="1832073788765803750">অৰ্ধ প্ৰস্থৰ কাটাকনা</translation>
 <translation id="1834290891154666894">বিষয়ৰ বিকল্প নামৰ সৈতে মিলা প্ৰবিষ্টি অমান্য</translation>
 <translation id="1838709767668011582">Googleৰ ছাইট</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="2198315389084035571">সৰলীকৰণ কৰা চীনা</translation>
 <translation id="22085916256174561">কোৰিয়ান</translation>
-<translation id="2208919847696382164">Linuxৰ জৰিয়তে ইনষ্টল কৰক</translation>
 <translation id="2215692307449050019">বেটাৰী কম আছে। আপুনি পাৱাৰৰ সৈতে সংযুক্ত হ’লে ছিংক পুনৰ আৰম্ভ হ’ব।</translation>
 <translation id="2225536596944493418">আপুনি <ph name="NUMBER_OF_ITEMS" />টা বস্তু মচি পেলাবলৈ নিশ্চিতনে?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ফল্ডাৰ সৃষ্টি কৰিব পৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="2663066752008346276">Myansan কীব’ৰ্ডৰ সৈতে বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2664412712123763093">ফাইলৰ অৱস্থান</translation>
-<translation id="2718540689505416944">Linuxৰ জৰিয়তে এপ্ ইনষ্টল কৰক</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সবিশেষ</translation>
 <translation id="2724954091494693138">F-কীব’ৰ্ডৰ সৈতে তুৰ্কী</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> শ্বেয়াৰ কৰাৰ সুবিধা পৰিচালনা কৰক</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">আপুনি নিজৰ Google Workspaceৰ আটাইবোৰ ষ্ট'ৰেজ ব্যৱহাৰ কৰিছে।</translation>
 <translation id="2771816809568414714">চ্চীজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
-<translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2802583107108007218">এই সীমাবদ্ধতাসমূহৰ বিষয়ে অধিক জানক</translation>
 <translation id="2803375539583399270">পিন দিয়ক</translation>
 <translation id="2819519502129272135">ফাইল ছিংক কৰা সুবিধাটো অফ কৰা হৈছে</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">আপুনি অফলাইন হৈ আছে</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="3793469551756281394">প্ৰায় <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> বাকী আছে</translation>
-<translation id="3798449238516105146">সংস্কৰণ</translation>
 <translation id="3801082500826908679">Faroese</translation>
 <translation id="3809272675881623365">শহা</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3855472144336161447">জার্মান NEO 2 কীব’র্ড</translation>
 <translation id="3858860766373142691">নাম</translation>
-<translation id="3866249974567520381">বিৱৰণ</translation>
 <translation id="3899991606604168269">বহুভাষিক কীব’ৰ্ডৰ সৈতে ফৰাচী (কানাডা)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="3906232975181435906">ম’বাইলৰ প্ৰ’ফাইল ইনষ্টল কৰি থকা হৈছে, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">বুলগেৰিয়ান ফ’নেটিক</translation>
 <translation id="4508265954913339219">সক্ৰিয় কৰিব পৰা নগ'ল</translation>
 <translation id="4509667233588080747">Workman আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
-<translation id="4522570452068850558">সবিশেষ</translation>
 <translation id="4527800702232535228">এই ফ’ল্ডাৰটো Parallels Desktopৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4552678318981539154">অধিক ষ্ট’ৰেজ কিনক</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">শুনক</translation>
 <translation id="5650895901941743674">আপোনাৰ এপিএনৰ কনফিগাৰেশ্বন পৰীক্ষা কৰক</translation>
 <translation id="5669691691057771421">নতুন পিন দিয়ক</translation>
-<translation id="5678784840044122290">Linux এপ্লিকেশ্বন আপোনাৰ টার্মিনেলৰ ভিতৰত উপলব্ধ হ'ব আৰু আপোনাৰ লঞ্চাৰতো এখন আইকন দেখুৱাব পাৰে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />আৰ্কাইভ বা ভাৰ্চুৱেল ডিস্কৰ পৰা সংযোগ বিচ্ছিনন্ন কৰিব পৰা নাই<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    আৰ্কাইভ বা ভাৰ্চুৱেল ডিস্কৰ সকলো ফাইল বন্ধ কৰি আকৌ চেষ্টা কৰক।</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">গে’মাৰ</translation>
 <translation id="5864471791310927901">DHCP বিচাৰিব পৰা নগ’ল।</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> টাৰ ভিতৰত <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সক্ৰিয় নকৰা, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
-<translation id="5911887972742538906">আপোনাৰ Linux এপ্লিকেশ্বন ইনষ্টল কৰাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হৈছে৷</translation>
 <translation id="5912396950572065471">ফৰ্মেট কৰক</translation>
 <translation id="5918480239180455431">সন্ধানৰ নতুন সুবিধাসমূহ উপলব্ধ</translation>
 <translation id="5926082595146149752">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে ডাট্‌চ (নেডাৰলেণ্ডছ)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">ড্ৰাইভৰ নাম</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, সবিশেষ</translation>
 <translation id="7246947237293279874">FTP প্ৰক্সি</translation>
-<translation id="7248671827512403053">এপ্লিকেশ্বন</translation>
 <translation id="7256405249507348194">চিনাক্ত কৰিব নোৱাৰা আসোঁৱাহ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ সেৱাসমূহ</translation>
 <translation id="7291818353625820805">কীসমূহ পুনৰাবৃত্তি হোৱাটো বিচাৰেনে? কীব’ৰ্ডৰ ছেটিঙত উচ্চাৰণ চিহ্নসমূহ অফ কৰক</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">কনফিগাৰ</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{১ টা আসোঁৱাহ।}one{# টা আসোঁৱাহ।}other{# টা আসোঁৱাহ।}}</translation>
 <translation id="8154842056504218462">বাছনি কৰা সকলো প্ৰবিষ্টি।</translation>
-<translation id="8157684860301034423">এপৰ তথ্য পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল।</translation>
 <translation id="8175731104491895765">ফৰাচী (বেলজিয়াম)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> টা Driveৰ ফাইল ছিংক কৰি থকা হৈছে</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু আহৰণ কৰা হ’ল।</translation>
-<translation id="9213073329713032541">ইনষ্টলেশ্বন সফলতাৰে আৰম্ভ কৰা হ’ল৷</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">চান্দ্ৰ</translation>
 <translation id="931652069802536959">নীতিয়ে নেটৱৰ্ক অৱৰোধ কৰিছে</translation>

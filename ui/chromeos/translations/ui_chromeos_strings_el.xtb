@@ -111,7 +111,6 @@
 <translation id="1813278315230285598">Υπηρεσίες</translation>
 <translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη προτροπή.</translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
-<translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
 <translation id="1832073788765803750">Κατακάνα μισού πλάτους</translation>
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="1838709767668011582">Ιστότοπος Google</translation>
@@ -155,7 +154,6 @@
 <translation id="2193661397560634290">Χρησιμοποιούνται <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Απλοποιημένα Κινεζικά</translation>
 <translation id="22085916256174561">Κορεατικά</translation>
-<translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
 <translation id="2215692307449050019">Χαμηλή στάθμη μπαταρίας. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν η συσκευή συνδεθεί στην παροχή ρεύματος.</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -216,7 +214,6 @@
 <translation id="2653059201992392941">Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="2663066752008346276">Βιρμανικά/Μιανμάρ με πληκτρολόγιο Myansan</translation>
 <translation id="2664412712123763093">Τοποθεσία αρχείου</translation>
-<translation id="2718540689505416944">Εγκατάσταση εφαρμογής με Linux</translation>
 <translation id="2719020180254996569">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Λεπτομέρειες</translation>
 <translation id="2724954091494693138">Τουρκικά με πληκτρολόγιο F</translation>
 <translation id="2732288874651063549">Διαχείριση κοινής χρήσης με το <ph name="VM_NAME" /></translation>
@@ -225,7 +222,6 @@
 <translation id="2764206540577097904">Χρησιμοποιήσατε ολόκληρο τον προσωπικό αποθηκευτικό χώρο σας στο Google Workspace.</translation>
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2781645665747935084">Βελγικά</translation>
-<translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
 <translation id="2802583107108007218">Μάθετε περισσότερα σχετικά με αυτούς τους περιορισμούς</translation>
 <translation id="2803375539583399270">Εισαγωγή PIN</translation>
 <translation id="2819519502129272135">Ο συγχρονισμός αρχείων έχει απενεργοποιηθεί</translation>
@@ -353,7 +349,6 @@
 <translation id="3786301125658655746">Είστε εκτός σύνδεσης</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3793469551756281394">Απομένουν περίπου <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />.</translation>
-<translation id="3798449238516105146">Έκδοση</translation>
 <translation id="3801082500826908679">Φερόε</translation>
 <translation id="3809272675881623365">Κουνέλι</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -368,7 +363,6 @@
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3855472144336161447">Γερμανικά Neo 2</translation>
 <translation id="3858860766373142691">Όνομα</translation>
-<translation id="3866249974567520381">Περιγραφή</translation>
 <translation id="3899991606604168269">Γαλλικά (Καναδά) με πολύγλωσσο πληκτρολόγιο</translation>
 <translation id="3901991538546252627">Σύνδεση με <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Εγκατάσταση προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -446,7 +440,6 @@
 <translation id="4477219268485577442">Φωνητικό Βουλγαρικά</translation>
 <translation id="4508265954913339219">Η ενεργοποίηση απέτυχε</translation>
 <translation id="4509667233588080747">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Workman International</translation>
-<translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4527800702232535228">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Parallels Desktop.</translation>
 <translation id="4552678318981539154">Αγοράστε περισσότερο αποθηκευτικό χώρο</translation>
 <translation id="4552759165874948005">Δίκτυο <ph name="NETWORK_TYPE" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -616,7 +609,6 @@
 <translation id="5649768706273821470">Ακρόαση</translation>
 <translation id="5650895901941743674">Ελέγξτε τη διαμόρφωση του APN</translation>
 <translation id="5669691691057771421">Εισαγωγή νέου κωδικού PIN</translation>
-<translation id="5678784840044122290">Η εφαρμογή Linux θα είναι διαθέσιμη στο τερματικό σας και μπορεί επίσης να εμφανίζει ένα εικονίδιο στην Εφαρμογή εκκίνησης.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Δεν είναι δυνατή η αποσύνδεση από κάποιο αρχείο ή εικονικό δίσκο<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Κλείστε όλα τα αρχεία στο αρχείο ή τον εικονικό δίσκο και προσπαθήστε ξανά.</translation>
@@ -651,7 +643,6 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Αποτυχία αναζήτησης DHCP</translation>
 <translation id="5896749729057314184">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
-<translation id="5911887972742538906">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
 <translation id="5912396950572065471">Διαμόρφωση</translation>
 <translation id="5918480239180455431">Νέες διαθέσιμες λειτουργίες αναζήτησης</translation>
 <translation id="5926082595146149752">Ολλανδικά (Ολλανδία) με πληκτρολόγιο υπολογιστή Διεθνές ΗΠΑ</translation>
@@ -821,7 +812,6 @@
 <translation id="7238097264433196391">Όνομα δίσκου</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Λεπτομέρειες</translation>
 <translation id="7246947237293279874">Διακομιστής μεσολάβησης FTP</translation>
-<translation id="7248671827512403053">Εφαρμογή</translation>
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
 <translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>
@@ -952,7 +942,6 @@
 <translation id="8151638057146502721">Διαμόρφωση</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 σφάλμα.}other{# σφάλματα.}}</translation>
 <translation id="8154842056504218462">Επιλέχθηκαν όλες οι καταχωρίσεις.</translation>
-<translation id="8157684860301034423">Αποτυχία ανάκτησης των πληροφοριών της εφαρμογής.</translation>
 <translation id="8175731104491895765">Γαλλικά (Βέλγιο)</translation>
 <translation id="8175799081768705361">Συγχρονισμός <ph name="NUMBER_OF_FILES_SYNCING" /> αρχείων Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1101,7 +1090,6 @@
 <translation id="9183302530794969518">Έγγραφα Google</translation>
 <translation id="9189836632794948435">Καζαχστανικά</translation>
 <translation id="9200427192836333033">Έγινε εξαγωγή <ph name="NUMBER_OF_ITEMS" /> στοιχείων.</translation>
-<translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="9219908252191632183">Σεληνιακό τοπίο</translation>
 <translation id="931652069802536959">Το δίκτυο έχει αποκλειστεί από την πολιτική</translation>

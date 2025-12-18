@@ -673,6 +673,7 @@
 <translation id="8747073452963259673">левый нижний угол области поиска: <ph name="LEFT" /> % слева, <ph name="BOTTOM" /> % снизу</translation>
 <translation id="878572486461146056">Произошла ошибка. Администратор вашей сети применил групповую политику, которая не позволяет выполнить установку. <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Для этого сайта Chromium запрашивает доступ к камере и микрофону.</translation>
+<translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8818550178040858407">Войти в Chromium?</translation>
 <translation id="8823401858233292222">Сделать Chromium браузером по умолчанию и закрепить на панели задач</translation>
 <translation id="8826492472752484139">Нажмите "Менеджер паролей"</translation>

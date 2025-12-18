@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Служби</translation>
 <translation id="181434555916624618">Зараз ця функція не показує згенеровані зображення, на яких є люди. Спробуйте інший запит.</translation>
 <translation id="1829129547161959350">Пінгвін</translation>
-<translation id="183183971458492120">Завантаження інформації…</translation>
 <translation id="1832073788765803750">Катакана половинної ширини</translation>
 <translation id="1834290891154666894">Недійсний запис збігу з альтернативною назвою суб’єкта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Використано <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">китайська (спрощена)</translation>
 <translation id="22085916256174561">Корейська</translation>
-<translation id="2208919847696382164">Установити для Linux</translation>
 <translation id="2215692307449050019">Низький рівень заряду акумулятора. Синхронізація файлів відновиться, коли ви підключите пристрій до живлення.</translation>
 <translation id="2225536596944493418">Видалити елементи (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не вдається створити папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Бірманська/м'янмська, розкладка м'янсан</translation>
 <translation id="2664412712123763093">Місце розташування файлу</translation>
-<translation id="2718540689505416944">Установити додаток для Linux</translation>
 <translation id="2719020180254996569">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Докладніше</translation>
 <translation id="2724954091494693138">Турецька, розкладка FGĞIOD</translation>
 <translation id="2732288874651063549">Керувати параметрами спільного доступу для <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Ваше індивідуальне сховище Google Workspace заповнено.</translation>
 <translation id="2771816809568414714">Сир</translation>
 <translation id="2781645665747935084">Бельгійська</translation>
-<translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2802583107108007218">Докладніше про ці обмеження</translation>
 <translation id="2803375539583399270">Введіть PIN-код</translation>
 <translation id="2819519502129272135">Синхронізацію файлів вимкнено</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Ви в режимі офлайн</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3793469551756281394">Залишилося приблизно <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Версія</translation>
 <translation id="3801082500826908679">Фарерська</translation>
 <translation id="3809272675881623365">Кролик</translation>
 <translation id="3810973564298564668">Керувати</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
-<translation id="3866249974567520381">Опис</translation>
 <translation id="3899991606604168269">Французька (Канада), багатомовна розкладка</translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Болгарська (фонетична)</translation>
 <translation id="4508265954913339219">Помилка активації</translation>
 <translation id="4509667233588080747">Англійська (США), розкладка Workman International</translation>
-<translation id="4522570452068850558">Деталі</translation>
 <translation id="4527800702232535228">Додаток Parallels Desktop має доступ до цієї папки</translation>
 <translation id="4552678318981539154">Придбати більше об’єму пам’яті</translation>
 <translation id="4552759165874948005">Мережа <ph name="NETWORK_TYPE" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Слухати</translation>
 <translation id="5650895901941743674">Перевірте конфігурацію APN</translation>
 <translation id="5669691691057771421">Введіть новий PIN-код</translation>
-<translation id="5678784840044122290">Додаток Linux буде доступний в терміналі, а його значок може відображатися на панелі запуску.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не вдається від’єднатися від архіву чи віртуального диска<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Закрийте всі файли в архіві або на віртуальному диску та повторіть спробу.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Помилка пошуку DHCP</translation>
 <translation id="5896749729057314184">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
-<translation id="5911887972742538906">Сталася помилка під час встановлення додатка Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5918480239180455431">Доступні нові функції пошуку</translation>
 <translation id="5926082595146149752">Нідерландська (Нідерланди), міжнародна розкладка США для ПК</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Назва диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дeталі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
-<translation id="7248671827512403053">Додаток</translation>
 <translation id="7256405249507348194">Нерозпізнана помилка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступні сервіси</translation>
 <translation id="7291818353625820805">Щоб символи клавіш вводилися повторно, вимкніть діакритичні знаки в налаштуваннях клавіатури.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Налаштувати</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 помилка.}one{# помилка.}few{# помилки.}many{# помилок.}other{# помилки.}}</translation>
 <translation id="8154842056504218462">Вибрано всі елементи.</translation>
-<translation id="8157684860301034423">Не вдалось отримати інформацію про додаток.</translation>
 <translation id="8175731104491895765">Французька (Бельгія)</translation>
 <translation id="8175799081768705361">Синхронізація файлів на Диску (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахська</translation>
 <translation id="9200427192836333033">Видобуто об’єктів: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="9219908252191632183">Місячний ландшафт</translation>
 <translation id="931652069802536959">Мережу заблоковано відповідно до правил</translation>

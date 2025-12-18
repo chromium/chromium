@@ -1030,7 +1030,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1679810534535368772">Seguro que queres saír?</translation>
 <translation id="167983332380191032">O servizo de xestión enviou un erro de HTTP.</translation>
 <translation id="167997285881077031">Configuración da conversión de texto a voz</translation>
-<translation id="1680849702532889074">Produciuse un erro durante a instalación da aplicación Linux.</translation>
 <translation id="1682195225331129001">Probar agora</translation>
 <translation id="1682548588986054654">Nova ventá de incógnito</translation>
 <translation id="1682696837763999627">Cursor de rato grande</translation>
@@ -1656,7 +1655,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Aplicacións para Android</translation>
 <translation id="2104166991923847969">Desactivar a zona wifi automaticamente</translation>
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
-<translation id="2106439768713835453">Compartir tamén o audio da aplicación</translation>
 <translation id="2107359546799360577">As optimizacións de JavaScript están desactivadas.</translation>
 <translation id="2108204112555497972">Comprobáronse hai <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
@@ -2668,7 +2666,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2778471504622896352">Engadir aplicacións remotas ao menú de aplicacións de ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2783952358106015700">Utiliza a chave de seguranza coa aplicación <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contrasinais</translation>
 <translation id="2785279781154577715">Aparencia da tarxeta de vista previa ao pasar por enriba das pestanas</translation>
@@ -4131,6 +4128,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3785748905555897481">PIN modificado correctamente</translation>
 <translation id="3786224729726357296">Eliminar permisos e datos do sitio <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Mostrar subliñado no texto escrito</translation>
+<translation id="3786890785076278600">Liña estática</translation>
 <translation id="3787434344076711519">Esperando pola tradución</translation>
 <translation id="3788301286821743879">Non se puido iniciar a aplicación de quiosco.</translation>
 <translation id="3788401245189148511">Podería:</translation>
@@ -4510,6 +4508,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4028467762035011525">Engadir métodos de introdución de texto</translation>
 <translation id="4029024445166427442">menú de aplicacións + maiúsculas + retroceso</translation>
 <translation id="4029556917477724407">Ir atrás desde a páxina <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 liñas</translation>
 <translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Engadir un cartafol novo</translation>
@@ -4880,7 +4879,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4293219510510666933">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación. Esta opción de configuración está activada.</translation>
 <translation id="429344752071832554">Deixar de enfocar grupo</translation>
 <translation id="4294392694389031609">Eliminouse <ph name="FILE_NAME" /> do historial de descargas, pero segue no teu dispositivo</translation>
-<translation id="4295072614469448764">A aplicación está dispoñible no terminal. Tamén pode haber unha icona no menú de aplicacións.</translation>
 <translation id="4295979599050707005">Volve iniciar sesión para confirmar que se pode utilizar a túa conta <ph name="USER_EMAIL" /> cos sitios web, aplicacións e extensións en Chrome e Google Play. Tamén podes quitar esta conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicacións instaladas e emitidas desde <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">O teu contrasinal orixinal para este sitio atopouse nunha violación da seguranza dos datos pública. O <ph name="DATE" /> pedícheslle ao <ph name="BRAND" /> que che cambiase automaticamente o contrasinal.</translation>
@@ -4987,7 +4985,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4373418556073552953">Inicia sesión co teu teléfono Android</translation>
 <translation id="4373973310429385827">Faro</translation>
-<translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros descargados</translation>
 <translation id="4376226992615520204">A localización está desactivada</translation>
 <translation id="4377363674125277448">Produciuse un problema co certificado do servidor.</translation>
@@ -5772,6 +5769,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4908811072292128752">Abre unha nova pestana para explorar dous sitios á vez</translation>
 <translation id="4910241725741323970">Xa se instalou a aplicación</translation>
 <translation id="4912643508233590958">Activacións desde o modo inactivo</translation>
+<translation id="4912892750325639080">3 liñas</translation>
 <translation id="4913209098186576320">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />A comprobación está tardando máis tempo do normal...</translation>
 <translation id="4913695564084524048">Non se poden atopar datos da aplicación</translation>
 <translation id="4915961947098019832">Permiso concedido para mostrar imaxes</translation>
@@ -6266,7 +6264,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5263656105659419083">Para volver facilmente ao panel lateral, na parte superior dereita fai clic en Fixar</translation>
 <translation id="5264148714798105376">Esta acción pode tardar arredor dun minuto.</translation>
 <translation id="5264252276333215551">Conéctate a Internet para iniciar a aplicación en modo de quiosco.</translation>
-<translation id="5265797726250773323">Produciuse un erro durante a instalación</translation>
 <translation id="526622169288322445">Máis accións para <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
 <translation id="5269659747698455324">Desbloquear as túas claves de acceso</translation>
@@ -7640,7 +7637,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="623261264391834964">Fai clic co botón dereito nunha caixa de texto para usar Axúdame a escribir</translation>
 <translation id="6233154960150021497">Uso predeterminado da voz en lugar do teclado</translation>
 <translation id="6234108445915742946">As Condicións de servizo de Chrome cambiarán o 31 de marzo</translation>
-<translation id="6234474535228214774">Pendente de instalación</translation>
 <translation id="6235208551686043831">Acendeuse a cámara do dispositivo. Coloca diante dela o código QR da eSIM.</translation>
 <translation id="6237342324375264347">Grupo <ph name="SHARE_STATE" />: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Aplicación para tomar notas co lapis óptico</translation>
@@ -8322,7 +8318,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6713668088933662563">Non ofrecer nunca que se traduzan estes idiomas</translation>
 <translation id="6714871567554212732">Ver máis detalles sobre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Os sitios web non teñen permiso para usar o teu micrófono</translation>
-<translation id="6715803357256707211">Produciuse un erro durante a instalación da aplicación Linux. Fai clic na notificación para ver os detalles.</translation>
 <translation id="6716049856796700977">Nada pode usar a túa localización. Con todo, poida que siga sendo visible para os sitios web e as aplicacións mediante o teu enderezo IP. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Perdeuse a conexión de rede. Comproba a túa conexión de rede ou proba con outra rede wifi.</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
@@ -9009,6 +9004,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7191159667348037">Impresora descoñecida (USB)</translation>
 <translation id="7191631508323321927">Corredor</translation>
 <translation id="7191632649590906354">Agora os membros da familia poderán usar o teu nome de usuario e contrasinal se utilizan o xestor de contrasinais de Google. Dilles que accedan a <ph name="WEBSITE" /> para iniciar sesión.</translation>
+<translation id="7192393330344360021">1 liña</translation>
 <translation id="7193051357671784796">Esta aplicación engadiuna a túa organización. Reiníciaa para acabar de instalala.</translation>
 <translation id="7193374945610105795">Non se gardou ningún contrasinal para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envía comentarios para grupos suxeridos</translation>
@@ -11119,6 +11115,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="862750493060684461">Caché de CSS</translation>
 <translation id="8627795981664801467">Só conexións seguras</translation>
 <translation id="8627804903623428808">Revisa estas condicións e controla os datos da túa filla ou fillo</translation>
+<translation id="8628674746770065790">Seguir cursor</translation>
 <translation id="862907440446514309">A persoa encargada de administrar a túa conta está gravando a túa pantalla con <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Activar modo de suspensión mentres se cargue a batería</translation>
 <translation id="8631032106121706562">Pétalos</translation>
@@ -12135,7 +12132,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="992592832486024913">Desactivar ChromeVox (comentarios orais)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> grupos de pestanas suxeridos</translation>
 <translation id="992778845837390402">Estase creando unha copia de seguranza de Linux</translation>
-<translation id="993540765962421562">Instalación en curso</translation>
 <translation id="994087375490600917">Paneis laterais</translation>
 <translation id="994289308992179865">&amp;Bucle</translation>
 <translation id="995755448277384931">Engadir IBAN</translation>

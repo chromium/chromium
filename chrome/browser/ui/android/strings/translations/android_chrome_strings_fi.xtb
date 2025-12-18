@@ -1719,6 +1719,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8137562778192957619">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Google Salasanoihin.</translation>
 <translation id="8152331954420209374">Siirry Lensiin</translation>
 <translation id="8153206878708357851">Näppäimistöselaaminen päälle/pois</translation>
+<translation id="8154784523622173959">Personoi tämän sivun taustaa</translation>
 <translation id="8163820386638255770">Salasanojen käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) ei-aktiivinen kohde}other{(#) ei-aktiivista kohdetta}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> tiedostoa jäljellä</translation>

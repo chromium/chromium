@@ -404,6 +404,7 @@
 <translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2484459871750294497">Hoe zet ik deze functie aan?</translation>
+<translation id="2485534095078940149">Bijgevoegd bestand {title}</translation>
 <translation id="2493269659028026145">Onmiddellijk vergrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2496626742194544812">Naar het eerste tabblad gaan</translation>
@@ -1034,6 +1035,7 @@
 <translation id="496392417432935267">Ergens anders geopend</translation>
 <translation id="4970724460420203313">Als je Chrome gebruikt met je beheerde account, kun je browsen gerelateerd aan je organisatie (zoals tabbladen, geschiedenis en wachtwoorden) scheiden van je andere browse-activiteiten</translation>
 <translation id="4971735654804503942">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies. Stuurt een waarschuwing over wachtwoordlekken. Vereist dat browsegegevens naar Google worden verstuurd.</translation>
+<translation id="4977176874984951085">Menu met pagina-acties openen</translation>
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="4985921635659180565">Zodra een bestand is gepland voor verwijdering, kan dit niet worden geannuleerd.</translation>
 <translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
@@ -1119,6 +1121,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Een verplicht veld is leeg. Vul het in voordat je opslaat.}other{Sommige verplichte velden zijn leeg. Vul ze in voordat je opslaat.}}</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Denk dus goed na voordat je lid wordt. De link verloopt over 48 uur.</translation>
+<translation id="5275953427913009986">Bijgevoegd tabblad {title}</translation>
 <translation id="5282340693022193851">Als je meldingen voor prijzen volgen wilt krijgen, zet je meldingen aan in de iOS-instellingen.</translation>
 <translation id="528857768909044842">Tabbladgroepen worden hier opgeslagen</translation>
 <translation id="5294624619177114121">Mobiele meldingen</translation>
@@ -1192,6 +1195,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5579012242779565775">Leeslijst verbergen</translation>
 <translation id="5581786858144165447">Vragen aan AI-modus</translation>
 <translation id="5585019845078534178">Kaarten</translation>
+<translation id="5589976607021609750">Bijgevoegde afbeelding</translation>
 <translation id="5595485650161345191">Adres bewerken</translation>
 <translation id="559567008082979829">Stel in dat je downloads na één maand worden verwijderd.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
@@ -1875,6 +1879,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8005666035647241369">In Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="8010488806779226127">Ontdek functies waarmee je meer kunt doen terwijl je browst</translation>
 <translation id="8011489434346330032">Webcontrole</translation>
+<translation id="8015826420689927262">Bijlage verwijderen</translation>
 <translation id="8017015647846870183">Uit Google Wachtwoordmanager, inclusief wachtwoorden en toegangssleutels</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8023170444051056234">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van al je apparaten</translation>
@@ -2230,6 +2235,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="956218893102219091">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="963102227019621224">Web- en app-activiteit</translation>
+<translation id="965879457362663186">Bijlage toevoegen</translation>
 <translation id="966593914872420832">Gesproken zoekopdracht</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Lid worden van tabbladgroep met <ph name="OWNER_NAME" />}=1{Lid worden van tabbladgroep met <ph name="OWNER_NAME" /> en {COUNT} andere persoon}other{Lid worden van tabbladgroep met <ph name="OWNER_NAME" /> en {COUNT} anderen}}</translation>
 <translation id="973493300226275298">Volg de prijs van een product in online winkels. Je krijgt meldingen als de prijs daalt.</translation>

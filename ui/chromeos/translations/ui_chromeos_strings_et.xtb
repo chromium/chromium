@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Teenused</translation>
 <translation id="181434555916624618">Praegu inimestega seotud tulemusi ei kuvata. Proovige muud päringut.</translation>
 <translation id="1829129547161959350">Pingviin</translation>
-<translation id="183183971458492120">Teabe laadimine …</translation>
 <translation id="1832073788765803750">Poollaiusega katakana</translation>
 <translation id="1834290891154666894">Sobimatu teema alternatiivse nime vaste sisestus</translation>
 <translation id="1838709767668011582">Google'i sait</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> on kasutatud</translation>
 <translation id="2198315389084035571">hiina (lihtsustatud)</translation>
 <translation id="22085916256174561">korea</translation>
-<translation id="2208919847696382164">Installi Linuxiga</translation>
 <translation id="2215692307449050019">Aku hakkab tühjaks saama. Failide sünkroonimine jätkub, kui olete toiteallikaga ühendatud.</translation>
 <translation id="2225536596944493418">Kas soovite <ph name="NUMBER_OF_ITEMS" /> üksust kindlasti kustutada?</translation>
 <translation id="2230062665678605299">Kausta „<ph name="FOLDER_NAME" />” ei saa luua. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="2663066752008346276">birma (Myanmar), Myansani klaviatuuriga</translation>
 <translation id="2664412712123763093">Faili asukoht</translation>
-<translation id="2718540689505416944">Rakenduse installimine Linuxiga</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, üksikasjad</translation>
 <translation id="2724954091494693138">türgi, F-klaviatuuriga</translation>
 <translation id="2732288874651063549">Halda jagamist VM-iga <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Olete kasutanud ära kogu oma individuaalse Google Workspace'i salvestusruumi.</translation>
 <translation id="2771816809568414714">Juust</translation>
 <translation id="2781645665747935084">Belgia</translation>
-<translation id="2782104745158847185">Viga Linuxi rakenduse installimisel</translation>
 <translation id="2802583107108007218">Lisateave nende piirangute kohta</translation>
 <translation id="2803375539583399270">Sisestage PIN-kood</translation>
 <translation id="2819519502129272135">Failide sünkroonimine on välja lülitatud</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Olete võrguühenduseta</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="3793469551756281394">Jäänud on ligikaudu <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Versioon</translation>
 <translation id="3801082500826908679">fääri</translation>
 <translation id="3809272675881623365">Küülik</translation>
 <translation id="3810973564298564668">Halda</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3855472144336161447">Saksa Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
-<translation id="3866249974567520381">Kirjeldus</translation>
 <translation id="3899991606604168269">prantsuse (Kanada), mitmekeelse klaviatuuriga</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
 <translation id="3906232975181435906">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgaaria foneetiline</translation>
 <translation id="4508265954913339219">Aktiveerimine nurjus</translation>
 <translation id="4509667233588080747">inglise (USA), Workmani rahvusvaheline klaviatuuriga</translation>
-<translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4527800702232535228">Seda kausta jagatakse Parallels Desktopiga</translation>
 <translation id="4552678318981539154">Ostke rohkem salvestusruumi</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-võrk, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Esita</translation>
 <translation id="5650895901941743674">Kontrollige oma APN-i seadistust</translation>
 <translation id="5669691691057771421">Sisestage uus PIN-kood</translation>
-<translation id="5678784840044122290">Linuxi rakendus on saadaval teie terminalis ja käivitajas võidakse kuvada ka ikoon.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ühendust arhiivi või virtuaalse kettaga ei saa katkestada<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Sulgege arhiivis või virtuaalsel kettal kõik failid ja seejärel proovige uuesti.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Mängur</translation>
 <translation id="5864471791310927901">DHCP otsing nurjus</translation>
 <translation id="5896749729057314184">Võrk <ph name="NETWORK_INDEX" /> <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, inaktiveeritud, signaalitugevus <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
-<translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
 <translation id="5918480239180455431">Saadaval on uued otsingufunktsioonid</translation>
 <translation id="5926082595146149752">hollandi (Holland), USA rahvusvahelise arvutiklaviatuuriga</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Ketta nimi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, üksikasjad</translation>
 <translation id="7246947237293279874">FTP-puhverserver</translation>
-<translation id="7248671827512403053">Rakendus</translation>
 <translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
 <translation id="7291818353625820805">Kas soovite, et klahvisisestust korrataks? Lülitage klaviatuuri seadetes rõhumärgid välja.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Seadista</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 viga.}other{# viga.}}</translation>
 <translation id="8154842056504218462">Valiti kõik kirjed.</translation>
-<translation id="8157684860301034423">Rakenduse teabe toomine nurjus.</translation>
 <translation id="8175731104491895765">prantsuse (Belgia)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive'i faili sünkroonimine</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="9189836632794948435">kasahhi</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> üksust ekstraktiti.</translation>
-<translation id="9213073329713032541">Installimise alustamine õnnestus.</translation>
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="9219908252191632183">Kuu</translation>
 <translation id="931652069802536959">Võrk on reegli tõttu blokeeritud.</translation>

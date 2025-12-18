@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Gotovo</translation>
 <translation id="2577522251608256362">Četvrt</translation>
 <translation id="2579713773888829241">Dijeljeni diskovi</translation>
+<translation id="2580306219079937316">Otvori postavke Prevoditelja</translation>
 <translation id="2583688836549072561">Grupa kartica, <ph name="GROUP_TITLE" />, broj kartica: <ph name="TABS_NUMBER" />, nova aktivnost.</translation>
 <translation id="2593272815202181319">Ravnomjerno raspoređeno</translation>
 <translation id="2601778637777010194">Praćenje pada cijena proizvoda</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Izmjena nije spremljena.</translation>
 <translation id="3254806613790954367">Vaša posljednja otvorena kartica na svim vašim uređajima</translation>
 <translation id="325717987950204592">Dodirnite Privatnost i sigurnost</translation>
+<translation id="3266338926702638258">Prikaži povijest cijena za ovaj proizvod</translation>
 <translation id="3272527697863656322">Odustani</translation>
 <translation id="3273510436356991673">Prilagodite početni zaslon</translation>
 <translation id="3277021493514034324">Adresa web-lokacije kopirana</translation>
@@ -1934,6 +1936,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8221665793629393739">Podsjetnik za ponovno posjetu</translation>
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8233237502828137700">Zatvorite natpis promocije</translation>
+<translation id="823339794112333264">Uključi mikrofon</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8258734532103758067">Izvezao/izvezla sam svoje podatke</translation>
 <translation id="8258999165172757081">Dodano</translation>
@@ -2039,6 +2042,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8611922158252451755">Svatko s vezom može uređivati sve kartice, pa budite oprezni prilikom dijeljenja. Veza istječe za 48 sati.</translation>
 <translation id="8614671330774943747">Prelazak na izmjenjivanje kartica</translation>
 <translation id="8620640915598389714">Uredi</translation>
+<translation id="862367213447108001">Uvijek prikazuj skočne prozore na ovoj web-lokaciji</translation>
 <translation id="8625706492572042370">Uredite početni zaslon</translation>
 <translation id="8631370184731241854">Zaključane anonimne kartice</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
@@ -2135,6 +2139,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8928426232677696166">Trenutačno je odabran račun <ph name="EMAIL" /> kojim upravlja vaša organizacija. Odaberite račun.</translation>
 <translation id="894191600409472540">Izradite snažne zaporke</translation>
 <translation id="8943780400130412484">Želite li pokrenuti novo preuzimanje?</translation>
+<translation id="8947838125864566256">Isključi mikrofon</translation>
 <translation id="8953046091948372197">Ovdje ćete pronaći svoje zaporke</translation>
 <translation id="8953602327115378731">{count,plural, =1{Iznad tipkovnice dostupna je {count} opcija za samodovršavanje.}one{Iznad tipkovnice dostupna je {count} opcija za samodovršavanje.}few{Iznad tipkovnice dostupne su {count} opcije za samodovršavanje.}other{Iznad tipkovnice dostupno je {count} opcija za samodovršavanje.}}</translation>
 <translation id="895541991026785598">Prijavljivanje problema</translation>

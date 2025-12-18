@@ -1034,7 +1034,6 @@
 <translation id="1679810534535368772">Сапраўды хочаце выйсці?</translation>
 <translation id="167983332380191032">Сэрвіс кіравання адправіў памылку HTTP.</translation>
 <translation id="167997285881077031">Налады голасу для сінтэзу маўлення</translation>
-<translation id="1680849702532889074">Адбылася памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="1682195225331129001">Паспрабаваць</translation>
 <translation id="1682548588986054654">Новае акно ў рэжыме інкогніта</translation>
 <translation id="1682696837763999627">Вялікі курсор мышы</translation>
@@ -1658,7 +1657,6 @@
 <translation id="2102495993840063010">Праграмы для Android</translation>
 <translation id="2104166991923847969">Аўтаматычна выключаць хот-спот</translation>
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
-<translation id="2106439768713835453">Таксама абагульваць аўдыя з праграмы</translation>
 <translation id="2107359546799360577">Аптымізацыя JavaScript адключана.</translation>
 <translation id="2108204112555497972">Праверана <ph name="NUM_DAYS_HOURS_MINUTES" /> таму</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
@@ -2670,7 +2668,6 @@
 <translation id="2778471504622896352">Дадаваць праграмы з аддаленым доступам на панэль запуску ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
 <translation id="2783952358106015700">Выкарыстоўвайце свой ключ бяспекі, уваходзячы на <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Праверка пароляў</translation>
 <translation id="2785279781154577715">Налады карткі перадпрагляду, якая адкрываецца пры навядзенні курсора на ўкладку</translation>
@@ -4128,6 +4125,7 @@
 <translation id="3785748905555897481">PIN-код зменены</translation>
 <translation id="3786224729726357296">Выдаліць даныя і дазволы сайта <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Паказваць падкрэсліванне тэксту пры яго ўводзе</translation>
+<translation id="3786890785076278600">Статычны радок</translation>
 <translation id="3787434344076711519">Выконваецца пераклад</translation>
 <translation id="3788301286821743879">Не ўдалося запусціць праграму-кіёск.</translation>
 <translation id="3788401245189148511">Гэта пашырэнне або ўбудова можа:</translation>
@@ -4507,6 +4505,7 @@
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4029024445166427442">Клавіша панэлі запуску + Shift + Backspace</translation>
 <translation id="4029556917477724407">Вярнуцца назад са старонкі "<ph name="PAGE_TITLE" />"</translation>
+<translation id="4031178684547097947">5 радкоў</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4031527940632463547">Датчыкі заблакіраваны</translation>
 <translation id="4033471457476425443">Дадаць новую папку</translation>
@@ -4877,7 +4876,6 @@
 <translation id="4293219510510666933">Вы можаце выкарыстоўваць звычайныя фразы для пошуку наведаных старонак у гісторыі прагляду сайтаў. Вы таксама можаце задаваць пытанні і атрымліваць адказы, якія ўлічваюць вашу гісторыю прагляду сайтаў. Гэта налада ўключана.</translation>
 <translation id="429344752071832554">Не вылучаць групу</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" выдалены з гісторыі спампоўвання, але застаўся на прыладзе</translation>
-<translation id="4295072614469448764">Праграма даступная ў тэрмінале. Акрамя таго, на панэль запуску мог быць дададзены яе значок.</translation>
 <translation id="4295979599050707005">Каб пацвердзіць, што ўліковы запіс <ph name="USER_EMAIL" /> можа выкарыстоўвацца з вэб-сайтамі, праграмамі і пашырэннямі ў браўзеры Chrome і краме Google Play, увайдзіце ў яго яшчэ раз. Таксама яго можна выдаліць. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Праграмы, якія ўстаноўлены і трансліруюцца з <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Ваш зыходны пароль для гэтага вэб-сайта аказаўся сярод агульнадаступных даных у выніку ўцечкі. <ph name="DATE" /> вы звярнуліся ў сэрвіс "<ph name="BRAND" />", каб аўтаматычна змяніць свой пароль.</translation>
@@ -4984,7 +4982,6 @@
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
 <translation id="4373418556073552953">Увайдзіце з дапамогай тэлефона Android</translation>
 <translation id="4373973310429385827">Маяк</translation>
-<translation id="4374831787438678295">Усталёўшчык Linux</translation>
 <translation id="4375035964737468845">Адкрыць спампаваныя файлы</translation>
 <translation id="4376226992615520204">Вызначэнне месцазнаходжання выключана</translation>
 <translation id="4377363674125277448">Узнікла праблема з сертыфікатам сервера.</translation>
@@ -5769,6 +5766,7 @@
 <translation id="4908811072292128752">Адкрыйце новую ўкладку, каб праглядаць разам два сайты</translation>
 <translation id="4910241725741323970">Праграма ўжо ўсталявана</translation>
 <translation id="4912643508233590958">Абуджэнні ад бяздзейнасці</translation>
+<translation id="4912892750325639080">3 радкі</translation>
 <translation id="4913209098186576320">Гэты файл можа быць небяспечным<ph name="LINE_BREAK" />Праверка займае больш часу, чым звычайна...</translation>
 <translation id="4913695564084524048">Не ўдаецца знайсці даныя праграмы</translation>
 <translation id="4915961947098019832">Дазволена паказваць відарысы</translation>
@@ -6263,7 +6261,6 @@
 <translation id="5263656105659419083">Каб хутка вярнуцца на бакавую панэль, уверсе справа націсніце "Замацаваць"</translation>
 <translation id="5264148714798105376">Гэта можа заняць каля хвіліны.</translation>
 <translation id="5264252276333215551">Каб запусціць праграму ў рэжыме кіёска, падключыцеся да інтэрнэту.</translation>
-<translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="526622169288322445">Іншыя дзеянні ў дачыненні да атрымальніка <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Каб абараніцца ад небяспечных сайтаў, уключыце Бяспечны прагляд</translation>
 <translation id="5269659747698455324">Разблакіраваць ключы доступу</translation>
@@ -7639,7 +7636,6 @@
 <translation id="623261264391834964">Каб скарыстаць дапамогу з напісаннем, націсніце правай кнопкай мышы на тэкставае поле</translation>
 <translation id="6233154960150021497">Стандартныя паводзіны — выкарыстоўваць голас замест клавіятуры</translation>
 <translation id="6234108445915742946">Умовы выкарыстання Chrome зменяцца 31 сакавіка</translation>
-<translation id="6234474535228214774">Чакаецца ўсталёўка</translation>
 <translation id="6235208551686043831">Камера прылады ўключана. Навядзіце камеру на QR-код eSIM-карты.</translation>
 <translation id="6237342324375264347">Група "<ph name="GROUP_NAME" />" (<ph name="SHARE_STATE" />) – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Праграма для запісу нататак пяром</translation>
@@ -8327,7 +8323,6 @@
 <translation id="6713668088933662563">Не прапаноўваць перакладаць з гэтых моў</translation>
 <translation id="6714871567554212732">Паглядзець падрабязныя звесткі пра групу "<ph name="GROUP_NAME" />"</translation>
 <translation id="6715735940363172819">Вэб-сайтам не дазваляецца выкарыстоўваць мікрафон</translation>
-<translation id="6715803357256707211">Адбылася памылка падчас усталявання Linux-праграмы. Каб даведацца больш, націсніце на апавяшчэнне.</translation>
 <translation id="6716049856796700977">Доступ да звестак пра месцазнаходжанне закрыты. Аднак даныя пра ваша месцазнаходжанне па-ранейшаму могуць быць даступныя праграмам і вэб-сайтам праз ваш IP-адрас. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Падключэнне да сеткі страчана. Праверце падключэнне да сеткі або падключыцеся да іншай сеткі Wi-Fi.</translation>
 <translation id="671928215901716392">Экран блакіроўкі</translation>
@@ -9014,6 +9009,7 @@
 <translation id="7191159667348037">Невядомы прынтар (USB)</translation>
 <translation id="7191631508323321927">Калідор</translation>
 <translation id="7191632649590906354">Цяпер удзельнікі вашай сямейнай групы могуць ужываць ваша імя карыстальніка і пароль, якія захоўваюцца ў Менеджары пароляў Google. Папрасіце іх выканаць уваход на вэб-сайце <ph name="WEBSITE" />.</translation>
+<translation id="7192393330344360021">1 радок</translation>
 <translation id="7193051357671784796">Гэта праграма была дададзена вашай арганізацыяй. Каб завяршыць усталяванне праграмы, перазапусціце яе.</translation>
 <translation id="7193374945610105795">Няма захаваных пароляў для <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Пакіньце водгук аб прапановах па групаванні ўкладак</translation>
@@ -11124,6 +11120,7 @@
 <translation id="862750493060684461">Кэш CSS</translation>
 <translation id="8627795981664801467">Толькі бяспечныя падключэнні</translation>
 <translation id="8627804903623428808">Азнаёмцеся з гэтымі ўмовамі і кіруйце данымі свайго дзіцяці</translation>
+<translation id="8628674746770065790">Рухацца за курсорам</translation>
 <translation id="862907440446514309">Адміністратар запісвае змесціва вашага экрана з дапамогай праграмы "<ph name="APP0_NAME" />".</translation>
 <translation id="8630338733867813168">Рэжым сну падчас зарадкі</translation>
 <translation id="8631032106121706562">Пялёсткі</translation>
@@ -12140,7 +12137,6 @@
 <translation id="992592832486024913">Выключыць ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="992653586748191655">Прапануем стварыць групы ўкладак (<ph name="NUM" />)</translation>
 <translation id="992778845837390402">Ідзе рэзервовае капіраванне кантэйнера Linux</translation>
-<translation id="993540765962421562">Выконваецца ўсталяванне</translation>
 <translation id="994087375490600917">Бакавыя панэлі</translation>
 <translation id="994289308992179865">&amp;Зацыкліць</translation>
 <translation id="995755448277384931">Дадаванне нумара IBAN</translation>

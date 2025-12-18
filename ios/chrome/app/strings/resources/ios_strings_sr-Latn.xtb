@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Gotovo</translation>
 <translation id="2577522251608256362">Deo grada</translation>
 <translation id="2579713773888829241">Deljeni Diskovi</translation>
+<translation id="2580306219079937316">Otvori podešavanja prevoda</translation>
 <translation id="2583688836549072561">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />, nova aktivnost.</translation>
 <translation id="2593272815202181319">Fiksne širine</translation>
 <translation id="2601778637777010194">Pratite pad cena proizvoda</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Čuvanje promene nije uspelo.</translation>
 <translation id="3254806613790954367">Poslednja otvorena kartica na svim uređajima</translation>
 <translation id="325717987950204592">Dodirnite Privatnost i bezbednost</translation>
+<translation id="3266338926702638258">Prikaži istoriju cena za ovaj proizvod</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3273510436356991673">Prilagodite početni ekran</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
@@ -1934,6 +1936,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8221665793629393739">Podsetnik da ponovo posetite</translation>
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8233237502828137700">Zatvorite promotivni baner</translation>
+<translation id="823339794112333264">Uključi mikrofon</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8258734532103758067">I've exported my data (Izvezao/la sam podatke)</translation>
 <translation id="8258999165172757081">Dodato</translation>
@@ -2039,6 +2042,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8611922158252451755">Svako sa linkom može da menja sve kartice, pa pazite šta delite. Link ističe za 48 sati.</translation>
 <translation id="8614671330774943747">Prelazak na Prebacivač kartica</translation>
 <translation id="8620640915598389714">Izmeni</translation>
+<translation id="862367213447108001">Uvek prikazuj iskačuće prozore na ovom sajtu</translation>
 <translation id="8625706492572042370">Izmenite početni ekran</translation>
 <translation id="8631370184731241854">Zaključane kartice bez arhiviranja</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
@@ -2135,6 +2139,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8928426232677696166">Trenutno je izabran nalog <ph name="EMAIL" />, kojim upravlja organizacija. Odaberite nalog.</translation>
 <translation id="894191600409472540">Napravite jake lozinke</translation>
 <translation id="8943780400130412484">Želite da započnete novo preuzimanje?</translation>
+<translation id="8947838125864566256">Isključi mikrofon</translation>
 <translation id="8953046091948372197">Ovde ćete pronaći lozinke</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opcija za automatsko dovršavanje je dostupna iznad tastature.}one{{count} opcija za automatsko dovršavanje je dostupna iznad tastature.}few{{count} opcije za automatsko dovršavanje su dostupne iznad tastature.}other{{count} opcija za automatsko dovršavanje je dostupno iznad tastature.}}</translation>
 <translation id="895541991026785598">Prijavite problem</translation>

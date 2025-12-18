@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Dienste</translation>
 <translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
 <translation id="1829129547161959350">Pinguin</translation>
-<translation id="183183971458492120">Informationen werden geladen…</translation>
 <translation id="1832073788765803750">Katakana mit halber Breite</translation>
 <translation id="1834290891154666894">Ungültige Übereinstimmung für den alternativen Betreffnamen</translation>
 <translation id="1838709767668011582">Google Sites-Website</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> belegt</translation>
 <translation id="2198315389084035571">Chinesisch (vereinfacht)</translation>
 <translation id="22085916256174561">Koreanisch</translation>
-<translation id="2208919847696382164">Mit Linux installieren</translation>
 <translation id="2215692307449050019">Akku ist schwach. Die Dateisynchronisierung wird fortgesetzt, wenn das Gerät an die Stromversorgung angeschlossen wird.</translation>
 <translation id="2225536596944493418">Möchtest du wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
 <translation id="2230062665678605299">Ordner "<ph name="FOLDER_NAME" />" kann nicht erstellt werden. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="2663066752008346276">Burmesisch (Myanmar) mit Myansan-Tastatur</translation>
 <translation id="2664412712123763093">Dateispeicherort</translation>
-<translation id="2718540689505416944">App mit Linux installieren</translation>
 <translation id="2719020180254996569">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Details</translation>
 <translation id="2724954091494693138">Türkisch mit F-Tastatur</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />-Freigaben verwalten</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Dein gesamter individueller Google Workspace-Speicher ist belegt.</translation>
 <translation id="2771816809568414714">Käse</translation>
 <translation id="2781645665747935084">Belgisch</translation>
-<translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2802583107108007218">Weitere Informationen zu diesen Einschränkungen</translation>
 <translation id="2803375539583399270">PIN eingeben</translation>
 <translation id="2819519502129272135">Dateisynchronisierung deaktiviert</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Du bist offline</translation>
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3793469551756281394">Noch ungefähr <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Version</translation>
 <translation id="3801082500826908679">Färöisch</translation>
 <translation id="3809272675881623365">Kaninchen</translation>
 <translation id="3810973564298564668">Verwalten</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3866249974567520381">Beschreibung</translation>
 <translation id="3899991606604168269">Französisch (Kanada) mit mehrsprachiger Tastatur</translation>
 <translation id="3901991538546252627">Verbindung mit <ph name="NAME" /> wird hergestellt.</translation>
 <translation id="3906232975181435906">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
 <translation id="4508265954913339219">Aktivierung fehlgeschlagen</translation>
 <translation id="4509667233588080747">Englisch (USA) mit internationaler Workman-Tastatur</translation>
-<translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">Dieser Ordner ist für Parallels Desktop freigegeben</translation>
 <translation id="4552678318981539154">Mehr Speicherplatz erwerben</translation>
 <translation id="4552759165874948005">Netzwerk: <ph name="NETWORK_TYPE" />, Signalstärke: <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5650895901941743674">APN‑Konfiguration prüfen</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
-<translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Schließe alle Dateien in dem Archiv bzw. auf dem virtuellen Datenträger und probiere es dann noch einmal.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-Suche fehlgeschlagen</translation>
 <translation id="5896749729057314184">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
-<translation id="5911887972742538906">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Es sind neue Suchfunktionen verfügbar</translation>
 <translation id="5926082595146149752">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Name des Laufwerks</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Details</translation>
 <translation id="7246947237293279874">FTP-Proxy</translation>
-<translation id="7248671827512403053">App</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
 <translation id="7291818353625820805">Du möchtest, dass die Tasteneingabe wiederholt wird? Deaktiviere die Akzentzeichen in den Tastatureinstellungen.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 Fehler.}other{# Fehler.}}</translation>
 <translation id="8154842056504218462">Alle Einträge wurden ausgewählt.</translation>
-<translation id="8157684860301034423">Fehler beim Abrufen der App-Informationen.</translation>
 <translation id="8175731104491895765">Französisch (Belgien)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-Dateien werden synchronisiert</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasachisch</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> Elemente extrahiert.</translation>
-<translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
 <translation id="931652069802536959">Das Netzwerk wird durch eine Richtlinie blockiert</translation>

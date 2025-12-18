@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Службы</translation>
 <translation id="181434555916624618">Результаты с изображением людей пока недоступны. Попробуйте ввести другой запрос.</translation>
 <translation id="1829129547161959350">Пингвин</translation>
-<translation id="183183971458492120">Загрузка данных…</translation>
 <translation id="1832073788765803750">Катакана половинной ширины</translation>
 <translation id="1834290891154666894">Недопустимая запись совпадения с альтернативным именем субъекта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Занято: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Китайский (упрощенный)</translation>
 <translation id="22085916256174561">Корейский</translation>
-<translation id="2208919847696382164">Установить с помощью Linux</translation>
 <translation id="2215692307449050019">Низкий уровень заряда батареи. Синхронизация файлов возобновится, когда вы подключите устройство к источнику питания.</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Бирманский, раскладка MyanSan</translation>
 <translation id="2664412712123763093">Местоположение файла</translation>
-<translation id="2718540689505416944">Установка приложения с помощью Linux</translation>
 <translation id="2719020180254996569">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", подробная информация</translation>
 <translation id="2724954091494693138">Турецкий, раскладка Turkish F</translation>
 <translation id="2732288874651063549">Настройки доступа для <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Закончилось место в хранилище вашего личного аккаунта Google Workplace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгийская</translation>
-<translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2802583107108007218">Подробнее об ограничениях</translation>
 <translation id="2803375539583399270">Введите PIN-код</translation>
 <translation id="2819519502129272135">Синхронизация файлов отключена</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Вы работаете в автономном режиме.</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3793469551756281394">Осталось около <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Версия</translation>
 <translation id="3801082500826908679">Фарерский</translation>
 <translation id="3809272675881623365">Кролик</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
-<translation id="3866249974567520381">Описание</translation>
 <translation id="3899991606604168269">Французский (Канада), мультиязычная раскладка</translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Установка мобильного профиля, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Болгарская (фонетическая)</translation>
 <translation id="4508265954913339219">Активация завершилась со сбоем</translation>
 <translation id="4509667233588080747">Английский (США), международная раскладка Workman</translation>
-<translation id="4522570452068850558">Сведения</translation>
 <translation id="4527800702232535228">Доступ к этой папке предоставлен Parallels Desktop.</translation>
 <translation id="4552678318981539154">Приобретите дополнительное пространство</translation>
 <translation id="4552759165874948005">Сеть <ph name="NETWORK_TYPE" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Прослушать</translation>
 <translation id="5650895901941743674">проверьте настройки точки доступа.</translation>
 <translation id="5669691691057771421">Введите новый PIN-код</translation>
-<translation id="5678784840044122290">Приложение Linux будет доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не удалось отключиться от архива или электронного диска<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Закройте все файлы в архиве или на электронном диске и повторите попытку.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Поиск DHCP завершен со сбоем</translation>
 <translation id="5896749729057314184">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
-<translation id="5911887972742538906">При установке приложения для Linux произошла ошибка.</translation>
 <translation id="5912396950572065471">Форматировать</translation>
 <translation id="5918480239180455431">В результатах поиска доступны новые функции</translation>
 <translation id="5926082595146149752">Нидерландский (Нидерланды), американская международная раскладка (ПК)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Название диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробная информация</translation>
 <translation id="7246947237293279874">FTP-прокси</translation>
-<translation id="7248671827512403053">Приложение</translation>
 <translation id="7256405249507348194">Неопознанная ошибка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступные сервисы</translation>
 <translation id="7291818353625820805">Хотите, чтобы символы вводились повторно? Отключите диакритические знаки в настройках клавиатуры.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Настроить</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ошибка.}one{# ошибка.}few{# ошибки.}many{# ошибок.}other{# ошибки.}}</translation>
 <translation id="8154842056504218462">Выбраны все объекты.</translation>
-<translation id="8157684860301034423">Не удалось получить информацию о приложении.</translation>
 <translation id="8175731104491895765">Французский (Бельгия)</translation>
 <translation id="8175799081768705361">Синхронизация файлов (<ph name="NUMBER_OF_FILES_SYNCING" />) на Диске…</translation>
 <translation id="8179976553408161302">ВВОД</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Документы</translation>
 <translation id="9189836632794948435">Казахский</translation>
 <translation id="9200427192836333033">Извлечено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Установка началась.</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219908252191632183">Луна</translation>
 <translation id="931652069802536959">Сеть заблокирована согласно правилам организации.</translation>

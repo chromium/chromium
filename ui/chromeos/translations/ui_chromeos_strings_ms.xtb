@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Perkhidmatan</translation>
 <translation id="181434555916624618">Pada masa ini, hasil janaan orang tidak akan dipaparkan. Cuba gesaan lain.</translation>
 <translation id="1829129547161959350">Penguin</translation>
-<translation id="183183971458492120">Memuatkan maklumat...</translation>
 <translation id="1832073788765803750">Katakana separuh lebar</translation>
 <translation id="1834290891154666894">Entri padanan nama alternatif subjek tidak sah</translation>
 <translation id="1838709767668011582">Tapak Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> digunakan</translation>
 <translation id="2198315389084035571">Bahasa Cina Mudah</translation>
 <translation id="22085916256174561">Korea</translation>
-<translation id="2208919847696382164">Pasang dengan Linux</translation>
 <translation id="2215692307449050019">Bateri lemah. Penyegerakan fail akan disambung semula apabila anda disambungkan kepada bekalan kuasa.</translation>
 <translation id="2225536596944493418">Adakah anda pasti anda mahu memadamkan <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan papan kekunci Myansan</translation>
 <translation id="2664412712123763093">Lokasi fail</translation>
-<translation id="2718540689505416944">Pasang apl dengan Linux</translation>
 <translation id="2719020180254996569">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Butiran</translation>
 <translation id="2724954091494693138">Turki dengan papan kekunci F</translation>
 <translation id="2732288874651063549">Urus perkongsian <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Anda telah menggunakan semua storan Google Workspace individu anda.</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Bahasa Belgium</translation>
-<translation id="2782104745158847185">Ralat semasa memasang aplikasi Linux</translation>
 <translation id="2802583107108007218">Ketahui lebih lanjut tentang sekatan ini</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2819519502129272135">Penyegerakan fail dimatikan</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Anda di luar talian</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="3793469551756281394">Kira-kira <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> lagi</translation>
-<translation id="3798449238516105146">Versi</translation>
 <translation id="3801082500826908679">Bahasa Faroese</translation>
 <translation id="3809272675881623365">Arnab</translation>
 <translation id="3810973564298564668">Urus</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3855472144336161447">Bahasa Jerman Neo 2</translation>
 <translation id="3858860766373142691">Nama</translation>
-<translation id="3866249974567520381">Huraian</translation>
 <translation id="3899991606604168269">Perancis (Kanada) dengan papan kekunci Berbilang Bahasa</translation>
 <translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Memasang profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Fonetik bahasa Bulgaria</translation>
 <translation id="4508265954913339219">Pengaktifan gagal</translation>
 <translation id="4509667233588080747">Inggeris (AS) dengan papan kekunci Antarabangsa Workman</translation>
-<translation id="4522570452068850558">Butiran</translation>
 <translation id="4527800702232535228">Folder ini dikongsi dengan Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli lagi storan</translation>
 <translation id="4552759165874948005">Rangkaian <ph name="NETWORK_TYPE" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5650895901941743674">Semak konfigurasi APN anda</translation>
 <translation id="5669691691057771421">Masukkan PIN baharu</translation>
-<translation id="5678784840044122290">Aplikasi Linux akan tersedia di dalam Terminal anda dan mungkin menunjukkan ikon dalam Pelancar anda juga.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan sambungan daripada arkib atau cakera maya<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Tutup semua fail pada arkib atau cakera maya, kemudian cuba lagi.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Pemain</translation>
 <translation id="5864471791310927901">Carian DHCP gagal</translation>
 <translation id="5896749729057314184">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dinyahaktifkan, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>
-<translation id="5911887972742538906">Ralat telah berlaku semasa pemasangan aplikasi Linux anda.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Ciri carian baharu tersedia</translation>
 <translation id="5926082595146149752">Belanda (Belanda) dengan papan kekunci PC Antarabangsa AS</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Nama pemacu</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Butiran</translation>
 <translation id="7246947237293279874">Proksi FTP</translation>
-<translation id="7248671827512403053">Aplikasi</translation>
 <translation id="7256405249507348194">Ralat yang tidak dikenal pasti: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Perkhidmatan yang tersedia</translation>
 <translation id="7291818353625820805">Mahu kekunci untuk mengulang? Matikan anda aksen dalam Tetapan Papan Kekunci</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigurasi</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ralat.}other{# ralat.}}</translation>
 <translation id="8154842056504218462">Semua masukan dipilih.</translation>
-<translation id="8157684860301034423">Gagal mengambil maklumat apl.</translation>
 <translation id="8175731104491895765">Perancis (Belgium)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> fail Drive disegerakkan</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakhstan</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> item diekstrak.</translation>
-<translation id="9213073329713032541">Pemasangan berjaya dimulakan.</translation>
 <translation id="9219103736887031265">Imej</translation>
 <translation id="9219908252191632183">Qamari</translation>
 <translation id="931652069802536959">Rangkaian disekat oleh dasar</translation>

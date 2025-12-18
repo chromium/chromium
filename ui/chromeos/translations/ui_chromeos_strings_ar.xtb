@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">الخدمات</translation>
 <translation id="181434555916624618">لن يتم عرض النتائج التي تتضمّن أشخاصًا في الوقت الحالي. يُرجى تجربة طلب آخر.</translation>
 <translation id="1829129547161959350">بطريق</translation>
-<translation id="183183971458492120">جارٍ تحميل المعلومات...</translation>
 <translation id="1832073788765803750">أحرف كاتاكانا بوضع نصف العرض</translation>
 <translation id="1834290891154666894">إدخال غير صالح لمطابقة الاسم البديل الخاص بالموضوع</translation>
 <translation id="1838709767668011582">‏موقع Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">مساحة التخزين المستخدمة: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">الصينية المبسطة</translation>
 <translation id="22085916256174561">الكورية</translation>
-<translation id="2208919847696382164">‏تثبيت باستخدام نظام التشغيل Linux</translation>
 <translation id="2215692307449050019">طاقة البطارية منخفضة. سيتم استئناف مزامنة الملفات عند توصيل الجهاز بمصدر طاقة.</translation>
 <translation id="2225536596944493418">هل تريد بالتأكيد حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر؟</translation>
 <translation id="2230062665678605299">تعذر إنشاء المجلد "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="2663066752008346276">البورمية/ميانمار باستخدام لوحة مفاتيح ميانمار ميانسان</translation>
 <translation id="2664412712123763093">موقع الملف</translation>
-<translation id="2718540689505416944">‏تثبيت التطبيق باستخدام نظام التشغيل Linux</translation>
 <translation id="2719020180254996569">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، التفاصيل</translation>
 <translation id="2724954091494693138">‏التركية باستخدام لوحة مفاتيح F</translation>
 <translation id="2732288874651063549">إدارة المشاركة مع "<ph name="VM_NAME" />"</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">‏لقد استهلكت كل مساحة التخزين الشخصية على Google Workspace.</translation>
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
-<translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2802583107108007218">مزيد من المعلومات حول هذه القيود</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
 <translation id="2819519502129272135">تم إيقاف مزامنة الملفات</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">أنت غير متصل بالإنترنت.</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3793469551756281394">تبقّى <ph name="REMAINING_TIME_HOUR" /> و<ph name="REMAINING_TIME_MINUTE" /> تقريبًا</translation>
-<translation id="3798449238516105146">الإصدار</translation>
 <translation id="3801082500826908679">الفاروية</translation>
 <translation id="3809272675881623365">أرنب</translation>
 <translation id="3810973564298564668">إدارة</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
-<translation id="3866249974567520381">الوصف</translation>
 <translation id="3899991606604168269">الفرنسية (كندا) باستخدام لوحة مفاتيح متعددة اللغات</translation>
 <translation id="3901991538546252627">جارٍ الاتصال بـ <ph name="NAME" /></translation>
 <translation id="3906232975181435906">‏جارٍ تثبيت الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">بلغارية صوتية</translation>
 <translation id="4508265954913339219">تعذّر إتمام عملية التفعيل</translation>
 <translation id="4509667233588080747">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman الدولية</translation>
-<translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4527800702232535228">‏تمّت مشاركة هذا المجلد مع نظام Parallels Desktop.</translation>
 <translation id="4552678318981539154">شراء المزيد من مساحة التخزين</translation>
 <translation id="4552759165874948005">شبكة <ph name="NETWORK_TYPE" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">استماع</translation>
 <translation id="5650895901941743674">‏تحقَّق من إعدادات اسم نقطة الوصول (APN)</translation>
 <translation id="5669691691057771421">إدخال رقم التعريف الشخصي الجديد</translation>
-<translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    يُرجى إغلاق جميع الملفات في الأرشيف أو القرص الافتراضي، ثم إعادة المحاولة.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">لاعب</translation>
 <translation id="5864471791310927901">‏تعذّر بحث DHCP</translation>
 <translation id="5896749729057314184">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعَّلة، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
-<translation id="5911887972742538906">‏حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="5912396950572065471">التنسيق</translation>
 <translation id="5918480239180455431">تتوفّر ميزات بحث جديدة.</translation>
 <translation id="5926082595146149752">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">اسم محرك الأقراص</translation>
 <translation id="7238643356913091553">الشبكة <ph name="NETWORK_NAME" />، التفاصيل</translation>
 <translation id="7246947237293279874">الخادم الوكيل لبروتوكول نقل الملفات</translation>
-<translation id="7248671827512403053">تطبيق</translation>
 <translation id="7256405249507348194">خطأ غير معروف: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">الخدمات المتوفرة</translation>
 <translation id="7291818353625820805">هل تريد أن يتم تكرار الحرف الذي يكتبه المفتاح؟ يمكنك إيقاف ميزة إظهار علامات التشكيل من خلال "إعدادات لوحة المفاتيح".</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">إعداد</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{خطأ واحد}zero{# خطأ}two{خطآن (#)}few{# أخطاء}many{# خطأ}other{# خطأ}}</translation>
 <translation id="8154842056504218462">تم اختيار جميع الإدخالات.</translation>
-<translation id="8157684860301034423">تعذّر جلب معلومات التطبيق.</translation>
 <translation id="8175731104491895765">الفرنسية (بلجيكا)</translation>
 <translation id="8175799081768705361">‏جارٍ مزامنة <ph name="NUMBER_OF_FILES_SYNCING" /> ملف على Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9189836632794948435">الكازاخية</translation>
 <translation id="9200427192836333033">العناصر المستخرَجة: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>
 <translation id="931652069802536959">سياسة المؤسسة تحظر هذه الشبكة</translation>

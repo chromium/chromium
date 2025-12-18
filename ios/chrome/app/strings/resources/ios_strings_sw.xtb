@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Nimemaliza</translation>
 <translation id="2577522251608256362">Mtaa</translation>
 <translation id="2579713773888829241">Hifadhi za Pamoja</translation>
+<translation id="2580306219079937316">Fungua mipangilio ya Tafsiri</translation>
 <translation id="2583688836549072561">Kikundi cha vichupo, <ph name="GROUP_TITLE" />, vichupo <ph name="TABS_NUMBER" />, shughuli mpya.</translation>
 <translation id="2593272815202181319">Nafasi moja</translation>
 <translation id="2601778637777010194">Fuatilia punguzo la bei katika bidhaa</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Imeshindwa kuhifadhi mabadiliko uliyofanya.</translation>
 <translation id="3254806613790954367">Kichupo ulichofungua mwisho kwenye vifaa vyako vyote</translation>
 <translation id="325717987950204592">Gusa "Usalama na Faragha"</translation>
+<translation id="3266338926702638258">Onyesha historia ya bei ya bidhaa hii</translation>
 <translation id="3272527697863656322">Ghairi</translation>
 <translation id="3273510436356991673">Weka mapendeleo kwenye skrini yako ya kwanza</translation>
 <translation id="3277021493514034324">Anwani ya tovuti imenakiliwa</translation>
@@ -1934,6 +1936,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8221665793629393739">Kikumbusho cha kutembelea tena</translation>
 <translation id="8232956427053453090">Hifadhi data</translation>
 <translation id="8233237502828137700">Funga bango la tangazo</translation>
+<translation id="823339794112333264">Washa maikrofoni</translation>
 <translation id="8250920743982581267">Hati</translation>
 <translation id="8258734532103758067">Nimehamisha data yangu</translation>
 <translation id="8258999165172757081">Imewekwa</translation>
@@ -2039,6 +2042,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8611922158252451755">Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote, kwa hivyo ruhusu ufikiaji kwa busara. Muda wa kutumia kiungo huisha baada ya saa 48.</translation>
 <translation id="8614671330774943747">Nenda kwenye Kibadilishaji cha Vichupo</translation>
 <translation id="8620640915598389714">Badilisha</translation>
+<translation id="862367213447108001">Onyesha madirisha ibukizi kila wakati kwenye tovuti hii</translation>
 <translation id="8625706492572042370">Badilisha Skrini ya Kwanza</translation>
 <translation id="8631370184731241854">Vichupo vya faraghani vimefungwa</translation>
 <translation id="8633025649649592204">Shughuli za hivi majuzi</translation>
@@ -2135,6 +2139,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8928426232677696166"><ph name="EMAIL" />, inadhibitiwa na shirika lako lililochaguliwa kwa sasa. Chagua akaunti.</translation>
 <translation id="894191600409472540">Unda manenosiri thabiti</translation>
 <translation id="8943780400130412484">Ungependa kuanza kupakua upya?</translation>
+<translation id="8947838125864566256">Zima maikrofoni</translation>
 <translation id="8953046091948372197">Utaona manenosiri yako hapa</translation>
 <translation id="8953602327115378731">{count,plural, =1{Kuna chaguo {count} la kujaza kiotomatiki juu ya kibodi yako.}other{Kuna chaguo {count} za kujaza kiotomatiki juu ya kibodi yako.}}</translation>
 <translation id="895541991026785598">Ripoti Tatizo</translation>

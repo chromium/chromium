@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Služby</translation>
 <translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný pokyn.</translation>
 <translation id="1829129547161959350">Tučňák</translation>
-<translation id="183183971458492120">Načítání informací...</translation>
 <translation id="1832073788765803750">Katakana poloviční šířky</translation>
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Využito <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
 <translation id="22085916256174561">korejština</translation>
-<translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
 <translation id="2215692307449050019">Baterie je slabá. Synchronizace bude pokračovat, až bude zařízení připojeno k napájení.</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">barmština/myanmarština s myansanskou klávesnicí</translation>
 <translation id="2664412712123763093">Umístění souboru</translation>
-<translation id="2718540689505416944">Nainstalujte aplikaci pro Linux</translation>
 <translation id="2719020180254996569">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">turečtina s klávesnicí F</translation>
 <translation id="2732288874651063549">Spravovat sdílení s nástrojem <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Zaplnili jste celé své úložiště Google Workspace.</translation>
 <translation id="2771816809568414714">Sýr</translation>
 <translation id="2781645665747935084">Belgická klávesnice</translation>
-<translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
 <translation id="2802583107108007218">Další informace o těchto omezeních</translation>
 <translation id="2803375539583399270">Zadejte kód PIN</translation>
 <translation id="2819519502129272135">Synchronizace souborů je vypnutá</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Jste offline</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="3793469551756281394">Zbývá přibližně: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Verze</translation>
 <translation id="3801082500826908679">faerština</translation>
 <translation id="3809272675881623365">Králík</translation>
 <translation id="3810973564298564668">Spravovat</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3855472144336161447">Německá klávesnice Neo 2</translation>
 <translation id="3858860766373142691">Název</translation>
-<translation id="3866249974567520381">Popis</translation>
 <translation id="3899991606604168269">francouzština (Kanada) s vícejazyčnou klávesnicí</translation>
 <translation id="3901991538546252627">Připojování k síti <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulharská fonetická klávesnice</translation>
 <translation id="4508265954913339219">Aktivace se nezdařila</translation>
 <translation id="4509667233588080747">angličtina (USA) s klávesnicí Workman International</translation>
-<translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Tato složka je sdílena s nástrojem Parallels Desktop</translation>
 <translation id="4552678318981539154">Koupit větší úložiště</translation>
 <translation id="4552759165874948005">Síť: <ph name="NETWORK_TYPE" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -602,7 +595,6 @@
 <translation id="5649768706273821470">Poslechnout si</translation>
 <translation id="5650895901941743674">Zkontrolujte konfiguraci APN</translation>
 <translation id="5669691691057771421">Zadejte nový PIN</translation>
-<translation id="5678784840044122290">Aplikace pro Linux bude k dispozici v Terminálu a může se pro ni také zobrazovat ikona ve Spouštěči.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Odpojení od archivu nebo virtuálního disku nelze provést<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Zavřete všechny soubory v archivu nebo na virtuálním disku a poté to zkuste znovu.</translation>
@@ -637,7 +629,6 @@
 <translation id="5861477046012235702">Hráč</translation>
 <translation id="5864471791310927901">Vyhledávání serveru DHCP selhalo.</translation>
 <translation id="5896749729057314184">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
-<translation id="5911887972742538906">Při instalaci aplikace pro Linux došlo k chybě.</translation>
 <translation id="5912396950572065471">Formát</translation>
 <translation id="5918480239180455431">K dispozici jsou nové funkce vyhledávání</translation>
 <translation id="5926082595146149752">nizozemština (Nizozemsko) s klávesnicí USA – mezinárodní (PC)</translation>
@@ -806,7 +797,6 @@
 <translation id="7238097264433196391">Název Disku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server protokolu FTP</translation>
-<translation id="7248671827512403053">Aplikace</translation>
 <translation id="7256405249507348194">Neznámá chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby se klávesy opakovaly? Vypněte v Nastavení klávesnice diakritická znaménka</translation>
@@ -933,7 +923,6 @@
 <translation id="8151638057146502721">Konfigurovat</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 chyba.}few{# chyby.}many{# chyby.}other{# chyb.}}</translation>
 <translation id="8154842056504218462">Vybrali jste všechny položky.</translation>
-<translation id="8157684860301034423">Informace o aplikaci se nepodařilo načíst.</translation>
 <translation id="8175731104491895765">francouzština (Belgie)</translation>
 <translation id="8175799081768705361">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1077,7 +1066,6 @@
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">kazaština</translation>
 <translation id="9200427192836333033">Počet rozbalených položek: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>
 <translation id="931652069802536959">Síť je blokována zásadami</translation>

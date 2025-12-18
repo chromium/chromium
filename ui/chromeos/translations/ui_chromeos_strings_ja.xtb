@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">サービス</translation>
 <translation id="181434555916624618">現時点では、人物が含まれる結果は表示されません。別のプロンプトをお試しください。</translation>
 <translation id="1829129547161959350">ペンギン</translation>
-<translation id="183183971458492120">情報を読み込んでいます...</translation>
 <translation id="1832073788765803750">半角カタカナ</translation>
 <translation id="1834290891154666894">無効なサブジェクト代替名マッチのエントリ</translation>
 <translation id="1838709767668011582">Google サイト</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> 使用</translation>
 <translation id="2198315389084035571">中国語（簡体字）</translation>
 <translation id="22085916256174561">韓国語</translation>
-<translation id="2208919847696382164">Linux でのインストール</translation>
 <translation id="2215692307449050019">電池残量が少なくなっています。電源に接続すると、ファイルの同期が再開されます。</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="2230062665678605299">フォルダ「<ph name="FOLDER_NAME" />」を作成することができません。<ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="2663066752008346276">ビルマ語 / ミャンマー語（Myansan）キーボード</translation>
 <translation id="2664412712123763093">ファイルの場所</translation>
-<translation id="2718540689505416944">Linux でアプリをインストール</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、詳細</translation>
 <translation id="2724954091494693138">トルコ語（F）キーボード</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> との共有を管理</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">個人用の Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2781645665747935084">ベルギー語</translation>
-<translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2802583107108007218">これらの制限の詳細</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">現在オフラインです</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3793469551756281394">残り約 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">バージョン</translation>
 <translation id="3801082500826908679">フェロー語</translation>
 <translation id="3809272675881623365">ウサギ</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
 <translation id="3858860766373142691">名前</translation>
-<translation id="3866249974567520381">説明</translation>
 <translation id="3899991606604168269">フランス語（カナダ）（多言語）キーボード</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
 <translation id="3906232975181435906">モバイル プロファイルのインストール中 - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">ブルガリア語（表音）</translation>
 <translation id="4508265954913339219">起動に失敗しました</translation>
 <translation id="4509667233588080747">英語（アメリカ）（Workman インターナショナル）キーボード</translation>
-<translation id="4522570452068850558">詳細</translation>
 <translation id="4527800702232535228">このフォルダは Parallels Desktop と共有されています</translation>
 <translation id="4552678318981539154">追加ストレージを購入</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ネットワーク、信号強度 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5650895901941743674">APN 設定を確認してください</translation>
 <translation id="5669691691057771421">新しい PIN を入力</translation>
-<translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    アーカイブまたは仮想ディスク上のすべてのファイルを閉じてから、もう一度お試しください。</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">ゲーマー</translation>
 <translation id="5864471791310927901">DHCP を検索できませんでした</translation>
 <translation id="5896749729057314184">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
-<translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
 <translation id="5918480239180455431">新しい検索機能をご利用いただけます</translation>
 <translation id="5926082595146149752">オランダ語（オランダ）（US インターナショナル PC）キーボード</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">ドライブ名</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />、詳細</translation>
 <translation id="7246947237293279874">FTP プロキシ</translation>
-<translation id="7248671827512403053">アプリケーション</translation>
 <translation id="7256405249507348194">不明なエラー: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">利用可能なサービス</translation>
 <translation id="7291818353625820805">キー入力を繰り返す場合は、キーボードの設定でアクセント記号をオフにします</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 件のエラーがあります。}other{# 件のエラーがあります。}}</translation>
 <translation id="8154842056504218462">すべての項目を選択しました。</translation>
-<translation id="8157684860301034423">アプリ情報を取得できませんでした。</translation>
 <translation id="8175731104491895765">フランス語（ベルギー）</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> 個のドライブ ファイルを同期しています</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google ドキュメント</translation>
 <translation id="9189836632794948435">カザフ語</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを抽出しました。</translation>
-<translation id="9213073329713032541">インストールを開始しました。</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="9219908252191632183">月面</translation>
 <translation id="931652069802536959">ネットワークはポリシーによってブロックされています</translation>

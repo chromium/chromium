@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Servizi</translation>
 <translation id="181434555916624618">Per il momento, i risultati con persone non verranno mostrati. Prova con un altro prompt.</translation>
 <translation id="1829129547161959350">Pinguino</translation>
-<translation id="183183971458492120">Caricamento delle informazioni…</translation>
 <translation id="1832073788765803750">Katakana a metà larghezza</translation>
 <translation id="1834290891154666894">Voce corrispondenza nome alternativo del soggetto non valida</translation>
 <translation id="1838709767668011582">Sito Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Spazio utilizzato: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Cinese semplificato</translation>
 <translation id="22085916256174561">Coreano</translation>
-<translation id="2208919847696382164">Installa con Linux</translation>
 <translation id="2215692307449050019">Batteria in esaurimento. La sincronizzazione dei file riprenderà quando il dispositivo sarà collegato all'alimentazione.</translation>
 <translation id="2225536596944493418">Vuoi eliminare <ph name="NUMBER_OF_ITEMS" /> elementi?</translation>
 <translation id="2230062665678605299">Impossibile creare la cartella "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="2663066752008346276">Birmano/Myanmar con tastiera Myansan</translation>
 <translation id="2664412712123763093">Posizione file</translation>
-<translation id="2718540689505416944">Installa app con Linux</translation>
 <translation id="2719020180254996569">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, dettagli</translation>
 <translation id="2724954091494693138">Turco con tastiera F</translation>
 <translation id="2732288874651063549">Gestisci la condivisione con <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Hai esaurito il tuo spazio di archiviazione Google Workspace individuale.</translation>
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2781645665747935084">Belga</translation>
-<translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2802583107108007218">Scopri di più su queste limitazioni</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
 <translation id="2819519502129272135">Sincronizzazione dei file non attiva</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Sei offline</translation>
 <translation id="3789841737615482174">Installa</translation>
 <translation id="3793469551756281394">Tempo rimanente: circa <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Versione</translation>
 <translation id="3801082500826908679">Faroese</translation>
 <translation id="3809272675881623365">Coniglio</translation>
 <translation id="3810973564298564668">Gestisci</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3866249974567520381">Descrizione</translation>
 <translation id="3899991606604168269">Francese (Canada) con tastiera multilingue</translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Fonetica bulgara</translation>
 <translation id="4508265954913339219">Attivazione non riuscita</translation>
 <translation id="4509667233588080747">Inglese (USA) con tastiera Workman internazionale</translation>
-<translation id="4522570452068850558">Dettagli</translation>
 <translation id="4527800702232535228">Questa cartella è condivisa con Parallels Desktop</translation>
 <translation id="4552678318981539154">Acquista più spazio di archiviazione</translation>
 <translation id="4552759165874948005">Rete <ph name="NETWORK_TYPE" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -602,7 +595,6 @@
 <translation id="5649768706273821470">Ascolta</translation>
 <translation id="5650895901941743674">Controlla configurazione APN</translation>
 <translation id="5669691691057771421">Inserisci il nuovo PIN</translation>
-<translation id="5678784840044122290">L'applicazione Linux sarà disponibile nel terminale e potrebbe anche essere visualizzata un'icona nell'Avvio app.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossibile disconnettere un archivio o un disco virtuale<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Chiudi tutti i file nell'archivio o sul disco virtuale e riprova.</translation>
@@ -637,7 +629,6 @@
 <translation id="5861477046012235702">Giocatore</translation>
 <translation id="5864471791310927901">Ricerca DHCP non riuscita</translation>
 <translation id="5896749729057314184">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
-<translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5918480239180455431">Nuove funzionalità di ricerca disponibili</translation>
 <translation id="5926082595146149752">Olandese (Paesi Bassi) con tastiera PC internazionale USA</translation>
@@ -806,7 +797,6 @@
 <translation id="7238097264433196391">Nome unità</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, dettagli</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
-<translation id="7248671827512403053">Applicazione</translation>
 <translation id="7256405249507348194">Errore non riconosciuto: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servizi disponibili</translation>
 <translation id="7291818353625820805">Vuoi attivare la ripetizione dei tasti? Disattiva gli accenti nelle Impostazioni tastiera</translation>
@@ -933,7 +923,6 @@
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errori.}}</translation>
 <translation id="8154842056504218462">Sono stati selezionati tutti gli elementi.</translation>
-<translation id="8157684860301034423">Impossibile recuperare le informazioni sull'app.</translation>
 <translation id="8175731104491895765">Francese (Belgio)</translation>
 <translation id="8175799081768705361">Sincronizzazione di <ph name="NUMBER_OF_FILES_SYNCING" /> file di Drive in corso…</translation>
 <translation id="8179976553408161302">Invio</translation>
@@ -1077,7 +1066,6 @@
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementi estratti.</translation>
-<translation id="9213073329713032541">Installazione eseguita correttamente.</translation>
 <translation id="9219103736887031265">Immagini</translation>
 <translation id="9219908252191632183">Lunare</translation>
 <translation id="931652069802536959">La rete è bloccata da una policy</translation>

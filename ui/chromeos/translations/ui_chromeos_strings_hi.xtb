@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">सेवाएं</translation>
 <translation id="181434555916624618">फ़िलहाल, ऐसी इमेज जनरेट नहीं की जा सकती जिसमें लोग शामिल हों. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
-<translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1832073788765803750">हाफ़ विड्थ काताकाना</translation>
 <translation id="1834290891154666894">विषय के दूसरे नाम से मिलती-जुलती एंट्री अमान्य है</translation>
 <translation id="1838709767668011582">Google साइट</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> का इस्तेमाल किया गया</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="22085916256174561">कोरियन</translation>
-<translation id="2208919847696382164">Linux ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
 <translation id="2215692307449050019">डिवाइस की बैटरी कम है. डिवाइस को पावर सॉकेट से कनेक्ट करने पर, फ़ाइल सिंक की सुविधा फिर से शुरू हो जाएगी.</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">आपके पास <ph name="RETRIES" /> मौके बचे हैं.</translation>
 <translation id="2663066752008346276">मयन्सन कीबोर्ड के साथ बर्मीज़/म्यांमार</translation>
 <translation id="2664412712123763093">फ़ाइल की जगह</translation>
-<translation id="2718540689505416944">Linux पर ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, जानकारी</translation>
 <translation id="2724954091494693138">एफ़-कीबोर्ड के साथ टर्किश</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> के साथ शेयर करने की सुविधा मैनेज करें</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">आपने Google Workspace के अपने निजी स्टोरेज का पूरा इस्तेमाल कर लिया है.</translation>
 <translation id="2771816809568414714">पनीर</translation>
 <translation id="2781645665747935084">बेल्जियाई</translation>
-<translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2802583107108007218">इन पाबंदियों के बारे में ज़्यादा जानें</translation>
 <translation id="2803375539583399270">पिन डालें</translation>
 <translation id="2819519502129272135">फ़ाइल सिंक करने की सुविधा बंद है</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">आप ऑफ़लाइन हैं</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3793469551756281394">करीब <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> बाकी हैं</translation>
-<translation id="3798449238516105146">वर्शन</translation>
 <translation id="3801082500826908679">फ़ारोईस</translation>
 <translation id="3809272675881623365">खरगोश</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
-<translation id="3866249974567520381">वर्णन</translation>
 <translation id="3899991606604168269">बहुभाषी कीबोर्ड के साथ फ़्रेंच (कनाडा)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">बुल्गारियाई फ़ोनेटिक</translation>
 <translation id="4508265954913339219">सक्रियण विफल</translation>
 <translation id="4509667233588080747">वर्कमैन इंटरनैशनल कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
-<translation id="4522570452068850558">ब्यौरा</translation>
 <translation id="4527800702232535228">यह फ़ोल्डर Parallels Desktop के साथ शेयर किया गया है</translation>
 <translation id="4552678318981539154">ज़्यादा स्टोरेज खरीदें</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">सुनें</translation>
 <translation id="5650895901941743674">अपने एपीएन कॉन्फ़िगरेशन की जांच करें</translation>
 <translation id="5669691691057771421">नया पिन डालें</translation>
-<translation id="5678784840044122290">Linux ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध होगा और आपके 'लॉन्चर' में एक आइकॉन भी दिखाई दे सकता है.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />किसी संग्रह या वर्चुअल डिस्क से डिसकनेक्ट नहीं किया जा सकता<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    संग्रह या वर्चुअल डिस्क पर मौजूद सभी फ़ाइलें बंद करें, फिर दोबारा कोशिश करें.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप विफल</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
-<translation id="5911887972742538906">आपका Linux ऐप्लिकेशन इंस्टॉल करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="5912396950572065471">फ़ॉर्मैट</translation>
 <translation id="5918480239180455431">खोज के नतीजे पाने की नई सुविधाएं उपलब्ध हैं</translation>
 <translation id="5926082595146149752">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ डच (नीदरलैंड्स)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">डिस्क का नाम</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, जानकारी</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
-<translation id="7248671827512403053">ऐप्स </translation>
 <translation id="7256405249507348194">अपरिचित गड़बड़ी: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाएं</translation>
 <translation id="7291818353625820805">क्या आपको बटन दबाकर रखना है? कीबोर्ड सेटिंग में उच्चारण के चिह्न बंद करें</translation>
@@ -932,7 +922,6 @@
 <translation id="8151638057146502721">कॉन्फ़िगर करें</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 गड़बड़ी.}one{# गड़बड़ी.}other{# गड़बड़ियां.}}</translation>
 <translation id="8154842056504218462">सभी एंट्री चुनी गईं.</translation>
-<translation id="8157684860301034423">ऐप्लिकेशन जानकारी बहाल नहीं की जा सकी.</translation>
 <translation id="8175731104491895765">फ़्रेंच (बेल्जियम)</translation>
 <translation id="8175799081768705361">Drive की <ph name="NUMBER_OF_FILES_SYNCING" /> फ़ाइलें सिंक की जा रही हैं</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1076,7 +1065,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कज़ाक़</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> आइटम मिले.</translation>
-<translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>
 <translation id="931652069802536959">नीति के तहत नेटवर्क को ब्लॉक किया गया है</translation>

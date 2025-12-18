@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Amasevisi</translation>
 <translation id="181434555916624618">Okwamanje, imiphumela enabantu ngeke ivezwe. Zama omunye umyalelo.</translation>
 <translation id="1829129547161959350">I-penguin</translation>
-<translation id="183183971458492120">Ilayisha ulwazi...</translation>
 <translation id="1832073788765803750">I-katakana ebanzi ngokwengxenye</translation>
 <translation id="1834290891154666894">Ukufakwa kwelinye igama elifanayo lesihloko elingavumelekile</translation>
 <translation id="1838709767668011582">Isayithi le-Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> esebenzile</translation>
 <translation id="2198315389084035571">isi-Sipmlified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
-<translation id="2208919847696382164">Faka nge-Linux</translation>
 <translation id="2215692307449050019">Ibhethri liphansi. Ukuvumelanisa ifayela kuzoqala kabusha uma uxhumeke emandleni.</translation>
 <translation id="2225536596944493418">Ingabe ufuna ukususa izinto ze-<ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Ayikwazi ukudala ifolda le-"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Unemizamo engu-<ph name="RETRIES" /> esele.</translation>
 <translation id="2663066752008346276">Isi-Burmese/Myanmar ngekhibhodi ye-Myansan</translation>
 <translation id="2664412712123763093">Indawo yefayela</translation>
-<translation id="2718540689505416944">Faka uhlelo lokusebenza nge-Linux</translation>
 <translation id="2719020180254996569">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, imininingwane</translation>
 <translation id="2724954091494693138">Turkish esinekhibhodi ye-F</translation>
 <translation id="2732288874651063549">Lawula ukwabelana no-<ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Usisebenzise sonke isitoreji sakho ngasinye se-Google Workspace</translation>
 <translation id="2771816809568414714">Ushizi</translation>
 <translation id="2781645665747935084">Isi-Belgian</translation>
-<translation id="2782104745158847185">Iphutha ukufaka uhlelo lokusebenza le-Linux</translation>
 <translation id="2802583107108007218">Funda kabanzi mayelana nale mikhawulo</translation>
 <translation id="2803375539583399270">Faka iphinikhodi</translation>
 <translation id="2819519502129272135">Ukuvumelanisa ifayela kuvaliwe</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Awuxhunyiwe ku-inthanethi</translation>
 <translation id="3789841737615482174">Faka</translation>
 <translation id="3793469551756281394">Cishe kusele okungu-<ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Inguqulo</translation>
 <translation id="3801082500826908679">I-Faroese</translation>
 <translation id="3809272675881623365">Unogwaja</translation>
 <translation id="3810973564298564668">Phatha</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Emuva</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Igama</translation>
-<translation id="3866249974567520381">Incazelo</translation>
 <translation id="3899991606604168269">French (Canada) esinekhibhodi Yezilimi eziningi</translation>
 <translation id="3901991538546252627">Ixhumeka ku-<ph name="NAME" /></translation>
 <translation id="3906232975181435906">Ifaka iphrofayela leselula, Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwangu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Ifonethikhi yesi-Bulgarian</translation>
 <translation id="4508265954913339219">Ukwenza kusebenze kuhlulekile</translation>
 <translation id="4509667233588080747">English (US) enekhibhodi yamazwe ngamazwe ye-Workman</translation>
-<translation id="4522570452068850558">Imininingwane</translation>
 <translation id="4527800702232535228">Le folda yabiwa Nedeskithophu ye-Parallels</translation>
 <translation id="4552678318981539154">Thenga isitoreji esiningi</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> inethiwekhi, amandla wesignali <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Lalela</translation>
 <translation id="5650895901941743674">Hlola ukulungiselelwa kwe-APN yakho</translation>
 <translation id="5669691691057771421">Faka iphinikhodi entsha</translation>
-<translation id="5678784840044122290">Uhlelo lokusebenza le-Linux luzotholakala ngaphakathi kwe-Terminal yakho futhi lingaboniasa isithonjana kusiqalisi sakho.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ayikwazi ukulanda kusuka kungobo yomlando noma idiski le-virtual<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Vala onke amafayela kungobo yomlando noma idiski le-virtual, bese uyazama futhi.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Umdlali wamageyimu</translation>
 <translation id="5864471791310927901">Ukubheka kwe-DHCP kuhlulekile</translation>
 <translation id="5896749729057314184">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
-<translation id="5911887972742538906">Kuvele iphutha phakathi nokufakwa kohlelo lwakho lokusebenza lwe-Linux.</translation>
 <translation id="5912396950572065471">Ifomethi</translation>
 <translation id="5918480239180455431">Izici zokusesha ezintsha ziyatholakala:</translation>
 <translation id="5926082595146149752">Dutch (Netherlands) nge-US International PC keyboard</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Igama ledrayivu</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Imininingwane</translation>
 <translation id="7246947237293279874">Ummeleli we-FTP</translation>
-<translation id="7248671827512403053">Uhlelo lokusebenza</translation>
 <translation id="7256405249507348194">Iphutha elingabonwa: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Amasevisi atholakalayo</translation>
 <translation id="7291818353625820805">Ufuna okhiye baphinde? Vala izimpawu zokuphimisa kumasethingi ekhibhodi</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Lungiselela</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{Iphutha elingu-1.}one{Amaphutha angu-#.}other{Amaphutha angu-#.}}</translation>
 <translation id="8154842056504218462">Ukhethe konke okungenayo.</translation>
-<translation id="8157684860301034423">Yehlulekile ukubuyisa ulwazi lohlelo lokusebenza.</translation>
 <translation id="8175731104491895765">French (Belgium)</translation>
 <translation id="8175799081768705361">Ivumelanisa amafayela e-Drive e-<ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Faka</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Amadokhumenti</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033">Izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zithukululiwe.</translation>
-<translation id="9213073329713032541">Ukufaka kuqaliswe ngempumelelo.</translation>
 <translation id="9219103736887031265">Izithombe</translation>
 <translation id="9219908252191632183">I-Lunar</translation>
 <translation id="931652069802536959">Inethiwekhi ivinjiwe yinqubomgomo</translation>

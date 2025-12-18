@@ -2674,6 +2674,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5307166000025436103">Gerai</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5308689395849655368">Strigčių ataskaitų teikimas neleidžiamas.</translation>
+<translation id="5309562313526658209">Naršyti</translation>
 <translation id="5314967030527622926">Lankstinukų rengyklė</translation>
 <translation id="5316812925700871227">Pasukti prieš laikrodžio rodyklę</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -2936,6 +2937,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5730040223043577876">„Chrome“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="5732392974455271431">Jūsų tėvai gali atblokuoti ją už jus</translation>
 <translation id="573555826359077410">Mygtukas „Sukurti formą“; suaktyvinkite, jei norite sparčiai sukurti naują formą „Google“ formose</translation>
+<translation id="5737022235680044108">Jūsų organizacija užblokavo <ph name="HOST_NAME" /> inkognito režimu.</translation>
 <translation id="5738385766833540397">Tvarkykite, kaip gausite įspėjimus apie sumažintas stebimų produktų kainas</translation>
 <translation id="5739619009927381786">Atrakinkite ekraną atlikdami kitą žingsnį, paprastai naudodami piršto atspaudą. Arba galite <ph name="BEGIN_LINK" />patvirtinti naudodami kitą būdą<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, sinchronizuokite istoriją ir skirtukus</translation>
@@ -3617,6 +3619,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6844998850832008753">Šį kartą leidžiama stebėti rankas</translation>
 <translation id="6849023911358004088">Mygtukas „Tvarkyti saugos nustatymus“; suaktyvinkite, jei norite tvarkyti Saugaus naršymo ir kitus duomenis „Chrome“ nustatymuose</translation>
 <translation id="6850286078059909152">Teksto spalva</translation>
+<translation id="685163597635765693">Jūsų organizacija užblokavo <ph name="HOST_NAME" /> nuorodas inkognito režimu.</translation>
 <translation id="6852204201400771460">Įkelti programą iš naujo?</translation>
 <translation id="6854691830678097752">Kad galėtumėte sparčiau atsiskaityti, išsaugokite šį kortelės saugos kodą (CVC) paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Tvarkykite slaptažodžius...</translation>
@@ -3629,6 +3632,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6871813064737840684">Šios parinkties kainų istorija žiniatinklyje</translation>
 <translation id="6873456682041376666">Viršutinis dėklas</translation>
 <translation id="6874604403660855544">&amp;Pridėti dar kartą</translation>
+<translation id="6875873347995743859">Siųsti padėjėjui</translation>
 <translation id="6875894866901426843"><ph name="DATE_TIME" /> administratorius ištrins vietinius failus, įskaitant visus šiukšliadėžėje esančius failus.</translation>
 <translation id="6880941331070119097">Didelės kainos parinktis</translation>
 <translation id="6881240511396774766">Greitai sukurkite naują „Google“ dokumentą</translation>
@@ -3886,6 +3890,7 @@ Papildoma išsami informacija:
 <translation id="7273111226200291353">Failai, kuriuos atsisiunčiate, siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų arba kenkėjiškų programų, ir saugomi atsižvelgiant į įmonės politiką bei matomi administratoriui.</translation>
 <translation id="7275334191706090484">Tvarkomos žymės</translation>
 <translation id="7275808129217605899">Sveika mityba</translation>
+<translation id="7282894295403887199">Negalite apsilankyti šiame puslapyje inkognito režimu</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite pakeisti „Google“ paskyros slaptažodį</translation>
 <translation id="7286908876112207905">Neleidžiama įklijuoti šio turinio šioje svetainėje</translation>
 <translation id="7291578327729322058">Vairuotojo pažymėjimo pridėjimas</translation>

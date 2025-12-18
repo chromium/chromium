@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Paslaugos</translation>
 <translation id="181434555916624618">Kol kas rezultatai su žmonėmis nebus rodomi. Bandykite kitą užklausą.</translation>
 <translation id="1829129547161959350">Pingvinas</translation>
-<translation id="183183971458492120">Įkeliama informacija...</translation>
 <translation id="1832073788765803750">Pusės pločio katakana</translation>
 <translation id="1834290891154666894">Netinkama alternatyvaus subjekto pavadinimo atitikties įvestis</translation>
 <translation id="1838709767668011582">„Google“ svetainė</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Išnaudota: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Supaprastinta kinų k.</translation>
 <translation id="22085916256174561">Korėjiečių k.</translation>
-<translation id="2208919847696382164">Diegimas naudojant „Linux“</translation>
 <translation id="2215692307449050019">Akumuliatorius senka. Failų sinchronizavimas bus atnaujintas, kai prisijungsite prie maitinimo šaltinio.</translation>
 <translation id="2225536596944493418">Ar tikrai norite ištrinti <ph name="NUMBER_OF_ITEMS" /> element.?</translation>
 <translation id="2230062665678605299">Nepavyko sukurti aplanko „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmiečių k. (Mianmaro) su „Myansan“ klaviatūra</translation>
 <translation id="2664412712123763093">Failo vieta</translation>
-<translation id="2718540689505416944">Programos diegimas naudojant „Linux“</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, išsami informacija</translation>
 <translation id="2724954091494693138">Turkų k. su F klaviatūra</translation>
 <translation id="2732288874651063549">Tvarkyti „<ph name="VM_NAME" />“ bendrinimą</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Išnaudojote visą asmeninę „Google Workspace“ saugyklą.</translation>
 <translation id="2771816809568414714">Sūris</translation>
 <translation id="2781645665747935084">Belgų</translation>
-<translation id="2782104745158847185">Įdiegiant „Linux“ programą įvyko klaida</translation>
 <translation id="2802583107108007218">Sužinokite daugiau apie šiuos apribojimus</translation>
 <translation id="2803375539583399270">Įveskite PIN kodą</translation>
 <translation id="2819519502129272135">Failų sinchronizavimas išjungtas</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Esate neprisijungę</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="3793469551756281394">Liko maždaug <ph name="REMAINING_TIME_HOUR" /> ir <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Versija</translation>
 <translation id="3801082500826908679">Farerų</translation>
 <translation id="3809272675881623365">Triušis</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3855472144336161447">Vokiečių „Neo 2“</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
-<translation id="3866249974567520381">Aprašas</translation>
 <translation id="3899991606604168269">Prancūzų k. (Kanada) su keliomis kalbomis klaviatūra</translation>
 <translation id="3901991538546252627">Jungiamasi prie „<ph name="NAME" />“</translation>
 <translation id="3906232975181435906">Įdiegiamas mobiliojo ryšio profilis, <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Fonetinė bulgarų</translation>
 <translation id="4508265954913339219">Nepavyko suaktyvinti</translation>
 <translation id="4509667233588080747">Anglų k. (JAV) su „Workman“ tarptautine klaviatūra</translation>
-<translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4527800702232535228">Šis aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
 <translation id="4552759165874948005">Tinklas: <ph name="NETWORK_TYPE" />, signalo stipris <ph name="SIGNAL_STRENGTH" /> proc.</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Klausyti</translation>
 <translation id="5650895901941743674">APN konfigūracijos tikrinimas</translation>
 <translation id="5669691691057771421">Įveskite naują PIN kodą</translation>
-<translation id="5678784840044122290">„Linux“ programa pasiekiama jūsų terminale ir piktograma taip pat gali būti rodoma Paleidimo priemonėje.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Negalima atsijungti nuo archyvo ar virtualiojo disko<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Uždarykite visus failus archyve ar virtualiajame diske, tada bandykite dar kartą.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Žaidėjas</translation>
 <translation id="5864471791310927901">DHCP paieška nepavyko</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, nesuaktyvintas, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., išsami informacija</translation>
-<translation id="5911887972742538906">Diegiant „Linux“ programą įvyko klaida.</translation>
 <translation id="5912396950572065471">Formatas</translation>
 <translation id="5918480239180455431">Pasiekiamos naujos paieškos funkcijos</translation>
 <translation id="5926082595146149752">Nyderlandų k. (Nyderlandai) su JAV tarptautine (AK) klaviatūra</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Atmintuko pavadinimas</translation>
 <translation id="7238643356913091553">„<ph name="NETWORK_NAME" />“, išsami informacija</translation>
 <translation id="7246947237293279874">FTP tarpinis serveris</translation>
-<translation id="7248671827512403053">Programa</translation>
 <translation id="7256405249507348194">Neatpažinta klaida: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Prieinamos paslaugos</translation>
 <translation id="7291818353625820805">Norite, kad klavišai būtų kartojami? Išjunkite kirčio ženklus klaviatūros nustatymuose</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigūruoti</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{Viena klaida.}one{# klaida.}few{# klaidos.}many{# klaidos.}other{# klaidų.}}</translation>
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
-<translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>
 <translation id="8175731104491895765">Prancūzų k. (Belgija)</translation>
 <translation id="8175799081768705361">Sinchronizuojama Disko failų: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Įvesti</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">„Google“ dokumentai</translation>
 <translation id="9189836632794948435">Kazachų k.</translation>
 <translation id="9200427192836333033">Išskirta elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Diegimas sėkmingai pradėtas.</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219908252191632183">Mėnulyje</translation>
 <translation id="931652069802536959">Tinklas užblokuotas pagal politiką</translation>

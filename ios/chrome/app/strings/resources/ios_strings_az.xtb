@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Hazırdır</translation>
 <translation id="2577522251608256362">Yaxın yerlər</translation>
 <translation id="2579713773888829241">Paylaşılmış disklər</translation>
+<translation id="2580306219079937316">Tərcümə ayarlarını açın</translation>
 <translation id="2583688836549072561">Tab qrupu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab, yeni fəaliyyət.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Məhsullar üzrə qiymətin düşməsini izləyin</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Dəyişiklik yaddaşda saxlanmadı.</translation>
 <translation id="3254806613790954367">Bütün cihazlarınızda son açıq tab</translation>
 <translation id="325717987950204592">"Məxfilik və güvənlik" üzərinə toxunun</translation>
+<translation id="3266338926702638258">Bu məhsul üçün qiymət tarixçəsini göstərin</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
 <translation id="3273510436356991673">Əsas ekranı fərdiləşdirin</translation>
 <translation id="3277021493514034324">Sayt ünvanı kopyalandı</translation>
@@ -1934,6 +1936,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8221665793629393739">Yenidən daxil olmağınız üçün xatırlatma</translation>
 <translation id="8232956427053453090">Datanı saxlayın</translation>
 <translation id="8233237502828137700">Banner tanıtımını bağlayın</translation>
+<translation id="823339794112333264">Mikrofonu aktiv edin</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
 <translation id="8258734532103758067">Datamı eksport etdim</translation>
 <translation id="8258999165172757081">Əlavə edilib</translation>
@@ -2039,6 +2042,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8611922158252451755">Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də paylaşarkən diqqətli olun. Keçidin müddəti 48 saat ərzində bitir.</translation>
 <translation id="8614671330774943747">Tab keçiricisinə daxil olun</translation>
 <translation id="8620640915598389714">Redaktə edin</translation>
+<translation id="862367213447108001">Bu saytda popapları həmişə göstərin</translation>
 <translation id="8625706492572042370">Ana ekranı redaktə edin</translation>
 <translation id="8631370184731241854">Kilidli Anonim tablar</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
@@ -2135,6 +2139,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8928426232677696166"><ph name="EMAIL" />, hazırda seçilmiş təşkilatınız tərəfindən idarə olunur. Hesab seçin.</translation>
 <translation id="894191600409472540">Güclü parollar yaradın</translation>
 <translation id="8943780400130412484">Yeni endirmə başlasın?</translation>
+<translation id="8947838125864566256">Mikrofonu söndürün</translation>
 <translation id="8953046091948372197">Parolları burada tapa bilərsiniz</translation>
 <translation id="8953602327115378731">{count,plural, =1{Avtomatik tamamlama üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Avtomatik tamamlama üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="895541991026785598">Problemi Xəbər verin</translation>

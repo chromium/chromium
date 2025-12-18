@@ -1032,7 +1032,6 @@
 <translation id="1679810534535368772">तपाईं साँच्चिकै बाहिर निस्कन चाहनुहुन्छ?</translation>
 <translation id="167983332380191032">व्यवस्थापन सेवाले HTTP त्रुटि पठायो।</translation>
 <translation id="167997285881077031">टेक्स्ट-टू-स्पिच सुविधाको आवाजसम्बन्धी सेटिङ</translation>
-<translation id="1680849702532889074">तपाईंको Linux एप स्थापना गर्ने क्रममा कुनै त्रुटि भयो।</translation>
 <translation id="1682195225331129001">अहिले गरी हेर्नुहोस्</translation>
 <translation id="1682548588986054654">नयँ इन्कग्निटो सन्झ्याल</translation>
 <translation id="1682696837763999627">माउसको ठुलो कर्सर</translation>
@@ -1658,7 +1657,6 @@
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2104166991923847969">हटस्पट स्वतः अफ गर्नुहोस्</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> वटा कन्सोल म्यासेज लुकाइएका छन्</translation>
-<translation id="2106439768713835453">एपको अडियो पनि सेयर गर्नुहोस्</translation>
 <translation id="2107359546799360577">JavaScript अप्टिमाइजेसन अफ गरिएको छ।</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> अघि जाँच गरिएको</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
@@ -2670,7 +2668,6 @@
 <translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> मार्फत आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="2785267875302712148">पासवर्ड जाँच</translation>
 <translation id="2785279781154577715">ट्याबमा होभर गर्दा देखिने प्रिभ्यू कार्डको स्वरूप</translation>
@@ -4129,6 +4126,7 @@
 <translation id="3785748905555897481">PIN परिवर्तन गरियो</translation>
 <translation id="3786224729726357296"><ph name="SITE" /> को साइट डेटा मेटाउनुहोस् र यो साइटलाई दिइएका अनुमति रद्द गर्नुहोस्</translation>
 <translation id="3786834302860277193">कम्पोजिसन टेक्स्ट टाइप गर्दा अन्डरलाइन देखाउनुहोस्</translation>
+<translation id="3786890785076278600">स्थिर लाइन</translation>
 <translation id="3787434344076711519">अनुवाद गर्न बाँकी छ</translation>
 <translation id="3788301286821743879">kiosk एप सुरु गर्न सकिएन।</translation>
 <translation id="3788401245189148511">यसले सक्छ:</translation>
@@ -4507,6 +4505,7 @@
 <translation id="4028467762035011525">इनपुट विधिहरू थप्नुहोस्</translation>
 <translation id="4029024445166427442">लन्चर + सिफ्ट + ब्याकस्पेस</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> नामक पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
+<translation id="4031178684547097947">५ वटा लाइन</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4031527940632463547">सेन्सरहरूमा रोक लगाइयो</translation>
 <translation id="4033471457476425443">नयाँ फोल्डर थप्नुहोस्</translation>
@@ -4877,7 +4876,6 @@
 <translation id="4293219510510666933">ब्राउजिङ हिस्ट्री खोज्न र आफूले खोलेका साइटहरू भेट्टाउन बोलीचालीको भाषा प्रयोग गर्नुहोस्। तपाईं आफ्नो ब्राउजिङ हिस्ट्रीका आधारमा प्रश्नहरू सोध्न र जवाफहरू प्राप्त गर्न पनि सक्नुहुन्छ। यो सेटिङ अन छ।</translation>
 <translation id="429344752071832554">समूह अनफोकस गर्नुहोस्</translation>
 <translation id="4294392694389031609">डाउनलोड हिस्ट्रीबाट <ph name="FILE_NAME" /> मेटाइएको छ तर उक्त फाइल अझै पनि तपाईंको डिभाइसमा छ</translation>
-<translation id="4295072614469448764">यो एप तपाईंको टर्मिनलमा उपलब्ध छ। तपाईंको लन्चरमा कुनै आइकन पनि हुन सक्छ।</translation>
 <translation id="4295979599050707005">तपाईंको खाता <ph name="USER_EMAIL" /> Chrome तथा Google Play का वेबसाइट, एप र विस्तारहरूमा प्रयोग गर्न सकिने कुरा पुष्टि गर्न कृपया फेरि साइन इन गर्नुहोस्। तपाईं यो खाता हटाउन पनि सक्नुहुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> ले इन्स्टल र स्ट्रिम गरेका एपहरू</translation>
 <translation id="4296632172536745000">यो साइटको मूल पासवर्ड चोरी भएको डेटाको सार्वजनिक सङ्ग्रहमा भेटिएको थियो। तपाईंले <ph name="DATE" /> मा <ph name="BRAND" /> लाई तपाईंका निम्ति तपाईंको पासवर्ड स्वतः परिवर्तन गरिदिन अनुरोध गर्नुभएको थियो।</translation>
@@ -4913,7 +4911,7 @@
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4316850752623536204">विकासकर्ता वेबसाइट</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{{NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
-<translation id="4317733381297736564">एपभित्र हुने किनमेल</translation>
+<translation id="4317733381297736564">एपभित्र गरिने खरिदहरू</translation>
 <translation id="4317820549299924617">पुष्टि गर्ने कार्य असफल भयो</translation>
 <translation id="4319441675152393296"><ph name="HOST" /> रिड गर्न तथा बदल्न यो एक्स्टेन्सनको आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="4320177379694898372">इन्टरनेट छैन</translation>
@@ -4984,7 +4982,6 @@
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="4373418556073552953">आफ्नो Android फोनमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="4373973310429385827">लाइटहाउस</translation>
-<translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
 <translation id="4375035964737468845">डाउनलोड गरिएका फाइलहरू खोल्नुहोस्</translation>
 <translation id="4376226992615520204">स्थान अफ गरिएको छ</translation>
 <translation id="4377363674125277448">सर्भरको प्रमाणपत्रमा एक समस्या थियो।</translation>
@@ -5769,6 +5766,7 @@
 <translation id="4908811072292128752">दुई साइटहरूलाई एकैपटक ब्राउज गर्न एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4910241725741323970">एप इन्स्टल गरिसकिएको छ</translation>
 <translation id="4912643508233590958">आइडल उठ्नेहरू</translation>
+<translation id="4912892750325639080">३ वटा लाइन</translation>
 <translation id="4913209098186576320">यो फाइल खतरनाक हुन सक्छ<ph name="LINE_BREAK" />यो फाइलको जाँच गर्न सामान्यभन्दा बढी समय लागिरहेको छ...</translation>
 <translation id="4913695564084524048">एपसम्बन्धी डेटा भेटिएन</translation>
 <translation id="4915961947098019832">फोटोहरू देखाउन अनुमति दिइएका साइटहरू</translation>
@@ -6263,7 +6261,6 @@
 <translation id="5263656105659419083">सजिलैसँग साइड प्यानलमा फर्कनका लागि सिरानको दायाँ भागमा रहेको पिनमा क्लिक गर्नुहोस्</translation>
 <translation id="5264148714798105376">लोड हुन एक मिनेट जति लाग्न सक्छ।</translation>
 <translation id="5264252276333215551">कृपया किअस्क मोडमा तपाईंको एप्लिकेसनलाई लन्च गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
-<translation id="5265797726250773323">स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="5267572070504076962">खतरनाक साइटहरूबाट जोगिन Safe Browsing अन गर्नुहोस्</translation>
 <translation id="5269659747698455324">आफ्ना पासकीहरू अनलक गर्नुहोस्</translation>
@@ -7639,7 +7636,6 @@
 <translation id="623261264391834964">लेख्न मद्दत गर्ने सुविधा प्रयोग गर्न कुनै टेक्स्ट बक्समा राइट क्लिक गर्नुहोस्</translation>
 <translation id="6233154960150021497">डिफल्ट रूपमा किबोर्डको साटो आवाजको प्रयोग गर्नुहोस्</translation>
 <translation id="6234108445915742946">३१ मार्चदेखि Chrome को सेवाका सर्तहरू परिवर्तन हुँदै छन्</translation>
-<translation id="6234474535228214774">स्थापना गर्ने काम विचाराधीन छ</translation>
 <translation id="6235208551686043831">डिभाइसको क्यामेरा अन गरिएको छ। कृपया तपाईंको eSIM को QR कोड क्यामेराको अगाडि राख्नुहोस्।</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> समूह <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">टिपोट लिन प्रयोग हुने स्टाइलस एप</translation>
@@ -8321,7 +8317,6 @@
 <translation id="6713668088933662563">यी भाषाहरूमा अनुवाद गर्ने विकल्प कहिल्यै नदेखाउनुहोस्</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> का बारेमा थप विवरणहरू हेर्नुहोस्</translation>
 <translation id="6715735940363172819">वेबसाइटहरूलाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
-<translation id="6715803357256707211">तपाईंको Linux एप स्थापना गर्ने क्रममा कुनै त्रुटि भयो। विस्तृत विवरणका लागि सूचनामा क्लिक गर्नुहोस्।</translation>
 <translation id="6716049856796700977">केही कुराले पनि तपाईंको लोकेसन प्रयोग गर्न सक्दैन। तर तपाईंको लोकेसन तपाईंको IP एड्रेसमार्फत अझै पनि एप तथा वेबसाइटहरूमा देखिन सक्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">इन्टरनेट चलिरहेको छैन। आफ्नो इन्टरनेट कनेक्सन जाँच्नुहोस् वा कुनै अर्को Wi-Fi नेटवर्कमा कनेक्ट गरी हेर्नुहोस्।</translation>
 <translation id="671928215901716392">लक स्क्रिन</translation>
@@ -9008,6 +9003,7 @@
 <translation id="7191159667348037">अज्ञात प्रिन्टर (USB)</translation>
 <translation id="7191631508323321927">हलवे</translation>
 <translation id="7191632649590906354">तपाईंको परिवारका सदस्यहरू अब Google पासवर्ड म्यानेजर प्रयोग गर्दा तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्छन्। उनीहरूलाई <ph name="WEBSITE" /> मा गएर साइन इन गर्न लगाउनुहोस्।</translation>
+<translation id="7192393330344360021">एउटा लाइन</translation>
 <translation id="7193051357671784796">तपाईंको सङ्गठनले यो एप थपेको हो। एपको स्थापना पूरा गर्न यसलाई पुनः सुचारु गर्नुहोस्।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> का लागि कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
 <translation id="7193663868864659844">सिफारिस गरिएका समूहहरूका बारेमा प्रतिक्रिया दिनुहोस्</translation>
@@ -11118,6 +11114,7 @@
 <translation id="862750493060684461">CSS क्यास</translation>
 <translation id="8627795981664801467">सुरक्षित जडानहरू मात्र</translation>
 <translation id="8627804903623428808">यी सर्तहरू पढ्नुहोस् र आफ्ना बच्चाको डेटा नियन्त्रण गर्नुहोस्</translation>
+<translation id="8628674746770065790">कर्सर फलो गर्नुहोस्</translation>
 <translation id="862907440446514309">तपाईंका एड्मिन <ph name="APP0_NAME" /> मार्फत तपाईंको स्क्रिन रेकर्ड गर्दै हुनुहुन्छ।</translation>
 <translation id="8630338733867813168">चार्ज गरिरहेका बेला स्लिप मोडमा लैजानुहोस्</translation>
 <translation id="8631032106121706562">पेटल</translation>
@@ -12134,7 +12131,6 @@
 <translation id="992592832486024913">ChromeVox असक्षम गर्नुहोस् (बोली पृष्ठपोषण)</translation>
 <translation id="992653586748191655">सिफारिस गरिएका <ph name="NUM" /> वटा ट्याब समूह</translation>
 <translation id="992778845837390402">हाल Linux को ब्याकअप हुँदै छ</translation>
-<translation id="993540765962421562">स्थापना गर्ने कार्य जारी छ</translation>
 <translation id="994087375490600917">साइड प्यानलहरू</translation>
 <translation id="994289308992179865">&amp;लुप</translation>
 <translation id="995755448277384931">IBAN हाल्नुहोस्</translation>

@@ -1029,7 +1029,6 @@
 <translation id="1679810534535368772">Наистина ли искате да излезете?</translation>
 <translation id="167983332380191032">Услугата за управление изпрати HTTP грешка.</translation>
 <translation id="167997285881077031">Настройки за гласовете за синтезиран говор</translation>
-<translation id="1680849702532889074">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="1682195225331129001">Изпробване сега</translation>
 <translation id="1682548588986054654">Нов прозорец инкогнито</translation>
 <translation id="1682696837763999627">Голям курсор на мишката</translation>
@@ -1663,7 +1662,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2104166991923847969">Автоматично изключване на точката за достъп</translation>
 <translation id="2105809836724866556">„<ph name="MODULE_TITLE" />“ бе скрито</translation>
-<translation id="2106439768713835453">Споделяне и на звука от приложението</translation>
 <translation id="2107359546799360577">Оптимизирането на JavaScript е деактивирано.</translation>
 <translation id="2108204112555497972">Проверено преди <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонен номер}other{# телефонни номера}}</translation>
@@ -1920,6 +1918,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2283599456633275070">Пътувания</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Отваряне на всички в &amp;нова група с раздели}=1{Отваряне в &amp;нова група с раздели}other{Отваряне на всички ({COUNT}) в &amp;нова група с раздели}}</translation>
 <translation id="2285942871162473373">Отпечатъкът ви не бе разпознат. Опитайте отново.</translation>
+<translation id="2286840900796601828">Превъртане с 10 секунди назад</translation>
 <translation id="2287617382468007324">IPP адрес за отпечатване</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{С цел защита на данните ви бяха премахнати разрешенията за сайт, който не сте посещавали наскоро}other{С цел защита на данните ви бяха премахнати разрешенията за сайтовете, които не сте посещавали наскоро}}</translation>
 <translation id="2287944065963043964">Екран за вход</translation>
@@ -2678,7 +2677,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
 <translation id="2783952358106015700">Използване на ключа ви за сигурност за <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Проверка на паролите</translation>
 <translation id="2785279781154577715">Изглед на картата за визуализация при задържане на курсора на мишката върху даден раздел</translation>
@@ -4138,6 +4136,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3785748905555897481">ПИН кодът бе променен успешно</translation>
 <translation id="3786224729726357296">Изтриване на данните и разрешенията за <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Подчертаване на въвеждания текст</translation>
+<translation id="3786890785076278600">Статичен ред</translation>
 <translation id="3787434344076711519">Изчаква се превод</translation>
 <translation id="3788301286821743879">Неуспешно стартиране на павилионното приложение.</translation>
 <translation id="3788401245189148511">То би имало възможност за:</translation>
@@ -4518,6 +4517,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4028467762035011525">Добавяне на методи на въвеждане</translation>
 <translation id="4029024445166427442">клавиша „стартов панел“ + Shift + Backspace</translation>
 <translation id="4029556917477724407">Връщане от страницата „<ph name="PAGE_TITLE" />“</translation>
+<translation id="4031178684547097947">5 реда</translation>
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4031527940632463547">Сензорите са блокирани</translation>
 <translation id="4033471457476425443">Добавяне на нова папка</translation>
@@ -4888,7 +4888,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4293219510510666933">Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили. Можете също да задавате въпроси и да получавате отговори въз основа на тази история. Тази настройка е включена.</translation>
 <translation id="429344752071832554">Премахване на фокуса от групата</translation>
 <translation id="4294392694389031609">Файлът <ph name="FILE_NAME" /> бе изтрит от историята на изтеглянията, но все още е на устройството ви</translation>
-<translation id="4295072614469448764">Приложението е налично в терминала. Възможно е също да има икона в стартовия панел.</translation>
 <translation id="4295979599050707005">Моля, влезте отново, за да потвърдите, че профилът ви <ph name="USER_EMAIL" /> може да се използва с уебсайтове, приложения и разширения в Chrome и Google Play. Имате възможност също да го премахнете. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Приложения, които са инсталирани и поточно предавани от <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Първоначалната ви парола за този сайт бе открита при обществено нарушение на сигурността на данните. На <ph name="DATE" /> помолихте <ph name="BRAND" /> да промени автоматично паролата ви вместо вас.</translation>
@@ -4995,7 +4994,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4370975561335139969">Въведените имейл адрес и парола не съвпадат</translation>
 <translation id="4373418556073552953">Вход с телефона ви с Android</translation>
 <translation id="4373973310429385827">Морски фар</translation>
-<translation id="4374831787438678295">Инсталационна програма за Linux</translation>
 <translation id="4375035964737468845">Отваряне на изтеглени файлове</translation>
 <translation id="4376226992615520204">Местоположението е изключено</translation>
 <translation id="4377363674125277448">Имаше проблем със сертификата на сървъра.</translation>
@@ -5780,6 +5778,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4908811072292128752">Отворете нов раздел, за да сърфирате в два сайта едновременно</translation>
 <translation id="4910241725741323970">Приложението вече е инсталирано</translation>
 <translation id="4912643508233590958">Събуждания при неактивност</translation>
+<translation id="4912892750325639080">3 реда</translation>
 <translation id="4913209098186576320">Възможно е този файл да е опасен<ph name="LINE_BREAK" />Проверката отнема повече време от обикновено…</translation>
 <translation id="4913695564084524048">Данните от приложението не могат да бъдат намерени</translation>
 <translation id="4915961947098019832">Сайтове с разрешение за показване на изображения</translation>
@@ -6274,7 +6273,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5263656105659419083">За да се връщате лесно към страничния панел, кликнете върху „Фиксиране“ горе вдясно</translation>
 <translation id="5264148714798105376">Това може да отнеме около минута.</translation>
 <translation id="5264252276333215551">Моля, свържете се с интернет, за да стартирате приложението си в павилионен режим.</translation>
-<translation id="5265797726250773323">Грешка при инсталирането</translation>
 <translation id="526622169288322445">Още действия за „<ph name="ADDRESS_SUMMARY" />“</translation>
 <translation id="5267572070504076962">Включете Безопасно сърфиране, за да получите защита срещу опасни сайтове</translation>
 <translation id="5269659747698455324">Отключване на ключовете ви за достъп</translation>
@@ -7652,7 +7650,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="623261264391834964">Кликнете с десния бутон в текстово поле, за да използвате „Помощ при писане“</translation>
 <translation id="6233154960150021497">Стандартно използване на глас вместо клавиатура</translation>
 <translation id="6234108445915742946">Общите условия на Chrome ще бъдат променени на 31 март</translation>
-<translation id="6234474535228214774">Предстои инсталиране</translation>
 <translation id="6235208551686043831">Камерата на устройството е включена. Поставете пред нея QR кода за електронната си SIM карта.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> група „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Приложение за водене на бележки с писалка</translation>
@@ -8334,7 +8331,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6713668088933662563">Никога да не се предлага превод за тези езици</translation>
 <translation id="6714871567554212732">Вижте още подробности за „<ph name="GROUP_NAME" />“</translation>
 <translation id="6715735940363172819">На уебсайтовете е забранено да използват микрофона ви</translation>
-<translation id="6715803357256707211">Възникна грешка при инсталирането на приложението за Linux. За подробности кликнете върху известието.</translation>
 <translation id="6716049856796700977">Местоположението ви не може да се използва, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Връзката с мрежата бе прекъсната. Проверете я или опитайте с друга Wi-Fi мрежа.</translation>
 <translation id="671928215901716392">Заключване на екрана</translation>
@@ -9022,6 +9018,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7191159667348037">Неизвестен принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
 <translation id="7191632649590906354">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли. Кажете им да посетят <ph name="WEBSITE" />, за да влязат в профила.</translation>
+<translation id="7192393330344360021">1 ред</translation>
 <translation id="7193051357671784796">Това приложение бе добавено от организацията ви. Рестартирайте го, за да завършите инсталирането му.</translation>
 <translation id="7193374945610105795">Няма запазени пароли за <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Изпращане на отзиви за предложените групи</translation>
@@ -11133,6 +11130,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="862750493060684461">Кеш за CSS</translation>
 <translation id="8627795981664801467">Само сигурни връзки</translation>
 <translation id="8627804903623428808">Прегледайте тези условия и управлявайте данните на детето си</translation>
+<translation id="8628674746770065790">Следване на курсора</translation>
 <translation id="862907440446514309">Администраторът ви записва екрана ви чрез <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Спящ режим при зареждане</translation>
 <translation id="8631032106121706562">Цвете</translation>
@@ -12149,7 +12147,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="992592832486024913">Деактивиране на ChromeVox (обратна връзка с говор)</translation>
 <translation id="992653586748191655">Предложени са <ph name="NUM" /> групи раздели</translation>
 <translation id="992778845837390402">В момента се създава резервно копие на Linux</translation>
-<translation id="993540765962421562">Инсталирането е в ход</translation>
 <translation id="994087375490600917">Странични панели</translation>
 <translation id="994289308992179865">Цикъ&amp;л</translation>
 <translation id="995755448277384931">Добавяне на IBAN</translation>

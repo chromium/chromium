@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Končano</translation>
 <translation id="2577522251608256362">Soseska</translation>
 <translation id="2579713773888829241">Deljeni diski</translation>
+<translation id="2580306219079937316">Odpiranje nastavitve prevajanja</translation>
 <translation id="2583688836549072561">Skupina zavihkov, <ph name="GROUP_TITLE" />, zavihki (<ph name="TABS_NUMBER" />), nova dejavnost.</translation>
 <translation id="2593272815202181319">Stalna širina</translation>
 <translation id="2601778637777010194">Spremljanje znižanj cen izdelkov</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Spremembe ni bilo mogoče shraniti.</translation>
 <translation id="3254806613790954367">Zadnji odprti zavihek v vseh napravah</translation>
 <translation id="325717987950204592">Dotaknite se »Zasebnost in varnost«</translation>
+<translation id="3266338926702638258">Prikaz zgodovine cen za ta izdelek</translation>
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3273510436356991673">Prilagajanje začetnega zaslona</translation>
 <translation id="3277021493514034324">Kopiran naslov spletnega mesta</translation>
@@ -1934,6 +1936,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8221665793629393739">Opomnik za vnovični obisk</translation>
 <translation id="8232956427053453090">Ohrani podatke</translation>
 <translation id="8233237502828137700">Zapiranje promocijske pasice</translation>
+<translation id="823339794112333264">Vklop mikrofona</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8258734532103758067">Podatki so bili izvoženi</translation>
 <translation id="8258999165172757081">Dodano</translation>
@@ -2039,6 +2042,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8611922158252451755">Vsi s povezavo lahko urejajo vse zavihke, zato premišljeno delite vsebino. Povezava poteče čez 48 ur.</translation>
 <translation id="8614671330774943747">Na preklop med zavihki</translation>
 <translation id="8620640915598389714">Uredi</translation>
+<translation id="862367213447108001">Vedno prikaži pojavne elemente na tem spletnem mestu</translation>
 <translation id="8625706492572042370">Urejanje začetnega zaslona</translation>
 <translation id="8631370184731241854">Zaklenjeni anonimni zavihki</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
@@ -2135,6 +2139,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8928426232677696166">Trenutno je izbran <ph name="EMAIL" />, ki ga upravlja vaša organizacija. Izberite račun.</translation>
 <translation id="894191600409472540">Ustvarite zapletena gesla.</translation>
 <translation id="8943780400130412484">Želite začeti nov prenos?</translation>
+<translation id="8947838125864566256">Izklop mikrofona</translation>
 <translation id="8953046091948372197">Tukaj bodo prikazana gesla</translation>
 <translation id="8953602327115378731">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za samodokončanje.}one{Nad tipkovnico je na voljo {count} možnost za samodokončanje.}two{Nad tipkovnico sta na voljo {count} možnosti za samodokončanje.}few{Nad tipkovnico so na voljo {count} možnosti za samodokončanje.}other{Nad tipkovnico je na voljo {count} možnosti za samodokončanje.}}</translation>
 <translation id="895541991026785598">Prijavite težavo</translation>

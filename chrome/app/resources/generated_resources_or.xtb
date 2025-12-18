@@ -1028,7 +1028,6 @@
 <translation id="1679810534535368772">ଆପଣ ନିଶ୍ଚିତ ରୂପେ ବାହାରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="167983332380191032">ପରିଚାଳନା ସେବା HTTP ତ୍ରୁଟି ପଠାଇଛନ୍ତି</translation>
 <translation id="167997285881077031">ଟେକ୍ସଟ୍-ରୁ-ସ୍ପିଚ୍ ଭଏସ୍ ସେଟିଂସ୍</translation>
-<translation id="1680849702532889074">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‍ଷ୍ଟଲେସନ୍ ସମୟରେ ଏକ ସମସ୍ୟା ଦେଖାଦେଲା।</translation>
 <translation id="1682195225331129001">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="1682548588986054654">&amp;ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋ</translation>
 <translation id="1682696837763999627">ବଡ଼ ମାଉସ କର୍ସର</translation>
@@ -1654,7 +1653,6 @@
 <translation id="2102495993840063010">Android ଆପଗୁଡ଼ିକ</translation>
 <translation id="2104166991923847969">ସ୍ୱଚାଳିତ ଭାବେ ହଟସ୍ପଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ଲୁଚାଯାଇଛି</translation>
-<translation id="2106439768713835453">ଆପ୍ଲିକେସନ ଅଡିଓକୁ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="2107359546799360577">JavaScript ଅପ୍ଟିମାଇଜେସନକୁ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ପୂର୍ବରୁ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ଫୋନ୍ ନମ୍ବର}other{#ଟି ଫୋନ୍ ନମ୍ବର}}</translation>
@@ -2667,7 +2665,6 @@
 <translation id="2778471504622896352">ChromeOS ଲଞ୍ଚରରେ ଅଧିକ ରିମୋଟ ଆପ୍ସ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> ସହ ଆପଣଙ୍କ ସୁରକ୍ଷା କୀ’ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2785267875302712148">ପାସୱାର୍ଡ ଚେକଅପ</translation>
 <translation id="2785279781154577715">ଟାବ ହୋଭର ପ୍ରିଭ୍ୟୁ କାର୍ଡ ଏପିଏରେନ୍ସ</translation>
@@ -4127,6 +4124,7 @@
 <translation id="3785748905555897481">PIN ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="3786224729726357296"><ph name="SITE" /> ପାଇଁ ସାଇଟ ଡାଟା ଓ ଅନୁମତିଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="3786834302860277193">କମ୍ପୋଜିସନ ଟେକ୍ସଟ ପାଇଁ ଅଣ୍ଡରଲାଇନ ଦେଖାନ୍ତୁ</translation>
+<translation id="3786890785076278600">ଷ୍ଟାଟିକ ଲାଇନ</translation>
 <translation id="3787434344076711519">ଅନୁବାଦ ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି</translation>
 <translation id="3788301286821743879">କିଓସ୍କ ଆପ୍ଲିକେସନ୍ ଲଞ୍ଚ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3788401245189148511">ଏହା କରିପାରିବ:</translation>
@@ -4505,6 +4503,7 @@
 <translation id="4028467762035011525">ଇନପୁଟ୍ ପଦ୍ଧତିଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4029024445166427442">ଲଞ୍ଚର + Shift + Backspace</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ପୃଷ୍ଠାରୁ ପୂର୍ବବର୍ତ୍ତୀ ପୃଷ୍ଠାକୁ ଫେରନ୍ତୁ</translation>
+<translation id="4031178684547097947">5 ଲାଇନ</translation>
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4031527940632463547">ସେନ୍ସର୍‍ ଅବରୋଧ କରାଯାଇଛି</translation>
 <translation id="4033471457476425443">ନୂଆ ଫୋଡ୍ଲର୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -4875,7 +4874,6 @@
 <translation id="4293219510510666933">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ସର୍ଚ୍ଚ କରିବା ଏବଂ ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକୁ ଖୋଜିବା ପାଇଁ ଦୈନନ୍ଦିନ ବ୍ୟବହାର ହେଉଥିବା ଭାଷାକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଆଧାରରେ ଆପଣ ପ୍ରଶ୍ନ ମଧ୍ୟ ପଚାରିପାରିବେ ଏବଂ ଉତ୍ତର ପାଇପାରିବେ। ଏହି ସେଟିଂ ଚାଲୁ ଅଛି।</translation>
 <translation id="429344752071832554">ଗ୍ରୁପକୁ ଅନଫୋକସ କରନ୍ତୁ</translation>
 <translation id="4294392694389031609">ଡାଉନଲୋଡ ଇତିହାସରୁ <ph name="FILE_NAME" />କୁ ଡିଲିଟ କରିଛନ୍ତି, କିନ୍ତୁ ଏହା ଏବେ ବି ଆପଣଙ୍କ ଡିଭାଇସରେ ଅଛି</translation>
-<translation id="4295072614469448764">ଆପଣଙ୍କର ଟର୍ମିନଲ୍‌ରେ ଆପ୍ ଉପଲବ୍ଧ ଅଛି। ଆପଣଙ୍କର ଲଞ୍ଚର୍‌ରେ ଗୋଟିଏ ଆଇକନ୍ ମଧ୍ୟ ଥାଇପାରେ।</translation>
 <translation id="4295979599050707005">ଦୟାକରି ଏହା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ ଯାହା ଦ୍ୱାରା Chrome ଏବଂ Google Playରେ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="USER_EMAIL" />କୁ ୱେବସାଇଟ୍‍ଗୁଡ଼ିକ, ଆପ୍ସ ଏବଂ ଏକ୍ସଟେନସନ୍‍ଗୁଡ଼ିକ ସହ ବ୍ୟବହାର କରାଯାଇପାରିବ। ଏହି ଆକାଉଣ୍ଟକୁ ଆପଣ ମଧ୍ୟ କାଢ଼ି ପାରନ୍ତି। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" />ରୁ ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ ଏବଂ ଷ୍ଟ୍ରିମ କରାଯାଇଛି</translation>
 <translation id="4296632172536745000">ଏହି ସାଇଟ ପାଇଁ ଆପଣଙ୍କର ମୂଳ ପାସୱାର୍ଡ ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। <ph name="DATE" />ରେ ଆପଣ <ph name="BRAND" />କୁ ଆପଣଙ୍କ ପାଇଁ ସ୍ୱତଃ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବାକୁ କହିଛନ୍ତି।</translation>
@@ -4982,7 +4980,6 @@
 <translation id="4370975561335139969">ଆପଣ ଲେଖିଥିବା ଇମେଲ୍ ଓ ପାସ୍‍ୱର୍ଡ ମେଳ ହେଉନାହିଁ</translation>
 <translation id="4373418556073552953">ଆପଣଙ୍କ Android ଫୋନ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4373973310429385827">ଲାଇଟହାଉସ</translation>
-<translation id="4374831787438678295">Linux ଇନ୍‍ଷ୍ଟଲର୍</translation>
 <translation id="4375035964737468845">ଡାଇନ୍‌ଲୋଡ୍‍ ହୋ‍ଇଥିବା ଫାଇଲ୍‍ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="4376226992615520204">ଲୋକେସନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="4377363674125277448">ସର୍ଭର୍‌ର ସାର୍ଟିଫିକେଟ୍‌ରେ ଗୋଟିଏ ସମସ୍ୟା ହୋ‍ଇଛି।</translation>
@@ -5766,6 +5763,7 @@
 <translation id="4908811072292128752">ଏକାଥରେ ଦୁଇଟି ସାଇଟ୍‌ ବ୍ରାଉଜ୍‌ କରିବାକୁ ଏକ ନୂଆ ଟାବ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="4910241725741323970">ଆପଟି ପୂର୍ବରୁ ଇନଷ୍ଟଲ ହୋଇଛି</translation>
 <translation id="4912643508233590958">ନିଷ୍କ୍ରିୟ ପ୍ରୋସେସର୍‌ ସକ୍ରିୟକରଣ</translation>
+<translation id="4912892750325639080">3 ଲାଇନ</translation>
 <translation id="4913209098186576320">ଏହି ଫାଇଲ ବିପଦଜନକ ହୋଇପାରେ<ph name="LINE_BREAK" />ଏହି ଯାଞ୍ଚ ପାଇଁ ସାଧାରଣ ଅପେକ୍ଷା ଅଧିକ ସମୟ ଲାଗୁଛି...</translation>
 <translation id="4913695564084524048">ଆପ ଡାଟା ମିଳୁନାହିଁ</translation>
 <translation id="4915961947098019832">ଛବିଗୁଡ଼ିକୁ ଦେଖାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -6260,7 +6258,6 @@
 <translation id="5263656105659419083">ସାଇଡ ପେନେଲକୁ ସହଜରେ ଫେରିବା ପାଇଁ 'ଶୀର୍ଷ ଡାହାଣରେ ପିନ କରନ୍ତୁ'ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="5264148714798105376">ଏଥିରେ ଗୋଟିଏ ମିନିଟ୍‌ କିମ୍ବା କିଛି ଅଧିକ ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="5264252276333215551">କିଓସ୍କ ମୋଡ୍‌ରେ ଆପଣଙ୍କର ଆପ୍‌ ଲଞ୍ଚ କରିବାକୁ ଦୟାକରି ଇଣ୍ଟର୍ନେଟ୍‍କୁ ସଂଯୋଗ କରନ୍ତୁ।</translation>
-<translation id="5265797726250773323">ଇନ୍‌ଷ୍ଟଲ୍ ହେବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="5267572070504076962">ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକଠାରୁ ସୁରକ୍ଷା ପାଇବା ପାଇଁ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5269659747698455324">ଆପଣଙ୍କ ପାସକୀ’ଗୁଡ଼ିକୁ ଅନଲକ କରନ୍ତୁ</translation>
@@ -7634,7 +7631,6 @@
 <translation id="623261264391834964">ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଏକ ଟେକ୍ସଟ ବକ୍ସରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="6233154960150021497">ଡିଫଲ୍ଟ ଭାବେ କୀବୋର୍ଡ ପରିବର୍ତ୍ତେ ଭଏସ୍ ବ୍ୟବହାର କରିବା</translation>
 <translation id="6234108445915742946">ମାର୍ଚ୍ଚ 31ରୁ Chromeର ସେବାର ସର୍ତ୍ତାବଳୀ ବଦଳିବାକୁ ଯାଉଛି</translation>
-<translation id="6234474535228214774">ବାକିଗୁଡ଼ିକୁ ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="6235208551686043831">ଡିଭାଇସର କ୍ୟାମେରାକୁ ଚାଲୁ କରାଯାଇଛି। ଦୟାକରି ଆପଣଙ୍କ eSIM QR କୋଡକୁ କ୍ୟାମେରା ସାମ୍ନାରେ ରଖନ୍ତୁ।</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> ଗୋଷ୍ଠୀ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">ଷ୍ଟାଇଲସ୍ ନୋଟ୍-ଲେଖିବା ଆପ୍</translation>
@@ -8318,7 +8314,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6713668088933662563">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ କେବେ ବି ଅଫର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> ବିଷୟରେ ଅଧିକ ବିବରଣୀ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="6715735940363172819">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ୱେବସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
-<translation id="6715803357256707211">ଆପଣଙ୍କ Linux ଆପ୍ଲିକେସନ୍‍ର ଇନ୍‌ଷ୍ଟଲେସନ୍ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। ବିବରଣୀ ପାଇଁ ବିଜ୍ଞପ୍ତିରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="6716049856796700977">କୌଣସିଟି ଆପଣଙ୍କ ଲୋକେସନ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ। କିନ୍ତୁ, ଆପଣଙ୍କ ଲୋକେସନ ଆପଣଙ୍କ IP ଠିକଣା ମାଧ୍ୟମରେ ଏବେ ବି ଆପ୍ସ ଏବଂ ୱେବସାଇଟକୁ ଦୃଶ୍ୟମାନ ହୋଇପାରେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ନେଟୱାର୍କ ସଂଯୋଗ ବିଚ୍ଛିନ୍ନ ହୋଇଛି। ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ଅନ୍ୟ ଏକ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="671928215901716392">ଲକ ସ୍କ୍ରିନ</translation>
@@ -9005,6 +9000,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7191159667348037">ଅଜଣା ପ୍ରିଣ୍ଟର୍ (USB)</translation>
 <translation id="7191631508323321927">ହଲଓ୍ଵେ</translation>
 <translation id="7191632649590906354">ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟମାନେ Google Password Manager ବ୍ୟବହାର କଲେ ସେମାନେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ। ସାଇନ ଇନ କରିବା ପାଇଁ <ph name="WEBSITE" />କୁ ଯିବାକୁ ସେମାନଙ୍କୁ କୁହନ୍ତୁ।</translation>
+<translation id="7192393330344360021">1 ଲାଇନ</translation>
 <translation id="7193051357671784796">ଏହି ଆପ୍ ଆପଣଙ୍କର ସଂସ୍ଥା ଦ୍ୱାରା ଯୋଗ କରାଯାଇଥିଲା। ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମାପ୍ତ କରିବା ପାଇଁ ଆପ୍‌କୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> ପାଇଁ କୌଣସି ପାସ୍‍ୱର୍ଡ ସେଭ୍ ହୋଇନାହିଁ</translation>
 <translation id="7193663868864659844">ପରାମର୍ଶ ଦିଆଯାଇଥିବା ଗ୍ରୁପଗୁଡ଼ିକ ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
@@ -11114,6 +11110,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="862750493060684461">CSS କ୍ୟାଶ୍</translation>
 <translation id="8627795981664801467">କେବଳ ନିରାପତ୍ତା ସଂଯୋଜନାସମୂହ</translation>
 <translation id="8627804903623428808">ଏହି ସର୍ତ୍ତାବଳୀର ସମୀକ୍ଷା କରି ଆପଣଙ୍କ ପିଲାର ଡାଟାକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
+<translation id="8628674746770065790">କର୍ସରକୁ ଫଲୋ କରନ୍ତୁ</translation>
 <translation id="862907440446514309">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରୁଛନ୍ତି।</translation>
 <translation id="8630338733867813168">ଚାର୍ଜିଂ ସମୟରେ ଡିଭାଇସକୁ ସ୍ଲିପ୍ ମୋଡରେ ରଖନ୍ତୁ</translation>
 <translation id="8631032106121706562">ପାଖୁଡ଼ା</translation>
@@ -12130,7 +12127,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="992592832486024913">ChromeVox ଅକ୍ଷମ କରନ୍ତୁ (କଥିତ ମତାମତ)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> ଟାବ ଗ୍ରୁପ ପ୍ରସ୍ତାବ ଦିଆଯାଇଛି</translation>
 <translation id="992778845837390402">ବର୍ତ୍ତମାନ Linuxର ବ୍ୟାକ୍‍ଅପ୍ ଚାଲିଛି</translation>
-<translation id="993540765962421562">ଇନ୍‌ଷ୍ଟଲେସନ୍ ଚାଲୁଛି</translation>
 <translation id="994087375490600917">ସାଇଡ ପେନେଲ</translation>
 <translation id="994289308992179865">&amp;ଲୁପ୍</translation>
 <translation id="995755448277384931">IBAN ଯୋଗ କରନ୍ତୁ</translation>

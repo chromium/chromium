@@ -1030,7 +1030,6 @@
 <translation id="1679810534535368772">Желите ли стварно да изађете?</translation>
 <translation id="167983332380191032">Услуга управљања је послала HTTP грешку.</translation>
 <translation id="167997285881077031">Подешавања гласа за претварање текста у говор</translation>
-<translation id="1680849702532889074">Дошло је до грешке током инсталирања Linux апликације.</translation>
 <translation id="1682195225331129001">Пробајте</translation>
 <translation id="1682548588986054654">Нови прозор без архивирања</translation>
 <translation id="1682696837763999627">Велики курсор миша</translation>
@@ -1655,7 +1654,6 @@
 <translation id="2102495993840063010">Android апликације</translation>
 <translation id="2104166991923847969">Аутоматски искључи хотспот</translation>
 <translation id="2105809836724866556">Скривено: <ph name="MODULE_TITLE" /></translation>
-<translation id="2106439768713835453">Дели и звук апликације</translation>
 <translation id="2107359546799360577">Оптимизације JavaScript-а су онемогућене.</translation>
 <translation id="2108204112555497972">Проверено пре <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Број телефона}one{# број телефона}few{# броја телефона}other{# бројева телефона}}</translation>
@@ -2667,7 +2665,6 @@
 <translation id="2778471504622896352">Додавање даљинских апликација у Chrome ОС покретач</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Грешка при инсталирању Linux апликације</translation>
 <translation id="2783952358106015700">Користите безбедносни кључ у апликацији <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Провера лозинки</translation>
 <translation id="2785279781154577715">Изглед картице за преглед при преласку курсором</translation>
@@ -4127,6 +4124,7 @@
 <translation id="3785748905555897481">PIN је промењен</translation>
 <translation id="3786224729726357296">Избриши податке о сајту и дозволе за <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Прикажи подвлачење за унети текст</translation>
+<translation id="3786890785076278600">Статични ред</translation>
 <translation id="3787434344076711519">Чека се превод</translation>
 <translation id="3788301286821743879">Покретање киоск апликације није успело.</translation>
 <translation id="3788401245189148511">Могли би да:</translation>
@@ -4506,6 +4504,7 @@
 <translation id="4028467762035011525">Додај методе уноса</translation>
 <translation id="4029024445166427442">тастер покретача + shift + backspace</translation>
 <translation id="4029556917477724407">Назад са странице <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 редова</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4031527940632463547">Приступ сензорима је блокиран</translation>
 <translation id="4033471457476425443">Додај нови фолдер</translation>
@@ -4876,7 +4875,6 @@
 <translation id="4293219510510666933">Користите свакодневни језик да бисте претраживали историју прегледања и проналазили сајтове које сте посетили. Можете и да постављате питања и добијате одговоре на основу историје прегледања. Ово подешавање је укључено.</translation>
 <translation id="429344752071832554">Уклони фокус са групе</translation>
 <translation id="4294392694389031609">Фајл <ph name="FILE_NAME" /> је избрисан из историје преузимања, али је и даље на уређају</translation>
-<translation id="4295072614469448764">Апликација је доступна на терминалу. Можда имате и икону у Покретачу.</translation>
 <translation id="4295979599050707005">Пријавите се поново да бисте потврдили да налог <ph name="USER_EMAIL" /> може да се користи са веб-сајтовима, апликацијама и додацима у Chrome-у и на Google Play-у. Можете и да уклоните овај налог. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Инсталиране и стримоване апликације из апликације <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Првобитна лозинка за овај сајт је пронађена у јавној повреди података. <ph name="DATE" /> сте затражили да <ph name="BRAND" /> аутоматски промени лозинку за вас.</translation>
@@ -4983,7 +4981,6 @@
 <translation id="4370975561335139969">Имејл и лозинка које сте унели се не подударају</translation>
 <translation id="4373418556073552953">Пријавите се помоћу Android телефона</translation>
 <translation id="4373973310429385827">Светионик</translation>
-<translation id="4374831787438678295">Linux програм за инсталацију</translation>
 <translation id="4375035964737468845">Отварање преузетих датотека</translation>
 <translation id="4376226992615520204">Локација је искључена</translation>
 <translation id="4377363674125277448">Дошло је до проблема са сертификатом сервера.</translation>
@@ -5768,6 +5765,7 @@
 <translation id="4908811072292128752">Отворите нову картицу да бисте прегледали два сајта истовремено</translation>
 <translation id="4910241725741323970">Апликација је већ инсталирана</translation>
 <translation id="4912643508233590958">Буђења из стања мировања</translation>
+<translation id="4912892750325639080">3 реда</translation>
 <translation id="4913209098186576320">Овај фајл је можда опасан<ph name="LINE_BREAK" />Ова провера траје дуже него обично...</translation>
 <translation id="4913695564084524048">Не могу да пронађем податке апликације</translation>
 <translation id="4915961947098019832">Дозвољено им је да приказују слике</translation>
@@ -6262,7 +6260,6 @@
 <translation id="5263656105659419083">Да бисте се лако вратили на бочну таблу, кликните на Закачи у горњем десном углу</translation>
 <translation id="5264148714798105376">Ово ће потрајати минут или два.</translation>
 <translation id="5264252276333215551">Успоставите везу са интернетом да бисте покренули апликацију у режиму киоска.</translation>
-<translation id="5265797726250773323">Грешка при инсталирању</translation>
 <translation id="526622169288322445">Још радњи за <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Укључите Безбедно прегледање да бисте добили заштиту од опасних сајтова</translation>
 <translation id="5269659747698455324">Откључај приступне кључеве</translation>
@@ -7638,7 +7635,6 @@
 <translation id="623261264391834964">Кликните десним тастером у оквир за текст да бисте користили функцију Помоћ при писању</translation>
 <translation id="6233154960150021497">Враћа подразумевану употребу гласа уместо тастатуре</translation>
 <translation id="6234108445915742946">Chrome услови коришћења услуге се мењају 31. марта</translation>
-<translation id="6234474535228214774">Инсталирање је на чекању</translation>
 <translation id="6235208551686043831">Камера уређаја је укључена. Поставите eSIM QR кôд испред камере.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> група <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Апликација за прављење бележака помоћу писаљке</translation>
@@ -8324,7 +8320,6 @@
 <translation id="6713668088933662563">Никада не нуди превод за ове језике</translation>
 <translation id="6714871567554212732">Погледајте још детаља о <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Веб-сајтовима није дозвољено да користе микрофон</translation>
-<translation id="6715803357256707211">Дошло је до грешке током инсталирања Linux апликације. Кликните на обавештење да бисте пронашли детаљне информације.</translation>
 <translation id="6716049856796700977">Ништа не може да користи локацију. Међутим, апликације и веб-сајтови могу и даље да виде вашу локацију преко IP адресе. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Мрежна веза је прекинута. Проверите мрежну везу или пробајте са другом WiFi мрежом.</translation>
 <translation id="671928215901716392">Закључај екран</translation>
@@ -9012,6 +9007,7 @@
 <translation id="7191159667348037">Непознат штампач (USB)</translation>
 <translation id="7191631508323321927">Ходник</translation>
 <translation id="7191632649590906354">Чланови породице сада могу да користе ваше корисничко име и лозинку када користе Google менаџер лозинки. Реците им да посете <ph name="WEBSITE" /> да би се пријавили.</translation>
+<translation id="7192393330344360021">1 ред</translation>
 <translation id="7193051357671784796">Ову апликацију је додала ваша организација. Поново је покрените да бисте завршили инсталацију.</translation>
 <translation id="7193374945610105795">Ниједна лозинка није сачувана за <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Пошаљите повратне информације за предложене групе</translation>
@@ -11123,6 +11119,7 @@
 <translation id="862750493060684461">CSS кеш</translation>
 <translation id="8627795981664801467">Само безбедне везе</translation>
 <translation id="8627804903623428808">Прегледајте ове услове и контролишите дететове податке</translation>
+<translation id="8628674746770065790">Прати курсор</translation>
 <translation id="862907440446514309">Администратор снима ваш екран помоћу апликације <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Спавање током пуњења</translation>
 <translation id="8631032106121706562">Латице</translation>
@@ -12141,7 +12138,6 @@
 <translation id="992592832486024913">Онемогући ChromeVox (говорне повратне информације)</translation>
 <translation id="992653586748191655">Предложених група картица: <ph name="NUM" /></translation>
 <translation id="992778845837390402">У току је прављење резервне копије Linux података</translation>
-<translation id="993540765962421562">Инсталација је у току</translation>
 <translation id="994087375490600917">Бочне табле</translation>
 <translation id="994289308992179865">&amp;Понављај</translation>
 <translation id="995755448277384931">Додајте IBAN</translation>

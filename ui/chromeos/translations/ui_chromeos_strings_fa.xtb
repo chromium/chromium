@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">سرویس‌ها</translation>
 <translation id="181434555916624618">فعلاً نتایج حاوی افراد نمایش داده نخواهد شد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="1829129547161959350">پنگوئن</translation>
-<translation id="183183971458492120">درحال بارگیری اطلاعات...</translation>
 <translation id="1832073788765803750">کاتاکانای نیم‌پهنا</translation>
 <translation id="1834290891154666894">ورودی مربوط به «مطابقت نام جایگزین موضوع» نامعتبر است</translation>
 <translation id="1838709767668011582">‏سایت Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> مصرف‌شده</translation>
 <translation id="2198315389084035571">چینی ساده</translation>
 <translation id="22085916256174561">کره‌ای</translation>
-<translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2215692307449050019">باتری ضعیف است. وقتی دستگاه به برق وصل شود، همگام‌سازی ازسرگرفته می‌شود.</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
-<translation id="2718540689505416944">‏نصب برنامه با Linux</translation>
 <translation id="2719020180254996569">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، جزئیات</translation>
 <translation id="2724954091494693138">‏ترکی با صفحه‌کلید F</translation>
 <translation id="2732288874651063549">مدیریت هم‌رسانی با <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">‏از کل فضای ذخیره‌سازی شخصی Google Workspace استفاده کرده‌اید.</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>
-<translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
 <translation id="2802583107108007218">درباره این محدودیت‌ها بیشتر بدانید</translation>
 <translation id="2803375539583399270">پین را وارد کنید</translation>
 <translation id="2819519502129272135">همگام‌سازی فایل خاموش است</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> و <ph name="REMAINING_TIME_MINUTE" /> باقی مانده است</translation>
-<translation id="3798449238516105146">نسخه</translation>
 <translation id="3801082500826908679">فاروئی</translation>
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3810973564298564668">مدیریت</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3855472144336161447">نئو آلمان ۲</translation>
 <translation id="3858860766373142691">نام</translation>
-<translation id="3866249974567520381">توضیح</translation>
 <translation id="3899991606604168269">فرانسوی (کانادایی) با صفحه‌کلید چندزبانه</translation>
 <translation id="3901991538546252627">در حال اتصال به <ph name="NAME" /></translation>
 <translation id="3906232975181435906">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">آوایی بلغاری</translation>
 <translation id="4508265954913339219">فعالسازی انجام نشد</translation>
 <translation id="4509667233588080747">‏انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی Workman</translation>
-<translation id="4522570452068850558">جزئیات</translation>
 <translation id="4527800702232535228">‏این پوشه با Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="4552678318981539154">خرید فضای ذخیره بیشتر</translation>
 <translation id="4552759165874948005">شبکه <ph name="NETWORK_TYPE" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">گوش دادن</translation>
 <translation id="5650895901941743674">‏پیکربندی APN را بررسی کنید</translation>
 <translation id="5669691691057771421">پین جدید را وارد کنید</translation>
-<translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    همه فایل‌های روی بایگانی یا دیسک مجازی را ببندید و سپس دوباره امتحان کنید.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">بازیکن</translation>
 <translation id="5864471791310927901">‏بررسی DHCP انجام نشد</translation>
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
-<translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
 <translation id="5912396950572065471">قالب</translation>
 <translation id="5918480239180455431">ویژگی‌های جستجوی جدید دردسترس است</translation>
 <translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">نام درایو</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، جزئیات</translation>
 <translation id="7246947237293279874">‏پروکسی FTP</translation>
-<translation id="7248671827512403053">برنامه کاربردی</translation>
 <translation id="7256405249507348194">خطای نامشخص: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">خدمات موجود</translation>
 <translation id="7291818353625820805">می‌خواهید کلیدها تکرار شوند؟ نشانه‌های تکیه را در «تنظیمات صفحه‌کلید» خاموش کنید</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">پیکربندی</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{‫۱ خطا.}one{‫# خطا.}other{‫# خطا.}}</translation>
 <translation id="8154842056504218462">همه ورودی‌ها انتخاب شد.</translation>
-<translation id="8157684860301034423">اطلاعات برنامه بازیابی نشد.</translation>
 <translation id="8175731104491895765">فرانسوی (بلژیک)</translation>
 <translation id="8175799081768705361">‏درحال همگام‌سازی <ph name="NUMBER_OF_FILES_SYNCING" /> فایل Drive</translation>
 <translation id="8179976553408161302">ورود</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> مورد استخراج شد.</translation>
-<translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>
 <translation id="931652069802536959">شبکه توسط خط‌مشی مسدود شده است</translation>

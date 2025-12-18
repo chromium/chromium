@@ -1032,7 +1032,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1679810534535368772">Yakin ingin keluar?</translation>
 <translation id="167983332380191032">Layanan pengelolaan mengirim error HTTP.</translation>
 <translation id="167997285881077031">Setelan suara text-to-speech</translation>
-<translation id="1680849702532889074">Terjadi error saat menginstal aplikasi Linux.</translation>
 <translation id="1682195225331129001">Coba sekarang</translation>
 <translation id="1682548588986054654">Jendela Samaran Baru</translation>
 <translation id="1682696837763999627">Kursor mouse besar</translation>
@@ -1667,7 +1666,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2102495993840063010">Aplikasi Android</translation>
 <translation id="2104166991923847969">Otomatis nonaktifkan hotspot</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> tersembunyi</translation>
-<translation id="2106439768713835453">Bagikan juga audio aplikasi</translation>
 <translation id="2107359546799360577">Pengoptimalan JavaScript dinonaktifkan.</translation>
 <translation id="2108204112555497972">Diperiksa <ph name="NUM_DAYS_HOURS_MINUTES" /> lalu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nomor telepon}other{# nomor telepon}}</translation>
@@ -2682,7 +2680,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2778471504622896352">Menambahkan aplikasi jarak jauh ke peluncur ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
 <translation id="2783952358106015700">Gunakan kunci keamanan dengan <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Pemeriksaan Sandi</translation>
 <translation id="2785279781154577715">Tampilan pratinjau kartu informasi tab</translation>
@@ -4893,7 +4890,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4293219510510666933">Gunakan bahasa sehari-hari untuk menelusuri histori penjelajahan dan menemukan situs yang pernah Anda buka. Anda juga dapat mengajukan pertanyaan dan mendapatkan jawaban berdasarkan histori penjelajahan Anda. Setelan ini aktif.</translation>
 <translation id="429344752071832554">Jangan Fokuskan Grup</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> dihapus dari histori download, tetapi masih ada di perangkat Anda</translation>
-<translation id="4295072614469448764">Aplikasi tersedia di terminal Anda. Ikonnya juga mungkin tersedia di Peluncur.</translation>
 <translation id="4295979599050707005">Harap login lagi untuk mengonfirmasi bahwa akun <ph name="USER_EMAIL" /> dapat digunakan dengan situs, aplikasi, dan ekstensi di Chrome serta Google Play. Anda juga dapat menghapus akun ini. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplikasi yang diinstal dan di-streaming dari <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Sandi awal Anda untuk situs ini ditemukan dalam pelanggaran data publik. Pada <ph name="DATE" />, Anda meminta <ph name="BRAND" /> untuk otomatis mengubah sandi Anda.</translation>
@@ -5000,7 +4996,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4370975561335139969">Email dan sandi yang Anda masukkan tidak cocok</translation>
 <translation id="4373418556073552953">Login dengan ponsel Android Anda</translation>
 <translation id="4373973310429385827">Mercusuar</translation>
-<translation id="4374831787438678295">Installer Linux</translation>
 <translation id="4375035964737468845">Membuka file yang didownload</translation>
 <translation id="4376226992615520204">Lokasi dinonaktifkan</translation>
 <translation id="4377363674125277448">Ada masalah dengan sertifikat server.</translation>
@@ -6280,7 +6275,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5263656105659419083">Untuk kembali ke panel samping dengan mudah, klik Sematkan di kanan atas</translation>
 <translation id="5264148714798105376">Tindakan ini perlu waktu beberapa menit.</translation>
 <translation id="5264252276333215551">Sambungkan ke internet untuk meluncurkan aplikasi Anda dalam mode kios.</translation>
-<translation id="5265797726250773323">Error saat menginstal</translation>
 <translation id="526622169288322445">Tindakan lainnya untuk <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Aktifkan Safe Browsing untuk mendapatkan perlindungan terhadap situs berbahaya</translation>
 <translation id="5269659747698455324">Buka kunci sandi Anda</translation>
@@ -7657,7 +7651,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="623261264391834964">Klik kanan di kotak teks untuk menggunakan fitur Bantu tulis</translation>
 <translation id="6233154960150021497">Default untuk menggunakan suara, bukan keyboard</translation>
 <translation id="6234108445915742946">Persyaratan Layanan Chrome akan berubah pada 31 Maret</translation>
-<translation id="6234474535228214774">Penginstalan menunggu antrean</translation>
 <translation id="6235208551686043831">Kamera perangkat telah diaktifkan. Letakkan Kode QR eSIM Anda di depan kamera.</translation>
 <translation id="6237342324375264347">Grup <ph name="SHARE_STATE" /> <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Aplikasi mencatat dengan stilus</translation>
@@ -8339,7 +8332,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6713668088933662563">Jangan pernah tawarkan penerjemahan bahasa ini</translation>
 <translation id="6714871567554212732">Lihat detail selengkapnya tentang <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Situs tidak diizinkan menggunakan mikrofon Anda</translation>
-<translation id="6715803357256707211">Terjadi error saat menginstal aplikasi Linux. Klik notifikasi untuk mengetahui detailnya.</translation>
 <translation id="6716049856796700977">Tidak ada yang dapat menggunakan lokasi Anda. Namun, lokasi Anda mungkin masih dapat dilihat oleh aplikasi dan situs melalui alamat IP Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Koneksi jaringan terputus. Periksa koneksi jaringan Anda atau coba jaringan Wi-Fi lain.</translation>
 <translation id="671928215901716392">Kunci layar</translation>
@@ -12155,7 +12147,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="992592832486024913">Nonaktifkan ChromeVox (respons lisan)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> Grup tab disarankan</translation>
 <translation id="992778845837390402">Backup Linux saat ini sedang berlangsung</translation>
-<translation id="993540765962421562">Penginstalan sedang berlangsung</translation>
 <translation id="994087375490600917">Panel samping</translation>
 <translation id="994289308992179865">&amp;Putaran</translation>
 <translation id="995755448277384931">Tambahkan IBAN</translation>

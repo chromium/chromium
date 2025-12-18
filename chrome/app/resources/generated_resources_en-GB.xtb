@@ -1032,7 +1032,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1679810534535368772">Are you sure that you want to exit?</translation>
 <translation id="167983332380191032">Management service sent HTTP error.</translation>
 <translation id="167997285881077031">Text-to-speech voice settings</translation>
-<translation id="1680849702532889074">An error occurred during installation of your Linux application.</translation>
 <translation id="1682195225331129001">Try now</translation>
 <translation id="1682548588986054654">New Incognito window</translation>
 <translation id="1682696837763999627">Big mouse cursor</translation>
@@ -1667,7 +1666,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2102495993840063010">Android apps</translation>
 <translation id="2104166991923847969">Turn off hotspot automatically</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> hidden</translation>
-<translation id="2106439768713835453">Also share application audio</translation>
 <translation id="2107359546799360577">JavaScript optimisations are disabled.</translation>
 <translation id="2108204112555497972">Checked <ph name="NUM_DAYS_HOURS_MINUTES" /> ago</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
@@ -2682,7 +2680,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2778471504622896352">Add remote apps to the ChromeOS Launcher</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Error installing Linux application</translation>
 <translation id="2783952358106015700">Use your security key with <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Password Checkup</translation>
 <translation id="2785279781154577715">Tab hover preview card appearance</translation>
@@ -4142,6 +4139,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3785748905555897481">PIN changed successfully</translation>
 <translation id="3786224729726357296">Delete site data and permissions for <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Show underline for composition text</translation>
+<translation id="3786890785076278600">Static line</translation>
 <translation id="3787434344076711519">Waiting for translation</translation>
 <translation id="3788301286821743879">The kiosk application could not be launched.</translation>
 <translation id="3788401245189148511">It could:</translation>
@@ -4521,6 +4519,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4028467762035011525">Add input methods</translation>
 <translation id="4029024445166427442">launcher + shift + backspace</translation>
 <translation id="4029556917477724407">Back from <ph name="PAGE_TITLE" /> page</translation>
+<translation id="4031178684547097947">5 lines</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4031527940632463547">Sensors blocked</translation>
 <translation id="4033471457476425443">Add new folder</translation>
@@ -4891,7 +4890,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4293219510510666933">Use everyday language to search your browsing history and find sites that you visited. You can also ask questions and get answers based on your browsing history. This setting is on.</translation>
 <translation id="429344752071832554">Unfocus group</translation>
 <translation id="4294392694389031609">Deleted <ph name="FILE_NAME" /> from download history, but it's still on your device</translation>
-<translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
 <translation id="4295979599050707005">Please sign in again to confirm that your account <ph name="USER_EMAIL" /> can be used with websites, apps and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installed and streamed applications from <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to change your password automatically for you.</translation>
@@ -4998,7 +4996,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4373418556073552953">Sign in with your Android phone</translation>
 <translation id="4373973310429385827">Lighthouse</translation>
-<translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
 <translation id="4376226992615520204">Location turned off</translation>
 <translation id="4377363674125277448">There was a problem with server's certificate.</translation>
@@ -5783,6 +5780,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4908811072292128752">Open a new tab to browse two sites at once</translation>
 <translation id="4910241725741323970">App is already installed</translation>
 <translation id="4912643508233590958">Idle wake ups</translation>
+<translation id="4912892750325639080">3 lines</translation>
 <translation id="4913209098186576320">This file may be dangerous<ph name="LINE_BREAK" />This check is taking longer than usual...</translation>
 <translation id="4913695564084524048">Can't find app data</translation>
 <translation id="4915961947098019832">Allowed to show images</translation>
@@ -6277,7 +6275,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5263656105659419083">To easily get back to the side panel, click Pin at the top right</translation>
 <translation id="5264148714798105376">This may take a minute or so.</translation>
 <translation id="5264252276333215551">Please connect to the Internet to launch your app in kiosk mode.</translation>
-<translation id="5265797726250773323">Error while installing</translation>
 <translation id="526622169288322445">More actions for <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5269659747698455324">Unlock your passkeys</translation>
@@ -7654,7 +7651,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="623261264391834964">Right-click in a text box to use Help me write</translation>
 <translation id="6233154960150021497">Default to using voice instead of keyboard</translation>
 <translation id="6234108445915742946">Chrome's Terms of Service are changing on 31 March</translation>
-<translation id="6234474535228214774">Install pending</translation>
 <translation id="6235208551686043831">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Stylus note-taking app</translation>
@@ -8336,7 +8332,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6713668088933662563">Never offer to translate these languages</translation>
 <translation id="6714871567554212732">View more details about <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Websites are not allowed to use your microphone</translation>
-<translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
 <translation id="6716049856796700977">Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Network connection was lost. Check your network connection or try another Wi-Fi network.</translation>
 <translation id="671928215901716392">Lock screen</translation>
@@ -9024,6 +9019,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7191159667348037">Unknown printer (USB)</translation>
 <translation id="7191631508323321927">Hallway</translation>
 <translation id="7191632649590906354">Your family members can now use your username and password when they use Google Password Manager. Tell them to go to <ph name="WEBSITE" /> to sign in.</translation>
+<translation id="7192393330344360021">1 line</translation>
 <translation id="7193051357671784796">This app was added by your organisation. Restart the app to finish installing it.</translation>
 <translation id="7193374945610105795">No passwords saved for <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Send feedback for suggested groups</translation>
@@ -11135,6 +11131,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="862750493060684461">CSS cache</translation>
 <translation id="8627795981664801467">Secure connections only</translation>
 <translation id="8627804903623428808">Review these terms and control your child's data</translation>
+<translation id="8628674746770065790">Follow cursor</translation>
 <translation id="862907440446514309">Your administrator is recording your screen with <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Sleep while charging</translation>
 <translation id="8631032106121706562">Petals</translation>
@@ -12151,7 +12148,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="992592832486024913">Disable ChromeVox (spoken feedback)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> tab groups suggested</translation>
 <translation id="992778845837390402">Linux backup currently in progress</translation>
-<translation id="993540765962421562">Installation in progress</translation>
 <translation id="994087375490600917">Side panels</translation>
 <translation id="994289308992179865">&amp;Loop</translation>
 <translation id="995755448277384931">Add IBAN</translation>

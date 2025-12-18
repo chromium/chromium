@@ -1030,7 +1030,6 @@
 <translation id="1679810534535368772">終了してもよろしいですか？</translation>
 <translation id="167983332380191032">管理サービスから HTTP エラーが送信されました。</translation>
 <translation id="167997285881077031">テキスト読み上げの音声の設定</translation>
-<translation id="1680849702532889074">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="1682195225331129001">今すぐ試す</translation>
 <translation id="1682548588986054654">新規シークレット ウインドウ</translation>
 <translation id="1682696837763999627">大きなマウスカーソル</translation>
@@ -1654,7 +1653,6 @@
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
-<translation id="2106439768713835453">アプリケーションの音声も共有する</translation>
 <translation id="2107359546799360577">JavaScript の最適化が無効になっています。</translation>
 <translation id="2108204112555497972">前回の確認: <ph name="NUM_DAYS_HOURS_MINUTES" /> 前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
@@ -1907,6 +1905,7 @@
 <translation id="2283599456633275070">旅行</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{すべてを新しいタブグループで開く(&amp;N)}=1{新しいタブグループで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいタブグループで開く(&amp;N)}}</translation>
 <translation id="2285942871162473373">指紋を認識できませんでした。もう一度お試しください。</translation>
+<translation id="2286840900796601828">10 秒巻き戻し</translation>
 <translation id="2287617382468007324">印刷の IPP アドレス</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{データ保護のため、最近アクセスしていないサイトから権限を削除しました}other{データ保護のため、最近アクセスしていないサイトから権限を削除しました}}</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
@@ -2664,7 +2663,6 @@
 <translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />、<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2783952358106015700">「<ph name="APP_NAME" />」でセキュリティ キーを使用</translation>
 <translation id="2785267875302712148">パスワード チェックアップ</translation>
 <translation id="2785279781154577715">タブ マウスオーバーのプレビュー カードのデザイン</translation>
@@ -4871,7 +4869,6 @@
 <translation id="4293219510510666933">普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。この設定はオンになっています。</translation>
 <translation id="429344752071832554">グループへのフォーカスを解除</translation>
 <translation id="4294392694389031609">ダウンロード履歴から <ph name="FILE_NAME" /> を削除しましたが、デバイスには引き続き保存されています</translation>
-<translation id="4295072614469448764">アプリはお使いのデバイスでご利用いただけます。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="4295979599050707005">もう一度ログインして、Chrome と Google Play のウェブサイト、アプリ、拡張機能でアカウント（<ph name="USER_EMAIL" />）を使用できることを確認してください。このアカウントを削除することも可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> からインストールされ、ストリーミングされたアプリケーション</translation>
 <translation id="4296632172536745000">一般に報告されているデータ侵害で、このサイトの元のパスワードが検出されました。<ph name="DATE" /> に <ph name="BRAND" /> でパスワードを自動変更しました。</translation>
@@ -4978,7 +4975,6 @@
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4373418556073552953">Android スマートフォンでログイン</translation>
 <translation id="4373973310429385827">灯台</translation>
-<translation id="4374831787438678295">Linux インストーラ</translation>
 <translation id="4375035964737468845">ダウンロードしたファイルを開く</translation>
 <translation id="4376226992615520204">位置情報は OFF です</translation>
 <translation id="4377363674125277448">サーバーの証明書に問題があります。</translation>
@@ -6254,7 +6250,6 @@
 <translation id="5263656105659419083">右上の固定をクリックすると、サイドパネルにすばやく戻れます</translation>
 <translation id="5264148714798105376">これには 1 分ほどかかる場合があります。</translation>
 <translation id="5264252276333215551">キオスク モードでアプリを起動するにはインターネットに接続してください。</translation>
-<translation id="5265797726250773323">インストール中にエラーが発生しました</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> に対するその他の操作</translation>
 <translation id="5267572070504076962">セーフ ブラウジングをオンにすると危険なサイトから保護されます</translation>
 <translation id="5269659747698455324">パスキーのロックを解除</translation>
@@ -7629,7 +7624,6 @@
 <translation id="623261264391834964">テキスト ボックスを右クリックして文書作成サポートを使用します</translation>
 <translation id="6233154960150021497">キーボードではなく音声をデフォルトで使用します</translation>
 <translation id="6234108445915742946">Chrome の利用規約が 3 月 31 日に更新されます</translation>
-<translation id="6234474535228214774">インストールを準備しています</translation>
 <translation id="6235208551686043831">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> グループ「<ph name="GROUP_NAME" />」 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">タッチペンのメモアプリ</translation>
@@ -8310,7 +8304,6 @@
 <translation id="6713668088933662563">翻訳するか確認しない言語</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> の詳細を表示</translation>
 <translation id="6715735940363172819">ウェブサイトでのマイクの使用は許可されていません</translation>
-<translation id="6715803357256707211">Linux アプリケーションのインストール中にエラーが発生しました。詳細を確認するには通知をクリックしてください。</translation>
 <translation id="6716049856796700977">位置情報の利用を許可されているアプリやウェブサイトはありません。ただし、IP アドレスを通じて位置情報がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="671928215901716392">画面をロック</translation>
@@ -12125,7 +12118,6 @@
 <translation id="992592832486024913">ChromeVox（音声フィードバック）を無効にする</translation>
 <translation id="992653586748191655"><ph name="NUM" /> 個のタブグループが提案されました</translation>
 <translation id="992778845837390402">現在、Linux のバックアップが進行中です</translation>
-<translation id="993540765962421562">インストールしています</translation>
 <translation id="994087375490600917">サイドパネル</translation>
 <translation id="994289308992179865">ループ(&amp;L)</translation>
 <translation id="995755448277384931">IBAN の追加</translation>

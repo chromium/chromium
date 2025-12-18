@@ -404,6 +404,7 @@
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何啟用此功能？</translation>
+<translation id="2485534095078940149">附加咗檔案「{title}」</translation>
 <translation id="2493269659028026145">使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />立即鎖定</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
@@ -1034,6 +1035,7 @@
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4970724460420203313">以受管帳戶使用 Chrome，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
+<translation id="4977176874984951085">打開頁面操作選單</translation>
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
@@ -1119,6 +1121,7 @@
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 希望你加入分頁群組。任何擁有連結的人均可編輯所有分頁，因此加入時請小心。連結會於 48 小時後到期。</translation>
+<translation id="5275953427913009986">附加咗分頁「{title}」</translation>
 <translation id="5282340693022193851">如要接收價格追蹤通知，請在 iOS 設定開啟通知功能。</translation>
 <translation id="528857768909044842">分頁群組會儲存在這裡</translation>
 <translation id="5294624619177114121">流動通知</translation>
@@ -1192,6 +1195,7 @@
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
 <translation id="5581786858144165447">詢問 AI 模式</translation>
 <translation id="5585019845078534178">付款卡</translation>
+<translation id="5589976607021609750">附加咗圖像</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">設定下載項目在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -1875,6 +1879,7 @@
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
 <translation id="8010488806779226127">探索能提升瀏覽體驗的功能</translation>
 <translation id="8011489434346330032">網絡檢查工具</translation>
+<translation id="8015826420689927262">刪除附件</translation>
 <translation id="8017015647846870183">「Google 密碼管理工具」上的資料，包括密碼和密鑰</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023170444051056234">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
@@ -2230,6 +2235,7 @@
 <translation id="956218893102219091">使用精確位置 (而非根據 IP 位址估計的位置) 可讓 Gemini 提供最準確的結果。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963102227019621224">網絡和應用程式活動記錄</translation>
+<translation id="965879457362663186">加附件</translation>
 <translation id="966593914872420832">語音搜尋</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{加入<ph name="OWNER_NAME" />所在的分頁群組}=1{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人所在的分頁群組}other{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人所在的分頁群組}}</translation>
 <translation id="973493300226275298">追蹤產品在網上商店中的價格。如果產品降價，系統將通知您。</translation>

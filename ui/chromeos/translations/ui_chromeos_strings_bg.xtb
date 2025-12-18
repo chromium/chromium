@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Услуги</translation>
 <translation id="181434555916624618">Засега резултатите с хора няма да се показват. Опитайте с друга подкана.</translation>
 <translation id="1829129547161959350">Пингвин</translation>
-<translation id="183183971458492120">Информацията се зарежда...</translation>
 <translation id="1832073788765803750">катакана с половин ширина</translation>
 <translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
 <translation id="1838709767668011582">Сайт в Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Използвали сте <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">опростен китайски</translation>
 <translation id="22085916256174561">Корейски</translation>
-<translation id="2208919847696382164">Инсталиране с Linux</translation>
 <translation id="2215692307449050019">Батерията е изтощена. Синхронизирането на файловете ще се възобнови, когато включите устройството в захранването.</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="2663066752008346276">Бирмански с клавиатура Myansan</translation>
 <translation id="2664412712123763093">Местоположение на файла</translation>
-<translation id="2718540689505416944">Инсталиране на приложението с Linux</translation>
 <translation id="2719020180254996569">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, подробности</translation>
 <translation id="2724954091494693138">Турски с клавиатура от тип F</translation>
 <translation id="2732288874651063549">Управление на споделянето с(ъс) <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Използвахте цялото си индивидуално хранилище в Google Workspace.</translation>
 <translation id="2771816809568414714">Сирене</translation>
 <translation id="2781645665747935084">Белгийска клавиатура</translation>
-<translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
 <translation id="2802583107108007218">Научете повече за тези ограничения</translation>
 <translation id="2803375539583399270">Въведете ПИН кодa</translation>
 <translation id="2819519502129272135">Синхронизирането на файловете е изключено</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Офлайн сте</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3793469551756281394">Оставащото време е около <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Версия</translation>
 <translation id="3801082500826908679">фарьорски</translation>
 <translation id="3809272675881623365">Заек</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
 <translation id="3858860766373142691">Име</translation>
-<translation id="3866249974567520381">Описание</translation>
 <translation id="3899991606604168269">Френски (Канада) с многоезична клавиатура</translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Мобилният потребителски профил се инсталира, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Българска фонетична клавиатура</translation>
 <translation id="4508265954913339219">Активирането не бе успешно</translation>
 <translation id="4509667233588080747">Английски (САЩ) с международна клавиатура (Уъркман)</translation>
-<translation id="4522570452068850558">Подробности</translation>
 <translation id="4527800702232535228">Тази папка е споделена с Parallels Desktop</translation>
 <translation id="4552678318981539154">Купуване на още хранилище</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> мрежа, сила на сигнала <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Слушане</translation>
 <translation id="5650895901941743674">Проверете конфигурацията си за APN</translation>
 <translation id="5669691691057771421">Въведете новия ПИН</translation>
-<translation id="5678784840044122290">Приложението за Linux ще бъде налично в терминала и може също да има икона в стартовия панел.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се прекрати връзката с архив или виртуален диск<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Затворете всички файлове от архива или виртуалния диск и опитайте отново.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Геймър</translation>
 <translation id="5864471791310927901">Търсенето на DHCP сървър не бе успешно</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
-<translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5918480239180455431">Налице са нови функции за търсене</translation>
 <translation id="5926082595146149752">Нидерландски (Нидерландия) с американска международна клавиатура (PC)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Име на устройството</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробности</translation>
 <translation id="7246947237293279874">FTP прокси сървър</translation>
-<translation id="7248671827512403053">Приложение</translation>
 <translation id="7256405249507348194">Неразпозната грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Налични услуги</translation>
 <translation id="7291818353625820805">Искате въвеждането да се повтаря при задържане на клавишите? Изключете диакритичните знаци от настройките на клавиатурата</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Конфигуриране</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}other{# грешки.}}</translation>
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
-<translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>
 <translation id="8175731104491895765">Френски (Белгия)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> файла в Диск се синхронизират</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахски</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> елемента са извлечени.</translation>
-<translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>
 <translation id="931652069802536959">Мрежата е блокирана от правило</translation>

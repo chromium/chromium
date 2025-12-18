@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">סיום</translation>
 <translation id="2577522251608256362">שכונה</translation>
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
+<translation id="2580306219079937316">פתיחה של הגדרות התרגום</translation>
 <translation id="2583688836549072561">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות, פעילות חדשה.</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">לא ניתן היה לשמור את השינוי.</translation>
 <translation id="3254806613790954367">הכרטיסייה האחרונה שפתחת בכל המכשירים</translation>
 <translation id="325717987950204592">לוחצים על "פרטיות ואבטחה"</translation>
+<translation id="3266338926702638258">הצגה של היסטוריית המחירים של המוצר הזה</translation>
 <translation id="3272527697863656322">ביטול</translation>
 <translation id="3273510436356991673">התאמה אישית של מסך הבית</translation>
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
@@ -1934,6 +1936,7 @@
 <translation id="8221665793629393739">תזכורת: רוצה לחזור לכאן?</translation>
 <translation id="8232956427053453090">שמירת הנתונים</translation>
 <translation id="8233237502828137700">סגירת הבאנר של המבצע</translation>
+<translation id="823339794112333264">הפעלה של המיקרופון</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8258734532103758067">ייצאתי את הנתונים שלי</translation>
 <translation id="8258999165172757081">נוסף</translation>
@@ -2039,6 +2042,7 @@
 <translation id="8611922158252451755">צריך לשים לב עם מי משתפים את הכרטיסיות כי כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="8614671330774943747">פתיחת הכלי למעבר בין כרטיסיות</translation>
 <translation id="8620640915598389714">עריכה</translation>
+<translation id="862367213447108001">תמיד להציג את החלונות הקופצים באתר הזה</translation>
 <translation id="8625706492572042370">עריכה של מסך הבית</translation>
 <translation id="8631370184731241854">כרטיסיות פרטיות נעולות</translation>
 <translation id="8633025649649592204">פעילות אחרונה</translation>
@@ -2135,6 +2139,7 @@
 <translation id="8928426232677696166">החשבון <ph name="EMAIL" /> מנוהל על ידי הארגון שלך. צריך לבחור חשבון.</translation>
 <translation id="894191600409472540">עליך ליצור סיסמאות חזקות</translation>
 <translation id="8943780400130412484">להתחיל הורדה חדשה?</translation>
+<translation id="8947838125864566256">השבתה של המיקרופון</translation>
 <translation id="8953046091948372197">הסיסמאות יופיעו כאן</translation>
 <translation id="8953602327115378731">{count,plural, =1{אפשרות אחת ({count}) להשלמה אוטומטית זמינה מעל המקלדת.}one{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}two{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}other{‫{count} אפשרויות להשלמה אוטומטית זמינות מעל המקלדת.}}</translation>
 <translation id="895541991026785598">דיווח על בעיה</translation>

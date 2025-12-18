@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Xidmətlər</translation>
 <translation id="181434555916624618">Hələlik insanlarla bağlı nəticələr göstərilməyəcək. Başqa sorğu ilə cəhd edin.</translation>
 <translation id="1829129547161959350">Pinqvin</translation>
-<translation id="183183971458492120">İnfo yüklənir...</translation>
 <translation id="1832073788765803750">Yarım enli katakana</translation>
 <translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
 <translation id="1838709767668011582">Google site</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> istifadə edilib</translation>
 <translation id="2198315389084035571">Sadələşmiş Çin</translation>
 <translation id="22085916256174561">Koreya</translation>
-<translation id="2208919847696382164">Linux ilə quraşdırın</translation>
 <translation id="2215692307449050019">Batareya azdır. Enerji mənbəyinə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="2663066752008346276">Myansan klaviaturası ilə Birma/Myanma dili</translation>
 <translation id="2664412712123763093">Faylın yeri</translation>
-<translation id="2718540689505416944">Linux ilə tətbiqi quraşdırın</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Detallar</translation>
 <translation id="2724954091494693138">F klaviaturası ilə Türk dili</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> paylaşımını idarə edin</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Bütün fərdi Google Workspace yaddaşınızdan istifadə etmisiniz.</translation>
 <translation id="2771816809568414714">Pendir</translation>
 <translation id="2781645665747935084">Belçikalı</translation>
-<translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
 <translation id="2802583107108007218">Bu məhdudiyyətlər haqqında ətraflı məlumat</translation>
 <translation id="2803375539583399270">PİN daxil edin</translation>
 <translation id="2819519502129272135">Fayl sinxronlaşdırması deaktivdir</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Oflaynsınız.</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3793469551756281394">Təxminən <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> qalıb</translation>
-<translation id="3798449238516105146">Versiya</translation>
 <translation id="3801082500826908679">Farer</translation>
 <translation id="3809272675881623365">Dovşan</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
-<translation id="3866249974567520381">Təsvir</translation>
 <translation id="3899991606604168269">Çoxdilli klaviatura ilə Fransız (Kanada)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> qoşulur</translation>
 <translation id="3906232975181435906">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bolqar fonetikası</translation>
 <translation id="4508265954913339219">Aktivləşdirilmə uğursuz oldu</translation>
 <translation id="4509667233588080747">Beynəlxalq Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
-<translation id="4522570452068850558">Detallar</translation>
 <translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="4552678318981539154">Əlavə yaddaş ehtiyatı alın</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> şəbəkəsi, siqnal gücü <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Dinləyin</translation>
 <translation id="5650895901941743674">APN konfiqurasiyasını yoxlayın</translation>
 <translation id="5669691691057771421">Yeni PIN kodu daxil edin</translation>
-<translation id="5678784840044122290">Linux tətbiqi Terminalda əlçatan olacaq və Başladıcınızda da işarə görünə bilər.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arxiv və ya virtual diskdən əlaqəni silmək mümkün deyil<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Arxiv və ya virtual diskdə bütün faylları bağlayın və yenidən cəhd edin.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Oyunçu</translation>
 <translation id="5864471791310927901">DHCP axtarış uğursuz oldu</translation>
 <translation id="5896749729057314184">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
-<translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Yeni axtarış funksiyaları var</translation>
 <translation id="5926082595146149752">ABŞ Beynəlxalq kompüter klaviaturası ilə Holland dili (Niderland)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Cihazın adı</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Detallar</translation>
 <translation id="7246947237293279874">FTP Proksisi</translation>
-<translation id="7248671827512403053">Tətbiq</translation>
 <translation id="7256405249507348194">Naməlum xəta: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Əlçatan xidmətlər</translation>
 <translation id="7291818353625820805">Düymələrin təkrarlanmasını istəyirsiniz? Klaviatura Ayarlarında aksent vurğularını deaktiv edin</translation>
@@ -932,7 +922,6 @@
 <translation id="8151638057146502721">Konfiqurasiya edin</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 xəta.}other{# xəta.}}</translation>
 <translation id="8154842056504218462">Bütün daxiletmələri seçin</translation>
-<translation id="8157684860301034423">Tətbiq məlumatını əldə etmək alınmadı.</translation>
 <translation id="8175731104491895765">Fransız dili (Belçika)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Disk faylı sinxronlaşdırılır</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1076,7 +1065,6 @@
 <translation id="9183302530794969518">Google Sənəd</translation>
 <translation id="9189836632794948435">Qazax</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> element çıxarılıb.</translation>
-<translation id="9213073329713032541">Quraşdırma uğurla başladı.</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="9219908252191632183">Qəməri</translation>
 <translation id="931652069802536959">Şəbəkə siyasət tərəfindən bloklanıb</translation>

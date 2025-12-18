@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Služby</translation>
 <translation id="181434555916624618">Výsledky s ľuďmi sa teraz nezobrazia. Vyskúšajte iný pokyn.</translation>
 <translation id="1829129547161959350">Tučniak</translation>
-<translation id="183183971458492120">Načítavajú sa informácie…</translation>
 <translation id="1832073788765803750">Katakana polovičnej šírky</translation>
 <translation id="1834290891154666894">Neplatný vstup zhody alternatívneho názvu subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Využité: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">zjednodušená čínština</translation>
 <translation id="22085916256174561">Kórejská klávesnica</translation>
-<translation id="2208919847696382164">Inštalovať pomocou systému Linux</translation>
 <translation id="2215692307449050019">Batéria je takmer vybitá. Synchronizácia súborov bude pokračovať po pripojení k napájaniu.</translation>
 <translation id="2225536596944493418">Naozaj chcete odstrániť príslušné položky (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Priečinok <ph name="FOLDER_NAME" /> sa nepodarilo vytvoriť. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Mjanmarská klávesnica s rozložením Myansan</translation>
 <translation id="2664412712123763093">Umiestnenie súboru</translation>
-<translation id="2718540689505416944">Inštalovať aplikáciu pomocou systému Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">Turecká klávesnica (typ F)</translation>
 <translation id="2732288874651063549">Správa zdieľania s virtuálnym počítačom <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Vyčerpali ste celý svoj osobný ukladací priestor v službe Google Workspace.</translation>
 <translation id="2771816809568414714">Syr</translation>
 <translation id="2781645665747935084">Belgická klávesnica</translation>
-<translation id="2782104745158847185">Pri inštalácii aplikácie pre Linux sa vyskytla chyba</translation>
 <translation id="2802583107108007218">Ďalšie informácie o týchto obmedzeniach</translation>
 <translation id="2803375539583399270">Zadajte kód PIN</translation>
 <translation id="2819519502129272135">Synchronizácia súborov je vypnutá</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Ste offline</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3793469551756281394">Zostáva približne <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Verzia</translation>
 <translation id="3801082500826908679">Faerčina</translation>
 <translation id="3809272675881623365">Králik</translation>
 <translation id="3810973564298564668">Spravovať</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Späť</translation>
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
 <translation id="3858860766373142691">Názov</translation>
-<translation id="3866249974567520381">Popis</translation>
 <translation id="3899991606604168269">Francúzska (Kanada) viacjazyčná klávesnica</translation>
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Inštaluje sa mobilný profil. Sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulharská fonetická klávesnica</translation>
 <translation id="4508265954913339219">Aktivácia zlyhala</translation>
 <translation id="4509667233588080747">Anglická (US) klávesnica s medzinárodným rozložením Workman</translation>
-<translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Tento priečinok je zdieľaný aplikáciou Parallels Desktop</translation>
 <translation id="4552678318981539154">Kúpiť väčší ukladací priestor</translation>
 <translation id="4552759165874948005">Sieť: <ph name="NETWORK_TYPE" />. Sila signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -603,7 +596,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5649768706273821470">Počúvať</translation>
 <translation id="5650895901941743674">Skontrolujte svoju konfiguráciu prístupového bodu</translation>
 <translation id="5669691691057771421">Zadanie nového kódu PIN</translation>
-<translation id="5678784840044122290">Aplikácia Linux bude k dispozícii v termináli a jej ikona sa môže tiež zobraziť v Spúšťači.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nedá sa odpojiť od archívu či virtuálneho disku<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Zavrite všetky súbory v archíve alebo virtuálnom disku a potom to skúste znova.</translation>
@@ -638,7 +630,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5861477046012235702">Hráč</translation>
 <translation id="5864471791310927901">Vyhľadanie servera DHCP zlyhalo</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivovaná, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
-<translation id="5911887972742538906">Pri inštalácii aplikácie pre Linux sa vyskytla chyba.</translation>
 <translation id="5912396950572065471">Formát</translation>
 <translation id="5918480239180455431">K dispozícii sú nové funkcie výsledkov vyhľadávania</translation>
 <translation id="5926082595146149752">Holandská klávesnica (Holandsko) s americkou klávesnicou s medzinárodným rozložením klávesov (PC)</translation>
@@ -807,7 +798,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7238097264433196391">Názov jednotky</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server FTP</translation>
-<translation id="7248671827512403053">Aplikácia</translation>
 <translation id="7256405249507348194">Nerozpoznaná chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby sa klávesy opakovali? Vypnite v nastaveniach klávesnice diakritické znamienka.</translation>
@@ -934,7 +924,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8151638057146502721">Konfigurovať</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 chyba.}few{# chyby.}many{# errors.}other{# chýb.}}</translation>
 <translation id="8154842056504218462">Boli vybrané všetky položky.</translation>
-<translation id="8157684860301034423">Nepodarilo sa načítať informácie o aplikácii.</translation>
 <translation id="8175731104491895765">Francúzska (Belgicko) klávesnica</translation>
 <translation id="8175799081768705361">Synchronizujú sa súbory (<ph name="NUMBER_OF_FILES_SYNCING" />) na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">Kazašská klávesnica</translation>
 <translation id="9200427192836333033">Počet extrahovaných položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Inštalácia bola úspešne spustená.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Mesačná krajina</translation>
 <translation id="931652069802536959">Sieť blokujú pravidlá</translation>

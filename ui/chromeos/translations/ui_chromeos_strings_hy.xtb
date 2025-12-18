@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Services</translation>
 <translation id="181434555916624618">Այս պահին մարդկանց մասին տվյալներ պարունակող արդյունքները չեն ցուցադրվի։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="1829129547161959350">Պինգվին</translation>
-<translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
 <translation id="1832073788765803750">կիսալայն կատականա</translation>
 <translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
 <translation id="1838709767668011582">Google site</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Օգտագործվել է <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Պարզեցված չինարեն</translation>
 <translation id="22085916256174561">կորեերեն</translation>
-<translation id="2208919847696382164">Տեղադրել Լինուքսի միջոցով</translation>
 <translation id="2215692307449050019">Մարտկոցի լիցքը քիչ է։ Ֆայլերի համաժամացումը կվերսկսվի, երբ դուք միանաք հոսանքի աղբյուրին։</translation>
 <translation id="2225536596944493418">Իսկապե՞ս ուզում եք ջնջել <ph name="NUMBER_OF_ITEMS" /> տարրերը։</translation>
 <translation id="2230062665678605299">Հնարավոր չէ ստեղծել «<ph name="FOLDER_NAME" />» պանակը: <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="2663066752008346276">բիրմաներեն (Մյանմա)՝ InScript ստեղնաշարով</translation>
 <translation id="2664412712123763093">Ֆայլի տեղադրությունը</translation>
-<translation id="2718540689505416944">Տեղադրեք Լինուքսի հավելված</translation>
 <translation id="2719020180254996569">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, մանրամասներ</translation>
 <translation id="2724954091494693138">թուրքերեն (Turkish F ստեղնաշար)</translation>
 <translation id="2732288874651063549">Կառավարել հասանելիության պարամետրերը <ph name="VM_NAME" />-ի համար</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Դուք օգտագործել եք Google Workspace-ի ձեր ամբողջ անհատական տարածքը։</translation>
 <translation id="2771816809568414714">Պանիր</translation>
 <translation id="2781645665747935084">Բելգիական</translation>
-<translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
 <translation id="2802583107108007218">Իմանալ ավելին այս սահմանափակումների մասին</translation>
 <translation id="2803375539583399270">Մուտքագրեք PIN կոդը</translation>
 <translation id="2819519502129272135">Ֆայլերի համաժամացումն անջատված է</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Դուք միացած չեք ցանցին</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3793469551756281394">Մնացել է մոտ <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Տարբերակ</translation>
 <translation id="3801082500826908679">ֆարյորերեն</translation>
 <translation id="3809272675881623365">Ճագար</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3855472144336161447">Գերմանական (Neo 2)</translation>
 <translation id="3858860766373142691">Անուն</translation>
-<translation id="3866249974567520381">Նկարագրություն</translation>
 <translation id="3899991606604168269">ֆրանսերեն (Կանադա)՝ բազմալեզու ստեղնաշարով</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
 <translation id="3906232975181435906">Տեղադրվում է բջջային պրոֆիլը (ցանց <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />)</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Բուլղարական հնչյունային</translation>
 <translation id="4508265954913339219">Ակտիվացումը չհաջողվեց</translation>
 <translation id="4509667233588080747">անգլերեն (ԱՄՆ)՝ Workman միջազգային ստեղնաշարով</translation>
-<translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4527800702232535228">Այս պանակը հասանելի է Parallels Desktop-ին</translation>
 <translation id="4552678318981539154">Գնեք լրացուցիչ տարածք</translation>
 <translation id="4552759165874948005">Ցանց՝ <ph name="NETWORK_TYPE" />, ազդանշանի ուժգնություն՝ <ph name="SIGNAL_STRENGTH" /></translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Լսել</translation>
 <translation id="5650895901941743674">Ստուգեք ձեր APN-ի կազմաձևը</translation>
 <translation id="5669691691057771421">Մուտքագրեք նոր PIN կոդը</translation>
-<translation id="5678784840044122290">Լինուքսի հավելվածը հասանելի կլինի ձեր տերմինալում, և կարող է նաև պատկերակ ցուցադրվի ձեր գործարկիչում:</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Չհաջողվեց հեռացնել կրիչը կամ վիրտուալ սկավառակը<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Փակեք կրիչի կամ վիրտուալ սկավառակի բոլոր ֆայլերը և նորից փորձեք:</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Խաղացող</translation>
 <translation id="5864471791310927901">DHCP-ի որոնումը չհաջողվեց</translation>
 <translation id="5896749729057314184">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
-<translation id="5911887972742538906">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="5912396950572065471">Ձևաչափ</translation>
 <translation id="5918480239180455431">Հասանելի են որոնման նոր գործառույթներ</translation>
 <translation id="5926082595146149752">հոլանդերեն (Նիդեռլանդներ)՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարով</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Կրիչի անունը</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, մանրամասներ</translation>
 <translation id="7246947237293279874">FTP պրոքսի սերվեր</translation>
-<translation id="7248671827512403053">Հավելված</translation>
 <translation id="7256405249507348194">Չճանաչված սխալ՝ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Հասանելի ծառայություններ</translation>
 <translation id="7291818353625820805">Ուզո՞ւմ եք, որ ստեղները կրկնվեն։ Ստեղնաշարի կարգավորումներում անջատեք առոգանության նշանները։</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 սխալ։}one{# սխալ։}other{# սխալ։}}</translation>
 <translation id="8154842056504218462">Բոլոր գրառումներն ընտրվեցին:</translation>
-<translation id="8157684860301034423">Չհաջողվեց բեռնել հավելվածի մասին տեղեկությունները։</translation>
 <translation id="8175731104491895765">ֆրանսերեն (Բելգիա)</translation>
 <translation id="8175799081768705361">Համաժամացվում է <ph name="NUMBER_OF_FILES_SYNCING" /> Drive ֆայլ</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Փաստաթղթեր</translation>
 <translation id="9189836632794948435">ղազախերեն</translation>
 <translation id="9200427192836333033">Դուրս բերվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
-<translation id="9213073329713032541">Տեղադրումը սկսվեց:</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="9219908252191632183">Լուսնային լանդշաֆտ</translation>
 <translation id="931652069802536959">Ցանցն արգելափակված է համաձայն կազմակերպության կանոնի</translation>

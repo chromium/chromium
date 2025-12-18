@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Usluge</translation>
 <translation id="181434555916624618">Zasad se ne prikazuju rezultati s osobama. Pokušajte s drugim upitom.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
-<translation id="183183971458492120">Učitavanje informacija…</translation>
 <translation id="1832073788765803750">Uska katakana</translation>
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva predmeta</translation>
 <translation id="1838709767668011582">Google web lokacija</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Iskorišteno <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Pojednostavljeni kineski</translation>
 <translation id="22085916256174561">korejski</translation>
-<translation id="2208919847696382164">Instaliraj s Linuxom</translation>
 <translation id="2215692307449050019">Baterija je slaba. Sinhronizacija fajlova će se nastaviti kada priključite napajanje.</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati sljedeći broj stavki: <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Kreiranje foldera "<ph name="FOLDER_NAME" />" nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Broj preostalih pokušaja: <ph name="RETRIES" /></translation>
 <translation id="2663066752008346276">burmanski/mijanmarski s mijansan tastaturom</translation>
 <translation id="2664412712123763093">Lokacija fajla</translation>
-<translation id="2718540689505416944">Instaliraj aplikaciju s Linuxom</translation>
 <translation id="2719020180254996569">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalji</translation>
 <translation id="2724954091494693138">turski s tastaturom F</translation>
 <translation id="2732288874651063549">Upravljajte dijeljenjem s virtuelnom mašinom <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Iskoristili ste svu individualnu pohranu Google Workspacea.</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijski</translation>
-<translation id="2782104745158847185">Greška prilikom instalacije Linux aplikacije</translation>
 <translation id="2802583107108007218">Saznajte više o ovim ograničenjima</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2819519502129272135">Sinhronizacija fajlova je isključena</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Niste povezani na mrežu</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3793469551756281394">Preostalo je oko <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Verzija</translation>
 <translation id="3801082500826908679">Farska</translation>
 <translation id="3809272675881623365">Zec</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3855472144336161447">Njemačka Neo 2</translation>
 <translation id="3858860766373142691">Naziv</translation>
-<translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">francuski (Kanada) s višejezičnom tastaturom</translation>
 <translation id="3901991538546252627">Povezivanje na mrežu <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instaliranje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">bugarski, fonetski</translation>
 <translation id="4508265954913339219">Aktivacija nije uspjela</translation>
 <translation id="4509667233588080747">engleski (SAD) s Workman međunarodnom tastaturom</translation>
-<translation id="4522570452068850558">Detalji</translation>
 <translation id="4527800702232535228">Ovaj folder se dijeli s aplikacijom Parallels Desktop</translation>
 <translation id="4552678318981539154">Kupite dodatni prostor za pohranu</translation>
 <translation id="4552759165874948005">Mreža <ph name="NETWORK_TYPE" />, jačina signala <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5650895901941743674">Provjerite konfiguraciju APN-a</translation>
 <translation id="5669691691057771421">Unesite novi PIN</translation>
-<translation id="5678784840044122290">Linux aplikacija će biti dostupna unutar vašeg Terminala, a može i prikazivati ikonu na vašem Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije moguće prekinuti vezu s arhivom ili virtuelnim diskom<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Zatvorite sve fajlove u arhivi ili na virtuelnom disku i pokušajte ponovo.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">Traženje DHCP-a nije uspjelo</translation>
 <translation id="5896749729057314184">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
-<translation id="5911887972742538906">Došlo je do greške prilikom instalacije Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Nove funkcije pretraživanja su dostupne</translation>
 <translation id="5926082595146149752">nizozemski (Nizozemska) s međunarodnom SAD tastaturom za PC</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Naziv diska</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalji</translation>
 <translation id="7246947237293279874">FTP proksi</translation>
-<translation id="7248671827512403053">Prijava</translation>
 <translation id="7256405249507348194">Neprepoznata greška: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
 <translation id="7291818353625820805">Želite tipke za ponavljanje? Isključite znakove naglaska u Postavkama tastature</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 greška.}one{# greška.}few{# greške.}other{# grešaka.}}</translation>
 <translation id="8154842056504218462">Svi unosi su odabrani.</translation>
-<translation id="8157684860301034423">Preuzimanje informacija o aplikaciji nije uspjelo.</translation>
 <translation id="8175731104491895765">francuski (Belgija)</translation>
 <translation id="8175799081768705361">Sinhronizacija <ph name="NUMBER_OF_FILES_SYNCING" /> fajl(ov)a s Diska</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9189836632794948435">kazaški</translation>
 <translation id="9200427192836333033">Broj izdvojenih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="9213073329713032541">Instalacija uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Lunarno</translation>
 <translation id="931652069802536959">Mreža je blokirana pravilima</translation>

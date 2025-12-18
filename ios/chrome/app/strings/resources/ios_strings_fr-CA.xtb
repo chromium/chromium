@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Terminé</translation>
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2579713773888829241">Disques partagés</translation>
+<translation id="2580306219079937316">Ouvrir les paramètres de Traduction</translation>
 <translation id="2583688836549072561">Nouvelle activité dans le groupe d'onglets <ph name="GROUP_TITLE" /> comprenant <ph name="TABS_NUMBER" /> onglets.</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix des produits</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
 <translation id="3254806613790954367">Votre dernier onglet ouvert sur tous vos appareils</translation>
 <translation id="325717987950204592">Touchez « Confidentialité et sécurité »</translation>
+<translation id="3266338926702638258">Afficher l'historique des prix de ce produit</translation>
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3273510436356991673">Personnalisez l'écran d'accueil</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
@@ -1934,6 +1936,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8221665793629393739">Votre rappel de revisiter le site</translation>
 <translation id="8232956427053453090">Garder les données</translation>
 <translation id="8233237502828137700">Fermer la bannière promotionnelle</translation>
+<translation id="823339794112333264">Activer le microphone</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8258734532103758067">J'ai exporté mes données</translation>
 <translation id="8258999165172757081">Ajouté</translation>
@@ -2039,6 +2042,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8611922158252451755">Toute personne disposant du lien peut modifier l'ensemble des onglets, alors partagez le groupe judicieusement. Le lien expire dans 48 heures.</translation>
 <translation id="8614671330774943747">Accéder au Gestionnaire d'onglets</translation>
 <translation id="8620640915598389714">Modifier</translation>
+<translation id="862367213447108001">Toujours afficher les fenêtres contextuelles sur ce site</translation>
 <translation id="8625706492572042370">Modifier l'écran d'accueil</translation>
 <translation id="8631370184731241854">Onglets de navigation privée verrouillés</translation>
 <translation id="8633025649649592204">Activité récente</translation>
@@ -2135,6 +2139,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8928426232677696166"><ph name="EMAIL" />, géré par votre organisation, actuellement sélectionné. Sélectionnez un compte.</translation>
 <translation id="894191600409472540">Créez des mots de passe forts</translation>
 <translation id="8943780400130412484">Commencer un nouveau téléchargement?</translation>
+<translation id="8947838125864566256">Désactiver le microphone</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} option de saisie semi-automatique accessible au-dessus de votre clavier.}one{{count} option de saisie semi-automatique accessible au-dessus de votre clavier.}other{{count} options de saisie semi-automatique accessibles au-dessus de votre clavier.}}</translation>
 <translation id="895541991026785598">Signaler un problème</translation>

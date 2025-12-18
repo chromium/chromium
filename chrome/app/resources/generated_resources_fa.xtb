@@ -1030,8 +1030,7 @@
 <translation id="1679810534535368772">مطمئنید می‌خواهید خارج شوید؟</translation>
 <translation id="167983332380191032">‏سرویس مدیریت خطای HTTP (اچ‌تی‌تی‌پی) ارسال کرد.</translation>
 <translation id="167997285881077031">تنظیمات صدای نوشتار به گفتار</translation>
-<translation id="1680849702532889074">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
-<translation id="1682195225331129001">اکنون امتحان کنید</translation>
+<translation id="1682195225331129001">اکنون امتحان کردن</translation>
 <translation id="1682548588986054654">پنجره جدید ناشناس</translation>
 <translation id="1682696837763999627">مکان‌نمای موشواره بزرگ</translation>
 <translation id="1682867089915960590">«مرور با نشانگر نوشتار» روشن شود؟</translation>
@@ -1664,7 +1663,6 @@
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2104166991923847969">خاموش شدن خودکار نقطه اتصال</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پنهان شده است</translation>
-<translation id="2106439768713835453">صدای برنامه نیز هم‌رسانی شود</translation>
 <translation id="2107359546799360577">بهینه‌سازی جاوا اسکریپت غیرفعال است.</translation>
 <translation id="2108204112555497972">‫<ph name="NUM_DAYS_HOURS_MINUTES" /> ثانیه پیش بررسی شد</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
@@ -1921,6 +1919,7 @@
 <translation id="2283599456633275070">سفر</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{باز کردن همه در &amp;گروه زبانه جدید}=1{باز کردن در &amp;گروه زبانه جدید}one{باز کردن همه ({COUNT}) در &amp;گروه زبانه جدید}other{باز کردن همه ({COUNT}) در &amp;گروه زبانه جدید}}</translation>
 <translation id="2285942871162473373">اثر انگشتتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
+<translation id="2286840900796601828">‫۱۰ ثانیه به عقب</translation>
 <translation id="2287617382468007324">‏نشانی IPP چاپ</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{برای محافظت از داده‌هایتان، اجازه‌ها از سایتی که اخیراً بازدید نکرده‌اید برداشته شد}one{برای محافظت از داده‌هایتان، اجازه‌ها از سایتی که اخیراً بازدید نکرده‌اید برداشته شد}other{برای محافظت از داده‌هایتان، اجازه‌ها از سایت‌هایی که اخیراً بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="2287944065963043964">صفحه ورود به سیستم</translation>
@@ -2679,7 +2678,6 @@
 <translation id="2778471504622896352">‏افزودن برنامه‌های کنترل ازراه‌دور به راه‌انداز ChromeOS</translation>
 <translation id="2781459437789641557">‫<ph name="ATTRIBUTION_LINE_1" />،‏ <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
 <translation id="2783952358106015700">برای <ph name="APP_NAME" />، از کلید امنیتی‌تان استفاده کنید</translation>
 <translation id="2785267875302712148">بازرسی گذرواژه</translation>
 <translation id="2785279781154577715">ظاهر «کارت پیش‌نمایش نگه داشتن روی زبانه»</translation>
@@ -4744,7 +4742,7 @@
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
 <translation id="4201546031411513170">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در تنظیمات انتخاب کنید.</translation>
-<translation id="4202536110335087135">اکنون امتحان کنید</translation>
+<translation id="4202536110335087135">اکنون امتحان کردن</translation>
 <translation id="4203065553461038553">نام یا محل فایل بیش‌ازحد طولانی است</translation>
 <translation id="4203769790323223880">دوربین مجاز نیست</translation>
 <translation id="4204415812590935863">درحال‌حاضر نمی‌توان زمینه ایجاد کرد.</translation>
@@ -4890,7 +4888,6 @@
 <translation id="4293219510510666933">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید. همچنین می‌توانید سؤال بپرسید و براساس سابقه مرورتان پاسخ دریافت کنید. این تنظیم روشن است.</translation>
 <translation id="429344752071832554">غیرمتمرکز کردن گروه</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> از سابقه بارگیری حذف شد، اما هنوز در دستگاهتان است</translation>
-<translation id="4295072614469448764">برنامه در «ترمینال» دردسترس است. ممکن است در «راه‌انداز» هم نمادی وجود داشته باشد.</translation>
 <translation id="4295979599050707005">‏لطفاً دوباره به سیستم وارد شوید تا تأیید کنید حساب شما (<ph name="USER_EMAIL" />) می‌تواند با وب‌سایت‌ها، برنامه‌ها، و افزونه‌های Chrome و Google Play استفاده شود. همچنین می‌توانید این حساب را بردارید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">برنامه‌های نصب‌شده و جاری‌سازی‌شده از <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">گذرواژه اصلی شما برای این سایت در یک سرقت عمومی اطلاعات شبکه پیدا شد. در <ph name="DATE" /> از <ph name="BRAND" /> خواستید گذرواژه‌تان را به‌طور خودکار برای شما تغییر دهد.</translation>
@@ -4997,7 +4994,6 @@
 <translation id="4370975561335139969">ایمیل و گذرواژه‌ای که وارد کرده‌اید، مطابقت ندارند</translation>
 <translation id="4373418556073552953">‏ورود به سیستم با تلفن Android</translation>
 <translation id="4373973310429385827">فانوس دریایی</translation>
-<translation id="4374831787438678295">‏نصب‌کننده Linux</translation>
 <translation id="4375035964737468845">باز کردن فایل‌های بارگیری‌شده</translation>
 <translation id="4376226992615520204">مکان خاموش است</translation>
 <translation id="4377363674125277448">مشکلی در رابطه با گواهی سرور پیش آمد.</translation>
@@ -6277,7 +6273,6 @@
 <translation id="5263656105659419083">برای بازگشت آسان به پانل کناری، روی «سنجاق» در گوشه چپ بالا کلیک کنید</translation>
 <translation id="5264148714798105376">ممکن است یک دقیقه یا بیشتر طول بکشد.</translation>
 <translation id="5264252276333215551">برای راه‌اندازی برنامه‌تان در حالت کیوسک لطفاً به اینترنت متصل شوید.</translation>
-<translation id="5265797726250773323">هنگام نصب خطایی روی داد</translation>
 <translation id="526622169288322445">کنش‌های بیشتر برای <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
 <translation id="5269659747698455324">باز کردن قفل گذرکلیدها</translation>
@@ -7654,7 +7649,6 @@
 <translation id="623261264391834964">برای استفاده از «کمک گرفتن در نوشتن»، روی چارگوش نوشتاری کلیک راست کنید</translation>
 <translation id="6233154960150021497">پیش‌فرض استفاده از صدا به‌جای صفحه‌کلید</translation>
 <translation id="6234108445915742946">‏«شرایط خدمات Chrome» در تاریخ ۳۱ مارس تغییر می‌کند</translation>
-<translation id="6234474535228214774">نصب درانتظار</translation>
 <translation id="6235208551686043831">دوربین دستگاه روشن شده است. لطفاً رمزینه پاسخ‌سریع سیم‌کارت داخلی را مقابل دوربین قرار دهید.</translation>
 <translation id="6237342324375264347">گروه <ph name="GROUP_NAME" /> <ph name="SHARE_STATE" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">برنامه یادداشت‌برداری قلم</translation>
@@ -8338,7 +8332,6 @@
 <translation id="6713668088933662563">ترجمه این زبان‌ها هرگز پیشنهاد نشود</translation>
 <translation id="6714871567554212732">مشاهده جزئیات بیشتر درباره <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">وب‌سایت‌ها اجازه ندارند از میکروفون شما استفاده کنند</translation>
-<translation id="6715803357256707211">‏هنگام نصب برنامه Linux خطایی روی داد. برای جزئیات بیشتر، روی اعلان کلیک کنید.</translation>
 <translation id="6716049856796700977">‏هیچ‌چیز نمی‌تواند از مکان شما استفاده کند. بااین‌حال، ممکن است مکان شما همچنان ازطریق نشانی IP شما برای برنامه‌ها و وب‌سایت‌ها نمایان باشد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">‏اتصال شبکه قطع شد. اتصال شبکه را بررسی کنید یا شبکه Wi-Fi دیگری را امتحان کنید.</translation>
 <translation id="671928215901716392">قفل صفحه</translation>
@@ -12156,7 +12149,6 @@
 <translation id="992592832486024913">‏غیرفعال کردن ChromeVox (بازخورد گفتاری)</translation>
 <translation id="992653586748191655">‫<ph name="NUM" /> گروه زبانه پیشنهادی</translation>
 <translation id="992778845837390402">‏درحال‌حاضر پشتیبان‌گیری Linux درحال انجام است</translation>
-<translation id="993540765962421562">نصب درحال انجام است.</translation>
 <translation id="994087375490600917">پانل‌های کناری</translation>
 <translation id="994289308992179865">&amp;حلقه</translation>
 <translation id="995755448277384931">‏افزودن IBAN</translation>

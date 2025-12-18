@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">שירותים</translation>
 <translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="1829129547161959350">פינגווין</translation>
-<translation id="183183971458492120">טעינת מידע…</translation>
 <translation id="1832073788765803750">קטאקאנה בחצי רוחב</translation>
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">נעשה שימוש ב-<ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="22085916256174561">קוריאנית</translation>
-<translation id="2208919847696382164">‏התקנה עם Linux</translation>
 <translation id="2215692307449050019">הסוללה חלשה. סנכרון הקבצים ימשיך כשהמכשיר יהיה מחובר לחשמל.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="2663066752008346276">‏בורמזית/מיאנמר עם מקלדת Myansan</translation>
 <translation id="2664412712123763093">מיקום הקובץ</translation>
-<translation id="2718540689505416944">‏התקנת אפליקציה עם Linux</translation>
 <translation id="2719020180254996569">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, פרטים</translation>
 <translation id="2724954091494693138">‏טורקית עם מקלדת F</translation>
 <translation id="2732288874651063549">ניהול השיתוף עם <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">‏השתמשת בכל נפח האחסון לשימוש פרטי שלך ב-Google Workspace.</translation>
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2781645665747935084">בלגית</translation>
-<translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
 <translation id="2802583107108007218">מידע נוסף על ההגבלות האלה</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
 <translation id="2819519502129272135">סנכרון הקבצים מושבת</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">אין לך חיבור לאינטרנט</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3793469551756281394">נותרו כ-<ph name="REMAINING_TIME_HOUR" /> ו-<ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">גרסה</translation>
 <translation id="3801082500826908679">פארואזית</translation>
 <translation id="3809272675881623365">ארנב</translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
 <translation id="3858860766373142691">שם</translation>
-<translation id="3866249974567520381">תיאור</translation>
 <translation id="3899991606604168269">צרפתית (קנדה) עם מקלדת רב-לשונית</translation>
 <translation id="3901991538546252627">מתבצעת התחברות אל: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">התקנה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">בולגרית פונטית</translation>
 <translation id="4508265954913339219">ההפעלה נכשלה</translation>
 <translation id="4509667233588080747">‏מקלדת Workman בינלאומית באנגלית (ארה"ב)</translation>
-<translation id="4522570452068850558">פרטים</translation>
 <translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
 <translation id="4552678318981539154">לרכישת עוד נפח אחסון</translation>
 <translation id="4552759165874948005">‏רשת <ph name="NETWORK_TYPE" />, עוצמת אות ‎<ph name="SIGNAL_STRENGTH" />%‎</translation>
@@ -604,7 +597,6 @@
 <translation id="5649768706273821470">האזנה</translation>
 <translation id="5650895901941743674">‏בדיקת ההגדרות האישיות של ה-APN</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
-<translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    צריך לסגור את כל הקבצים בארכיון או בדיסק הווירטואלי ולנסות שוב.</translation>
@@ -639,7 +631,6 @@
 <translation id="5861477046012235702">גיימר</translation>
 <translation id="5864471791310927901">‏חיפוש DHCP נכשל</translation>
 <translation id="5896749729057314184">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
-<translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>
 <translation id="5918480239180455431">יש תכונות חיפוש חדשות</translation>
 <translation id="5926082595146149752">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
@@ -808,7 +799,6 @@
 <translation id="7238097264433196391">שם התקן האחסון</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, פרטים</translation>
 <translation id="7246947237293279874">‏שרת proxy של FTP</translation>
-<translation id="7248671827512403053">יישום</translation>
 <translation id="7256405249507348194">שגיאה לא מזוהה: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">שירותים זמינים</translation>
 <translation id="7291818353625820805">רוצה שבלחיצה ארוכה על מקשים, הפעולה שלהם תתבצע שוב ושוב? צריך להשבית את הסימנים הדיאקריטיים בהגדרות המקלדת</translation>
@@ -935,7 +925,6 @@
 <translation id="8151638057146502721">הגדרה</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{שגיאה אחת.}one{# שגיאות.}two{# שגיאות.}other{# שגיאות.}}</translation>
 <translation id="8154842056504218462">בחרת את כל הפריטים.</translation>
-<translation id="8157684860301034423">אחזור פרטי האפליקציה נכשל.</translation>
 <translation id="8175731104491895765">צרפתית (בלגיה)</translation>
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> קבצים ב-Drive מסתנכרנים עכשיו</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1079,7 +1068,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">קזחית</translation>
 <translation id="9200427192836333033">חולצו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
-<translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
 <translation id="931652069802536959">הרשת חסומה בעקבות המדיניות</translation>

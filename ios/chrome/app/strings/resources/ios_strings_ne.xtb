@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">भयो</translation>
 <translation id="2577522251608256362">छिमेक</translation>
 <translation id="2579713773888829241">साझा ड्राइभहरू</translation>
+<translation id="2580306219079937316">Translate सम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="2583688836549072561">ट्याब समूह, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> वटा ट्याब, नयाँ गतिविधि।</translation>
 <translation id="2593272815202181319">मोनोस्पेस</translation>
 <translation id="2601778637777010194">उत्पादनहरूको मूल्यमा आउने गिरावट ट्र्याक गर्नुहोस्</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">तपाईंले गरेको परिवर्तन सेभ गर्न सकिएन।</translation>
 <translation id="3254806613790954367">तपाईंका सबै डिभाइसमा खोलिएका ट्याबहरूमध्ये पछिल्लो पटक खोलिएको ट्याब</translation>
 <translation id="325717987950204592">"गोपनीयता तथा सुरक्षा" मा ट्याप गर्नुहोस्</translation>
+<translation id="3266338926702638258">यो उत्पादनको मूल्यसम्बन्धी हिस्ट्री देखाउनुहोस्</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3273510436356991673">आफ्नो होम स्क्रिन कस्टमाइज गर्नुहोस्</translation>
 <translation id="3277021493514034324">साइटको ठेगाना कपी गरियो</translation>
@@ -1934,6 +1936,7 @@
 <translation id="8221665793629393739">तपाईंलाई यो वेबपेज फेरि हेर्न सम्झाउने रिमाइन्डर</translation>
 <translation id="8232956427053453090">डेटा राख्नुहोस्</translation>
 <translation id="8233237502828137700">ब्यानर प्रोमो बन्द गर्नुहोस्</translation>
+<translation id="823339794112333264">माइक्रोफोन अन गर्नुहोस्</translation>
 <translation id="8250920743982581267">कागजातहरू</translation>
 <translation id="8258734532103758067">मैले आफ्नो डेटा एक्स्पोर्ट गरेको छु</translation>
 <translation id="8258999165172757081">थपियो</translation>
@@ -2039,6 +2042,7 @@
 <translation id="8611922158252451755">यो लिंक हुने जोकोहीले सबै ट्याब सम्पादन गर्न सक्ने भएकाले लिंक सेयर गर्दा ख्याल गर्नुहोस्। यो लिंकको म्याद ४८ घण्टामा सकिन्छ।</translation>
 <translation id="8614671330774943747">ट्याब स्विचरमा जानुहोस्</translation>
 <translation id="8620640915598389714">सम्पादन गर्नुहोस्</translation>
+<translation id="862367213447108001">यो साइटमा सधैँ पप-अपहरू देखाउनुहोस्</translation>
 <translation id="8625706492572042370">होम स्क्रिन बदल्नुहोस्</translation>
 <translation id="8631370184731241854">लक गरिएका इन्कोग्निटो ट्याबहरू</translation>
 <translation id="8633025649649592204">हालसालैको क्रियाकलाप</translation>
@@ -2135,6 +2139,7 @@
 <translation id="8928426232677696166"><ph name="EMAIL" />। यो खाता हाल चयन गरिएको तपाईंको सङ्गठनले व्यवस्थापन गर्छ। कुनै खाता चयन गर्नुहोस्।</translation>
 <translation id="894191600409472540">भरपर्दा पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="8943780400130412484">नयाँ डाउनलोड सुरु गर्ने हो?</translation>
+<translation id="8947838125864566256">माइक्रोफोन अफ गर्नुहोस्</translation>
 <translation id="8953046091948372197">तपाईंका पासवर्डहरू यहाँ देखिने छन्</translation>
 <translation id="8953602327115378731">{count,plural, =1{तपाईंको किबोर्डको माथिल्लो भागमा स्वतः पूरा गर्ने {count} विकल्प उपलब्ध छ।}other{तपाईंको किबोर्डको माथिल्लो भागमा स्वतः पूरा गर्ने {count} वटा विकल्प उपलब्ध छन्।}}</translation>
 <translation id="895541991026785598">समस्या रिपोर्ट गर्नुहोस्</translation>

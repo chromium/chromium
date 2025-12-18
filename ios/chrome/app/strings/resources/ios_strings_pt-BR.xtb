@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Concluir</translation>
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="2579713773888829241">Drives compartilhados</translation>
+<translation id="2580306219079937316">Abrir configurações do Tradutor</translation>
 <translation id="2583688836549072561">Grupo de guias, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> guias, nova atividade.</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2601778637777010194">Monitorar reduções no preço de produtos</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Não foi possível salvar a mudança.</translation>
 <translation id="3254806613790954367">Mostra a última guia aberta em todos os dispositivos</translation>
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
+<translation id="3266338926702638258">Mostrar histórico de preços deste produto</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalize sua tela inicial</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
@@ -1934,6 +1936,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8221665793629393739">Seu lembrete para rever</translation>
 <translation id="8232956427053453090">Manter dados</translation>
 <translation id="8233237502828137700">Fechar banner promocional</translation>
+<translation id="823339794112333264">Ativar microfone</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8258734532103758067">Exportei meus dados</translation>
 <translation id="8258999165172757081">Adicionado</translation>
@@ -2039,6 +2042,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8611922158252451755">Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. Ele expira em 48 horas.</translation>
 <translation id="8614671330774943747">Acessar o seletor de guias</translation>
 <translation id="8620640915598389714">Editar</translation>
+<translation id="862367213447108001">Sempre mostrar pop-ups neste site</translation>
 <translation id="8625706492572042370">Editar tela inicial</translation>
 <translation id="8631370184731241854">Guias anônimas bloqueadas</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
@@ -2135,6 +2139,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8928426232677696166"><ph name="EMAIL" />, gerenciado pela sua organização, selecionada atualmente. Escolha uma conta.</translation>
 <translation id="894191600409472540">Crie senhas fortes</translation>
 <translation id="8943780400130412484">Iniciar novo download?</translation>
+<translation id="8947838125864566256">Desativar microfone</translation>
 <translation id="8953046091948372197">Suas senhas vão aparecer aqui</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opção de preenchimento automático disponível acima do teclado.}one{{count} opção de preenchimento automático disponível acima do teclado.}other{{count} opções de preenchimento automático disponíveis acima do teclado.}}</translation>
 <translation id="895541991026785598">Informar um problema</translation>

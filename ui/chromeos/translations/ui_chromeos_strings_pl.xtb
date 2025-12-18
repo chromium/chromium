@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Usługi</translation>
 <translation id="181434555916624618">Na razie wyniki z ludźmi nie będą wyświetlane. Użyj innego prompta.</translation>
 <translation id="1829129547161959350">Pingwin</translation>
-<translation id="183183971458492120">Ładuję informacje…</translation>
 <translation id="1832073788765803750">Katakana o połowie szerokości</translation>
 <translation id="1834290891154666894">Nieprawidłowa pozycja dopasowania alternatywnej nazwy podmiotu</translation>
 <translation id="1838709767668011582">Witryna Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Wykorzystano <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">chiński uproszczony</translation>
 <translation id="22085916256174561">Koreański</translation>
-<translation id="2208919847696382164">Zainstaluj za pomocą Linuksa</translation>
 <translation id="2215692307449050019">Bateria jest słaba. Synchronizacja zostanie wznowiona, gdy podłączysz urządzenie do zasilania.</translation>
 <translation id="2225536596944493418">Czy na pewno chcesz usunąć te elementy (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nie można utworzyć folderu „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmański/myanmarski z klawiaturą Myansan</translation>
 <translation id="2664412712123763093">Lokalizacja pliku</translation>
-<translation id="2718540689505416944">Zainstaluj za pomocą Linuksa</translation>
 <translation id="2719020180254996569">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, szczegóły</translation>
 <translation id="2724954091494693138">Turecki z klawiaturą F</translation>
 <translation id="2732288874651063549">Zarządzaj udostępnianiem maszynie wirtualnej <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Wykorzystujesz całe swoje indywidualne miejsce na dane w Google Workspace.</translation>
 <translation id="2771816809568414714">Ser</translation>
 <translation id="2781645665747935084">belgijska klawiatura</translation>
-<translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
 <translation id="2802583107108007218">Więcej informacji o tych ograniczeniach</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
 <translation id="2819519502129272135">Synchronizacja plików jest wyłączona</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Jesteś offline</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3793469551756281394">Zostało około <ph name="REMAINING_TIME_HOUR" /> i <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Wersja</translation>
 <translation id="3801082500826908679">Farerski</translation>
 <translation id="3809272675881623365">Królik</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3855472144336161447">niemiecka klawiatura Neo 2</translation>
 <translation id="3858860766373142691">Nazwa</translation>
-<translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">Francuski (Kanada) z klawiaturą wielojęzyczną</translation>
 <translation id="3901991538546252627">Łączę z: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">bułgarska klawiatura fonetyczna</translation>
 <translation id="4508265954913339219">Aktywacja nie powiodła się</translation>
 <translation id="4509667233588080747">Angielski (USA) z międzynarodową klawiaturą Workman</translation>
-<translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4527800702232535228">Ten folder jest udostępniany Parallels Desktop</translation>
 <translation id="4552678318981539154">Kup więcej miejsca</translation>
 <translation id="4552759165874948005">Sieć <ph name="NETWORK_TYPE" />, siła sygnału <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Posłuchaj</translation>
 <translation id="5650895901941743674">Sprawdź konfigurację APN</translation>
 <translation id="5669691691057771421">Wpisz nowy kod PIN</translation>
-<translation id="5678784840044122290">Aplikacja na Linuksa będzie dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nie można odłączyć archiwum lub dysku wirtualnego<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Zamknij wszystkie pliki z archiwum lub dysku wirtualnego i spróbuj ponownie.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Gracz</translation>
 <translation id="5864471791310927901">Wyszukiwanie DHCP nie powiodło się</translation>
 <translation id="5896749729057314184">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
-<translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Dostępne są nowe funkcje wyszukiwania</translation>
 <translation id="5926082595146149752">Niderlandzki (Holandia) z klawiaturą amerykańską międzynarodową (PC)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Nazwa dysku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, szczegóły</translation>
 <translation id="7246947237293279874">Serwer proxy FTP</translation>
-<translation id="7248671827512403053">Aplikacja</translation>
 <translation id="7256405249507348194">Nierozpoznany błąd: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostępne usługi</translation>
 <translation id="7291818353625820805">Chcesz, żeby klawisze powtarzały ten sam znak? Wyłącz znaki akcentowane w Ustawieniach klawiatury</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 błąd.}few{# błędy.}many{# błędów.}other{# błędu.}}</translation>
 <translation id="8154842056504218462">Zaznaczono wszystkie elementy.</translation>
-<translation id="8157684860301034423">Nie udało się pobrać informacji o aplikacji.</translation>
 <translation id="8175731104491895765">Francuski (Belgia)</translation>
 <translation id="8175799081768705361">Synchronizuję pliki (<ph name="NUMBER_OF_FILES_SYNCING" />) na Dysku</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9189836632794948435">Kazachski</translation>
 <translation id="9200427192836333033">Wyodrębnione elementy: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Instalacja rozpoczęła się.</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219908252191632183">Księżycowy</translation>
 <translation id="931652069802536959">Sieć jest zablokowana przez zasadę</translation>

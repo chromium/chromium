@@ -1033,7 +1033,6 @@
 <translation id="1679810534535368772">Закрыть страницу?</translation>
 <translation id="167983332380191032">От сервиса управления получен недействительный код HTTP.</translation>
 <translation id="167997285881077031">Настройки синтеза речи</translation>
-<translation id="1680849702532889074">В процессе установки приложения для Linux произошла ошибка.</translation>
 <translation id="1682195225331129001">Попробовать</translation>
 <translation id="1682548588986054654">Новое окно в режиме инкогнито</translation>
 <translation id="1682696837763999627">Крупный указатель</translation>
@@ -1659,7 +1658,6 @@
 <translation id="2102495993840063010">Приложения для Android</translation>
 <translation id="2104166991923847969">Автоматически отключать точку доступа</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> скрыты.</translation>
-<translation id="2106439768713835453">Также передавать аудио из приложения</translation>
 <translation id="2107359546799360577">Оптимизация JavaScript отключена</translation>
 <translation id="2108204112555497972">Проверено <ph name="NUM_DAYS_HOURS_MINUTES" /> назад</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефона}one{# номер телефона}few{# номера телефонов}many{# номеров телефонов}other{# номера телефона}}</translation>
@@ -2671,7 +2669,6 @@
 <translation id="2778471504622896352">Добавление приложений с удаленным доступом на панель запуска Chrome OS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />: вход с помощью электронного ключа</translation>
 <translation id="2785267875302712148">Проверка паролей</translation>
 <translation id="2785279781154577715">Всплывающие карточки при наведении указателя мыши</translation>
@@ -4494,7 +4491,7 @@
 <translation id="4015250302257349679">Чтобы перейти к всплывающей подсказке, нажмите <ph name="ACCELERATOR" />. Повторное нажатие позволит перейти к элементу, на который указывает подсказка.</translation>
 <translation id="4016762287427926315">Разрешения, предоставленные приложению "<ph name="APP_NAME" />", будут действовать и для этого приложения. Вы можете их <ph name="BEGIN_LINK" />изменить<ph name="END_LINK" />.</translation>
 <translation id="4017225831995090447">Создать QR-код для этой ссылки</translation>
-<translation id="4018953474106733212">Эту функцию следует включать только веб-разработчикам и использовать только с доверенными приложениями.</translation>
+<translation id="4018953474106733212">Эту функцию следует включать только веб-разработчикам и использовать только с надежными приложениями.</translation>
 <translation id="4019983356493507433">Изменить список закладок</translation>
 <translation id="4020701737692625681">Администратор может записывать ваш экран</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4882,7 +4879,6 @@
 <translation id="4293219510510666933">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами. Вы также можете задавать вопросы и получать ответы, основанные на этой истории. Параметр включен.</translation>
 <translation id="429344752071832554">Отменить выбор группы</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" удален из истории скачиваний, но он по-прежнему доступен на вашем устройстве.</translation>
-<translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="4295979599050707005">Если вы разрешаете сайтам, приложениям и расширениям в Chrome и Google Play использовать данные аккаунта <ph name="USER_EMAIL" />, войдите ещё раз. Вы также можете удалить этот аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Установленные и транслируемые приложения из приложения "<ph name="APP_NAME" />"</translation>
 <translation id="4296632172536745000">Ваш старый пароль оказался в открытом доступе из-за утечки данных. <ph name="DATE" /> вы попросили <ph name="BRAND" /> автоматически сменить пароль.</translation>
@@ -4989,7 +4985,6 @@
 <translation id="4370975561335139969">Указан неправильный адрес или пароль</translation>
 <translation id="4373418556073552953">Вход с помощью телефона Android</translation>
 <translation id="4373973310429385827">Маяк</translation>
-<translation id="4374831787438678295">Установщик Linux</translation>
 <translation id="4375035964737468845">Открывание скачанных файлов</translation>
 <translation id="4376226992615520204">Геолокация отключена</translation>
 <translation id="4377363674125277448">Возникла проблема с сертификатом сервера.</translation>
@@ -6268,7 +6263,6 @@
 <translation id="5263656105659419083">Для быстрого возврата к боковой панели нажмите "Закрепить" в правом верхнем углу</translation>
 <translation id="5264148714798105376">Это может занять около минуты.</translation>
 <translation id="5264252276333215551">Подключитесь к Интернету, чтобы запустить приложение в киоск-режиме.</translation>
-<translation id="5265797726250773323">Ошибка при установке</translation>
 <translation id="526622169288322445">Другие действия с адресом <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Чтобы обеспечить защиту от опасных сайтов, включите Безопасный просмотр.</translation>
 <translation id="5269659747698455324">Разблокировать ключи доступа</translation>
@@ -7645,7 +7639,6 @@
 <translation id="623261264391834964">Используйте генератор текстов, нажав правой кнопкой мыши на текстовое поле.</translation>
 <translation id="6233154960150021497">Использовать голос вместо клавиатуры по умолчанию</translation>
 <translation id="6234108445915742946">Условия использования Chrome будут обновлены 31 марта</translation>
-<translation id="6234474535228214774">Ожидание установки…</translation>
 <translation id="6235208551686043831">Камера устройства включена. Разместите QR-код eSIM перед объективом.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> группа "<ph name="GROUP_NAME" />": <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Приложение для создания заметок с помощью стилуса</translation>
@@ -8333,7 +8326,6 @@
 <translation id="6713668088933662563">Никогда не предлагать перевести страницы на этих языках</translation>
 <translation id="6714871567554212732">Подробнее о группе "<ph name="GROUP_NAME" />"</translation>
 <translation id="6715735940363172819">У сайтов нет доступа к микрофону</translation>
-<translation id="6715803357256707211">При установке приложения для Linux произошла ошибка. Чтобы узнать больше, нажмите на уведомление.</translation>
 <translation id="6716049856796700977">Доступ к местоположению полностью закрыт. Однако сайты и приложения по-прежнему могут определять, где вы находитесь, по IP-адресу. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Сетевое подключение прервано. Проверьте его или используйте другую сеть Wi-Fi.</translation>
 <translation id="671928215901716392">Блокировать экран</translation>
@@ -12152,7 +12144,6 @@
 <translation id="992592832486024913">Отключить ChromeVox (голосовое сопровождение)</translation>
 <translation id="992653586748191655">Рекомендуется создать группы (<ph name="NUM" />)</translation>
 <translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
-<translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994087375490600917">Боковые панели</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>
 <translation id="995755448277384931">Добавить код IBAN</translation>

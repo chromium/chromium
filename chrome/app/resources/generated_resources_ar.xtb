@@ -1034,7 +1034,6 @@
 <translation id="1679810534535368772">هل تريد فعلاً الخروج؟</translation>
 <translation id="167983332380191032">‏أرسلت خدمة الإدارة خطأ HTTP.</translation>
 <translation id="167997285881077031">إعدادات الصوت في ميزة "تحويل النص إلى كلام"</translation>
-<translation id="1680849702532889074">‏لقد حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="1682195225331129001">التجربة الآن</translation>
 <translation id="1682548588986054654">نافذة جديدة للتصفح المتخفي</translation>
 <translation id="1682696837763999627">مؤشر الماوس الكبير</translation>
@@ -1662,7 +1661,6 @@
 <translation id="2102495993840063010">‏تطبيقات Android</translation>
 <translation id="2104166991923847969">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
-<translation id="2106439768713835453">مشاركة صوت التطبيق أيضًا</translation>
 <translation id="2107359546799360577">‏تحسينات JavaScript غير مفعَّلة.</translation>
 <translation id="2108204112555497972">تمّ التحقُّق قبل <ph name="NUM_DAYS_HOURS_MINUTES" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
@@ -1916,6 +1914,7 @@
 <translation id="2283599456633275070">السفر</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{فتح الكل في مجموعة علامات تبويب جديدة}=1{الفتح في مجموعة علامات تبويب جديدة}two{‏فتح الكل (عنوانَي URL ({COUNT})) في مجموعة علامات تبويب جديدة}few{‏فتح الكل ({COUNT} عناوين URL) في مجموعة علامات تبويب جديدة}many{‏فتح الكل ({COUNT} عنوان URL) في مجموعة علامات تبويب جديدة}other{‏فتح الكل ({COUNT} عنوان URL) في مجموعة علامات تبويب جديدة}}</translation>
 <translation id="2285942871162473373">لم يتم التعرّف على بصمة الإصبع. يُرجى إعادة المحاولة.</translation>
+<translation id="2286840900796601828">الترجيع بمقدار 10 ثوانٍ</translation>
 <translation id="2287617382468007324">‏عنوان بروتوكول الطباعة على الإنترنت (IPP)</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{لحماية بياناتك، تمّت إزالة الأذونات من موقع إلكتروني لم تزُره مؤخرًا.}zero{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها مؤخرًا.}two{لحماية بياناتك، تمّت إزالة الأذونات من موقعَين إلكترونيَّين لم تزُرهما مؤخرًا.}few{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها مؤخرًا.}many{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها مؤخرًا.}other{لحماية بياناتك، تمّت إزالة الأذونات من مواقع إلكترونية لم تزُرها مؤخرًا.}}</translation>
 <translation id="2287944065963043964">شاشة تسجيل الدخول</translation>
@@ -2674,7 +2673,6 @@
 <translation id="2778471504622896352">‏إضافة التطبيقات عن بُعد إلى مشغِّل التطبيقات في ChromeOS</translation>
 <translation id="2781459437789641557">"<ph name="ATTRIBUTION_LINE_1" />" و"<ph name="ATTRIBUTION_LINE_2" />"</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">التحقق من كلمات المرور</translation>
 <translation id="2785279781154577715">مظهر بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
@@ -4135,6 +4133,7 @@
 <translation id="3785748905555897481">تم تغيير رقم التعريف الشخصي بنجاح</translation>
 <translation id="3786224729726357296">حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE" /></translation>
 <translation id="3786834302860277193">إظهار التسطير للنص التجميعي</translation>
+<translation id="3786890785076278600">خط ثابت</translation>
 <translation id="3787434344076711519">في انتظار الترجمة</translation>
 <translation id="3788301286821743879">‏تعذّر إطلاق تطبيق Kiosk.</translation>
 <translation id="3788401245189148511">يمكنه:</translation>
@@ -4511,6 +4510,7 @@
 <translation id="4028467762035011525">إضافة أساليب إدخال</translation>
 <translation id="4029024445166427442">‏مفتاح مشغِّل التطبيقات + shift + مفتاح Backspace</translation>
 <translation id="4029556917477724407">الرجوع من الصفحة "<ph name="PAGE_TITLE" />" إلى الصفحة السابقة</translation>
+<translation id="4031178684547097947">‫5 أسطر</translation>
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4031527940632463547">تم حظر أجهزة الاستشعار</translation>
 <translation id="4033471457476425443">إضافة مجلد جديد</translation>
@@ -4881,7 +4881,6 @@
 <translation id="4293219510510666933">يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي تمت زيارتها. وبإمكانك أيضًا طرح الأسئلة والحصول على إجابات استنادًا إلى سجلّ التصفّح. هذا الإعداد مفعَّل.</translation>
 <translation id="429344752071832554">إلغاء التركيز على المجموعة</translation>
 <translation id="4294392694389031609">تم حذف <ph name="FILE_NAME" /> من سجلّ التنزيل، ولكنه لا يزال على جهازك.</translation>
-<translation id="4295072614469448764">أصبح التطبيق متاحًا في الوحدة الطرفية وقد تجد رمزًا له في مشغِّل التطبيقات.</translation>
 <translation id="4295979599050707005">‏يُرجى تسجيل الدخول مرة أخرى لتأكيد إمكانية استخدام حسابك <ph name="USER_EMAIL" /> مع المواقع الإلكترونية والتطبيقات والإضافات في Chrome وGoogle Play. يمكنك أيضًا إزالة هذا الحساب. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">التطبيقات التي تم تثبيتها وبثّ محتواها من "<ph name="APP_NAME" />"</translation>
 <translation id="4296632172536745000">‏تم العثور على كلمة المرور الأصلية لهذا الموقع الإلكتروني في عملية اختراق علنية للبيانات. في ‎<ph name="DATE" />، طلبت من "<ph name="BRAND" />" تغيير كلمة مرورك تلقائيًا.</translation>
@@ -4988,7 +4987,6 @@
 <translation id="4370975561335139969">البريد الإلكتروني وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="4373418556073552953">‏تسجيل الدخول باستخدام هاتف Android</translation>
 <translation id="4373973310429385827">منارة</translation>
-<translation id="4374831787438678295">‏أداة تثبيت Linux</translation>
 <translation id="4375035964737468845">فتح الملفات التي تم تنزيلها</translation>
 <translation id="4376226992615520204">تم إيقاف إذن تحديد الموقع الجغرافي.</translation>
 <translation id="4377363674125277448">هناك مشكلة مع شهادة الخادم.</translation>
@@ -5773,6 +5771,7 @@
 <translation id="4908811072292128752">فتح علامة تبويب جديدة لتصفح موقعي ويب في وقت واحد</translation>
 <translation id="4910241725741323970">سَبَق تثبيت هذا التطبيق</translation>
 <translation id="4912643508233590958">عمليات التنشيط من الوضع بعيد</translation>
+<translation id="4912892750325639080">‫3 أسطر</translation>
 <translation id="4913209098186576320">قد يكون هذا الملف خطيرًا<ph name="LINE_BREAK" />تستغرق عملية التحقق هذه وقتًا أطول من المعتاد...</translation>
 <translation id="4913695564084524048">يتعذّر العثور على بيانات التطبيق</translation>
 <translation id="4915961947098019832">المواقع الإلكترونية التي يُسمح لها بعرض الصور</translation>
@@ -6267,7 +6266,6 @@
 <translation id="5263656105659419083">للرجوع بسهولة إلى اللوحة الجانبية، انقر على "تثبيت" في أعلى يسار الصفحة.</translation>
 <translation id="5264148714798105376">قد يستغرق ذلك دقيقة أو نحو ذلك.</translation>
 <translation id="5264252276333215551">يُرجى الاتصال بالإنترنت لتشغيل التطبيق في وضع الكشك.</translation>
-<translation id="5265797726250773323">حدث خطأ أثناء التثبيت</translation>
 <translation id="526622169288322445">مزيد من الإجراءات للعنوان <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">يُرجى تفعيل إعداد "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة</translation>
 <translation id="5269659747698455324">تفعيل مفاتيح المرور</translation>
@@ -7644,7 +7642,6 @@
 <translation id="623261264391834964">انقر بزر الماوس الأيمن في مربّع نص لاستخدام ميزة "مساعدة في الكتابة"</translation>
 <translation id="6233154960150021497">الخيار التلقائي لاستخدام الصوت بدلاً من لوحة المفاتيح</translation>
 <translation id="6234108445915742946">‏بنود خدمة Chrome ستتغيّر في 31 آذار (مارس)</translation>
-<translation id="6234474535228214774">التثبيت معلّق</translation>
 <translation id="6235208551686043831">‏تم تشغيل كاميرا الجهاز. يُرجى وضع رمز الاستجابة السريعة لشريحة eSIM أمام الكاميرا.</translation>
 <translation id="6237342324375264347">مجموعة <ph name="GROUP_NAME" /> <ph name="SHARE_STATE" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">تطبيق تدوين الملاحظات باستخدام قلم الشاشة</translation>
@@ -8334,7 +8331,6 @@
 <translation id="6713668088933662563">عدم اقتراح ترجمة المحتوى المعروض بهذه اللغات مطلقًا</translation>
 <translation id="6714871567554212732">عرض مزيد من التفاصيل عن "<ph name="GROUP_NAME" />"</translation>
 <translation id="6715735940363172819">لا يُسمح للمواقع الإلكترونية باستخدام الميكروفون</translation>
-<translation id="6715803357256707211">‏لقد حدث خطأ أثناء تثبيت تطبيق Linux. يُرجى النقر على الإشعار لمعرفة التفاصيل.</translation>
 <translation id="6716049856796700977">‏لا يمكن لأي موقع إلكتروني أو تطبيق استخدام موقعك الجغرافي. ومع ذلك، قد يظل موقعك الجغرافي مرئيًا للتطبيقات والمواقع الإلكترونية من خلال عنوان IP الخاص بجهازك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">‏تم فقد اتصال الشبكة، يُرجى التحقّق من اتصالك بالشبكة أو تجربة شبكة Wi-Fi أخرى.</translation>
 <translation id="671928215901716392">قفل الشاشة</translation>
@@ -9023,6 +9019,7 @@
 <translation id="7191159667348037">‏طابعة غير معروفة (USB)</translation>
 <translation id="7191631508323321927">ردهة</translation>
 <translation id="7191632649590906354">‏أصبح بإمكان أفراد عائلتك استخدام اسم المستخدم وكلمة المرور لحسابك عند استخدام "مدير كلمات المرور في Google". اطلب منهم الانتقال إلى <ph name="WEBSITE" /> لتسجيل الدخول.</translation>
+<translation id="7192393330344360021">سطر واحد</translation>
 <translation id="7193051357671784796">أضافت مؤسستك هذا التطبيق. يمكنك إعادة تشغيل التطبيق لإنهاء تثبيته.</translation>
 <translation id="7193374945610105795">لم يتم حفظ أي كلمات مرور لـ <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">إرسال ملاحظات عن المجموعات المقترَحة</translation>
@@ -11134,6 +11131,7 @@
 <translation id="862750493060684461">‏ذاكرة التخزين المؤقت للغة CSS</translation>
 <translation id="8627795981664801467">الاتصالات الآمنة فقط</translation>
 <translation id="8627804903623428808">مراجعة هذه البنود والتحكّم في بيانات طفلك</translation>
+<translation id="8628674746770065790">اتّباع المؤشر</translation>
 <translation id="862907440446514309">يسجّل المشرف محتوى شاشتك باستخدام "<ph name="APP0_NAME" />".</translation>
 <translation id="8630338733867813168">وضع السكون أثناء الشحن</translation>
 <translation id="8631032106121706562">البتلات</translation>
@@ -12154,7 +12152,6 @@
 <translation id="992592832486024913">‏إيقاف ChromeVox (التعليقات المنطوقة)</translation>
 <translation id="992653586748191655">تم اقتراح مجموعتَي علامات تبويب (<ph name="NUM" />)</translation>
 <translation id="992778845837390402">‏الاحتفاظ بنسخة احتياطية من Linux قيد التقدم حاليًا</translation>
-<translation id="993540765962421562">التثبيت قيد التقدم</translation>
 <translation id="994087375490600917">اللوحات الجانبية</translation>
 <translation id="994289308992179865">ت&amp;كرار</translation>
 <translation id="995755448277384931">‏إضافة رقم الحساب بصيغة IBAN</translation>

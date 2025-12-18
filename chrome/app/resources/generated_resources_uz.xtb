@@ -1029,7 +1029,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1679810534535368772">Haqiqatan ham chiqmoqchimisiz?</translation>
 <translation id="167983332380191032">Boshqaruv xizmatidan yaroqsiz HTTP kod qabul qilindi.</translation>
 <translation id="167997285881077031">Matnni nutqqa aylantirish uchun ovoz sozlamalari</translation>
-<translation id="1680849702532889074">Linux ilovasini o‘rnatishda xatolik yuz berdi.</translation>
 <translation id="1682195225331129001">Sinash</translation>
 <translation id="1682548588986054654">Yangi inkognito oyna</translation>
 <translation id="1682696837763999627">Katta sichqoncha kursori</translation>
@@ -1656,7 +1655,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2102495993840063010">Android ilovalar</translation>
 <translation id="2104166991923847969">Hotspotni avtomatik faolsizlantirish</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> berkitilgan</translation>
-<translation id="2106439768713835453">Ilova audiosi ham ulashilsin</translation>
 <translation id="2107359546799360577">JavaScript optimizatsiyasi yoqilmagan.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> oldin tekshirilgan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon raqami}other{# ta telefon raqami}}</translation>
@@ -2671,7 +2669,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2778471504622896352">Ilovalarni masofadan ChromeOS ishga tushirgichiga qoʻshish</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux ilovasini o‘rnatishda xatolik yuz berdi</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> hisobiga elektron kalit orqali kiring</translation>
 <translation id="2785267875302712148">Parollarni tekshirish</translation>
 <translation id="2785279781154577715">Varaq ustidagi bildirgi koʻrinishi</translation>
@@ -4880,7 +4877,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4293219510510666933">Sodda iboralardan tuzilgan soʻrovlar yordamida brauzer tarixida ochilgan saytlarni qidiring. Shuningdek, brauzer tarixi asosida savollar berishingiz va javob olishingiz mumkin. Bu sozlama yoniq.</translation>
 <translation id="429344752071832554">Guruhni fokusdan yechish</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> yuklanmalar tarixidan oʻchirildi, lekin fayl qurilmangizda saqlangan</translation>
-<translation id="4295072614469448764">Ilova terminalingizda mavjud. Launcherda ikonka bo‘lishi kerak.</translation>
 <translation id="4295979599050707005"><ph name="USER_EMAIL" /> hisobingizga qaytadan kirib, Chrome va Google Play hisobingizni saytlar, ilova va kengaytmalarga kirishda ishlatishiga ruxsat berishingizni tasdiqlang. Bu hisobni olib tashlashingiz ham mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Oʻrnatilgan va <ph name="APP_NAME" /> namoyish qilgan ilovalar</translation>
 <translation id="4296632172536745000">Bu saytdagi asl parolingizning ommaviy oshkor qilingani aniqlandi. <ph name="DATE" /> sanasida <ph name="BRAND" /> orqali parolingizni avtomatik almashtirishni soʻragansiz.</translation>
@@ -4987,7 +4983,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4370975561335139969">Siz kiritgan e-pochta va parol mos kelmadi</translation>
 <translation id="4373418556073552953">Android telefonidan kiring</translation>
 <translation id="4373973310429385827">Mayoq</translation>
-<translation id="4374831787438678295">Linux uchun o‘rnatkich</translation>
 <translation id="4375035964737468845">Yuklab olingan fayllarni ochish</translation>
 <translation id="4376226992615520204">Joylashuvni aniqlash xususiyati yoniq emas</translation>
 <translation id="4377363674125277448">Server sertifikatida xatolik yuz berdi.</translation>
@@ -6266,7 +6261,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5263656105659419083">Yon panelga tezda qaytish uchun yuqori oʻng burchakdagi “Qadash” tugmasini bosing</translation>
 <translation id="5264148714798105376">Bunga bir-ikki daqiqa ketadi</translation>
 <translation id="5264252276333215551">Ilovani kiosk-rejimida ishga tushirish uchun Internetga ulaning.</translation>
-<translation id="5265797726250773323">O‘rnatilmadi</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> uchun boshqa amallar</translation>
 <translation id="5267572070504076962">Xavfli saytlardan himoyalanish uchun xavfsiz kezish funksiyasini yoqing</translation>
 <translation id="5269659747698455324">Kirish kalitlaridan foydalaning</translation>
@@ -7643,7 +7637,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="623261264391834964">Matn yordamchisidan foydalanish uchun matn maydonida oʻng klik bosing</translation>
 <translation id="6233154960150021497">Birlamchi holatda klaviatura oʻrniga ovoz ishlatilsin</translation>
 <translation id="6234108445915742946">Chrome xizmat shartlari 31-mart kuni yangilanadi</translation>
-<translation id="6234474535228214774">Oʻrnatilishi kutilmoqda</translation>
 <translation id="6235208551686043831">Qurilma kamerasi yoqildi. Kameraga eSIM QR kodini qarating.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> “<ph name="GROUP_NAME" />“ guruhi - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Stilus yordamida qayd yaratish ilovasi</translation>
@@ -8325,7 +8318,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6713668088933662563">Hech qachon ushbu tillardagi sahifalarni tarjima qilish taklif qilinmasin</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> haqida batafsil</translation>
 <translation id="6715735940363172819">Saytlarga mikrofondan foydalanish taqiqlangan</translation>
-<translation id="6715803357256707211">Linux ilovasini oʻrnatishda xatolik yuz berdi. Batafsil axborot olish uchun bildirishnoma ustiga bosing.</translation>
 <translation id="6716049856796700977">Joylashuv axborotiga ruxsat berilmaydi. Ammo ayrim ilova va saytlar joylashuvingizni IP manzilingiz orqali aniqlashi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Internet uzilib qoldi. Tarmoq sozlamalarini tekshiring yoki boshqa Wi-Fi tarmoqqa ulaning.</translation>
 <translation id="671928215901716392">Bloklash ekrani</translation>
@@ -12140,7 +12132,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="992592832486024913">ChromeVox‘ni (ovozli ta’rif) o‘chirib qo‘yish</translation>
 <translation id="992653586748191655"><ph name="NUM" /> ta varaqlar guruhi tavsiya etildi</translation>
 <translation id="992778845837390402">Ayni vaqtda Linux fayllari zaxiralanmoqda</translation>
-<translation id="993540765962421562">O‘rnatilmoqda</translation>
 <translation id="994087375490600917">Yon panellar</translation>
 <translation id="994289308992179865">&amp;Takrorlash</translation>
 <translation id="995755448277384931">IBAN kiritish</translation>

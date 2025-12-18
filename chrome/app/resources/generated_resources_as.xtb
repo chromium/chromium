@@ -1030,7 +1030,6 @@
 <translation id="1679810534535368772">আপুনি বাহিৰ হ’বলৈ বিচৰাটো নিশ্চিতনে?</translation>
 <translation id="167983332380191032">পৰিচালনা সেৱাই HTTP আসোঁৱাহ পঠিয়াইছে।</translation>
 <translation id="167997285881077031">পাঠৰ পৰা কথনৰ কণ্ঠধ্বনিৰ ছেটিংসমূহ</translation>
-<translation id="1680849702532889074">আপোনাৰ Linux এপ্লিকেশ্বন ইনষ্টল কৰাৰ সময়ত এটা আসোঁৱাহ পোৱা গ’ল।</translation>
 <translation id="1682195225331129001">এতিয়াই ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="1682548588986054654">নতুন ইনক’গনিট’ ৱিণ্ড’</translation>
 <translation id="1682696837763999627">মাউছৰ ডাঙৰ কাৰ্ছৰ</translation>
@@ -1665,7 +1664,6 @@
 <translation id="2102495993840063010">Android এপ্‌</translation>
 <translation id="2104166991923847969">হটস্পট স্বয়ংক্ৰিয়ভাৱে অফ কৰক</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকুওৱা হ’ল</translation>
-<translation id="2106439768713835453">লগতে এপ্লিকেশ্বনৰ অডিঅ’ শ্বেয়াৰ কৰক</translation>
 <translation id="2107359546799360577">JavaScript অপ্টিমাইজেশ্বন অক্ষম কৰা হৈছে।</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> সময় পূর্বে পৰীক্ষা কৰা হৈছে</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফ’ন নম্বৰ}one{# টা ফ’ন নম্বৰ}other{# টা ফ’ন নম্বৰ}}</translation>
@@ -1922,6 +1920,7 @@
 <translation id="2283599456633275070">ভ্ৰমণ</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{&amp;নতুন টেবৰ গোটত আটাইবোৰ খোলক}=1{&amp;নতুন টেবৰ গোটত খোলক}one{&amp;নতুন টেবৰ গোটত আটাইবোৰ ({COUNT} টা) খোলক}other{&amp;নতুন টেবৰ গোটত আটাইবোৰ ({COUNT} টা) খোলক}}</translation>
 <translation id="2285942871162473373">আপোনাৰ ফিংগাৰপ্ৰিণ্ট চিনাক্ত কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
+<translation id="2286840900796601828">১০ ছেকেণ্ড ৰিৱাইণ্ড কৰক</translation>
 <translation id="2287617382468007324">প্ৰিণ্ট কৰাৰ IPP ঠিকনা</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি শেহতীয়াকৈ এক্সেছ নকৰা এটা ছাইটৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}one{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি শেহতীয়াকৈ এক্সেছ নকৰা ছাইটসমূহৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}other{আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি শেহতীয়াকৈ এক্সেছ নকৰা ছাইটসমূহৰ পৰা অনুমতিসমূহ আঁতৰোৱা হৈছে}}</translation>
 <translation id="2287944065963043964">লগ ইন স্ক্রীন</translation>
@@ -2680,7 +2679,6 @@
 <translation id="2778471504622896352">ChromeOS লঞ্চাৰটোত ৰিম’ট এপ্ যোগ দিয়ক</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />ৰ জৰিয়তে আপোনাৰ নিৰাপত্তা চাবি ব্যৱহাৰ কৰক</translation>
 <translation id="2785267875302712148">পাছৱৰ্ড চেকআপ</translation>
 <translation id="2785279781154577715">এটা টেবৰ ওপৰত কাৰ্ছৰডাল লৰচৰ কৰোঁতে পূৰ্বদৰ্শন দেখুওৱা কাৰ্ডৰ ৰূপ</translation>
@@ -4890,7 +4888,6 @@
 <translation id="4293219510510666933">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক। আপুনি লগতে আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ ভিত্তিত প্ৰশ্ন কৰিব পাৰে আৰু উত্তৰ পাব পাৰে। এই ছেটিংটো অন আছে।</translation>
 <translation id="429344752071832554">গোটৰ পৰা ফ’কাছ আঁতৰাওক</translation>
 <translation id="4294392694389031609">ডাউনল’ডৰ ইতিহাসৰ পৰা <ph name="FILE_NAME" /> মচা হৈছে, কিন্তু এতিয়াও আপোনাৰ ডিভাইচত আছে</translation>
-<translation id="4295072614469448764">আপোনাৰ টাৰ্মিনেলত এপ্ আছে। আপোনাৰ লঞ্চাৰটোএ এটা আইকন থাকিব পাৰে।</translation>
 <translation id="4295979599050707005">Chrome আৰু Google Playৰ ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহৰ সৈতে আপোনাৰ একাউণ্টটো <ph name="USER_EMAIL" /> ব্যৱহাৰ কৰিব পাৰি বুলি নিশ্চিত কৰিবলৈ, অনুগ্ৰহ কৰি পুনৰ ছাইন ইন কৰক। আপুনি এই একাউণ্টটোও আঁতৰাব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" />ৰ পৰা ইনষ্টল আৰু ষ্ট্ৰীম কৰা এপ্লিকেশ্বন</translation>
 <translation id="4296632172536745000">এই ছাইটৰ বাবে থকা আপোনাৰ মূল পাছৱৰ্ডটো এটা ৰাজহুৱা ডেটা উলংঘনত পোৱা গৈছে। <ph name="DATE" />ত আপুনি <ph name="BRAND" />ক আপোনাৰ বাবে আপোনাৰ পাছৱৰ্ডটো স্বয়ংক্ৰিয়ভাৱে সলনি কৰিবলৈ কৈছে।</translation>
@@ -4997,7 +4994,6 @@
 <translation id="4370975561335139969">আপুনি দিয়া ইমেইল আৰু পাছৱৰ্ড মিলা নাই</translation>
 <translation id="4373418556073552953">আপোনাৰ Android ফ’নৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="4373973310429385827">লাইটহাউছ</translation>
-<translation id="4374831787438678295">Linux ইনষ্টলাৰ</translation>
 <translation id="4375035964737468845">ডাউনল'ড হোৱা ফাইলসমূহ খোলক</translation>
 <translation id="4376226992615520204">অৱস্থান অফ কৰা আছে</translation>
 <translation id="4377363674125277448">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰৰ ক্ষেত্ৰত কিবা সমস্যা হৈছে।</translation>
@@ -6277,7 +6273,6 @@
 <translation id="5263656105659419083">সহজে ছাইডৰ পেনেললৈ উভতি যাবলৈ, সোঁফালে একেবাৰে ওপৰৰ থকা পিন কৰকত ক্লিক কৰক</translation>
 <translation id="5264148714798105376">এই কাম সম্পূৰ্ণ হ’বলৈ একমিনিটমান লাগিব পাৰে।</translation>
 <translation id="5264252276333215551">আপোনাৰ এপ্ কিঅ'স্ক ম'ডত লঞ্চ কৰিবলৈ অনুগ্ৰহ কৰি ইণ্টাৰনেটত সংযোগ কৰক।</translation>
-<translation id="5265797726250773323">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />ৰ বাবে আৰু অধিক কাৰ্য</translation>
 <translation id="5267572070504076962">বিপজ্জনক ছাইটসমূহৰ পৰা সুৰক্ষা লাভ কৰিবলৈ সুৰক্ষিত ব্ৰাউজিং অন কৰক</translation>
 <translation id="5269659747698455324">আপোনাৰ পাছকী আনলক কৰক</translation>
@@ -7654,7 +7649,6 @@
 <translation id="623261264391834964">মোক লিখাত সহায় কৰক সুবিধাটো ব্যৱহাৰ কৰিবলৈ এটা পাঠ বাকচত ৰাইট-ক্লিক কৰক</translation>
 <translation id="6233154960150021497">ডিফ'ল্ট হৈছে কীব'ৰ্ডৰ পৰিৱৰ্তে কণ্ঠধ্বনিৰ ব্যৱহাৰ কৰা</translation>
 <translation id="6234108445915742946">৩১ মাৰ্চৰ পৰা Chromeৰ সেৱাৰ চর্তাৱলী সলনি হ’ব</translation>
-<translation id="6234474535228214774">ইনষ্টল বাকী আছে</translation>
 <translation id="6235208551686043831">ডিভাইচৰ কেমেৰাটো অন কৰা হ’ল। অনুগ্ৰহ কৰি আপোনাৰ ই-ছিমৰ কিউআৰ ক’ডটো কেমেৰাটোৰ সন্মুখত ৰাখক।</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> গোট <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">ষ্টাইলাছ টোকা লোৱা এপ্‌</translation>
@@ -8338,7 +8332,6 @@
 <translation id="6713668088933662563">এই ভাষাসমূহত কেতিয়াও অনুবাদ কৰাৰ সুবিধা প্ৰদান নকৰিব</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" />ৰ বিষয়ে অধিক সবিশেষ চাওক</translation>
 <translation id="6715735940363172819">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিবলৈ ৱেবছাইটসমূহক অনুমতি দিয়া নহয়</translation>
-<translation id="6715803357256707211">আপোনাৰ Linux এপ্লিকেশ্বনটো ইনষ্টল কৰাৰ সময়ত এটা আসোঁৱাহৰ সৃষ্টি হৈছে। সবিশেষৰ বাবে জাননীটোত ক্লিক কৰক।</translation>
 <translation id="6716049856796700977">কোনোৱে আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিব নোৱাৰে। অৱশ্যে, আপোনাৰ অৱস্থান এতিয়াও এপ্ আৰু ৱেবছাইটসমূহে আপোনাৰ আইপি ঠিকনাৰ জৰিয়তে দেখা পাব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">নেটৱৰ্ক সংযোগ হেৰাইছিল। আপোনাৰ ইণ্টাৰনেট সংযোগটো পৰীক্ষা কৰক অথবা অন্য এটা ৱাই-ফাই নেটৱৰ্ক ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="671928215901716392">লক স্ক্ৰীন</translation>
@@ -12154,7 +12147,6 @@
 <translation id="992592832486024913">ChromeVox অক্ষম কৰক (কথিত মতামত)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> টা টেবৰ গোটৰ পৰামৰ্শ দিয়া হৈছে</translation>
 <translation id="992778845837390402">বর্তমান Linuxৰ বেকআপ প্ৰক্ৰিয়া চলি আছে</translation>
-<translation id="993540765962421562">ইনষ্টল কৰা প্ৰক্রিয়া চলি আছে</translation>
 <translation id="994087375490600917">ছাইডৰ পেনেল</translation>
 <translation id="994289308992179865">&amp;লুপ কৰক</translation>
 <translation id="995755448277384931">IBANটো যোগ দিয়ক</translation>

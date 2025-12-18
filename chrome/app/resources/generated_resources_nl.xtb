@@ -1031,7 +1031,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1679810534535368772">Weet je zeker dat je het scherm wilt afsluiten?</translation>
 <translation id="167983332380191032">Beheerservice heeft HTTP-fout verzonden.</translation>
 <translation id="167997285881077031">Spraakinstellingen voor tekst-naar-spraak</translation>
-<translation id="1680849702532889074">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="1682195225331129001">Nu proberen</translation>
 <translation id="1682548588986054654">Nieuw incognitovenster</translation>
 <translation id="1682696837763999627">Grote cursor</translation>
@@ -1657,7 +1656,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2104166991923847969">Hotspot automatisch uitzetten</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is verborgen</translation>
-<translation id="2106439768713835453">App-audio ook delen</translation>
 <translation id="2107359546799360577">JavaScript-optimalisaties staan uit.</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> geleden gecheckt</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefoonnummer}other{# telefoonnummers}}</translation>
@@ -1911,6 +1909,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2283599456633275070">Reizen</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Alles openen in &amp;nieuwe tabbladgroep}=1{Openen in &amp;nieuwe tabbladgroep}other{Alles ({COUNT}) openen in &amp;nieuwe tabbladgroep}}</translation>
 <translation id="2285942871162473373">Je vingerafdruk kan niet worden herkend. Probeer het opnieuw.</translation>
+<translation id="2286840900796601828">10 seconden terug</translation>
 <translation id="2287617382468007324">IPP-adres afdrukken</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Ter bescherming van je gegevens zijn de rechten verwijderd voor een site die je niet recent hebt bezocht}other{Ter bescherming van je gegevens zijn de rechten verwijderd voor sites die je niet recent hebt bezocht}}</translation>
 <translation id="2287944065963043964">Inlogscherm</translation>
@@ -2669,7 +2668,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2778471504622896352">Externe apps toevoegen aan de ChromeOS Launcher</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2783952358106015700">Je beveiligingssleutel gebruiken met <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Wachtwoordcheck</translation>
 <translation id="2785279781154577715">Weergave van pop-upkaarten voor tabbladen</translation>
@@ -4877,7 +4875,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4293219510510666933">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht. Je kunt ook vragen stellen en antwoorden krijgen op basis van je browsegeschiedenis. Deze instelling staat aan.</translation>
 <translation id="429344752071832554">Focus van groep verwijderen</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> is verwijderd uit de downloadgeschiedenis, maar staat nog steeds op je apparaat</translation>
-<translation id="4295072614469448764">De app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="4295979599050707005">Log opnieuw in om te bevestigen dat je account <ph name="USER_EMAIL" /> mag worden gebruikt met websites, apps en extensies in Chrome en Google Play. Je kunt dit account ook verwijderen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Geïnstalleerde en gestreamde sub-apps uit <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Je oorspronkelijke wachtwoord voor deze site is gevonden bij een openbaar gegevenslek. Op <ph name="DATE" /> heb je <ph name="BRAND" /> gevraagd om je wachtwoord automatisch voor je te wijzigen.</translation>
@@ -4984,7 +4981,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4370975561335139969">Het opgegeven e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="4373418556073552953">Inloggen met je Android-telefoon</translation>
 <translation id="4373973310429385827">Vuurtoren</translation>
-<translation id="4374831787438678295">Linux-installatieprogramma</translation>
 <translation id="4375035964737468845">Gedownloade bestanden openen</translation>
 <translation id="4376226992615520204">Locatie staat uit</translation>
 <translation id="4377363674125277448">Er is een probleem met het certificaat van de server.</translation>
@@ -6263,7 +6259,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5263656105659419083">Klik rechtsboven op Vastzetten zodat je makkelijk kunt teruggaan naar het zijvenster</translation>
 <translation id="5264148714798105376">Dit kan een minuut duren.</translation>
 <translation id="5264252276333215551">Maak verbinding met internet om je app te openen in de kiosmodus.</translation>
-<translation id="5265797726250773323">Fout bij het installeren</translation>
 <translation id="526622169288322445">Meer acties voor <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Zet Safe Browsing aan om bescherming tegen gevaarlijke sites te krijgen</translation>
 <translation id="5269659747698455324">Je toegangssleutels ontgrendelen</translation>
@@ -7636,7 +7631,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="623261264391834964">Klik met de rechtermuisknop in een tekstvak om Help me met schrijven te gebruiken</translation>
 <translation id="6233154960150021497">Standaard spraak in plaats van toetsenbord gebruiken</translation>
 <translation id="6234108445915742946">De Servicevoorwaarden van Chrome veranderen op 31 maart</translation>
-<translation id="6234474535228214774">Installatie in behandeling</translation>
 <translation id="6235208551686043831">De camera van het apparaat staat aan. Houd de QR-code van je e-simkaart voor de camera.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App voor notities met stylus</translation>
@@ -8318,7 +8312,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6713668088933662563">Nooit aanbieden om deze talen te vertalen</translation>
 <translation id="6714871567554212732">Meer informatie over <ph name="GROUP_NAME" /> bekijken</translation>
 <translation id="6715735940363172819">Websites mogen je microfoon niet gebruiken</translation>
-<translation id="6715803357256707211">Er is een fout opgetreden tijdens de installatie van je Linux-app. Klik op de melding voor meer informatie.</translation>
 <translation id="6716049856796700977">Niets kan je locatie gebruiken. Je locatie is via je IP-adres misschien nog wel zichtbaar voor apps en websites. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">De netwerkverbinding is verbroken. Check je netwerkverbinding of probeer een ander wifi-netwerk.</translation>
 <translation id="671928215901716392">Scherm vergrendelen</translation>
@@ -12135,7 +12128,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="992592832486024913">ChromeVox (gesproken feedback) uitzetten</translation>
 <translation id="992653586748191655"><ph name="NUM" /> tabbladgroepen voorgesteld</translation>
 <translation id="992778845837390402">Linux-back-up wordt momenteel uitgevoerd</translation>
-<translation id="993540765962421562">De installatie wordt uitgevoerd</translation>
 <translation id="994087375490600917">Zijvensters</translation>
 <translation id="994289308992179865">&amp;Loop</translation>
 <translation id="995755448277384931">IBAN toevoegen</translation>

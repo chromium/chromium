@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Кызматтар</translation>
 <translation id="181434555916624618">Азырынча адамдар бар сүрөттөр түзүлбөйт. Башка кеңешти колдонуп көрүңүз.</translation>
 <translation id="1829129547161959350">Пингвин</translation>
-<translation id="183183971458492120">Маалымат жүктөлүүдө...</translation>
 <translation id="1832073788765803750">Жарым жазылыктагы катакана</translation>
 <translation id="1834290891154666894">Cубъекттин кошумча аталышына окшош жараксыз жазуу</translation>
 <translation id="1838709767668011582">Google сайты</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> колдонулду</translation>
 <translation id="2198315389084035571">Жөнөкөйлөштүрүлгөн кытайча</translation>
 <translation id="22085916256174561">Корейче</translation>
-<translation id="2208919847696382164">Linux менен орнотуу</translation>
 <translation id="2215692307449050019">Батареянын кубаты аз. Файлды шайкештирүү түзмөк электр кубатына туташтырылганда улантылат.</translation>
 <translation id="2225536596944493418">Чын эле <ph name="NUMBER_OF_ITEMS" /> нерсени жок кылгыңыз келеби?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" папкасын түзүү мүмкүн болбой жатат. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="2663066752008346276">Бирмача (Мьянма) жана Myansan баскычтобу</translation>
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
-<translation id="2718540689505416944">Колдонмону Linux менен орнотуу</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Чоо-жайы</translation>
 <translation id="2724954091494693138">Түркчө (Turkish F баскычтобу)</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> аркылуу бөлүшүүнү тескөө</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Жеке Google Workspace сактагычыңыздын баарын колдонуп койдуңуз.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Белгийче</translation>
-<translation id="2782104745158847185">Linux колдонмосун орнотууда ката кетти</translation>
 <translation id="2802583107108007218">Бул чектөөлөр жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="2803375539583399270">PIN кодду киргизиңиз</translation>
 <translation id="2819519502129272135">Файлды шайкештирүү өчүрүлдү</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Офлайндасыз</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3793469551756281394">Болжол менен <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> калды</translation>
-<translation id="3798449238516105146">Версия</translation>
 <translation id="3801082500826908679">Фарерче</translation>
 <translation id="3809272675881623365">Коён</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Аталышы</translation>
-<translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="3899991606604168269">Французча (Канада) жана көп тилдүү баскычтоп</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> менен туташууда</translation>
 <translation id="3906232975181435906">Мобилдик профиль орнотулууда, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Болгарча фонетикалык</translation>
 <translation id="4508265954913339219">Жанбай калды</translation>
 <translation id="4509667233588080747">Англисче (АКШ) жана Workman эл аралык баскычтобу</translation>
-<translation id="4522570452068850558">Чоо-жайлары</translation>
 <translation id="4527800702232535228">Бул папка Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="4552678318981539154">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> тармагы, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Угуу</translation>
 <translation id="5650895901941743674">APN конфигурациясын текшериңиз</translation>
 <translation id="5669691691057771421">Жаңы PIN киргизиңиз</translation>
-<translation id="5678784840044122290">Linux колдонмосу Терминалыңызда жеткиликтүү болуп, Жүргүзгүчтө анын сүрөтчөсү көрүнүшү мүмкүн.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архивден же виртуалдуу дисктен ажыратуу мүмкүн эмес<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Архивдеги же виртуалдуу дисктеги бардык файлдарды жаап, кайталап көрүңүз.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Оюнчу</translation>
 <translation id="5864471791310927901">DHCP каралбай калды</translation>
 <translation id="5896749729057314184">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
-<translation id="5911887972742538906">Linux колдонмосун орнотуу учурунда ката кетти.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5918480239180455431">Жаңы издөө функциялары жеткиликтүү</translation>
 <translation id="5926082595146149752">Голландча (Голландия) жана эл аралык АКШ баскычтобу (жеке компьютерлер үчүн)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Дисктин аталышы</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Чоо-жайы</translation>
 <translation id="7246947237293279874">FTP проксиси</translation>
-<translation id="7248671827512403053">Колдонмо</translation>
 <translation id="7256405249507348194">Бейтааныш ката: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Жеткиликтүү кызматтар</translation>
 <translation id="7291818353625820805">Баскычтарды кайталап басуу керекпи? Баскычтоп параметрлеринен басым белгилерин өчүрүңүз</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Конфигурациялоо</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ката.}other{# ката.}}</translation>
 <translation id="8154842056504218462">Бардык пункттар тандалды.</translation>
-<translation id="8157684860301034423">Колдонмо тууралуу маалымат алынбай калды.</translation>
 <translation id="8175731104491895765">Французча (Бельгия)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive файлы шайкештирилүүдө</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Казакча</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> нерсе алынды.</translation>
-<translation id="9213073329713032541">Орнотуу ийгиликтүү башталды.</translation>
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="9219908252191632183">Айлуу</translation>
 <translation id="931652069802536959">Эрежелерге ылайык тармак бөгөттөлдү</translation>

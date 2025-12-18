@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Gata</translation>
 <translation id="2577522251608256362">Cartier</translation>
 <translation id="2579713773888829241">Drive-uri în comun</translation>
+<translation id="2580306219079937316">Deschide setările pentru traducere</translation>
 <translation id="2583688836549072561">Grup de file, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> file, activitate nouă.</translation>
 <translation id="2593272815202181319">Un singur spațiu</translation>
 <translation id="2601778637777010194">Urmărește scăderile de prețuri pentru produse</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Modificarea nu a putut fi salvată.</translation>
 <translation id="3254806613790954367">Ultima filă deschisă pe toate dispozitivele</translation>
 <translation id="325717987950204592">Atinge Confidențialitate și securitate</translation>
+<translation id="3266338926702638258">Afișează istoricul prețurilor pentru acest produs</translation>
 <translation id="3272527697863656322">Anulează</translation>
 <translation id="3273510436356991673">Personalizează ecranul de pornire</translation>
 <translation id="3277021493514034324">Adresa site-ului a fost copiată</translation>
@@ -1934,6 +1936,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8221665793629393739">Mementoul tău pentru a reveni</translation>
 <translation id="8232956427053453090">Păstrează datele</translation>
 <translation id="8233237502828137700">Închide promoția din banner</translation>
+<translation id="823339794112333264">Activează microfonul</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="8258734532103758067">Am exportat datele</translation>
 <translation id="8258999165172757081">Adăugat</translation>
@@ -2039,6 +2042,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8611922158252451755">Oricine are linkul poate edita toate filele, prin urmare trimite-l cu atenție. Linkul expiră în 48 de ore.</translation>
 <translation id="8614671330774943747">Accesează comutatorul de file</translation>
 <translation id="8620640915598389714">Editează</translation>
+<translation id="862367213447108001">Afișează întotdeauna ferestrele pop-up pe acest site</translation>
 <translation id="8625706492572042370">Editează ecranul de pornire</translation>
 <translation id="8631370184731241854">File incognito blocate</translation>
 <translation id="8633025649649592204">Activitate recentă</translation>
@@ -2135,6 +2139,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestionat de organizația ta, este selectat. Alege un cont.</translation>
 <translation id="894191600409472540">Creează parole puternice</translation>
 <translation id="8943780400130412484">Începi o nouă descărcare?</translation>
+<translation id="8947838125864566256">Dezactivează microfonul</translation>
 <translation id="8953046091948372197">Aici vei vedea parolele</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opțiune de completare automată disponibilă deasupra tastaturii.}few{{count} opțiuni de completare automată disponibile deasupra tastaturii.}other{{count} de opțiuni de completare automată disponibile deasupra tastaturii.}}</translation>
 <translation id="895541991026785598">Semnalează o problemă</translation>

@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Udfør</translation>
 <translation id="2577522251608256362">Kvarter</translation>
 <translation id="2579713773888829241">Fællesdrev</translation>
+<translation id="2580306219079937316">Åbn oversættelsesindstillinger</translation>
 <translation id="2583688836549072561">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner, ny aktivitet.</translation>
 <translation id="2593272815202181319">Enkelt tegnafstand</translation>
 <translation id="2601778637777010194">Hold øje med prisfald på produkter</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
 <translation id="3254806613790954367">Din seneste åbne fane på tværs af alle dine enheder</translation>
 <translation id="325717987950204592">Tryk på "Privatliv og sikkerhed"</translation>
+<translation id="3266338926702638258">Vis prishistorik for dette produkt</translation>
 <translation id="3272527697863656322">Annuller</translation>
 <translation id="3273510436356991673">Tilpas din startskærm</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
@@ -1934,6 +1936,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8221665793629393739">Påmindelse om at besøge siden igen</translation>
 <translation id="8232956427053453090">Behold data</translation>
 <translation id="8233237502828137700">Luk bannerpromovering</translation>
+<translation id="823339794112333264">Aktivér mikrofon</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8258734532103758067">Jeg har eksporteret mine data</translation>
 <translation id="8258999165172757081">Tilføjet</translation>
@@ -2039,6 +2042,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8611922158252451755">Alle med linket kan redigere alle faner, så del med omtanke. Linket udløber om 48 timer.</translation>
 <translation id="8614671330774943747">Gå til Faneskift</translation>
 <translation id="8620640915598389714">Rediger</translation>
+<translation id="862367213447108001">Vis altid pop op-vinduer på dette website</translation>
 <translation id="8625706492572042370">Rediger hjemmeskærm</translation>
 <translation id="8631370184731241854">Låste inkognitofaner</translation>
 <translation id="8633025649649592204">Seneste aktivitet</translation>
@@ -2135,6 +2139,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8928426232677696166"><ph name="EMAIL" />, som administreres af din organisation, er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="894191600409472540">Opret stærke adgangskoder</translation>
 <translation id="8943780400130412484">Vil du starte en ny download?</translation>
+<translation id="8947838125864566256">Deaktiver mikrofon</translation>
 <translation id="8953046091948372197">Her finder du dine adgangskoder</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} mulighed for autofuldførelse er tilgængelig over dit tastatur.}one{{count} mulighed for autofuldførelse er tilgængelig over dit tastatur.}other{{count} muligheder for autofuldførelse er tilgængelige over dit tastatur.}}</translation>
 <translation id="895541991026785598">Rapportér et problem</translation>

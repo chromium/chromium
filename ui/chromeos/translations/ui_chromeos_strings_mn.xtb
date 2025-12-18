@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Үйлчилгээ</translation>
 <translation id="181434555916624618">Одоогоор хүмүүсийг агуулсан илэрцүүдийг харуулахгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="1829129547161959350">Пенгвин</translation>
-<translation id="183183971458492120">Мэдээллийг ачаалж байна...</translation>
 <translation id="1832073788765803750">Хагас өргөнтэй катакана</translation>
 <translation id="1834290891154666894">Субъектийн хоёрдогч нэрийн тохирлын оруулга буруу байна</translation>
 <translation id="1838709767668011582">Google сайт</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" />-г ашигласан</translation>
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
 <translation id="22085916256174561">Солонгос</translation>
-<translation id="2208919847696382164">Linux-р суулгах</translation>
 <translation id="2215692307449050019">Батарей бага байна. Таныг тэжээлд холбогдсон үед файлыг үргэлжлүүлэн синк хийнэ.</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Танд <ph name="RETRIES" /> оролдлого үлдсэн байна.</translation>
 <translation id="2663066752008346276">Мьянсан гартай бирм/мьянмар</translation>
 <translation id="2664412712123763093">Файлын байршил</translation>
-<translation id="2718540689505416944">Linux-р апп суулгах</translation>
 <translation id="2719020180254996569">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="2724954091494693138">F-гартай турк</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" />-н хуваалцахыг удирдах</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Та Google Workspace-н хувь хүний хадгалах сангаа бүгдийг нь ашигласан байна.</translation>
 <translation id="2771816809568414714">Бяслаг</translation>
 <translation id="2781645665747935084">Бельги</translation>
-<translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2802583107108007218">Эдгээр хязгаарлалтын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2803375539583399270">ПИН оруулна уу</translation>
 <translation id="2819519502129272135">Файлын синкийг унтраасан</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Та офлайн байна</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="3793469551756281394">Ойролцоогоор <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> үлдсэн</translation>
-<translation id="3798449238516105146">Хувилбар</translation>
 <translation id="3801082500826908679">Фөриэс хэл</translation>
 <translation id="3809272675881623365">Туулай</translation>
 <translation id="3810973564298564668">удирдах</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3855472144336161447">Герман Neo 2</translation>
 <translation id="3858860766373142691">Нэр</translation>
-<translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="3899991606604168269">Олон хэлний гартай франц (Канад)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-д холбогдож байна</translation>
 <translation id="3906232975181435906">Мобайл профайлыг суулгаж байна, Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
 <translation id="4508265954913339219">Идэвхжүүлэлт амжилтгүй боллоо</translation>
 <translation id="4509667233588080747">Workman олон улсын гартай англи (АНУ)</translation>
-<translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4527800702232535228">Энэ фолдерыг Parallels Desktop-тай хуваалцсан байна</translation>
 <translation id="4552678318981539154">Нэмэлт мэдээлэл хадгах зай худалдан авах</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> сүлжээ, дохионы хүч <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -601,7 +594,6 @@
 <translation id="5649768706273821470">Сонсох</translation>
 <translation id="5650895901941743674">APN-н тохируулгаа шалгана уу</translation>
 <translation id="5669691691057771421">Шинэ ПИН оруулна уу</translation>
-<translation id="5678784840044122290">Linux апп таны Терминалд боломжтой болохоос гадна таны Эхлүүлэгчид дүрс тэмдэг харуулж болзошгүй.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архив эсвэл виртуал дискнээс салгах боломжгүй байна<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Архив эсвэл виртуал дискний бүх файлыг хаагаад дахин оролдоно уу.</translation>
@@ -636,7 +628,6 @@
 <translation id="5861477046012235702">Тоглогч</translation>
 <translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
-<translation id="5911887972742538906">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5918480239180455431">Хайлтын шинэ онцлог боломжтой</translation>
 <translation id="5926082595146149752">АНУ-ын олон улсын компьютерын гартай голланд (Нидерланд)</translation>
@@ -805,7 +796,6 @@
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
-<translation id="7248671827512403053">Аппликейшн</translation>
 <translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
 <translation id="7291818353625820805">Товчнуудыг давтахыг хүсэж байна уу? Гарын тохиргоонд өргөлтийн тэмдгүүдийг унтраана уу</translation>
@@ -932,7 +922,6 @@
 <translation id="8151638057146502721">Тохируулах</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 алдаа.}other{# алдаа.}}</translation>
 <translation id="8154842056504218462">Бүх оролтыг сонгосон.</translation>
-<translation id="8157684860301034423">Аппын мэдээллийг сэргээж чадсангүй.</translation>
 <translation id="8175731104491895765">Франц (Бельги)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Драйвын файлыг синк хийж байна</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
@@ -1076,7 +1065,6 @@
 <translation id="9183302530794969518">Google Докс</translation>
 <translation id="9189836632794948435">Казак</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> зүйлийг задалсан.</translation>
-<translation id="9213073329713032541">Суулгалтыг амжилттай эхлүүллээ.</translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="9219908252191632183">Сарны гадарга</translation>
 <translation id="931652069802536959">Сүлжээг бодлогоор блоклосон</translation>

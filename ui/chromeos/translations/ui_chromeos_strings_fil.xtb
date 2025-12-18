@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Mga Serbisyo</translation>
 <translation id="181434555916624618">Sa ngayon, hindi ipapakita ang mga resultang may mga tao. Sumubok ng ibang prompt.</translation>
 <translation id="1829129547161959350">Penguin</translation>
-<translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
 <translation id="1832073788765803750">Half width katakana</translation>
 <translation id="1834290891154666894">Invalid na entry ng pagtugma ng alternatibong pangalan</translation>
 <translation id="1838709767668011582">Site ng Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> ang nagamit</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
-<translation id="2208919847696382164">I-install gamit ang Linux</translation>
 <translation id="2215692307449050019">Paubos na ang baterya. Magpapatuloy ang pag-sync ng file kapag nakakonekta sa kuryente ang device mo.</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
 <translation id="2230062665678605299">Hindi malikha ang folder na "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="2663066752008346276">Burmese/Myanmar na may Myansan keyboard</translation>
 <translation id="2664412712123763093">Lokasyon ng file</translation>
-<translation id="2718540689505416944">I-install ang app gamit ang Linux</translation>
 <translation id="2719020180254996569">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Mga Detalye</translation>
 <translation id="2724954091494693138">Turkish na may F-keyboard</translation>
 <translation id="2732288874651063549">Pamahalaan ang pag-share sa <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Nagamit mo na ang lahat ng iyong indibidwal na storage sa Google Workspace.</translation>
 <translation id="2771816809568414714">Keso</translation>
 <translation id="2781645665747935084">Belgian</translation>
-<translation id="2782104745158847185">Nagkaroon ng error sa pag-install ng Linux application</translation>
 <translation id="2802583107108007218">Matuto pa tungkol sa mga paghihigpit na ito</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
 <translation id="2819519502129272135">Naka-off ang pag-sync ng file</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Naka-offline ka</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3793469551756281394">Humigit-kumulang <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ang natitira</translation>
-<translation id="3798449238516105146">Bersyon</translation>
 <translation id="3801082500826908679">Faroese</translation>
 <translation id="3809272675881623365">Kuneho</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
-<translation id="3866249974567520381">Paglalarawan</translation>
 <translation id="3899991606604168269">French (Canada) na may Multilingual keyboard</translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Ini-install ang profile ng mobile, Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
 <translation id="4508265954913339219">Nabigo ang pag-activate</translation>
 <translation id="4509667233588080747">English (US) na may Workman International keyboard</translation>
-<translation id="4522570452068850558">Mga Detalye</translation>
 <translation id="4527800702232535228">Nakabahagi ang folder sa Parallels Desktop</translation>
 <translation id="4552678318981539154">Bumili ng higit pang storage</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> network, lakas ng signal na <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5650895901941743674">Tingnan ang configuration ng APN mo</translation>
 <translation id="5669691691057771421">Ilagay ang bagong PIN</translation>
-<translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Isara ang lahat ng file sa archive o virtual disk, pagkatapos ay subukan ulit.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Nabigo ang paghanap ng DHCP</translation>
 <translation id="5896749729057314184">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Hindi Naka-activate, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
-<translation id="5911887972742538906">Nagkaroon ng error habang ini-install ang iyong Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Available na ang mga bagong feature sa paghahanap</translation>
 <translation id="5926082595146149752">Dutch (Netherlands) na may US International PC keyboard</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Pangalan ng drive</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Mga Detalye</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
-<translation id="7248671827512403053">Application</translation>
 <translation id="7256405249507348194">Hindi nakikilalang error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mga available na serbisyo</translation>
 <translation id="7291818353625820805">Gustong maulit ang mga key? I-off ang mga accent mark sa Mga Setting ng Keyboard</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">I-configure</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 error.}one{# error.}other{# na error.}}</translation>
 <translation id="8154842056504218462">Pinili ang lahat ng entry.</translation>
-<translation id="8157684860301034423">Hindi na-retrieve ang impormasyon ng app.</translation>
 <translation id="8175731104491895765">French (Belgium)</translation>
 <translation id="8175799081768705361">Sini-sync ang <ph name="NUMBER_OF_FILES_SYNCING" /> (na) file sa Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033">Na-extract ang <ph name="NUMBER_OF_ITEMS" /> (na) item.</translation>
-<translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="9219908252191632183">Lunar</translation>
 <translation id="931652069802536959">Bina-block ng patakaran ang network</translation>

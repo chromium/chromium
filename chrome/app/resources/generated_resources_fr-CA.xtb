@@ -1032,7 +1032,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1679810534535368772">Voulez-vous vraiment quitter cette fenêtre?</translation>
 <translation id="167983332380191032">Le service de gestion a envoyé une erreur HTTP.</translation>
 <translation id="167997285881077031">Paramètres vocaux de la synthèse vocale</translation>
-<translation id="1680849702532889074">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="1682195225331129001">Essayer maintenant</translation>
 <translation id="1682548588986054654">Nouvelle fenêtre de navigation privée</translation>
 <translation id="1682696837763999627">Grand curseur de souris</translation>
@@ -1658,7 +1657,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2104166991923847969">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="2105809836724866556">Module <ph name="MODULE_TITLE" /> masqué</translation>
-<translation id="2106439768713835453">Partager également l'audio de l'application</translation>
 <translation id="2107359546799360577">Les optimisations JavaScript sont désactivées.</translation>
 <translation id="2108204112555497972">Vérifié il y a <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
@@ -2670,7 +2668,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Erreur lors de l'installation de l'application Linux</translation>
 <translation id="2783952358106015700">Utiliser la clé de sécurité avec <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Vérification de mot de passe</translation>
 <translation id="2785279781154577715">Affichage de la fiche informative d'aperçu de l'onglet</translation>
@@ -4132,6 +4129,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3785748905555897481">Le NIP a bien été modifié</translation>
 <translation id="3786224729726357296">Supprimer les autorisations et les données relatives aux sites pour <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Afficher le soulignement pour le texte de composition</translation>
+<translation id="3786890785076278600">Ligne statique</translation>
 <translation id="3787434344076711519">En attente de traduction</translation>
 <translation id="3788301286821743879">Impossible de lancer l'application de kiosque.</translation>
 <translation id="3788401245189148511">Elle pourrait :</translation>
@@ -4511,6 +4509,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4028467762035011525">Ajouter des méthodes d'entrée</translation>
 <translation id="4029024445166427442">lanceur+majuscule+retour arrière</translation>
 <translation id="4029556917477724407">Retour à partir de la page <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 lignes</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
@@ -4881,7 +4880,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4293219510510666933">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités. Vous pouvez aussi poser des questions et obtenir des réponses en fonction de votre historique de navigation. Ce paramètre est activé.</translation>
 <translation id="429344752071832554">Annuler la mise en évidence du groupe</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements, mais il est toujours sur votre appareil</translation>
-<translation id="4295072614469448764">L'application est disponible dans votre terminal. Une icône peut également être disponible dans votre lanceur d'applications.</translation>
 <translation id="4295979599050707005">Veuillez vous connecter à nouveau pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et dans Google Play. Vous pouvez aussi supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Applications installées et diffusées depuis <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Votre mot de passe d'origine pour ce site a été trouvé dans une violation de données publique. Le <ph name="DATE" />, vous avez demandé à <ph name="BRAND" /> de modifier automatiquement votre mot de passe pour vous.</translation>
@@ -4988,7 +4986,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4370975561335139969">L’adresse de courriel et le mot de passe que vous avez entrés ne correspondent pas</translation>
 <translation id="4373418556073552953">Connectez-vous avec votre téléphone Android</translation>
 <translation id="4373973310429385827">Phare</translation>
-<translation id="4374831787438678295">Installateur Linux</translation>
 <translation id="4375035964737468845">Ouvrir les fichiers téléchargés</translation>
 <translation id="4376226992615520204">La localisation est désactivée</translation>
 <translation id="4377363674125277448">Un problème est survenu avec le certificat du serveur.</translation>
@@ -5772,6 +5769,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites en même temps</translation>
 <translation id="4910241725741323970">L'application est déjà installée</translation>
 <translation id="4912643508233590958">Sorties de veille</translation>
+<translation id="4912892750325639080">3 lignes</translation>
 <translation id="4913209098186576320">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Cette vérification prend plus de temps que d'habitude…</translation>
 <translation id="4913695564084524048">Impossible de trouver les données de l'appli</translation>
 <translation id="4915961947098019832">Autorisés à afficher des images</translation>
@@ -6266,7 +6264,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5263656105659419083">Pour revenir facilement au panneau latéral, cliquez sur Épingler en haut à droite</translation>
 <translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
 <translation id="5264252276333215551">Veuillez vous connecter à Internet pour lancer l'application en mode kiosque.</translation>
-<translation id="5265797726250773323">Erreur lors de l'installation</translation>
 <translation id="526622169288322445">Autres actions pour <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Activez la Navigation sécurisée pour profiter d'une protection contre les sites dangereux</translation>
 <translation id="5269659747698455324">Déverrouiller vos clés d'accès</translation>
@@ -7642,7 +7639,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="623261264391834964">Faites un clic droit dans une zone de texte pour utiliser l'Aide à la rédaction</translation>
 <translation id="6233154960150021497">Utiliser la voix plutôt que le clavier par défaut</translation>
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome changeront le 31 mars</translation>
-<translation id="6234474535228214774">Installation en attente…</translation>
 <translation id="6235208551686043831">L'appareil photo est activé. Veuillez placer le code QR de votre carte eSIM devant l'appareil photo.</translation>
 <translation id="6237342324375264347">Le groupe <ph name="GROUP_NAME" /> a été <ph name="SHARE_STATE" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Application de prise de notes avec stylet</translation>
@@ -8326,7 +8322,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6713668088933662563">Ne jamais proposer de traduire ces langues</translation>
 <translation id="6714871567554212732">Afficher plus de détails sur le groupe suivant : <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Les sites Web ne sont pas autorisés à utiliser votre microphone</translation>
-<translation id="6715803357256707211">Une erreur s'est produite lors de l'installation de votre application Linux. Cliquez sur la notification pour en savoir plus.</translation>
 <translation id="6716049856796700977">Aucun client ni service ne peut utiliser votre position. Cependant, votre position peut toujours être visible pour les applications et les sites Web par le biais de votre adresse IP. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">La connexion réseau a été perdue. Vérifiez votre connexion réseau ou essayez un autre réseau Wi-Fi.</translation>
 <translation id="671928215901716392">Verrouiller l'écran</translation>
@@ -9013,6 +9008,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>
 <translation id="7191631508323321927">Vestibule</translation>
 <translation id="7191632649590906354">Les membres de votre famille peuvent désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'ils utilisent le gestionnaire de mots de passe Google. Dites-leur d'accéder à <ph name="WEBSITE" /> pour se connecter.</translation>
+<translation id="7192393330344360021">1 ligne</translation>
 <translation id="7193051357671784796">Cette application a été ajoutée par votre organisation Redémarrez-la pour terminer l'installation.</translation>
 <translation id="7193374945610105795">Aucun mot de passe enregistré pour <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envoyez des commentaires sur les groupes suggérés</translation>
@@ -11123,6 +11119,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Connexions sécurisées seulement</translation>
 <translation id="8627804903623428808">Consulter ces conditions et contrôler les données de votre enfant</translation>
+<translation id="8628674746770065790">Suivre le curseur</translation>
 <translation id="862907440446514309">Votre administrateur enregistre votre écran grâce à <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Mode veille durant la recharge</translation>
 <translation id="8631032106121706562">Pétale</translation>
@@ -12139,7 +12136,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="992592832486024913">Désactiver ChromeVox (commentaires audio)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> groupes d'onglets suggérés</translation>
 <translation id="992778845837390402">Sauvegarde Linux en cours…</translation>
-<translation id="993540765962421562">Installation en cours…</translation>
 <translation id="994087375490600917">Panneaux latéraux</translation>
 <translation id="994289308992179865">Bouc&amp;le</translation>
 <translation id="995755448277384931">Ajouter un IBAN</translation>

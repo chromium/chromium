@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">บริการ</translation>
 <translation id="181434555916624618">ในตอนนี้ระบบจะไม่แสดงผลการค้นหาที่มีผู้คน โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="1829129547161959350">นกเพนกวิน</translation>
-<translation id="183183971458492120">กำลังโหลดข้อมูล...</translation>
 <translation id="1832073788765803750">คาตาคานะแบบครึ่งความกว้าง</translation>
 <translation id="1834290891154666894">รายการจับคู่ชื่อสำรองของหัวเรื่องไม่ถูกต้อง</translation>
 <translation id="1838709767668011582">เว็บไซต์ Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">ใช้ไป <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
 <translation id="22085916256174561">เกาหลี</translation>
-<translation id="2208919847696382164">ติดตั้งด้วย Linux</translation>
 <translation id="2215692307449050019">แบตเตอรี่เหลือน้อย การซิงค์ไฟล์จะดำเนินการต่อเมื่อคุณเชื่อมต่อกับแหล่งจ่ายไฟ</translation>
 <translation id="2225536596944493418">แน่ใจไหมว่าต้องการลบ <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="2230062665678605299">ไม่สามารถสร้างโฟลเดอร์ "<ph name="FOLDER_NAME" />" <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="2663066752008346276">พม่า/เมียนมาด้วยแป้นพิมพ์เมียนซาน</translation>
 <translation id="2664412712123763093">ตำแหน่งที่ตั้งไฟล์</translation>
-<translation id="2718540689505416944">ติดตั้งแอปด้วย Linux</translation>
 <translation id="2719020180254996569">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, รายละเอียด</translation>
 <translation id="2724954091494693138">ตุรกี (F-keyboard)</translation>
 <translation id="2732288874651063549">จัดการการแชร์กับ <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">คุณใช้พื้นที่เก็บข้อมูลส่วนบุคคลใน Google Workspace หมดแล้ว</translation>
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2781645665747935084">เบลเยียม</translation>
-<translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2802583107108007218">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อจำกัดเหล่านี้</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
 <translation id="2819519502129272135">การซิงค์ไฟล์ปิดอยู่</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">คุณออฟไลน์อยู่</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3793469551756281394">เหลือเวลาอีกประมาณ <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">รุ่น</translation>
 <translation id="3801082500826908679">แฟโร</translation>
 <translation id="3809272675881623365">กระต่าย</translation>
 <translation id="3810973564298564668">จัดการ</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3855472144336161447">Neo 2 แบบเยอรมัน</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
-<translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="3899991606604168269">ฝรั่งเศส (แคนาดา) ด้วยแป้นพิมพ์หลายภาษา</translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3906232975181435906">กำลังติดตั้งโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">การออกเสียงภาษาบัลแกเรีย</translation>
 <translation id="4508265954913339219">การเปิดใช้งานล้มเหลว</translation>
 <translation id="4509667233588080747">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman แบบสากล</translation>
-<translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4527800702232535228">โฟลเดอร์นี้แชร์อยู่กับ Parallels Desktop</translation>
 <translation id="4552678318981539154">ซื้อพื้นที่เก็บข้อมูลเพิ่ม</translation>
 <translation id="4552759165874948005">เครือข่าย <ph name="NETWORK_TYPE" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">ฟัง</translation>
 <translation id="5650895901941743674">ตรวจสอบการกำหนดค่า APN</translation>
 <translation id="5669691691057771421">ป้อน PIN ใหม่</translation>
-<translation id="5678784840044122290">แอปพลิเคชัน Linux จะพร้อมให้ใช้งานในเทอร์มินัลของคุณและอาจแสดงไอคอนใน Launcher ด้วย</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ยกเลิกการเชื่อมต่อจากที่เก็บถาวรหรือดิสก์เสมือนไม่สำเร็จ<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    ปิดไฟล์ทั้งหมดในที่เก็บถาวรหรือดิสก์เสมือน จากนั้นลองอีกครั้ง</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">เกมเมอร์</translation>
 <translation id="5864471791310927901">การค้นหา DHCP ล้มเหลว</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
-<translation id="5911887972742538906">ข้อผิดพลาดเกิดขึ้นระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="5912396950572065471">รูปแบบ</translation>
 <translation id="5918480239180455431">มีฟีเจอร์การค้นหาใหม่พร้อมใช้งาน</translation>
 <translation id="5926082595146149752">ดัตช์ (เนเธอร์แลนด์) ด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">ชื่อไดรฟ์</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, รายละเอียด</translation>
 <translation id="7246947237293279874">พร็อกซี FTP</translation>
-<translation id="7248671827512403053">แอปพลิเคชัน</translation>
 <translation id="7256405249507348194">ข้อผิดพลาดที่ไม่รู้จัก: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
 <translation id="7291818353625820805">ต้องการให้แป้นทำงานซ้ำไหม โปรดปิดเครื่องหมายการเน้นเสียงในการตั้งค่าแป้นพิมพ์</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">กำหนดค่า</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{ข้อผิดพลาด 1 รายการ}other{ข้อผิดพลาด # รายการ}}</translation>
 <translation id="8154842056504218462">เลือกรายการทั้งหมดอยู่</translation>
-<translation id="8157684860301034423">ดึงข้อมูลแอปไม่สำเร็จ</translation>
 <translation id="8175731104491895765">ฝรั่งเศส (เบลเยียม)</translation>
 <translation id="8175799081768705361">กำลังซิงค์ไฟล์ในไดรฟ์ <ph name="NUMBER_OF_FILES_SYNCING" /> รายการ</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google เอกสาร</translation>
 <translation id="9189836632794948435">คาซัค</translation>
 <translation id="9200427192836333033">แตกไฟล์แล้ว <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
-<translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>
 <translation id="931652069802536959">เครือข่ายถูกบล็อกโดยนโยบาย</translation>

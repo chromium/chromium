@@ -947,6 +947,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கம் - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> பக்கங்கள் - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="504456571576643789">கருத்தில்கொள்ள வேண்டியவை</translation>
+<translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டுள்ளது}other{<ph name="WINDOW_COUNT_NORMAL" /> சாளரங்கள் தேர்ந்தெடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="5056587122125565772">படத்தை உருவாக்கு</translation>
 <translation id="506254248375231072">பக்கங்கள் எதுவுமில்லை</translation>
 <translation id="5075939510584558547">என்க்ரிப்ஷன் செய்யாமலே சேமித்தல்</translation>
@@ -1726,6 +1727,7 @@
 <translation id="8190358571722158785">1 நாள் மீதமுள்ளது</translation>
 <translation id="8192765420340770300">உள்நுழைவதற்கான கீழ்ப்புறச் சீட்டு முழுத் திரையில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8201752259339925400">தேடல் வினவலை அழிக்கும்</translation>
 <translation id="820568752112382238">அதிகம் பார்த்த தளங்கள்</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> மற்றும் <ph name="NUMBER_OF_OTHER_MEMBERS" /> நபருடன் பக்கக் குழுவில் சேருங்கள்}other{<ph name="OWNER_FIRST_NAME" /> மற்றும் <ph name="NUMBER_OF_OTHER_MEMBERS" /> பேருடன் பக்கக் குழுவில் சேருங்கள்}}</translation>
 <translation id="8209050860603202033">படத்தைத் திற</translation>

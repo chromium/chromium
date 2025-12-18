@@ -1031,7 +1031,6 @@
 <translation id="1679810534535368772">คุณแน่ใจไหมว่าต้องการออก</translation>
 <translation id="167983332380191032">บริการการจัดการแสดงข้อผิดพลาด HTTP</translation>
 <translation id="167997285881077031">การตั้งค่าเสียงของการอ่านออกเสียงข้อความ</translation>
-<translation id="1680849702532889074">เกิดข้อผิดพลาดระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="1682195225331129001">ลองใช้เลย</translation>
 <translation id="1682548588986054654">หน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1682696837763999627">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
@@ -1657,7 +1656,6 @@
 <translation id="2102495993840063010">แอป Android</translation>
 <translation id="2104166991923847969">ปิดฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="2105809836724866556">ซ่อน<ph name="MODULE_TITLE" />แล้ว</translation>
-<translation id="2106439768713835453">แชร์เสียงของแอปพลิเคชันด้วย</translation>
 <translation id="2107359546799360577">ปิดใช้การเพิ่มประสิทธิภาพ JavaScript อยู่</translation>
 <translation id="2108204112555497972">ตรวจสอบเมื่อ <ph name="NUM_DAYS_HOURS_MINUTES" />ที่ผ่านมา</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{หมายเลขโทรศัพท์}other{# หมายเลขโทรศัพท์}}</translation>
@@ -2669,7 +2667,6 @@
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2783952358106015700">ใช้คีย์ความปลอดภัยกับ <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">การตรวจสอบรหัสผ่าน</translation>
 <translation id="2785279781154577715">ลักษณะของการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
@@ -4127,6 +4124,7 @@
 <translation id="3785748905555897481">เปลี่ยน PIN เรียบร้อยแล้ว</translation>
 <translation id="3786224729726357296">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE" /></translation>
 <translation id="3786834302860277193">แสดงเส้นใต้สําหรับข้อความประกอบ</translation>
+<translation id="3786890785076278600">เส้นคงที่</translation>
 <translation id="3787434344076711519">กำลังรอการแปล</translation>
 <translation id="3788301286821743879">เปิดแอปพลิเคชันคีออสก์ไม่ได้</translation>
 <translation id="3788401245189148511">ส่วนขยายต้องการจะ:</translation>
@@ -4506,6 +4504,7 @@
 <translation id="4028467762035011525">เพิ่มวิธีการป้อนข้อมูล</translation>
 <translation id="4029024445166427442">Launcher + Shift + Backspace</translation>
 <translation id="4029556917477724407">กลับไปจากหน้า <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 บรรทัด</translation>
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4031527940632463547">มีการบล็อกเซ็นเซอร์</translation>
 <translation id="4033471457476425443">เพิ่มโฟลเดอร์ใหม่</translation>
@@ -4876,7 +4875,6 @@
 <translation id="4293219510510666933">ใช้ภาษาที่ใช้ในชีวิตประจำวันเพื่อค้นหาประวัติการท่องเว็บและหาเว็บไซต์ที่เคยเข้าชม คุณยังถามคำถามและรับคำตอบตามประวัติการท่องเว็บได้ด้วย การตั้งค่านี้เปิดอยู่</translation>
 <translation id="429344752071832554">ยกเลิกการสนทนากลุ่ม</translation>
 <translation id="4294392694389031609">ลบ <ph name="FILE_NAME" /> ออกจากประวัติการดาวน์โหลดแล้ว แต่ยังคงอยู่ในอุปกรณ์ของคุณ</translation>
-<translation id="4295072614469448764">แอปพร้อมให้ใช้งานในเทอร์มินัลของคุณ และอาจจะมีไอคอนใน Launcher ด้วย</translation>
 <translation id="4295979599050707005">โปรดลงชื่อเข้าใช้อีกครั้งเพื่อยืนยันว่าบัญชี <ph name="USER_EMAIL" /> ของคุณใช้กับเว็บไซต์ แอป และส่วนขยายใน Chrome และ Google Play ได้ คุณอาจนำบัญชีนี้ออกก็ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">แอปพลิเคชันที่ติดตั้งและสตรีมจาก <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">ระบบพบรหัสผ่านเดิมของคุณสำหรับเว็บไซต์นี้ในการละเมิดข้อมูลสาธารณะ เมื่อวันที่ <ph name="DATE" /> คุณขอให้<ph name="BRAND" /> เปลี่ยนรหัสผ่านให้คุณโดยอัตโนมัติ</translation>
@@ -4983,7 +4981,6 @@
 <translation id="4370975561335139969">อีเมลและรหัสผ่านที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="4373418556073552953">ลงชื่อเข้าใช้ด้วยโทรศัพท์ Android</translation>
 <translation id="4373973310429385827">ประภาคาร</translation>
-<translation id="4374831787438678295">โปรแกรมติดตั้ง Linux</translation>
 <translation id="4375035964737468845">เปิดไฟล์ที่ดาวน์โหลดมา</translation>
 <translation id="4376226992615520204">ตำแหน่งปิดอยู่</translation>
 <translation id="4377363674125277448">มีปัญหาเกี่ยวกับใบรับรองของเซิร์ฟเวอร์</translation>
@@ -5767,6 +5764,7 @@
 <translation id="4908811072292128752">เปิดแท็บใหม่เพื่อเรียกดูไซต์ 2 ไซต์พร้อมกัน</translation>
 <translation id="4910241725741323970">ติดตั้งแอปแล้ว</translation>
 <translation id="4912643508233590958">ไม่ใช้งานการปลุก</translation>
+<translation id="4912892750325639080">3 บรรทัด</translation>
 <translation id="4913209098186576320">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />การตรวจสอบนี้ใช้เวลานานกว่าปกติ...</translation>
 <translation id="4913695564084524048">ไม่พบข้อมูลแอป</translation>
 <translation id="4915961947098019832">ได้รับอนุญาตให้แสดงรูปภาพ</translation>
@@ -6261,7 +6259,6 @@
 <translation id="5263656105659419083">หากต้องการกลับไปที่แผงด้านข้างได้โดยง่าย ให้คลิก "ปักหมุด" ที่ด้านขวาบน</translation>
 <translation id="5264148714798105376">อาจใช้เวลาประมาณ 1 นาที</translation>
 <translation id="5264252276333215551">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อเปิดแอปในโหมดคีออสก์</translation>
-<translation id="5265797726250773323">เกิดข้อผิดพลาดระหว่างติดตั้ง</translation>
 <translation id="526622169288322445">การดำเนินการเพิ่มเติมสำหรับ <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">เปิด Google Safe Browsing เพื่อปกป้องคุณจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="5269659747698455324">ปลดล็อกพาสคีย์</translation>
@@ -7634,7 +7631,6 @@
 <translation id="623261264391834964">คลิกขวาที่กล่องข้อความเพื่อใช้ "ช่วยฉันเขียน"</translation>
 <translation id="6233154960150021497">มีค่าเริ่มต้นเป็นการใช้เสียงแทนแป้นพิมพ์</translation>
 <translation id="6234108445915742946">ข้อกำหนดในการให้บริการของ Chrome จะมีการเปลี่ยนแปลงในวันที่ 31 มีนาคม</translation>
-<translation id="6234474535228214774">กำลังรอการติดตั้ง</translation>
 <translation id="6235208551686043831">เปิดกล้องของอุปกรณ์แล้ว โปรดวางคิวอาร์โค้ด eSIM ตรงหน้ากล้อง</translation>
 <translation id="6237342324375264347">กลุ่มที่<ph name="SHARE_STATE" /> <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">แอปการจดบันทึกด้วยสไตลัส</translation>
@@ -8316,7 +8312,6 @@
 <translation id="6713668088933662563">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
 <translation id="6714871567554212732">ดูรายละเอียดเพิ่มเติมเกี่ยวกับ <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">เว็บไซต์ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน</translation>
-<translation id="6715803357256707211">เกิดข้อผิดพลาดระหว่างการติดตั้งแอปพลิเคชัน Linux คลิกที่การแจ้งเตือนเพื่อดูรายละเอียด</translation>
 <translation id="6716049856796700977">ไม่มีสิ่งใดใช้ตำแหน่งของคุณได้ อย่างไรก็ตาม ตำแหน่งของคุณอาจยังแสดงต่อแอปและเว็บไซต์ผ่านที่อยู่ IP <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">การเชื่อมต่อเครือข่ายขาดหาย โปรดตรวจสอบการเชื่อมต่อเครือข่ายหรือลองใช้เครือข่าย Wi-Fi อื่น</translation>
 <translation id="671928215901716392">ล็อกหน้าจอ</translation>
@@ -9004,6 +8999,7 @@
 <translation id="7191159667348037">เครื่องพิมพ์ที่ไม่รู้จัก (USB)</translation>
 <translation id="7191631508323321927">ห้องโถง</translation>
 <translation id="7191632649590906354">ตอนนี้สมาชิกในครอบครัวสามารถใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google โปรดบอกให้สมาชิกไปที่ <ph name="WEBSITE" /> เพื่อลงชื่อเข้าใช้</translation>
+<translation id="7192393330344360021">1 บรรทัด</translation>
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">ส่งความคิดเห็นสำหรับกลุ่มที่แนะนำ</translation>
@@ -11114,6 +11110,7 @@
 <translation id="862750493060684461">แคช CSS</translation>
 <translation id="8627795981664801467">สำหรับการเชื่อมต่อที่ปลอดภัยเท่านั้น</translation>
 <translation id="8627804903623428808">ตรวจสอบข้อกำหนดเหล่านี้และควบคุมข้อมูลของบุตรหลาน</translation>
+<translation id="8628674746770065790">ติดตามเคอร์เซอร์</translation>
 <translation id="862907440446514309">ผู้ดูแลระบบกำลังบันทึกหน้าจอของคุณด้วย <ph name="APP0_NAME" /></translation>
 <translation id="8630338733867813168">เข้าสู่โหมดสลีปขณะชาร์จ</translation>
 <translation id="8631032106121706562">พีทอล</translation>
@@ -12130,7 +12127,6 @@
 <translation id="992592832486024913">ปิดใช้ ChromeVox (การตอบสนองด้วยเสียง)</translation>
 <translation id="992653586748191655">กลุ่มแท็บ <ph name="NUM" /> กลุ่มที่แนะนำ</translation>
 <translation id="992778845837390402">กำลังดำเนินการสำรองข้อมูล Linux</translation>
-<translation id="993540765962421562">กำลังดำเนินการติดตั้ง</translation>
 <translation id="994087375490600917">แผงด้านข้าง</translation>
 <translation id="994289308992179865">ว&amp;นกลับ</translation>
 <translation id="995755448277384931">เพิ่ม IBAN</translation>

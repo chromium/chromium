@@ -256,7 +256,7 @@
 <translation id="1166457390969131095">使用並儲存 Google 帳戶中的密碼和密鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
-<translation id="1167008614036441342">由於你最近沒有使用，因此系統已移除付款卡</translation>
+<translation id="1167008614036441342">由於你近期沒有使用，因此系統已移除卡片</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
 <translation id="1168704243733734901">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係<ph name="STYLE" />，情境係<ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">問 Google 有關上一個頁面的問題</translation>
@@ -1032,7 +1032,6 @@
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">裝置管理服務已傳送 HTTP 錯誤。</translation>
 <translation id="167997285881077031">「文字轉語音」聲音設定</translation>
-<translation id="1680849702532889074">安裝 Linux 應用程式時發生錯誤。</translation>
 <translation id="1682195225331129001">立即試用</translation>
 <translation id="1682548588986054654">新增無痕式視窗</translation>
 <translation id="1682696837763999627">大型滑鼠游標</translation>
@@ -1667,7 +1666,6 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
-<translation id="2106439768713835453">同時分享應用程式音訊</translation>
 <translation id="2107359546799360577">JavaScript 優化功能已停用。</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
@@ -1924,6 +1922,7 @@
 <translation id="2283599456633275070">旅遊</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法識別您的指紋。請再試一次。</translation>
+<translation id="2286840900796601828">倒帶 10 秒</translation>
 <translation id="2287617382468007324">列印 IPP 位址</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{為保護你的資料，系統已移除你最近沒有瀏覽的網站權限}other{為保護你的資料，系統已移除你最近沒有瀏覽的網站權限}}</translation>
 <translation id="2287944065963043964">登入畫面</translation>
@@ -2681,7 +2680,6 @@
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />、<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
 <translation id="2785267875302712148">密碼安全檢查</translation>
 <translation id="2785279781154577715">分頁懸停預覽資訊卡外觀</translation>
@@ -3453,7 +3451,7 @@
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">不允許網站處理通訊協定</translation>
 <translation id="333863344734218290">在你瀏覽不安全的公開和私人網站時發出警告</translation>
-<translation id="3339789735267352349">就已知危險的網站、下載檔案及擴充程式為你提供保護。</translation>
+<translation id="3339789735267352349">就已知危險的網站、下載檔案及擴充程式為你提供保護</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341091511696469129">Chrome 可產生並翻譯以下語言的字幕</translation>
@@ -4887,7 +4885,6 @@
 <translation id="4293219510510666933">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。你亦可提出問題，系統會根據瀏覽記錄提供解答。此設定已開啟。</translation>
 <translation id="429344752071832554">取消聚焦群組</translation>
 <translation id="4294392694389031609">已從下載記錄中刪除「<ph name="FILE_NAME" />」，但此檔案仍保存在你的裝置上</translation>
-<translation id="4295072614469448764">應用程式已在終端機上完成安裝，其圖示可能會在啟動器中顯示。</translation>
 <translation id="4295979599050707005">請再次登入，確認您的帳戶 <ph name="USER_EMAIL" /> 可用於 Chrome 和 Google Play 的網站、應用程式和擴充程式。您亦可以移除此帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">已透過「<ph name="APP_NAME" />」安裝及串流的應用程式</translation>
 <translation id="4296632172536745000">你在這個網站的原密碼在公開資料外洩事件中外洩。你於 <ph name="DATE" />要求「<ph name="BRAND" />」自動為你更改密碼。</translation>
@@ -4994,7 +4991,6 @@
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
 <translation id="4373973310429385827">燈塔</translation>
-<translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案</translation>
 <translation id="4376226992615520204">已關閉位置功能</translation>
 <translation id="4377363674125277448">伺服器憑證有問題。</translation>
@@ -6273,7 +6269,6 @@
 <translation id="5263656105659419083">㩒一下右上角嘅 [固定]，就可以輕易返去側面板</translation>
 <translation id="5264148714798105376">這可能需要幾分鐘時間。</translation>
 <translation id="5264252276333215551">如要以 Kiosk 模式啟動您的應用程式，請連線至互聯網。</translation>
-<translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="526622169288322445">可以對「<ph name="ADDRESS_SUMMARY" />」執行嘅其他動作</translation>
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
 <translation id="5269659747698455324">解鎖密鑰</translation>
@@ -7646,7 +7641,6 @@
 <translation id="623261264391834964">在文字框中按一下右鍵，即可使用「幫我寫」功能</translation>
 <translation id="6233154960150021497">預設使用語音取代鍵盤</translation>
 <translation id="6234108445915742946">Chrome 的《服務條款》將於 3 月 31 日變更</translation>
-<translation id="6234474535228214774">正在等待安裝</translation>
 <translation id="6235208551686043831">開咗裝置相機。請將相機鏡頭對準 eSIM 卡嘅 QR 碼。</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" />群組「<ph name="GROUP_NAME" />」- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">觸控筆筆記應用程式</translation>
@@ -8328,7 +8322,6 @@
 <translation id="6713668088933662563">一律不顯示翻譯以下語言</translation>
 <translation id="6714871567554212732">睇下<ph name="GROUP_NAME" />嘅詳情</translation>
 <translation id="6715735940363172819">未授權網站使用麥克風</translation>
-<translation id="6715803357256707211">安裝 Linux 應用程式時發生錯誤。按一下通知即可瞭解詳情。</translation>
 <translation id="6716049856796700977">所有應用程式、網站和系統服務都無法使用你的位置。不過，應用程式和網站仍可透過 IP 位址取得你的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">網絡連線已中斷。請檢查您的網絡連線，或改用其他 Wi-Fi 網絡。</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
@@ -12138,7 +12131,6 @@
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>
 <translation id="992653586748191655">已建議 <ph name="NUM" /> 個分頁群組</translation>
 <translation id="992778845837390402">正在執行 Linux 備份</translation>
-<translation id="993540765962421562">正在安装</translation>
 <translation id="994087375490600917">側面板</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
 <translation id="995755448277384931">新增 IBAN</translation>

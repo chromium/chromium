@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">सेवा</translation>
 <translation id="181434555916624618">सध्यासाठी, लोक असलेले परिणाम दाखवले जाणार नाहीत. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
-<translation id="183183971458492120">माहिती लोड करत आहे...</translation>
 <translation id="1832073788765803750">हाफ वाइड कातकाना</translation>
 <translation id="1834290891154666894">विषयाच्या पर्यायी नावाच्या जुळणीची एंट्री चुकीची आहे</translation>
 <translation id="1838709767668011582">Google साइट</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> वापरली</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="22085916256174561">कोरियन</translation>
-<translation id="2208919847696382164">Linux सह इंस्टॉल करा</translation>
 <translation id="2215692307449050019">बॅटरी कमी आहे. तुम्ही पॉवरशी कनेक्ट केल्यावर फाइल सिंक पुन्हा सुरू होईल.</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="2663066752008346276">म्यानसान कीबोर्डसह बर्मीज/म्यानमार</translation>
 <translation id="2664412712123763093">फाइलचे स्थान</translation>
-<translation id="2718540689505416944">Linux सह अ‍ॅप इंस्टॉल करा</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, तपशील</translation>
 <translation id="2724954091494693138">F-कीबोर्डसह तुर्की</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> शेअरिंग व्यवस्थापित करा</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">तुम्ही तुमचे पूर्ण वैयक्तिक Google Workspace स्टोरेज वापरले आहे.</translation>
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2781645665747935084">बेल्जियन</translation>
-<translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
 <translation id="2802583107108007218">या निर्बंधांबद्दल अधिक जाणून घ्या</translation>
 <translation id="2803375539583399270">पिन एंटर करा</translation>
 <translation id="2819519502129272135">फाइल सिंक करणे सुरू करा</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">तुम्ही ऑफलाइन आहात</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3793469551756281394">सुमारे <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> शिल्लक आहेत</translation>
-<translation id="3798449238516105146">आवृत्ती</translation>
 <translation id="3801082500826908679">फारोसे</translation>
 <translation id="3809272675881623365">ससा</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="3855472144336161447">जर्मन निओ 2</translation>
 <translation id="3858860766373142691">नाव</translation>
-<translation id="3866249974567520381">वर्णन</translation>
 <translation id="3899991606604168269">बहुभाषिक कीबोर्डसह फ्रेंच (कॅनडा)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> वर कनेक्ट करीत आहे</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफाइल इंस्टॉल करत आहे, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
 <translation id="4508265954913339219">सक्रियन अयशस्वी</translation>
 <translation id="4509667233588080747">वर्कमॅन आंतरराष्ट्रीय कीबोर्डसह इंग्रजी (यूएस)</translation>
-<translation id="4522570452068850558">तपशील</translation>
 <translation id="4527800702232535228">हे फोल्डर Parallels Desktop सह शेअर केलेले आहे</translation>
 <translation id="4552678318981539154">अधिक स्टोरेज खरेदी करा</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5649768706273821470">ऐका</translation>
 <translation id="5650895901941743674">APN कॉन्फिगरेशन तपासा</translation>
 <translation id="5669691691057771421">नवीन पिन एंटर करा</translation>
-<translation id="5678784840044122290">तुमच्या टर्मिनलमध्ये Linux ॲप्लिकेशन उपलब्ध असेल आणि तुमच्या लॉंचरमध्ये आयकन देखील दिसू शकेल.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />संग्रहण किंवा आभासी डिस्कमधून डिस्कनेक्ट करू शकत नाही<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    संग्रहण किंवा आभासी डिस्कवरील सर्व फाइल बंद करा, नंतर प्रयत्न करा.</translation>
@@ -638,7 +630,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप अयशस्वी</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
-<translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
 <translation id="5918480239180455431">नवीन शोध वैशिष्ट्ये उपलब्ध</translation>
 <translation id="5926082595146149752">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह डच (नेदरलँड)</translation>
@@ -807,7 +798,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, तपशील</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
-<translation id="7248671827512403053">ॲप्लिकेशन</translation>
 <translation id="7256405249507348194">अपरिचित एरर: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवा</translation>
 <translation id="7291818353625820805">की रिपीट व्हाव्यात असे वाटते का? कीबोर्ड सेटिंग्ज मध्ये अ‍ॅक्सेंट मार्क बंद करा</translation>
@@ -934,7 +924,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8151638057146502721">कॉन्फिगर करा</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{१ एरर.}other{# एरर.}}</translation>
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
-<translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>
 <translation id="8175731104491895765">फ्रेंच (बेल्जियम)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive फाइल सिंक करत आहे</translation>
 <translation id="8179976553408161302">एंटर</translation>
@@ -1078,7 +1067,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">कझाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> आयटम काढले आहेत.</translation>
-<translation id="9213073329713032541">इंस्टॉलेशनला यशस्वीरीत्या सुरुवात झाली.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लुनार</translation>
 <translation id="931652069802536959">नेटवर्क धोरणाद्वारे ब्लॉक केले आहे</translation>

@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">ဝန်​ဆောင်​မှု​များ</translation>
 <translation id="181434555916624618">လောလောဆယ် လူပါသော ရလဒ်များကို ပြမည်မဟုတ်ပါ။ အခြားတောင်းဆိုချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="1829129547161959350">ပင်ဂွင်</translation>
-<translation id="183183971458492120">အချက်အလက်များကို ဖွင့်နေသည်...</translation>
 <translation id="1832073788765803750">အကျယ်တစ်ဝက် ခတခန (ဂျပန်)</translation>
 <translation id="1834290891154666894">မှန်ကန်မှုမရှိသည့် အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု ထည့်သွင်းခြင်း</translation>
 <translation id="1838709767668011582">Google ဆိုက်</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> သုံးထားသည်</translation>
 <translation id="2198315389084035571">ရိုးရှင်း တရုတ်</translation>
 <translation id="22085916256174561">ကိုရီးယား</translation>
-<translation id="2208919847696382164">Linux ဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="2215692307449050019">ဘက်ထရီ အားနည်းနေသည်။ ပါဝါချိတ်ပြီးနောက် ဖိုင်စင့်ခ်လုပ်ခြင်းကို ဆက်လုပ်ပါမည်။</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="2663066752008346276">မြန်စံကီးဘုတ်ဖြင့် ဗမာ/မြန်မာ</translation>
 <translation id="2664412712123763093">ဖိုင်တည်နေရာ</translation>
-<translation id="2718540689505416944">အက်ပ်ကို Linux ဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="2719020180254996569">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ အသေးစိတ်များ</translation>
 <translation id="2724954091494693138">F ကီးဘုတ်ဖြင့် တူရကီ</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> မျှဝေမှုကို စီမံရန်</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">သင်၏တစ်ဦးချင်း Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးပြီးပါပြီ။</translation>
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2781645665747935084">ဘယ်လ်ဂျီယံ</translation>
-<translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="2802583107108007218">ဤကန့်သတ်ချက်များအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2803375539583399270">ပင်နံပါတ် ထည့်ပါ</translation>
 <translation id="2819519502129272135">ဖိုင်စင့်ခ်လုပ်ခြင်း ပိတ်ထားသည်</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">သင်သည် အော့ဖ်လိုင်း ဖြစ်နေ</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ခန့် ကျန်သေးသည်</translation>
-<translation id="3798449238516105146">ဗားရှင်း</translation>
 <translation id="3801082500826908679">ဖားရို့စ်</translation>
 <translation id="3809272675881623365">ယုန်</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">အမည်</translation>
-<translation id="3866249974567520381">ဖော်ပြချက်</translation>
 <translation id="3899991606604168269">ဘာသာစကားအမျိုးမျိုး ကီးဘုတ်ဖြင့် ပြင်သစ် (ကနေဒါ)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />သို့ ချိတ်ဆက်​ေနေ</translation>
 <translation id="3906232975181435906">မိုဘိုင်းပရိုဖိုင် ထည့်သွင်းနေသည်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">ဘာလ်ဂေရီယမ် အသံထွက်</translation>
 <translation id="4508265954913339219">ဖွင့်သုံးမှု မအောင်မြင်</translation>
 <translation id="4509667233588080747">Workman နိုင်ငံတကာကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
-<translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4527800702232535228">ဤဖိုင်တွဲကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="4552678318981539154">နောက်ထပ် သိုလှောင်ခြင်း ဝယ်မည်</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5650895901941743674">သင့် APN စီစဉ်သတ်မှတ်ချက်ကို ကြည့်ပါ</translation>
 <translation id="5669691691057771421">ပင်နံပါတ်အသစ်ကို ထည့်ပါ</translation>
-<translation id="5678784840044122290">Linux အပလီကေးရှင်းကို သင်၏ Terminal အတွင်းတွင်ရနိုင်ပြီး သင်၏ Launcher တွင်လည်း သင်္ကေတပြနိုင်ပါသည်။</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုကို ချိတ်ဆက်မှုဖြုတ်၍မရပါ<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုပေါ်ရှိ ဖိုင်များအားလုံးကို ပိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">ဂိမ်းကစားသူ</translation>
 <translation id="5864471791310927901">DHCP ရှာဖွေမှု မအောင်မြင်ခဲ့</translation>
 <translation id="5896749729057314184">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
-<translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5918480239180455431">ရှာဖွေမှုတူးလ်အသစ်များ ရနိုင်သည်</translation>
 <translation id="5926082595146149752">ယူအက်စ်နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် ဒတ်ချ် (နယ်သာလန်)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">ဒရိုက်ဗ်အမည်</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />၊ အသေးစိတ်များ</translation>
 <translation id="7246947237293279874">FTP ပရောက်စီ</translation>
-<translation id="7248671827512403053">အပလီကေးရှင်း</translation>
 <translation id="7256405249507348194">သိမှတ်မရသည့် အမှား: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ရရှိနိုင်သော ဝန်ဆောင်မှုများ</translation>
 <translation id="7291818353625820805">ခလုတ်များကို ထပ်ကျော့လိုပါသလား။ ကီးဘုတ်ဆက်တင်များတွင် အသံပြောင်း အမှတ်အသားများကို ပိတ်ပါ</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">ပြုပြင်</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{အမှား ၁ ခု။}other{အမှား # ခု။}}</translation>
 <translation id="8154842056504218462">ထည့်သွင်းမှုအားလုံး ရွေးချယ်ထားသည်။</translation>
-<translation id="8157684860301034423">အက်ပ်အချက်အလက်များကို ရယူ၍မရပါ။</translation>
 <translation id="8175731104491895765">ပြင်သစ် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="8175799081768705361">Drive ဖိုင် <ph name="NUMBER_OF_FILES_SYNCING" /> ဖိုင် စင့်ခ်လုပ်နေသည်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ကာဇာခ်</translation>
 <translation id="9200427192836333033">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူပြီးပြီ။</translation>
-<translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="9219908252191632183">လ</translation>
 <translation id="931652069802536959">ကွန်ရက်ကို မူဝါဒအရ ပိတ်ထားသည်</translation>

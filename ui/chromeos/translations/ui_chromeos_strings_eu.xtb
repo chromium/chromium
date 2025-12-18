@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Zerbitzuak</translation>
 <translation id="181434555916624618">Oraingoz, jendea duten emaitzak ez dira erakutsiko. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="1829129547161959350">Pinguinoa</translation>
-<translation id="183183971458492120">Informazioa kargatzen…</translation>
 <translation id="1832073788765803750">Zabalera erdiko katakana</translation>
 <translation id="1834290891154666894">Gaiaren ordezko izenaren bat-etortzearen sarrera ez da zuzena</translation>
 <translation id="1838709767668011582">Google-ko webgunea</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> erabili dira</translation>
 <translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
 <translation id="22085916256174561">Korearra</translation>
-<translation id="2208919847696382164">Instalatu Linux-ekin</translation>
 <translation id="2215692307449050019">Bateria agortzen ari da. Korrontera konektatzen zarenean berrekingo zaio fitxategiak sinkronizatzeari.</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="2663066752008346276">Birmaniarra, MyanSan teklatuarekin</translation>
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
-<translation id="2718540689505416944">Instalatu aplikazioa Linux-ekin</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Xehetasunak.</translation>
 <translation id="2724954091494693138">Turkiarra (F teklatua)</translation>
 <translation id="2732288874651063549">Kudeatu <ph name="VM_NAME" /> makina birtualarekin partekatzen dituzun elementuak</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Google Workspace-ko banako biltegi osoa erabili duzu.</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2781645665747935084">Belgikarra</translation>
-<translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
 <translation id="2802583107108007218">Lortu murriztapen horiei buruzko informazio gehiago</translation>
 <translation id="2803375539583399270">Idatzi PINa</translation>
 <translation id="2819519502129272135">Fitxategiak sinkronizatzeko aukera desaktibatuta dago</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Ez zaude konektatuta</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> eta <ph name="REMAINING_TIME_MINUTE" /> inguru geratzen dira</translation>
-<translation id="3798449238516105146">Bertsioa</translation>
 <translation id="3801082500826908679">Faroetarra</translation>
 <translation id="3809272675881623365">Untxia</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3855472144336161447">Neo 2 alemana</translation>
 <translation id="3858860766373142691">Izena</translation>
-<translation id="3866249974567520381">Azalpena</translation>
 <translation id="3899991606604168269">Frantsesa (Kanada), hizkuntza anitzetarako teklatuarekin</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> sarera konektatzen</translation>
 <translation id="3906232975181435906">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgariar fonetikoa</translation>
 <translation id="4508265954913339219">Ezin izan da aktibatu</translation>
 <translation id="4509667233588080747">Ingelesa (AEB), nazioarteko Workman teklatuarekin</translation>
-<translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4527800702232535228">Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="4552678318981539154">Erosi memoria gehiago</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> sarea. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Entzun</translation>
 <translation id="5650895901941743674">Egiaztatu APNaren konfigurazioa</translation>
 <translation id="5669691691057771421">Idatzi PIN berria</translation>
-<translation id="5678784840044122290">Linux aplikazioa erabilgarri egongo da zure terminalean eta baliteke haren ikonoa abiarazlean agertzea.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ezin da deskonektatu artxibotik edo disko birtualetik<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Itxi artxiboko edo disko birtualeko fitxategi guztiak eta saiatu berriro.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Jokalaria</translation>
 <translation id="5864471791310927901">DHCP bilaketak huts egin du</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
-<translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>
 <translation id="5918480239180455431">Bilaketa-eginbide berriak daude erabilgarri</translation>
 <translation id="5926082595146149752">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Unitatearen izena</translation>
 <translation id="7238643356913091553">Xehetasunak (<ph name="NETWORK_NAME" />)</translation>
 <translation id="7246947237293279874">FTP proxya</translation>
-<translation id="7248671827512403053">Aplikazioa</translation>
 <translation id="7256405249507348194">Errore ezezaguna: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Zerbitzu erabilgarriak</translation>
 <translation id="7291818353625820805">Teklak errepikatzea nahi duzu? Desaktibatu azentu-markak teklatuaren ezarpenetan.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfiguratu</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errore.}}</translation>
 <translation id="8154842056504218462">Hautatu dira sarrera guztiak.</translation>
-<translation id="8157684860301034423">Ezin izan da eskuratu aplikazioari buruzko informazioa.</translation>
 <translation id="8175731104491895765">Frantsesa (Belgika)</translation>
 <translation id="8175799081768705361">Drive-ko <ph name="NUMBER_OF_FILES_SYNCING" /> fitxategi sinkronizatzen</translation>
 <translation id="8179976553408161302">Sartu</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Dokumentuak</translation>
 <translation id="9189836632794948435">Kazakhtarra</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementu atera dira.</translation>
-<translation id="9213073329713032541">Hasi da instalazioa.</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="9219908252191632183">Ilargia</translation>
 <translation id="931652069802536959">Gidalerroak blokeatu du sarea</translation>

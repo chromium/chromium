@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Þjónusta</translation>
 <translation id="181434555916624618">Í bili verða niðurstöður með fólki ekki sýndar. Prófaðu aðra skipun.</translation>
 <translation id="1829129547161959350">Mörgæs</translation>
-<translation id="183183971458492120">Sækir upplýsingar...</translation>
 <translation id="1832073788765803750">Katakana í hálfri breidd</translation>
 <translation id="1834290891154666894">Ógild samsvörunarfærsla fyrir auknefni viðfangs</translation>
 <translation id="1838709767668011582">Google vefsvæði</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> í notkun</translation>
 <translation id="2198315389084035571">Kínverska (einfölduð)</translation>
 <translation id="22085916256174561">Kóreska</translation>
-<translation id="2208919847696382164">Setja upp með Linux</translation>
 <translation id="2215692307449050019">Rafhlaðan er að tæmast. Samstilling skráa hefst aftur þegar þú tengist við rafmagn.</translation>
 <translation id="2225536596944493418">Ertu viss um að þú viljir eyða <ph name="NUMBER_OF_ITEMS" /> atriðum?</translation>
 <translation id="2230062665678605299">Ekki er hægt að búa til möppuna „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Þú átt <ph name="RETRIES" /> tilraunir eftir.</translation>
 <translation id="2663066752008346276">Búrmanska/Myanmar með Myansan-lyklaborði</translation>
 <translation id="2664412712123763093">Staðsetning skráar</translation>
-<translation id="2718540689505416944">Setja upp forrit með Linux</translation>
 <translation id="2719020180254996569">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upplýsingar</translation>
 <translation id="2724954091494693138">Tyrkneska með F-lyklaborði</translation>
 <translation id="2732288874651063549">Stjórna deilingu með <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Þú hefur fyllt Google Workspace einstaklingsgeymsluna þína.</translation>
 <translation id="2771816809568414714">Ostur</translation>
 <translation id="2781645665747935084">Belgískt</translation>
-<translation id="2782104745158847185">Villa við uppsetningu Linux-forrits</translation>
 <translation id="2802583107108007218">Nánar um þessar takmarkanir</translation>
 <translation id="2803375539583399270">Sláðu inn PIN-númer</translation>
 <translation id="2819519502129272135">Slökkt á samstillingu skráa</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Þú ert ekki á netinu</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="3793469551756281394">Um <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> eftir</translation>
-<translation id="3798449238516105146">Útgáfa</translation>
 <translation id="3801082500826908679">Færeyska</translation>
 <translation id="3809272675881623365">Kanína</translation>
 <translation id="3810973564298564668">Stjórna</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3855472144336161447">Þýskt Neo 2</translation>
 <translation id="3858860766373142691">Heiti</translation>
-<translation id="3866249974567520381">Lýsing</translation>
 <translation id="3899991606604168269">Franska (Kanada) með fjölmála lyklaborði</translation>
 <translation id="3901991538546252627">Tengist <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Setur upp snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
 <translation id="4508265954913339219">Virkjun mistókst</translation>
 <translation id="4509667233588080747">Enska (bandarísk) með alþjóðlegu Workman-lyklaborði</translation>
-<translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4527800702232535228">Þessari möppu er deilt með Parallels Desktop</translation>
 <translation id="4552678318981539154">Kaupa meira geymslurými</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> net, <ph name="SIGNAL_STRENGTH" />% sendistyrkur</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Hlusta</translation>
 <translation id="5650895901941743674">Athugaðu stillingar aðgangsstaðarins</translation>
 <translation id="5669691691057771421">Sláðu inn nýtt PIN-númer</translation>
-<translation id="5678784840044122290">Linux-forritið verður tiltækt í gegnum skipanalínu og einnig gæti tákn birst í ræsiforritinu.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ekki hægt að aftengjast geymslu eða sýndardiski<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Lokaðu öllum skrám í geymslunni eða á sýndardisknum og reyndu svo aftur.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Leikjaspilari</translation>
 <translation id="5864471791310927901">DHCP-uppfletting mistókst</translation>
 <translation id="5896749729057314184">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, óvirkt, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, upplýsingar</translation>
-<translation id="5911887972742538906">Villa kom upp við uppsetningu Linux-forritsins.</translation>
 <translation id="5912396950572065471">Snið</translation>
 <translation id="5918480239180455431">Nýir leitareiginleikar í boði</translation>
 <translation id="5926082595146149752">Hollenska (Holland) með bandarísku alþjóðlegu tölvulyklaborði</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Heiti drifs</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, upplýsingar</translation>
 <translation id="7246947237293279874">FTP-staðgengilsþjónn</translation>
-<translation id="7248671827512403053">Forrit</translation>
 <translation id="7256405249507348194">Óþekkt villa: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Þjónusta í boði</translation>
 <translation id="7291818353625820805">Viltu endurtaka lykla? Slökktu á áherslumerkjum í stillingum lyklaborðsins.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Grunnstilla</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 villa.}one{# villa.}other{# villur.}}</translation>
 <translation id="8154842056504218462">Allar færslur valdar.</translation>
-<translation id="8157684860301034423">Mistókst að sækja upplýsingar um forrit.</translation>
 <translation id="8175731104491895765">Franska (Belgía)</translation>
 <translation id="8175799081768705361">Samstillir <ph name="NUMBER_OF_FILES_SYNCING" /> Drive-skrár</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="9189836632794948435">Kasakstanska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> atriði dregin út.</translation>
-<translation id="9213073329713032541">Uppsetning hófst.</translation>
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="9219908252191632183">Tungllandslag</translation>
 <translation id="931652069802536959">Lokað er á netkerfi vegna reglna</translation>

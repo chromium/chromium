@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">服務</translation>
 <translation id="181434555916624618">目前不會顯示含有人臉的結果，請試試其他提示。</translation>
 <translation id="1829129547161959350">企鵝</translation>
-<translation id="183183971458492120">正在載入資訊...</translation>
 <translation id="1832073788765803750">半形片假名</translation>
 <translation id="1834290891154666894">主體替代名稱比對項目無效</translation>
 <translation id="1838709767668011582">Google 網站</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">已使用 <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">簡體中文</translation>
 <translation id="22085916256174561">韓文</translation>
-<translation id="2208919847696382164">透過 Linux 執行安裝程序</translation>
 <translation id="2215692307449050019">電力不足，系統會在接上電源後繼續同步處理檔案。</translation>
 <translation id="2225536596944493418">你確定要刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="2663066752008346276">緬甸文搭配 Myansan 鍵盤</translation>
 <translation id="2664412712123763093">檔案位置</translation>
-<translation id="2718540689505416944">透過 Linux 安裝應用程式</translation>
 <translation id="2719020180254996569">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，詳細資料</translation>
 <translation id="2724954091494693138">土耳其文搭配 F 鍵盤</translation>
 <translation id="2732288874651063549">管理 <ph name="VM_NAME" /> 共用設定</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">你的個人 Google Workspace 儲存空間已用盡。</translation>
 <translation id="2771816809568414714">乳酪</translation>
 <translation id="2781645665747935084">比利時文</translation>
-<translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2802583107108007218">進一步瞭解這些限制</translation>
 <translation id="2803375539583399270">輸入 PIN</translation>
 <translation id="2819519502129272135">檔案同步處理功能已關閉</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">你處於離線狀態</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3793469551756281394">大約還剩 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">版本</translation>
 <translation id="3801082500826908679">法羅文</translation>
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德文 Neo 2</translation>
 <translation id="3858860766373142691">名稱</translation>
-<translation id="3866249974567520381">說明</translation>
 <translation id="3899991606604168269">法文 (加拿大) 搭配多語鍵盤</translation>
 <translation id="3901991538546252627">正在連線至：<ph name="NAME" /></translation>
 <translation id="3906232975181435906">正在安裝行動裝置設定檔，第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">保加利亞文 (拼音)</translation>
 <translation id="4508265954913339219">啟用失敗</translation>
 <translation id="4509667233588080747">英文 (美國) 搭配 Workman 國際鍵盤</translation>
-<translation id="4522570452068850558">詳細資料</translation>
 <translation id="4527800702232535228">已與 Parallls Desktop 共用這個資料夾</translation>
 <translation id="4552678318981539154">購買更多儲存空間</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />網路，訊號強度 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">聆聽</translation>
 <translation id="5650895901941743674">請檢查 APN 設定</translation>
 <translation id="5669691691057771421">輸入新的 PIN 碼</translation>
-<translation id="5678784840044122290">這個 Linux 應用程式將出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法與封存檔或虛擬磁碟中斷連結<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    請關閉封存檔或虛擬磁碟中的所有檔案，然後再試一次。</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">遊戲玩家</translation>
 <translation id="5864471791310927901">DHCP 查閱失敗</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
-<translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
 <translation id="5918480239180455431">新搜尋功能已推出</translation>
 <translation id="5926082595146149752">荷蘭文 (荷蘭) 搭配美式國際 PC 鍵盤</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">硬碟名稱</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，詳細資料</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
-<translation id="7248671827512403053">應用程式</translation>
 <translation id="7256405249507348194">無法辨識的錯誤：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用的服務</translation>
 <translation id="7291818353625820805">要重複按鍵動作嗎？請前往鍵盤設定關閉重音符號功能</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 個錯誤。}other{# 個錯誤。}}</translation>
 <translation id="8154842056504218462">已選取所有項目。</translation>
-<translation id="8157684860301034423">無法擷取應用程式資訊。</translation>
 <translation id="8175731104491895765">法文 (比利時)</translation>
 <translation id="8175799081768705361">正在同步處理 <ph name="NUMBER_OF_FILES_SYNCING" /> 個雲端硬碟檔案</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="9189836632794948435">哈薩克文</translation>
 <translation id="9200427192836333033">已擷取 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
-<translation id="9213073329713032541">已成功啟動安裝程序。</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="9219908252191632183">月球表面</translation>
 <translation id="931652069802536959">網路已根據政策封鎖</translation>

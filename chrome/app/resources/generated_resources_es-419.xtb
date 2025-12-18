@@ -1028,7 +1028,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1679810534535368772">¿Confirmas que quieres salir?</translation>
 <translation id="167983332380191032">El servicio de administración envió un error de HTTP.</translation>
 <translation id="167997285881077031">Configuración de la voz para la función de texto a voz</translation>
-<translation id="1680849702532889074">Se produjo un error durante la instalación de la app de Linux.</translation>
 <translation id="1682195225331129001">Probar ahora</translation>
 <translation id="1682548588986054654">Nueva ventana de incógnito</translation>
 <translation id="1682696837763999627">Cursor grande del mouse</translation>
@@ -1654,7 +1653,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2104166991923847969">Desactivar el hotspot automáticamente</translation>
 <translation id="2105809836724866556">Se ocultó el <ph name="MODULE_TITLE" /></translation>
-<translation id="2106439768713835453">Compartir también el audio de la aplicación</translation>
 <translation id="2107359546799360577">Las optimizaciones de JavaScript están inhabilitadas.</translation>
 <translation id="2108204112555497972">Se verificó hace <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
@@ -2666,7 +2664,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2778471504622896352">Agregar apps remotas al selector de ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
 <translation id="2785279781154577715">Visualización de la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
@@ -4126,6 +4123,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3785748905555897481">El PIN se cambió correctamente</translation>
 <translation id="3786224729726357296">Borrar los datos del sitio y permisos de <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Mostrar subrayado en el texto redactado</translation>
+<translation id="3786890785076278600">Línea estática</translation>
 <translation id="3787434344076711519">Esperando la traducción</translation>
 <translation id="3788301286821743879">No se pudo iniciar la app del kiosco.</translation>
 <translation id="3788401245189148511">Podría:</translation>
@@ -4505,6 +4503,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4029024445166427442">Selector + Mayúsculas + retroceso</translation>
 <translation id="4029556917477724407">Regresar de la página <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 líneas</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
@@ -4875,7 +4874,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4293219510510666933">Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación. Este parámetro de configuración está activado.</translation>
 <translation id="429344752071832554">Dejar de enfocar el grupo</translation>
 <translation id="4294392694389031609">Se borró <ph name="FILE_NAME" /> del historial de descargas, pero aún está en tu dispositivo</translation>
-<translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
 <translation id="4295979599050707005">Vuelve a acceder para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, apps y extensiones en Chrome y Google Play. También puedes quitarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicaciones instaladas y transmitidas desde <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Se encontró tu contraseña original para este sitio en una violación de la seguridad de los datos pública. El <ph name="DATE" />, le pediste a <ph name="BRAND" /> que cambiara automáticamente tu contraseña.</translation>
@@ -4982,7 +4980,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
 <translation id="4373418556073552953">Accede con tu teléfono Android</translation>
 <translation id="4373973310429385827">Faro</translation>
-<translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>
 <translation id="4376226992615520204">Ubicación desactivada</translation>
 <translation id="4377363674125277448">Se produjo un error con el certificado del servidor.</translation>
@@ -5767,6 +5764,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4908811072292128752">Abre una pestaña nueva para navegar en dos sitios al mismo tiempo</translation>
 <translation id="4910241725741323970">Ya se instaló la app</translation>
 <translation id="4912643508233590958">Reactivaciones</translation>
+<translation id="4912892750325639080">3 líneas</translation>
 <translation id="4913209098186576320">Es posible que este archivo sea peligroso<ph name="LINE_BREAK" />La revisión está tardando más de lo habitual…</translation>
 <translation id="4913695564084524048">No se pueden encontrar los datos de la app</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
@@ -6261,7 +6259,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar en la parte superior derecha</translation>
 <translation id="5264148714798105376">Esta acción puede tardar unos minutos.</translation>
 <translation id="5264252276333215551">Conéctate a Internet para iniciar tu aplicación en modo kiosco.</translation>
-<translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
 <translation id="526622169288322445">Más acciones para <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Activa la Navegación segura para obtener protección contra sitios peligrosos</translation>
 <translation id="5269659747698455324">Desbloquear tus llaves de acceso</translation>
@@ -7638,7 +7635,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="623261264391834964">Haz clic con el botón derecho en un cuadro de texto para usar Ayúdame a escribir</translation>
 <translation id="6233154960150021497">Usar de forma predeterminada la voz en lugar del teclado</translation>
 <translation id="6234108445915742946">El 31 de marzo, cambiarán las Condiciones del Servicio de Chrome</translation>
-<translation id="6234474535228214774">Instalación pendiente</translation>
 <translation id="6235208551686043831">Se activó la cámara del dispositivo. Coloca el código QR de tu eSIM frente a la cámara.</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> grupo <ph name="GROUP_NAME" />, <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App para tomar notas con la pluma stylus</translation>
@@ -8320,7 +8316,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6713668088933662563">Nunca ofrecer la traducción de estos idiomas</translation>
 <translation id="6714871567554212732">Ver más detalles sobre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Los sitios web no pueden usar el micrófono</translation>
-<translation id="6715803357256707211">Se produjo un error durante la instalación de la app de Linux. Haz clic en la notificación para obtener más detalles.</translation>
 <translation id="6716049856796700977">Nadie puede usar tu ubicación. Sin embargo, es posible que tu ubicación aún sea visible para apps y sitios web a través de tu dirección IP. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Se interrumpió la conexión de red. Revísala o intenta usar otra red Wi-Fi.</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
@@ -9008,6 +9003,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7191159667348037">Impresora desconocida (USB)</translation>
 <translation id="7191631508323321927">Pasillo</translation>
 <translation id="7191632649590906354">Los miembros de tu familia ahora pueden usar tu nombre de usuario y contraseña cuando usan el Administrador de contraseñas de Google. Diles que pueden acceder en <ph name="WEBSITE" />.</translation>
+<translation id="7192393330344360021">1 línea</translation>
 <translation id="7193051357671784796">Tu organización agregó esta app. Para finalizar la instalación, restablece la app.</translation>
 <translation id="7193374945610105795">No se guardó ninguna contraseña para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envía comentarios sobre los grupos sugeridos</translation>
@@ -11119,6 +11115,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="862750493060684461">Caché CSS</translation>
 <translation id="8627795981664801467">Conexiones seguras solamente</translation>
 <translation id="8627804903623428808">Revisa estas condiciones y controla los datos de tu hijo</translation>
+<translation id="8628674746770065790">Seguir cursor</translation>
 <translation id="862907440446514309">El administrador está grabando tu pantalla con <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Suspender mientras se carga el dispositivo</translation>
 <translation id="8631032106121706562">Pétalos</translation>
@@ -12135,7 +12132,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="992592832486024913">Inhabilitar ChromeVox (descripciones por voz)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> grupos de pestañas sugeridos</translation>
 <translation id="992778845837390402">La copia de seguridad de Linux está en curso</translation>
-<translation id="993540765962421562">La instalación está en curso</translation>
 <translation id="994087375490600917">Paneles laterales</translation>
 <translation id="994289308992179865">Bucle</translation>
 <translation id="995755448277384931">Agregar un IBAN</translation>

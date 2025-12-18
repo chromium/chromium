@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Serveis</translation>
 <translation id="181434555916624618">De moment, no es mostraran resultats amb persones. Prova-ho amb una altra indicació.</translation>
 <translation id="1829129547161959350">Pingüí</translation>
-<translation id="183183971458492120">S'està carregant la informació...</translation>
 <translation id="1832073788765803750">Katakana de mitja amplada</translation>
 <translation id="1834290891154666894">Entrada no vàlida de nom alternatiu d'assumpte coincident</translation>
 <translation id="1838709767668011582">Lloc de Google</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> en ús</translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
 <translation id="22085916256174561">Coreà</translation>
-<translation id="2208919847696382164">Instal·la per a Linux</translation>
 <translation id="2215692307449050019">Queda poca bateria. La sincronització de fitxers es reprendrà quan et connectis a l'alimentació.</translation>
 <translation id="2225536596944493418">Confirmes que vols suprimir <ph name="NUMBER_OF_ITEMS" /> elements?</translation>
 <translation id="2230062665678605299">No es pot crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="2663066752008346276">Birmà (Birmània) amb teclat myansan</translation>
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
-<translation id="2718540689505416944">Instal·la l'aplicació per a Linux</translation>
 <translation id="2719020180254996569">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalls</translation>
 <translation id="2724954091494693138">Turc amb teclat F</translation>
 <translation id="2732288874651063549">Administra l'ús compartit de <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Has fet servir tot el teu emmagatzematge individual de Google Workspace.</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>
-<translation id="2782104745158847185">Hi ha hagut un error en instal·lar l'aplicació per a Linux</translation>
 <translation id="2802583107108007218">Més informació sobre aquestes restriccions</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2819519502129272135">La sincronització de fitxers està desactivada</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">No tens connexió</translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="3793469551756281394">Temps restant aproximat: <ph name="REMAINING_TIME_HOUR" /> i <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Versió</translation>
 <translation id="3801082500826908679">Feroès</translation>
 <translation id="3809272675881623365">Conill</translation>
 <translation id="3810973564298564668">Gestiona</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3866249974567520381">Descripció</translation>
 <translation id="3899991606604168269">Francès (Canadà) amb teclat multilingüe</translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="3906232975181435906">S'està instal·lant el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />.</translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Fonètic búlgar</translation>
 <translation id="4508265954913339219">Hi ha hagut un error en l'activació.</translation>
 <translation id="4509667233588080747">Anglès (EUA) amb teclat Workman internacional</translation>
-<translation id="4522570452068850558">Detalls</translation>
 <translation id="4527800702232535228">Aquesta carpeta es comparteix amb Parallels Desktop</translation>
 <translation id="4552678318981539154">Compra més emmagatzematge</translation>
 <translation id="4552759165874948005">Xarxa <ph name="NETWORK_TYPE" /> (intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent)</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Escolta</translation>
 <translation id="5650895901941743674">Comprova la configuració de l'APN</translation>
 <translation id="5669691691057771421">Introdueix el PIN nou</translation>
-<translation id="5678784840044122290">L'aplicació per a Linux estarà disponible al terminal i és possible que també inclogui una icona al menú d'aplicacions.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No es pot desconnectar d'un arxiu o d'un disc virtual<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Tanca tots els fitxers de l'arxiu o del disc virtual i torna-ho a provar.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Jugador de videojocs</translation>
 <translation id="5864471791310927901">Error en la cerca de DHCP</translation>
 <translation id="5896749729057314184">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
-<translation id="5911887972742538906">Hi ha hagut un error en instal·lar l'aplicació per a Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Ara hi ha noves funcions de cerca disponibles</translation>
 <translation id="5926082595146149752">Neerlandès (Països Baixos) amb teclat internacional dels EUA (PC)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Nom de la unitat</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalls</translation>
 <translation id="7246947237293279874">Servidor intermediari FTP</translation>
-<translation id="7248671827512403053">Aplicació</translation>
 <translation id="7256405249507348194">Error no reconegut: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serveis disponibles</translation>
 <translation id="7291818353625820805">Vols que les tecles es repeteixin? Desactiva les marques d'accentuació a Configuració del teclat.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 error.}other{# errors.}}</translation>
 <translation id="8154842056504218462">S'han seleccionat totes les entrades.</translation>
-<translation id="8157684860301034423">No s'ha pogut recuperar la informació de l'aplicació.</translation>
 <translation id="8175731104491895765">Francès (Bèlgica)</translation>
 <translation id="8175799081768705361">S'estan sincronitzant <ph name="NUMBER_OF_FILES_SYNCING" /> fitxers de Drive</translation>
 <translation id="8179976553408161302">Retorn</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9200427192836333033">S'han extret <ph name="NUMBER_OF_ITEMS" /> elements.</translation>
-<translation id="9213073329713032541">La instal·lació s'ha iniciat.</translation>
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219908252191632183">Paisatge lunar</translation>
 <translation id="931652069802536959">Una política ha bloquejat la xarxa</translation>

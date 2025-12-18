@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">ግልጋሎቶች</translation>
 <translation id="181434555916624618">ለአሁን ሰዎች ያሏቸው ውጤቶች አይታዩም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="1829129547161959350">ፔንግዊን</translation>
-<translation id="183183971458492120">መረጃ በመጫን ላይ...</translation>
 <translation id="1832073788765803750">ባለግማሽ ስፋት ካታካና</translation>
 <translation id="1834290891154666894">ልክ ያልሆነ የርዕስ አማራጭ ስም ዝምድና ግቤት</translation>
 <translation id="1838709767668011582">የGoogle ጣቢያ</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> ጥቅም ላይ ውሏል</translation>
 <translation id="2198315389084035571">ቀላል ቻይንኛ</translation>
 <translation id="22085916256174561">ኮሪያኛ</translation>
-<translation id="2208919847696382164">በLinux ይጫኑ</translation>
 <translation id="2215692307449050019">የባትሪ ኃይል ዝቅተኛ ነው። የፋይል ማስመር ከኃይል ጋር በሚገናኙበት ጊዜ ከቆመበት ይቀጥላል።</translation>
 <translation id="2225536596944493418">እርግጠኛ ነዎት <ph name="NUMBER_OF_ITEMS" /> ንጥሎችን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2230062665678605299">የ«<ph name="FOLDER_NAME" />» አቃፊን መፍጠር አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="2663066752008346276">በርማኛ/ሚያንማር በሚያንሳን ቁልፍ ሰሌዳ</translation>
 <translation id="2664412712123763093">የፋይል ቦታ</translation>
-<translation id="2718540689505416944">መተግበሪያ በLinux ጫን</translation>
 <translation id="2719020180254996569">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ ዝርዝሮች</translation>
 <translation id="2724954091494693138">ቱርክኛ በF-ቁልፍ ሰሌዳ</translation>
 <translation id="2732288874651063549">የ<ph name="VM_NAME" /> ማጋራትን ያስተዳድሩ</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">ሁሉንም የእርስዎን የግለሰብ የGoogle Workspace ማከማቻ ተጠቅመዋል።</translation>
 <translation id="2771816809568414714">ቺዝ</translation>
 <translation id="2781645665747935084">የቤልጂየም</translation>
-<translation id="2782104745158847185">የLinux መተግበሪያን መጫን ላይ ስህተት</translation>
 <translation id="2802583107108007218">ስለ እነዚህ ገደቦች የበለጠ ይወቁ</translation>
 <translation id="2803375539583399270">ፒን ያስገቡ</translation>
 <translation id="2819519502129272135">የፋይል ስምረት ጠፍቷል</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">ከመስመር ውጭ ነዎት</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ገደማ ይቀራል</translation>
-<translation id="3798449238516105146">ስሪት</translation>
 <translation id="3801082500826908679">ፋሮኛ</translation>
 <translation id="3809272675881623365">ጥንቸል</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
 <translation id="3858860766373142691">ስም</translation>
-<translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="3899991606604168269">ፈረንሳይኛ (ካናዳ) በባለብዙ ቋንቋ ቁልፍ ሰሌዳ</translation>
 <translation id="3901991538546252627">ከ<ph name="NAME" /> ጋር በመገናኘት ላይ</translation>
 <translation id="3906232975181435906">የሞባይል መገለጫ በመጫን ላይ፣ አውታረ መረብ<ph name="NETWORK_INDEX" /> ከ <ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">የቡልጋሪያኛ ፎነቲክ</translation>
 <translation id="4508265954913339219">ማግበር አልተሳካም</translation>
 <translation id="4509667233588080747">እንግሊዝኛ (አሜሪካ) በዎርክማን ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
-<translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="4552678318981539154">ተጨማሪ ማከማቻ ይግዙ</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> አውታረ መረብ፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">አዳምጥ</translation>
 <translation id="5650895901941743674">የኤፒኤን ውቅረትዎን ይፈትሹት</translation>
 <translation id="5669691691057771421">አዲስ ፒን ያስገቡ</translation>
-<translation id="5678784840044122290">የLinux መተግበሪያው በእርስዎ መነሻ ጣቢያ ውስጥ ይገኛል። እንዲሁም በእርስዎ አስጀማሪ ውስጥ አዶ ሊያሳይ ይችል ይሆናል።</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ከማህደር ወይም ከምናባዊ ዲስክ ማለያየት አይቻልም<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    በማህደር ወይም ምናባዊ ዲስክ ላይ ያሉ ሁሉንም ፋይሎች ይዝጉ፣ ከዚያ እንደገና ይሞክሩ።</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">ተጫዋች</translation>
 <translation id="5864471791310927901">የDHCP ፍለጋ አልተሳካም</translation>
 <translation id="5896749729057314184">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ያልነቃ፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
-<translation id="5911887972742538906">የእርስዎን የLinux መተግበሪያ በመጫን ወቅት ስህተት አጋጥሟል።</translation>
 <translation id="5912396950572065471">ቅርጸት</translation>
 <translation id="5918480239180455431">አዲስ የፍለጋ ባህሪያት ይገኛሉ</translation>
 <translation id="5926082595146149752">ደች (ኔዘርላንድስ) በአሜሪካ ዓለም አቀፍ ፒሲ ቁልፍ ሰሌዳ</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">የአንጻፊ ስም</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />፣ ዝርዝሮች</translation>
 <translation id="7246947237293279874">የኤፍቲፒ ተኪ</translation>
-<translation id="7248671827512403053">መተግበሪያ</translation>
 <translation id="7256405249507348194">ያልታወቀ ስህተት፦ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">የሚገኙ አገልግሎቶች</translation>
 <translation id="7291818353625820805">ቁልፎች እንዲደጋገሙ ይፈልጋሉ? በቁልፍ ሰሌዳ ቅንብሮች ውስጥ የአጽንዖት ምልክቶችን ያጥፉ</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">አዋቅር</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ስህተት።}one{# ስህተቶች።}other{# ስህተቶች}}</translation>
 <translation id="8154842056504218462">ሁሉም ግቤቶች ተመርጠዋል።</translation>
-<translation id="8157684860301034423">የመተግበሪያ መረጃን ሰርስሮ ማውጣት አልተሳካም።</translation>
 <translation id="8175731104491895765">ፈረንሳይኛ (ቤልጄየም)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> የDrive ፋይሎችን በማስመር ላይ</translation>
 <translation id="8179976553408161302">አስገባ</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9189836632794948435">ካዛክኛ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ከማህደር ወጥተዋል።</translation>
-<translation id="9213073329713032541">ጭነት በተሳካ ሁኔታ ጀምሯል።</translation>
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="9219908252191632183">ጨረቃዊ</translation>
 <translation id="931652069802536959">አውታረ መረብ በመመሪያ ታግዷል</translation>

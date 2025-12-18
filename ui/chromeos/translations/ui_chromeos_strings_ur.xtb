@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">سروسز</translation>
 <translation id="181434555916624618">ابھی کے لیے، لوگوں کے ساتھ نتائج نہیں دکھائے جائیں گے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="1829129547161959350">پینگوئن</translation>
-<translation id="183183971458492120">معلومات لوڈ ہو رہی ہے…</translation>
 <translation id="1832073788765803750">نصف چوڑائی کٹاکانا</translation>
 <translation id="1834290891154666894">موضوع کے متبادل نام سے مماثل اندراج غلط ہے</translation>
 <translation id="1838709767668011582">‏Google سائٹ</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> استعمال شدہ</translation>
 <translation id="2198315389084035571">آسان کردہ چینی</translation>
 <translation id="22085916256174561">کوریائی</translation>
-<translation id="2208919847696382164">‏Linux کے ساتھ انسٹال کریں</translation>
 <translation id="2215692307449050019">بیٹری کم ہے۔ آپ کے پاور سے منسلک ہونے پر فائل کی مطابقت پذیری دوبارہ شروع ہو جائے گی۔</translation>
 <translation id="2225536596944493418">‏کیا آپ واقعی ‎<ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2230062665678605299">فولڈر "<ph name="FOLDER_NAME" />" بنانے سے قاصر۔ <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔</translation>
 <translation id="2663066752008346276">میانسان کی بورڈ کے ساتھ برمی/میانمار</translation>
 <translation id="2664412712123763093">فائل کا مقام</translation>
-<translation id="2718540689505416944">‏Linux والی ایپ انسٹال کریں</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، تفصیلات</translation>
 <translation id="2724954091494693138">‏F کی بورڈ کے ساتھ ترکی</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> کے اشتراک کا نظم کریں</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">‏آپ نے اپنی تمام انفرادی Google Workspace اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
-<translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
 <translation id="2802583107108007218">ان پابندیوں کے بارے میں مزید جانیں</translation>
 <translation id="2803375539583399270">‏PIN درج کریں</translation>
 <translation id="2819519502129272135">فائل کی مطابقت پذیری آف کی گئی</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">آپ آف لائن ہیں</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> باقی</translation>
-<translation id="3798449238516105146">ورژن</translation>
 <translation id="3801082500826908679">فیروئیز</translation>
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3855472144336161447">جرمن نیو 2</translation>
 <translation id="3858860766373142691">نام</translation>
-<translation id="3866249974567520381">تفصیل</translation>
 <translation id="3899991606604168269">کثیر لسانی کی بورڈ کے ساتھ فرانسیسی (کینیڈا)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="3906232975181435906">موبائل پروفائل انسٹال ہو رہی ہے، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
 <translation id="4508265954913339219">فعالیت ناکام ہو گئی</translation>
 <translation id="4509667233588080747">‏Workman بین الاقوامی کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
-<translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4527800702232535228">‏یہ فولڈر Parallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="4552678318981539154">مزید اسٹوریج خریدیں</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> نیٹ ورک، سگنل کی مظبوطی <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">سنیں</translation>
 <translation id="5650895901941743674">‏اپنی APN کنفیگریشن چیک کریں</translation>
 <translation id="5669691691057771421">‏نیا PIN درج کریں</translation>
-<translation id="5678784840044122290">‏Linux ایپلیکیشن آپ کے 'ٹرمنل' کے اندر دستیاب ہوگی اور آپ کے لانچر میں بھی ایک آئیکن ظاہر ہو سکتا ہے۔</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />کسی آرکائیو یا ورچوئل ڈسک سے غیر منسلک نہیں ہو سکتا<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    آرکائیو یا ورچوئل ڈسک پر تمام فائلیں بند کریں، پھر دوبارہ کوشش کریں۔</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">گیمر</translation>
 <translation id="5864471791310927901">‏DHCP کی تلاش ناکام ہو گئی</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی، تفصیلات</translation>
-<translation id="5911887972742538906">‏آپ کی Linux ایپلیکیشن انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔</translation>
 <translation id="5912396950572065471">فارمیٹ</translation>
 <translation id="5918480239180455431">تلاش کی نئی خصوصیات دستیاب ہیں</translation>
 <translation id="5926082595146149752">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ ڈچ (نیدرلینڈز)</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">ڈرائیو کا نام</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، تفصیلات</translation>
 <translation id="7246947237293279874">‏FTP پراکسی</translation>
-<translation id="7248671827512403053">اطلاق</translation>
 <translation id="7256405249507348194">غیر شناخت شدہ خرابی: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">دستیاب سروسز</translation>
 <translation id="7291818353625820805">کلیدوں کو دہرانا چاہتے ہیں؟ کی بورڈ کی ترتیبات میں تلفظ کے نشانات آف کریں</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">کنفیگر کریں</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 خرابی۔}other{# خرابیاں۔}}</translation>
 <translation id="8154842056504218462">تمام اندراجات منتخب کئے گئے۔</translation>
-<translation id="8157684860301034423">ایپ کی معلومات دوبارہ حاصل کرنے میں ناکام ہو گئے۔</translation>
 <translation id="8175731104491895765">فرانسیسی (بیلجیم)</translation>
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> Drive فائلز کی مطابقت پذیری کی جا رہی ہے</translation>
 <translation id="8179976553408161302">انٹر</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">قزاخ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو ایکسٹریکٹ کیا گیا۔</translation>
-<translation id="9213073329713032541">انسٹالیشن کامیابی کے ساتھ شروع ہو گئی۔</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">قمری</translation>
 <translation id="931652069802536959">نیٹ ورک پالیسی کے ذریعے بلاک ہے</translation>

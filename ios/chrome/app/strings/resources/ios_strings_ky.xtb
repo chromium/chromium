@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Бүттү</translation>
 <translation id="2577522251608256362">Район</translation>
 <translation id="2579713773888829241">Жалпы дисктер</translation>
+<translation id="2580306219079937316">Которуу параметрлерин ачуу</translation>
 <translation id="2583688836549072561">Өтмөктөр тобу, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> өтмөк, жаңы аракет.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Товарлардын баасынын төмөндөшүнө көз салуу</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Өзгөртүүңүз сакталган жок.</translation>
 <translation id="3254806613790954367">Бардык түзмөктөрдө ачылган акыркы өтмөк</translation>
 <translation id="325717987950204592">"Купуялык жана коопсуздук" параметрин таптап коюңуз</translation>
+<translation id="3266338926702638258">Бул товардын баасынын өзгөрүшүн көрсөтүү</translation>
 <translation id="3272527697863656322">Жокко чыгаруу</translation>
 <translation id="3273510436356991673">Башкы экранды ыңгайлаштырыңыз</translation>
 <translation id="3277021493514034324">Сайттын дареги көчүрүлдү</translation>
@@ -1934,6 +1936,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8221665793629393739">Кайра баш багуу тууралуу эстеткич</translation>
 <translation id="8232956427053453090">Дайындарды сактоо</translation>
 <translation id="8233237502828137700">Жарнамалык баннерди жабуу</translation>
+<translation id="823339794112333264">Микрофонду күйгүзүү</translation>
 <translation id="8250920743982581267">Документтер</translation>
 <translation id="8258734532103758067">Маалыматтарымды экспорттодум</translation>
 <translation id="8258999165172757081">Кошулду</translation>
@@ -2039,6 +2042,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8611922158252451755">Шилтемеси бар колдонуучулар бардык өтмөктөрдү түзөтө алат, андыктан ишенимдүү адамдар менен бөлүшүңүз. Шилтеменин мөөнөтү 48 сааттан кийин аяктайт.</translation>
 <translation id="8614671330774943747">Өтмөктөрдү которуштургучка өтүү</translation>
 <translation id="8620640915598389714">Түзөтүү</translation>
+<translation id="862367213447108001">Бул сайтта калкыма терезелер ар дайым көрсөтүлсүн</translation>
 <translation id="8625706492572042370">Башкы экранды түзөтүү</translation>
 <translation id="8631370184731241854">Кулпуланган жашыруун өтмөктөр</translation>
 <translation id="8633025649649592204">Соңку аракеттер</translation>
@@ -2135,6 +2139,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8928426232677696166"><ph name="EMAIL" /> аккаунтун учурда уюмуңуз тескейт. Аккаунт тандаңыз.</translation>
 <translation id="894191600409472540">Татаал сырсөз түзүңүз</translation>
 <translation id="8943780400130412484">Жаңы жүктөп алуу башталсынбы?</translation>
+<translation id="8947838125864566256">Микрофонду өчүрүү</translation>
 <translation id="8953046091948372197">Сырсөздөрүңүздү ушул жерден табасыз</translation>
 <translation id="8953602327115378731">{count,plural, =1{Автотолтуруунун {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}other{Автотолтуруунун {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="895541991026785598">Маселе жөнндө кабрл</translation>

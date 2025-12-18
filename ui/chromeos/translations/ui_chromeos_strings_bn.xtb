@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">পরিষেবাসমূহ</translation>
 <translation id="181434555916624618">এই মুহূর্তে, লোকজন আছে এমন ছবি দেখানো হবে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="1829129547161959350">পেঙ্গুইন</translation>
-<translation id="183183971458492120">তথ্য লোড করা হচ্ছে…</translation>
 <translation id="1832073788765803750">হাফ উইডথ কাটাকানা</translation>
 <translation id="1834290891154666894">সাবজেক্টের অন্য নামের সাথে মিল থাকা এন্ট্রি ভুল</translation>
 <translation id="1838709767668011582">Google সাইট</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> ব্যবহার করা হয়েছে</translation>
 <translation id="2198315389084035571">সরলীকৃত চীনা</translation>
 <translation id="22085916256174561">কোরিয়ান</translation>
-<translation id="2208919847696382164">Linux ব্যবহার করে ইনস্টল করুন</translation>
 <translation id="2215692307449050019">ব্যাটারির চার্জ কম। আপনি পাওয়ারের সাথে কানেক্ট করলে, ফাইল সিঙ্ক করার প্রসেস আবার চালু হবে।</translation>
 <translation id="2225536596944493418">আপনি কি <ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> " ফোল্ডার তৈরী করতে ব্যর্থ৷<ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="2663066752008346276">বার্মিজ/মায়ানমার ভাষায় মায়ানসান কীবোর্ড</translation>
 <translation id="2664412712123763093">ফাইলের লোকেশন</translation>
-<translation id="2718540689505416944">Linux ব্যবহার করে অ্যাপ ইনস্টল করুন</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, বিবরণ</translation>
 <translation id="2724954091494693138">তুর্কি ভাষায় এফ (F) কীবোর্ড</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> শেয়ার করা ম্যানেজ করুন</translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">আপনার সমস্ত ব্যক্তিগত Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
 <translation id="2771816809568414714">চিজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
-<translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
 <translation id="2802583107108007218">এই সীমাবদ্ধতার বিষয়ে আরও জানুন</translation>
 <translation id="2803375539583399270">পিন নম্বর দিন</translation>
 <translation id="2819519502129272135">ফাইল সিঙ্ক করার প্রসেস বন্ধ হয়ে গেছে</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">আপনি অফলাইন আছেন</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3793469551756281394">আরও প্রায় <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> সময় লাগবে</translation>
-<translation id="3798449238516105146">ভার্সন</translation>
 <translation id="3801082500826908679">ফেয়ারোইজ</translation>
 <translation id="3809272675881623365">খরগোশ</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
-<translation id="3866249974567520381">বর্ণনা</translation>
 <translation id="3899991606604168269">ফরাসি (কানাডা) ভাষায় মাল্টিলিঙ্গুয়াল কীবোর্ড</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3906232975181435906">মোবাইল প্রোফাইল ইনস্টল করা হচ্ছে, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">বুলগেরিয়ান ফনেটিক</translation>
 <translation id="4508265954913339219">সক্রিয়করণ ব্যর্থ</translation>
 <translation id="4509667233588080747">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় ওয়ার্কম্যান ইন্টারন্যাশনাল কীবোর্ড</translation>
-<translation id="4522570452068850558">বিবরণগুলি</translation>
 <translation id="4527800702232535228">এই ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="4552678318981539154">আরও সঞ্চয়স্থান কিনুন</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, সিগন্যাল:<ph name="SIGNAL_STRENGTH" />%</translation>
@@ -602,7 +595,6 @@
 <translation id="5649768706273821470">শুনুন</translation>
 <translation id="5650895901941743674">আপনার APN কনফিগারেশন চেক করুন</translation>
 <translation id="5669691691057771421">নতুন পিন লিখুন</translation>
-<translation id="5678784840044122290">Linux অ্যাপ্লিকেশনটি আপনার  টার্মিনালের মধ্যে পাওয়া যাবে এবং আপনার লঞ্চারে একটি আইকনও দেখাতে পারে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />একটি আর্কাইভ বা ভার্চুয়াল ডিস্ক থেকে ডিসকানেক্ট করা যাবে না<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    আর্কাইভ বা ভার্চুয়াল ডিস্কের সমস্ত ফাইল বন্ধ করে আবার চেষ্টা করুন।</translation>
@@ -637,7 +629,6 @@
 <translation id="5861477046012235702">গেমার</translation>
 <translation id="5864471791310927901">DHCP লুকআপ ব্যর্থ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
-<translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
 <translation id="5918480239180455431">নতুন সার্চ ফিচার উপলভ্য আছে</translation>
 <translation id="5926082595146149752">ডাচ (নেদারল্যান্ডস) ভাষায় ইউএস ইন্টারন্যাশনাল পিসি কীবোর্ড</translation>
@@ -806,7 +797,6 @@
 <translation id="7238097264433196391">ড্রাইভের নাম</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, বিবরণ</translation>
 <translation id="7246947237293279874">এফটিপি প্রক্সি</translation>
-<translation id="7248671827512403053">অ্যাপ্লিকেশান</translation>
 <translation id="7256405249507348194">অস্বীকৃত ত্রুটি: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ পরিষেবাসমূহ</translation>
 <translation id="7291818353625820805">'কী' রিপিট করতে চান? কীবোর্ড সেটিংস থেকে অ্যাকসেন্ট চিহ্ন বন্ধ করুন</translation>
@@ -933,7 +923,6 @@
 <translation id="8151638057146502721">কনফিগার করুন</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{১টি সমস্যা।}one{#টি সমস্যা।}other{#টি সমস্যা।}}</translation>
 <translation id="8154842056504218462">সব এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
-<translation id="8157684860301034423">অ্যাপের তথ্য ফিরিয়ে আনা যায়নি।</translation>
 <translation id="8175731104491895765">ফরাসি (বেলজিয়াম)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" />টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1077,7 +1066,6 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">কাজাখ</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" />টি আইটেম এক্সট্যাক্ট করা হয়েছে।</translation>
-<translation id="9213073329713032541">ইনস্টলেশন চালু হয়েছে।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">লুনার</translation>
 <translation id="931652069802536959">নেটওয়ার্ক নীতি অনুযায়ী ব্লক করা হয়েছে</translation>

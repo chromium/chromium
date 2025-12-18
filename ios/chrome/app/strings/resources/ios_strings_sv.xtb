@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Klar</translation>
 <translation id="2577522251608256362">Stadsdel</translation>
 <translation id="2579713773888829241">Delade enheter</translation>
+<translation id="2580306219079937316">Öppna översättningsinställningarna</translation>
 <translation id="2583688836549072561">Flikgrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flikar, ny aktivitet.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Bevaka prissänkningar på produkter</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3254806613790954367">Din senast öppna flik på alla dina enheter</translation>
 <translation id="325717987950204592">Tryck på Integritet och säkerhet</translation>
+<translation id="3266338926702638258">Visa prishistorik för den här produkten</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Anpassa startskärmen</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
@@ -1934,6 +1936,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8221665793629393739">Påminnelse om att besöka sidan igen</translation>
 <translation id="8232956427053453090">Behåll data</translation>
 <translation id="8233237502828137700">Stäng bannerkampanj</translation>
+<translation id="823339794112333264">Slå på mikrofonen</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8258734532103758067">Jag har exporterat min data</translation>
 <translation id="8258999165172757081">Tillagt</translation>
@@ -2039,6 +2042,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8611922158252451755">Alla som har länken kan redigera alla flikar, så tänk efter innan du delar. Länken löper ut om 48 timmar.</translation>
 <translation id="8614671330774943747">Öppna Flikbyte</translation>
 <translation id="8620640915598389714">Redigera</translation>
+<translation id="862367213447108001">Visa alltid popup-fönster på den här webbplatsen</translation>
 <translation id="8625706492572042370">Ändra hemskärmen</translation>
 <translation id="8631370184731241854">Låsta inkognitoflikar</translation>
 <translation id="8633025649649592204">Senaste aktiviteterna</translation>
@@ -2135,6 +2139,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8928426232677696166"><ph name="EMAIL" />, som hanteras av organisationen, är valt just nu. Välj ett konto.</translation>
 <translation id="894191600409472540">Skapa starka lösenord</translation>
 <translation id="8943780400130412484">Starta ny nedladdning?</translation>
+<translation id="8947838125864566256">Stäng av mikrofonen</translation>
 <translation id="8953046091948372197">Du hittar dina lösenord här</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} alternativ för autoslutför visas ovanför tangentbordet.}other{{count} alternativ för autoslutför visas ovanför tangentbordet.}}</translation>
 <translation id="895541991026785598">Rapportera ett problem</translation>

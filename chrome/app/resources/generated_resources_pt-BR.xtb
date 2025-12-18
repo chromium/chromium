@@ -1033,7 +1033,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1679810534535368772">Quer mesmo sair?</translation>
 <translation id="167983332380191032">O serviço de gerenciamento enviou um erro de HTTP.</translation>
 <translation id="167997285881077031">Configurações de voz da conversão de texto em voz</translation>
-<translation id="1680849702532889074">Ocorreu um erro durante a instalação do aplicativo Linux.</translation>
 <translation id="1682195225331129001">Quero testar</translation>
 <translation id="1682548588986054654">Nova janela anônima</translation>
 <translation id="1682696837763999627">Cursor grande do mouse</translation>
@@ -1668,7 +1667,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2104166991923847969">Desativar ponto de acesso automaticamente</translation>
 <translation id="2105809836724866556">Módulo "<ph name="MODULE_TITLE" />" oculto</translation>
-<translation id="2106439768713835453">Compartilhar também o áudio do aplicativo</translation>
 <translation id="2107359546799360577">As otimizações de JavaScript estão desativadas.</translation>
 <translation id="2108204112555497972">Verificado há <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
@@ -2682,7 +2680,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2778471504622896352">Adicionar apps remotos ao iniciador do ChromeOS</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2782104745158847185">Erro ao instalar o aplicativo Linux</translation>
 <translation id="2783952358106015700">Usar sua chave de segurança com <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Check-up de Senha</translation>
 <translation id="2785279781154577715">Aparência do card de visualização ao passar o cursor sobre a guia</translation>
@@ -4143,6 +4140,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3785748905555897481">PIN alterado</translation>
 <translation id="3786224729726357296">Excluir permissões e dados do site <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Mostrar sublinhado para o texto de composição</translation>
+<translation id="3786890785076278600">Linha estática</translation>
 <translation id="3787434344076711519">Aguardando tradução</translation>
 <translation id="3788301286821743879">Não foi possível iniciar o aplicativo de quiosque.</translation>
 <translation id="3788401245189148511">Ele poderia:</translation>
@@ -4522,6 +4520,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4028467762035011525">Adicionar métodos de entrada</translation>
 <translation id="4029024445166427442">acesso rápido + shift + backspace</translation>
 <translation id="4029556917477724407">Voltar da página <ph name="PAGE_TITLE" /></translation>
+<translation id="4031178684547097947">5 linhas</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
@@ -4892,7 +4891,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4293219510510666933">Use a linguagem cotidiana para pesquisar seu histórico de navegação e encontrar sites que você visitou. Você também pode fazer perguntas e receber respostas com base nesse histórico. Esta configuração está ativada.</translation>
 <translation id="429344752071832554">Desfocar grupo</translation>
 <translation id="4294392694389031609">O arquivo <ph name="FILE_NAME" /> foi excluído do histórico de downloads, mas ainda está no seu dispositivo</translation>
-<translation id="4295072614469448764">O aplicativo está disponível no seu terminal. Também pode haver um ícone no acesso rápido.</translation>
 <translation id="4295979599050707005">Faça login novamente para confirmar que sua conta <ph name="USER_EMAIL" /> pode ser usada com sites, apps e extensões no Chrome e no Google Play. Você também pode remover essa conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicativos instalados e transmitidos por streaming pelo app <ph name="APP_NAME" /></translation>
 <translation id="4296632172536745000">Sua senha original para este site foi encontrada em um vazamento de dados público. Em <ph name="DATE" />, você pediu para o <ph name="BRAND" /> mudar sua senha automaticamente.</translation>
@@ -4999,7 +4997,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4370975561335139969">O e-mail e a senha que você digitou não coincidem.</translation>
 <translation id="4373418556073552953">Fazer login com o smartphone Android</translation>
 <translation id="4373973310429385827">Farol</translation>
-<translation id="4374831787438678295">Instalador do Linux</translation>
 <translation id="4375035964737468845">Abrir arquivos baixados</translation>
 <translation id="4376226992615520204">Localização desativada</translation>
 <translation id="4377363674125277448">Ocorreu um problema com o certificado do servidor.</translation>
@@ -5784,6 +5781,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4908811072292128752">Abra uma nova guia para navegar em dois sites de uma vez</translation>
 <translation id="4910241725741323970">O app já está instalado</translation>
 <translation id="4912643508233590958">Ativações do estado ocioso</translation>
+<translation id="4912892750325639080">3 linhas</translation>
 <translation id="4913209098186576320">Este arquivo pode ser perigoso<ph name="LINE_BREAK" />A verificação está demorando mais do que o normal…</translation>
 <translation id="4913695564084524048">Não foi possível encontrar dados do app</translation>
 <translation id="4915961947098019832">Permitir a exibição de imagens</translation>
@@ -6278,7 +6276,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5263656105659419083">Para voltar facilmente ao painel lateral, clique em "Fixar" no canto superior direito</translation>
 <translation id="5264148714798105376">Isso pode levar aproximadamente um minuto.</translation>
 <translation id="5264252276333215551">Conecte-se à Internet para iniciar seu aplicativo no modo quiosque.</translation>
-<translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
 <translation id="5269659747698455324">Desbloquear suas chaves de acesso</translation>
@@ -7656,7 +7653,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="623261264391834964">Clique com o botão direito do mouse em uma caixa de texto para usar o recurso "Me ajude a escrever"</translation>
 <translation id="6233154960150021497">Usar voz em vez de teclado por padrão</translation>
 <translation id="6234108445915742946">Os Termos de Serviço do Chrome serão atualizados em 31 de março</translation>
-<translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o QR code do eSIM na frente dela.</translation>
 <translation id="6237342324375264347">Grupo <ph name="SHARE_STATE" /> <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App de anotações com a stylus</translation>
@@ -8340,7 +8336,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6713668088933662563">Nunca oferecer a opção de traduzir estes idiomas</translation>
 <translation id="6714871567554212732">Veja mais detalhes sobre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Os sites não podem usar seu microfone</translation>
-<translation id="6715803357256707211">Ocorreu um erro durante a instalação do aplicativo Linux. Clique na notificação para ver mais detalhes.</translation>
 <translation id="6716049856796700977">Nada pode usar seu local. No entanto, seu local ainda poderá ficar visível para apps e sites usando seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Conexão de rede perdida. Confira ou tente usar outra rede Wi-Fi.</translation>
 <translation id="671928215901716392">Bloquear tela</translation>
@@ -9028,6 +9023,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
 <translation id="7191631508323321927">Corredor</translation>
 <translation id="7191632649590906354">Os membros da sua família agora podem usar seu nome de usuário e senha ao usar o Gerenciador de senhas do Google. É necessário acessar <ph name="WEBSITE" /> para fazer login.</translation>
+<translation id="7192393330344360021">1 linha</translation>
 <translation id="7193051357671784796">Este app foi adicionado pela sua organização. Reinicie o app para concluir a instalação.</translation>
 <translation id="7193374945610105795">Nenhuma senha salva para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Enviar feedback sobre os grupos sugeridos</translation>
@@ -11139,6 +11135,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Somente conexões seguras</translation>
 <translation id="8627804903623428808">Leia estes termos e tenha controle sobre os dados da criança</translation>
+<translation id="8628674746770065790">Seguir cursor</translation>
 <translation id="862907440446514309">O administrador está gravando sua tela com o app <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Suspensão ao carregar</translation>
 <translation id="8631032106121706562">Bem-me-quer</translation>
@@ -12156,7 +12153,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="992592832486024913">Desativar ChromeVox (resposta falada)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> grupos de guias sugeridos</translation>
 <translation id="992778845837390402">O backup do Linux está em andamento</translation>
-<translation id="993540765962421562">Instalação em andamento</translation>
 <translation id="994087375490600917">Painéis laterais</translation>
 <translation id="994289308992179865">&amp;Repetir</translation>
 <translation id="995755448277384931">Adicionar IBAN</translation>

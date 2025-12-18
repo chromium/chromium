@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Готово</translation>
 <translation id="2577522251608256362">Околиці</translation>
 <translation id="2579713773888829241">Спільні диски</translation>
+<translation id="2580306219079937316">Відкрити налаштування перекладу</translation>
 <translation id="2583688836549072561">Група вкладок "<ph name="GROUP_TITLE" />" (кількість вкладок: <ph name="TABS_NUMBER" />), нові дії.</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
 <translation id="2601778637777010194">Відстежуйте зниження цін на товари</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Не вдалося зберегти зміну.</translation>
 <translation id="3254806613790954367">Остання відкрита вкладка на будь-якому з ваших пристроїв</translation>
 <translation id="325717987950204592">Натисніть "Конфіденційність і безпека"</translation>
+<translation id="3266338926702638258">Показати історію цін на цей товар</translation>
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3273510436356991673">Налаштуйте головний екран</translation>
 <translation id="3277021493514034324">Адресу сайту скопійовано</translation>
@@ -1934,6 +1936,7 @@
 <translation id="8221665793629393739">Нагадування відвідати цей сайт повторно</translation>
 <translation id="8232956427053453090">Зберігати дані</translation>
 <translation id="8233237502828137700">Закрити рекламний банер</translation>
+<translation id="823339794112333264">Увімкнути мікрофон</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8258734532103758067">Дані експортовано</translation>
 <translation id="8258999165172757081">Додано</translation>
@@ -2039,6 +2042,7 @@
 <translation id="8611922158252451755">Редагувати можуть усі, хто має посилання, тому надавайте доступ відповідально. Посилання діє 48 годин.</translation>
 <translation id="8614671330774943747">Перейти до перемикача вкладок</translation>
 <translation id="8620640915598389714">Редагувати</translation>
+<translation id="862367213447108001">Завжди показувати спливаючі вікна на цьому сайті</translation>
 <translation id="8625706492572042370">Редагувати головний екран</translation>
 <translation id="8631370184731241854">Заблоковані анонімні вкладки</translation>
 <translation id="8633025649649592204">Останні дії</translation>
@@ -2135,6 +2139,7 @@
 <translation id="8928426232677696166">Зараз вибрано обліковий запис <ph name="EMAIL" />, яким керує ваша організація. Виберіть обліковий запис.</translation>
 <translation id="894191600409472540">Створіть надійні паролі</translation>
 <translation id="8943780400130412484">Почати нове завантаження?</translation>
+<translation id="8947838125864566256">Вимкнути мікрофон</translation>
 <translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>
 <translation id="8953602327115378731">{count,plural, =1{Над клавіатурою показується {count} варіант автозавершення.}one{Над клавіатурою показується {count} варіант автозавершення.}few{Над клавіатурою показуються {count} варіанти автозавершення.}many{Над клавіатурою показуються {count} варіантів автозавершення.}other{Над клавіатурою показуються {count} варіанта автозавершення.}}</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>

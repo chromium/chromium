@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">Pakalpojumi</translation>
 <translation id="181434555916624618">Pagaidām netiek rādīti rezultāti, kuros redzamas personas. Izmēģiniet citu uzvedni.</translation>
 <translation id="1829129547161959350">Pingvīns</translation>
-<translation id="183183971458492120">Notiek informācijas ielāde...</translation>
 <translation id="1832073788765803750">Pusplatuma katakana</translation>
 <translation id="1834290891154666894">Nederīgs subjekta alternatīvā nosaukuma atbilstības ieraksts.</translation>
 <translation id="1838709767668011582">Google vietne</translation>
@@ -153,7 +152,6 @@
 <translation id="2193661397560634290">Izmantots: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Ķīniešu (vienkāršotā)</translation>
 <translation id="22085916256174561">Korejiešu</translation>
-<translation id="2208919847696382164">Instalēt operētājsistēmā Linux</translation>
 <translation id="2215692307449050019">Zems akumulatora uzlādes līmenis. Failu sinhronizācija tiks atsākta, kad ierīce būs pieslēgta strāvas padevei.</translation>
 <translation id="2225536596944493418">Vai tiešām vēlaties dzēst <ph name="NUMBER_OF_ITEMS" /> vienumus?</translation>
 <translation id="2230062665678605299">Mapi “<ph name="FOLDER_NAME" />” nevar izveidot. <ph name="ERROR_MESSAGE" /></translation>
@@ -214,7 +212,6 @@
 <translation id="2653059201992392941">Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="2663066752008346276">Birmiešu (Mjanma), ar Myansan tastatūru</translation>
 <translation id="2664412712123763093">Faila atrašanās vieta</translation>
-<translation id="2718540689505416944">Instalēt lietotni operētājsistēmā Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, informācija</translation>
 <translation id="2724954091494693138">Turku, ar F tastatūru</translation>
 <translation id="2732288874651063549">Pārvaldīt kopīgošanu ar <ph name="VM_NAME" /></translation>
@@ -223,7 +220,6 @@
 <translation id="2764206540577097904">Jūs esat izmantojis visu savu individuālo Google Workspace krātuvi.</translation>
 <translation id="2771816809568414714">Siers</translation>
 <translation id="2781645665747935084">Beļģu</translation>
-<translation id="2782104745158847185">Instalējot Linux lietojumprogrammu, radās kļūda</translation>
 <translation id="2802583107108007218">Uzzināt vairāk par šiem ierobežojumiem</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
 <translation id="2819519502129272135">Failu sinhronizācija ir izslēgta</translation>
@@ -346,7 +342,6 @@
 <translation id="3786301125658655746">Esat bezsaistē</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3793469551756281394">Aptuvens atlikušais laiks: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
-<translation id="3798449238516105146">Versija</translation>
 <translation id="3801082500826908679">Fēru valoda</translation>
 <translation id="3809272675881623365">Trusis</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -360,7 +355,6 @@
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3855472144336161447">Vācu Neo 2</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
-<translation id="3866249974567520381">Apraksts</translation>
 <translation id="3899991606604168269">Franču (Kanāda), ar vairākvalodu tastatūru</translation>
 <translation id="3901991538546252627">Notiek savienojuma izveide ar <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Notiek mobilo sakaru profila instalēšana, <ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +432,6 @@
 <translation id="4477219268485577442">Bulgāru fonētiskā</translation>
 <translation id="4508265954913339219">Aktivizācija neizdevās</translation>
 <translation id="4509667233588080747">Angļu (ASV), ar Workman starptautisko tastatūru</translation>
-<translation id="4522570452068850558">Dati</translation>
 <translation id="4527800702232535228">Šī mape ir kopīgota ar Parallels Desktop</translation>
 <translation id="4552678318981539154">Iegādāties papildu vietu krātuvē</translation>
 <translation id="4552759165874948005">Tīkls: <ph name="NETWORK_TYPE" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +596,6 @@
 <translation id="5649768706273821470">Klausīties</translation>
 <translation id="5650895901941743674">Pārbaudiet savu APN konfigurāciju</translation>
 <translation id="5669691691057771421">Ievadiet jauno PIN.</translation>
-<translation id="5678784840044122290">Linux lietojumprogramma būs pieejama jūsu terminālī, un programmā Palaidējs var būt redzama arī tās ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nevar pārtraukt savienojumu ar arhīvu vai virtuālo disku<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Aizveriet visus arhīvā vai virtuālajā diskā atvērtos failus un mēģiniet vēlreiz.</translation>
@@ -638,7 +630,6 @@
 <translation id="5861477046012235702">Videospēļu spēlētājs</translation>
 <translation id="5864471791310927901">DHCP uzmeklēšana neizdevās</translation>
 <translation id="5896749729057314184">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
-<translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
 <translation id="5918480239180455431">Pieejamas jaunas meklēšanas funkcijas</translation>
 <translation id="5926082595146149752">Holandiešu (Nīderlande), ar ASV starptautisko datora tastatūru</translation>
@@ -807,7 +798,6 @@
 <translation id="7238097264433196391">Diska nosaukums</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, informācija</translation>
 <translation id="7246947237293279874">FTP starpniekserveris</translation>
-<translation id="7248671827512403053">Lietojumprogramma</translation>
 <translation id="7256405249507348194">Neatpazīta kļūda: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Pieejamie pakalpojumi</translation>
 <translation id="7291818353625820805">Vai vēlaties atkārtot taustiņu rakstzīmes? Tastatūras iestatījumos izslēdziet uzsvara zīmes.</translation>
@@ -934,7 +924,6 @@
 <translation id="8151638057146502721">Konfigurēt</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 kļūda.}zero{# kļūdu.}one{# kļūda.}other{# kļūdas.}}</translation>
 <translation id="8154842056504218462">Atlasīti visi vienumi.</translation>
-<translation id="8157684860301034423">Neizdevās izgūt informāciju par lietotni.</translation>
 <translation id="8175731104491895765">Franču (Beļģija)</translation>
 <translation id="8175799081768705361">Notiek šāda skaita Diska failu sinhronizēšana: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Ievadīt</translation>
@@ -1078,7 +1067,6 @@
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9189836632794948435">Kazahu</translation>
 <translation id="9200427192836333033">Izvilkto vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="9219908252191632183">Mēness</translation>
 <translation id="931652069802536959">Tīkls ir bloķēts saskaņā ar politiku.</translation>

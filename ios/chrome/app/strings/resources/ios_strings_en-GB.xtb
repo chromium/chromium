@@ -427,6 +427,7 @@
 <translation id="2573117291489209663">Done</translation>
 <translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="2579713773888829241">Shared drives</translation>
+<translation id="2580306219079937316">Open Translate settings</translation>
 <translation id="2583688836549072561">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs, new activity.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Track price drops of products</translation>
@@ -592,6 +593,7 @@
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3254806613790954367">Your last open tab across all your devices</translation>
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
+<translation id="3266338926702638258">Show price history for this product</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
@@ -1934,6 +1936,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8221665793629393739">Your reminder to revisit</translation>
 <translation id="8232956427053453090">Keep data</translation>
 <translation id="8233237502828137700">Close banner promo</translation>
+<translation id="823339794112333264">Turn on microphone</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
 <translation id="8258999165172757081">Added</translation>
@@ -2039,6 +2042,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8611922158252451755">Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.</translation>
 <translation id="8614671330774943747">Go to Tab Switcher</translation>
 <translation id="8620640915598389714">Edit</translation>
+<translation id="862367213447108001">Always show pop-ups on this site</translation>
 <translation id="8625706492572042370">Edit home screen</translation>
 <translation id="8631370184731241854">Locked Incognito tabs</translation>
 <translation id="8633025649649592204">Recent activity</translation>
@@ -2135,6 +2139,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8928426232677696166"><ph name="EMAIL" />, managed by your organisation, currently selected. Choose an account.</translation>
 <translation id="894191600409472540">Create strong passwords</translation>
 <translation id="8943780400130412484">Start new download?</translation>
+<translation id="8947838125864566256">Turn off microphone</translation>
 <translation id="8953046091948372197">You'll find your passwords here</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} option for autocomplete available above your keyboard.}other{{count} options for autocomplete available above your keyboard.}}</translation>
 <translation id="895541991026785598">Report an Issue</translation>
