@@ -110,10 +110,10 @@ chrome.metricsPrivate.recordUserAction = function(name) {};
 /**
  * Records an extension usage UKM event when `ExtensionUsageAction`s occur in
  * extensions UI surfaces.
- * @param {string} url
+ * @param {string} extensionId
  * @param {!chrome.metricsPrivate.ExtensionUsageAction} action
  */
-chrome.metricsPrivate.recordExtensionUsageUkm = function(url, action) {};
+chrome.metricsPrivate.recordExtensionUsageUkm = function(extensionId, action) {};
 
 /**
  * Records a percentage value from 1 to 100.

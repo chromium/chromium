@@ -19,7 +19,7 @@ enum class ExtensionUsageAction {
   kEnabled,
   kDisabled,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionUsageAction)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionUsageAction,//extensions/common/api/metrics_private.json)
 
 }  // namespace extensions
 

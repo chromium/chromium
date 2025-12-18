@@ -3367,7 +3367,7 @@ Called by update_extension_permission.py.-->
   <int value="5" label="Extension Disabled"/>
 </enum>
 
-<!-- LINT.ThenChange(/extensions/common/extension_usage.h:ExtensionUsageAction) -->
+<!-- LINT.ThenChange(//extensions/common/extension_usage.h:ExtensionUsageAction,//extensions/common/api/metrics_private.json) -->
 
 <enum name="ExternalItemState">
   <int value="0" label="DEPRECATED_DISABLED"/>

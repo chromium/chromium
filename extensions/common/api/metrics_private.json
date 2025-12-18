@@ -50,6 +50,7 @@
           }
         }
       },
+      // LINT.IfChange(ExtensionUsageAction)
       {
         "id": "ExtensionUsageAction",
         "type": "string",
@@ -63,6 +64,7 @@
         ],
         "description": "The type of extension usage action triggered by user UI actions."
       }
+      // LINT.ThenChange(/extensions/common/extension_usage.h:ExtensionUsageAction,/tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionUsageAction)
     ],
     "functions": [
       {
@@ -142,7 +144,7 @@
         "type": "function",
         "description": "Records an extension usage UKM event triggered by user UI actions.",
         "parameters": [
-          {"name": "url", "type": "string"},
+          {"name": "extensionId", "type": "string"},
           {"name": "action", "$ref": "ExtensionUsageAction"}
         ]
       },
