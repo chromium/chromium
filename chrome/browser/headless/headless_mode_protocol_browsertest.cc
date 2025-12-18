@@ -496,6 +496,9 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
+                            "shared/range-mouse-event-after-node-removal.js")
+
 // TODO(crbug.com/423951863): Fails on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SetZoomedWindowBounds DISABLED_SetZoomedWindowBounds

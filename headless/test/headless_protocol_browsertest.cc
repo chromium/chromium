@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "components/headless/test/shared_test_util.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace headless {
@@ -717,5 +719,23 @@ HEADLESS_PROTOCOL_TEST(WindowWithNewContext,
 
 HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
                        "shared/set-zoomed-window-bounds.js")
+
+// TODO(469041917): this is only required due to crbug.com/469041917 and
+// should be removed when the issue is fixed.
+class DisableBoundaryEventDispatchTracksNodeRemovalTest
+    : public HeadlessProtocolBrowserTest {
+ protected:
+  DisableBoundaryEventDispatchTracksNodeRemovalTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kBoundaryEventDispatchTracksNodeRemoval);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+HEADLESS_PROTOCOL_TEST_F(DisableBoundaryEventDispatchTracksNodeRemovalTest,
+                         RangeMouseEventAfterNodeRemoval,
+                         "shared/range-mouse-event-after-node-removal.js")
 
 }  // namespace headless
