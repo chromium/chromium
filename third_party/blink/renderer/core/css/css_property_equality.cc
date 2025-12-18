@@ -1448,8 +1448,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWritingMode:
       NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
 
-    // TODO(crbug.com/1459374): Implement comparison for these properties. They
-    // are reachable via transitions now.
+    // CSSPropertyIDs which are descriptors only
     case CSSPropertyID::kAdditiveSymbols:
     case CSSPropertyID::kAscentOverride:
     case CSSPropertyID::kBasePalette:
@@ -1482,9 +1481,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kSystem:
     case CSSPropertyID::kTypes:
     case CSSPropertyID::kUnicodeRange:
-      return true;
-
-    // Invalid properties.
+    // Invalid properties
     case CSSPropertyID::kAll:
     case CSSPropertyID::kInvalid:
     case CSSPropertyID::kVariable:

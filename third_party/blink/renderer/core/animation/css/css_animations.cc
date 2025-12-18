@@ -1023,6 +1023,9 @@ Vector<const CSSProperty*> PropertiesForTransitionAll(
       continue;
     }
     const CSSProperty& property = CSSProperty::Get(id);
+    if (!property.IsProperty()) {
+      continue;
+    }
     if (!with_discrete && !property.IsInterpolable()) {
       continue;
     }

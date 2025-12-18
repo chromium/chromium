@@ -8775,12 +8775,13 @@ CSSValue* ConsumeTransitionProperty(CSSParserTokenStream& stream,
       token.ParseAsUnresolvedCSSPropertyID(execution_context);
   if (unresolved_property != CSSPropertyID::kInvalid &&
       unresolved_property != CSSPropertyID::kVariable) {
-#if DCHECK_IS_ON()
-    DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
-               .IsWebExposed(execution_context));
-#endif
-    stream.ConsumeIncludingWhitespace();
-    return MakeGarbageCollected<CSSCustomIdentValue>(unresolved_property);
+    const CSSProperty& property =
+        CSSProperty::Get(ResolveCSSPropertyID(unresolved_property));
+    if (property.IsProperty()) {
+      DCHECK(property.IsWebExposed(execution_context));
+      stream.ConsumeIncludingWhitespace();
+      return MakeGarbageCollected<CSSCustomIdentValue>(unresolved_property);
+    }
   }
   return ConsumeCustomIdent(stream, context);
 }
