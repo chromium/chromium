@@ -61,9 +61,8 @@ const CGFloat kSidePannelOutlineBottomInset = 8.0;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  if (_contentViewController) {
+  if (_contentViewController && !_contentViewController.parentViewController) {
     [self addChildViewController:_contentViewController];
-    //    _contentViewController.view.userInteractionEnabled = NO;
     _contentViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [_borderView addSubview:_contentViewController.view];
     [_contentViewController didMoveToParentViewController:self];
