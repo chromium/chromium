@@ -148,9 +148,9 @@ void BtmDatabase::DatabaseErrorCallback(int extended_error,
     return;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
+  // The default handling is to log on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error)) {
-    DLOG(FATAL) << db_->GetErrorMessage();
+    DLOG(ERROR) << db_->GetErrorMessage();
   }
 }
 

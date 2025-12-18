@@ -121,8 +121,8 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
 
     ProfileDestructionWaiter destruction_waiter(&profile_to_delete);
     profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-        profile_to_delete.GetPath(), base::DoNothing(),
-        ProfileMetrics::DELETE_PROFILE_SETTINGS);
+        profile_path_to_delete, base::DoNothing(),
+        ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
     destruction_waiter.Wait();
 
     return deleting_web_contents;
@@ -317,14 +317,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
             webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed);
 }
 
-// Flaky on Linux, see https://crbug.com/454830629.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_IconDownloading DISABLED_IconDownloading
-#else
-#define MAYBE_IconDownloading IconDownloading
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
-                       MAYBE_IconDownloading) {
+                       IconDownloading) {
   WebAppIconDownloader icon_downloader;
 
   std::unique_ptr<content::WebContents> deleting_web_contents =
