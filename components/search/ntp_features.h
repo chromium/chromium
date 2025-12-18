@@ -84,7 +84,9 @@ BASE_DECLARE_FEATURE(kNtpOneGoogleBarAsyncBarParts);
 BASE_DECLARE_FEATURE(kNtpFooter);
 BASE_DECLARE_FEATURE(kNtpTabGroupsModule);
 BASE_DECLARE_FEATURE(kNtpTabGroupsModuleZeroState);
-BASE_DECLARE_FEATURE(kNtpFeatureOptimization);
+BASE_DECLARE_FEATURE(kNtpFeatureOptimizationModuleRemoval);
+BASE_DECLARE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval);
+BASE_DECLARE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -273,16 +275,15 @@ extern const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam;
 // added from an action chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
 
-// Parameter determining if stale shortcuts will be auto-removed.
-extern const base::FeatureParam<bool> kEnableStaleShortcutsAutoRemoval;
-
-// Parameter determining if stale modules will be auto-removed.
-extern const base::FeatureParam<bool> kEnableStaleModulesAutoRemoval;
+// Parameter determining the minimum amount of time that must pass before
+// shortcuts staleness counters will be incremented.
+extern const base::FeatureParam<base::TimeDelta>
+    kShortcutsMinStalenessUpdateTimeInterval;
 
 // Parameter determining the minimum amount of time that must pass before
 // staleness counters will be incremented.
 extern const base::FeatureParam<base::TimeDelta>
-    kMinStalenessUpdateTimeInterval;
+    kModuleMinStalenessUpdateTimeInterval;
 
 // Parameter determining the count at which shortcuts will be considered stale
 // and be eligible for auto-removal.
@@ -291,10 +292,6 @@ extern const base::FeatureParam<int> kStaleShortcutsCountThreshold;
 // Parameter determining the count at which modules will be considered stale
 // and eligible for auto-removal.
 extern const base::FeatureParam<int> kStaleModulesCountThreshold;
-
-// Parameter determining if the dismiss button that allows users to hide modules
-// for certain periods of time will be removed.
-extern const base::FeatureParam<bool> kRemoveDismissModules;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

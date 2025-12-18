@@ -452,15 +452,18 @@ IN_PROC_BROWSER_TEST_P(
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 }
 
-class NewTabPageUtilFeatureOptimizationTest : public NewTabPageUtilBrowserTest {
+class NewTabPageUtilFeatureOptimizationModuleRemovalTest :
+  public NewTabPageUtilBrowserTest {
  public:
-  NewTabPageUtilFeatureOptimizationTest() {
-    features().InitWithFeatures({ntp_features::kNtpFeatureOptimization}, {});
+  NewTabPageUtilFeatureOptimizationModuleRemovalTest() {
+    features().InitWithFeatures(
+        {ntp_features::kNtpFeatureOptimizationModuleRemoval}, {});
   }
 };
 
-IN_PROC_BROWSER_TEST_P(NewTabPageUtilFeatureOptimizationTest,
-                       DisableModuleAutoRemoval) {
+IN_PROC_BROWSER_TEST_P(
+    NewTabPageUtilFeatureOptimizationModuleRemovalTest,
+    DisableModuleAutoRemoval) {
   // Arrange.
   const std::string module_id = ntp_modules::kGoogleCalendarModuleId;
 
@@ -504,5 +507,5 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         NewTabPageUtilFeatureOptimizationTest,
+                         NewTabPageUtilFeatureOptimizationModuleRemovalTest,
                          testing::Bool());

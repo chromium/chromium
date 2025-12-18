@@ -7419,7 +7419,17 @@
     "expiry_milestone": 108
   },
   {
-    "name": "ntp-feature-optimization",
+    "name": "ntp-feature-optimization-dismiss-modules-removal",
+    "owners": [ "hannahrogers@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "ntp-feature-optimization-module-removal",
+    "owners": [ "hannahrogers@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "ntp-feature-optimization-shortcuts-removal",
     "owners": [ "hannahrogers@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 150
   },
