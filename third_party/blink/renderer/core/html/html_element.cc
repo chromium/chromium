@@ -2253,7 +2253,16 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 4. A custom element button with `ElementInternals.type=button`
+        // Case 4. A select element whose picker is a popover.
+        if (auto* select = DynamicTo<HTMLSelectElement>(test_node)) {
+          if (auto* popover_picker = select->PopoverPickerElement()) {
+            if (RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
+              return popover_picker;
+            }
+          }
+        }
+
+        // Case 5. A custom element button with `ElementInternals.type=button`
         // with the `popovertarget` attribute or the `commandfor` attribute.
         if (auto* html_element = DynamicTo<HTMLElement>(test_node);
             html_element &&
@@ -2473,16 +2482,6 @@ void HTMLElement::HandlePopoverLightDismissForClick(
   auto* pointer_down_popover = FindTopmostRelatedPopover(pointer_down_target);
   auto* pointer_up_popover = FindTopmostRelatedPopover(pointer_up_target);
   if (pointer_down_popover == pointer_up_popover) {
-    for (Node& ancestor :
-         FlatTreeTraversal::InclusiveAncestorsOf(pointer_down_target)) {
-      if (IsA<HTMLSelectElement>(ancestor)) {
-        // The customizable select popover is opened on mousedown instead of
-        // click. In order to prevent it from being opened and then light
-        // dismissed from one click, this is necessary.
-        return;
-      }
-    }
-
     HideAllPopoversUntil(
         pointer_up_popover, pointer_down_target.GetDocument(),
         HidePopoverFocusBehavior::kNone,
