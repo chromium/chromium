@@ -191,8 +191,8 @@ class SceneControllerTest : public PlatformTest {
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<Browser> browser_;
   InternalFakeSceneController* scene_controller_;
   SceneState* scene_state_;
   ProfileState* profile_state_;

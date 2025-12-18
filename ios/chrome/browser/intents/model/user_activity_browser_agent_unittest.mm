@@ -194,17 +194,18 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
-  raw_ptr<UserActivityBrowserAgent, DanglingUntriaged>
-      user_activity_browser_agent_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
 
  private:
-  std::unique_ptr<TestBrowser> browser_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
+
+ protected:
+  raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
 };
 
 #pragma mark - Tests.
