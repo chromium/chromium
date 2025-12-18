@@ -120,9 +120,9 @@ ACTION(ReturnNewWebUI) {
 }
 
 GURL GetSigninPromoURL() {
-  return signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::kStartPage,
-      signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
+  return signin::GetEmbeddedPromoURL(signin_metrics::AccessPoint::kStartPage,
+                                     signin_metrics::Reason::kFetchLstOnly,
+                                     false);
 }
 
 // Mock the TestChromeWebUIControllerFactory::WebUIProvider to prove that we are
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
 // load it inside the iframe of the login ui.
 IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, NoWebUIInIframe) {
   GURL url = GetSigninPromoURL().Resolve(
-      "?source=0&access_point=0&reason=5&frameUrl=chrome://foo");
+      "?source=0&access_point=0&reason=6&frameUrl=chrome://foo");
   EXPECT_CALL(foo_provider(), NewWebUI(_, _)).Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
