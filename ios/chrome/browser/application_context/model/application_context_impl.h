@@ -114,9 +114,6 @@ class ApplicationContextImpl : public ApplicationContext {
   // application states.
   void OnAppEnterState(AppState app_state);
 
-  // TODO(crbug.com/414379493): Remove this method.
-  void SetApplicationLocale(const std::string& locale);
-
   // Create the local state.
   void CreateLocalState();
 
