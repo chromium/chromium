@@ -539,7 +539,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
-       OnlyShowBookmarkPromoInSignInPendingWithAccountStorageEnabled) {
+       ShowBookmarkPromoInSignInPendingState) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
                               ConsentLevel::kSignin);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
@@ -550,10 +550,10 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
           {syncer::UserSelectableType::kBookmarks})));
   EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 
-  // Promo is not showing in sign in pending with account storage disabled.
+  // Promo is showing in sign in pending with account storage disabled.
   ON_CALL(*sync_service()->GetMockUserSettings(), GetSelectedTypes())
       .WillByDefault(testing::Return(syncer::UserSelectableTypeSet()));
-  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 
   // Promo is showing when not in sign in pending with account storage disabled.
   ClearPrimaryAccount(identity_manager());
