@@ -41,8 +41,8 @@ NSNumber* GetUniqueIdentifierFromType(ImportDataItemType type) {
   return @(static_cast<NSUInteger>(type));
 }
 
-/// Returns the localized label text for the given `type`.
-NSString* GetTextForItemType(ImportDataItemType type) {
+/// Returns the localized title text for the given `type`.
+NSString* GetTitleWithoutCount(ImportDataItemType type) {
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
@@ -88,14 +88,8 @@ UIImage* GetImageForItemType(ImportDataItemType type) {
                                             kLeadingSymbolImagePointSize);
 }
 
-/// Returns the description for an item before it is imported, showing `count`
-/// as the number of items to be imported.
-NSString* GetDescriptionForUnimportedItemTypeWithCount(ImportDataItemType type,
-                                                       int count) {
-  if (count == 0) {
-    return l10n_util::GetNSString(
-        IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA);
-  }
+/// Returns the localized title text for the given `type` with `count` of items.
+NSString* GetTitleWithCount(ImportDataItemType type, int count) {
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
@@ -119,8 +113,9 @@ NSString* GetDescriptionForUnimportedItemTypeWithCount(ImportDataItemType type,
 
 /// Returns the description for the item after it is imported, showing `count`
 /// as the number of items imported.
-NSString* GetDescriptionForImportedItemTypeWithCount(ImportDataItemType type,
-                                                     int count) {
+std::u16string GetDescriptionForImportedItemTypeWithCount(
+    ImportDataItemType type,
+    int count) {
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
@@ -139,7 +134,7 @@ NSString* GetDescriptionForImportedItemTypeWithCount(ImportDataItemType type,
       message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSKEYS;
       break;
   }
-  return l10n_util::GetPluralNSStringF(message_id, count);
+  return l10n_util::GetPluralStringFUTF16(message_id, count);
 }
 
 /// Returns a view with a spinning activity indicator.
@@ -321,7 +316,7 @@ UIView* GetCheckmark() {
 
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
-  configuration.title = GetTextForItemType(item.type);
+  configuration.title = [self titleForItem:item];
   configuration.subtitle = [self descriptionForItem:item];
 
   ColorfulSymbolContentConfiguration* symbolConfiguration =
@@ -348,41 +343,45 @@ UIView* GetCheckmark() {
   return cell;
 }
 
+/// Returns the title for `item`.
+- (NSString*)titleForItem:(ImportDataItem*)item {
+  if (item.invalidCount > 0 ||
+      item.status == ImportDataItemImportStatus::kBlockedByPolicy) {
+    return GetTitleWithoutCount(item.type);
+  }
+
+  return GetTitleWithCount(item.type, item.count);
+}
+
 /// Returns the description for `item`.
 - (NSString*)descriptionForItem:(ImportDataItem*)item {
-  NSString* description;
   switch (item.status) {
     case ImportDataItemImportStatus::kReady:
     case ImportDataItemImportStatus::kImporting:
-      description =
-          GetDescriptionForUnimportedItemTypeWithCount(item.type, item.count);
-      break;
-    case ImportDataItemImportStatus::kImported:
-      description =
-          GetDescriptionForImportedItemTypeWithCount(item.type, item.count);
-      break;
+      return nil;
+    case ImportDataItemImportStatus::kImported: {
+      if (item.invalidCount == 0) {
+        return nil;
+      }
+
+      /// Concatenate string for invalid passwords or passkeys.
+      CHECK(item.type == ImportDataItemType::kPasswords ||
+            item.type == ImportDataItemType::kPasskeys)
+          << "Unexpected type: " << static_cast<NSUInteger>(item.type);
+      int messageId =
+          item.type == ImportDataItemType::kPasswords
+              ? IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS
+              : IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSKEYS;
+      std::u16string invalidCountString =
+          l10n_util::GetPluralStringFUTF16(messageId, item.invalidCount);
+      return l10n_util::GetNSStringF(
+          IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+          GetDescriptionForImportedItemTypeWithCount(item.type, item.count),
+          invalidCountString);
+    }
     case ImportDataItemImportStatus::kBlockedByPolicy:
-      description =
-          l10n_util::GetNSString(IDS_IOS_IMPORT_ITEM_BLOCKED_BY_POLICY);
-      break;
+      return l10n_util::GetNSString(IDS_IOS_IMPORT_ITEM_BLOCKED_BY_POLICY);
   }
-  if (item.invalidCount > 0) {
-    /// Concatenate string for invalid passwords or passkeys.
-    CHECK(item.type == ImportDataItemType::kPasswords ||
-          item.type == ImportDataItemType::kPasskeys)
-        << "Unsupported type: " << static_cast<int>(item.type);
-    CHECK_EQ(item.status, ImportDataItemImportStatus::kImported);
-    int messageId =
-        item.type == ImportDataItemType::kPasswords
-            ? IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS
-            : IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSKEYS;
-    std::u16string invalidCountString =
-        l10n_util::GetPluralStringFUTF16(messageId, item.invalidCount);
-    description = l10n_util::GetNSStringF(IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
-                                          base::SysNSStringToUTF16(description),
-                                          invalidCountString);
-  }
-  return description;
 }
 
 /// Helper method that sets up the trailing accessory for `item`.

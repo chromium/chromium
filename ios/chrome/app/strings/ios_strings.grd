@@ -3394,8 +3394,8 @@
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on an import screen displaying the number of credit cards that will be imported. [iOS only]">
         {count, plural,
-          =1 {{count} card}
-          other {{count} cards}}
+          =1 {{count} credit card}
+          other {{count} credit cards}}
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on an import screen displaying the number of history items that will be imported. [iOS only]">
         {count, plural,
