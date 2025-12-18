@@ -43,7 +43,7 @@ if (is_chromeos) {
   ]
 }
 
-# See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_build_configuration.md#build_webui
+# See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_build_configuration.md#build_webui
 template("build_webui") {
   not_needed([ "target_name" ])
 

@@ -11,7 +11,7 @@ component is expected to handle these calls.
 
 For simpler components with no I18n or chrome dependencies, see cr_elements.
 
-See [build_webui()](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/webui_build_configuration.md#build_webui)
+See [build_webui()](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/webui/webui_build_configuration.md#build_webui)
 as well as example from existing cr_components/ subfolders, for the recommended
 way of building individual cr_components/.
 
