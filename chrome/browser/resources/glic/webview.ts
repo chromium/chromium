@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
-import type {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import type {Subscriber} from './glic_api/glic_api.js';
 import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
@@ -52,8 +52,6 @@ export type PageType =
     |'regular'
     // A error page that should be displayed.
     |'guestError'
-    // An error page that indicates access loss.
-    |'guestCaaError'
     // The page could not be loaded.
     |'loadError';
 
@@ -110,9 +108,17 @@ export class WebviewPersistentState {
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
 
+export interface WebviewControllerInterface {
+  webview: chrome.webviewTag.WebView;
+  getWebClientState(): ObservableValueReadOnly<WebClientState>;
+  destroy(): void;
+  waitingOnPanelWillOpen(): boolean;
+  onLoadTimeOut(): void;
+}
+
 // Creates and manages the <webview> element, and the GlicApiHost which
 // communicates with it.
-export class WebviewController {
+export class WebviewController implements WebviewControllerInterface {
   webview: chrome.webviewTag.WebView;
   private host?: GlicApiHost;
   private communicator?: GlicApiCommunicator;
@@ -126,7 +132,7 @@ export class WebviewController {
 
   constructor(
       private readonly container: HTMLElement,
-      private browserProxy: BrowserProxyImpl,
+      private browserProxy: BrowserProxy,
       private delegate: WebviewDelegate,
       private hostEmbedder: ApiHostEmbedder,
       private persistentState: WebviewPersistentState,

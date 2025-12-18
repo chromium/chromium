@@ -34,3 +34,7 @@ IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestObservable) {
 IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestGlicApiHost) {
   RunTest("glic/unit_tests/glic_api_host_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestGlicWebviewLoader) {
+  RunTest("glic/unit_tests/glic_webview_loader_test.js", "mocha.run()");
+}
