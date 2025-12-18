@@ -34,19 +34,15 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -91,7 +87,6 @@ public class SigninManagerImplTest {
     @Mock private PrefService mPrefService;
     @Mock private IdentityMutator mIdentityMutator;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
-    @Mock private Profile mProfile;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
@@ -341,52 +336,7 @@ public class SigninManagerImplTest {
                 mock(SigninManager.SignOutCallback.class),
                 /* forceWipeUserData= */ true);
 
-        // Passwords should not be among the cleared types.
-        int[] expectedClearedTypes =
-                new int[] {
-                    BrowsingDataType.HISTORY,
-                    BrowsingDataType.CACHE,
-                    BrowsingDataType.SITE_DATA,
-                    BrowsingDataType.FORM_DATA,
-                };
-        verify(mBrowsingDataBridgeNativeMock)
-                .clearBrowsingData(
-                        any(),
-                        any(),
-                        eq(expectedClearedTypes),
-                        eq(TimePeriod.ALL_TIME),
-                        any(),
-                        any(),
-                        any(),
-                        any());
-    }
-
-    @Test
-    public void wipeSyncDataOnly() {
-        createSigninManager();
-        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
-
-        mSigninManager.wipeSyncUserData(
-                CallbackUtils.emptyRunnable(), SigninManager.DataWipeOption.WIPE_SYNC_DATA);
-
-        // Passwords should not be among the cleared types.
-        int[] expectedClearedTypes =
-                new int[] {
-                    BrowsingDataType.HISTORY,
-                    BrowsingDataType.CACHE,
-                    BrowsingDataType.SITE_DATA,
-                    BrowsingDataType.FORM_DATA,
-                };
-        verify(mBrowsingDataBridgeNativeMock)
-                .clearBrowsingData(
-                        any(),
-                        any(),
-                        eq(expectedClearedTypes),
-                        eq(TimePeriod.ALL_TIME),
-                        any(),
-                        any(),
-                        any(),
-                        any());
+        verify(mNativeMock).wipeSyncUserData(anyLong(), any());
     }
 
     @Test
@@ -536,7 +486,6 @@ public class SigninManagerImplTest {
                 (SigninManagerImpl)
                         SigninManagerImpl.create(
                                 NATIVE_SIGNIN_MANAGER,
-                                mProfile,
                                 mPrefService,
                                 mIdentityManager,
                                 mIdentityMutator);

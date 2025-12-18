@@ -30,6 +30,17 @@ class IdentityManager;
 struct CoreAccountInfo;
 class Profile;
 
+// TODO(crbug.com/469293318): Merge this enum with DataWipeOption in
+// SigninManager.
+enum class ClearedTypes {
+  // Clear the service worker caches for Google domains.
+  kGoogleServiceWorkerCaches,
+  // Clear all the sync data.
+  kSyncData,
+  // Clear all the profile data.
+  kAllData
+};
+
 // Android wrapper of Chrome's C++ identity management code which provides
 // access from the Java layer. Note that on Android, there's only a single
 // profile, and therefore a single instance of this wrapper. The name of the
@@ -70,6 +81,9 @@ class SigninManagerAndroid : public KeyedService {
   // Delete service worker caches for google.<eTLD>.
   void WipeGoogleServiceWorkerCaches(JNIEnv* env,
                                      const base::RepeatingClosure& callback);
+
+  // Delete sync data for this profile.
+  void WipeSyncUserData(JNIEnv* env, const base::RepeatingClosure& callback);
 
   void SetUserAcceptedAccountManagement(JNIEnv* env,
                                         bool accepted_account_management);
@@ -120,7 +134,7 @@ class SigninManagerAndroid : public KeyedService {
                                const ManagementCredentials& credentials);
 
   static void WipeData(Profile* profile,
-                       bool all_data,
+                       ClearedTypes cleared_types,
                        base::OnceClosure callback);
 
   const raw_ptr<Profile> profile_ = nullptr;
