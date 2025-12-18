@@ -24030,6 +24030,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Opened from navigation throttle"/>
   <int value="3" label="Opened from pinned side panel button"/>
   <int value="4" label="Opened from omnibox chip"/>
+  <int value="5" label="Opened via tab switch"/>
 </enum>
 
 <enum name="ReadingListContextMenuActions">

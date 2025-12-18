@@ -20,7 +20,8 @@ enum class ReadAnythingOpenTrigger {
   kReadAnythingNavigationThrottle = 2,
   kPinnedSidePanelEntryToolbarButton = 3,
   kOmniboxChip = 4,
-  kMaxValue = kOmniboxChip,
+  kTabSwitch = 5,
+  kMaxValue = kTabSwitch,
 };
 
 namespace read_anything {
@@ -38,6 +39,8 @@ inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(
       return SidePanelOpenTrigger::kPinnedEntryToolbarButton;
     case ReadAnythingOpenTrigger::kOmniboxChip:
       return SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+    case ReadAnythingOpenTrigger::kTabSwitch:
+      return SidePanelOpenTrigger::kTabChanged;
   }
 }
 
@@ -54,6 +57,8 @@ SidePanelToReadAnythingOpenTrigger(SidePanelOpenTrigger trigger) {
       return ReadAnythingOpenTrigger::kPinnedSidePanelEntryToolbarButton;
     case SidePanelOpenTrigger::kReadAnythingOmniboxChip:
       return ReadAnythingOpenTrigger::kOmniboxChip;
+    case SidePanelOpenTrigger::kTabChanged:
+      return ReadAnythingOpenTrigger::kTabSwitch;
     default:
       return std::optional<ReadAnythingOpenTrigger>();
   }

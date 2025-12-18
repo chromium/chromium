@@ -152,27 +152,34 @@ void ReadAnythingController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection_change) {
-  // TODO(crbug.com/462754391): Add logic to prevent marking a tab as inactive
-  // when the user is in split view and the tab is still visible.
   if (selection_change.active_tab_changed()) {
     // Handle when this controller's tab becomes active, or when this
     // controller's tab is the previous active tab.
+    // TODO(crbug.com/462754391): Check whether we should show IRM if tab is
+    // visible as part of a split view, even if it's not the active tab.
+    // Similarly, make sure not to hide IRM if the tab is visible in a split
+    // view, even it's become inactive.
     if (tab_->GetContents() == selection_change.new_contents) {
-      // TODO(crbug.com/463730426): ReadAnythingController should decide whether
-      // to show Reading Mode when tab becomes active.
-      is_active_tab_ = true;
+      OnTabActivated();
     } else if (tab_->GetContents() == selection_change.old_contents &&
                change.type() != TabStripModelChange::kRemoved) {
-      is_active_tab_ = false;
-      if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
-        CloseImmersiveUI();
-      }
+      OnTabBackgrounded();
     }
   }
 }
 
-bool ReadAnythingController::isActiveTab() {
-  return is_active_tab_;
+void ReadAnythingController::OnTabActivated() {
+  if (should_show_immersive_on_tab_reactivate_) {
+    ShowImmersiveUI(ReadAnythingOpenTrigger::kTabSwitch);
+    // Reset value now that the tab is active
+    should_show_immersive_on_tab_reactivate_ = false;
+  }
+}
+
+void ReadAnythingController::OnTabBackgrounded() {
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI(/*closed_by_tab_switch=*/true);
+  }
 }
 
 int ReadAnythingController::GetNavCounterForTesting() const {
@@ -277,7 +284,7 @@ void ReadAnythingController::ShowUI(SidePanelOpenTrigger trigger) {
   }
 }
 
-void ReadAnythingController::CloseImmersiveUI() {
+void ReadAnythingController::CloseImmersiveUI(bool closed_by_tab_switch) {
   if (GetPresentationState() != PresentationState::kInImmersiveOverlay) {
     return;
   }
@@ -294,6 +301,12 @@ void ReadAnythingController::CloseImmersiveUI() {
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
       immersive_overlay_view->CloseUI();
+  // If a tab switch is the reason we're closing immersive mode, we want to
+  // set should_show_immersive_on_tab_reactivate_ so we know to activate
+  // immersive mode again if the tab becomes active.
+  if (closed_by_tab_switch) {
+    should_show_immersive_on_tab_reactivate_ = true;
+  }
   if (wrapper) {
     TransferWebUiOwnership(std::move(wrapper));
   }

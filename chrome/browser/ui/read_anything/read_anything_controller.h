@@ -119,7 +119,7 @@ class ReadAnythingController : public TabStripModelObserver {
   void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
 
   // Closes the Immersive Reading Mode UI.
-  void CloseImmersiveUI();
+  void CloseImmersiveUI(bool closed_by_tab_switch = false);
 
   // Toggles the Reading Mode UI by utilizing the SidePanelUI on the active
   // tab.
@@ -149,10 +149,6 @@ class ReadAnythingController : public TabStripModelObserver {
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           web_ui_wrapper);
 
-  // Test function while OnTabStripModelChanged events are implemented.
-  // TODO(crbug.com/463732840): Remove this function once the
-  // OnTabStripModelChanged events are implemented.
-  bool isActiveTab();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -170,6 +166,10 @@ class ReadAnythingController : public TabStripModelObserver {
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
+  // Called when the tab is activated.
+  void OnTabActivated();
+  // Called when the tab is backgrounded.
+  void OnTabBackgrounded();
 
   std::unique_ptr<WebContentsObserverInstance> main_page_observer_;
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
@@ -198,11 +198,6 @@ class ReadAnythingController : public TabStripModelObserver {
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;
 
-  // Keeps track of whether the tab is active.
-  // TODO(crbug.com/463732840): Detemrine if this variable is needed once the
-  // OnTabStripModelChanged events are implemented.
-  bool is_active_tab_ = false;
-
   bool has_shown_ui_ = false;
 
   base::ObserverList<Observer> observers_;
@@ -211,6 +206,9 @@ class ReadAnythingController : public TabStripModelObserver {
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   PresentationState presentation_state_ = PresentationState::kUndefined;
+  // When a tab becomes inactive and hides IRM, this is set to true to let us
+  // know we should show IRM again when the tab becomes active again.
+  bool should_show_immersive_on_tab_reactivate_ = false;
 
   // When the Immersive Reading Mode overlay is shown, it covers the main web
   // contents, changing it's visibility to Visibility::OCCLUDED. This causes
