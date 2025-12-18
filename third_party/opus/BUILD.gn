@@ -6,9 +6,7 @@ import("//build/config/arm.gni")
 import("//testing/test.gni")
 
 # If ARM optimizations shall be used to accelerate performance.
-use_opus_arm_optimization =
-    current_cpu == "arm" ||
-    (current_cpu == "arm64" && (is_fuchsia || is_ios || is_win))
+use_opus_arm_optimization = current_cpu == "arm" || current_cpu == "arm64"
 
 use_opus_x86_optimization = current_cpu == "x86" || current_cpu == "x64"
 
@@ -111,12 +109,8 @@ config("opus_private_config") {
       "OPUS_ARM_MAY_HAVE_NEON_INTR",
     ]
 
-    # TODO(thakis): Do this on all platforms,
-    # no need for runtime detection anymore.
-    if (is_ios && current_cpu == "arm64") {
-      # Runtime detection of CPU features not available on iOS.
+    if (current_cpu == "arm64") {
       defines += [
-        "OPUS_ARM_MAY_HAVE_NEON_INTR",
         "OPUS_ARM_PRESUME_NEON_INTR",
         "OPUS_ARM_PRESUME_AARCH64_NEON_INTR",
       ]
