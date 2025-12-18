@@ -55,6 +55,7 @@ buildflag_header("buildflags") {
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
     "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
     "ENABLE_GLIC=$enable_glic",
+    "ENABLE_GLIC_ANDROID=$enable_glic_android",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_PDF_SAVE_TO_DRIVE=$enable_pdf_save_to_drive",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
@@ -731,6 +732,10 @@ mojom("mojo_bindings") {
 
   if (enable_glic) {
     enabled_features += [ "enable_glic" ]
+  }
+
+  if (enable_glic_android) {
+    enabled_features += [ "enable_glic_android" ]
   }
 
   public_deps = [

@@ -48,6 +48,10 @@ declare_args() {
   # Enables inclusion of glic in the build.
   enable_glic = is_mac || is_win || is_linux || is_chromeos
 
+  # Enables inclusion of glic in the build on Android.
+  # This is temporary, and will eventually be replaced by enable_glic.
+  enable_glic_android = is_android
+
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = enable_src_internal
@@ -86,6 +90,7 @@ chrome_grit_defines = [
   "enable_extensions=$enable_extensions",
   "enable_extensions_core=$enable_extensions_core",
   "enable_glic=$enable_glic",
+  "enable_glic_android=$enable_glic_android",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_pdf_ink2=$enable_pdf_ink2",
   "enable_pdf_save_to_drive=$enable_pdf_save_to_drive",

@@ -6294,6 +6294,11 @@ static_library("browser") {
     ]
   }
 
+  if (enable_glic_android) {
+    deps += [ "//chrome/browser/glic:glic_android" ]
+    allow_circular_includes_from += [ "//chrome/browser/glic:glic_android" ]
+  }
+
   if (enable_background_mode) {
     deps += [
       "//chrome/browser/background/extensions",
