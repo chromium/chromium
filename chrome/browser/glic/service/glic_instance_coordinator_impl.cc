@@ -70,6 +70,18 @@ BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<base::TimeDelta> kGlicMaxRecencyValue{
     &kGlicMaxRecency, "duration", base::Minutes(30)};
 
+BASE_FEATURE(kGlicMemoryPressureResponse, base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<base::MemoryPressureLevel>::Option
+    kGlicMemoryPressureResponseLevelOptions[] = {
+        {base::MEMORY_PRESSURE_LEVEL_MODERATE, "moderate"},
+        {base::MEMORY_PRESSURE_LEVEL_CRITICAL, "critical"}};
+
+constexpr base::FeatureParam<base::MemoryPressureLevel>
+    kGlicMemoryPressureResponseLevel{&kGlicMemoryPressureResponse, "level",
+                                     base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                                     &kGlicMemoryPressureResponseLevelOptions};
+
 base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
   return base::TimeTicks::Now() - instance->GetLastActiveTime();
 }
@@ -637,7 +649,11 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   metrics_.OnMemoryPressure(level);
 
-  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (!base::FeatureList::IsEnabled(kGlicMemoryPressureResponse)) {
+    return;
+  }
+
+  if (level < kGlicMemoryPressureResponseLevel.Get()) {
     return;
   }
 
