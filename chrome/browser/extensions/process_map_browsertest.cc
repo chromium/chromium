@@ -104,7 +104,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   void ExecuteUserScriptInActiveTab(const ExtensionId& extension_id) {
     base::RunLoop run_loop;
     content::WebContents* web_contents = GetActiveWebContents();
-    // TODO(crbug.com/40262660): Add a utility method for user script
+    // TODO(crbug.com/469329741): Add a utility method for user script
     // injection in browser tests.
     ScriptExecutor script_executor(web_contents);
     std::vector<mojom::JSSourcePtr> sources;
