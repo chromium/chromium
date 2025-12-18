@@ -120,7 +120,7 @@ class NavigationContextImpl : public NavigationContext {
                         ui::PageTransition page_transition,
                         bool is_renderer_initiated);
 
-  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
+  base::WeakPtr<WebState> web_state_;
   int64_t navigation_id_ = 0;
   GURL url_;
   bool has_user_gesture_ = false;
