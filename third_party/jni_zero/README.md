@@ -70,6 +70,7 @@ To add JNI to a class:
 
 #### Example:
 **Java**
+
 ```java
 class MyClass {
   // Cannot be private. Must be package or public.
@@ -100,6 +101,7 @@ class MyClass {
 ```
 
 **C++**
+
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
 
