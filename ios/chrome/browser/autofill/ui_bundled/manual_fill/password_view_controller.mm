@@ -79,8 +79,6 @@ enum ManualFallbackItemType : NSInteger {
   self.searchController.obscuresBackgroundDuringPresentation = NO;
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
-  self.searchController.searchBar.accessibilityIdentifier =
-      manual_fill::kPasswordSearchBarAccessibilityIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
 
   if (self.searchController) {

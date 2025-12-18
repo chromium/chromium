@@ -17,9 +17,6 @@ NSString* const kExpandedManualFillPasswordFaviconID =
 NSString* const kPasswordDoneButtonAccessibilityIdentifier =
     @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
 
-NSString* const kPasswordSearchBarAccessibilityIdentifier =
-    @"ManualFillPasswordSearchBarAccessibilityIdentifier";
-
 NSString* const kPasswordTableViewAccessibilityIdentifier =
     @"ManualFillPasswordTableViewAccessibilityIdentifier";
 

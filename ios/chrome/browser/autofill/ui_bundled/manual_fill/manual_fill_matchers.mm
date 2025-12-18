@@ -28,10 +28,6 @@ id<GREYMatcher> PasswordTableViewMatcher() {
   return grey_accessibilityID(kPasswordTableViewAccessibilityIdentifier);
 }
 
-id<GREYMatcher> PasswordSearchBarMatcher() {
-  return grey_accessibilityID(kPasswordSearchBarAccessibilityIdentifier);
-}
-
 id<GREYMatcher> ManagePasswordsMatcher() {
   return grey_accessibilityID(kManagePasswordsAccessibilityIdentifier);
 }

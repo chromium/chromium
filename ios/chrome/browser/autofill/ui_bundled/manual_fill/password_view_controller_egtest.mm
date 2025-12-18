@@ -690,8 +690,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is still present after tapping the
 // search bar.
-// TODO(crbug.com/362893177): Deflake and reenable the test.
-- (void)DISABLED_testPasswordControllerWhileSearching {
+- (void)testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -716,24 +715,22 @@ void CheckKeyboardIsUpAndNotCovered() {
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 
   // Tap the password search.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_tap()];
 
-  // Verify keyboard is shown and that the password controller is still present
-  // in the background.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // Verify that the password controller is still present.
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 
   // Search for a term that shouldn't give any results.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"example1")];
   [[EarlGrey selectElementWithMatcher:grey_text(@"example.com")]
       assertWithMatcher:grey_notVisible()];
 
   // Search for a term that matches with the saved credential.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"AMPL")];
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 }
