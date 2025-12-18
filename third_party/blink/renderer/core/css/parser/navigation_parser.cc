@@ -145,18 +145,12 @@ NavigationLocation* NavigationParser::ParseLocation(
   if (stream.Peek().GetType() == kIdentToken) {
     AtomicString route_name(
         stream.ConsumeIncludingWhitespace().Value().ToString());
-    if (stream.AtEnd()) {
-      return MakeGarbageCollected<NavigationLocation>(route_name);
-    }
-  } else {
-    URLPatternParseResult result = ParseURLPattern(stream, document);
-    if (result.IsSuccess()) {
-      stream.ConsumeWhitespace();
-      if (stream.AtEnd()) {
-        return MakeGarbageCollected<NavigationLocation>(result.url_pattern,
-                                                        result.original_string);
-      }
-    }
+    return MakeGarbageCollected<NavigationLocation>(route_name);
+  }
+  URLPatternParseResult result = ParseURLPattern(stream, document);
+  if (result.IsSuccess()) {
+    return MakeGarbageCollected<NavigationLocation>(result.url_pattern,
+                                                    result.original_string);
   }
   return nullptr;
 }

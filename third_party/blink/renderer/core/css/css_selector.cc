@@ -35,7 +35,7 @@
 #include "style_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/core/css/navigation_query.h"
+#include "third_party/blink/renderer/core/css/link_condition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -1308,9 +1308,9 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         break;
       }
       case kPseudoLinkTo: {
-        DCHECK(GetNavigationLocation());
+        DCHECK(GetLinkCondition());
         builder.Append("(");
-        GetNavigationLocation()->SerializeTo(builder);
+        GetLinkCondition()->SerializeTo(builder);
         builder.Append(")");
         break;
       }
@@ -1525,9 +1525,9 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   data_.rare_data_->selector_list_ = selector_list;
 }
 
-void CSSSelector::SetNavigationLocation(NavigationLocation* location) {
+void CSSSelector::SetLinkCondition(LinkCondition* condition) {
   CreateRareData();
-  data_.rare_data_->navigation_location_ = location;
+  data_.rare_data_->link_condition_ = condition;
 }
 
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
@@ -2096,7 +2096,7 @@ void CSSSelector::Trace(Visitor* visitor) const {
 
 void CSSSelector::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(selector_list_);
-  visitor->Trace(navigation_location_);
+  visitor->Trace(link_condition_);
 }
 
 const CSSSelector* CSSSelector::SelectorListOrParent() const {

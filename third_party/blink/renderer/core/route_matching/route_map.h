@@ -113,6 +113,12 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     UpdateActiveRoutes();
   }
 
+  // Return the "from" URL of the current navigation, if any.
+  KURL GetFromURL() const { return previous_url_; }
+
+  // Return the "from" URL of the current navigation, if any.
+  KURL GetToURL() const { return next_url_; }
+
  private:
   ParseResult AddPatternToRoute(Route&, const JSONValue&);
   bool UpdateMatchStatus(Route&,

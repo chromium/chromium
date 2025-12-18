@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>:link-to(--route with (param: "value"))</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#link-navigation-pseudo-classes">
+<style>
+  @route --ruth {
+    pathname: "/*/:dir/:file";
+  }
+  :link-to(--ruth) {
+    padding-left: 10px;
+  }
+  :link-to(--ruth with (dir: "target")) {
+    padding-top: 10px;
+  }
+</style>
+<a id="link1" href="target/foo">link1</a>
+<a id="link2" href="something_else/foo">link2</a>
+<a id="link3" href="/">link3</a>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(getComputedStyle(link1).paddingLeft, "10px");
+    assert_equals(getComputedStyle(link1).paddingTop, "10px");
+  }, "Matches route and parameter");
+
+  test(()=> {
+    assert_equals(getComputedStyle(link2).paddingLeft, "10px");
+    assert_equals(getComputedStyle(link2).paddingTop, "0px");
+  }, "Matches just route");
+
+  test(()=> {
+    assert_equals(getComputedStyle(link3).paddingLeft, "0px");
+    assert_equals(getComputedStyle(link3).paddingTop, "0px");
+  }, "Matches nothing");
+</script>
+

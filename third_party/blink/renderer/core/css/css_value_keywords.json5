@@ -1483,7 +1483,10 @@
     "blur",
     "drop-shadow",
     "url",
+
+    // Route matching, such as @route, @navigation, and :link-to().
     "url-pattern",
+    "navigation-param",
 
     // colors
     "rgb",

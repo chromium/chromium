@@ -4925,6 +4925,41 @@ void StyleEngine::RevisitStyleSheetForInspector(
   }
 }
 
+void StyleEngine::NavigationsMayHaveChanged() {
+  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
+  SetNeedsActiveStyleUpdate(GetDocument());
+
+  // Navigation changes may affect how navigation-param() expressions inside
+  // :link-to() pseudo selectors match. Do a PseudoStateChanged() on each link
+  // in the document, which will mark every element potentially affected by the
+  // navigation for style recalc.
+  //
+  // TODO(crbug.com/436805487): Should come up with something less brutal (spec
+  // changes should be considered, too - this is somewhat unusual).
+  //
+  // A plain lambda won't do because they cannot be invoked recursively. And I
+  // want the code to stay here in this function, at least for now, so here we
+  // go:
+  struct Marker {
+    static void MarkAllLinks(Node& root) {
+      for (Node& node : NodeTraversal::StartsAt(root)) {
+        if (node.IsLink()) {
+          // TODO(crbug.com/436805487): This is in order to implement
+          // :link-to(--route with navigation-param()), but it's a rather heavy
+          // hammer. Maybe there are better ways (spec changes should be
+          // considered, too).
+          To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoLinkTo);
+        }
+        if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
+          MarkAllLinks(*shadow_root);
+        }
+      }
+    }
+  };
+
+  Marker::MarkAllLinks(GetDocument());
+}
+
 double StyleEngine::GetCachedRandomBaseValue(
     const RandomValueSharing& random_value_sharing,
     const Element* element) {

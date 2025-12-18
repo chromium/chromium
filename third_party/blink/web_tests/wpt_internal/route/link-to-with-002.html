@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<title>:link-to(--route with navigation-param(param))</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#link-navigation-pseudo-classes">
+<style>
+  @route --ruth {
+    pathname: "/*/:dir/:file";
+  }
+  :link-to(--ruth with navigation-param(dir)) {
+    padding-top: 10px;
+  }
+  :link-to(--ruth with (navigation-param(dir)) and (navigation-param(file))) {
+    padding-bottom: 10px;
+  }
+  #container:has(>:link-to(--ruth with navigation-param(file))) {
+    padding-left: 10px;
+  }
+</style>
+<a id="link1" href="target/bar">link1</a>
+<div id="container">
+  <a href="target/bar">link1</a>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+    const nav = Promise.withResolvers();
+    const precommit = Promise.withResolvers();
+    const handler = Promise.withResolvers();
+    navigation.onnavigate = (event) => {
+      nav.resolve();
+      event.intercept({
+        async precommitHandler() {
+          precommit.resolve();
+          await new Promise(r => t.step_timeout(r, 0));
+        },
+        async handler() { handler.resolve(); }
+      })
+    }
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "initial");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "initial");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "initial");
+    navigation.navigate("target/foo");
+    await nav.promise;
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "nav");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "nav");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "nav");
+    await precommit.resolve;
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "precommit");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "precommit");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "precommit");
+    await navigation.transition.committed;
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "committed");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "committed");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "committed");
+    await handler.promise;
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "handler");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "handler");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "handler");
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "final");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "final");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "final");
+
+    navigation.navigate("bar");
+    await nav.promise;
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "nav2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "nav2");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "nav2");
+    await precommit.resolve;
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "precommit2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "precommit2");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "precommit2");
+    await navigation.transition.committed;
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "committed2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "10px", "committed2");
+    assert_equals(getComputedStyle(container).paddingLeft, "10px", "committed2");
+    await handler.promise;
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "handler2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "10px", "handler2");
+    assert_equals(getComputedStyle(container).paddingLeft, "10px", "handler2");
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(link1).paddingTop, "0px", "final2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "final2");
+    assert_equals(getComputedStyle(container).paddingLeft, "0px", "final2");
+  }, "navigation-param()");
+</script>

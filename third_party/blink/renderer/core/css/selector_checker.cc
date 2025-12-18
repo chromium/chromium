@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/core/css/navigation_query.h"
+#include "third_party/blink/renderer/core/css/link_condition.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -90,7 +90,6 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -2222,16 +2221,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 bool SelectorChecker::CheckPseudoLinkTo(const SelectorCheckingContext& context,
                                         MatchResult& result) const {
   DCHECK(context.selector);
-  DCHECK(context.selector->GetNavigationLocation());
+  DCHECK(context.selector->GetLinkCondition());
   Element& element = GetCandidateElement(context, result);
-  const auto* anchor = DynamicTo<HTMLAnchorElement>(&element);
-  if (!anchor) {
-    return false;
-  }
-  const Route* route =
-      context.selector->GetNavigationLocation()->FindOrCreateRoute(
-          element.GetDocument());
-  return route && route->MatchesUrl(anchor->Href());
+  return context.selector->GetLinkCondition()->Evaluate(element);
 }
 
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
