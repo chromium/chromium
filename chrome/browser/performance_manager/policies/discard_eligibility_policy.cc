@@ -122,6 +122,51 @@ void DiscardEligibilityPolicy::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
+bool DiscardEligibilityPolicy::WillDiscardBePerceptible(
+    const PageNode* page_node) const {
+  if (page_node->IsAudible() || page_node->HasPictureInPicture() ||
+      page_node->GetNotificationPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED) {
+    return true;
+  }
+
+  const auto* live_state_data =
+      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  if (live_state_data) {
+    if (live_state_data->IsCapturingVideo() ||
+        live_state_data->IsCapturingAudio() ||
+        live_state_data->IsBeingMirrored() ||
+        live_state_data->IsCapturingWindow() ||
+        live_state_data->IsCapturingDisplay() ||
+        live_state_data->IsConnectedToBluetoothDevice() ||
+        live_state_data->IsConnectedToUSBDevice()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool DiscardEligibilityPolicy::IsDiscardAllowed(
+    const PageNode* page_node) const {
+  const GURL& main_frame_url = page_node->GetMainFrameUrl();
+  if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
+                                 main_frame_url)) {
+    return false;
+  }
+
+  const auto* live_state_data =
+      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  if (live_state_data) {
+    if (!live_state_data->IsAutoDiscardable() ||
+        live_state_data->IsPinnedTab()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // NOTE: This is used by ProcessRankPolicyAndroid. If you add a new condition to
 // this, you need to add an observer callback to ProcessRankPolicyAndroid as
 // well.

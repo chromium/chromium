@@ -334,6 +334,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.ChildFrameCrash.PageWillReload" enum="Boolean"
+    expires_after="2026-05-03">
+  <owner>kawasin@google.com</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Logs whether a page with a crashed subframe will be marked for reload. The
+    logic is implemented as ReloadHiddenTabsWithCrashedSubframes feature but
+    DiscardPageWithCrashedSubframePolicy logs the result with the same logic.
+    This is a supplementary metrics to understand
+    Stability.ChildFrameCrash.PageEligibleToDiscard metrics better. Logged once
+    per subframe process crash.
+  </summary>
+</histogram>
+
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
     enum="ShownAfterCrashingReason" expires_after="2026-08-24">
   <owner>alexmos@chromium.org</owner>
