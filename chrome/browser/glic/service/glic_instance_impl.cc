@@ -569,15 +569,14 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   instance_metrics_.OnUnbindEmbedder(key);
-  if (auto* tab = std::get_if<tabs::TabInterface*>(&key)) {
+  if (auto** tab = std::get_if<tabs::TabInterface*>(&key)) {
     auto tab_handle = (*tab)->GetHandle();
     std::optional<GlicPinnedTabUsage> usage =
         sharing_manager().GetPinnedTabUsage(tab_handle);
     // If the conversation hasn't had a turn since the tab was pinned and the
     // tab was not manually pinned, then we will unpin the tab.
-    if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) &&
-        usage.has_value() && usage->Unused() &&
-        !usage->IsExplicitlyPinnedByUser()) {
+    if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbindIfUnused) && usage &&
+        usage->Unused() && !usage->IsExplicitlyPinnedByUser()) {
       sharing_manager().UnpinTabs({tab_handle});
     }
 

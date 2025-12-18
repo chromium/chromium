@@ -11,10 +11,16 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/restore_type.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -22,6 +28,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 
 using testing::_;
 using testing::ElementsAre;
@@ -339,6 +346,75 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
   // Verify the tab was unpinned.
   EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
   EXPECT_EQ(0u, pinned_tab_manager_->GetNumPinnedTabs());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       VerifyPinnedStatePersistsOnRestore) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+
+  // Switch to another tab to ensure the pinned tab is in the background.
+  CreateAndAddTab("/sentient-toaster-manual");
+  EXPECT_NE(tab_strip_model->GetActiveWebContents(),
+            tab_interface->GetContents());
+
+  // Discard the pinned tab to simulate a situation where it needs to be
+  // restored.
+  auto* lifecycle_unit =
+      resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
+          tab_interface->GetContents());
+  ASSERT_TRUE(lifecycle_unit);
+  lifecycle_unit->DiscardTab(::mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  EXPECT_TRUE(tab_interface->GetContents()->WasDiscarded());
+
+  // Activate the tab to trigger a restore (reload).
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents(),
+            tab_interface->GetContents());
+  content::WaitForLoadStop(tab_interface->GetContents());
+
+  // Verify the tab remains pinned.
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       VerifyUnpinningOnBackgroundOriginChange) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+
+  // Switch to another tab to ensure the pinned tab is in the background.
+  CreateAndAddTab("/sentient-toaster-manual");
+  EXPECT_NE(tab_strip_model->GetActiveWebContents(),
+            tab_interface->GetContents());
+
+  // Navigate the pinned tab to a different origin.
+  GURL new_origin_url("data:text/html,<html><body>New Origin</body></html>");
+  {
+    content::NavigationController::LoadURLParams params(new_origin_url);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    tab_interface->GetContents()->GetController().LoadURLWithParams(params);
+    content::WaitForLoadStop(tab_interface->GetContents());
+  }
+
+  // Verify the tab is unpinned.
+  EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
 }
 
 }  // namespace glic

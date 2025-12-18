@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "glic_pinned_tab_manager.h"
@@ -108,9 +109,27 @@ class GlicPinnedTabManager::PinnedTabObserver
     }
   }
 
-  void PrimaryPageChanged(content::Page& page) override {
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted() ||
+        navigation_handle->IsSameDocument()) {
+      return;
+    }
+
+    // If the navigation is a restore, we update the origin but do not unpin the
+    // tab. This allows restored tabs to load their content (changing origin
+    // from empty/initial to the restored site) without triggering the privacy
+    // check that unpins background tabs on origin change.
+    if (navigation_handle->GetRestoreType() ==
+        content::RestoreType::kRestored) {
+      last_origin_ =
+          navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
+      return;
+    }
+
     CheckOriginChangeAndMaybeDeleteSelf(
-        page.GetMainDocument().GetLastCommittedOrigin());
+        navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin());
   }
 
   void OnTabDestroyed(tabs::TabInterface* tab) {
@@ -124,8 +143,11 @@ class GlicPinnedTabManager::PinnedTabObserver
                              content::WebContents* new_contents) {
     CHECK_EQ(web_contents(), old_contents);
     StartObservation(tab, new_contents);
-    CheckOriginChangeAndMaybeDeleteSelf(
-        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+    // When a tab is discarded, the new contents (placeholder) might have an
+    // opaque origin. We update the last_origin_ but do not trigger unpinning
+    // checks.
+    last_origin_ =
+        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
 
   void FocusedTabDataChanged(TabDataChange tab_data) {
