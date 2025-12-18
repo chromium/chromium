@@ -137,8 +137,8 @@ source_set("main_extra_parts") {
 source_set("global_features") {
   sources = [ "global_features.h" ]
   deps = [
-    "//net:buildflags",
     "//chrome/common:buildflags",
+    "//net:buildflags",
     "//ui/base/unowned_user_data",
   ]
   public_deps = [
@@ -6277,27 +6277,27 @@ static_library("browser") {
     ]
   }
 
+  if (enable_glic_android || enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:impl",
+    ]
+    allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
+  }
+
   if (enable_glic) {
     deps += [
       "//chrome/browser/background/glic",
       "//chrome/browser/background/glic:impl",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/media",
     ]
 
     allow_circular_includes_from += [
       "//chrome/browser/background/glic:impl",
-      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/media",
       "//chrome/browser/glic/fre",
     ]
-  }
-
-  if (enable_glic_android) {
-    deps += [ "//chrome/browser/glic:glic_android" ]
-    allow_circular_includes_from += [ "//chrome/browser/glic:glic_android" ]
   }
 
   if (enable_background_mode) {

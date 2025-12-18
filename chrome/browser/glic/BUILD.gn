@@ -9,14 +9,18 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_glic || enable_glic_android)
 
-if (!is_android) {
-  # TODO(b/430371855): This target should eventually become Glic's public target,
-  # to be imported from external BUILD files. The "impl" source set below would
-  # then list resources only needed internally for the implementation. In the
-  # meantime, prefer adding new sources or dependencies only needed internally to
-  # the "impl" target.
-  source_set("glic") {
-    sources = [
+# TODO(b/430371855): This target should eventually become Glic's public target,
+# to be imported from external BUILD files. The "impl" source set below would
+# then list resources only needed internally for the implementation. In the
+# meantime, prefer adding new sources or dependencies only needed internally to
+# the "impl" target.
+source_set("glic") {
+  sources = [
+    "host/auth_controller.h",
+    "host/glic_cookie_synchronizer.h",
+  ]
+  if (!is_android) {
+    sources += [
       "browser_ui/glic_button_controller.h",
       "browser_ui/glic_button_controller_delegate.h",
       "browser_ui/glic_iph_controller.h",
@@ -35,7 +39,6 @@ if (!is_android) {
       "glic_user_status_fetcher.h",
       "glic_user_status_request.h",
       "glic_zero_state_suggestions_manager.h",
-      "host/auth_controller.h",
       "host/context/glic_focused_browser_manager_interface.h",
       "host/context/glic_focused_tab_manager.h",
       "host/context/glic_focused_tab_manager_interface.h",
@@ -43,7 +46,6 @@ if (!is_android) {
       "host/context/glic_sharing_manager_provider.h",
       "host/context/glic_tab_data.h",
       "host/glic_annotation_manager.h",
-      "host/glic_cookie_synchronizer.h",
       "host/glic_page_handler.h",
       "host/glic_ui.h",
       "host/glic_web_client_access.h",
@@ -61,92 +63,58 @@ if (!is_android) {
       "widget/glic_window_controller.h",
       "widget/local_hotkey_manager.h",
     ]
-    public_deps = [
-      ":enum",
-      ":mojo_bindings",
-      "//base",
-      "//chrome/browser:shell_integration",
+  }
+  public_deps = [
+    ":enum",
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/profiles:profile",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/content_extraction/content/browser",
+    "//components/favicon/core",
+    "//components/metrics",
+    "//components/optimization_guide/content/browser",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//content/public/browser",
+    "//google_apis/common",
+    "//ui/base/unowned_user_data",
+    "//ui/webui",
+  ]
+  if (!is_android) {
+    public_deps += [
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
-      "//chrome/browser/page_content_annotations:fetcher",
-      "//chrome/browser/permissions/system",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-      "//components/content_extraction/content/browser",
-      "//components/favicon/core",
-      "//components/metrics",
-      "//components/optimization_guide/content/browser",
-      "//components/policy/core/browser",
-      "//components/prefs",
-      "//components/signin/public/identity_manager",
-      "//components/variations",
-      "//content/public/browser",
-      "//google_apis/common",
-      "//ui/base/unowned_user_data",
       "//ui/views",
       "//ui/views/controls/webview",
-      "//ui/webui",
     ]
-    deps = [
-      "//chrome/browser/actor:types",
-      "//chrome/common",
-      "//components/user_education/common",
-      "//ui/base/interaction",
-    ]
-    if (use_aura) {
-      public_deps += [ "//ui/wm" ]
-    }
-    if (is_chromeos) {
-      public_deps += [ "//chromeos/ash/components/browser_context_helper" ]
-    }
   }
-}
 
-if (enable_glic_android) {
-  # This target contains the glic files that will build for Android.
-  # Eventually, "glic" and "impl" will build on Android, and this target
-  # will be removed.
-  source_set("glic_android") {
-    sources = [
-      "host/auth_controller.cc",
-      "host/auth_controller.h",
-      "host/glic_cookie_synchronizer.cc",
-      "host/glic_cookie_synchronizer.h",
-      "host/glic_synthetic_trial_manager.cc",
-      "host/glic_synthetic_trial_manager.h",
-    ]
-    deps = [
-      "//base",
-      "//build:branding_buildflags",
-      "//chrome/app:command_ids",
-      "//chrome/app:generated_resources",
-      "//chrome/browser/glic:mojo_bindings",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui:layout_constants",
-      "//chrome/common:chrome_features",
-      "//chrome/common:non_code_constants",
-      "//components/lens",
-      "//components/lens:buildflags",
-      "//components/signin/public/base",
-      "//components/signin/public/identity_manager",
-      "//components/variations",
-      "//components/vector_icons",
-      "//content/public/browser",
-      "//google_apis",
-      "//google_apis/common",
-      "//printing/buildflags",
-      "//services/screen_ai/buildflags",
-      "//skia",
-      "//ui/base",
-      "//ui/events",
-      "//ui/gfx",
-      "//ui/gfx/geometry",
-      "//url",
-    ]
+  deps = [
+    "//chrome/common",
+    "//components/user_education/common",
+    "//ui/base/interaction",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/actor:types" ]
+  }
+  if (use_aura) {
+    public_deps += [ "//ui/wm" ]
+  }
+  if (is_chromeos) {
+    public_deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }
 
@@ -154,12 +122,21 @@ source_set("enum") {
   sources = [ "glic_enums.h" ]
 }
 
-if (!is_android) {
-  # TODO(b/430371855): This is the better target for resources only needed
-  # by the Glic implementation. Prefer adding to this target any new sources or
-  # dependencies that are only needed internally.
-  source_set("impl") {
-    sources = [
+# TODO(b/430371855): This is the better target for resources only needed
+# by the Glic implementation. Prefer adding to this target any new sources or
+# dependencies that are only needed internally.
+source_set("impl") {
+  sources = [
+    "host/auth_controller.cc",
+    "host/auth_controller.h",
+    "host/glic_cookie_synchronizer.cc",
+    "host/glic_cookie_synchronizer.h",
+    "host/glic_synthetic_trial_manager.cc",
+    "host/glic_synthetic_trial_manager.h",
+  ]
+
+  if (!is_android) {
+    sources += [
       "gemini_act_on_web_settings_policy_handler.cc",
       "glic_hotkey.cc",
       "glic_metrics.cc",
@@ -174,7 +151,6 @@ if (!is_android) {
       "glic_user_status_fetcher.cc",
       "glic_user_status_request.cc",
       "glic_zero_state_suggestions_manager.cc",
-      "host/auth_controller.cc",
       "host/context/glic_active_instance_sharing_manager.cc",
       "host/context/glic_active_instance_sharing_manager.h",
       "host/context/glic_active_pinned_focused_tab_manager.cc",
@@ -209,12 +185,9 @@ if (!is_android) {
       "host/context/glic_tab_data_observer.cc",
       "host/context/glic_tab_data_observer.h",
       "host/glic_annotation_manager.cc",
-      "host/glic_cookie_synchronizer.cc",
       "host/glic_page_handler.cc",
       "host/glic_region_capture_controller.cc",
       "host/glic_region_capture_controller.h",
-      "host/glic_synthetic_trial_manager.cc",
-      "host/glic_synthetic_trial_manager.h",
       "host/glic_ui.cc",
       "host/glic_web_contents_warming_pool.cc",
       "host/glic_web_contents_warming_pool.h",
@@ -279,41 +252,73 @@ if (!is_android) {
       "widget/inactive_view_controller.h",
       "widget/local_hotkey_manager.cc",
     ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [
-      ":glic",
-      "//chrome/browser:browser_process",
-      "//chrome/browser:global_features",
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":glic",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/feedback",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/signin",
+    "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/profiles",
+    "//chrome/common",
+    "//components/application_locale_storage",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/favicon/content",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feedback/content",
+    "//components/language/core/common",
+    "//components/metrics",
+    "//components/metrics_services_manager",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//components/variations/service",
+    "//components/webui/chrome_urls",
+    "//third_party/metrics_proto",
+    "//ui/base/interaction",
+    "//ui/snapshot",
+    "//ui/webui",
+    "//url",
+  ]
+  if (!is_android) {
+    # Many of these deps will be needed in Android, but are not yet supported.
+    deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
       "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing",
-      "//chrome/browser/feedback",
       "//chrome/browser/glic/actor",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/media",
       "//chrome/browser/glic/shared",
       "//chrome/browser/lens/region_search",
-      "//chrome/browser/lifetime:termination_notification",
-      "//chrome/browser/media/webrtc",
-      "//chrome/browser/picture_in_picture",
-      "//chrome/browser/profiles:profile_util",
-      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resources/glic:resources",
       "//chrome/browser/resources/glic/fre:resources",
-      "//chrome/browser/signin",
-      "//chrome/browser/subscription_eligibility",
       "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_element_identifiers",
+      "//components/guest_view/browser",
+      "//components/password_manager/core/browser/actor_login:common",
+      "//extensions/browser",
+    ]
+
+    # Deps that will not be available on Android soon.
+    deps += [
       "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:browser_tab_strip",
-      "//chrome/browser/ui:layout_constants",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/passwords",
-      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/user_education",
@@ -321,46 +326,23 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame/",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/common",
-      "//components/application_locale_storage",
-      "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
-      "//components/favicon/content",
-      "//components/feature_engagement/public:feature_constants",
-      "//components/feedback/content",
-      "//components/guest_view/browser",
-      "//components/language/core/common",
-      "//components/metrics",
-      "//components/metrics_services_manager",
-      "//components/password_manager/core/browser/actor_login:common",
-      "//components/pref_registry",
-      "//components/prefs",
-      "//components/sessions",
-      "//components/tabs:public",
-      "//components/variations/service",
-      "//components/webui/chrome_urls",
-      "//extensions/browser",
-      "//third_party/metrics_proto",
-      "//ui/base/interaction",
-      "//ui/snapshot",
-      "//ui/webui",
-      "//url",
     ]
+  }
 
-    if (is_mac) {
-      deps += [ "//ui/accelerated_widget_mac" ]
-    }
-    if (is_chromeos) {
-      deps += [ "//ash" ]
-    }
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-    if (enable_pdf) {
-      deps += [
-        "//components/pdf/browser",
-        "//components/pdf/common:constants",
-      ]
-    }
+  if (is_mac) {
+    deps += [ "//ui/accelerated_widget_mac" ]
+  }
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/browser",
+      "//components/pdf/common:constants",
+    ]
   }
 }
 
