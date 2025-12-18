@@ -62,6 +62,10 @@ extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 // the side panel only affects the current tab.
 extern const base::FeatureParam<bool> kTaskScopedSidePanel;
 
+// Whether to open side panel when an external link is clicked on the contextual
+// task page.
+extern const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked;
+
 // Whether the context menu is enabled for Nextbox.
 extern bool GetIsContextualTasksNextboxContextMenuEnabled();
 

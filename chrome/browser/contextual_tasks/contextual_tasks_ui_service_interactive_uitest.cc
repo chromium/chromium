@@ -507,4 +507,55 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       }));
 }
 
+class ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest
+    : public ContextualTasksUiServiceInteractiveUiTest {
+ public:
+  ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kContextualTasks, {{"OpenSidePanelOnLinkClicked", "false"}});
+  }
+  ~ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest,
+    OnThreadLinkClicked_DoNotOpenSidePanel) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
+  // Add a contextual-tasks tab and add it to a group.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* task_tab = tab_strip_model->GetActiveTab();
+
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Fake a link click interception.
+  service->OnThreadLinkClicked(GURL(chrome::kChromeUIHistoryURL),
+                               task1.GetTaskId(), task_tab->GetWeakPtr(),
+                               browser()->GetWeakPtr());
+
+  // Wait for the navigation to finish.
+  content::TestNavigationObserver observer(
+      browser()->GetActiveTabInterface()->GetContents());
+  observer.WaitForNavigationFinished();
+
+  // Verify the side panel is not open.
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+}
+
 }  // namespace contextual_tasks

@@ -99,6 +99,11 @@ const base::FeatureParam<bool> kTaskScopedSidePanel(&kContextualTasksContext,
                                                      "TaskScopedSidePanel",
                                                      true);
 
+const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked(
+    &kContextualTasks,
+    "OpenSidePanelOnLinkClicked",
+    true);
+
 const base::FeatureParam<bool> kEnableLensInContextualTasks(
     &kContextualTasksContext,
     "EnableLensInContextualTasks",
