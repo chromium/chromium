@@ -384,7 +384,7 @@ public class ShareSheetCoordinator
      * <p>This method delivers its result asynchronously through {@code callback}, to allow for the
      * upcoming ShareRanking backend, which is asynchronous. The existing backend is synchronous,
      * but this method is an asynchronous wrapper around it so that the design of the rest of this
-     * class won't need to change when ShareRanking is hooked up. TODO(crbug.com/40185097)
+     * class won't need to change when ShareRanking is hooked up.
      */
     @VisibleForTesting
     void createThirdPartyPropertyModels(
