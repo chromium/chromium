@@ -9,18 +9,23 @@
 #include <limits>
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/test_task_graph_runner.h"
+#include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 namespace {
+
+constexpr int kDeviceFramesPerSecond = 60;
 
 class MockBrowserControlsOffsetManagerClient
     : public BrowserControlsOffsetManagerClient {
@@ -127,6 +132,10 @@ class MockBrowserControlsOffsetManagerClient
   void ScrollVerticallyBy(float dy) {
     gfx::Vector2dF viewport_scroll_delta = manager()->ScrollBy({0.f, dy});
     viewport_scroll_offset_ += viewport_scroll_delta;
+  }
+
+  base::TimeDelta CurrentFrameInterval() const override {
+    return base::Seconds(1) / kDeviceFramesPerSecond;
   }
 
  private:
@@ -1630,6 +1639,40 @@ TEST(BrowserControlsOffsetManagerTest,
   client.ScrollVerticallyBy(30.f);
   manager->ScrollEnd();
   EXPECT_FLOAT_EQ(30.f, client.ViewportScrollOffset().y());
+}
+
+TEST(BrowserControlsOffsetManagerTest, SmoothScrollPreventsInstantJump) {
+  constexpr float kControlsHeight = 100.f;
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/kControlsHeight,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+
+  manager->ScrollBegin();
+  manager->ScrollBy(gfx::Vector2dF(0.f, 2 * kControlsHeight));
+  manager->ScrollEnd();
+
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsShownRatio());
+
+  base::test::ScopedFeatureList feature_list(
+      features::kBrowserControlsSmoothScroll);
+
+  const int kNumAnimationFrames =
+      std::ceil(1 / manager->MaximumShownRatioDeltaPerFrame(0.f));
+  manager->ScrollBegin();
+  for (int i = 0; i < kNumAnimationFrames; i++) {
+    manager->ScrollBy(gfx::Vector2dF(0.f, -kControlsHeight));
+    if (i < kNumAnimationFrames - 1) {
+      EXPECT_LT(manager->TopControlsShownRatio(), 1.f) << "Frame #" << i + 1;
+    } else {
+      EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio())
+          << "Frame #" << i + 1;
+    }
+  }
+  manager->ScrollEnd();
 }
 
 }  // namespace

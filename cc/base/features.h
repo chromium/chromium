@@ -303,6 +303,8 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
 // the scheduler.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainIdleBypassScheduler);
 
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

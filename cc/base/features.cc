@@ -268,4 +268,6 @@ BASE_FEATURE(kUnlockDuringGpuImageOperations,
 
 BASE_FEATURE(kMainIdleBypassScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBrowserControlsSmoothScroll, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

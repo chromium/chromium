@@ -218,6 +218,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool OnlyExpandTopControlsAtPageTop() const override;
   bool HaveRootScrollNode() const override;
   void SetNeedsCommit() override;
+  base::TimeDelta CurrentFrameInterval() const override;
 
   // ImageAnimationController::Client implementation.
   void RequestBeginFrameForAnimatedImages() override;

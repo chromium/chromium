@@ -7,11 +7,15 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <numbers>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
@@ -29,7 +33,16 @@ namespace {
 const int64_t kShowHideMaxDurationMs = 200;
 // TODO(sinansahin): Temporary value, pending UX guidance probably.
 const int64_t kHeightChangeDurationMs = 200;
+
+float NormalizeShownRatio(float value, float min_shown_ratio) {
+  if (min_shown_ratio == 1.f) {
+    return 1.f;
+  }
+
+  return (std::clamp(value, min_shown_ratio, 1.f) - min_shown_ratio) /
+         (1.f - min_shown_ratio);
 }
+}  // namespace
 
 // static
 std::unique_ptr<BrowserControlsOffsetManager>
@@ -47,6 +60,7 @@ BrowserControlsOffsetManager::BrowserControlsOffsetManager(
     : client_(client),
       permitted_state_(BrowserControlsState::kBoth),
       accumulated_scroll_delta_(0.f),
+      unapplied_scroll_delta_(0.f),
       baseline_top_content_offset_(0.f),
       baseline_bottom_content_offset_(0.f),
       controls_show_threshold_(controls_hide_threshold),
@@ -461,6 +475,27 @@ void BrowserControlsOffsetManager::ScrollBegin() {
   ResetBaseline();
 }
 
+float BrowserControlsOffsetManager::MaximumShownRatioDeltaPerFrame(
+    float min_ratio) const {
+  if (!base::FeatureList::IsEnabled(features::kBrowserControlsSmoothScroll)) {
+    return 1.f;
+  }
+
+  // When smooth scrolling is enabled, limit the rate at which their shown ratio
+  // can change to prevent browser controls from jumping due to large scroll
+  // deltas to match the speed of the show-hide animation i.e. from the
+  // show/hide threshold to either 0 or 1 in `kAnimationDuration`, whichever is
+  // faster.
+  float animation_duration_ms =
+      kShowHideMaxDurationMs * (std::min(1.f - controls_show_threshold_,
+                                         controls_hide_threshold_ - min_ratio));
+  float frame_duration_ms = client_->CurrentFrameInterval().InMillisecondsF();
+  animation_duration_ms =
+      std::clamp(animation_duration_ms, frame_duration_ms,
+                 static_cast<float>(kShowHideMaxDurationMs));
+  return frame_duration_ms / animation_duration_ms;
+}
+
 gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
     const gfx::Vector2dF& pending_delta) {
   // If one or both of the top/bottom controls are showing, the shown ratio
@@ -498,6 +533,8 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
   // top controls have the priority because they need to visually be in sync
   // with the web contents.
   bool base_on_top_controls = TopControlsHeight();
+  float controls_height =
+      base_on_top_controls ? TopControlsHeight() : BottomControlsHeight();
 
   float old_top_offset = ContentTopOffset();
   float baseline_content_offset = base_on_top_controls
@@ -509,20 +546,40 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
   // reach the min and max ratios at the same time when scrolling or during
   // the usual show/hide animations, but they can have different shown ratios at
   // any time.
-  float shown_ratio =
-      (baseline_content_offset - accumulated_scroll_delta_) /
-      (base_on_top_controls ? TopControlsHeight() : BottomControlsHeight());
+  float shown_ratio = (baseline_content_offset - accumulated_scroll_delta_ +
+                       unapplied_scroll_delta_) /
+                      controls_height;
 
   float min_ratio = base_on_top_controls ? TopControlsMinShownRatio()
                                          : BottomControlsMinShownRatio();
-  float normalized_shown_ratio;
-  if (min_ratio == 1.f) {
-    normalized_shown_ratio = 1.f;
-  } else {
-    normalized_shown_ratio =
-        (std::clamp(shown_ratio, min_ratio, 1.f) - min_ratio) /
-        (1.f - min_ratio);
+  float normalized_shown_ratio = NormalizeShownRatio(shown_ratio, min_ratio);
+
+  float max_shown_ratio_delta = MaximumShownRatioDeltaPerFrame(min_ratio);
+  float current_normalized_shown_ratio =
+      NormalizeShownRatio(base_on_top_controls ? TopControlsShownRatio()
+                                               : BottomControlsShownRatio(),
+                          min_ratio);
+  float clamped_normalized_shown_ratio =
+      std::clamp(normalized_shown_ratio,
+                 current_normalized_shown_ratio - max_shown_ratio_delta,
+                 current_normalized_shown_ratio + max_shown_ratio_delta);
+
+  if (clamped_normalized_shown_ratio != normalized_shown_ratio) {
+    // If the scroll delta wasn't fully applied because it was capped, update
+    // the unapplied_scroll_delta_ to account for the capped amount. This
+    // will be smeared across future calls to ScrollBy.
+    float unapplied_scroll_delta =
+        (normalized_shown_ratio - clamped_normalized_shown_ratio) *
+        (1.f - min_ratio) * controls_height;
+    if (std::signbit(unapplied_scroll_delta) !=
+        std::signbit(unapplied_scroll_delta_)) {
+      unapplied_scroll_delta_ = 0.f;
+    }
+    unapplied_scroll_delta_ += unapplied_scroll_delta;
   }
+
+  normalized_shown_ratio = clamped_normalized_shown_ratio;
+
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.
@@ -543,6 +600,14 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
   }
 
   ResetAnimations();
+
+  // If the controls are not yet fully visible and the user is scrolling up
+  // from the top of the page, prevent any overscroll since that can trigger
+  // page refresh before the controls are fully visible.
+  if (normalized_shown_ratio < 1.f && pending_delta.y() < 0.f &&
+      viewport_offset_y == 0.f) {
+    return gfx::Vector2dF();
+  }
 
   // applied_delta will negate any scroll on the content if the top browser
   // controls are showing in favor of hiding the controls and resizing the
@@ -585,6 +650,16 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
     base::TimeTicks monotonic_time) {
   if (!HasAnimation() || !client_->HaveRootScrollNode())
     return gfx::Vector2dF();
+
+  if (unapplied_scroll_delta_ != 0.f) {
+    float unapplied_scroll_delta = unapplied_scroll_delta_;
+    gfx::Vector2dF applied_delta =
+        ScrollBy(gfx::Vector2dF(0.f, unapplied_scroll_delta));
+    unapplied_scroll_delta_ = unapplied_scroll_delta - applied_delta.y();
+    // Return zero to prevent the page from counter scrolling to give the effect
+    // of the controls sliding over the page contents.
+    return gfx::Vector2dF();
+  }
 
   float old_top_offset = ContentTopOffset();
   float old_bottom_offset = ContentBottomOffset();
@@ -646,7 +721,8 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
 
 bool BrowserControlsOffsetManager::HasAnimation() {
   return top_controls_animation_.IsInitialized() ||
-         bottom_controls_animation_.IsInitialized();
+         bottom_controls_animation_.IsInitialized() ||
+         unapplied_scroll_delta_ != 0.f;
 }
 
 void BrowserControlsOffsetManager::ResetAnimations() {
@@ -714,6 +790,7 @@ void BrowserControlsOffsetManager::SetupAnimation(
       /*jump_to_end_on_reset=*/false);
   bottom_controls_animation_.SetBounds(BottomControlsMinShownRatio(), 1.f);
 
+  unapplied_scroll_delta_ = 0.f;
   client_->DidChangeBrowserControlsPosition();
 }
 
@@ -745,6 +822,7 @@ void BrowserControlsOffsetManager::StartAnimationIfNecessary() {
 
 void BrowserControlsOffsetManager::ResetBaseline() {
   accumulated_scroll_delta_ = 0.f;
+  unapplied_scroll_delta_ = 0.f;
   baseline_top_content_offset_ = ContentTopOffset();
   baseline_bottom_content_offset_ = ContentBottomOffset();
 }
