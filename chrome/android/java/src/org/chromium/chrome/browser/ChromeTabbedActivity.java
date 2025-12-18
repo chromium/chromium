@@ -172,6 +172,7 @@ import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -3889,7 +3890,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             RecordUserAction.record("MobileMenuDownloadManager");
         } else if (id == R.id.open_recently_closed_tab) {
             TabModel currentModel = mTabModelSelector.getCurrentModel();
-            if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
+            if (!currentModel.isIncognito()) {
+                mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
+                        fromMenu ? NewWindowAppSource.MENU : NewWindowAppSource.KEYBOARD_SHORTCUT);
+            }
             RecordUserAction.record("MobileTabClosedUndoShortCut");
         } else if (id == R.id.quick_delete_menu_id) {
             if (mTabModelSelector.getCurrentModel().isIncognito()) return false;
