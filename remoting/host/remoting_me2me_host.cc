@@ -473,7 +473,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string oauth_refresh_token_;
   std::string service_account_email_;
   base::Value::Dict config_;
-  std::string host_owner_corp_username_;
   std::set<std::string> host_owner_emails_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
@@ -873,7 +872,7 @@ bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
   }
 
   auto [username, domain] = *email_parts;
-  if (domain == kCorpSignalingDomain && username == host_owner_corp_username_) {
+  if (domain == kCorpSignalingDomain) {
     // Corp signaling does not rely on enterprise policies for authz and does
     // not use real email addresses anyway so skip the policy checks.
     LOG(INFO) << "Corp signaling user detected: " << username;
@@ -1767,15 +1766,11 @@ void HostProcess::InitializeSignaling() {
 #if BUILDFLAG(IS_LINUX)
   // TODO: joedow - Remove Linux scope after this codepath has been stabilized.
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (is_corp_host_ && cmd_line->HasSwitch(kEnableCorpMessaging)) {
-    // TODO: joedow - Add a config value for username rather than extracting
-    // username from the email address.
-    host_owner_corp_username_ =
-        base::SplitStringOnce(*host_owner_emails_.begin(), '@')->first;
+  if (cmd_line->HasSwitch(kEnableCorpMessaging)) {
     corp_signal_strategy_ = std::make_unique<CorpSignalStrategy>(
         context_->url_loader_factory(),
-        context_->create_client_cert_store_callback(),
-        host_owner_corp_username_, key_pair_);
+        context_->create_client_cert_store_callback(), GetUsername(),
+        key_pair_);
     corp_signaling_connector_ =
         std::make_unique<CorpSignalingConnector>(corp_signal_strategy_.get());
     corp_signaling_connector_->Start();
