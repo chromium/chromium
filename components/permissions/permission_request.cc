@@ -100,6 +100,12 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kLocalNetworkAccess:
       message_id = IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT;
       break;
+    case RequestType::kLocalNetwork:
+      message_id = IDS_LOCAL_NETWORK_INFOBAR_TEXT;
+      break;
+    case RequestType::kLoopbackNetwork:
+      message_id = IDS_LOOPBACK_NETWORK_INFOBAR_TEXT;
+      break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;
@@ -365,6 +371,12 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kLocalNetworkAccess:
       message_id = IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kLocalNetwork:
+      message_id = IDS_LOCAL_NETWORK_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kLoopbackNetwork:
+      message_id = IDS_LOOPBACK_NETWORK_PERMISSION_FRAGMENT;
       break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;

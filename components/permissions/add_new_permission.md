@@ -173,11 +173,14 @@ update enum [RequestType](https://source.chromium.org/chromium/chromium/src/+/ma
 2. In [request_type.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/request_type.cc) update
     * [GetIconId*()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/request_type.cc;l=269;drc=c970b8647281cc3fc7ffe1288ce7c5f2e5f7acf6) for Android and Desktop
         * Reuse icons from the step above.
-    * [GetDialogMessageText()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_request.cc;l=44;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0) for Android
-    * [GetMessageTextFragment()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_request.cc;l=166;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0) for Desktop
-        * Permission prompt strings should be reviewed by meggynwatkins@ and permissions-core@ in a design doc.
     * [PermissionKeyForRequestType()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/request_type.cc;l=288;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
     * [GetBlockedIconIdDesktop()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/request_type.cc;l=116;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
+3. In [components/permissions/permission_request.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_request.cc) update
+    * [GetMessageTextFragment()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_request.cc;bpv=1;bpt=1;l=327?q=GetMessageTextFragment&gsn=GetMessageTextFragment&gs=KYTHE%3A%2F%2Fkythe%3A%2F%2Fchromium.googlesource.com%2Fcodesearch%2Fchromium%2Fsrc%2F%2Fmain%3Flang%3Dc%252B%252B%3Fpath%3Dcomponents%2Fpermissions%2Fpermission_request.cc%23kBkUz4YwtxNBDhcFhLXHTIM5t94AN0E96I-f4u9eO7U)
+      for Desktop
+    * [GetDialogAnnotatedMessageText()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_request.cc;bpv=1;bpt=1;l=65?q=GetMessageTextFragment&gsn=GetDialogAnnotatedMessageText&gs=KYTHE%3A%2F%2Fkythe%3A%2F%2Fchromium.googlesource.com%2Fcodesearch%2Fchromium%2Fsrc%2F%2Fmain%3Flang%3Dc%252B%252B%3Fpath%3Dcomponents%2Fpermissions%2Fpermission_request.cc%23kEqGMBoAXnGsWfDviX0MQ3duf32L_2SML_eLtmCQr_g)
+      for Android
+    * Permission prompt strings should be reviewed by meggynwatkins@ and permissions-core@ in a design doc.
 
 ### Tracking
 1. In [tools/metrics/histograms/enums.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/enums.xml)
@@ -185,15 +188,20 @@ update histograms:
     * `name="PermissionType"`
     * `name="ContentType"`
     * `name="PermissionRequestType"`
+1. In
+   [tools/metrics/histograms/metadata/permissions/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/permissions/histograms.xml)
+   update:
+   * `name="PermissionRequestTypes"`
 1. In [tools/metrics/histograms/metadata/content/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/content/histograms.xml) update `<token key="ContentSettingsType">`
 1. In [permission_uma_util.h](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h)
 updated enum
 [RequestTypeForUma](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h;l=41;drc=796b971e6e0d1b033bda58b31e9f24d397ad6178)
 1. In [permission_uma_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc)
 updated methods:
-    * [GetUmaValueForRequestType()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc;l=55;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
     * [GetPermissionRequestString()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc;l=117;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
-    * [RecordPermissionAction()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc;l=843-914;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
+    * [GetPermissionStringForUma](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc?q=symbol%3A%5Cbpermissions%3A%3AGetPermissionStringForUma%5Cb%20case%3Ayes)
+1. In [components/permissions/permission_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_util.cc) update:
+    * [GetUmaValueForRequestType()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_util.cc?q=symbol:%5CbGetUmaValueForRequestType)
 
 ### Extend PermissionContextBase
 To extend [PermissionContextBase](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_context_base.h):

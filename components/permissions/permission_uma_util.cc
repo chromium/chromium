@@ -183,6 +183,10 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "WebAppInstallation";
     case RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS:
       return "LocalNetworkAccess";
+    case RequestTypeForUma::PERMISSION_LOCAL_NETWORK:
+      return "LocalNetwork";
+    case RequestTypeForUma::PERMISSION_LOOPBACK_NETWORK:
+      return "LoopbackNetwork";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -732,6 +736,10 @@ std::string GetPermissionStringForUma(
       return "WebAppInstallation";
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       return "LocalNetworkAccess";
+    case ContentSettingsType::LOCAL_NETWORK:
+      return "LocalNetwork";
+    case ContentSettingsType::LOOPBACK_NETWORK:
+      return "LoopbackNetwork";
     default:
       break;
   }

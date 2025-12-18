@@ -22670,6 +22670,11 @@ Called by update_net_error_codes.py.-->
   <int value="37" label="PERMISSION_KEYBOARD_LOCK"/>
   <int value="38" label="PERMISSION_POINTER_LOCK"/>
   <int value="39" label="MULTIPLE_KEYBOARD_AND_POINTER_LOCK"/>
+  <int value="40" label="PERMISSION_HAND_TRACKING"/>
+  <int value="41" label="PERMISSION_WEB_APP_INSTALLATION"/>
+  <int value="42" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
+  <int value="43" label="PERMISSION_LOCAL_NETWORK"/>
+  <int value="44" label="PERMISSION_LOOPBACK_NETWORK"/>
 </enum>
 
 <!-- LINT.IfChange(PermissionType) -->

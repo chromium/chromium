@@ -150,6 +150,10 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kLocalNetworkAccess:
       return RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS;
+    case RequestType::kLocalNetwork:
+      return RequestTypeForUma::PERMISSION_LOCAL_NETWORK;
+    case RequestType::kLoopbackNetwork:
+      return RequestTypeForUma::PERMISSION_LOOPBACK_NETWORK;
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
     case RequestType::kHandTracking:

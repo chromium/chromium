@@ -143,6 +143,14 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.LOCAL_NETWORK_ACCESS, true));
             parameters.add(
                     new ParameterSet()
+                            .name("RequestType.kLocalNetwork")
+                            .value(ContentSettingsType.LOCAL_NETWORK, true));
+            parameters.add(
+                    new ParameterSet()
+                            .name("RequestType.kLoopbackNetwork")
+                            .value(ContentSettingsType.LOOPBACK_NETWORK, true));
+            parameters.add(
+                    new ParameterSet()
                             .name("RequestType.kMicStream")
                             .value(ContentSettingsType.MEDIASTREAM_MIC, true));
             parameters.add(

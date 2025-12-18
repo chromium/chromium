@@ -132,8 +132,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".KeyboardAndPointerLock"
       summary="Keyboard and pointer lock permission"/>
   <variant name=".KeyboardLock" summary="Keyboard lock permission"/>
+  <variant name=".LocalNetwork" summary="Local network permission"/>
   <variant name=".LocalNetworkAccess"
       summary="Local network access permission"/>
+  <variant name=".LoopbackNetwork" summary="Loopback network permission"/>
   <variant name=".MidiSysEx" summary="Midi SysEx permission"/>
   <variant name=".MultipleDownload" summary="Multiple downloads permission"/>
   <variant name=".Nfc" summary="NFC permission"/>
@@ -179,8 +181,11 @@ chromium-metrics-reviews@google.com.
       summary="Keyboard and pointer lock permission"/>
   <variant name=".KeyboardLock" summary="Keyboard lock permission"/>
   <variant name=".LocalFonts" summary="Local fonts permission actions"/>
+  <variant name=".LocalNetwork" summary="Local network permission actions"/>
   <variant name=".LocalNetworkAccess"
       summary="Local network access permission actions"/>
+  <variant name=".LoopbackNetwork"
+      summary="Loopback network permission actions"/>
   <variant name=".MidiSysEx" summary="Midi SysEx permsision actions"/>
   <variant name=".Nfc" summary="Nfc permsision actions"/>
   <variant name=".Notifications" summary="Notification permission actions"/>

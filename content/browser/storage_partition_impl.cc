@@ -2212,6 +2212,16 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   }
   const URLLoaderNetworkContext& context =
       url_loader_network_observers_.current_context();
+  blink::PermissionType permission_type;
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksSplitPermissions)) {
+    // TODO(crbug.com/465491626): ask for right permission, should be either
+    // LOCAL_NETWORK or LOOPBACK_NETWORK depending on resource target.
+    // Current pick is arbitrary.
+    permission_type = blink::PermissionType::LOOPBACK_NETWORK;
+  } else {
+    permission_type = blink::PermissionType::LOCAL_NETWORK_ACCESS;
+  }
 
   // Three different cases are handled here depending on the request context:
   //   1. Document context (ContextType::kRenderFrameHostContext) covers fetch()
@@ -2299,10 +2309,10 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
 
     PermissionController& permission_controller =
         CHECK_DEREF(browser_context_->GetPermissionController());
+
     auto status = permission_controller.GetPermissionStatusForCurrentDocument(
         content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(
-                blink::PermissionType::LOCAL_NETWORK_ACCESS),
+            CreatePermissionDescriptorForPermissionType(permission_type),
         rfh);
 
     // If the request was loaded from cache, prefer retrying over the network
@@ -2337,8 +2347,7 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
           rfh,
           PermissionRequestDescription(
               content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      blink::PermissionType::LOCAL_NETWORK_ACCESS)),
+                  CreatePermissionDescriptorForPermissionType(permission_type)),
           base::BindOnce(
               [](OnLocalNetworkAccessPermissionRequiredCallback cb,
                  PermissionResult permission_result) {
@@ -2382,8 +2391,7 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
         CHECK_DEREF(browser_context_->GetPermissionController());
     auto status = permission_controller.GetPermissionStatusForWorker(
         content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(
-                blink::PermissionType::LOCAL_NETWORK_ACCESS),
+            CreatePermissionDescriptorForPermissionType(permission_type),
         content::RenderProcessHost::FromID(context.process_id()),
         context.worker_origin().value());
 

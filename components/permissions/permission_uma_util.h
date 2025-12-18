@@ -53,7 +53,7 @@ enum class ActivityIndicatorState {
 //   1) The PermissionRequestType enum in
 //      tools/metrics/histograms/metadata/permissions/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
-//      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
+//      tools/metrics/histograms/metadata/permissions/histograms.xml.
 //   3) GetPermissionRequestString function in
 //      components/permissions/permission_uma_util.cc
 //
@@ -105,6 +105,8 @@ enum class RequestTypeForUma {
   PERMISSION_HAND_TRACKING = 40,
   PERMISSION_WEB_APP_INSTALLATION = 41,
   PERMISSION_LOCAL_NETWORK_ACCESS = 42,
+  PERMISSION_LOCAL_NETWORK = 43,
+  PERMISSION_LOOPBACK_NETWORK = 44,
   // NUM must be the last value in the enum.
   NUM,
 };
