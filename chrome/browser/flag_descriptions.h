@@ -7498,11 +7498,6 @@ inline constexpr char kMahiSummarizeSelectedName[] =
 inline constexpr char kMahiSummarizeSelectedDescription[] =
     "Enable Mahi to summarize the selected text";
 
-inline constexpr char kMediaAppImageMantisReimagineName[] =
-    "Reimagine feature of Mantis";
-inline constexpr char kMediaAppImageMantisReimagineDescription[] =
-    "Enable the Reimagine feature of Mantis";
-
 inline constexpr char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 inline constexpr char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
