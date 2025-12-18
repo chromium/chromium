@@ -32,7 +32,7 @@ jobs:
           cargo install cddlconv@0.1.7;
           npm install parse5
       - name: Check out the main spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
@@ -41,7 +41,7 @@ jobs:
         run: ./scripts/test.sh
         working-directory: webdriver-bidi
       - name: Upload WebDriverBidi CDDL
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: all-cddl
           path: webdriver-bidi/all.cddl
@@ -55,13 +55,13 @@ jobs:
           cargo install cddlconv@0.1.7;
           npm install parse5
       - name: Check out the main spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
           path: webdriver-bidi
       - name: Check out w3c/permissions spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: w3c/permissions
           ref: main
@@ -70,7 +70,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
         working-directory: permissions
       - name: Upload WebDriverBidi CDDL for Permissions
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: permissions-cddl
           path: permissions/permissions.cddl
@@ -84,13 +84,13 @@ jobs:
           cargo install cddlconv@0.1.7;
           npm install parse5
       - name: Check out the main spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
           path: webdriver-bidi
       - name: Check out WebBluetoothCG/web-bluetooth spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: WebBluetoothCG/web-bluetooth
           ref: main
@@ -99,7 +99,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl web-bluetooth.cddl
         working-directory: web-bluetooth
       - name: Upload WebDriverBidi CDDL for web-bluetooth
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: web-bluetooth-cddl
           path: web-bluetooth/web-bluetooth.cddl
@@ -113,13 +113,13 @@ jobs:
           cargo install cddlconv@0.1.7;
           npm install parse5
       - name: Check out the main spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
           path: webdriver-bidi
       - name: Check out WICG/nav-speculation spec repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: WICG/nav-speculation
           ref: main
@@ -128,7 +128,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./prefetch.bs && mv all.cddl nav-speculation.cddl
         working-directory: nav-speculation
       - name: Upload WebDriverBidi CDDL for nav-speculation
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: nav-speculation-cddl
           path: nav-speculation/nav-speculation.cddl
@@ -147,20 +147,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out mapper repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Set up Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: '3.11'
           cache: pip
       - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v5.0.0
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v5.0.0
         with:
           go-version: '1.21.x'
       - name: Install cddlconv
         run: cargo install cddlconv@0.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -168,25 +168,25 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download WebDriverBidi CDDL
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: all-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for Permissions
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: permissions-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for web-bluetooth
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: web-bluetooth-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for nav-speculation
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: nav-speculation-cddl
         # Tolerate missing files.
@@ -215,7 +215,7 @@ jobs:
         run: npm run format || npm run format
         continue-on-error: true
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-bidi-types
