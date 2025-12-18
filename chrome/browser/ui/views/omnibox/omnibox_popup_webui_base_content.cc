@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_tab_selection_listener.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -160,6 +161,10 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
                           extensions::mojom::ViewType::kComponent);
   webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
                                    location_bar_view_->browser());
+
+  tab_selection_listener_ = std::make_unique<OmniboxPopupTabSelectionListener>(
+      weak_factory_.GetWeakPtr(),
+      location_bar_view_->browser()->tab_strip_model());
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
