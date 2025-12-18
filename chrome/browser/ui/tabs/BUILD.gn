@@ -74,7 +74,6 @@ if (!is_android) {
 
   source_set("tab_menu") {
     sources = [
-      "glic_tab_sub_menu_model.h",
       "tab_menu_model.h",
       "tab_menu_model_delegate.h",
       "tab_menu_model_factory.h",
@@ -106,7 +105,6 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
-      "glic_tab_sub_menu_model.cc",
       "tab_menu_model.cc",
       "tab_menu_model_factory.cc",
     ]
@@ -746,7 +744,6 @@ if (!is_android) {
     ]
 
     if (enable_glic) {
-      sources += [ "glic_tab_sub_menu_model_browsertest.cc" ]
       deps += [
         "//chrome/browser/glic",
         "//chrome/browser/glic/test_support",

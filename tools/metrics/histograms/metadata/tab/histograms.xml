@@ -68,9 +68,6 @@ chromium-metrics-reviews@google.com.
       summary="the Commerce product specifications command"/>
   <variant name="CopyURL" summary="the Copy URL command"/>
   <variant name="Duplicate" summary="the Duplicate command"/>
-  <variant name="GlicCreateNewChat"
-      summary="the Start New Chat with Gemini command"/>
-  <variant name="GlicShare" summary="the Share with Gemini command"/>
   <variant name="GlicShareLimit" summary="the Glic share limit command"/>
   <variant name="GlicStartShare" summary="the Share Tab with Gemini command"/>
   <variant name="GlicStopShare"
