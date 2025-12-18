@@ -19,7 +19,6 @@
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/delegate/color_picker_bridge.h"
-#include "components/embedder_support/android/delegate/screenshot_result.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/android/color_utils_android.h"
+#include "ui/android/resources/capture_result.h"
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -514,7 +514,7 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
   // Convert the C++ callback to a JNI callback using ToJniCallback.
   auto wrapped_callback = base::BindOnce(
       [](base::OnceCallback<void(const SkBitmap&)> callback,
-         const ScreenshotResult& result) {
+         const ui::CaptureResult& result) {
         TRACE_EVENT("content",
                     "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap::"
                     "Callback");
@@ -553,7 +553,7 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsHardwareBuffer(
   // Wrap the result C++ callback as a JNI callback and convert the types.
   auto wrapped_output_callback = base::BindOnce(
       [](content::HardwareBufferResultCallback output_callback,
-         const ScreenshotResult& result) {
+         const ui::CaptureResult& result) {
         if (!result) {
           std::move(output_callback)
               .Run(base::android::ScopedHardwareBufferHandle(),

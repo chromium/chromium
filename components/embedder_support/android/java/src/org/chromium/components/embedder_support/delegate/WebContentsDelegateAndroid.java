@@ -23,6 +23,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
 /** Java peer of the native class of the same name. */
@@ -233,8 +234,8 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     private boolean maybeCopyContentAreaAsBitmap(
-            JniOnceCallback<@Nullable ScreenshotResult> callback) {
-        boolean result = maybeCopyContentArea(callback, ScreenshotResult.Destination.BITMAP);
+            JniOnceCallback<@Nullable CaptureResult> callback) {
+        boolean result = maybeCopyContentArea(callback, CaptureResult.Destination.BITMAP);
         if (!result) {
             // If the method returns false, the callback won't be called, so we need to destroy it
             // to prevent memory leaks and match the previous behavior of no callback.
@@ -245,9 +246,8 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     private boolean maybeCopyContentAreaAsHardwareBuffer(
-            JniOnceCallback<@Nullable ScreenshotResult> callback) {
-        boolean result =
-                maybeCopyContentArea(callback, ScreenshotResult.Destination.HARDWARE_BUFFER);
+            JniOnceCallback<@Nullable CaptureResult> callback) {
+        boolean result = maybeCopyContentArea(callback, CaptureResult.Destination.HARDWARE_BUFFER);
         if (!result) {
             // If the method returns false, the callback won't be called, so we need to destroy it
             // to prevent memory leaks and match the previous behavior of no callback.
@@ -317,8 +317,8 @@ public class WebContentsDelegateAndroid {
      * @return True if a native view such as an NTP is presenting.
      */
     public boolean maybeCopyContentArea(
-            Callback<@Nullable ScreenshotResult> callback,
-            ScreenshotResult.Destination destination) {
+            Callback<@Nullable CaptureResult> callback,
+            @CaptureResult.Destination int destination) {
         return false;
     }
 

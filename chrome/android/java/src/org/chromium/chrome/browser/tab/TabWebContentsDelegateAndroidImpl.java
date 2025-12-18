@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.embedder_support.delegate.ScreenshotResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
@@ -58,6 +57,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -602,8 +602,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public boolean maybeCopyContentArea(
-            Callback<@Nullable ScreenshotResult> callback,
-            ScreenshotResult.Destination destination) {
+            Callback<@Nullable CaptureResult> callback,
+            @CaptureResult.Destination int destination) {
         return NativePageBitmapCapturer.maybeCaptureNativeView(mTab, callback, destination);
     }
 

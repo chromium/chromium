@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.embedder_support.delegate;
+package org.chromium.ui.resources.dynamics;
+
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.graphics.Bitmap;
 import android.hardware.HardwareBuffer;
+
+import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -13,28 +17,34 @@ import org.jni_zero.JNINamespace;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * A container class for the result of a screenshot operation, which can be either a {@link Bitmap}
  * or a {@link HardwareBuffer}. This class is used to pass screenshot data between Java and C++
  * components.
  */
-@JNINamespace("web_contents_delegate_android")
+@JNINamespace("ui")
 @NullMarked
-public class ScreenshotResult {
+public class CaptureResult {
     /** Defines the desired format for the screenshot result. */
-    public enum Destination {
+    @IntDef({Destination.BITMAP, Destination.HARDWARE_BUFFER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Destination {
         /** The screenshot result should be a {@link Bitmap}. */
-        BITMAP,
+        int BITMAP = 0;
+
         /** The screenshot result should be a {@link HardwareBuffer}. */
-        HARDWARE_BUFFER
+        int HARDWARE_BUFFER = 1;
     }
 
     /**
-     * Constructs a {@link ScreenshotResult} with a {@link Bitmap}.
+     * Constructs a {@link CaptureResult} with a {@link Bitmap}.
      *
      * @param bitmap The captured bitmap.
      */
-    public ScreenshotResult(Bitmap bitmap) {
+    public CaptureResult(Bitmap bitmap) {
         mDestination = Destination.BITMAP;
         mBitmap = bitmap;
         mHardwareBuffer = null;
@@ -42,14 +52,14 @@ public class ScreenshotResult {
     }
 
     /**
-     * Constructs a {@link ScreenshotResult} with a {@link HardwareBuffer} and a callback to release
+     * Constructs a {@link CaptureResult} with a {@link HardwareBuffer} and a callback to release
      * its resources.
      *
      * @param hardwareBuffer The captured hardware buffer.
      * @param releaseCallback A {@link Runnable} to be executed when the hardware buffer can be
      *     released.
      */
-    public ScreenshotResult(HardwareBuffer hardwareBuffer, Runnable releaseCallback) {
+    public CaptureResult(HardwareBuffer hardwareBuffer, Runnable releaseCallback) {
         mDestination = Destination.HARDWARE_BUFFER;
         mHardwareBuffer = hardwareBuffer;
         mReleaseCallback = releaseCallback;
@@ -63,9 +73,9 @@ public class ScreenshotResult {
      * @return The captured {@link Bitmap}, or {@code null} if not applicable.
      */
     @CalledByNative
-    public @Nullable Bitmap getBitmap() {
+    public Bitmap getBitmap() {
         assert mDestination == Destination.BITMAP;
-        return mBitmap;
+        return assertNonNull(mBitmap);
     }
 
     /**
@@ -75,9 +85,9 @@ public class ScreenshotResult {
      * @return The captured {@link HardwareBuffer}, or {@code null} if not applicable.
      */
     @CalledByNative
-    public @Nullable HardwareBuffer getHardwareBuffer() {
+    public HardwareBuffer getHardwareBuffer() {
         assert mDestination == Destination.HARDWARE_BUFFER;
-        return mHardwareBuffer;
+        return assertNonNull(mHardwareBuffer);
     }
 
     /**
@@ -88,12 +98,12 @@ public class ScreenshotResult {
      * @return The {@link Runnable} to release resources, or {@code null} if not applicable.
      */
     @CalledByNative
-    public @Nullable Runnable getReleaseCallback() {
+    public Runnable getReleaseCallback() {
         assert mDestination == Destination.HARDWARE_BUFFER;
-        return mReleaseCallback;
+        return assertNonNull(mReleaseCallback);
     }
 
-    private final Destination mDestination;
+    private final @Destination int mDestination;
     private final @Nullable Bitmap mBitmap;
     private final @Nullable HardwareBuffer mHardwareBuffer;
     private final @Nullable Runnable mReleaseCallback;

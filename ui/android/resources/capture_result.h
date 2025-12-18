@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_SCREENSHOT_RESULT_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_SCREENSHOT_RESULT_H_
+#ifndef UI_ANDROID_RESOURCES_CAPTURE_RESULT_H_
+#define UI_ANDROID_RESOURCES_CAPTURE_RESULT_H_
 
 #include <jni.h>
-
-#include <memory>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -23,21 +21,21 @@ class ScopedClosureRunner;
 
 class SkBitmap;
 
-namespace web_contents_delegate_android {
+namespace ui {
 
 // This class is a mirror of
-// org.chromium.components.embedder_support.delegate.ScreenshotResult.
+// org.chromium.ui.resources.dynamics.CaptureResult.
 // It uses ScopedJavaLocalRef, meaning that the class is only usable as
 // a stack-based object in a single thread.
-class ScreenshotResult {
+class UI_ANDROID_EXPORT CaptureResult {
   STACK_ALLOCATED();
 
  public:
-  explicit ScreenshotResult(const jni_zero::JavaRef<jobject>& obj);
-  ScreenshotResult(ScreenshotResult&& other) = delete;
-  ScreenshotResult(const ScreenshotResult&) = delete;
-  ScreenshotResult operator=(const ScreenshotResult&) = delete;
-  ~ScreenshotResult();
+  explicit CaptureResult(const jni_zero::JavaRef<jobject>& obj);
+  CaptureResult(CaptureResult&& other) = delete;
+  CaptureResult(const CaptureResult&) = delete;
+  CaptureResult operator=(const CaptureResult&) = delete;
+  ~CaptureResult();
 
   // Returns whether there is a non-null result.
   explicit operator bool() const;
@@ -49,20 +47,19 @@ class ScreenshotResult {
   base::ScopedClosureRunner GetReleaseCallback() const;
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> java_screenshot_result_;
+  base::android::ScopedJavaLocalRef<jobject> java_capture_result_;
 };
 
-}  // namespace web_contents_delegate_android
+}  // namespace ui
 
 namespace jni_zero {
 
 template <>
-inline web_contents_delegate_android::ScreenshotResult FromJniType(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
-  return web_contents_delegate_android::ScreenshotResult(obj);
+inline ui::CaptureResult FromJniType(JNIEnv* env,
+                                     const jni_zero::JavaRef<jobject>& obj) {
+  return ui::CaptureResult(obj);
 }
 
 }  // namespace jni_zero
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_SCREENSHOT_RESULT_H_
+#endif  // UI_ANDROID_RESOURCES_CAPTURE_RESULT_H_

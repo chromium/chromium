@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/android/delegate/screenshot_result.h"
+#include "ui/android/resources/capture_result.h"
 
 #include <android/hardware_buffer_jni.h>
 
@@ -15,41 +15,41 @@
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/web_contents_delegate_jni_headers/ScreenshotResult_jni.h"
+#include "ui/android/ui_android_jni_headers/CaptureResult_jni.h"
 
-namespace web_contents_delegate_android {
+namespace ui {
 
 using base::android::ScopedHardwareBufferHandle;
 using base::android::ScopedJavaGlobalRef;
 
-ScreenshotResult::ScreenshotResult(const jni_zero::JavaRef<jobject>& obj)
-    : java_screenshot_result_(obj) {}
+CaptureResult::CaptureResult(const jni_zero::JavaRef<jobject>& obj)
+    : java_capture_result_(obj) {}
 
-ScreenshotResult::~ScreenshotResult() = default;
+CaptureResult::~CaptureResult() = default;
 
-ScreenshotResult::operator bool() const {
-  return !java_screenshot_result_.is_null();
+CaptureResult::operator bool() const {
+  return !java_capture_result_.is_null();
 }
 
-SkBitmap ScreenshotResult::GetBitmap() const {
+SkBitmap CaptureResult::GetBitmap() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   gfx::JavaBitmap j_bitmap(
-      Java_ScreenshotResult_getBitmap(env, java_screenshot_result_));
+      Java_CaptureResult_getBitmap(env, java_capture_result_));
   return gfx::CreateSkBitmapFromJavaBitmap(j_bitmap);
 }
 
-ScopedHardwareBufferHandle ScreenshotResult::GetHardwareBuffer() const {
+ScopedHardwareBufferHandle CaptureResult::GetHardwareBuffer() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_hardware_buffer =
-      Java_ScreenshotResult_getHardwareBuffer(env, java_screenshot_result_);
+      Java_CaptureResult_getHardwareBuffer(env, java_capture_result_);
   return ScopedHardwareBufferHandle::Create(
       AHardwareBuffer_fromHardwareBuffer(env, j_hardware_buffer.obj()));
 }
 
-base::ScopedClosureRunner ScreenshotResult::GetReleaseCallback() const {
+base::ScopedClosureRunner CaptureResult::GetReleaseCallback() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_release_callback = ScopedJavaGlobalRef(
-      Java_ScreenshotResult_getReleaseCallback(env, java_screenshot_result_));
+      Java_CaptureResult_getReleaseCallback(env, java_capture_result_));
   return base::ScopedClosureRunner(base::BindOnce(
       [](ScopedJavaGlobalRef<jobject> j_release_callback) {
         base::android::RunRunnableAndroid(j_release_callback);
@@ -57,6 +57,4 @@ base::ScopedClosureRunner ScreenshotResult::GetReleaseCallback() const {
       std::move(j_release_callback)));
 }
 
-}  // namespace web_contents_delegate_android
-
-DEFINE_JNI(ScreenshotResult)
+}  // namespace ui
