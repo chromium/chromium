@@ -35,6 +35,9 @@
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     proxiedPresenterDelegate;
 
+// Whether the close button should be hidden.
+@property(nonatomic, assign) BOOL hidesCloseButton;
+
 // The close button.
 @property(nonatomic, readonly) UIButton* closeButton;
 

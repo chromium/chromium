@@ -19,7 +19,10 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_present_animator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_view_controller.h"
+#import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_animator.h"
+#import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_presentation_controller.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -80,6 +84,10 @@
   _viewController.transitioningDelegate = self;
   if (self.isOffTheRecord) {
     _viewController.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
+  if (IsComposeboxIpadEnabled() &&
+      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    _viewController.hidesCloseButton = YES;
   }
   _viewController.delegate = self;
 
@@ -163,6 +171,13 @@
     animationControllerForPresentedController:(UIViewController*)presented
                          presentingController:(UIViewController*)presenting
                              sourceController:(UIViewController*)source {
+  if (IsComposeboxIpadEnabled() &&
+      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    ComposeboxiPadAnimator* animator = [[ComposeboxiPadAnimator alloc] init];
+    animator.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+    animator.presenting = YES;
+    return animator;
+  }
   ComposeboxPresentAnimator* animator =
       [[ComposeboxPresentAnimator alloc] initWithContext:self
                                            animationBase:_animationBase];
@@ -172,9 +187,37 @@
 
 - (id<UIViewControllerAnimatedTransitioning>)
     animationControllerForDismissedController:(UIViewController*)dismissed {
+  if (IsComposeboxIpadEnabled() &&
+      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    ComposeboxiPadAnimator* animator = [[ComposeboxiPadAnimator alloc] init];
+    animator.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+    animator.presenting = NO;
+    return animator;
+  }
   return [[ComposeboxDismissAnimator alloc]
       initWithContextProvider:self
                 animationBase:_animationBase];
+}
+
+- (UIPresentationController*)
+    presentationControllerForPresentedViewController:
+        (UIViewController*)presented
+                            presentingViewController:
+                                (UIViewController*)presenting
+                                sourceViewController:(UIViewController*)source {
+  if (IsComposeboxIpadEnabled() &&
+      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    ComposeboxiPadPresentationController* controller =
+        [[ComposeboxiPadPresentationController alloc]
+            initWithPresentedViewController:presented
+                   presentingViewController:presenting];
+    controller.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+    controller.browserCoordinatorHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+
+    return controller;
+  }
+  return nil;
 }
 
 #pragma mark - ComposeboxViewControllerDelegate
@@ -224,6 +267,11 @@
 }
 
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {
+  if (IsComposeboxIpadEnabled() &&
+      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    return ComposeboxInputPlatePosition::kiPad;
+  }
+
   if (IsComposeboxForceTopEnabled()) {
     return ComposeboxInputPlatePosition::kTop;
   }

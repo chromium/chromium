@@ -1165,7 +1165,7 @@ BASE_FEATURE(kComposeboxIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComposeboxIOSEnabled() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return false;
+    return IsComposeboxIpadEnabled();
   }
   return base::FeatureList::IsEnabled(kComposeboxIOS);
 }

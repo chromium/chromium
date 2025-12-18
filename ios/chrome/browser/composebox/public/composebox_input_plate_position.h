@@ -11,9 +11,11 @@ enum class ComposeboxInputPlatePosition {
   kTop = 0,
   // Input plate on bottom.
   kBottom = 1,
+  // Input plate for iPad.
+  kiPad = 2,
   // The input plate is currently unavailable (either deallocated or not yet
   // added).
-  kMissing = 2
+  kMissing = 3
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_INPUT_PLATE_POSITION_H_

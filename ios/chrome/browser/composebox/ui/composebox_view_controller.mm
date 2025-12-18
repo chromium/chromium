@@ -119,6 +119,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                    action:@selector(closeButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
   [self.view addSubview:_closeButton];
+  _closeButton.hidden = self.hidesCloseButton;
 
   // Omnibox popup container.
   _omniboxPopupContainer = [[UIView alloc] init];
@@ -132,6 +133,11 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                      withAction:@selector(userInterfaceStyleChanged)];
 }
 
+- (void)setHidesCloseButton:(BOOL)hidesCloseButton {
+  _hidesCloseButton = hidesCloseButton;
+  _closeButton.hidden = hidesCloseButton;
+}
+
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   [_inputViewController.view layoutIfNeeded];
@@ -139,7 +145,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [_presenter
       setKeyboardAttachedBottomOmniboxHeight:_inputViewController.inputHeight];
 
-  if ([self currentInputPlatePosition] == ComposeboxInputPlatePosition::kTop) {
+  if ([self currentInputPlatePosition] == ComposeboxInputPlatePosition::kTop ||
+      [self currentInputPlatePosition] == ComposeboxInputPlatePosition::kiPad) {
     [_presenter
         setAdditionalVerticalContentInset:_inputViewController.inputHeight];
   }
@@ -296,6 +303,37 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       ]];
       break;
     }
+    case ComposeboxInputPlatePosition::kiPad: {
+      _progressiveBlurEffect = [self
+          createBlurBackgroundEffectForPosition:[self
+                                                    currentInputPlatePosition]];
+      [self.view insertSubview:_progressiveBlurEffect
+                  aboveSubview:_omniboxPopupContainer];
+      AddSameConstraintsToSidesWithInsets(
+          _progressiveBlurEffect, _inputViewController.view,
+          LayoutSides::kBottom, NSDirectionalEdgeInsetsMake(0, 0, -20, 0));
+      AddSameConstraintsToSides(
+          _progressiveBlurEffect, safeAreaGuide,
+          LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+
+      // TODO(crbug.com/469368394): position it based on the omnibox.
+      [_constraintsForCurrentPosition addObjectsFromArray:@[
+        [_inputViewController.view.leadingAnchor
+            constraintEqualToAnchor:safeAreaGuide.leadingAnchor
+                           constant:kInputPlatePadding],
+        [_inputViewController.view.topAnchor
+            constraintEqualToAnchor:safeAreaGuide.topAnchor
+                           constant:kInputPlateTopPadding],
+        [_inputViewController.view.trailingAnchor
+            constraintEqualToAnchor:safeAreaGuide.trailingAnchor
+                           constant:-kInputPlatePadding],
+        [_inputViewController.view.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
+                                                  .topAnchor
+                                     constant:-kInputPlatePadding],
+      ]];
+      break;
+    }
     case ComposeboxInputPlatePosition::kMissing:
       break;
   }
@@ -315,6 +353,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     (id)[[UIColor whiteColor] colorWithAlphaComponent:1.0].CGColor,
   ];
   switch (positon) {
+    case ComposeboxInputPlatePosition::kiPad:  // Fall through
     case ComposeboxInputPlatePosition::kTop:
       gradientLayer.startPoint = CGPointMake(0.5, 1.0);
       gradientLayer.endPoint = CGPointMake(0.5, 0.4);
