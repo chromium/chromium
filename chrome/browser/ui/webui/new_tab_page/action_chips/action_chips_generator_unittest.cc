@@ -46,6 +46,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "url/gurl.h"
 namespace {
 using ::action_chips::RemoteSuggestionsServiceSimple;
@@ -82,11 +83,16 @@ struct SuggestResultFields {
 };
 
 SearchSuggestionParser::SuggestResult MakeResult(
-    const SuggestResultFields& fields) {
-  return SearchSuggestionParser::SuggestResult(
+    const SuggestResultFields& fields,
+    std::optional<omnibox::GroupId> group_id = std::nullopt) {
+  auto result = SearchSuggestionParser::SuggestResult(
       fields.suggestion, fields.type, fields.suggest_type, fields.subtypes,
       fields.from_keyword, fields.navigational_intent, fields.relevance,
       fields.relevance_from_server, fields.input_text);
+  if (group_id.has_value()) {
+    result.set_suggestion_group_id(group_id.value());
+  }
+  return result;
 }
 
 class MockRemoteSuggestionsServiceSimple
@@ -521,7 +527,9 @@ TEST_P(ActionChipsGeneratorDeepDiveTest, GenerateChips) {
                  callback) {
             std::move(callback).Run(SearchSuggestionParser::SuggestResults{
                 MakeResult({.suggestion = u"Test suggestion 1"}),
-                MakeResult({.suggestion = u"Test suggestion 2"})});
+                MakeResult({.suggestion = u"Test suggestion 2"},
+                           omnibox::GroupId::GROUP_PERSONALIZED_ZERO_SUGGEST),
+                MakeResult({.suggestion = u"Test suggestion 3"})});
             return nullptr;
           }));
 
@@ -552,7 +560,7 @@ TEST_P(ActionChipsGeneratorDeepDiveTest, GenerateChips) {
   ActionChipPtr deep_dive_chip_1 =
       CreateStaticDeepDiveChip(tab_info->Clone(), "Test suggestion 1");
   ActionChipPtr deep_dive_chip_2 =
-      CreateStaticDeepDiveChip(tab_info->Clone(), "Test suggestion 2");
+      CreateStaticDeepDiveChip(tab_info->Clone(), "Test suggestion 3");
 
   EXPECT_THAT(actual,
               testing::Conditional(
@@ -749,10 +757,10 @@ TEST_P(
                                         actual);
   run_loop.Run();
 
-  ActionChipPtr most_resent_tab_chip =
+  ActionChipPtr most_recent_tab_chip =
       CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
   std::vector<Matcher<ActionChipPtr>> expected;
-  expected.push_back(Eq(std::cref(most_resent_tab_chip)));
+  expected.push_back(Eq(std::cref(most_recent_tab_chip)));
   std::vector<ActionChipPtr> deep_dive_chips;
   for (const SearchSuggestionParser::SuggestResult& suggestion :
        GetParam().response) {

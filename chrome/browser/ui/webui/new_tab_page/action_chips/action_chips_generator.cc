@@ -39,6 +39,7 @@
 #include "components/search/ntp_features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
 
@@ -202,7 +203,10 @@ std::vector<ActionChipPtr> CreateDeepDiveChips(
     if (chips.size() == 3) {
       break;
     }
-    if (suggestion.type() != AutocompleteMatchType::SEARCH_SUGGEST) {
+    if (suggestion.type() != AutocompleteMatchType::SEARCH_SUGGEST ||
+        (suggestion.suggestion_group_id().has_value() &&
+         suggestion.suggestion_group_id().value() !=
+             omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH)) {
       continue;
     }
     chips.push_back(CreateDeepDiveChip(tab->Clone(), suggestion.suggestion()));
