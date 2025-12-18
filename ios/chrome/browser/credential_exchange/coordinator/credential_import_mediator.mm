@@ -91,13 +91,15 @@
 #pragma mark - CredentialImporterDelegate
 
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
-                             passkeyCount:(NSInteger)passkeyCount {
+                             passkeyCount:(NSInteger)passkeyCount
+                      exporterDisplayName:(NSString*)exporterDisplayName {
   if (passwordCount == 0 && passkeyCount == 0) {
     [_delegate showNothingImportedScreen];
     return;
   }
 
   self.importingPasskeys = passkeyCount > 0;
+  [_consumer setExporterDisplayName:exporterDisplayName];
   [_consumer
       setImportDataItem:[[ImportDataItem alloc]
                             initWithType:ImportDataItemType::kPasswords

@@ -28,7 +28,8 @@ class SavedPasswordsPresenter;
 
 // Displays the initial import screen with counts of received credentials.
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
-                             passkeyCount:(NSInteger)passkeyCount;
+                             passkeyCount:(NSInteger)passkeyCount
+                      exporterDisplayName:(NSString*)exporterDisplayName;
 
 // Displays the conflict resolution screen with conflicting `passwords` and
 // `passkeys`.

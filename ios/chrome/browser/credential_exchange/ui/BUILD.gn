@@ -20,6 +20,7 @@ source_set("ui") {
     "//components/password_manager/core/browser/ui",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_exchange/ui/resources",
     "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/data_import/ui",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",

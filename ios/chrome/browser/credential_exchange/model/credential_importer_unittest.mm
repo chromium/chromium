@@ -134,7 +134,8 @@ class CredentialImporterTest : public PlatformTest {
 TEST_F(CredentialImporterTest, ImportsValidPassword) {
   [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
                                                       @"https://example.com") ]
-                                         passkeys:@[]];
+                                         passkeys:@[]
+                              exporterDisplayName:@""];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
@@ -159,7 +160,8 @@ TEST_F(CredentialImporterTest, ImportsValidPassword) {
 TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
   [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
                                                       @"example.com") ]
-                                         passkeys:@[]];
+                                         passkeys:@[]
+                              exporterDisplayName:@""];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
@@ -190,7 +192,8 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
   [importer_ onCredentialsTranslatedWithPasswords:@[
     passwordWithoutUrl, CreateTestPassword(@"example.com")
   ]
-                                         passkeys:@[]];
+                                         passkeys:@[]
+                              exporterDisplayName:@""];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);

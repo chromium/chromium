@@ -21,6 +21,20 @@ namespace {
 // Number of expected items in the table.
 constexpr int kExpectedItemCount = 2;
 
+// Exporter display name for the Apple Passwords.
+NSString* const kApplePasswordsDisplayName = @"Apple Passwords";
+
+// Returns the name of the banner based on `exporterDisplayName`. Returns a
+// generic banner if the name does not match any available banners.
+NSString* GetBannerName(NSString* exporterDisplayName) {
+  // TODO(crbug.com/450982128): Add banners for other exporters.
+  if ([exporterDisplayName isEqual:kApplePasswordsDisplayName]) {
+    return @"credential_import_apple";
+  }
+
+  return @"credential_import_generic";
+}
+
 }  // namespace
 
 @interface CredentialImportViewController () <UITableViewDelegate>
@@ -35,8 +49,6 @@ constexpr int kExpectedItemCount = 2;
 @dynamic delegate;
 
 - (void)viewDidLoad {
-  // TODO(crbug.com/450982128): Use correct banner.
-  self.bannerName = @"safari_data_import";
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_TITLE);
   self.configuration.primaryActionString = l10n_util::GetNSString(IDS_CONTINUE);
@@ -70,6 +82,10 @@ constexpr int kExpectedItemCount = 2;
   self.disclaimerText =
       l10n_util::GetNSStringF(IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_DISCLAIMER,
                               base::UTF8ToUTF16(userEmail));
+}
+
+- (void)setExporterDisplayName:(NSString*)exporterDisplayName {
+  self.bannerName = GetBannerName(exporterDisplayName);
 }
 
 - (void)transitionToImportStage:(CredentialImportStage)importStage {

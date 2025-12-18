@@ -157,13 +157,15 @@ std::string DataToString(NSData* data) {
             (NSArray<CredentialExchangePassword*>*)passwords
                                     passkeys:
                                         (NSArray<CredentialExchangePasskey*>*)
-                                            passkeys {
+                                            passkeys
+                         exporterDisplayName:(NSString*)exporterDisplayName {
   _passwords = passwords;
   _passkeys = passkeys;
   _presentCredentialTypesCount =
       (passwords.count > 0 ? 1 : 0) + (passkeys.count > 0 ? 1 : 0);
   [_delegate showImportScreenWithPasswordCount:passwords.count
-                                  passkeyCount:passkeys.count];
+                                  passkeyCount:passkeys.count
+                           exporterDisplayName:exporterDisplayName];
 }
 
 #pragma mark - Private

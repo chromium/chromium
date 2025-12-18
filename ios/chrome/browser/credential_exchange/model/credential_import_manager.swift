@@ -9,7 +9,9 @@ import Foundation
 @objc public protocol CredentialImportManagerDelegate {
   /// Called when translating the credentials from ASExportedCredentialData to NSObjects is finished.
   @objc func onCredentialsTranslated(
-    passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey])
+    passwords: [CredentialExchangePassword],
+    passkeys: [CredentialExchangePasskey],
+    exporterDisplayName: NSString)
 }
 
 /// Handles importing user credentials through ASCredentialImportManager.
@@ -43,7 +45,10 @@ import Foundation
         let credentialData = try await importManager.importCredentials(token: uuid as UUID)
         let translatedData = translateCredentialData(credentialData)
         delegate?.onCredentialsTranslated(
-          passwords: translatedData.passwords, passkeys: translatedData.passkeys)
+          passwords: translatedData.passwords,
+          passkeys: translatedData.passkeys,
+          exporterDisplayName: credentialData.exporterDisplayName as NSString
+        )
       } catch {
         // TODO(crbug.com/445889307): Handle errors.
       }
