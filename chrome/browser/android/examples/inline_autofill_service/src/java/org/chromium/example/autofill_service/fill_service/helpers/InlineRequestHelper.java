@@ -18,10 +18,10 @@ import android.view.autofill.AutofillId;
 import android.view.inputmethod.InlineSuggestionsRequest;
 import android.widget.inline.InlinePresentationSpec;
 
-import androidx.annotation.Nullable;
 import androidx.autofill.inline.v1.InlineSuggestionUi;
 import androidx.autofill.inline.v1.InlineSuggestionUi.Content;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.example.autofill_service.SettingsActivity;
 
 class InlineRequestHelper {

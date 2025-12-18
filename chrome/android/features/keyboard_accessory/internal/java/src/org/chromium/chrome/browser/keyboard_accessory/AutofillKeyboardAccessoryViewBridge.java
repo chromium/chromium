@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
@@ -20,6 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;

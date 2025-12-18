@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.payments.LegalMessageLine;
