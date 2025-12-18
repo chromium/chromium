@@ -235,8 +235,7 @@ bool ShouldUseNewFopDisplay() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  return true;
 #endif
 }
 
@@ -2578,12 +2577,7 @@ class BrowserAutofillManagerTestForMetadataCardSuggestions
     : public BrowserAutofillManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  BrowserAutofillManagerTestForMetadataCardSuggestions() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    feature_flags_.InitAndEnableFeature(
-        features::kAutofillEnableNewFopDisplayDesktop);
-#endif
-  }
+  BrowserAutofillManagerTestForMetadataCardSuggestions() = default;
 
  private:
   base::test::ScopedFeatureList feature_flags_;
@@ -8293,12 +8287,7 @@ class BrowserAutofillManagerTestForSharingNickname
   BrowserAutofillManagerTestForSharingNickname()
       : local_nickname_(GetParam().local_nickname),
         server_nickname_(GetParam().server_nickname),
-        expected_nickname_(GetParam().expected_nickname) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    feature_flags_.InitAndEnableFeature(
-        features::kAutofillEnableNewFopDisplayDesktop);
-#endif
-  }
+        expected_nickname_(GetParam().expected_nickname) {}
 
   CreditCard GetLocalCard() {
     CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",

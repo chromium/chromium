@@ -892,12 +892,6 @@ inline constexpr char kAutofillEnableNewFopDisplayAndroidDescription[] =
     "When enabled, updates payment method Autofill suggestions and settings "
     "UI.";
 
-inline constexpr char kAutofillEnableNewFopDisplayDesktopName[] =
-    "Enable Autofill new FOP display on Desktop";
-inline constexpr char kAutofillEnableNewFopDisplayDesktopDescription[] =
-    "When enabled, updates payment method Autofill suggestions and settings "
-    "UI.";
-
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char

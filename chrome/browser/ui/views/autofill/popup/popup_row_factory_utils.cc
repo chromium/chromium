@@ -673,14 +673,9 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kVirtualCreditCardEntry: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableNewFopDisplayDesktop)
-              ? CreateAlternativePaymentMethodPopupRowContentView(
-                    controller, suggestion, show_new_badge,
-                    main_filling_product, std::move(filter_match))
-              : CreatePopupRowContentView(suggestion, show_new_badge,
-                                          main_filling_product,
-                                          std::move(filter_match)));
+          CreateAlternativePaymentMethodPopupRowContentView(
+              controller, suggestion, show_new_badge, main_filling_product,
+              std::move(filter_match)));
     }
     default:
       return std::make_unique<PopupRowView>(

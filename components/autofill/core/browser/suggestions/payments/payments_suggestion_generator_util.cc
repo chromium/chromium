@@ -1239,8 +1239,7 @@ bool ShouldUseNewFopDisplay() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  return true;
 #endif
 }
 

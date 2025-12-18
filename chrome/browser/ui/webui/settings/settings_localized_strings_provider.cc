@@ -1337,11 +1337,6 @@ bool IsCvcStorageAndFillingEnabled() {
       autofill::features::kAutofillEnableCvcStorageAndFilling);
 }
 
-bool IsNewFopDisplayDesktopEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableNewFopDisplayDesktop);
-}
-
 bool IsWalletServerStorageEnabled() {
   return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
          base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
@@ -1692,8 +1687,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("cvcStorageAvailable",
                           IsCvcStorageAndFillingEnabled());
 
-  html_source->AddBoolean("enableNewFopDisplay",
-                          IsNewFopDisplayDesktopEnabled());
+  html_source->AddBoolean("enableNewFopDisplay", true);
 
   html_source->AddBoolean("autofillCardBenefitsAvailable",
                           payments_data.IsCardBenefitsFeatureEnabled());

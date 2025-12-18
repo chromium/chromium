@@ -34,25 +34,15 @@ constexpr SkColor kCardArtBorderColor = SkColorSetARGB(0xFF, 0xE3, 0xE3, 0xE3);
 constexpr int kCardArtBorderStrokeWidth = 2;
 
 // The width and length card art is resized to.
-constexpr int kCardArtImageWidth = 40;
-constexpr int kCardArtImageHeight = 24;
-
-// The width and length the new FOP display card art is resized to.
-constexpr int kNewFopCardArtImageWidth = 48;
-constexpr int kNewFopCardArtImageHeight = 30;
+constexpr int kCardArtImageWidth = 48;
+constexpr int kCardArtImageHeight = 30;
 
 int CardArtImageWidth() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableNewFopDisplayDesktop)
-             ? kNewFopCardArtImageWidth
-             : kCardArtImageWidth;
+  return kCardArtImageWidth;
 }
 
 int CardArtImageHeight() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableNewFopDisplayDesktop)
-             ? kNewFopCardArtImageHeight
-             : kCardArtImageHeight;
+  return kCardArtImageHeight;
 }
 
 }  // namespace

@@ -44,10 +44,7 @@ namespace autofill {
 constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
 
 int GetObfuscationLength() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableNewFopDisplayDesktop)
-             ? 2
-             : 4;
+  return 2;
 }
 
 SaveCardBubbleViews::SaveCardBubbleViews(views::BubbleAnchor anchor_view,
@@ -200,18 +197,12 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   auto card_identifier_view = std::make_unique<views::View>();
   auto* layout = card_identifier_view->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
-  if (is_cvc_only_save || base::FeatureList::IsEnabled(
-                              features::kAutofillEnableNewFopDisplayDesktop)) {
-    layout->SetCollapseMargins(true);
-    layout->SetDefault(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0,
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
-  } else {
-    layout->SetOrientation(views::LayoutOrientation::kVertical);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  }
+  layout->SetCollapseMargins(true);
+  layout->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, 0, 0,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   const CreditCard& card = controller_->GetCard();
   auto* const card_identifier_label =
@@ -254,12 +245,9 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithOrder(2));
   } else if (!card.IsExpired(base::Time::Now())) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableNewFopDisplayDesktop)) {
-      card_identifier_view->AddChildView(std::make_unique<views::Label>(
-          kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_SECONDARY));
-    }
+    card_identifier_view->AddChildView(std::make_unique<views::Label>(
+        kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY));
     // Add card expiration date for card saves.
     auto* expiration_date_label =
         card_identifier_view->AddChildView(std::make_unique<views::Label>(
