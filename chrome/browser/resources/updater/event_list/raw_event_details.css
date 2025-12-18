@@ -14,7 +14,8 @@ cr-expand-button {
   width: 45%;
 }
 
-pre {
+.raw-event-json {
+  font-family: monospace;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   background-color: var(--google-grey-100);

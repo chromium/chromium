@@ -1,0 +1,146 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --event-type-background-color: var(--google-blue-50);
+  --omaha-request-background-color: var(--google-green-50);
+  --code-background-color: var(--google-grey-100);
+  --event-error-border-color: var(--google-red-700);
+  --event-error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
+
+  border: 1px solid var(--cr-scrollable-border-color);
+  border-radius: 8px;
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --event-type-background-color: var(--google-blue-900);
+    --omaha-request-background-color: var(--google-green-700);
+    --code-background-color: var(--google-grey-800);
+    --event-error-border-color: var(--cr-fallback-color-error);
+    --event-error-background-color: color-mix(in srgb, var(--google-red-500) 10%, black);
+  }
+}
+
+:host([error]) {
+  border-color: var(--event-error-border-color);
+  background-color: var(--event-error-background-color);
+}
+
+cr-expand-button {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.event-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  color: var(--cr-primary-text-color);
+}
+
+.event-summary {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-grow: 1;
+}
+
+.event-timestamp {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.8em;
+  flex-shrink: 0;
+  color: var(--cr-secondary-text-color);
+}
+
+.event-duration {
+  min-height: 1em;
+}
+
+.event-type-column {
+  flex-basis: 20%;
+  flex-shrink: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-type {
+  background-color: var(--event-type-background-color);
+  color: var(--cr-primary-text-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.9em;
+  color: var(--cr-link-color);
+}
+
+.event-type.omaha-request {
+  background-color: var(--omaha-request-background-color);
+  margin-right: 4px;
+  color: var(--google-green-900);
+}
+
+@media (prefers-color-scheme: dark) {
+  .event-type.omaha-request {
+    color: var(--google-grey-50);
+  }
+}
+
+.event-description {
+  flex-basis: 60%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-app {
+  font-weight: bold;
+  flex-basis: 20%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cr-primary-text-color);
+}
+
+.event-app.internal-event {
+  font-style: italic;
+}
+
+.event-body {
+  padding: 4px 16px;
+  color: var(--cr-primary-text-color);
+}
+
+.event-error-details {
+  color: var(--cr-fallback-color-error);
+  margin-top: 4px;
+}
+
+pre, code {
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--code-background-color);
+  color: var(--cr-primary-text-color);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: monospace;
+}

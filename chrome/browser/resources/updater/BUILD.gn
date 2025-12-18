@@ -14,10 +14,13 @@ build_webui("build") {
     "updater.css",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
   ts_files = [
     "app.html.ts",
     "app.ts",
     "event_history.ts",
+    "event_list/event_list_item.html.ts",
+    "event_list/event_list_item.ts",
     "event_list/filter_bar.html.ts",
     "event_list/filter_bar.ts",
     "event_list/filter_dialog/app_dialog.html.ts",
@@ -42,6 +45,7 @@ build_webui("build") {
   ]
   css_files = [
     "app.css",
+    "event_list/event_list_item.css",
     "event_list/filter_bar.css",
     "event_list/filter_dialog/app_dialog.css",
     "event_list/filter_dialog/date_dialog.css",

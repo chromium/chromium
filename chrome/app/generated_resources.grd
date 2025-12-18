@@ -19794,8 +19794,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- chrome://updater -->
     <if expr="is_linux or is_macosx or is_win">
-      <message name="IDS_UPDATER_VIEW_RAW_DETAILS" desc="Title of the button to display the contents of a Chrome Updater log in JSON format">
-        Source
+      <message name="IDS_UPDATER_ACTIVATION_FAILED" desc="Summary of a failed attempt by the Chrome Updater to become authoritative in managing updates on the machine.">
+        Activation failed
+      </message>
+      <message name="IDS_UPDATER_ACTIVATION_SUCCEEDED" desc="Summary of a successful attempt by the Chrome Updater to become authoritative in managing updates on the machine.">
+        Activation succeeded
       </message>
       <message name="IDS_UPDATER_ADD_FILTER" desc="In Title Case: Title of the button to add a filter over a list of Chrome Updater logs.">
         Add Filter
@@ -19803,17 +19806,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_APP" desc="In Title Case: Title of the chip which filters logs by application (e.g. 'Google Chrome').">
         App
       </message>
-      <message name="IDS_UPDATER_APP_NAME_OR_ID" desc="Placeholder text in a search box asking the user to enter an application name or identifier string.">
-        App Name or ID
-      </message>
       <message name="IDS_UPDATER_APPLY" desc="Label on a button to apply the selected filters.">
         Apply
+      </message>
+      <message name="IDS_UPDATER_APP_NAME_OR_ID" desc="Placeholder text in a search box asking the user to enter an application name or identifier string.">
+        App Name or ID
       </message>
       <message name="IDS_UPDATER_CANCEL" desc="Label on a button to cancel the current action or close a menu.">
         Cancel
       </message>
       <message name="IDS_UPDATER_CLEAR_ALL_FILTERS" desc="Tooltip or accessibility label for a button that removes all active search filters.">
         Clear all filters
+      </message>
+      <message name="IDS_UPDATER_COMMAND_LINE" desc="Label preceding the command line of an executed program in the summary of a logged Chrome Updater event">
+        Command line:
+      </message>
+      <message name="IDS_UPDATER_COMMAND_OUTCOME" desc="Summary of an event in which a command line program was executed.">
+        Command exited with code <ph name="EXIT_CODE">$1<ex>0</ex></ph>
       </message>
       <message name="IDS_UPDATER_COMMON" desc="Header string for a section of common options in a filter menu.">
         Common
@@ -19832,6 +19841,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_END_DATE" desc="Label for the end date input field.">
         End Date:
+      </message>
+      <message name="IDS_UPDATER_ERROR_DETAILS" desc="Details of an error encountered by the updater, including numeric category, code, and extra code values.">
+        Error: Category: <ph name="CATEGORY">$1<ex>1</ex></ph>, Code: <ph name="CODE">$2<ex>2</ex></ph>, Extra Code: <ph name="EXTRA_CODE">$3<ex>0</ex></ph>
       </message>
       <message name="IDS_UPDATER_EVENT_TYPE" desc="Label for a filter category allowing the user to filter logs by the type of event.">
         Event Type
@@ -19855,7 +19867,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         POST Request
       </message>
       <message name="IDS_UPDATER_EVENT_TYPE_QUALIFY" desc="Label for an action carried out by the Chrome Updater in which a new version of the software performs self-health checks before becoming the authoritative updater on the system.">
-        Qualify
+        Self Test
       </message>
       <message name="IDS_UPDATER_EVENT_TYPE_UNINSTALL" desc="Label for an action carried out by the Chrome Updater in which it notices the removal of a piece of software from the system.">
         Uninstall
@@ -19869,23 +19881,71 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_FILTER_CHIP_APP" desc="Text displayed in a filter chip showing the selected application's names or identifier strings.">
         App: <ph name="APPS">$1<ex>Google Chrome, Google Chrome Beta, Google Chrome Canary, {6BBAE539-2232-434A-A4E5-9A33560C6284}</ex></ph>
       </message>
-      <message name="IDS_UPDATER_FILTER_CHIP_EVENT_TYPE" desc="Text displayed in a filter chip showing the selected event types.">
-        Event Type: <ph name="EVENT_TYPES">$1<ex>Update, Install</ex></ph>
-      </message>
       <message name="IDS_UPDATER_FILTER_CHIP_DATE" desc="Text displayed in a filter chip showing the selected date range.">
         Date: <ph name="DATE_RANGE">$1<ex>Jan 1, 2025 to Feb 1, 2025</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_FILTER_CHIP_EVENT_TYPE" desc="Text displayed in a filter chip showing the selected event types.">
+        Event Type: <ph name="EVENT_TYPES">$1<ex>Update, Install</ex></ph>
       </message>
       <message name="IDS_UPDATER_FILTER_CHIP_UPDATE_OUTCOME" desc="Text displayed in a filter chip showing the selected update outcomes.">
         Update Outcome: <ph name="OUTCOMES">$1<ex>Updated, Update Error</ex></ph>
       </message>
+      <message name="IDS_UPDATER_INSTALL_SUMMARY" desc="Summary of an event in which software was installed, including the version.">
+        Installed version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_INTERNAL" desc="Label used to indicate that a logged Chrome Updater event pertains to the updater itself and not an app managed by the updater (e.g. Google Chrome).">
+        Internal
+      </message>
+      <message name="IDS_UPDATER_NEXT_VERSION" desc="Label indicating the version of a software installation that the Chrome Updater tried to update to.">
+        Next version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_NO_UPDATE" desc="Summary of an update event where the server indicated that no update was available.">
+        No update was available
+      </message>
+      <message name="IDS_UPDATER_OMAHA_REQUEST" desc="Label for a collapsible section displaying or chip indicating the presence of Omaha protocol request data in JSON format.">
+        Omaha Request
+      </message>
+      <message name="IDS_UPDATER_OMAHA_RESPONSE" desc="Label for a collapsible section displaying the Omaha protocol request data in JSON format.">
+        Omaha Response
+      </message>
       <message name="IDS_UPDATER_OTHER" desc="Header string for a section of miscellaneous options in a filter menu.">
         Other
+      </message>
+      <message name="IDS_UPDATER_OUTCOME" desc="Summary of an event with a specific outcome.">
+        Operation completed with outcome: <ph name="OUTCOME">$1<ex>DISK_FULL</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_OUTCOME_UNKNOWN" desc="Summary of an event carried out by the Chrome Updater where the outcome is unknown.">
+        Operation completed with unknown outcome
+      </message>
+      <message name="IDS_UPDATER_PERSISTED_DATA_SUMMARY" desc="Summary of an event indicating how many apps are registered.">
+        <ph name="APP_COUNT">$1<ex>5</ex></ph> apps registered
+      </message>
+      <message name="IDS_UPDATER_PROCESS_SUMMARY" desc="Summary of an event that involved executing a command on the system, including the numeric exit code.">
+        Process exited with code <ph name="EXIT_CODE">$1<ex>0</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_QUALIFICATION_FAILED" desc="Summary of an event in which the Chrome Updater's self-check failed, indicating that the program is not working as intended and should not manage updates for Chrome.">
+        Self test failed
+      </message>
+      <message name="IDS_UPDATER_QUALIFICATION_SUCCEEDED" desc="Summary of an event in which the Chrome Updater's self-check succeeded, indicating that the program is working as intended and should manage updates for Chrome">
+        Self test succeeded
       </message>
       <message name="IDS_UPDATER_REMOVE_FILTER" desc="Accessibility label for the button that removes a specific filter chip.">
         Remove filter
       </message>
       <message name="IDS_UPDATER_START_DATE" desc="Label for the start date input field.">
         Start Date:
+      </message>
+      <message name="IDS_UPDATER_UNINSTALL_SUMMARY" desc="Summary of an uninstall event, including version and reason.">
+        Uninstalled version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>, reason: <ph name="REASON">$2<ex>NO_APPS_REMAINING</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_UPDATED_TO" desc="Summary of an update event that succeeded, including the new version.">
+        Updated to version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_UPDATER_VERSION" desc="Label indicating the version of the updater itself.">
+        Updater version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_UPDATE_ERROR" desc="Summary of an update event that failed.">
+        Update operation failed
       </message>
       <message name="IDS_UPDATER_UPDATE_OUTCOME" desc="Label for a filter category allowing the user to filter logs by the outcome of the update attempt.">
         Update Outcome
@@ -19898,6 +19958,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_UPDATE_OUTCOME_UPDATE_ERROR" desc="Label for the outcome of an update attempt in which the update could not complete because of an error.">
         Update Error
+      </message>
+      <message name="IDS_UPDATER_VIEW_RAW_DETAILS" desc="Title of the button to display the contents of a Chrome Updater log in JSON format">
+        Source
       </message>
     </if>
   </messages>
