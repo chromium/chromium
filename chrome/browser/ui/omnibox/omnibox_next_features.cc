@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -173,7 +174,13 @@ bool IsAimPopupEnabled(Profile* profile) {
   }
 
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_service && aim_service->IsAimEligible();
+  // TODO(b/469148777): Implement more granular enterprise policy checks.
+  //   As noted in b/469148777#comment2, gating the entire AIM popup by the
+  //   "context sharing" enterprise policy pref is a stopgap measure, until
+  //   we're able to implement more granular checks in M145.
+  return aim_service && aim_service->IsAimEligible() &&
+         contextual_search::ContextualSearchService::IsContextSharingEnabled(
+             profile->GetPrefs());
 }
 
 bool IsCreateImagesEnabled(Profile* profile) {
