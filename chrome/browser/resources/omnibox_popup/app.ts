@@ -17,7 +17,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -90,6 +90,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       showContextEntrypoint_: {type: Boolean},
       isLensSearchEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
+      tabSuggestions_: {type: Array},
     };
   }
 
@@ -106,6 +107,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowLensSearchChip');
   protected accessor isLensSearchEligible_: boolean = false;
+  protected accessor tabSuggestions_: TabInfo[] = [];
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_ = new EventTracker();
@@ -136,9 +138,13 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           (eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
           }),
+      this.callbackRouter_.onTabStripChanged.addListener(
+          this.refreshTabSuggestions_.bind(this)),
     ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
+
+    this.refreshTabSuggestions_();
 
     if (!this.isDebug) {
       this.eventTracker_.add(
@@ -246,6 +252,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       y: e.detail.y,
     };
     this.pageHandler_.showContextMenu(point);
+  }
+
+  protected async refreshTabSuggestions_() {
+    const {tabs} = await this.pageHandler_.getRecentTabs();
+    this.tabSuggestions_ = [...tabs];
   }
 }
 

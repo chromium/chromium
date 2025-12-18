@@ -15,11 +15,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
-#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -44,6 +45,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -82,10 +84,10 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller,
     content::WebUI* web_ui)
-    : SearchboxHandler(std::move(pending_page_handler),
-                       Profile::FromWebUI(web_ui),
-                       web_ui->GetWebContents(),
-                       /*controller=*/nullptr),
+    : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                 Profile::FromWebUI(web_ui),
+                                 web_ui->GetWebContents(),
+                                 /*controller=*/nullptr),
       metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.
@@ -226,4 +228,8 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   }
 
   return mojom_match;
+}
+
+int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
+  return omnibox::kContextMenuMaxTabSuggestions.Get();
 }

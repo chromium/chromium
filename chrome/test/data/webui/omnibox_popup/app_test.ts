@@ -61,6 +61,7 @@ class TestSearchboxBrowserProxy extends TestBrowserProxy {
     super();
     this.callbackRouter = new PageCallbackRouter();
     this.handler = TestMock.fromClass(PageHandlerRemote);
+    this.handler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 
@@ -202,6 +203,48 @@ suite('AppTest', function() {
 
       // Assert: The button is no longer focused.
       assertFalse(entrypointButton.matches(':focus-within'));
+    });
+
+    test('RecentTabChipShown', async () => {
+      loadTimeData.overrideValues({
+        searchboxLayoutMode: 'TallTopContext',
+        showContextMenuEntrypoint: true,
+        composeboxShowRecentTabChip: true,
+        addTabUploadDelayOnRecentTabChipClick: true,
+      });
+      const tabInfo = {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://www.google.com/search?q=foo'},
+        showInRecentTabChip: true,
+      };
+      testProxy.handler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
+      localApp.remove();
+      localApp = document.createElement('omnibox-popup-app');
+      document.body.appendChild(localApp);
+      await microtasksFinished();
+
+      const carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(!!carousel);
+      let recentTabChip =
+          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
+      // Assert chip does not show when no matches are available.
+      assertFalse(!!recentTabChip);
+
+      const matches = [
+        createSearchMatch(),
+      ];
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+        matches: matches,
+      }));
+
+      await microtasksFinished();
+      recentTabChip =
+          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
+      // Assert chip does show when matches are available.
+      assertTrue(!!recentTabChip);
     });
   });
 });

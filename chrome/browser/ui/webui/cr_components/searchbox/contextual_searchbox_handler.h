@@ -155,6 +155,10 @@ class ContextualSearchboxHandler
   void UploadSnapshotTabContextIfPresent();
 
  private:
+  // Helper to get the correct number of tab suggestions. Virtual so it
+  // can be overridden for specific implementations.
+  virtual int GetContextMenuMaxTabSuggestions();
+
   void OnAddTabContextTokenCreated(int32_t tab_id,
                                    bool delay_upload,
                                    AddTabContextCallback callback,
