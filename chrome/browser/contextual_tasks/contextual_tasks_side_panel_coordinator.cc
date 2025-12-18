@@ -511,9 +511,12 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
     }
   } else if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& content : change.GetRemove()->contents) {
-      // Do not disassociate the tab from the task if insert into side panel.
+      // Do not disassociate the tab from the task if insert into side panel or
+      // another tab strip.
       if (content.remove_reason !=
-          TabStripModelChange::RemoveReason::kInsertedIntoSidePanel) {
+              TabStripModelChange::RemoveReason::kInsertedIntoSidePanel &&
+          content.remove_reason !=
+              TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip) {
         DisassociateTabFromTask(content.contents);
       }
     }
