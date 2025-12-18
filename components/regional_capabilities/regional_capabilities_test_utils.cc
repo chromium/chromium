@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -120,3 +121,14 @@ void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
 }
 
 }  // namespace regional_capabilities
+
+namespace search_engines {
+
+// Declared in
+// //components/regional_capabilities/regional_capabilities_metrics.h
+void PrintTo(const SearchEngineChoiceScreenConditions& condition,
+             std::ostream* os) {
+  *os << regional_capabilities::ToString(condition);
+}
+
+}  // namespace search_engines

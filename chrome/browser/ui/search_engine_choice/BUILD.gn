@@ -20,6 +20,7 @@ if (!is_android) {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engine_choice",
+      "//components/regional_capabilities",
       "//components/search_engines",
       "//content/public/browser",
     ]

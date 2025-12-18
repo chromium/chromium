@@ -66,10 +66,18 @@ enum class SearchEngineChoiceScreenConditions {
   // The user is not eligible to make the choice because of their management
   // status.
   kManaged = 21,
+  // Although a choice had already been made, this profile is eligible due to
+  // having been requested by the program for devices that can be identified has
+  // having had this choice imported, for example from backup and restore flows.
+  kEligibleForRestore = 22,
 
-  kMaxValue = kManaged,
+  kMaxValue = kEligibleForRestore,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
+
+// Declaration for gtest, implemented in test-only targets.
+void PrintTo(const SearchEngineChoiceScreenConditions& condition,
+             std::ostream* os);
 }  // namespace search_engines
 
 namespace regional_capabilities {

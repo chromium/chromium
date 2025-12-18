@@ -246,6 +246,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     SearchEngineChoiceScreenConditions condition) {
   switch (condition) {
     case SearchEngineChoiceScreenConditions::kEligible:
+    case SearchEngineChoiceScreenConditions::kEligibleForRestore:
       return regional_capabilities::FunnelStage::kEligible;
 
     case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
@@ -602,6 +603,20 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAccountNotEligible;
   }
 
+  if (status == ChoiceStatus::kFromRestoredDevice) {
+    return SearchEngineChoiceScreenConditions::kEligibleForRestore;
+  }
+
+  if (status == ChoiceStatus::kNotMade) {
+    return SearchEngineChoiceScreenConditions::kEligible;
+  }
+
+  // Continue as `kEligible`, other statuses will be re-checked at triggering
+  // time.
+  // TODO(crbug.com/437857100): To be revisited to consider whether the list of
+  // status checked here should be expanded.
+  base::UmaHistogramEnumeration(
+      "Search.ChoiceDebug.UnhandledChoiceStatusAtLoadTime", status);
   return SearchEngineChoiceScreenConditions::kEligible;
 #endif
 }
@@ -637,8 +652,9 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     case ChoiceStatus::kCurrentIsNonGooglePrepopulated:
       return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
     case ChoiceStatus::kNotMade:
-    case ChoiceStatus::kFromRestoredDevice:
       return SearchEngineChoiceScreenConditions::kEligible;
+    case ChoiceStatus::kFromRestoredDevice:
+      return SearchEngineChoiceScreenConditions::kEligibleForRestore;
     case ChoiceStatus::kAccountNotEligible:
       return SearchEngineChoiceScreenConditions::kAccountNotEligible;
     case ChoiceStatus::kManaged:

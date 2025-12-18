@@ -496,6 +496,11 @@ chromium-metrics-reviews@google.com.
     There is device-level management, and the regional program does not treat
     managed profiles as eligible for the choice screen.
   </int>
+  <int value="22" label="EligibleForRestore">
+    Although a choice had already been made, this profile is eligible due to
+    having been requested by the program for devices that can be identified has
+    having had this choice imported, for example from backup and restore flows.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:SearchEngineChoiceScreenConditions) -->
@@ -532,6 +537,25 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom:ScrollState) -->
+
+<!-- LINT.IfChange(SearchEngineChoiceStatus) -->
+
+<enum name="SearchEngineChoiceStatus">
+  <int value="0" label="Valid"/>
+  <int value="1" label="NotMade"/>
+  <int value="2" label="FromRestoredDevice"/>
+  <int value="3" label="DefaultSearchDisabled"/>
+  <int value="4" label="CurrentIsSetByPolicy"/>
+  <int value="5" label="CurrentIsSetByExtension"/>
+  <int value="6" label="CurrentIsNonGooglePrepopulated"/>
+  <int value="7" label="CurrentIsNotPrepopulated"/>
+  <int value="8" label="CurrentIsDistributionCustom"/>
+  <int value="9" label="CurrentIsUnknownPrepopulated"/>
+  <int value="10" label="AccountNotEligible"/>
+  <int value="11" label="Managed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_service.h:ChoiceStatus) -->
 
 <enum name="SearchEngineChoiceWipeReason">
   <int value="0" label="Profile wipe"/>

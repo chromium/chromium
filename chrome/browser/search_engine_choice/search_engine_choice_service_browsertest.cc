@@ -190,7 +190,7 @@ const RestoreTestParam kTestParams[] = {
         .run_1_expectations =
             {.has_dialog_service = false,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
         // Run 2:  Since the choice was not flagged as imported in the session
         // where the clone was detected, for the "JustInTime" mode, we don't
@@ -209,14 +209,14 @@ const RestoreTestParam kTestParams[] = {
         .run_1_expectations =
             {.has_dialog_service = false,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
         // Run 2: We are able to wipe the choice timestamp and make remake the
         // profile eligible to get the choice dialog.
         .run_2_expectations =
             {.has_dialog_service = true,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
     },
 };

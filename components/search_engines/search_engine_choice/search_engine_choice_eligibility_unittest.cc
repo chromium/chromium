@@ -21,6 +21,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/choice_made_location.h"
@@ -1114,10 +1115,10 @@ INSTANTIATE_TEST_SUITE_P(
                               Spec::ExpectationsWithServices{
                                   .static_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .dynamic_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::google.id,
                               },
@@ -1262,10 +1263,10 @@ INSTANTIATE_TEST_SUITE_P(
                               Spec::ExpectationsWithServices{
                                   .static_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .dynamic_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::bing.id,
                               },
@@ -1428,10 +1429,10 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::ExpectationsWithServices{
                                  .static_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .dynamic_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
@@ -1537,10 +1538,10 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::ExpectationsWithServices{
                                  .static_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .dynamic_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },

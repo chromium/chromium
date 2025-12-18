@@ -93,12 +93,42 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
       return "IneligibleSurface";
     case SearchEngineChoiceScreenConditions::kManaged:
       return "Managed";
+    case search_engines::SearchEngineChoiceScreenConditions::
+        kEligibleForRestore:
+      return "EligibleForRestore";
   }
   NOTREACHED();
 }
 
 bool IsEligible(SearchEngineChoiceScreenConditions condition) {
-  return condition == SearchEngineChoiceScreenConditions::kEligible;
+  switch (condition) {
+    case SearchEngineChoiceScreenConditions::kEligible:
+    case SearchEngineChoiceScreenConditions::kEligibleForRestore:
+      return true;
+    case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
+    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
+    case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
+    case SearchEngineChoiceScreenConditions::kControlledByPolicy:
+    case SearchEngineChoiceScreenConditions::kExtensionControlled:
+    case SearchEngineChoiceScreenConditions::kAlreadyCompleted:
+    case SearchEngineChoiceScreenConditions::kUnsupportedBrowserType:
+    case SearchEngineChoiceScreenConditions::kFeatureSuppressed:
+    case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
+    case SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall:
+    case SearchEngineChoiceScreenConditions::kHasDistributionCustomSearchEngine:
+    case SearchEngineChoiceScreenConditions::
+        kHasRemovedPrepopulatedSearchEngine:
+    case SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine:
+    case SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent:
+    case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
+    case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
+    case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
+    case SearchEngineChoiceScreenConditions::kAccountNotEligible:
+    case SearchEngineChoiceScreenConditions::kIneligibleSurface:
+    case SearchEngineChoiceScreenConditions::kManaged:
+      return false;
+  }
+  NOTREACHED();
 }
 
 void RecordLoadedCountrySource(LoadedCountrySource source) {

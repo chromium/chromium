@@ -1499,7 +1499,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
       GetParam().expect_invalidation_timestamp
-          ? SearchEngineChoiceScreenConditions::kEligible
+          ? SearchEngineChoiceScreenConditions::kEligibleForRestore
           : SearchEngineChoiceScreenConditions::kAlreadyCompleted;
 #endif
   histogram_tester_.ExpectUniqueSample(

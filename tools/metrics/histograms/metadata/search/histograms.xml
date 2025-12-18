@@ -397,6 +397,23 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.UnhandledChoiceStatusAtLoadTime"
+    enum="SearchEngineChoiceStatus" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    When the &quot;static&quot; choice screen eligibility is evaluated at
+    profile load time, only a subset of the choice screen status count towards
+    ineligibility. This histogram is added to monitor the ignored conditions for
+    which we consider the profile &quot;eligible&quot;, but that would count as
+    &quot;ineligible&quot; when checked at triggering time.
+
+    Recorded at profile load, for a subset of the statuses leading to reporting
+    &quot;Eligible&quot; to the
+    &quot;RegionalCapabilities.FunnelStage.Eligibility&quot; histogram.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
     enum="UnknownCountryIdStored" expires_after="2026-08-19">
   <owner>cschlosser@chromium.org</owner>
