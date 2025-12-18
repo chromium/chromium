@@ -37,52 +37,6 @@ namespace net {
 
 NSString* const kNSErrorDomain = @"org.chromium.net.ErrorDomain";
 
-BASE_FEATURE(kUseNSURLErrorFailingURLErrorKey,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-NSError* GetIOSError(NSInteger ns_error_code,
-                     int net_error_code,
-                     NSString* url,
-                     const base::Time& creation_time) {
-  // The error we pass through has the domain NSURLErrorDomain, an IOS error
-  // code, and a userInfo dictionary in which we smuggle more detailed info
-  // about the error from our network stack. This dictionary contains the
-  // failing URL, and a nested error in which we deposit the original error code
-  // passed in from the Chrome network stack.
-  // The nested error has domain:kNSErrorDomain, code:|original_error_code|,
-  // and userInfo:nil; this NSError is keyed in the dictionary with
-  // NSUnderlyingErrorKey.
-  NSDate* creation_date = creation_time.ToNSDate();
-  DCHECK(creation_date);
-  NSError* underlying_error = [NSError errorWithDomain:kNSErrorDomain
-                                                  code:net_error_code
-                                              userInfo:nil];
-  DCHECK(url);
-  NSDictionary* dictionary = @{
-    NSURLErrorFailingURLStringErrorKey : url,
-    @"CreationDate" : creation_date,
-    NSUnderlyingErrorKey : underlying_error,
-  };
-  return [NSError errorWithDomain:NSURLErrorDomain
-                             code:ns_error_code
-                         userInfo:dictionary];
-}
-
-NSString* GetFailingURLStringFromError(NSError* error) {
-  NSString* failing_url_string =
-      error.userInfo[NSURLErrorFailingURLStringErrorKey];
-  if (failing_url_string) {
-    return failing_url_string;
-  }
-
-  if (!base::FeatureList::IsEnabled(kUseNSURLErrorFailingURLErrorKey)) {
-    return nil;
-  }
-
-  NSURL* failing_url = error.userInfo[NSURLErrorFailingURLErrorKey];
-  return failing_url.absoluteString;
-}
-
 NSURLResponse* GetNSURLResponseForRequest(URLRequest* request) {
   NSURL* url = NSURLWithGURL(request->url());
   DCHECK(url);

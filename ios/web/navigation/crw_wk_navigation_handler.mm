@@ -674,8 +674,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // If there was a redirect, change the URL to have the URL of the first
     // page.
     NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
-    userInfo[NSURLErrorFailingURLStringErrorKey] =
-        base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
+    userInfo[NSURLErrorFailingURLErrorKey] =
+        net::NSURLWithGURL(navigationContext->GetUrl());
     error = [NSError errorWithDomain:error.domain
                                 code:error.code
                             userInfo:userInfo];
@@ -684,16 +684,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (@available(iOS 26, *)) {
     if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
         error.code == web::kWebKitErrorCannotShowUrl &&
-        !net::GetFailingURLStringFromError(error)) {
+        !error.userInfo[NSURLErrorFailingURLErrorKey]) {
       // URL is expected in these errors, but it broke on iOS 26. Apply
       // workaround until WebKit fix is shipped.
       // TODO(crbug.com/441372052): Remove workaround.
-      NSString* urlString =
-          base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
-
+      NSURL* url = net::NSURLWithGURL(navigationContext->GetUrl());
       NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
-      userInfo[NSURLErrorFailingURLStringErrorKey] = urlString;
-      userInfo[web::kNSErrorFailingURLKey] = urlString;
+      userInfo[NSURLErrorFailingURLErrorKey] = url;
       error = [NSError errorWithDomain:error.domain
                                   code:error.code
                               userInfo:userInfo];
@@ -1968,11 +1965,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   // Error page needs the URL string in the error's userInfo for proper
   // display.
-  if (!net::GetFailingURLStringFromError(error)) {
+  if (!error.userInfo[NSURLErrorFailingURLErrorKey]) {
     NSMutableDictionary* updatedUserInfo = [[NSMutableDictionary alloc] init];
     [updatedUserInfo addEntriesFromDictionary:error.userInfo];
-    [updatedUserInfo setObject:blockedNSURL.absoluteString
-                        forKey:NSURLErrorFailingURLStringErrorKey];
+    [updatedUserInfo setObject:blockedNSURL
+                        forKey:NSURLErrorFailingURLErrorKey];
 
     error = [NSError errorWithDomain:error.domain
                                 code:error.code
@@ -2131,7 +2128,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       // `didReceiveAuthenticationChallenge:` is the OS constructed chain, while
       // `chain` is the chain from the server.
       NSArray* chain = error.userInfo[web::kNSErrorPeerCertificateChainKey];
-      NSURL* requestURL = error.userInfo[web::kNSErrorFailingURLKey];
+      NSURL* requestURL = error.userInfo[NSURLErrorFailingURLErrorKey];
       NSString* host = requestURL.host;
       scoped_refptr<net::X509Certificate> leafCert;
       if (chain.count && host.length) {
@@ -2154,8 +2151,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       ssl_info = info;
     }
   }
-  NSString* failingURLString = net::GetFailingURLStringFromError(error);
-  GURL failingURL(base::SysNSStringToUTF8(failingURLString));
+  GURL failingURL =
+      net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]);
   GURL itemURL = item->GetURL();
   if (itemURL != failingURL) {
     item->SetVirtualURL(failingURL);

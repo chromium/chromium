@@ -41,7 +41,9 @@ class CRWErrorPageHelperIntTest : public WebIntTest {
     NSError* error = [NSError
         errorWithDomain:NSURLErrorDomain
                    code:NSURLErrorBadURL
-               userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
+               userInfo:@{
+                 NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+               }];
 
     return [[CRWErrorPageHelper alloc] initWithError:error];
   }

@@ -20,7 +20,9 @@ TEST_F(CRWErrorPageHelperTest, FailedNavigationURL) {
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
-             userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
+             userInfo:@{
+               NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+             }];
   CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
   NSURL* url = [NSURL URLWithString:url_string];
   EXPECT_NSEQ(url, helper.failedNavigationURL);
@@ -33,7 +35,9 @@ TEST_F(CRWErrorPageHelperTest, ExtractOriginalURLFromErrorPageURL) {
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
-             userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
+             userInfo:@{
+               NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+             }];
   CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
   GURL url_from_helper = net::GURLWithNSURL(helper.errorPageFileURL);
   GURL result_original_url = [CRWErrorPageHelper
@@ -48,7 +52,9 @@ TEST_F(CRWErrorPageHelperTest, IsErrorPageFileURL) {
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
-             userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
+             userInfo:@{
+               NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+             }];
   CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
   EXPECT_TRUE([helper
       isErrorPageFileURLForFailedNavigationURL:helper.errorPageFileURL]);
@@ -57,12 +63,12 @@ TEST_F(CRWErrorPageHelperTest, IsErrorPageFileURL) {
 // Tests that a normal URL isn't identified as error page.
 TEST_F(CRWErrorPageHelperTest, IsErrorPageFileURLWrong) {
   NSString* url_string = @"file://test-error-page.com";
-  NSError* error =
-      [NSError errorWithDomain:NSURLErrorDomain
-                          code:NSURLErrorBadURL
-                      userInfo:@{
-                        NSURLErrorFailingURLStringErrorKey : @"http://fake.com"
-                      }];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : [NSURL URLWithString:@"http://fake.com"]
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorBadURL
+                                   userInfo:user_info];
   CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
   EXPECT_FALSE([helper
       isErrorPageFileURLForFailedNavigationURL:[NSURL

@@ -161,8 +161,7 @@ NSError* NetErrorFromError(NSError* error) {
           isEqualToString:static_cast<NSString*>(kCFErrorDomainCFNetwork)]) {
     // Attempt to translate NSURL and CFNetwork error codes into their
     // corresponding net error codes.
-    NSString* url_spec = net::GetFailingURLStringFromError(error);
-    NSURL* url = url_spec ? [NSURL URLWithString:url_spec] : nil;
+    NSURL* url = error.userInfo[NSURLErrorFailingURLErrorKey];
     GetNetErrorFromIOSErrorCode(underlying_error.code, &net_error_code, url);
   }
   return NetErrorFromError(error, net_error_code);

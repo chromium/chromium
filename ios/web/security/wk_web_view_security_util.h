@@ -21,8 +21,6 @@ namespace web {
 
 // NSErrorPeerCertificateChainKey from NSError's userInfo dict.
 extern NSString* const kNSErrorPeerCertificateChainKey;
-// NSErrorFailingURLKey from NSError's userInfo dict.
-extern NSString* const kNSErrorFailingURLKey;
 
 // Creates a certificate from an array of SecCertificateRef objects.
 // Returns null if `certs` is nil or empty.

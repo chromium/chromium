@@ -52,9 +52,7 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
         errorWithDomain:NSURLErrorDomain
                    code:errorCode
                userInfo:@{
-                 NSURLErrorFailingURLErrorKey : urlSchemeTask.request.URL,
-                 NSURLErrorFailingURLStringErrorKey :
-                     urlSchemeTask.request.URL.absoluteString
+                 NSURLErrorFailingURLErrorKey : urlSchemeTask.request.URL
                }];
     [urlSchemeTask didFailWithError:error];
     return;

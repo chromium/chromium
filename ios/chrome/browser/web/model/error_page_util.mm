@@ -19,6 +19,7 @@
 #import "components/grit/components_resources.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/net/protocol_handler_util.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
@@ -29,9 +30,8 @@ NSString* GetErrorPage(const GURL& url,
                        NSError* error,
                        bool is_post,
                        bool is_off_the_record) {
-  DCHECK_EQ(
-      url,
-      GURL(base::SysNSStringToUTF8(net::GetFailingURLStringFromError(error))));
+  DCHECK_EQ(url,
+            net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]));
   NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
   if (!final_error) {
     final_error = error;

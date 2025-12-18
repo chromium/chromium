@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -317,8 +318,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         if (image.IsEmpty()) {
           // Image fetch failed or returned empty.
           NSDictionary<NSErrorUserInfoKey, id>* userInfo = @{
-            NSURLErrorFailingURLStringErrorKey :
-                base::SysUTF8ToNSString(thumbnailURL.spec())
+            NSURLErrorFailingURLErrorKey : net::NSURLWithGURL(thumbnailURL)
           };
           NSError* fetchError = [NSError errorWithDomain:NSURLErrorDomain
                                                     code:NSURLErrorUnknown
