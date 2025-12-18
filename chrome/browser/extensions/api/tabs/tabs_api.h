@@ -166,10 +166,14 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
 // new index of the tab in the target tabstrip. On failure, returns -1.
 // Assumes that the caller has already checked whether the target window is
 // different from the source.
+// `allow_other_window_types` indicates whether moving tabs to windows with
+// types other than BrowserWindowInterface::TYPE_NORMAL is supported; this is
+// allowed in certain cases (like moving a tab to a popup).
 int MoveTabToWindow(ExtensionFunction* function,
                     int tab_id,
                     BrowserWindowInterface* target_browser,
                     int new_index,
+                    bool allow_other_window_types,
                     std::string* error);
 
 }  // namespace tabs_internal
@@ -226,14 +230,9 @@ class WindowsCreateFunction : public ExtensionFunction {
 #endif
 
   // Handles post-creation window initialization. `new_window` is the newly-
-  // created browser window. `source_window` and `tab_index` indicate an
-  // existing tab to move to the new window, if any.
+  // created browser window.
   // Returns the response to pass back to the extension.
-  // TODO(crbug.com/431004500): Remove `source_window` and `tab_index` here;
-  // they won't work to be passed in on desktop android.
-  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window,
-                                       WindowController* source_window,
-                                       int tab_index);
+  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnBocaWindowCreatedAsynchronously(const SessionID& session_id);

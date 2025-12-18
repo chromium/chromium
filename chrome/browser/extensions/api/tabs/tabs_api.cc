@@ -440,6 +440,7 @@ int MoveTabToWindow(ExtensionFunction* function,
                     int tab_id,
                     BrowserWindowInterface* target_browser,
                     int new_index,
+                    bool allow_other_window_types,
                     std::string* error) {
   WindowController* source_window = nullptr;
   int source_index = -1;
@@ -459,7 +460,8 @@ int MoveTabToWindow(ExtensionFunction* function,
   // TODO(crbug.com/40638654): Rather than calling checking against
   // TYPE_NORMAL, should this call
   // SupportsWindowFeature(Browser::kFeatureTabstrip)?
-  if (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+  if (!allow_other_window_types &&
+      target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
     return -1;
   }
@@ -660,7 +662,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params> params =
       windows::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  int tab_index = -1;
 
   DCHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
          source_context_type() == mojom::ContextType::kUntrustedWebUi);
@@ -726,13 +727,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       create_data_->state == windows::WindowState::kLockedFullscreen;
   WindowController* source_window = nullptr;
   if (create_data_ && create_data_->tab_id) {
-    // Find the tab. `tab_index` will later be used to move the tab into the
-    // created window.
+    // Find the tab.
     content::WebContents* web_contents = nullptr;
     if (!tabs_internal::GetTabById(*create_data_->tab_id, calling_profile,
                                    include_incognito_information(),
-                                   &source_window, &web_contents, &tab_index,
-                                   &error)) {
+                                   &source_window, &web_contents,
+                                   /*index_out=*/nullptr, &error)) {
       return RespondNow(Error(std::move(error)));
     }
 
@@ -884,7 +884,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   BrowserWindowInterface* new_window =
       CreateBrowserWindow(std::move(create_params));
   ExtensionFunction::ResponseValue response =
-      OnBrowserWindowCreated(new_window, source_window, tab_index);
+      OnBrowserWindowCreated(new_window);
   return RespondNow(std::move(response));
 #else
 
@@ -903,16 +903,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 #if BUILDFLAG(IS_ANDROID)
 void WindowsCreateFunction::OnBrowserWindowCreatedAsynchronously(
     BrowserWindowInterface* new_window) {
-  ExtensionFunction::ResponseValue response = OnBrowserWindowCreated(
-      new_window, /*source_window=*/nullptr, /*tab_index=*/-1);
+  ExtensionFunction::ResponseValue response =
+      OnBrowserWindowCreated(new_window);
   Respond(std::move(response));
 }
 #endif
 
 ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
-    BrowserWindowInterface* new_window,
-    WindowController* source_window,
-    int tab_index) {
+    BrowserWindowInterface* new_window) {
   if (!new_window) {
     return Error(ExtensionTabUtil::kBrowserWindowNotAllowed);
   }
@@ -987,25 +985,20 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   // TODO(https://crbug.com/431004500): Handle moving the tab to the new window
   // on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
-  const ::tabs::TabModel* tab = nullptr;
+  bool moved_tab = false;
   // Move the tab into the created window only if it's an empty popup or it's
   // a tabbed window.
   if (new_window->GetType() == Browser::TYPE_NORMAL || urls_.empty()) {
-    if (source_window && source_window->GetBrowser()) {
-      TabStripModel* source_tab_strip =
-          source_window->GetBrowser()->tab_strip_model();
-      CHECK(!isolated_web_app_url_info_.has_value());
-      std::unique_ptr<::tabs::TabModel> detached_tab =
-          source_tab_strip->DetachTabAtForInsertion(tab_index);
-      tab = detached_tab.get();
-      TabStripModel* target_tab_strip =
-          ExtensionTabUtil::GetEditableTabStripModel(
-              new_window->GetBrowserForMigrationOnly());
-      if (!target_tab_strip) {
-        return Error(ExtensionTabUtil::kTabStripNotEditableError);
+    if (create_data_ && create_data_->tab_id) {
+      std::string error;
+      // -1 means "move tab to the end", which is what we want.
+      int new_index = -1;
+      if (tabs_internal::MoveTabToWindow(
+              this, *create_data_->tab_id, new_window, new_index,
+              /*allow_other_window_types=*/true, &error) < 0) {
+        return Error(std::move(error));
       }
-      target_tab_strip->InsertDetachedTabAt(
-          urls_.size(), std::move(detached_tab), AddTabTypes::ADD_NONE);
+      moved_tab = true;
     }
   }
 #endif
@@ -1014,7 +1007,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   // tab when it is intended to create an empty popup.
   // TODO(https://crbug.com/431004500): Port to desktop android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!tab && urls_.empty() && new_window->GetType() == Browser::TYPE_NORMAL) {
+  if (!moved_tab && urls_.empty() &&
+      new_window->GetType() == Browser::TYPE_NORMAL) {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
     chrome::NewTab(new_window->GetBrowserForMigrationOnly(),
@@ -1965,7 +1959,8 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     BrowserWindowInterface* target_browser =
         target_controller->GetBrowserWindowInterface();
     int inserted_index = tabs_internal::MoveTabToWindow(
-        this, tab_id, target_browser, *new_index, error);
+        this, tab_id, target_browser, *new_index,
+        /*allow_other_window_types=*/false, error);
     if (inserted_index < 0) {
       return false;
     }

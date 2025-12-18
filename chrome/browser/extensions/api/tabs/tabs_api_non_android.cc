@@ -795,7 +795,8 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   for (size_t i = 0; i < tab_ids.size(); ++i) {
     if (tab_windows[i] != target_window) {
       if (tabs_internal::MoveTabToWindow(
-              this, tab_ids[i], target_window->GetBrowser(), -1, &error) < 0) {
+              this, tab_ids[i], target_window->GetBrowser(), -1,
+              /*allow_other_window_types=*/false, &error) < 0) {
         return RespondNow(Error(std::move(error)));
       }
     }
