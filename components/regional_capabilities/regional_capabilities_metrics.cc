@@ -160,6 +160,11 @@ void RecordProgramAndLocationMatch(
       program_and_location_match);
 }
 
+void RecordAndroidProgramResolution(AndroidProgramResolution resolution) {
+  base::UmaHistogramEnumeration(
+      "RegionalCapabilities.Debug.AndroidProgramResolution", resolution);
+}
+
 void RecordFunnelStage(FunnelStage stage) {
   base::UmaHistogramEnumeration("RegionalCapabilities.FunnelStage.Reported",
                                 stage);

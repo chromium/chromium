@@ -105,6 +105,10 @@ bool IsValidSerializedProgram(int serialized_program) {
 
 bool IsInProgramRegion(Program program,
                        const country_codes::CountryId& country_id) {
+  if (program == Program::kDefault) {
+    return true;  // All countries can be associated with the default program.
+  }
+
   return base::Contains(GetSettingsForProgram(program).associated_countries,
                         country_id);
 }

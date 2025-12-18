@@ -502,6 +502,10 @@ CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
 }
 
 void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
+  // The cache initialisation and associated logging should not run if override
+  // flags are present.
+  CHECK(!HasSearchEngineCountryListOverride(), base::NotFatalUntil::M149);
+
   // The regional scope cache is made of these 2 values, their presence has to
   // be consistent.
   CHECK_EQ(country_id_cache_.has_value(), program_settings_cache_.has_value());
@@ -561,10 +565,14 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
           switches::kResolveRegionalCapabilitiesFromDevice)) {
     program = client_->GetDeviceProgram();
 
-    if (!IsInProgramRegion(program, country_id_cache_.value())) {
+    if (IsInProgramRegion(program, country_id_cache_.value())) {
+      RecordAndroidProgramResolution(AndroidProgramResolution::kSuccess);
+    } else {
       // Interim program inconsistencies originate from asynchronous nature of
       // their resolution. For the time being, use a reasonable default.
       program = Program::kDefault;
+      RecordAndroidProgramResolution(
+          AndroidProgramResolution::kDefaultForOutOfProgramCountry);
     }
   } else
 #endif  // BUILDFLAG(IS_ANDROID)

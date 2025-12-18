@@ -131,6 +131,19 @@ void RecordVariationsCountryMatching(
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(AndroidProgramResolution)
+enum class AndroidProgramResolution {
+  kSuccess = 0,
+  kDefaultForOutOfProgramCountry = 1,
+  kMaxValue = kDefaultForOutOfProgramCountry,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:AndroidProgramResolution)
+
+void RecordAndroidProgramResolution(AndroidProgramResolution resolution);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(ProgramAndLocationMatch)
 enum class ProgramAndLocationMatch {
   SameAsProfileCountry = 0,
