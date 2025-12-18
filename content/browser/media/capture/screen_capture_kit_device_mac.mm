@@ -118,26 +118,32 @@ gfx::Size CreateEvenSize(const gfx::Size& original_size) {
   return {width, height};
 }
 
-// Given SCShareableContent and a vector of `NativeWindowId`s, returns an
-// array containing the SCWindow objects corresponding to the provided IDs.
-// Otherwise, returns an empty array if no matching windows are found.
+// Given SCShareableContent, a PipScreenCaptureCoordinatorProxy and a media
+// source, returns an array containing the SCWindow object to be excluded from
+// the capture. Otherwise, returns an empty array.
 API_AVAILABLE(macos(12.3))
-NSArray<SCWindow*>* ConvertWindowIDsToSCWindows(
+NSArray<SCWindow*>* GetWindowsToExclude(
     SCShareableContent* content,
-    const std::vector<content::DesktopMediaID::Id>& excluded_window_ids) {
-  NSMutableArray<SCWindow*>* excluded_sc_windows =
-      [[NSMutableArray alloc] init];
-  for (content::DesktopMediaID::Id excluded_id : excluded_window_ids) {
-    for (SCWindow* window_to_check in content.windows) {
-      if (window_to_check.windowID == excluded_id) {
-        [excluded_sc_windows addObject:window_to_check];
-        break;
-      }
+    content::PipScreenCaptureCoordinatorProxy* proxy,
+    const content::DesktopMediaID& source) {
+  if (!proxy) {
+    return @[];
+  }
+
+  std::optional<content::DesktopMediaID::Id> excluded_window_id =
+      proxy->WindowToExclude(source);
+
+  if (!excluded_window_id.has_value()) {
+    return @[];
+  }
+
+  for (SCWindow* window_to_check in content.windows) {
+    if (window_to_check.windowID == *excluded_window_id) {
+      return @[ window_to_check ];
     }
   }
-  return excluded_sc_windows;
+  return @[];
 }
-
 }  // namespace
 
 API_AVAILABLE(macos(12.3))
@@ -302,14 +308,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
           // fallback. See https://crbug.com/325530044.
           if (source_.id == display.displayID ||
               source_.id == webrtc::kFullDesktopScreenId) {
-            std::vector<DesktopMediaID::Id> excluded_window_ids;
-            if (pip_screen_capture_coordinator_proxy_) {
-              excluded_window_ids =
-                  pip_screen_capture_coordinator_proxy_->WindowsToExclude(
-                      source_);
-            }
-            NSArray<SCWindow*>* excluded_windows =
-                ConvertWindowIDsToSCWindows(content, excluded_window_ids);
+            NSArray<SCWindow*>* excluded_windows = GetWindowsToExclude(
+                content, pip_screen_capture_coordinator_proxy_.get(), source_);
             filter = [[SCContentFilter alloc] initWithDisplay:display
                                              excludingWindows:excluded_windows];
             stream_config_content_size_ =
@@ -571,13 +571,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       return;
     }
 
-    std::vector<DesktopMediaID::Id> excluded_window_ids;
-    if (pip_screen_capture_coordinator_proxy_) {
-      excluded_window_ids =
-          pip_screen_capture_coordinator_proxy_->WindowsToExclude(source_);
-    }
-    NSArray<SCWindow*>* excluded_windows =
-        ConvertWindowIDsToSCWindows(content, excluded_window_ids);
+    NSArray<SCWindow*>* excluded_windows = GetWindowsToExclude(
+        content, pip_screen_capture_coordinator_proxy_.get(), source_);
     SCContentFilter* filter =
         [[SCContentFilter alloc] initWithDisplay:display
                                 excludingWindows:excluded_windows];

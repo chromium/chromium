@@ -30,7 +30,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorProxyImpl
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const override;
   const std::vector<CaptureInfo>& Captures() const override;
 
-  std::vector<DesktopMediaID::Id> WindowsToExclude(
+  std::optional<DesktopMediaID::Id> WindowToExclude(
       const DesktopMediaID& media_id) const override;
 
   void AddObserver(Observer* observer) override;

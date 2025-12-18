@@ -45,7 +45,7 @@ class PipScreenCaptureCoordinatorProxy {
   virtual GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const = 0;
   virtual const std::vector<CaptureInfo>& Captures() const = 0;
 
-  virtual std::vector<DesktopMediaID::Id> WindowsToExclude(
+  virtual std::optional<DesktopMediaID::Id> WindowToExclude(
       const DesktopMediaID& media_id) const = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
