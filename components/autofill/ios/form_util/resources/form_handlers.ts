@@ -13,7 +13,7 @@ import {isAutofillableElement} from '//components/autofill/ios/form_util/resourc
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formSubmitted, reportFormSubmissionError, wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFieldIdentifier, getFormIdentifier, reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -509,4 +509,8 @@ function trackFormMutations(delay: number): void {
   formMutationObserver.observe(document, {childList: true, subtree: true});
 }
 
-gCrWebLegacy.formHandlers = {trackFormMutations};
+const formHandlersApi = new CrWebApi();
+
+formHandlersApi.addFunction('trackFormMutations', trackFormMutations);
+
+gCrWeb.registerApi('formHandlers', formHandlersApi);

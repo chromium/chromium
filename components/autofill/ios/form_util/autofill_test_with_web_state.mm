@@ -24,13 +24,14 @@ void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame) {
   // trackFormMutationsComplete after the function is called.
   ExecuteJavaScript(
       @"var trackFormMutationsComplete = false;"
+      @"const formHandlersApi = __gCrWeb.getRegisteredApi('formHandlers');"
       @"var originalTrackFormMutations = "
-      @"__gCrWeb.formHandlers.trackFormMutations;"
-      @"__gCrWeb.formHandlers.trackFormMutations = function() {"
+      @"formHandlersApi.getFunction('trackFormMutations');"
+      @"formHandlersApi.addFunction('trackFormMutations', function() {"
       @"  var result = originalTrackFormMutations.apply(this, arguments);"
       @"  trackFormMutationsComplete = true;"
       @"  return result;"
-      @"};");
+      @"});");
 
   autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
       frame, kTrackFormMutationsDelayInMs);
