@@ -1093,6 +1093,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   #override
   def SetUp(self):
+    if self.wait_for_java_debugger and not self._test_apk.GetIsDebuggable():
+      raise Exception('Passed --wait-for-java-debugger flag but did not set '
+                      'debuggable_apks = true in GN args')
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
     if self._proguard_mapping_path:

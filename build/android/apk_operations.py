@@ -1702,6 +1702,10 @@ class _LaunchCommand(_Command):
   def Run(self):
     if self.is_test_apk:
       raise Exception('Use the bin/run_* scripts to run test apks.')
+    if self.args.wait_for_java_debugger:
+      if self.apk_helper and not self.apk_helper.GetIsDebuggable():
+        raise Exception('Passed --wait-for-java-debugger flag but did not set '
+                        'debuggable_apks = true in GN args')
     _LaunchUrl(self.devices,
                self.args.package_name,
                argv=self.args.args,
