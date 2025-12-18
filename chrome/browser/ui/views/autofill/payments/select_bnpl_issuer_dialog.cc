@@ -159,6 +159,8 @@ SelectBnplIssuerDialog::~SelectBnplIssuerDialog() = default;
 void SelectBnplIssuerDialog::DisplayThrobber() {
   bnpl_issuer_view_->SetVisible(false);
   throbber_container_view_->SetVisible(true);
+  // Restarts the throbber if it was previously stopped, otherwise a no-op.
+  throbber_->Start();
 }
 
 void SelectBnplIssuerDialog::DismissThrobberAndShowIssuerView() {
