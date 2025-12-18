@@ -506,6 +506,12 @@ Things to consider:
             =1 {This happens when Chrome isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
             other {This happens when Chrome isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
       </message>
+      <message name="IDS_IOS_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.
+      </message>
+      <message name="IDS_IOS_IMPORT_PASSWORD_PASSKEY_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing passwords and passkeys in Password Manager and those imported. [iOS only]">
+        You already have passwords or passkeys in Google Password Manager for the sites shown. Select an account to keep the shown sign-in info, overwriting what's in Google Password Manager.
+      </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
         Open in Chrome
       </message>

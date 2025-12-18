@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -104,10 +105,12 @@ NSString* const kDataImportCredentialConflictResolutionSection =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
+  int messageId =
+      _passkeyConflicts.count > 0u
+          ? IDS_IOS_IMPORT_PASSWORD_PASSKEY_CONFLICT_RESOLUTION_DISCLAIMER
+          : IDS_IOS_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER;
   NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
-      initWithString:
-          l10n_util::GetNSString(
-              IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER)
+      initWithString:l10n_util::GetNSString(messageId)
           attributes:attributes];
   [header setAttributedString:attributedText];
   return header;
