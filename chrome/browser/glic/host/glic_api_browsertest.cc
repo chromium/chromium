@@ -747,12 +747,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
       RegisterConversation("test-id"), CloseGlic());
   ExecuteJsTest();
   WaitForWebUiState(mojom::WebUiState::kError);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount(
-               "Glic.Host.WebClientState.OnDestroy",
-               /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/) == 1;
-  }));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Host.WebClientState.OnDestroy",
+      /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
@@ -943,10 +940,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
   // back, so from the host's perspective bootstrapping is still pending.
   // There may be warmed instances that also receive this error, so expect at
   // least one count.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                           0 /*BOOTSTRAP_PENDING*/) > 0;
-  }));
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
+            0);
 #endif
 }
 
@@ -963,10 +959,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // May have more than one sample because there can be a warmed instance.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                           0 /*BOOTSTRAP_PENDING*/) > 0;
-  }));
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
+            0);
 #endif
 }
 
@@ -984,11 +979,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // There may be warmed instances that also receive this error, so expect at
   // least one count.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount(
-               "Glic.Host.WebClientState.OnDestroy",
-               /*sample=*/3 /*WEB_CLIENT_NOT_INITIALIZED*/) > 0;
-  }));
+  EXPECT_GT(
+      histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
+                                      3 /*WEB_CLIENT_NOT_INITIALIZED*/),
+      0);
 #endif
 }
 
@@ -1510,11 +1504,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   const char* script = R"js(
 (()=>{
   const appController = appRouter.glicController;
-  const host = appController.webviewLoader.webview.host;
-  if (!host.handler.getModelQualityClientId) {
+  if (!appController.webview.host.handler.getModelQualityClientId) {
     return "Method not found";
   }
-  host.handler.getModelQualityClientId();
+  appController.webview.host.handler.getModelQualityClientId();
   return "Method called";
 })()
 )js";

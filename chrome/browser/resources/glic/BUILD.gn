@@ -42,7 +42,6 @@ build_webui("build") {
     "observable.ts",
     "timer.ts",
     "webview.ts",
-    "glic_webview_loader.ts",
   ]
 
   webui_context_type = "trusted"

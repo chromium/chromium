@@ -565,6 +565,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Host.LoadingStageAtTimeOut" enum="LoadingStage"
+    expires_after="2026-07-17">
+  <owner>iwells@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Histogram that records which loading stage the glic host was in when loading
+    timed out. Only recorded when loading fails due to timeout.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Host.LoadingStageDuration.{LoadingStage}" units="ms"
+    expires_after="2026-07-21">
+  <owner>iwells@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records the amount of time a particular loading step took to complete.
+    {LoadingStage}
+  </summary>
+<!-- LINT.IfChange(LoadingStage) -->
+
+  <token key="LoadingStage">
+    <variant name="AwaitingCookieSync"/>
+    <variant name="AwaitingNotifyPanelWillOpen"/>
+    <variant name="AwaitingProfileReady"/>
+    <variant name="LoadingWebClient"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:LoadingStage) -->
+
+</histogram>
+
 <histogram name="Glic.Host.OpenedInRegularTab" enum="Boolean"
     expires_after="2026-09-30">
   <owner>carlosk@chromium.org</owner>

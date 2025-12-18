@@ -2,21 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {getRequiredElement} from '//resources/js/util.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
-import type {ProfileReadyState} from './glic.mojom-webui.js';
-import {PanelStateKind, WebUiState} from './glic.mojom-webui.js';
+import {PanelStateKind, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
-import type {GlicWebviewLoadState, OnlineMonitor} from './glic_webview_loader.js';
-import {GlicWebviewLoader, GlicWebviewLoadErrorReason, GlicWebviewLoadStatus, OnlineMonitorImpl} from './glic_webview_loader.js';
+import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
+import type {PageType, WebviewDelegate} from './webview.js';
+import {WebviewController, WebviewPersistentState} from './webview.js';
 
 const transitionDuration = {
   microseconds: BigInt(100000),
 };
 
+// Time to wait before showing loading panel.
+const kPreHoldLoadingTimeMs = loadTimeData.getInteger('preLoadingTimeMs');
+
+// Minimum time to hold "loading" panel visible.
+const kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
+
+// Maximum time to wait for load before showing error panel.
+const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
+
+// Whether to enable the debug button on the error panel. Can be enabled with
+// the --enable-features=GlicDebugWebview command-line flag.
+const kEnableDebug = loadTimeData.getBoolean('enableDebug');
+
+// Whether additional web client unresponsiveness tracking metrics should be
+// recorded.
+const kEnableUnresponsiveMetrics =
+    loadTimeData.getBoolean('enableWebClientUnresponsiveMetrics');
 
 interface PageElementTypes {
   panelContainer: HTMLElement;
@@ -67,26 +84,25 @@ export enum WebClientUnresponsiveState {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientUnresponsiveState)
 
-export class GlicAppController implements ApiHostEmbedder {
+// Enum for specific stages of loading the web client, reported if loading times
+// out.
+// LINT.IfChange(LoadingStage)
+export enum LoadingStage {
+  NOT_LOADING = 0,
+  AWAITING_PROFILE_READY = 1,
+  AWAITING_COOKIE_SYNC = 2,
+  LOADING_WEB_CLIENT = 3,
+  AWAITING_NOTIFY_PANEL_WILL_OPEN = 4,
+  MAX_VALUE = AWAITING_NOTIFY_PANEL_WILL_OPEN,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:LoadingStage,//tools/metrics/histograms/metadata/glic/histograms.xml:LoadingStage)
+
+export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   loadingTimer: number|undefined;
 
-  // Time to wait before showing loading panel.
-  readonly kPreHoldLoadingTimeMs = loadTimeData.getInteger('preLoadingTimeMs');
-
-  // Minimum time to hold "loading" panel visible.
-  readonly kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
-
-  // Maximum time to wait for load before showing error panel.
-  readonly kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
-
-  // Whether to enable the debug button on the error panel. Can be enabled with
-  // the --enable-features=GlicDebugWebview command-line flag.
-  readonly kEnableDebug = loadTimeData.getBoolean('enableDebug');
-
-  // Whether additional web client unresponsiveness tracking metrics should be
-  // recorded.
-  readonly kEnableUnresponsiveMetrics =
-      loadTimeData.getBoolean('enableWebClientUnresponsiveMetrics');
+  // This is used to simulate no connection for tests.
+  private simulateNoConnection: boolean =
+      loadTimeData.getBoolean('simulateNoConnection');
 
   private guestResizeEnabled: boolean = false;
 
@@ -101,7 +117,17 @@ export class GlicAppController implements ApiHostEmbedder {
   private lastWidth: number = 400;
   private lastHeight: number = 80;
 
+  // Present only when loading or after loading is finished. Removed on error.
+  private webview?: WebviewController;
+  private webviewPersistentState = new WebviewPersistentState();
+
+  private profileReadyState: ProfileReadyState|undefined = undefined;
+  private profileReadyInitialState = Promise.withResolvers<void>();
+
   private enteredUnresponsiveTimestampMs?: number;
+  // Loading stage, affects metrics only.
+  private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
+  private loadingStageStartTimestampMs?: DOMHighResTimeStamp;
 
   private panelStateKind: PanelStateKind = PanelStateKind.kHidden;
 
@@ -113,16 +139,24 @@ export class GlicAppController implements ApiHostEmbedder {
   private earliestLoadingDismissTime: number|undefined;
 
   browserProxy: BrowserProxyImpl;
-  private onlineMonitor: OnlineMonitor = new OnlineMonitorImpl();
-  private webviewLoader: GlicWebviewLoader;
 
   constructor(browserProxy: BrowserProxyImpl) {
     this.browserProxy = browserProxy;
-    this.webviewLoader = new GlicWebviewLoader(
-        $.webviewContainer, browserProxy, this, this.onlineMonitor);
-    this.webviewLoader.getState().subscribe(
-        this.webviewLoadStateChanged.bind(this));
 
+    window.addEventListener('online', () => {
+      this.online();
+    });
+    window.addEventListener('offline', () => {
+      if (!this.isOnline()) {
+        this.offline();
+      }
+    });
+
+    if (this.isOnline()) {
+      this.setState(WebUiState.kBeginLoad);
+    } else {
+      this.setState(WebUiState.kOffline);
+    }
     $.profilePickerButton.addEventListener('click', () => {
       this.openProfilePicker();
     });
@@ -149,17 +183,25 @@ export class GlicAppController implements ApiHostEmbedder {
       }
     });
 
-    if (this.kEnableDebug) {
+    if (kEnableDebug) {
       window.addEventListener('load', () => {
         this.installDebugButton();
       });
     }
+  }
 
-    this.webviewLoader.setWantLoad(true);
+  // WebviewDelegate implementation.
+  webviewUnresponsive(): void {
+    console.warn('webview unresponsive');
+    this.trackUnresponsiveState(
+        this.state === WebUiState.kUnresponsive ?
+            WebClientUnresponsiveState.ALREADY_ON_FROM_WEBVIEW_EVENT :
+            WebClientUnresponsiveState.ENTERED_FROM_WEBVIEW_EVENT);
+    this.setState(WebUiState.kUnresponsive);
   }
 
   trackUnresponsiveState(newState: WebClientUnresponsiveState): void {
-    if (!this.kEnableUnresponsiveMetrics) {
+    if (!kEnableUnresponsiveMetrics) {
       return;
     }
 
@@ -189,7 +231,46 @@ export class GlicAppController implements ApiHostEmbedder {
         WebClientUnresponsiveState.MAX_VALUE + 1);
   }
 
-  private setWebUiState(newState: WebUiState): void {
+  webviewError(reason: string): void {
+    console.warn(`webview exit. reason: ${reason}`);
+    this.setState(WebUiState.kError);
+  }
+
+  webviewPageCommit(type: PageType) {
+    switch (type) {
+      case 'login':
+        this.lastWidth = 400;
+        this.lastHeight = 800;
+        this.cancelTimeout();
+        $.guestPanel.classList.toggle('show-header', true);
+        this.showPanel('guestPanel');
+        break;
+      case 'guestError':
+      case 'guestCaaError':
+        this.setState(WebUiState.kGuestError);
+        break;
+      case 'regular':
+        $.guestPanel.classList.toggle('show-header', false);
+        if (this.state === WebUiState.kReady ||
+            this.state === WebUiState.kGuestError) {
+          this.setState(WebUiState.kBeginLoad);
+        }
+        break;
+      case 'loadError':
+        this.setState(WebUiState.kError);
+        break;
+      default:
+        assertNotReachedCase(type);
+    }
+  }
+
+  webviewDeniedByAdmin() {
+    $.disabledByAdminPanel.classList.toggle(
+        'show-disabled-by-admin-link', true);
+    this.setState(WebUiState.kDisabledByAdmin);
+  }
+
+  private setState(newState: WebUiState): void {
     if (this.state === newState) {
       return;
     }
@@ -210,31 +291,19 @@ export class GlicAppController implements ApiHostEmbedder {
   readonly states: Map<WebUiState, StateDescriptor> = new Map([
     [
       WebUiState.kBeginLoad,
-      {
-        onEnter: this.beginLoad,
-        onExit: this.cancelTimeout,
-      },
+      {onEnter: this.beginLoad, onExit: this.cancelTimeout},
     ],
     [
       WebUiState.kShowLoading,
-      {
-        onEnter: this.showLoading,
-        onExit: this.cancelTimeout,
-      },
+      {onEnter: this.showLoading, onExit: this.cancelTimeout},
     ],
     [
       WebUiState.kHoldLoading,
-      {
-        onEnter: this.holdLoading,
-        onExit: this.cancelTimeout,
-      },
+      {onEnter: this.holdLoading, onExit: this.cancelTimeout},
     ],
     [
       WebUiState.kFinishLoading,
-      {
-        onEnter: this.finishLoading,
-        onExit: this.cancelTimeout,
-      },
+      {onEnter: this.finishLoading, onExit: this.cancelTimeout},
     ],
     [
       WebUiState.kError,
@@ -242,6 +311,7 @@ export class GlicAppController implements ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
+              this.destroyWebview();
               this.showPanel('errorPanel');
             },
       },
@@ -250,6 +320,7 @@ export class GlicAppController implements ApiHostEmbedder {
       WebUiState.kOffline,
       {
         onEnter: () => {
+          this.destroyWebview();
           this.showPanel('offlinePanel');
         },
       },
@@ -260,6 +331,7 @@ export class GlicAppController implements ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
+              this.destroyWebview();
               this.showPanel('unavailablePanel');
             },
       },
@@ -270,6 +342,7 @@ export class GlicAppController implements ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
+              this.destroyWebview();
               this.showPanel('disabledByAdminPanel');
             },
       },
@@ -278,6 +351,7 @@ export class GlicAppController implements ApiHostEmbedder {
       WebUiState.kReady,
       {
         onEnter: () => {
+          this.trackLoadingStageEnd();
           $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
         },
@@ -304,6 +378,7 @@ export class GlicAppController implements ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
+              this.destroyWebview();
               this.showPanel('signInPanel');
             },
       },
@@ -333,91 +408,107 @@ export class GlicAppController implements ApiHostEmbedder {
   private beginLoad(): void {
     // Wait a moment before showing the loading panel.
     this.loadingTimer = setTimeout(() => {
-      this.setWebUiState(WebUiState.kShowLoading);
-    }, this.kPreHoldLoadingTimeMs);
+      this.setState(WebUiState.kShowLoading);
+    }, kPreHoldLoadingTimeMs);
+
+    this.load();
   }
 
+  private trackLoadingStageStart(newStage: LoadingStage) {
+    this.loadingStage = newStage;
+    this.loadingStageStartTimestampMs = performance.now();
+  }
 
-  private webviewLoadStateChanged(state: GlicWebviewLoadState) {
-    switch (state.status) {
-      case GlicWebviewLoadStatus.NOT_LOADED:
-        this.setWebUiState(WebUiState.kError);
-        break;
-      case GlicWebviewLoadStatus.LOADING:
-        this.setWebUiState(WebUiState.kBeginLoad);
-        break;
-      case GlicWebviewLoadStatus.RESPONSIVE:
-        $.guestPanel.classList.toggle('show-header', false);
-        switch (this.state) {
-          case WebUiState.kBeginLoad:
-          case WebUiState.kShowLoading:
-          case WebUiState.kHoldLoading:
-            // We wait until webClientReady() to transition to kReady.
-            break;
-          default:
-            this.setWebUiState(WebUiState.kReady);
-        }
-        break;
-      case GlicWebviewLoadStatus.UNRESPONSIVE:
-        console.warn('webview unresponsive');
-        this.trackUnresponsiveState(
-            this.state === WebUiState.kUnresponsive ?
-                WebClientUnresponsiveState.ALREADY_ON_FROM_WEBVIEW_EVENT :
-                WebClientUnresponsiveState.ENTERED_FROM_WEBVIEW_EVENT);
-        this.setWebUiState(WebUiState.kUnresponsive);
-        break;
-      case GlicWebviewLoadStatus.AT_LOGIN_PAGE:
-        this.lastWidth = 400;
-        this.lastHeight = 800;
-        this.cancelTimeout();
-        $.guestPanel.classList.toggle('show-header', true);
-        this.showPanel('guestPanel');
-        break;
-      case GlicWebviewLoadStatus.AT_GUEST_ERROR_PAGE:
-        this.setWebUiState(WebUiState.kGuestError);
-        break;
-      case GlicWebviewLoadStatus.ERROR:
-        const reason = state.errorReason!;
-        this.guestResizeEnabled = false;
-        switch (reason) {
-          case GlicWebviewLoadErrorReason.UNKNOWN:
-          case GlicWebviewLoadErrorReason.BLOCKED_BY_SYNC_ERROR:
-          case GlicWebviewLoadErrorReason.LOGIN_PAGE_REACHED:
-          case GlicWebviewLoadErrorReason.PAGE_LOAD_ERROR:
-            this.setWebUiState(WebUiState.kError);
-            break;
-          case GlicWebviewLoadErrorReason.BLOCKED_BY_NEED_SIGN_IN:
-            this.setWebUiState(WebUiState.kSignIn);
-            break;
-          case GlicWebviewLoadErrorReason.PROFILE_INELIGIBLE:
-            this.setWebUiState(WebUiState.kUnavailable);
-            break;
-          case GlicWebviewLoadErrorReason.DISABLED_BY_ADMIN:
-            $.disabledByAdminPanel.classList.toggle(
-                'show-disabled-by-admin-link', true);
-            this.setWebUiState(WebUiState.kDisabledByAdmin);
-            break;
-          case GlicWebviewLoadErrorReason.NOT_ONLINE:
-            this.setWebUiState(WebUiState.kOffline);
-            break;
-          default:
-            assertNotReachedCase(reason);
-        }
+  private trackLoadingStageEnd() {
+    if (this.loadingStage === LoadingStage.NOT_LOADING) {
+      return;
+    }
+
+    chrome.metricsPrivate.recordMediumTime(
+        'Glic.Host.LoadingStageDuration.' +
+            LoadingStage[this.getLoadingStage()],
+        Math.floor(performance.now() - this.loadingStageStartTimestampMs!));
+    this.loadingStage = LoadingStage.NOT_LOADING;
+  }
+
+  private getLoadingStage(): LoadingStage {
+    if (this.loadingStage === LoadingStage.LOADING_WEB_CLIENT &&
+        this.webview?.waitingOnPanelWillOpen()) {
+      return LoadingStage.AWAITING_NOTIFY_PANEL_WILL_OPEN;
+    }
+    return this.loadingStage;
+  }
+
+  private async load(): Promise<void> {
+    // profileReadyState isn't available right away. Wait until it's ready.
+    this.trackLoadingStageStart(LoadingStage.AWAITING_PROFILE_READY);
+    await this.profileReadyInitialState.promise;
+    this.trackLoadingStageEnd();
+
+    const readyState = this.profileReadyState;
+    assert(readyState !== undefined);
+    switch (readyState) {
+      case ProfileReadyState.kIneligible:
+      case ProfileReadyState.kUnknownError:
+        this.setState(WebUiState.kUnavailable);
+        return;
+      case ProfileReadyState.kDisabledByAdmin:
+        $.disabledByAdminPanel.classList.toggle(
+            'show-disabled-by-admin-link', false);
+        this.setState(WebUiState.kDisabledByAdmin);
+        return;
+      case ProfileReadyState.kSignInRequired:
+        this.setState(WebUiState.kSignIn);
+        return;
+      case ProfileReadyState.kReady:
         break;
       default:
-        assertNotReachedCase(state.status);
+        assertNotReachedCase(readyState);
     }
+
+    // Blocking on cookie syncing here introduces latency, we should consider
+    // ways to avoid it.
+    this.trackLoadingStageStart(LoadingStage.AWAITING_COOKIE_SYNC);
+    const {result} = this.browserProxy.glicPreloadHandler ?
+        await this.browserProxy.glicPreloadHandler.prepareForClient() :
+        await this.browserProxy.pageHandler.prepareForClient();
+    this.trackLoadingStageEnd();
+
+    switch (result) {
+      case PrepareForClientResult.kSuccess:
+        break;
+      case PrepareForClientResult.kErrorResyncingCookies:
+        console.warn('prepareForClient in beginLoad() failed.');
+        this.setState(WebUiState.kError);
+        return;
+      case PrepareForClientResult.kRequiresSignIn:
+        this.setState(WebUiState.kSignIn);
+        return;
+      default:
+        assertNotReachedCase(result);
+    }
+
+    // Load the web client only after cookie sync is complete.
+    this.trackLoadingStageStart(LoadingStage.LOADING_WEB_CLIENT);
+    this.destroyWebview();
+    this.webview = new WebviewController(
+        $.webviewContainer, this.browserProxy, this, this,
+        this.webviewPersistentState);
+    this.webview.getWebClientState().subscribe(
+        this.webClientStateChanged.bind(this));
+
+    // Browser is expected to call client's notifyPanelWillOpen(), and then we
+    // expect a call to webClientReady() when that finishes.
   }
 
   private showLoading(): void {
     this.showPanel('loadingPanel');
     // After kMinHoldLoadingTimeMs, transition to finish-loading or ready. Note
     // that we do not transition from show-loading to ready before the timeout.
-    this.earliestLoadingDismissTime =
-        performance.now() + this.kMinHoldLoadingTimeMs;
+    this.earliestLoadingDismissTime = performance.now() + kMinHoldLoadingTimeMs;
     this.loadingTimer = setTimeout(() => {
-      this.setWebUiState(WebUiState.kFinishLoading);
-    }, this.kMinHoldLoadingTimeMs);
+      this.setState(WebUiState.kFinishLoading);
+    }, kMinHoldLoadingTimeMs);
   }
 
   private holdLoading(): void {
@@ -425,7 +516,7 @@ export class GlicAppController implements ApiHostEmbedder {
     // `kMinHoldLoadingTimeMs` before showing it, to allow the loading animation
     // to complete once.
     this.loadingTimer = setTimeout(() => {
-      this.setWebUiState(WebUiState.kReady);
+      this.setState(WebUiState.kReady);
     }, Math.max(0, this.earliestLoadingDismissTime! - performance.now()));
   }
 
@@ -435,18 +526,26 @@ export class GlicAppController implements ApiHostEmbedder {
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
       if (!loadTimeData.getBoolean('glicWebContentsWarming') &&
-          this.webviewLoader.waitingOnPanelWillOpen()) {
+          this.webview?.waitingOnPanelWillOpen()) {
         console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
-        this.setWebUiState(WebUiState.kError);
+        this.setState(WebUiState.kError);
       } else if (
-          this.webviewLoader.currentStatus() ===
-          GlicWebviewLoadStatus.RESPONSIVE) {
-        // Normally, webClientReady() would transition to kReady. This is
-        // a fallback which is used when prewarming, as the webUI isn't shown
-        // yet.
-        this.setWebUiState(WebUiState.kReady);
+          this.webview?.getWebClientState().getCurrentValue() ===
+          WebClientState.RESPONSIVE) {
+        this.setState(WebUiState.kReady);
+      } else {
+        console.warn('Exceeded timeout waiting for client to load');
+        this.setState(WebUiState.kError);
       }
-    }, this.kMaxWaitTimeMs - this.kMinHoldLoadingTimeMs);
+
+      if (this.state !== WebUiState.kReady) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Glic.Host.LoadingTimedOut', this.getLoadingStage(),
+            LoadingStage.MAX_VALUE + 1);
+        this.webview?.onLoadTimeOut();
+      }
+      this.trackLoadingStageEnd();
+    }, kMaxWaitTimeMs - kMinHoldLoadingTimeMs);
   }
 
   // Show one webUI panel and hide the others. The widget is resized to fit the
@@ -479,6 +578,37 @@ export class GlicAppController implements ApiHostEmbedder {
             height: this.defaultHeight,
           },
           transitionDuration);
+    }
+  }
+
+  // Destroy the current webview if it exists. This is necessary because
+  // webview does not support unloading content by setting src=""
+  private destroyWebview(): void {
+    if (!this.webview) {
+      return;
+    }
+    this.webview.destroy();
+    this.webview = undefined;
+  }
+
+  private online(): void {
+    if (this.simulateNoConnection) {
+      return;
+    }
+    if (this.state !== WebUiState.kOffline) {
+      return;
+    }
+    this.setState(WebUiState.kBeginLoad);
+  }
+
+  private offline(): void {
+    const allowedStates = [
+      WebUiState.kBeginLoad,
+      WebUiState.kShowLoading,
+      WebUiState.kFinishLoading,
+    ];
+    if (allowedStates.includes(this.state!)) {
+      this.setState(WebUiState.kOffline);
     }
   }
 
@@ -515,9 +645,42 @@ export class GlicAppController implements ApiHostEmbedder {
   webClientReady(): void {
     if (this.state === WebUiState.kBeginLoad ||
         this.state === WebUiState.kFinishLoading) {
-      this.setWebUiState(WebUiState.kReady);
+      this.trackLoadingStageEnd();
+      this.setState(WebUiState.kReady);
     } else if (this.state === WebUiState.kShowLoading) {
-      this.setWebUiState(WebUiState.kHoldLoading);
+      this.setState(WebUiState.kHoldLoading);
+    }
+  }
+
+  webClientStateChanged(state: WebClientState): void {
+    switch (state) {
+      case WebClientState.RESPONSIVE:
+        // If we're still in a loading state, let it transition naturally
+        // through the loading process.
+        switch (this.state) {
+          case WebUiState.kBeginLoad:
+          case WebUiState.kShowLoading:
+          case WebUiState.kHoldLoading:
+            return;
+          default:
+            this.setState(WebUiState.kReady);
+        }
+        break;
+      case WebClientState.UNRESPONSIVE:
+        this.trackUnresponsiveState(
+            this.state === WebUiState.kUnresponsive ?
+                WebClientUnresponsiveState.ALREADY_ON_FROM_CUSTOM_HEARTBEAT :
+                WebClientUnresponsiveState.ENTERED_FROM_CUSTOM_HEARTBEAT);
+        this.setState(WebUiState.kUnresponsive);
+        break;
+      case WebClientState.ERROR:
+        this.guestResizeEnabled = false;
+        this.setState(WebUiState.kError);
+        break;
+      case WebClientState.UNINITIALIZED:
+        break;
+      default:
+        assertNotReachedCase(state);
     }
   }
 
@@ -527,7 +690,7 @@ export class GlicAppController implements ApiHostEmbedder {
   showDebug(): void {
     this.lastWidth = 400;
     this.lastHeight = 800;
-    this.setWebUiState(WebUiState.kReady);
+    this.setState(WebUiState.kReady);
     $.guestPanel.classList.toggle('show-header', true);
     $.guestPanel.classList.toggle('debug', true);
   }
@@ -538,7 +701,7 @@ export class GlicAppController implements ApiHostEmbedder {
     if (this.state === WebUiState.kReady &&
         $.guestPanel.classList.contains('debug')) {
       $.guestPanel.classList.toggle('debug', false);
-      this.setWebUiState(WebUiState.kError);
+      this.setState(WebUiState.kError);
     } else if (this.state === WebUiState.kReady) {
       this.browserProxy.pageHandler.closePanel();
     } else {
@@ -553,8 +716,9 @@ export class GlicAppController implements ApiHostEmbedder {
 
   // Called when the reload button is clicked.
   reload(): void {
-    this.webviewLoader.reload();
+    this.destroyWebview();
     // TODO: Allow the timeout on this load to be longer than the initial load.
+    this.setState(WebUiState.kBeginLoad);
   }
 
   private openProfilePicker(): void {
@@ -588,10 +752,47 @@ export class GlicAppController implements ApiHostEmbedder {
   }
 
   setProfileReadyState(state: ProfileReadyState) {
-    this.webviewLoader.setProfileReadyState(state);
+    if (this.profileReadyState === state) {
+      return;
+    }
+    const initialCall = this.profileReadyState === undefined;
+    this.profileReadyState = state;
+
+    if (initialCall) {
+      // The initial state is handled in `beginLoad()`.
+      this.profileReadyInitialState.resolve();
+    } else {
+      switch (this.profileReadyState) {
+        case ProfileReadyState.kUnknownError:
+        case ProfileReadyState.kIneligible:
+          this.setState(WebUiState.kUnavailable);
+          break;
+        case ProfileReadyState.kDisabledByAdmin:
+          $.disabledByAdminPanel.classList.toggle(
+              'show-disabled-by-admin-link', false);
+          this.setState(WebUiState.kDisabledByAdmin);
+          break;
+        case ProfileReadyState.kSignInRequired:
+          this.setState(WebUiState.kSignIn);
+          break;
+        case ProfileReadyState.kReady:
+          if (this.stateDescriptor()?.reloadOnOpen) {
+            this.setState(WebUiState.kBeginLoad);
+          }
+          break;
+        default:
+          assertNotReachedCase(this.profileReadyState);
+      }
+    }
   }
 
   openDisabledByAdminLink(): void {
     this.browserProxy.pageHandler.openDisabledByAdminLinkAndClosePanel();
+  }
+
+  isOnline() {
+    return loadTimeData.getBoolean('ignoreOfflineState') ?
+        true :
+        navigator.onLine && !this.simulateNoConnection;
   }
 }
