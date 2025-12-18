@@ -183,15 +183,6 @@
 
   itemFactory.accessibilityDelegate = self.tableViewController;
 
-  // Add the "Done" button and hook it up to `stop`.
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(dismissButtonTapped)];
-  [dismissButton
-      setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
-  self.tableViewController.navigationItem.rightBarButtonItem = dismissButton;
-
   // Present RecentTabsNavigationController.
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
@@ -242,11 +233,6 @@
 
   [super start];
   self.started = YES;
-}
-
-- (void)dismissButtonTapped {
-  base::RecordAction(base::UserMetricsAction("MobileReadingListClose"));
-  [_delegate closeReadingList];
 }
 
 - (void)stop {

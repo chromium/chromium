@@ -5539,11 +5539,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READING_LIST_DELETE_BUTTON" desc="Label of the button to delete the reading list entries [Length: 25em]" meaning="Delete the selected entries. [Length: 25em]">
         Delete
       </message>
+      <message name="IDS_IOS_READING_LIST_DESELECT_ALL_BUTTON" desc="Label of the button to deselect all the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Deselect all of the reading list entries. [Length: 20em]">
+        Deselect All
+      </message>
       <message name="IDS_IOS_READING_LIST_DONE_BUTTON" desc="Label of the button to dismiss reading list dialog">
         Done
-      </message>
-      <message name="IDS_IOS_READING_LIST_EDIT_BUTTON" desc="Label of the button to edit the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
-        Edit
       </message>
       <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL">
         <ph name="TITLE"><ex>Chromium - The Chromium projects</ex>$1</ph>, <ph name="STATE"><ex>available offline</ex>$2</ph>, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>
@@ -5589,6 +5589,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_READING_LIST_READ_HEADER" desc="Heading. Appears above a list of articles the user has already read, in their Reading List. Appears on the same page as an 'Unread' heading, which contains articles the user hasn't read yet. In English, 'Read' can be both verb and adjective so we needed to be more explicit. Does not need to be translated literally. [Length: 40em]" meaning="The entries below this header are read. [Length: 40em]">
         Pages you've read
+      </message>
+      <message name="IDS_IOS_READING_LIST_SELECT_ALL_BUTTON" desc="Label of the button to select all the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Select all of the reading list entries. [Length: 20em]">
+        Select All
+      </message>
+      <message name="IDS_IOS_READING_LIST_SELECT_BUTTON" desc="Label of the button to select the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
+        Select
       </message>
       <message name="IDS_IOS_READING_LIST_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the selected page has been added to the reading list. [Length: 35em]" meaning="The selected page has been added to your reading list. [Length: 35em]">
         Added to Reading List

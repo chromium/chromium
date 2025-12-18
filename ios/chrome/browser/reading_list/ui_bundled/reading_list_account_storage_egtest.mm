@@ -117,7 +117,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   if (!error) {
     [[EarlGrey
         selectElementWithMatcher:grey_accessibilityID(
-                                     kTableViewNavigationDismissButtonId)]
+                                     kReadingListNavigationBarCloseButtonID)]
         performAction:grey_tap()];
   }
 
@@ -442,8 +442,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_notNil()];
   // Close the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReadingListNavigationBarCloseButtonID)]
       performAction:grey_tap()];
   // Add Page 2 to the Reading List and verify that the snackbar containing the
   // user's email and an undo button appears.
@@ -481,8 +482,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReadingListNavigationBarCloseButtonID)]
       performAction:grey_tap()];
   // Add Page 1 to the Reading List.
   AddURLToReadingListWithoutSnackbarDismiss(self.testServer->GetURL(kPage1URL));
@@ -519,8 +521,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReadingListNavigationBarCloseButtonID)]
       performAction:grey_tap()];
   // Add Page 2 to the Reading List.
   AddURLToReadingListWithSnackbarDismiss(self.testServer->GetURL(kPage2URL),
@@ -559,8 +562,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReadingListNavigationBarCloseButtonID)]
       performAction:grey_tap()];
   // Add pages to the Reading List and dismiss the snackbars.
   AddURLToReadingListWithSnackbarDismiss(self.testServer->GetURL(kPage1URL),
@@ -619,8 +623,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
   // Close the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReadingListNavigationBarCloseButtonID)]
       performAction:grey_tap()];
   // Add pages to the Reading List and dismiss the snackbars.
   AddURLToReadingListWithSnackbarDismiss(self.testServer->GetURL(kPage1URL),

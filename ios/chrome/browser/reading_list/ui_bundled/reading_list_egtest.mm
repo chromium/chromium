@@ -134,6 +134,16 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Asserts the `button_id` navigation bar button is not visible.
+void AssertNavigationBarButtonNotVisibleWithID(NSString* button_id) {
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"UINavigationBar")),
+                                          nil)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Asserts the `button_id` toolbar button is not visible.
 void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
   [[EarlGrey
@@ -142,6 +152,15 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
                                               @"UIToolbar")),
                                           nil)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Assert the `button_id` button is visible.
+void AssertNavigationBarButtonVisibleWithID(NSString* button_id) {
+  id<GREYMatcher> buttonMatcher =
+      grey_allOf(grey_accessibilityID(button_id),
+                 grey_ancestor(grey_kindOfClassName(@"UINavigationBar")), nil);
+  [[EarlGrey selectElementWithMatcher:buttonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Assert the `button_id` toolbar button is visible.
@@ -263,7 +282,7 @@ void AddLotOfEntriesAndEnterEdit() {
   }
   OpenTestReadingList();
 
-  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
 }
 
 // Adds 2 read and 2 unread entries to the model, opens the reading list menu.
@@ -294,7 +313,7 @@ void AddEntriesAndOpenReadingList() {
 
 void AddEntriesAndEnterEdit() {
   AddEntriesAndOpenReadingList();
-  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
 }
 
 // Adds the current page to the Reading List.
@@ -506,7 +525,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AddEntriesAndEnterEdit();
   // In edit mode.
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
-  TapToolbarButtonWithID(kReadingListToolbarCancelButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarExitEditButtonID);
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
@@ -779,7 +798,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertIsShowingDistillablePage(false, distillableURL);
 }
 
-// Tests that only the "Edit" button is showing when not editing.
+// Tests that only the "Select" and "Close" button are showing when not editing.
 - (void)testVisibleButtonsNonEditingMode {
   GREYAssertNil(
       [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
@@ -791,43 +810,57 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarMarkButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarCancelButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarCloseButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
 }
 
-// Tests that only the "Cancel", "Delete All Read" and "Mark All…" buttons are
-// showing when not editing.
+// Tests that only the "Cancel", "Delete All Read", "Select All" and "Mark All…"
+// buttons are showing when editing.
 - (void)testVisibleButtonsEditingModeEmptySelection {
-// TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarCloseButtonID);
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
 }
 
-// Tests that only the "Cancel", "Delete" and "Mark Unread" buttons are showing
-// when not editing.
+// Tests that only the "Cancel", "Delete", "Select All" and "Mark Unread"
+// buttons are showing when editing.
 - (void)testVisibleButtonsOnlyReadEntrySelected {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarCloseButtonID);
+
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_UNREAD_BUTTON);
 }
 
-// Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
-// after delete (using swipe).
+// Tests that the "Cancel", "Select", "Select All" and "Mark Unread" buttons are
+// not visible after delete (using swipe).
 - (void)testVisibleButtonsAfterSwipeDeletion {
   AddEntriesAndOpenReadingList();
 
@@ -860,34 +893,87 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarMarkButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarCancelButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
 }
 
-// Tests that only the "Cancel", "Delete" and "Mark Read" buttons are showing
-// when not editing.
+// Tests that only the "Cancel", "Delete", "Select All" and "Mark Read" buttons
+// are showing when editing.
 - (void)testVisibleButtonsOnlyUnreadEntrySelected {
   AddEntriesAndEnterEdit();
   TapEntry(kUnreadTitle);
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_READ_BUTTON);
 }
 
-// Tests that only the "Cancel", "Delete" and "Mark…" buttons are showing when
-// not editing.
+// Tests that only the "Cancel", "Delete", "Select All" and "Mark…" buttons are
+// showing when editing.
 - (void)testVisibleButtonsMixedEntriesSelected {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_BUTTON);
+}
+
+// Tests that only the "Cancel", "Delete", "Deselect All" and "Mark…" buttons
+// are showing when editing and selecting all entries.
+- (void)testVisibleButtonsAllEntriesSelected {
+  AddEntriesAndEnterEdit();
+  TapEntry(kReadTitle);
+  TapEntry(kReadTitle2);
+  TapEntry(kUnreadTitle);
+  TapEntry(kUnreadTitle2);
+
+  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
+  AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarDeselectAllButtonID);
+  AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_BUTTON);
+}
+
+// Tests that only the "Cancel", "Delete", "Select All" and "Mark…" buttons are
+// showing when editing and deselecting all.
+- (void)testVisibleButtonsDeselectAll {
+  AddEntriesAndEnterEdit();
+  TapEntry(kReadTitle);
+  TapEntry(kReadTitle2);
+  TapEntry(kUnreadTitle);
+  TapEntry(kUnreadTitle2);
+
+  TapToolbarButtonWithID(kReadingListNavigationBarDeselectAllButtonID);
+
+  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
+  AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectAllButtonID);
+  AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
 }
 
 // Tests the deletion of selected entries.
@@ -905,15 +991,19 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
 
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarMarkButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
-  AssertToolbarButtonNotVisibleWithID(kReadingListToolbarCancelButtonID);
-  AssertToolbarButtonVisibleWithID(kReadingListToolbarEditButtonID);
+  AssertNavigationBarButtonNotVisibleWithID(
+      kReadingListNavigationBarExitEditButtonID);
+  AssertNavigationBarButtonVisibleWithID(
+      kReadingListNavigationBarSelectButtonID);
 
   AssertEntryVisible(kReadTitle);
   AssertEntryNotVisible(kReadTitle2);
@@ -926,7 +1016,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   kNumberUnreadEntries,
                   @"Wrong number of unread entry after delete.");
 
-  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
   TapEntry(kReadTitle);
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
   [[EarlGrey
@@ -936,7 +1026,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                        @"_UITableViewHeaderFooterContentView")),
                                    nil)] assertWithMatcher:grey_nil()];
 
-  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
   TapEntry(kUnreadTitle);
   TapEntry(kUnreadTitle2);
   TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
@@ -972,14 +1062,34 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   @"Wrong number of unread entries.");
 }
 
+// Tests the "Select All" button and deletion of all entries.
+- (void)testSelectAllAndDeleteEntries {
+  AddEntriesAndEnterEdit();
+
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectAllButtonID);
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReadingListToolbarDeleteAllReadButtonID)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(kReadingListToolbarDeleteButtonID)];
+
+  TapToolbarButtonWithID(kReadingListToolbarDeleteButtonID);
+
+  AssertEntryNotVisible(kReadTitle);
+  AssertEntryNotVisible(kReadTitle2);
+  AssertHeaderNotVisible(kReadHeader);
+  AssertEntryNotVisible(kUnreadTitle);
+  AssertEntryNotVisible(kUnreadTitle2);
+  AssertHeaderNotVisible(kUnreadHeader);
+  GREYAssertEqual(0l, [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of unread entry.");
+  GREYAssertEqual(0l, [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries.");
+}
+
 // Marks all unread entries as read.
 - (void)testMarkAllRead {
-// TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -1184,7 +1294,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       assertWithMatcher:grey_nil()];
 
   // Delete them from the Reading List view.
-  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
+  TapToolbarButtonWithID(kReadingListNavigationBarSelectButtonID);
   TapToolbarButtonWithID(kReadingListToolbarDeleteAllReadButtonID);
 
   // Verify the background string is displayed.

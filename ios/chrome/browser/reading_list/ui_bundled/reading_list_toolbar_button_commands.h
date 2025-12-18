@@ -10,14 +10,18 @@
 // Commands sent by reading list toolbar buttons.
 @protocol ReadingListToolbarButtonCommands <NSObject>
 
+// Called when the "Close" button is tapped.
+- (void)dismissButtonTapped;
 // Called when the "Edit" button is tapped.
 - (void)enterReadingListEditMode;
-// Called when the "Cancel" button is tapped.
+// Called when the "Exit Edit" button is tapped.
 - (void)exitReadingListEditMode;
 // Called when the "Delete Read" button is tapped.
 - (void)deleteAllReadReadingListItems;
 // Called when the "Delete" button is tapped.
 - (void)deleteSelectedReadingListItems;
+// Called when the "Deselect All" button is tapped.
+- (void)deselectAllReadingListItems;
 // Called when the "Mark Read" button is tapped.
 - (void)markSelectedReadingListItemsRead;
 // Called when the "Mark Unread" button is tapped.
@@ -30,6 +34,8 @@
 // should confirm whether the items should be marked as read or unread, then
 // perform the disambiguated action.
 - (void)markAllReadingListItemsAfterConfirmation;
+// Called when the "Select All" button is tapped.
+- (void)selectAllReadingListItems;
 
 @end
 
