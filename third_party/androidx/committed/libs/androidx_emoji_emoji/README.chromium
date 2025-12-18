@@ -1,7 +1,7 @@
 Name: Emoji
 Short Name: emoji
-URL: https://androidx.dev/snapshots/builds/14609034/artifacts/repository/androidx/emoji/emoji/1.2.0-SNAPSHOT/emoji-1.2.0-20251217.211107-1.aar
-Version: 1.2.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/emoji/emoji/1.2.0/emoji-1.2.0.aar
+Version: 1.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0, SIL Open Font License, Version 1.1, Unicode, Inc. License
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Core library to enable emoji compatibility in Kitkat and newer devices to avoid the empty emoji characters.
 
-See also: https://developer.android.com/jetpack/androidx/releases/emoji#1.2.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/emoji#1.2.0
 
 
 Local Modifications:
