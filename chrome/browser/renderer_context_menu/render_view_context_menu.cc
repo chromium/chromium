@@ -557,7 +557,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
         152},
        {IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE, 153},
        {IDC_CONTENT_CONTEXT_RELOAD_GLIC, 154},
-       {IDC_CONTENT_CONTEXT_CLOSE_GLIC, 155},
+       // Removed:
+       // {IDC_CONTENT_CONTEXT_CLOSE_GLIC, 155},
        {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 156},
        {IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 157},
        {IDC_CONTENT_CONTEXT_ARCHIVE_GLIC, 158},
@@ -886,8 +887,6 @@ void RenderViewContextMenu::AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kExitFullscreenMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kComposeMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
-                                      kGlicCloseMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicReloadMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
@@ -2431,11 +2430,6 @@ void RenderViewContextMenu::AppendGlicItems() {
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
             .value(),
         kGlicReloadMenuItem);
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
-                                    IDS_CONTENT_CONTEXT_CLOSE_GLIC);
-    menu_model_.SetElementIdentifierAt(
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC).value(),
-        kGlicCloseMenuItem);
     if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
       // Archive  Glic conversation.
@@ -3157,7 +3151,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return navigation_allowed;
 
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
-    case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
     case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:
       return true;
 
@@ -3427,24 +3420,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           glic_service->Reload(GetRenderFrameHost());
-        }
-      }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-      break;
-
-    case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
-#if BUILDFLAG(ENABLE_GLIC)
-      if (glic::GlicEnabling::IsEnabledByFlags()) {
-        auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
-        if (glic_service) {
-          // TODO(crbug.com/454112198): Clean up after multi-instance launches.
-          if (glic::GlicEnabling::IsMultiInstanceEnabled()) {
-            if (auto* rfh = GetRenderFrameHost()) {
-              glic_service->Close(rfh->GetOutermostMainFrame());
-            }
-          } else {
-            glic_service->CloseAndShutdown();
-          }
         }
       }
 #endif  // BUILDFLAG(ENABLE_GLIC)
