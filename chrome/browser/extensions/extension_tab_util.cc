@@ -94,9 +94,9 @@ namespace extensions {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
 
 // This enum is used for counting schemes used via a navigation triggered by
@@ -123,7 +123,7 @@ WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
   return BrowserExtensionWindowController::From(browser);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 BrowserWindowInterface* CreateBrowser(Profile* profile, bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -138,13 +138,13 @@ BrowserWindowInterface* CreateBrowser(Profile* profile, bool user_gesture) {
   return CreateBrowserWindow(std::move(params));
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Use this function for reporting a tab id to an extension. It will
 // take care of setting the id to TAB_ID_NONE if necessary (for
 // example with devtools).
 int GetTabIdForExtensions(const WebContents* web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // TODO(https://crbug.com/430344931): Port this logic.
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && !ExtensionTabUtil::BrowserSupportsTabs(browser)) {
@@ -601,7 +601,7 @@ bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
   return true;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
                                         TabStripModel** tab_strip_model,
@@ -627,7 +627,7 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
 
   return found;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 content::WebContents* ExtensionTabUtil::GetActiveTab(
     BrowserWindowInterface* browser) {
@@ -795,7 +795,7 @@ int ExtensionTabUtil::GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
   return -1;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::GetGroupById(
     int group_id,
@@ -859,7 +859,7 @@ bool ExtensionTabUtil::GetGroupById(
 
   return false;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tab_groups::TabGroup ExtensionTabUtil::CreateTabGroupObject(
@@ -909,7 +909,7 @@ bool ExtensionTabUtil::GetSharedStateOfGroup(const tab_groups::TabGroupId& id) {
   return saved_group->is_shared_tab_group();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
@@ -927,7 +927,7 @@ std::optional<api::tab_groups::TabGroup> ExtensionTabUtil::CreateTabGroupObject(
 
   return CreateTabGroupObject(id, *visual_data);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tab_groups::Color ExtensionTabUtil::ColorIdToColor(
@@ -1181,7 +1181,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   return url;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ExtensionTabUtil::CreateTab(
     std::unique_ptr<WebContents> web_contents,
     const std::string& extension_id,
@@ -1221,12 +1221,12 @@ void ExtensionTabUtil::CreateTab(
     browser->GetWindow()->Close();
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 void ExtensionTabUtil::ForEachTab(
     base::RepeatingCallback<void(WebContents*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   tabs::ForEachTabInterface([&callback](tabs::TabInterface* tab) {
     callback.Run(tab->GetContents());
     return true;
@@ -1284,7 +1284,7 @@ WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::OpenOptionsPageFromAPI(
     const Extension* extension,
@@ -1304,7 +1304,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromAPI(
     return false;
   return extensions::ExtensionTabUtil::OpenOptionsPage(extension, browser);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
@@ -1318,12 +1318,12 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
                                                                open_in_tab);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::BrowserSupportsTabs(BrowserWindowInterface* browser) {
   return browser && browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {
@@ -1367,13 +1367,13 @@ TabListInterface* ExtensionTabUtil::GetEditableTabList(
   return TabListInterface::From(&browser);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 TabStripModel* ExtensionTabUtil::GetEditableTabStripModel(Browser* browser) {
   if (!IsTabStripEditable())
     return nullptr;
   return browser->tab_strip_model();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
