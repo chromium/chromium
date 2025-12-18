@@ -13587,6 +13587,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kArabicIndicDigitInput)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-swipe-to-switch-pane",
+     flag_descriptions::kEnableSwipeToSwitchPaneName,
+     flag_descriptions::kEnableSwipeToSwitchPaneDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableSwipeToSwitchPane)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

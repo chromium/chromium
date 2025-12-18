@@ -5343,6 +5343,12 @@ inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesName[] =
 inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =
     "Enables handling escape events on secondary activities and native pages.";
 
+inline constexpr char kEnableSwipeToSwitchPaneName[] =
+    "Enable Swipe To Switch Pane";
+inline constexpr char kEnableSwipeToSwitchPaneDescription[] =
+    "Enables the capability to glide through pane switcher using swipes in the "
+    "Hub.";
+
 inline constexpr char kExternalNavigationDebugLogsName[] =
     "External Navigation Debug Logs";
 inline constexpr char kExternalNavigationDebugLogsDescription[] =

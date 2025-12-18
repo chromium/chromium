@@ -4448,6 +4448,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-swipe-to-switch-pane",
+    "owners": ["madhavpruthi@google.com", "ckitagawa@chromium.org","clank-tab-dev@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-system-notifications",
     "owners": [ "peter@chromium.org", "finnur@chromium.org" ],
     "expiry_milestone": 120

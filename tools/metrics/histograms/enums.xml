@@ -10321,6 +10321,7 @@ from previous Chrome versions.
   <int value="-1414399047" label="BlockCrossPartitionBlobUrlFetching:enabled"/>
   <int value="-1414207639" label="RequestDesktopSiteDefaultsLogging:enabled"/>
   <int value="-1413102021" label="DisableInstanceLimit:disabled"/>
+  <int value="-1413083800" label="EnableSwipeToSwitchPane:enabled"/>
   <int value="-1412920508"
       label="UserDisplayModeSyncStandaloneMitigation:enabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
@@ -18317,6 +18318,7 @@ from previous Chrome versions.
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1374413617" label="WebViewSupervisedUserSiteDetection:disabled"/>
+  <int value="1374893463" label="EnableSwipeToSwitchPane:disabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
   <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
