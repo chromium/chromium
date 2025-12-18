@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
+import android.content.Context;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -26,6 +29,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @NullMarked
 public class IncognitoUtils {
     private static @Nullable Boolean sIsEnabledForTesting;
+    private static @Nullable Boolean sIsTablet;
 
     private IncognitoUtils() {}
 
@@ -75,12 +79,25 @@ public class IncognitoUtils {
      * @return Whether incognito tabs should open in a separate window.
      */
     public static boolean shouldOpenIncognitoAsWindow() {
-        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
-        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        ContextUtils.getApplicationContext())
-                                && !DeviceInfo.isAutomotive())
-                        || DeviceInfo.isDesktop());
+        if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            return false;
+        }
+        // TODO(crbug.com/467768341): Clean up the desktop and tablet form factor check once the bug
+        // is fixed.
+        if (DeviceInfo.isDesktop()) {
+            return true;
+        }
+
+        boolean isTablet;
+        if (sIsTablet != null) {
+            isTablet = sIsTablet;
+        } else {
+            isTablet =
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                    ContextUtils.getApplicationContext())
+                            && !DeviceInfo.isAutomotive();
+        }
+        return isTablet;
     }
 
     /**
@@ -88,6 +105,18 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoThemeOverlayEnabledForTesting() {
         return ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
+    }
+
+    /**
+     * Initialize {@code sIsTablet} status if not already.
+     *
+     * @param context {@link Activity} context used to determine if the display is tablet size.
+     */
+    public static void initializeTabletStatus(Context context) {
+        if (sIsTablet != null || !ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            return;
+        }
+        sIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     @NativeMethods
