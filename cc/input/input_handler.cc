@@ -593,23 +593,28 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
       return;
     }
 
-    // Snap takes priority over overscroll animations.
-    // This allows us to guarantee that snapping has been handled when the
-    // elastic overscroll animation finishes.
-    if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
-      deferred_scroll_ends_.insert(latched_node->element_id);
-      return;
-    }
-
     // Scroll end will be deferred if there is an overscroll animation and the
-    // scrolling node need be snapped.
+    // scrolling node needs to be snapped. This avoids computing snap targets
+    // while the elastic overscroll stretch effect is active (Android applies
+    // the stretch via a non-identity TransformNode scale).
+    //
+    // TODO(crbug.com/470083700): Allow the snap animation to run concurrently
+    // with the elastic overscroll release. Currently, this is deferred to
+    // avoid targeting errors caused by the non-identity stretch transform.
     bool overscroll_snapped_node =
         scroll_elasticity_helper_ &&
         !scroll_elasticity_helper_->StretchAmount(latched_node->element_id)
              .IsZero() &&
         latched_node->snap_container_data.has_value();
     if (overscroll_snapped_node) {
-      DCHECK(!deferred_scroll_ends_.contains(latched_node->element_id));
+      deferred_scroll_ends_.insert(latched_node->element_id);
+      return;
+    }
+
+    // Snap takes priority over completing the scroll end. This allows us to
+    // guarantee that snapping has been handled when the scroll end is
+    // delivered.
+    if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
       deferred_scroll_ends_.insert(latched_node->element_id);
       return;
     }

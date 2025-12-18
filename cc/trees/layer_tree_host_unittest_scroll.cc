@@ -2614,24 +2614,27 @@ class LayerTreeHostScrollTestSnapAfterElasticOverscroll
         EXPECT_POINTF_EQ(initial_scroll_, CurrentScrollOffset(scroll_layer));
         scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
                                                     gfx::Vector2dF(0, -30));
+
         DoGestureScroll(host_impl, impl_thread_scroll_, scroller_element_id_);
         EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         break;
       case 2:
         scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
                                                     gfx::Vector2dF(0, -20));
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         break;
       case 3:
         scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
                                                     gfx::Vector2dF(0, -10));
-        EXPECT_NE(0, CurrentScrollOffset(scroll_layer).y());
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         break;
       case 4:
         scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
                                                     gfx::Vector2dF(0, 0));
-        EXPECT_NE(0, CurrentScrollOffset(scroll_layer).y());
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         scroll_elasticity_helper_->AnimationFinished(inner_viewport_element_id);
         break;
+
       default:
         break;
     }
