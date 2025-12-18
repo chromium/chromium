@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -241,17 +242,13 @@ void AccountsPolicyManager::OnSigninAllowedPrefChanged() {
 void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     Profile* profile,
     signin_metrics::ProfileSignout clear_primary_account_source) {
-  signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount(consent_level)) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
 
   CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(consent_level);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (CanOfferSignin(profile, primary_account.gaia, primary_account.email,
                      /*allow_account_from_other_profile=*/true)
           .IsOk()) {

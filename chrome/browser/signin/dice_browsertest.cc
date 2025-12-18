@@ -2205,15 +2205,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   ASSERT_TRUE(deleted_profiles.empty());
 
   // Sign the profile in.
-  // Using `kSignin` leads to test failure for some reason but should be
-  // addressed under crbug.com/417950948.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(browser()->profile());
-  // TODO(crbug.com/464457988): Mark sync setup as complete by default in the
-  // sign-in helper method.
-  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  SetupSignedInAccounts(signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
 
   // Prohibit sign-in on next start-up.
