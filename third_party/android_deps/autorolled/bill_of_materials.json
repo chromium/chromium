@@ -112,7 +112,7 @@
     {
         "name": "biometric",
         "group": "androidx.biometric",
-        "version": "1.4.0-alpha04"
+        "version": "1.4.0-alpha05"
     },
     {
         "name": "browser",
@@ -212,12 +212,12 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-alpha01"
+        "version": "1.11.0-alpha02"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-alpha01"
+        "version": "1.11.0-alpha02"
     },
     {
         "name": "runtime-retain",
@@ -392,7 +392,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-beta03"
+        "version": "1.6.0-rc01"
     },
     {
         "name": "credentials-play-services-auth",
@@ -417,62 +417,62 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0-alpha03"
     },
     {
         "name": "documentfile",
@@ -502,7 +502,7 @@
     {
         "name": "emoji",
         "group": "androidx.emoji",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0"
     },
     {
         "name": "exifinterface",
@@ -1092,7 +1092,7 @@
     {
         "name": "transition",
         "group": "androidx.transition",
-        "version": "1.7.0-beta01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "tvprovider",
@@ -1362,7 +1362,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha07"
+        "version": "1.14.0-alpha08"
     },
     {
         "name": "core-common",

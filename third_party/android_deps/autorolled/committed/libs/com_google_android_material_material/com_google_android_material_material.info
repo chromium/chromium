@@ -395,6 +395,7 @@ resources = [
   "res/drawable/mtrl_checkbox_button_icon_unchecked_checked.xml",
   "res/drawable/mtrl_checkbox_button_icon_unchecked_indeterminate.xml",
   "res/drawable/mtrl_checkbox_button_unchecked_checked.xml",
+  "res/drawable/mtrl_close_24px.xml",
   "res/drawable/mtrl_dialog_background.xml",
   "res/drawable/mtrl_dropdown_arrow.xml",
   "res/drawable/mtrl_ic_arrow_drop_down.xml",
