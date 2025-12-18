@@ -143,9 +143,12 @@ BASE_FEATURE(kSerialSplitDtrAndRts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kHidReportRequestExactLength, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
 // Controls whether to use the ellipsoidal altitude from Core Location
 // instead of the default altitude attribute.
 BASE_FEATURE(kEllipsoidalAltitude, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
 
 }  // namespace features

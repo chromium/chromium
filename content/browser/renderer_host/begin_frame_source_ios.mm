@@ -67,4 +67,9 @@ void BeginFrameSourceIOS::SetPreferredInterval(base::TimeDelta interval) {
   begin_frame_source_.SetPreferredInterval(interval);
 }
 
+void BeginFrameSourceIOS::NeedsBeginFrameWithId(int64_t display_id,
+                                                bool needs_begin_frames) {
+  // Should do nothing on iOS crbug.com/469887778#comment3.
+}
+
 }  // namespace content
