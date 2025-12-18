@@ -937,8 +937,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   base::RunLoop threat_report_sent_loop;
-  if (expect_threat_details)
+  if (expect_threat_details) {
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  }
 
   // Navigate to a safe page which contains multiple potential DOM details.
   // (Despite the name, kMaliciousPage is not the page flagged as bad in this
@@ -988,8 +989,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   base::RunLoop threat_report_sent_loop;
-  if (expect_threat_details)
+  if (expect_threat_details) {
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  }
 
   // Navigate to a safe page which contains multiple potential DOM details.
   // (Despite the name, kMaliciousPage is not the page flagged as bad in this
@@ -1447,8 +1449,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   base::RunLoop threat_report_sent_loop;
-  if (expect_threat_details)
+  if (expect_threat_details) {
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  }
 
   EnableExtendedReporting(true);
   GURL url = SetupWarningAndNavigate(browser());  // not incognito
@@ -1466,8 +1469,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   base::RunLoop threat_report_sent_loop;
-  if (expect_threat_details)
+  if (expect_threat_details) {
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  }
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   incognito_browser->profile()->GetPrefs()->SetBoolean(
@@ -1489,8 +1493,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   base::RunLoop threat_report_sent_loop;
-  if (expect_threat_details)
+  if (expect_threat_details) {
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  }
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, false);  // set up SBER
@@ -2471,8 +2476,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2567,8 +2572,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(WaitForReady(browser()));
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2603,8 +2608,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Now type something. The interstitial should be shown.
   EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2623,8 +2628,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents()->IsFullscreen());
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2641,8 +2646,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(RequestPermissionAndWaitForInterstitial(browser()));
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2669,8 +2674,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(WaitForReady(browser()));
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2689,8 +2694,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents()->IsFullscreen());
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -2749,8 +2754,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(MouseClickAndWaitForInterstitial(browser()));
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
-  AssertNoInterstitial(browser());         // Assert the interstitial is gone
-  EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
+  AssertNoInterstitial(browser());      // Assert the interstitial is gone
+  EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
