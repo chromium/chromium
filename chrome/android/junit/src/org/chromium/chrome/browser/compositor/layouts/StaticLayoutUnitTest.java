@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.layouts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -124,7 +123,6 @@ public class StaticLayoutUnitTest {
 
     private StaticLayout mStaticLayout;
     private PropertyModel mModel;
-    private boolean mNeedsOffsetTags;
 
     @Before
     public void setUp() {
@@ -160,7 +158,7 @@ public class StaticLayoutUnitTest {
         doReturn(WIDTH).when(mViewHost).getWidth();
         doReturn(HEIGHT).when(mViewHost).getHeight();
         doReturn(mCompositorAnimationHandler).when(mUpdateHost).getAnimationHandler();
-        mNeedsOffsetTags = true;
+
         mStaticLayout =
                 new StaticLayout(
                         mContext,
@@ -174,7 +172,7 @@ public class StaticLayoutUnitTest {
                         mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider,
                         mStaticTabSceneLayer,
-                        () -> mNeedsOffsetTags);
+                        true);
         mModel = mStaticLayout.getModelForTesting();
         mStaticLayout.setIsActive(true);
 
@@ -406,97 +404,5 @@ public class StaticLayoutUnitTest {
                 .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-    }
-
-    @Test
-    public void testContentOffsetTags_True() {
-        mNeedsOffsetTags = true;
-        final int offset = 15;
-        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
-        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
-
-        assertEquals(
-                "Content offset should be applied when mNeedsOffsetTags is true.",
-                offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        assertEquals(
-                "Content offset tag should be updated.",
-                tagsInfo.getContentOffsetTag(),
-                mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-    }
-
-    @Test
-    public void testContentOffsetTags_False() {
-        mNeedsOffsetTags = false;
-        final int offset = 15;
-        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
-        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
-
-        assertEquals(
-                "Content offset should be applied when mNeedsOffsetTags is false.",
-                offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        assertNull(
-                "Content offset tag should not be updated.",
-                mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-    }
-
-    @Test
-    public void testContentOffsetTags_Toggled() {
-        final int offset = 20;
-        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
-        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-
-        // Initially true
-        mNeedsOffsetTags = true;
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
-        assertEquals(
-                "Content offset should be applied when mNeedsOffsetTags is true.",
-                offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        assertEquals(
-                "Content offset tag should be updated.",
-                tagsInfo.getContentOffsetTag(),
-                mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-
-        // Toggle to false
-        mNeedsOffsetTags = false;
-        // Reset the tag to a known value.
-        mModel.set(LayoutTab.CONTENT_OFFSET_TAG, null);
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
-        assertEquals(
-                "Content offset should still be applied even when mNeedsOffsetTags is false.",
-                offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        assertEquals(
-                "Content offset tag should not be updated.",
-                null,
-                mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
-
-        // Toggle back to true
-        mNeedsOffsetTags = true;
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
-        assertEquals(
-                "Content offset should be applied after toggling mNeedsOffsetTags back to true.",
-                offset,
-                (int) mModel.get(LayoutTab.CONTENT_OFFSET));
-        assertEquals(
-                "Content offset tag should be updated.",
-                tagsInfo.getContentOffsetTag(),
-                mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
     }
 }
