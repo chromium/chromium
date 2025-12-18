@@ -54,8 +54,9 @@ class VerticalTabViewTest
  public:
   RootTabCollectionNode* root_node() {
     VerticalTabStripRegionView* region_view =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->vertical_tab_strip_region_view();
+        browser()
+            ->GetBrowserView()
+            .vertical_tab_strip_region_view_for_testing();
     return region_view->root_node_for_testing();
   }
 

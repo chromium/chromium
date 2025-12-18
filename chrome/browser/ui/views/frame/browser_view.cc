@@ -149,6 +149,7 @@
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
@@ -1247,6 +1248,16 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
          !GetIsWebAppType();
 }
 #endif
+
+TabStripRegionView* BrowserView::tab_strip_view() const {
+  if (vertical_tab_strip_container_ &&
+      tabs::VerticalTabStripStateController::From(browser_)
+          ->ShouldDisplayVerticalTabs()) {
+    return vertical_tab_strip_container_.get();
+  }
+
+  return tab_strip_region_view_.get();
+}
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   return tab_search_bubble_host_.get();

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -128,11 +129,7 @@ void VerticalTabDragHandlerImpl::OnMouseReleased(const ui::MouseEvent& event) {
 
 TabDragContext* VerticalTabDragHandlerImpl::GetContextForNewBrowser(
     BrowserView* browser_view) const {
-  auto* tab_strip = browser_view->vertical_tab_strip_region_view();
-  CHECK(tab_strip);
-  auto* controller = tab_strip->GetVerticalTabStripController();
-  CHECK(controller);
-  return controller->GetDragHandler().GetDragContext();
+  return browser_view->tab_strip_view()->GetDragContext();
 }
 
 TabSlotView* VerticalTabDragHandlerImpl::GetTabForContents(

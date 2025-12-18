@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:utils",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/toolbar",
   ]
 

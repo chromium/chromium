@@ -270,12 +270,17 @@ class BrowserView : public BrowserWindow,
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
 
-  TabStripRegionView* tab_strip_view() const {
-    return tab_strip_region_view_.get();
-  }
+  // Returns either the Horizontal or Vertical TabStrip.
+  TabStripRegionView* tab_strip_view() const;
 
-  VerticalTabStripRegionView* vertical_tab_strip_region_view() const {
-    return vertical_tab_strip_container_;
+  // Test only function. When the VerticalTabs feature is enabled,
+  // `vertical_tab_strip_container_` will have a value for normal tabbed
+  // browsers even if it is not the active TabStrip. Prefer to use
+  // VerticalTabsBrowserTestMixin or VerticalTabsInteractiveTestMixin to be
+  // automatically placed into VerticalTabs mode.
+  VerticalTabStripRegionView* vertical_tab_strip_region_view_for_testing()
+      const {
+    return vertical_tab_strip_container_.get();
   }
 
   // Accessor for the TabStrip.

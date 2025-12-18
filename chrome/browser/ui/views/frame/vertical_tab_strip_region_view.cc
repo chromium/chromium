@@ -264,8 +264,7 @@ views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
 }
 
 TabDragContext* VerticalTabStripRegionView::GetDragContext() {
-  // TODO(crbug.com/467710547): Wait for tab drag context implementation.
-  return nullptr;
+  return drag_handler_.get();
 }
 void VerticalTabStripRegionView::SetTabStripObserver(
     TabStripObserver* observer) {

@@ -20,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "ui/views/view_utils.h"
 
 // Template to be used as a mixin class for vertical tabs tests extending
 // InProcessBrowserTest.
@@ -55,10 +56,11 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   VerticalTabStripController* vertical_tab_strip_controller() {
-    return T::browser()
-        ->GetBrowserView()
-        .vertical_tab_strip_region_view()
-        ->GetVerticalTabStripController();
+    VerticalTabStripRegionView* const region_view =
+        T::browser()
+            ->GetBrowserView()
+            .vertical_tab_strip_region_view_for_testing();
+    return region_view ? region_view->GetVerticalTabStripController() : nullptr;
   }
 
   void EnterVerticalTabsMode() {

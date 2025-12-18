@@ -36,8 +36,9 @@ class VerticalTabStripRegionViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
   VerticalTabStripRegionView* region_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->vertical_tab_strip_region_view();
+    return browser()
+        ->GetBrowserView()
+        .vertical_tab_strip_region_view_for_testing();
   }
 
   tabs::VerticalTabStripStateController* state_controller() {
