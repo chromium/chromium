@@ -962,6 +962,11 @@ std::string_view MockHostResolverBase::request_host(size_t id) {
   return request(id)->request_endpoint().GetHostnameWithoutBrackets();
 }
 
+const HostResolver::Host& MockHostResolverBase::request_full_host(size_t id) {
+  DCHECK(request(id));
+  return request(id)->request_endpoint();
+}
+
 RequestPriority MockHostResolverBase::request_priority(size_t id) {
   DCHECK(request(id));
   return request(id)->priority();

@@ -5178,6 +5178,79 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithSecureAndInsecureHostsSeparateDnsRequests) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  auto override_rule = CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1);
+
+  constexpr std::string_view kInsecureHost1 = "http://insecure.test:80";
+  override_rule.dns_conditions.push_back(
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort(GURL(kInsecureHost1)),
+          .result = ProxyOverrideRule::DnsProbeCondition::Result::kResolved});
+
+  // Same hostname as the secure one.
+  constexpr std::string_view kInsecureHost2 = "http://host1.test:80";
+  override_rule.dns_conditions.push_back(
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort(GURL(kInsecureHost2)),
+          .result = ProxyOverrideRule::DnsProbeCondition::Result::kResolved});
+
+  config.set_proxy_override_rules({std::move(override_rule)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  auto nak = NetworkAnonymizationKey::CreateSameSite(
+      net::SchemefulSite(GURL(kMatchingUrl)));
+  int rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak, &info,
+                                callback.callback(), &request,
+                                NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  ASSERT_FALSE(callback.have_result());
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 3U);
+
+  const auto& request_host_1 = mock_host_resolver_->request_full_host(1U);
+  ASSERT_TRUE(request_host_1.HasScheme());
+  EXPECT_EQ(request_host_1.GetScheme(), "https");
+  EXPECT_EQ(request_host_1.GetHostnameWithoutBrackets(), "host1.test");
+  EXPECT_EQ(request_host_1.GetPort(), 443);
+
+  // Scheme should be stripped out for insecure schemes.
+  const auto& request_host_2 = mock_host_resolver_->request_full_host(2U);
+  ASSERT_FALSE(request_host_2.HasScheme());
+  EXPECT_EQ(request_host_2.GetHostnameWithoutBrackets(), "insecure.test");
+  EXPECT_EQ(request_host_2.GetPort(), 80);
+
+  const auto& request_host_3 = mock_host_resolver_->request_full_host(3U);
+  ASSERT_FALSE(request_host_3.HasScheme());
+  EXPECT_EQ(request_host_3.GetHostnameWithoutBrackets(), "host1.test");
+  EXPECT_EQ(request_host_3.GetPort(), 80);
+
+  // The MockHostResolver doesn't make a distinction between HTTP and HTTPS.
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  AddDnsEntry(GURL(kInsecureHost1), "2.3.4.5");
+  mock_host_resolver_->ResolveAllPending();
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
        OverrideRuleWithHostTwoRequestsSameNak) {
   ProxyConfig config = ProxyConfig::CreateDirect();
   auto proxy_list = CreateProxyList(kProxy1);

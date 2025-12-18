@@ -180,7 +180,11 @@ class NET_EXPORT ProxyConfig {
       // Creates a Value::Dict dump of this condition.
       base::Value::Dict ToDict() const;
 
+      // Insecure schemes will be stripped to prevent resolution failure if an
+      // HTTPS record exists. Secure schemes are retained to allow for HTTPS
+      // lookups.
       url::SchemeHostPort host;
+
       Result result = kNotFound;
     };
 
