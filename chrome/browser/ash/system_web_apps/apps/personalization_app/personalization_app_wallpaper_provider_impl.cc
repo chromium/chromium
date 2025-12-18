@@ -292,7 +292,7 @@ void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(
 
 void PersonalizationAppWallpaperProviderImpl::GetLocalImages(
     GetLocalImagesCallback callback) {
-  // TODO(b/190062481) also load images from android files.
+  // We do not load image from android files.
   ash::EnumerateLocalWallpaperFiles(
       profile_,
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::OnGetLocalImages,
