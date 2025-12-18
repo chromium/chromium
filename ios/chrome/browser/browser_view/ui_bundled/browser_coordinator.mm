@@ -2704,27 +2704,35 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)hideComposeboxImmediately:(BOOL)immediately {
-  if (!_composeboxCoordinator) {
+  [self hideComposeboxImmediately:immediately completion:nil];
+}
+
+- (void)hideComposeboxImmediately:(BOOL)immediately
+                       completion:(ProceduralBlock)completion {
+  if (!_composeboxCoordinator || immediately) {
+    [_composeboxCoordinator stop];
+    [self resetComposebox];
+    if (completion) {
+      completion();
+    }
     return;
   }
 
-  if (immediately) {
-    [_composeboxCoordinator stop];
-    [self resetComposebox];
-  } else {
-    __weak __typeof(self) weakSelf = self;
-    base::OnceClosure completion = base::BindOnce(^{
-      [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
-        [weakSelf resetComposebox];
-      }];
-    });
-    // Stop the prototoype on the next run loop as this might be called while
-    // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
-    // Remove this workaround once the omnibox can be safely dismissed while
-    // openMatch.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(completion));
-  }
+  __weak __typeof(self) weakSelf = self;
+  base::OnceClosure animationCompletion = base::BindOnce(^{
+    [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
+      [weakSelf resetComposebox];
+      if (completion) {
+        completion();
+      }
+    }];
+  });
+  // Stop the prototoype on the next run loop as this might be called while
+  // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
+  // Remove this workaround once the omnibox can be safely dismissed while
+  // openMatch.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(animationCompletion));
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

@@ -609,10 +609,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)cancelOmniboxEdit {
+  [self cancelOmniboxEditWithCompletion:nil];
+}
+
+- (void)cancelOmniboxEditWithCompletion:(ProceduralBlock)completion {
   if (IsComposeboxIOSEnabled()) {
     id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [commands hideComposeboxImmediately:NO];
+    [commands hideComposeboxImmediately:NO completion:completion];
     return;
   }
   if (self.isCancellingOmniboxEdit) {
@@ -621,6 +625,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.isCancellingOmniboxEdit = YES;
   [self.omniboxCoordinator endEditing];
   self.isCancellingOmniboxEdit = NO;
+  if (completion) {
+    completion();
+  }
 }
 
 #pragma mark - LocationBarModelDelegateWebStateProvider
