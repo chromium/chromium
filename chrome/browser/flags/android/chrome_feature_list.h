@@ -249,7 +249,6 @@ BASE_DECLARE_FEATURE(kShareCustomActionsInCCT);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShortCircuitUnfocusAnimation);
 BASE_DECLARE_FEATURE(kShowCloseAllIncognitoTabsButton);
-BASE_DECLARE_FEATURE(kShowHomeButtonPolicyAndroid);
 BASE_DECLARE_FEATURE(kShowNewTabAnimations);
 BASE_DECLARE_FEATURE(kShowTabListAnimations);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);

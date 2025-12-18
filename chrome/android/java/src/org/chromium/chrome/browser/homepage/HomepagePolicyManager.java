@@ -278,12 +278,10 @@ public class HomepagePolicyManager implements PrefObserver {
 
         mIsHomepageLocationManaged = !mHomepageUrl.isEmpty();
 
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            mHomeButtonPolicyState =
-                    mSharedPreferenceManager.readInt(
-                            ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                            BooleanPolicyState.UNMANAGED);
-        }
+        mHomeButtonPolicyState =
+                mSharedPreferenceManager.readInt(
+                        ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
+                        BooleanPolicyState.UNMANAGED);
 
         if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
             mHomepageSelectionPolicyState =
@@ -355,18 +353,16 @@ public class HomepagePolicyManager implements PrefObserver {
         }
 
         @BooleanPolicyState int homeButtonPolicyState = BooleanPolicyState.UNMANAGED;
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            boolean isManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
-            if (isManaged) {
-                homeButtonPolicyState =
-                        prefService.getBoolean(Pref.SHOW_HOME_BUTTON)
-                                ? BooleanPolicyState.MANAGED_BY_POLICY_ON
-                                : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
-            } else if (prefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
-            } else if (prefService.hasRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
-            }
+        boolean isManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
+        if (isManaged) {
+            homeButtonPolicyState =
+                    prefService.getBoolean(Pref.SHOW_HOME_BUTTON)
+                            ? BooleanPolicyState.MANAGED_BY_POLICY_ON
+                            : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
+        } else if (prefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON)) {
+            homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
+        } else if (prefService.hasRecommendation(Pref.SHOW_HOME_BUTTON)) {
+            homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
         }
 
         @BooleanPolicyState int homepageSelectionPolicyState = BooleanPolicyState.UNMANAGED;
@@ -444,18 +440,14 @@ public class HomepagePolicyManager implements PrefObserver {
         // Update shared preference
         mSharedPreferenceManager.writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, mHomepageUrl.serialize());
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            mSharedPreferenceManager.writeInt(
-                    ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE, mHomeButtonPolicyState);
-            // If admin changes recommendation that user has not overridden.
-            if (prefService.isRecommendedPreference(Pref.SHOW_HOME_BUTTON)) {
-                boolean enabled = prefService.getBoolean(Pref.SHOW_HOME_BUTTON);
-                mSharedPreferenceManager.writeBoolean(
-                        ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
-            }
-        } else {
-            mSharedPreferenceManager.removeKey(ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE);
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE, mHomeButtonPolicyState);
+        // If admin changes recommendation that user has not overridden.
+        if (prefService.isRecommendedPreference(Pref.SHOW_HOME_BUTTON)) {
+            boolean enabled = prefService.getBoolean(Pref.SHOW_HOME_BUTTON);
+            mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
         }
+
         if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
             mSharedPreferenceManager.writeInt(
                     ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,

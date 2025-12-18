@@ -56,10 +56,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Test for {@link HomepageSettings} to check the UI components and the interactions. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class})
-@Features.EnableFeatures({
-    ChromeFeatureList.SHOW_HOME_BUTTON_POLICY_ANDROID,
-    ChromeFeatureList.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID
-})
+@Features.EnableFeatures({ChromeFeatureList.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID})
 public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";
     private static final String ASSERT_MESSAGE_SWITCH_DISABLE = "Switch should be disabled.";

@@ -623,7 +623,6 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_BLOCKED_SENSITIVE_DOWNLOAD = "ShowBlockedSensitiveDownload";
     public static final String SHOW_CLOSE_ALL_INCOGNITO_TABS_BUTTON =
             "ShowCloseAllIncognitoTabsButton";
-    public static final String SHOW_HOME_BUTTON_POLICY_ANDROID = "ShowHomeButtonPolicyAndroid";
     public static final String SHOW_NEW_TAB_ANIMATIONS = "ShowNewTabAnimations";
     public static final String SHOW_TAB_LIST_ANIMATIONS = "ShowTabListAnimations";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
@@ -1021,8 +1020,6 @@ public abstract class ChromeFeatureList {
                     SETTINGS_SINGLE_ACTIVITY,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sShowHomeButtonPolicyAndroid =
-            newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
@@ -1229,7 +1226,6 @@ public abstract class ChromeFeatureList {
                     sSearchInSettings,
                     sSettingsMultiColumn,
                     sSettingsSingleActivity,
-                    sShowHomeButtonPolicyAndroid,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,

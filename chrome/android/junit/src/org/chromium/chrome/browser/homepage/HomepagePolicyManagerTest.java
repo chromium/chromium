@@ -35,10 +35,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Tests for the {@link HomepagePolicyManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({
-    ChromeFeatureList.SHOW_HOME_BUTTON_POLICY_ANDROID,
-    ChromeFeatureList.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID
-})
+@Features.EnableFeatures({ChromeFeatureList.HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID})
 public class HomepagePolicyManagerTest {
     public static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     public static final String CHROME_NTP = JUnitTestGURLs.NTP_URL.getSpec();
