@@ -376,9 +376,7 @@ public class SettingsSearchCoordinator {
         View queryContainer = mActivity.findViewById(R.id.search_query_container);
         searchBox.setVisibility(View.GONE);
         queryContainer.setVisibility(View.VISIBLE);
-        if (!mUseMultiColumn) {
-            assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
-        }
+        showBackArrowInSingleColumnMode(false);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         queryEdit.requestFocus();
         queryEdit.setText("");
@@ -397,6 +395,12 @@ public class SettingsSearchCoordinator {
         }
     }
 
+    private void showBackArrowInSingleColumnMode(boolean show) {
+        if (mUseMultiColumn) return;
+
+        assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(show);
+    }
+
     private void exitSearchState() {
         // Back action in search state. Restore the settings fragment and search UI.
         View searchBox = mActivity.findViewById(R.id.search_box);
@@ -404,9 +408,7 @@ public class SettingsSearchCoordinator {
         queryContainer.setVisibility(View.GONE);
         searchBox.setVisibility(View.VISIBLE);
         mQueryEntered = false;
-        if (!mUseMultiColumn) {
-            assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        }
+        showBackArrowInSingleColumnMode(true);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
 
@@ -444,6 +446,7 @@ public class SettingsSearchCoordinator {
                     onQueryUpdated(queryEdit.getText().toString());
                     mIndexData.setRefreshResult(false);
                 }
+                showBackArrowInSingleColumnMode(false);
             }
         }
         // Clearing the fragment before popping the back stack. Otherwise the existing
@@ -510,7 +513,7 @@ public class SettingsSearchCoordinator {
         View searchBox = mActivity.findViewById(R.id.search_box);
         View query = mActivity.findViewById(R.id.search_query_container);
         int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
-        boolean showBackIcon = mFragmentState == FS_SETTINGS;
+        boolean showBackIcon = mFragmentState != FS_SEARCH;
         if (mUseMultiColumn) {
             int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
             if (detailPaneWidth == 0) {
@@ -795,6 +798,7 @@ public class SettingsSearchCoordinator {
             // In single-column mode, search UI is hidden and title is shown instead in the toolbar.
             mActivity.findViewById(R.id.search_query_container).setVisibility(View.GONE);
         }
+        showBackArrowInSingleColumnMode(true);
         if (mTurnOffHighlight != null) {
             mTurnOffHighlight.run();
             mTurnOffHighlight = null;
