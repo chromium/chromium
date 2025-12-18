@@ -75,7 +75,7 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   raw_ptr<views::Button> settings_button_ = nullptr;
   raw_ptr<RoundedContainer> is_enabled_container_ = nullptr;
   raw_ptr<HoverHighlightView> toggle_row_ = nullptr;
-  // TODO(brandosocarras, b/360150790): use `toggle_switch_` in this class, not
+  // TODO(360150790): use `toggle_switch_` in this class, not
   // just in utest.
   raw_ptr<Switch> quick_share_toggle_ = nullptr;
   raw_ptr<RoundedContainer> visibility_selection_container_ = nullptr;
