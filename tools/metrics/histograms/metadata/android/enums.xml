@@ -923,6 +923,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Window manager"/>
   <int value="2" label="Instance retention period expiration"/>
   <int value="3" label="No tabs in window"/>
+  <int value="4" label="Recent Tabs page"/>
 </enum>
 
 <enum name="ContactsPickerDialogAction">

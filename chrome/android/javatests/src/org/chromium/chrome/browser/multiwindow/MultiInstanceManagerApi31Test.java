@@ -73,6 +73,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +83,6 @@ import java.util.Set;
 @DoNotBatch(reason = "This class tests creating, destroying and managing multiple windows.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 @MinAndroidSdkLevel(VERSION_CODES.S)
 @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 public class MultiInstanceManagerApi31Test {
@@ -118,8 +118,9 @@ public class MultiInstanceManagerApi31Test {
         for (ChromeTabbedActivity activity : mExtraActivities) {
             ThreadUtils.runOnUiThreadBlocking(
                     () ->
-                            mMultiInstanceManager.closeWindow(
-                                    activity.getWindowIdForTesting(), CloseWindowAppSource.OTHER));
+                            mMultiInstanceManager.closeWindows(
+                                    Collections.singletonList(activity.getWindowIdForTesting()),
+                                    CloseWindowAppSource.OTHER));
         }
     }
 
@@ -252,8 +253,10 @@ public class MultiInstanceManagerApi31Test {
         // Close one window.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.closeWindow(
-                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                        mMultiInstanceManager.closeWindows(
+                                Collections.singletonList(
+                                        otherActivities[otherActivities.length - 1]
+                                                .getWindowIdForTesting()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
 
         // Check state of instances after one instance is closed - the closed window should become
@@ -279,8 +282,10 @@ public class MultiInstanceManagerApi31Test {
         // Close one window.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.closeWindow(
-                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                        mMultiInstanceManager.closeWindows(
+                                Collections.singletonList(
+                                        otherActivities[otherActivities.length - 1]
+                                                .getWindowIdForTesting()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
 
         // Check state of instances after one instance is closed - the window should be fully
@@ -310,8 +315,10 @@ public class MultiInstanceManagerApi31Test {
         // Close one window.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.closeWindow(
-                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                        mMultiInstanceManager.closeWindows(
+                                Collections.singletonList(
+                                        otherActivities[otherActivities.length - 1]
+                                                .getWindowIdForTesting()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
 
         // Check state of instances after one instance is closed - the closed window should become
@@ -329,8 +336,10 @@ public class MultiInstanceManagerApi31Test {
         // Close another window.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.closeWindow(
-                                otherActivities[otherActivities.length - 2].getWindowIdForTesting(),
+                        mMultiInstanceManager.closeWindows(
+                                Collections.singletonList(
+                                        otherActivities[otherActivities.length - 2]
+                                                .getWindowIdForTesting()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
 
         // Check state of instances after the second instance is closed - the closed window should
@@ -369,8 +378,10 @@ public class MultiInstanceManagerApi31Test {
         // Close one window.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.closeWindow(
-                                otherActivities[otherActivities.length - 1].getWindowIdForTesting(),
+                        mMultiInstanceManager.closeWindows(
+                                Collections.singletonList(
+                                        otherActivities[otherActivities.length - 1]
+                                                .getWindowIdForTesting()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
 
         // Check state of instances after one instance is closed - the closed window should become

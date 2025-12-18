@@ -47,6 +47,7 @@ public abstract class MultiInstanceManager {
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
+    // LINT.IfChange(NewWindowAppSource)
     @IntDef({
         NewWindowAppSource.OTHER,
         NewWindowAppSource.MENU,
@@ -60,18 +61,19 @@ public abstract class MultiInstanceManager {
         int WINDOW_MANAGER = 2;
         int KEYBOARD_SHORTCUT = 3;
         int RECENT_TABS = 4;
-
-        // Be sure to also update enums.xml when updating these values.
         int NUM_ENTRIES = 5;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(CloseWindowAppSource)
     @IntDef({
         CloseWindowAppSource.OTHER,
         CloseWindowAppSource.WINDOW_MANAGER,
         CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION,
-        CloseWindowAppSource.NO_TABS_IN_WINDOW
+        CloseWindowAppSource.NO_TABS_IN_WINDOW,
+        CloseWindowAppSource.RECENT_TABS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CloseWindowAppSource {
@@ -79,10 +81,10 @@ public abstract class MultiInstanceManager {
         int WINDOW_MANAGER = 1;
         int RETENTION_PERIOD_EXPIRATION = 2;
         int NO_TABS_IN_WINDOW = 3;
-
-        // Update enums.xml when updating these values.
-        int NUM_ENTRIES = 4;
+        int RECENT_TABS = 4;
+        int NUM_ENTRIES = 5;
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
 
     @IntDef({
         InstanceAllocationType.DEFAULT,
@@ -409,13 +411,13 @@ public abstract class MultiInstanceManager {
     public void openWindow(int instanceId, @NewWindowAppSource int source) {}
 
     /**
-     * Close the window associated with a given task / activity. This will permanently and
-     * irreversibly delete persisted instance and tab state data.
+     * Close the windows associated with a given task / activity. This will permanently and
+     * irreversibly delete persisted instances and tab state data.
      *
-     * @param instanceId ID of the activity instance.
+     * @param instanceIds A list of IDs of the activity instance.
      * @param source The {@link CloseWindowAppSource} that reflects the source of instance closure.
      */
-    public void closeWindow(int instanceId, @CloseWindowAppSource int source) {}
+    public void closeWindows(List<Integer> instanceIds, @CloseWindowAppSource int source) {}
 
     /**
      * Intended to be called on initialization. If there's only one window at the moment that has

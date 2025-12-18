@@ -800,7 +800,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Closing the two other instances that are not managing the current activity.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
         verify(mMultiInstanceManager, times(2))
-                .closeWindow(anyInt(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
+                .closeWindows(any(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
     }
 
     @Test
@@ -822,7 +822,8 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Closing an instance removes the entry.
-        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.OTHER);
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.OTHER);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
@@ -844,7 +845,8 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Soft closing an instance does not remove the entry.
-        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
         List<InstanceInfo> instanceInfoList =
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, instanceInfoList.size());
@@ -873,7 +875,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Trigger a soft closure for instance ID 1.
         when(mActivityTask57.isFinishing()).thenReturn(true);
-        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
 
         // Verify the soft-closed instance becomes an inactive instance.
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
@@ -2012,7 +2015,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
-                .closeWindow(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
+                .closeWindows(any(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test
@@ -2033,7 +2036,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
-                .closeWindow(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
+                .closeWindows(any(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test

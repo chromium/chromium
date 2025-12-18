@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -205,10 +206,14 @@ public class RecentlyClosedEntriesManager {
         mEntriesUpdatedCallback = callback;
     }
 
-    /** Clears the list of recently closed entris. */
+    /** Clears the list of recently closed entries. */
     public void clearRecentlyClosedEntries() {
-        // TODO(crbug.com/444681612): Add logic to close all inactive and least used windows from
-        //  MultiInstanceManager.
+        List<InstanceInfo> instanceInfoList = getAllInactiveInstances();
+        List<Integer> instanceIds = new ArrayList<>();
+        for (InstanceInfo instanceInfo : instanceInfoList) {
+            instanceIds.add(instanceInfo.instanceId);
+        }
+        mMultiInstanceManager.closeWindows(instanceIds, CloseWindowAppSource.RECENT_TABS);
         mRecentlyClosedTabManager.clearRecentlyClosedEntries();
     }
 
@@ -247,6 +252,10 @@ public class RecentlyClosedEntriesManager {
         }
 
         mEntriesUpdatedCallback = null;
+    }
+
+    private List<InstanceInfo> getAllInactiveInstances() {
+        return mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
     }
 
     private void getRecentlyClosedTabsAndWindows(
@@ -300,8 +309,7 @@ public class RecentlyClosedEntriesManager {
     }
 
     private List<RecentlyClosedWindow> getRecentlyClosedWindows() {
-        List<InstanceInfo> instanceInfoList =
-                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        List<InstanceInfo> instanceInfoList = getAllInactiveInstances();
         List<RecentlyClosedWindow> recentlyClosedWindows = new ArrayList<>();
 
         for (InstanceInfo info : instanceInfoList) {
