@@ -228,15 +228,9 @@ inline constexpr char kEnhancedNetworkTtsExtensionPath[] =
 // The manifest filename of the Enhanced network TTS engine extension.
 inline constexpr char kEnhancedNetworkTtsManifestFilename[] =
     "enhanced_network_tts_manifest.json";
-// The manifest v3 filename of the Enhanced network TTS engine extension.
-inline constexpr char kEnhancedNetworkTtsManifestV3Filename[] =
-    "enhanced_network_tts_manifest_v3.json";
 // The guest manifest filename of the Enhanced network TTS engine extension.
 inline constexpr char kEnhancedNetworkTtsGuestManifestFilename[] =
     "enhanced_network_tts_manifest_guest.json";
-// The guest manifest v3 filename of the Enhanced network TTS engine extension.
-inline constexpr char kEnhancedNetworkTtsGuestManifestV3Filename[] =
-    "enhanced_network_tts_manifest_guest_v3.json";
 // The extension id of the Select-to-speak extension.
 inline constexpr char kSelectToSpeakExtensionId[] =
     "klbcgckkldhdhonijdbnhhaiedfkllef";

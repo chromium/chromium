@@ -2299,8 +2299,8 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
   component_loader->AddComponentFromDirWithManifestFilename(
       resources_path.Append(extension_misc::kEnhancedNetworkTtsExtensionPath),
       extension_misc::kEnhancedNetworkTtsExtensionId,
-      extension_misc::kEnhancedNetworkTtsManifestV3Filename,
-      extension_misc::kEnhancedNetworkTtsGuestManifestV3Filename,
+      extension_misc::kEnhancedNetworkTtsManifestFilename,
+      extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
       base::BindOnce(&AccessibilityManager::PostLoadEnhancedNetworkTts,
                      base::Unretained(this)),
       {});
