@@ -35,6 +35,7 @@ source_set("public") {
   deps = [
     "//components/keyed_service/core",
     "//components/lens/proto/server:proto",
+    "//components/prefs",
     "//components/search_engines",
     "//components/sessions",
     "//components/signin/public/identity_manager",
@@ -105,11 +106,13 @@ source_set("unit_tests") {
   ]
   deps = [
     ":impl",
+    ":prefs",
     ":public",
     ":test_support",
     "//base/test:test_support",
     "//components/lens",
     "//components/lens/proto/server:proto",
+    "//components/prefs:test_support",
     "//components/search_engines:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations",

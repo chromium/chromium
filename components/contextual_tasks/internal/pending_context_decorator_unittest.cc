@@ -16,6 +16,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,11 +65,15 @@ class MockContextualSearchContextController
 
 class PendingContextDecoratorTest : public testing::Test {
  public:
-  PendingContextDecoratorTest() = default;
+  PendingContextDecoratorTest() {
+    contextual_search::ContextualSearchService::RegisterProfilePrefs(
+        pref_service_.registry());
+  }
   ~PendingContextDecoratorTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(PendingContextDecoratorTest, Construction) {
@@ -103,6 +108,9 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add a tab context to the session, which will produce a token.
   base::UnguessableToken token;
@@ -209,6 +217,9 @@ TEST_F(PendingContextDecoratorTest, DecorateWithNoContextTokens) {
       std::make_unique<MockContextualSearchContextController>();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Set up decoration params with the session handle.
   ContextDecorationParams params;
@@ -242,6 +253,9 @@ TEST_F(PendingContextDecoratorTest, DecorateWithIncompleteData) {
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add three tokens: one valid, one with no URL, and one that will have a
   // null FileInfo.

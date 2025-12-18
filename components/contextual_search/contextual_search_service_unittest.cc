@@ -8,6 +8,8 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/fake_variations_client.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_search/pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations_client.h"
@@ -39,6 +41,7 @@ class ContextualSearchServiceTest : public testing::Test {
         identity_test_env_.identity_manager(), test_shared_loader_factory_,
         search_engines_test_environment_.template_url_service(),
         &fake_variations_client_, version_info::Channel::UNKNOWN, "en-US");
+    ContextualSearchService::RegisterProfilePrefs(pref_service_.registry());
   }
 
   lens::ClientToAimMessage CaptureClientToAimRequest(
@@ -66,6 +69,7 @@ class ContextualSearchServiceTest : public testing::Test {
   std::unique_ptr<
       ContextualSearchContextController::CreateClientToAimRequestInfo>
       captured_client_to_aim_message_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(ContextualSearchServiceTest, Session) {
@@ -82,6 +86,9 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params1->enable_viewport_images = false;
   auto session1_handle1 = service_->CreateSession(
       std::move(config_params1), ContextualSearchSource::kUnknown);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session1_handle1->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session1_handle1, NotNull());
   ASSERT_THAT(session1_handle1->GetController(), NotNull());
   ASSERT_THAT(session1_handle1->GetMetricsRecorder(), NotNull());
@@ -95,12 +102,14 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params2->enable_viewport_images = false;
   auto session2_handle1 = service_->CreateSession(
       std::move(config_params2), ContextualSearchSource::kUnknown);
+  session2_handle1->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle1, NotNull());
   ASSERT_THAT(session2_handle1->GetController(), NotNull());
   ASSERT_THAT(session2_handle1->GetMetricsRecorder(), NotNull());
 
   // Get a new handle to session two.
   auto session2_handle2 = service_->GetSession(session2_handle1->session_id());
+  session2_handle2->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle2, NotNull());
   EXPECT_EQ(session2_handle2->GetController(),
             session2_handle1->GetController());
@@ -114,6 +123,7 @@ TEST_F(ContextualSearchServiceTest, Session) {
   // Release the first handle to session two. The session should still be alive.
   session2_handle1.reset();
   auto session2_handle3 = service_->GetSession(session2_handle2->session_id());
+  session2_handle3->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle3, NotNull());
   EXPECT_EQ(session2_handle3->GetController(),
             session2_handle2->GetController());
@@ -130,6 +140,7 @@ TEST_F(ContextualSearchServiceTest, Session) {
 
   // Get a new handle to session one.
   auto session1_handle2 = service_->GetSession(session1_handle1->session_id());
+  session1_handle2->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session1_handle2, NotNull());
   EXPECT_EQ(session1_handle2->GetController(),
             session1_handle1->GetController());
@@ -148,6 +159,7 @@ TEST_F(ContextualSearchServiceTest, PendingContextTokens) {
 
   auto session_handle = service_->CreateSessionForTesting(
       std::move(mock_controller), std::move(metrics_recorder));
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add some dummy tokens.
   base::UnguessableToken token1 = base::UnguessableToken::Create();
@@ -230,6 +242,7 @@ TEST_F(ContextualSearchServiceTest, FileInfoTest) {
 
   auto session_handle = service_->CreateSessionForTesting(
       std::move(mock_controller), std::move(metrics_recorder));
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Create tokens and FileInfo objects.
   base::UnguessableToken token1 = base::UnguessableToken::Create();
@@ -350,6 +363,7 @@ TEST_F(ContextualSearchServiceTest, NullController) {
   auto session_handle = service_->CreateSession(
       std::move(config_params), ContextualSearchSource::kUnknown);
   ASSERT_THAT(session_handle, NotNull());
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add some dummy tokens.
   session_handle->GetUploadedContextTokensForTesting().push_back(

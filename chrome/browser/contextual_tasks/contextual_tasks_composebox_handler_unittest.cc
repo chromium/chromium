@@ -162,6 +162,10 @@ class ContextualTasksComposeboxHandlerTest
         std::move(mock_controller),
         std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(
             contextual_search::ContextualSearchSource::kContextualTasks));
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    contextual_session_handle->CheckSearchContentSharingSettings(
+        profile()->GetPrefs());
     session_handle_ =
         service_->GetSession(contextual_session_handle->session_id());
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())

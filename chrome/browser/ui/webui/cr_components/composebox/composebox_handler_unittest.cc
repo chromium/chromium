@@ -111,6 +111,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         version_info::Channel::UNKNOWN, "en-US");
     contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    contextual_session_handle_->CheckSearchContentSharingSettings(
+        profile()->GetPrefs());
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<ComposeboxHandler>(

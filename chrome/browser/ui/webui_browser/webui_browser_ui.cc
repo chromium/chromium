@@ -269,6 +269,10 @@ WebUIBrowserUI::GetContextualSessionHandle() {
       session_handle_ = service->CreateSession(
           omnibox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kOmnibox);
+      // TODO(crbug.com/469877646): Determine what to do with the return value
+      // of this call, or move this call to a different location.
+      session_handle_->CheckSearchContentSharingSettings(
+          Profile::FromWebUI(web_ui())->GetPrefs());
     }
   }
   return session_handle_.get();

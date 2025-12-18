@@ -106,7 +106,8 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
   explicit TestLensQueryFlowRouter(
       LensSearchController* lens_search_controller,
       contextual_search::MockContextualSearchContextController*
-          mock_context_controller)
+          mock_context_controller,
+      TestingProfile* profile)
       : LensQueryFlowRouter(lens_search_controller) {
     // Create the session handle immediately so that mock calls can be added
     // immediately.
@@ -115,6 +116,8 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
     raw_mock_session_handle_ = pending_mock_session_handle_.get();
     ON_CALL(*pending_mock_session_handle_, GetController())
         .WillByDefault(Return(mock_context_controller));
+    pending_mock_session_handle_->CheckSearchContentSharingSettings(
+        profile->GetPrefs());
     viewport_screenshot_.allocN32Pixels(10, 10);
   }
   ~TestLensQueryFlowRouter() override = default;
@@ -499,7 +502,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               lens_search_contextualization_controller())
       .WillOnce(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   GURL example_url("https://example.com");
   std::string page_title = "Title";
@@ -548,7 +552,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendRegionSearch_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -613,7 +618,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               lens_search_contextualization_controller())
       .WillRepeatedly(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -673,7 +679,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendContextualTextQuery_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -733,7 +740,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        SendMultimodalRequest_RoutesToContextualTasks) {
   // Arrange: Set up and create the router.
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Arrange: Set up the parameters.
   base::Time query_start_time = base::Time::Now();
@@ -800,7 +808,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               lens_search_contextualization_controller())
       .WillOnce(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Start the query flow to initialize the session handle.
   GURL example_url("https://example.com");
@@ -839,7 +848,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               lens_search_contextualization_controller())
       .WillOnce(Return(contextualization_controller_.get()));
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get());
+                                 mock_context_controller_.get(),
+                                 profile_.get());
 
   // Start the query flow to initialize the session handle.
   GURL example_url("https://example.com");

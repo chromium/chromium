@@ -55,6 +55,10 @@ class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
     session_handle_ = service->CreateSession(
         ntp_composebox::CreateQueryControllerConfigParams(),
         contextual_search::ContextualSearchSource::kUnknown);
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    session_handle_->CheckSearchContentSharingSettings(
+        browser()->profile()->GetPrefs());
 
     handler_ = std::make_unique<TestSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
