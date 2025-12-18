@@ -3086,6 +3086,46 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.LineFocusSessionLength" units="ms"
+    expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the length of time the user spends in Reading mode with line focus
+    on. This is measured from when line focus is enabled to when the user
+    disables line focus or hides Reading mode.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Distance"
+    units="pixels" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total distance moved with line focus in a session, either via
+    mouse movement or via scroll.
+  </summary>
+  <token key="Type">
+    <variant name="Mouse" summary="total mouse movement"/>
+    <variant name="Scroll" summary="total scroll distance"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Lines"
+    units="lines" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total number of lines highlighted or underlined with line focus
+    in a session, either via keyboard arrow keys or with Read aloud speech.
+  </summary>
+  <token key="Type">
+    <variant name="Keyboard" summary="total line changes by keyboard"/>
+    <variant name="Speech"
+        summary="total line highlight changes by read aloud"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.LineSpacing"
     enum="ReadAnythingLineSpacing" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

@@ -318,6 +318,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onContainerScrollEnd_() {
     this.nodeStore_.estimateWordsSeenWithDelay();
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.onScrollEnd(this.$.containerScroller.scrollTop);
+    }
   }
 
   showLoading() {

@@ -14,6 +14,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -156,6 +157,30 @@ class ReadAnythingAppModel {
   void set_words_distilled(const int words_distilled) {
     words_distilled_ = words_distilled;
   }
+
+  std::optional<base::TimeTicks> line_focus_session_start_time() const {
+    return line_focus_session_start_time_;
+  }
+  void set_line_focus_session_start_time(const base::TimeTicks time) {
+    line_focus_session_start_time_ = time;
+  }
+  int line_focus_mouse_distance() const { return line_focus_mouse_distance_; }
+  void set_line_focus_mouse_distance(const int distance) {
+    line_focus_mouse_distance_ = distance;
+  }
+  int line_focus_scroll_distance() const { return line_focus_scroll_distance_; }
+  void set_line_focus_scroll_distance(const int distance) {
+    line_focus_scroll_distance_ = distance;
+  }
+  int line_focus_keyboard_lines() const { return line_focus_keyboard_lines_; }
+  void set_line_focus_keyboard_lines(const int lines) {
+    line_focus_keyboard_lines_ = lines;
+  }
+  int line_focus_speech_lines() const { return line_focus_speech_lines_; }
+  void set_line_focus_speech_lines(const int lines) {
+    line_focus_speech_lines_ = lines;
+  }
+  void ResetLineFocusSession();
 
   const std::string& base_language_code() const { return base_language_code_; }
   void SetBaseLanguageCode(std::string base_language_code);
@@ -500,6 +525,13 @@ class ReadAnythingAppModel {
   int words_seen_ = 0;
   int words_heard_ = 0;
   int words_distilled_ = 0;
+
+  // Line focus session information. Used for logging.
+  std::optional<base::TimeTicks> line_focus_session_start_time_;
+  int line_focus_mouse_distance_ = 0;
+  int line_focus_scroll_distance_ = 0;
+  int line_focus_keyboard_lines_ = 0;
+  int line_focus_speech_lines_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire

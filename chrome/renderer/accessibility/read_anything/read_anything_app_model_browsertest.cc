@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_app_model.h"
 #include "read_anything_test_utils.h"
@@ -182,6 +183,28 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(links_enabled, model().links_enabled());
   EXPECT_EQ(images_enabled, model().images_enabled());
   EXPECT_EQ(color, model().color_theme());
+}
+
+TEST_F(ReadAnythingAppModelTest, ResetLineFocusSession_ResetsToStartingValue) {
+  const std::optional<base::TimeTicks> start_time =
+      model().line_focus_session_start_time();
+  const int mouse_distance = model().line_focus_mouse_distance();
+  const int scroll_distance = model().line_focus_scroll_distance();
+  const int keyboard_lines = model().line_focus_keyboard_lines();
+  const int speech_lines = model().line_focus_speech_lines();
+  model().set_line_focus_session_start_time(base::TimeTicks::Now());
+  model().set_line_focus_mouse_distance(mouse_distance + 100);
+  model().set_line_focus_scroll_distance(scroll_distance + 100);
+  model().set_line_focus_keyboard_lines(keyboard_lines + 100);
+  model().set_line_focus_speech_lines(speech_lines + 100);
+
+  model().ResetLineFocusSession();
+
+  ASSERT_EQ(model().line_focus_session_start_time(), start_time);
+  ASSERT_EQ(model().line_focus_mouse_distance(), mouse_distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), scroll_distance);
+  ASSERT_EQ(model().line_focus_keyboard_lines(), keyboard_lines);
+  ASSERT_EQ(model().line_focus_speech_lines(), speech_lines);
 }
 
 TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_RunsCallback) {

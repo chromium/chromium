@@ -9,8 +9,9 @@ import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-pane
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setContent, setupBasicSpeech} from './common.js';
+import {mockMetrics, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
@@ -24,6 +25,9 @@ suite('LineFocusController', () => {
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
+  let keyboardLines: number;
+  let speechLines: number;
 
   function createShortContainer(): HTMLElement {
     const container = document.createElement('p');
@@ -51,7 +55,7 @@ suite('LineFocusController', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-
+    metrics = mockMetrics();
     readAloudModel = new TestReadAloudModelBrowserProxy();
     setInstance(readAloudModel);
     readAloudModel.setInitialized(true);
@@ -73,6 +77,10 @@ suite('LineFocusController', () => {
     };
     lineFocusController.addListener(lineFocusListener);
     defaultContainer = document.createElement('div');
+    keyboardLines = 0;
+    speechLines = 0;
+    chrome.readingMode.incrementLineFocusKeyboardLines = () => keyboardLines++;
+    chrome.readingMode.incrementLineFocusSpeechLines = () => speechLines++;
   });
 
   test('isEnabled is false by default', () => {
@@ -183,7 +191,27 @@ suite('LineFocusController', () => {
     assertNotEquals(height2, height3);
   });
 
-  test('onLineFocusChange to none resets position and height', () => {
+  test('onLineFocusChange to different mode does not restart session', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    let started = false;
+    chrome.readingMode.startLineFocusSession = () => started = true;
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+    assertTrue(started);
+
+    started = false;
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusCursorLine, container, defaultHeight);
+    assertFalse(started);
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+    assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+  });
+
+  test('onLineFocusChange to off resets position and height', () => {
     const container = createShortContainer();
 
     lineFocusController.onLineFocusChange(
@@ -193,6 +221,186 @@ suite('LineFocusController', () => {
 
     assertEquals(0, lineFocusController.getTop());
     assertFalse(!!lineFocusController.getHeight());
+  });
+
+  test('onLineFocusChange to off after it was enabled logs session', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+  });
+
+  test('onLineFocusChange to off does nothing if flag disabled', () => {
+    chrome.readingMode.isLineFocusEnabled = false;
+    const container = createShortContainer();
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
+  });
+
+  test('onScrollEnd adds scroll distance', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
+    let scrollDistance = 0;
+    let mouseDistance = 0;
+    chrome.readingMode.addLineFocusScrollDistance = y => {
+      scrollDistance = y;
+    };
+    chrome.readingMode.addLineFocusMouseDistance = y => {
+      mouseDistance = y;
+    };
+    const top1 = 43;
+    const top2 = 55;
+    const top3 = 12;
+    // Ensure we test scrolling up and down;
+    assertLT(top1, top2);
+    assertGT(top2, top3);
+
+    lineFocusController.onScrollEnd(top1);
+    assertEquals(0, mouseDistance);
+    assertEquals(top1, scrollDistance);
+
+    lineFocusController.onScrollEnd(top2);
+    assertEquals(0, mouseDistance);
+    assertEquals(top2 - top1, scrollDistance);
+
+    lineFocusController.onScrollEnd(top3);
+    assertEquals(0, mouseDistance);
+    assertEquals(top2 - top3, scrollDistance);
+  });
+
+  test('onMouseMove adds mouse distance', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
+    let scrollDistance = 0;
+    let mouseDistance = 0;
+    chrome.readingMode.addLineFocusScrollDistance = y => {
+      scrollDistance = y;
+    };
+    chrome.readingMode.addLineFocusMouseDistance = y => {
+      mouseDistance = y;
+    };
+    const y1 = 43;
+    const y2 = 55;
+    const y3 = 12;
+    // Ensure we test moving up and down;
+    assertLT(y1, y2);
+    assertGT(y2, y3);
+
+    lineFocusController.onMouseMove(y1);
+    assertEquals(y1, mouseDistance);
+    assertEquals(0, scrollDistance);
+
+    lineFocusController.onMouseMove(y2);
+    assertEquals(y2 - y1, mouseDistance);
+    assertEquals(0, scrollDistance);
+
+    lineFocusController.onMouseMove(y3);
+    assertEquals(y2 - y3, mouseDistance);
+    assertEquals(0, scrollDistance);
+  });
+
+  test('onLineFocusChange to off after it was enabled logs session', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+  });
+
+  test('onLineFocusChange to off does nothing if flag disabled', () => {
+    chrome.readingMode.isLineFocusEnabled = false;
+    const container = createShortContainer();
+
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
+  });
+
+  test('onScrollEnd adds scroll distance', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
+    let scrollDistance = 0;
+    let mouseDistance = 0;
+    chrome.readingMode.addLineFocusScrollDistance = y => {
+      scrollDistance = y;
+    };
+    chrome.readingMode.addLineFocusMouseDistance = y => {
+      mouseDistance = y;
+    };
+    const top1 = 43;
+    const top2 = 55;
+    const top3 = 12;
+    // Ensure we test scrolling up and down;
+    assertLT(top1, top2);
+    assertGT(top2, top3);
+
+    lineFocusController.onScrollEnd(top1);
+    assertEquals(0, mouseDistance);
+    assertEquals(top1, scrollDistance);
+
+    lineFocusController.onScrollEnd(top2);
+    assertEquals(0, mouseDistance);
+    assertEquals(top2 - top1, scrollDistance);
+
+    lineFocusController.onScrollEnd(top3);
+    assertEquals(0, mouseDistance);
+    assertEquals(top2 - top3, scrollDistance);
+  });
+
+  test('onMouseMove adds mouse distance', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusCursorLine, defaultContainer,
+        defaultHeight);
+    let scrollDistance = 0;
+    let mouseDistance = 0;
+    chrome.readingMode.addLineFocusScrollDistance = y => {
+      scrollDistance = y;
+    };
+    chrome.readingMode.addLineFocusMouseDistance = y => {
+      mouseDistance = y;
+    };
+    const y1 = 43;
+    const y2 = 55;
+    const y3 = 12;
+    // Ensure we test moving up and down;
+    assertLT(y1, y2);
+    assertGT(y2, y3);
+
+    lineFocusController.onMouseMove(y1);
+    assertEquals(y1, mouseDistance);
+    assertEquals(0, scrollDistance);
+
+    lineFocusController.onMouseMove(y2);
+    assertEquals(y2 - y1, mouseDistance);
+    assertEquals(0, scrollDistance);
+
+    lineFocusController.onMouseMove(y3);
+    assertEquals(y2 - y3, mouseDistance);
+    assertEquals(0, scrollDistance);
   });
 
   test('onMouseMove does nothing if flag disabled', () => {
@@ -429,6 +637,8 @@ suite('LineFocusController', () => {
         parentHighlight.getBoundingClientRect().bottom,
         lineFocusController.getTop());
     assertTrue(lineFocusMoved);
+    assertEquals(1, speechLines);
+    assertEquals(0, keyboardLines);
   });
 
   test('ignores previous highlights', async () => {
@@ -484,12 +694,14 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(true);
     let newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
+    assertEquals(1, keyboardLines);
 
     // Snap to the last line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(true);
     newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
+    assertEquals(2, keyboardLines);
 
     // The container only has two lines, so moving forward should not change
     // position.
@@ -497,18 +709,22 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(true);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
+    assertEquals(2, keyboardLines);
 
     // Snap back to the first line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
+    assertEquals(3, keyboardLines);
 
     // Moving back again should not change position.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
+    assertEquals(3, keyboardLines);
+    assertEquals(0, speechLines);
   });
 
   test('snapToNextLine with static line scrolls by line', () => {
@@ -525,6 +741,7 @@ suite('LineFocusController', () => {
     let newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
     assertLT(oldScrollDiff, newScrollDiff);
+    assertEquals(1, keyboardLines);
 
     // Snap to the last line.
     oldTop = newTop;
@@ -534,6 +751,7 @@ suite('LineFocusController', () => {
     newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
     assertLT(oldScrollDiff, newScrollDiff);
+    assertEquals(2, keyboardLines);
 
     // Snap back to the first line.
     oldTop = newTop;
@@ -543,6 +761,8 @@ suite('LineFocusController', () => {
     newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
     assertGT(oldScrollDiff, newScrollDiff);
+    assertEquals(3, keyboardLines);
+    assertEquals(0, speechLines);
   });
 
   test('snapToNextLine scrolls down to line if out of view', () => {
@@ -574,6 +794,8 @@ suite('LineFocusController', () => {
     }
 
     assertLT(0, scrollDiffReceived);
+    assertLT(0, keyboardLines);
+    assertEquals(0, speechLines);
   });
 
   test('snapToNextLine scrolls up to line if out of view', () => {
@@ -606,6 +828,8 @@ suite('LineFocusController', () => {
     }
 
     assertGT(0, scrollDiffReceived);
+    assertLT(0, keyboardLines);
+    assertEquals(0, speechLines);
   });
 
   test('snapToNextLine with window moves by line', () => {
@@ -624,24 +848,28 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(true);
     let newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
+    assertEquals(3, keyboardLines);
 
     // Snap to the last line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(true);
     newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
+    assertEquals(4, keyboardLines);
 
     // Moving forward should not change position.
     oldTop = newTop;
     lineFocusController.snapToNextLine(true);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
+    assertEquals(4, keyboardLines);
 
     // Snap back to the third line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
+    assertEquals(5, keyboardLines);
 
     // Moving back again should not change position since the window is 3 lines
     // long and we are already at the third line.
@@ -649,6 +877,8 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
+    assertEquals(5, keyboardLines);
+    assertEquals(0, speechLines);
   });
 
   test('snapToNextLine does nothing when speech active', () => {

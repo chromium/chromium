@@ -458,6 +458,14 @@ class ReadAnythingAppController
 
   void LogSpeechStop(int source);
 
+  // Methods for logging line focus session info.
+  void StartLineFocusSession();
+  void LogLineFocusSession();
+  void AddLineFocusScrollDistance(int distance);
+  void AddLineFocusMouseDistance(int distance);
+  void IncrementLineFocusKeyboardLines();
+  void IncrementLineFocusSpeechLines();
+
   void OnUrlInformationSet();
 
   // Stores a screenshot of the page and triggers distillation to record protos.

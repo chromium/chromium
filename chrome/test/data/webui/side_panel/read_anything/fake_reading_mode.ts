@@ -292,6 +292,29 @@ export class FakeReadingMode {
   // Log when the empty state page is shown.
   logEmptyState(): void {}
 
+  // Ping that a line focus session has started.
+  startLineFocusSession(): void {}
+
+  // Log all the line focus session info, including length of time and
+  // movement activity.
+  logLineFocusSession(): void {}
+
+  // Add the given distance to the cumulative scroll distance for the current
+  // line focus session.
+  addLineFocusScrollDistance(_distance: number): void {}
+
+  // Add the given distance to the cumulative mouse distance for the current
+  // line focus session.
+  addLineFocusMouseDistance(_distance: number): void {}
+
+  // Increment the cumulative keyboard line count for the current line focus
+  // session.
+  incrementLineFocusKeyboardLines(): void {}
+
+  // Increment the cumulative speech line count for the current line focus
+  // session.
+  incrementLineFocusSpeechLines(): void {}
+
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
     this.highlightGranularity = this.autoHighlighting;

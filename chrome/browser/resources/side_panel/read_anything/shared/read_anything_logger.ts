@@ -153,6 +153,12 @@ export class ReadAnythingLogger {
         'Accessibility.ReadAnything.ReadAloud' + control + 'SessionCount');
   }
 
+  logLineFocusSession() {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.metrics.recordLineFocusSession();
+    }
+  }
+
   static getInstance(): ReadAnythingLogger {
     return instance || (instance = new ReadAnythingLogger());
   }

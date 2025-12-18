@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -1275,6 +1276,18 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("incrementMetricCount",
                  &ReadAnythingAppController::IncrementMetricCount)
       .SetMethod("logSpeechStop", &ReadAnythingAppController::LogSpeechStop)
+      .SetMethod("startLineFocusSession",
+                 &ReadAnythingAppController::StartLineFocusSession)
+      .SetMethod("logLineFocusSession",
+                 &ReadAnythingAppController::LogLineFocusSession)
+      .SetMethod("addLineFocusScrollDistance",
+                 &ReadAnythingAppController::AddLineFocusScrollDistance)
+      .SetMethod("addLineFocusMouseDistance",
+                 &ReadAnythingAppController::AddLineFocusMouseDistance)
+      .SetMethod("incrementLineFocusKeyboardLines",
+                 &ReadAnythingAppController::IncrementLineFocusKeyboardLines)
+      .SetMethod("incrementLineFocusSpeechLines",
+                 &ReadAnythingAppController::IncrementLineFocusSpeechLines)
       .SetMethod("sendGetVoicePackInfoRequest",
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
@@ -2207,6 +2220,7 @@ void ReadAnythingAppController::OnDeviceLocked() {
     read_aloud_model_.LogSpeechStop(
         ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
   }
+  LogLineFocusSession();
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
   // Signal to the WebUI that the device has been locked. We'll only receive
@@ -2230,6 +2244,7 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
         ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
     ReadingModeWillClose();
   }
+  LogLineFocusSession();
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
 }
@@ -2241,6 +2256,7 @@ void ReadAnythingAppController::OnTabWillDetach() {
         ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
     ReadingModeWillClose();
   }
+  LogLineFocusSession();
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
 }
@@ -2416,6 +2432,62 @@ void ReadAnythingAppController::LogSpeechStop(int source) {
   if (const auto maybe_enum =
           ToEnum<ReadAloudAppModel::ReadAloudStopSource>(source)) {
     read_aloud_model_.LogSpeechStop(maybe_enum.value());
+  }
+}
+
+void ReadAnythingAppController::StartLineFocusSession() {
+  if (IsLineFocusEnabled()) {
+    model_.set_line_focus_session_start_time(base::TimeTicks::Now());
+  }
+}
+
+void ReadAnythingAppController::LogLineFocusSession() {
+  if (IsLineFocusEnabled() &&
+      model_.line_focus_session_start_time().has_value()) {
+    base::UmaHistogramLongTimes(
+        "Accessibility.ReadAnything.LineFocusSessionLength",
+        base::TimeTicks::Now() -
+            model_.line_focus_session_start_time().value());
+    base::UmaHistogramCounts1M(
+        "Accessibility.ReadAnything.LineFocusSessionMouseDistance",
+        model_.line_focus_mouse_distance());
+    base::UmaHistogramCounts1M(
+        "Accessibility.ReadAnything.LineFocusSessionScrollDistance",
+        model_.line_focus_scroll_distance());
+    base::UmaHistogramCounts100000(
+        "Accessibility.ReadAnything.LineFocusSessionKeyboardLines",
+        model_.line_focus_keyboard_lines());
+    base::UmaHistogramCounts100000(
+        "Accessibility.ReadAnything.LineFocusSessionSpeechLines",
+        model_.line_focus_speech_lines());
+    model_.ResetLineFocusSession();
+  }
+}
+
+void ReadAnythingAppController::AddLineFocusScrollDistance(int distance) {
+  if (IsLineFocusEnabled()) {
+    model_.set_line_focus_scroll_distance(model_.line_focus_scroll_distance() +
+                                          distance);
+  }
+}
+
+void ReadAnythingAppController::AddLineFocusMouseDistance(int distance) {
+  if (IsLineFocusEnabled()) {
+    model_.set_line_focus_mouse_distance(model_.line_focus_mouse_distance() +
+                                         distance);
+  }
+}
+
+void ReadAnythingAppController::IncrementLineFocusKeyboardLines() {
+  if (IsLineFocusEnabled()) {
+    model_.set_line_focus_keyboard_lines(model_.line_focus_keyboard_lines() +
+                                         1);
+  }
+}
+
+void ReadAnythingAppController::IncrementLineFocusSpeechLines() {
+  if (IsLineFocusEnabled()) {
+    model_.set_line_focus_speech_lines(model_.line_focus_speech_lines() + 1);
   }
 }
 

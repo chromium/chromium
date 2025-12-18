@@ -13,12 +13,13 @@ export class LineFocus {
   static readonly ONE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 1);
   static readonly THREE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 3);
   static readonly FIVE_LINE_WINDOW = new LineFocus(LineFocusType.WINDOW, 5);
-  static readonly STATIC_LINE = new LineFocus(LineFocusType.LINE, 0);
+  static readonly STATIC_LINE = new LineFocus(LineFocusType.LINE, 1, true);
   static readonly CURSOR_LINE = new LineFocus(LineFocusType.LINE, 1);
 
   // Private constructor prevents others from creating new options
   private constructor(
-      public readonly type: LineFocusType, public readonly lines: number) {}
+      public readonly type: LineFocusType, public readonly lines: number,
+      public readonly isStatic: boolean = false) {}
 }
 
 // Events emitted from the toolbar to the app

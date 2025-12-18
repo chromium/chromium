@@ -322,6 +322,26 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                           {features::kReadAnythingReadAloud});
   }
 
+  void StartLineFocusSession() { controller_->StartLineFocusSession(); }
+
+  void LogLineFocusSession() { controller_->LogLineFocusSession(); }
+
+  void AddLineFocusScrollDistance(int distance) {
+    controller_->AddLineFocusScrollDistance(distance);
+  }
+
+  void AddLineFocusMouseDistance(int distance) {
+    controller_->AddLineFocusMouseDistance(distance);
+  }
+
+  void IncrementLineFocusKeyboardLines() {
+    controller_->IncrementLineFocusKeyboardLines();
+  }
+
+  void IncrementLineFocusSpeechLines() {
+    controller_->IncrementLineFocusSpeechLines();
+  }
+
   void ExpectNodesMapToEntireText(std::vector<ReadAloudTextSegment> segments,
                                   std::vector<ui::AXNodeID> node_ids,
                                   std::vector<std::u16string> texts) {
@@ -436,6 +456,27 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_ResetsWordsHeard) {
 
   EXPECT_EQ(0, model().words_heard());
 }
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnDeviceLocked_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnDeviceLocked();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnDeviceLocked_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnDeviceLocked();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+}
 #endif
 
 TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
@@ -540,6 +581,27 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   EXPECT_EQ(0, model().words_heard());
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
   read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
@@ -589,6 +651,27 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_ResetsWordsHeard) {
   controller().OnTabWillDetach();
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTabWillDetach_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnTabWillDetach();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTabWillDetach_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnTabWillDetach();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
@@ -903,6 +986,189 @@ TEST_F(ReadAnythingAppControllerTest,
       std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
 
   EXPECT_EQ(static_cast<int>(line_focus), controller().LineFocus());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       StartLineFocusSession_DoesNothingWithoutFlag) {
+  StartLineFocusSession();
+  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       StartLineFocusSession_StartsSessionWithFlag) {
+  EnableLineFocus();
+  StartLineFocusSession();
+  ASSERT_TRUE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusScrollDistance_DoesNothingWithoutFlag) {
+  const int distance = 100;
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusScrollDistance_AddsDistanceWithFlag) {
+  const int distance = 100;
+  EnableLineFocus();
+
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), distance);
+
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), distance + distance);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusMouseDistance_DoesNothingWithoutFlag) {
+  const int distance = 100;
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusMouseDistance_AddsDistanceWithFlag) {
+  const int distance = 100;
+  EnableLineFocus();
+
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_mouse_distance(), distance);
+
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_mouse_distance(), distance + distance);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusKeyboardLines_DoesNothingWithoutFlag) {
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusKeyboardLines_IncrementsWithFlag) {
+  EnableLineFocus();
+
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 1);
+
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusSpeechLines_DoesNothingWithoutFlag) {
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusSpeechLines_IncrementsWithFlag) {
+  EnableLineFocus();
+
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 1);
+
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       LogLineFocusSession_DoesNothingWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  model().set_line_focus_mouse_distance(1000);
+  model().set_line_focus_scroll_distance(348);
+  model().set_line_focus_keyboard_lines(25);
+  model().set_line_focus_speech_lines(102);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       LogLineFocusSession_DoesNothingIfNeverStarted) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  model().set_line_focus_mouse_distance(1000);
+  model().set_line_focus_scroll_distance(348);
+  model().set_line_focus_keyboard_lines(25);
+  model().set_line_focus_speech_lines(102);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_IncrementsWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  const int mouse_distance = 2001;
+  const int scroll_distance = 202;
+  const int keyboard_lines = 405;
+  const int speech_lines = 21;
+  model().set_line_focus_mouse_distance(mouse_distance);
+  model().set_line_focus_scroll_distance(scroll_distance);
+  model().set_line_focus_keyboard_lines(keyboard_lines);
+  model().set_line_focus_speech_lines(speech_lines);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance",
+      mouse_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance",
+      scroll_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines",
+      keyboard_lines, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", speech_lines,
+      1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_ResetsSession) {
+  EnableLineFocus();
+  StartLineFocusSession();
+  const int mouse_distance = 2001;
+  const int scroll_distance = 202;
+  const int keyboard_lines = 405;
+  const int speech_lines = 21;
+  model().set_line_focus_mouse_distance(mouse_distance);
+  model().set_line_focus_scroll_distance(scroll_distance);
+  model().set_line_focus_keyboard_lines(keyboard_lines);
+  model().set_line_focus_speech_lines(speech_lines);
+
+  LogLineFocusSession();
+
+  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
+  ASSERT_EQ(model().line_focus_mouse_distance(), 0);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
+  ASSERT_EQ(model().line_focus_speech_lines(), 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {

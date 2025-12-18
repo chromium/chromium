@@ -36,6 +36,9 @@ export class LineFocusModel {
   // The precomputed bottom positions of each line of text.
   private textLineBottoms_: number[] = [];
 
+  // Used for logging line focus session scroll distance.
+  private lastScrollTop_: number = 0;
+
   getMinY(): number {
     return this.minY_;
   }
@@ -106,5 +109,13 @@ export class LineFocusModel {
 
   setTextLineBottoms(bottoms: number[]): void {
     this.textLineBottoms_ = bottoms;
+  }
+
+  getLastScrollTop(): number {
+    return this.lastScrollTop_;
+  }
+
+  setLastScrollTop(top: number): void {
+    this.lastScrollTop_ = top;
   }
 }

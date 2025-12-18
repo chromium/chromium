@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
@@ -149,6 +150,14 @@ void ReadAnythingAppModel::ResetSelection() {
   selection_node_ids_.clear();
   start_ = SelectionEndpoint();
   end_ = SelectionEndpoint();
+}
+
+void ReadAnythingAppModel::ResetLineFocusSession() {
+  line_focus_session_start_time_ = std::optional<base::TimeTicks>();
+  line_focus_mouse_distance_ = 0;
+  line_focus_scroll_distance_ = 0;
+  line_focus_keyboard_lines_ = 0;
+  line_focus_speech_lines_ = 0;
 }
 
 bool ReadAnythingAppModel::PostProcessSelection() {

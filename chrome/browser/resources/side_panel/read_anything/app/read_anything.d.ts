@@ -450,6 +450,29 @@ declare namespace chrome {
     // Log when the empty state page is shown.
     function logEmptyState(): void;
 
+    // Ping that a line focus session has started.
+    function startLineFocusSession(): void;
+
+    // Log all the line focus session info, including length of time and
+    // movement activity.
+    function logLineFocusSession(): void;
+
+    // Add the given distance to the cumulative scroll distance for the current
+    // line focus session.
+    function addLineFocusScrollDistance(distance: number): void;
+
+    // Add the given distance to the cumulative mouse distance for the current
+    // line focus session.
+    function addLineFocusMouseDistance(distance: number): void;
+
+    // Increment the cumulative keyboard line count for the current line focus
+    // session.
+    function incrementLineFocusKeyboardLines(): void;
+
+    // Increment the cumulative speech line count for the current line focus
+    // session.
+    function incrementLineFocusSpeechLines(): void;
+
     // Returns a list of node ids and ranges (start and length) associated with
     // the index within the given text segment. The intended use is for
     // highlighting the ranges. Note that a highlight can span over multiple

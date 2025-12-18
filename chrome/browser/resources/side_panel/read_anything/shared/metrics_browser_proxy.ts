@@ -126,6 +126,7 @@ export interface MetricsBrowserProxy {
   recordEmptyState(): void;
   recordHighlightGranularity(highlight: number): void;
   recordLanguage(lang: string): void;
+  recordLineFocusSession(): void;
   recordNewPage(): void;
   recordNewPageWithSpeech(): void;
   recordSpeechError(error: ReadAnythingSpeechError): void;
@@ -146,6 +147,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordEmptyState() {
     chrome.readingMode.logEmptyState();
+  }
+
+  recordLineFocusSession() {
+    chrome.readingMode.logLineFocusSession();
   }
 
   recordSpeechStopSource(source: number) {

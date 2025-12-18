@@ -6,6 +6,7 @@ import {assert} from '//resources/js/assert.js';
 import {LineFocus, LineFocusType} from '../content/read_anything_types.js';
 import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {LineFocusModel} from './line_focus_model.js';
 
@@ -21,6 +22,7 @@ export class LineFocusController {
   private model_: LineFocusModel = new LineFocusModel();
   private highlightObserver_: MutationObserver;
   private speechController_ = SpeechController.getInstance();
+  private logger_ = ReadAnythingLogger.getInstance();
 
   constructor() {
     this.highlightObserver_ = new MutationObserver(this.onMutation_.bind(this));
@@ -51,13 +53,24 @@ export class LineFocusController {
         (this.model_.getCurrentLineFocus() !== LineFocus.OFF));
   }
 
+  onScrollEnd(newScrollTop: number) {
+    if (this.isEnabled()) {
+      const distance = Math.abs(newScrollTop - this.model_.getLastScrollTop());
+      chrome.readingMode.addLineFocusScrollDistance(distance);
+      this.model_.setLastScrollTop(newScrollTop);
+    }
+  }
+
   onMouseMove(y: number) {
     // Line focus should follow along with speech if it's active, so ignore
     // mouse movements.
     if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
         !this.isStatic_()) {
       this.model_.setCurrentLineIndex(null);
+      const previousY = this.model_.getY();
       this.setY_(Math.max(this.model_.getMinY(), y));
+      chrome.readingMode.addLineFocusMouseDistance(
+          Math.abs(this.model_.getY() - previousY));
     }
   }
 
@@ -86,9 +99,11 @@ export class LineFocusController {
 
   onLineFocusChange(
       lineFocusEnumValue: number, container: HTMLElement, height: number) {
+    const wasEnabled = this.isEnabled();
     const lineFocus = this.getLineFocusFromEnumValue_(lineFocusEnumValue);
     this.model_.setCurrentLineFocus(lineFocus);
     if (lineFocus.type === LineFocusType.NONE) {
+      this.logger_.logLineFocusSession();
       this.model_.setMinY(0);
       this.model_.setMaxY(0);
       this.model_.setY(0);
@@ -97,8 +112,13 @@ export class LineFocusController {
       this.model_.setDefaultWindowHeight(0);
       this.model_.setTextLineBottoms([]);
       this.model_.setCurrentLineIndex(null);
+      this.model_.setLastScrollTop(0);
       this.highlightObserver_.disconnect();
     } else {
+      // This is the start of a line focus session if it was off before this.
+      if (!wasEnabled) {
+        chrome.readingMode.startLineFocusSession();
+      }
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
         this.setCenterY_();
@@ -126,6 +146,9 @@ export class LineFocusController {
           this.clampLineIndex_(this.getFirstLineIndex_(isForward));
       this.model_.setCurrentLineIndex(firstIndex);
       this.setyOrScroll_(lines[firstIndex]!);
+      for (let i = 0; i < this.getCurrentLineFocusLines_(); i++) {
+        chrome.readingMode.incrementLineFocusKeyboardLines();
+      }
       return;
     }
 
@@ -142,6 +165,7 @@ export class LineFocusController {
       // view.
       if (lines[newIndex]! > this.model_.getMaxY() ||
           lineFocusTop < this.model_.getMinY()) {
+        chrome.readingMode.incrementLineFocusKeyboardLines();
         // TODO(crbug.com/447427066): Consider whether to instead scroll one
         // line at a time. If so, uncomment the code below and remove the center
         // logic below.
@@ -151,6 +175,7 @@ export class LineFocusController {
         const scrollDiff = (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
         this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
       } else if (this.model_.getCurrentLineIndex() !== previousLineIndex) {
+        chrome.readingMode.incrementLineFocusKeyboardLines();
         this.setyOrScroll_(lines[newIndex]!);
       }
 
@@ -178,7 +203,8 @@ export class LineFocusController {
   }
 
   private isStatic_(): boolean {
-    return this.model_.getCurrentLineFocus() === LineFocus.STATIC_LINE;
+    const lineFocus = this.model_.getCurrentLineFocus();
+    return !!lineFocus && lineFocus.isStatic;
   }
 
   // When the current line focus mode is static, scroll the content instead of
@@ -304,6 +330,7 @@ export class LineFocusController {
       const maxY =
           Math.max(...highlights.map(h => h.getBoundingClientRect().bottom));
       this.setyOrScroll_(maxY);
+      chrome.readingMode.incrementLineFocusSpeechLines();
     }
   }
 
