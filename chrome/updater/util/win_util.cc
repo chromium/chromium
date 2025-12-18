@@ -1661,7 +1661,9 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
     return base::unexpected(HRESULTFromLastError());
   }
   cmd_line.resize(bytes_read / sizeof(wchar_t));
-
+  if (cmd_line.back() == L'\0') {
+    cmd_line.pop_back();
+  }
   return cmd_line;
 }
 
