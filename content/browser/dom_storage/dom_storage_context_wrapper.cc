@@ -242,7 +242,7 @@ void DOMStorageContextWrapper::StartScavengingUnusedSessionStorage() {
     return;
   }
 
-  session_storage_control_->ScavengeUnusedNamespaces(base::NullCallback());
+  session_storage_control_->ScavengeUnusedNamespaces();
 }
 
 void DOMStorageContextWrapper::SetForceKeepSessionState() {
@@ -300,8 +300,7 @@ void DOMStorageContextWrapper::BindNamespace(
     mojo::ReportBadMessageCallback bad_message_callback,
     mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
   DCHECK(session_storage_control_);
-  session_storage_control_->BindNamespace(namespace_id, std::move(receiver),
-                                          base::DoNothing());
+  session_storage_control_->BindNamespace(namespace_id, std::move(receiver));
 }
 
 void DOMStorageContextWrapper::BindStorageArea(
@@ -317,8 +316,8 @@ void DOMStorageContextWrapper::BindStorageArea(
     return;
   }
   DCHECK(session_storage_control_);
-  session_storage_control_->BindStorageArea(
-      storage_key, namespace_id, std::move(receiver), base::DoNothing());
+  session_storage_control_->BindStorageArea(storage_key, namespace_id,
+                                            std::move(receiver));
 }
 
 bool DOMStorageContextWrapper::IsRequestValid(
@@ -374,7 +373,7 @@ void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   base::AutoLock lock(alive_namespaces_lock_);
   for (const auto& entry : alive_namespaces_)
     session_storage_control_->CreateNamespace(entry.first);
-  session_storage_control_->ScavengeUnusedNamespaces(base::NullCallback());
+  session_storage_control_->ScavengeUnusedNamespaces();
 
   partition_->ResetSessionStorageConnections();
 }

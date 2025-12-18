@@ -122,17 +122,15 @@ SessionStorageImpl::~SessionStorageImpl() {
 
 void SessionStorageImpl::BindNamespace(
     const std::string& namespace_id,
-    mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
-    BindNamespaceCallback callback) {
+    mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
   if (connection_state_ != CONNECTION_FINISHED) {
-    RunWhenConnected(base::BindOnce(
-        &SessionStorageImpl::BindNamespace, weak_ptr_factory_.GetWeakPtr(),
-        namespace_id, std::move(receiver), std::move(callback)));
+    RunWhenConnected(base::BindOnce(&SessionStorageImpl::BindNamespace,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    namespace_id, std::move(receiver)));
     return;
   }
   auto found = namespaces_.find(namespace_id);
   if (found == namespaces_.end()) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -150,24 +148,21 @@ void SessionStorageImpl::BindNamespace(
   // Track the total sessionStorage cache size.
   UMA_HISTOGRAM_COUNTS_100000("SessionStorageContext.CacheSizeInKB",
                               total_cache_size / 1024);
-  std::move(callback).Run(/*success=*/true);
 }
 
 void SessionStorageImpl::BindStorageArea(
     const blink::StorageKey& storage_key,
     const std::string& namespace_id,
-    mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
-    BindStorageAreaCallback callback) {
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   if (connection_state_ != CONNECTION_FINISHED) {
-    RunWhenConnected(base::BindOnce(
-        &SessionStorageImpl::BindStorageArea, weak_ptr_factory_.GetWeakPtr(),
-        storage_key, namespace_id, std::move(receiver), std::move(callback)));
+    RunWhenConnected(base::BindOnce(&SessionStorageImpl::BindStorageArea,
+                                    weak_ptr_factory_.GetWeakPtr(), storage_key,
+                                    namespace_id, std::move(receiver)));
     return;
   }
 
   auto found = namespaces_.find(namespace_id);
   if (found == namespaces_.end()) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -181,7 +176,6 @@ void SessionStorageImpl::BindStorageArea(
 
   PurgeUnusedAreasIfNeeded();
   found->second->OpenArea(storage_key, std::move(receiver), namespace_entry);
-  std::move(callback).Run(/*success=*/true);
 }
 
 void SessionStorageImpl::CreateNamespace(const std::string& namespace_id) {
@@ -479,16 +473,14 @@ void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
   RecordSessionStorageCachePurgedHistogram(purge_reason, purged_size_kib);
 }
 
-void SessionStorageImpl::ScavengeUnusedNamespaces(
-    ScavengeUnusedNamespacesCallback callback) {
+void SessionStorageImpl::ScavengeUnusedNamespaces() {
   if (has_scavenged_) {
-    std::move(callback).Run();
     return;
   }
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(
         base::BindOnce(&SessionStorageImpl::ScavengeUnusedNamespaces,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   has_scavenged_ = true;
@@ -503,7 +495,6 @@ void SessionStorageImpl::ScavengeUnusedNamespaces(
   }
   DeleteNamespacesFromMetadataAndDatabase(std::move(namespaces_to_delete));
   protected_namespaces_from_scavenge_.clear();
-  std::move(callback).Run();
 }
 
 bool SessionStorageImpl::OnMemoryDump(

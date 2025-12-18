@@ -40,23 +40,19 @@ enum SessionStorageCloneType {
 // Currently this is consumed in the browser process and implemented in the
 // storage service.
 interface SessionStorageControl {
-  // Binds a control interface for the given namespace. Returns `true` if
-  // `namespace_id` matched a valid namespace name and `false` otherwise.
+  // Binds a control interface for the given namespace.
   BindNamespace(string namespace_id,
-                pending_receiver<blink.mojom.SessionStorageNamespace> receiver)
-      => (bool success);
+                pending_receiver<blink.mojom.SessionStorageNamespace> receiver);
 
   // Binds a blink.mojom.StorageArea receiver for the `storage_key` in the
-  // given namespace. Returns `true` if `namespace_id` matched a valid
-  // namespace name and `false` otherwise.
+  // given namespace.
   //
   // Note that the browser calling this method should have already validated
   // that the source of `receiver` (i.e. some specific renderer process) is
   // allowed to access storage for `storage_key`.
   BindStorageArea(blink.mojom.StorageKey storage_key,
                   string namespace_id,
-                  pending_receiver<blink.mojom.StorageArea> receiver)
-      => (bool success);
+                  pending_receiver<blink.mojom.StorageArea> receiver);
 
   // Retrieves some basic usage information about the Session Storage state.
   GetUsage() => (array<SessionStorageUsageInfo> info);
@@ -70,8 +66,8 @@ interface SessionStorageControl {
   CleanUpStorage() => ();
 
   // Scans Session Storage for entries pertaining to unused namespaces and
-  // removes them from the backing storage. Response when done.
-  ScavengeUnusedNamespaces() => ();
+  // removes them from the backing storage.
+  ScavengeUnusedNamespaces();
 
   // Tells the service to immediately commit any pending operations to disk.
   Flush();

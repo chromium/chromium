@@ -75,20 +75,18 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // mojom::SessionStorageControl implementation:
   void BindNamespace(
       const std::string& namespace_id,
-      mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
-      BindNamespaceCallback callback) override;
+      mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver)
+      override;
   void BindStorageArea(
       const blink::StorageKey& storage_key,
       const std::string& namespace_id,
-      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
-      BindStorageAreaCallback callback) override;
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
   void GetUsage(GetUsageCallback callback) override;
   void DeleteStorage(const blink::StorageKey& storage_key,
                      const std::string& namespace_id,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
-  void ScavengeUnusedNamespaces(
-      ScavengeUnusedNamespacesCallback callback) override;
+  void ScavengeUnusedNamespaces() override;
   void Flush() override;
   void PurgeMemory() override;
   void CreateNamespace(const std::string& namespace_id) override;
