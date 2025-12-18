@@ -45,7 +45,7 @@ extensions_types_only_schema_files_ = [
   "incognito.json",
   "oauth2.webidl",
   "requirements.json",
-  "shared_module.idl",
+  "shared_module.webidl",
   "web_accessible_resources_mv2.idl",
   "web_accessible_resources.idl",
 ]
