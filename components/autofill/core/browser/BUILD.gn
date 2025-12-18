@@ -722,6 +722,8 @@ static_library("browser") {
     "suggestions/passkeys/hybrid_passkey_availability.h",
     "suggestions/passkeys/passkey_suggestion_generator.cc",
     "suggestions/passkeys/passkey_suggestion_generator.h",
+    "suggestions/payments/credit_card_suggestion_generator.cc",
+    "suggestions/payments/credit_card_suggestion_generator.h",
     "suggestions/payments/iban_suggestion_generator.cc",
     "suggestions/payments/iban_suggestion_generator.h",
     "suggestions/payments/merchant_promo_code_suggestion_generator.cc",
