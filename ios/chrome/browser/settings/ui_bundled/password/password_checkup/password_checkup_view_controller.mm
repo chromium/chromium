@@ -40,7 +40,7 @@ namespace {
 constexpr CGFloat kHeaderImageHeight = 99;
 
 // Duration of the cooldown period during which user interactions are ignored.
-constexpr base::TimeDelta kCooldownDuration = base::Microseconds(500);
+constexpr base::TimeDelta kCooldownDuration = base::Milliseconds(500);
 
 // Sections of the Password Checkup Homepage UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {

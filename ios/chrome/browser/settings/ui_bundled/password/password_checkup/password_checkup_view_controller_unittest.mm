@@ -621,9 +621,9 @@ TEST_F(PasswordCheckupViewControllerTest, TestCooldown) {
   SimulateTap(/*index=*/0, /*section=*/0);
   EXPECT_OCMOCK_VERIFY((id)handler_);
 
-  // 3. Fast forward past the cooldown ( > 500 microseconds).
+  // 3. Fast forward past the cooldown ( > 500 milliseconds).
   // Using 600us to be safe.
-  task_environment_.FastForwardBy(base::Microseconds(600));
+  task_environment_.FastForwardBy(base::Milliseconds(600));
 
   // 4. Third tap should succeed again.
   OCMExpect([handler_ showPasswordIssuesWithWarningType:
