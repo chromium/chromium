@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -399,8 +400,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
         }
 
         for (int adjustment : {-1, -2}) {
-          SCOPED_TRACE(std::format(
-              "Error case: packed data size incorrect. adjustment={}",
+          SCOPED_TRACE(base::StringPrintf(
+              "Error case: packed data size incorrect. adjustment=%d",
               adjustment));
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
@@ -414,8 +415,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmd) {
         }
 
         for (int adjustment : {-1, 1}) {
-          SCOPED_TRACE(std::format(
-              "Error case: view_format_count incorrect. adjustment={}",
+          SCOPED_TRACE(base::StringPrintf(
+              "Error case: view_format_count incorrect. adjustment=%d",
               adjustment));
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
@@ -492,8 +493,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmdInvalidUsage) {
            UsageAndInternalUsage{.usage = kInvalidUsage},
            UsageAndInternalUsage{.internal_usage = kInvalidUsage},
        }) {
-    SCOPED_TRACE(std::format("usage={} internal_usage={}", usage.usage,
-                             usage.internal_usage));
+    SCOPED_TRACE(base::StringPrintf("usage=%d internal_usage=%d", usage.usage,
+                                    usage.internal_usage));
     // Create the shared image
     SharedImageInterface* sii = GetSharedImageInterface();
     scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -511,8 +512,8 @@ TEST_P(WebGPUMailboxTextureTest, AssociateMailboxCmdInvalidUsage) {
         [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
            scoped_refptr<gpu::ClientSharedImage> shared_image,
            UsageAndInternalUsage usage) {
-          SCOPED_TRACE(std::format("usage={} internal_usage={}", usage.usage,
-                                   usage.internal_usage));
+          SCOPED_TRACE(base::StringPrintf("usage=%d internal_usage=%d",
+                                          usage.usage, usage.internal_usage));
           const gpu::Mailbox& mailbox = shared_image->mailbox();
 
           {
