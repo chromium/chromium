@@ -290,6 +290,7 @@ id<ShareKitAvatarPrimitive> TestShareKitService::AvatarImage(
 
 void TestShareKitService::Shutdown() {
   data_sharing_service_->SetUIDelegate(nullptr);
+  data_sharing_service_->SetSDKDelegate(nullptr);
 }
 
 void TestShareKitService::ShareGroup(tab_groups::LocalTabGroupID tab_group_id,
