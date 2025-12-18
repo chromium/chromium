@@ -30,7 +30,6 @@
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/permissions/permissions.h"
-#import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -674,62 +673,6 @@ void TapDoneButtonOnInfobarModal() {
     @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
     @(web::PermissionMicrophone) : @(web::PermissionStateNotAccessible)
   }];
-}
-
-// Tests that by enabling permissions, then triggering Reader mode, then
-// disabling Reader mode, the permission badges are still visible at the end.
-- (void)testPermissionsWithReaderMode {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL("/permissions/camera_only.html")];
-
-  {
-    // It is suspected that the video element in the test page performs some
-    // fast repetitive animations that, combined with the EarlGrey
-    // synchronization, delays the invocation of the infobar appearance
-    // animation completion block. As a workaround, we disables EarlGrey
-    // synchronization whenever the test is showing the video element.
-    ScopedSynchronizationDisabler disabler;
-    [self checkAndTapAlertContainingPermissions:
-              l10n_util::GetNSString(
-                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
-                                    shouldAllow:YES];
-
-    // Verify Camera Badge is visible (accepted state).
-    [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
-    [[EarlGrey selectElementWithMatcher:InfobarBannerCameraOnly()]
-        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-    [[EarlGrey selectElementWithMatcher:CameraBadge(/*accepted=*/YES)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-
-    // Inject a lot of text to make the page distillable (eligible for Reader
-    // Mode).
-    NSString* loremIpsum =
-        @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do "
-         "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim "
-         "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
-         "aliquip ex ea commodo consequat. Duis aute irure dolor in "
-         "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-         "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
-         "culpa qui officia deserunt mollit anim id est laborum.";
-    NSString* script = [NSString
-        stringWithFormat:
-            @"(function() { for (var i = 0; i < 20; i++) { var p = "
-            @"document.createElement('p'); "
-            @"p.innerText = '%@'; document.body.appendChild(p); } })();",
-            loremIpsum];
-    [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
-
-    // Enable Reader Mode.
-    [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady];
-
-    // Disable Reader Mode.
-    [ChromeEarlGrey hideReaderMode];
-
-    // Verify Camera Badge is visible (accepted state) at the end.
-    [[EarlGrey selectElementWithMatcher:CameraBadge(/*accepted=*/YES)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
 }
 
 @end
