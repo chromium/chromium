@@ -69,8 +69,9 @@ VerticalTabDragHandlerImpl::~VerticalTabDragHandlerImpl() = default;
 
 void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
                                                 const ui::MouseEvent& event) {
-  CHECK(dragged_tabs_.empty());
-  drag_controller_.reset();
+  // TODO(crbug.com/439963720): Look into why the state is not reset elsewhere
+  // after initializing a drag.
+  ResetDragState();
   drag_controller_ = std::make_unique<TabDragController>();
 
   // TODO(crbug.com/439963720): Support dragging multiple tabs.
