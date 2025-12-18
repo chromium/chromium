@@ -30,7 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
@@ -1125,8 +1125,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(
-      power_metrics::SystemPowerMonitor::GetInstance());
+  power_metrics::SystemPowerMonitor::Initialize();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   HandleEnableBenchmarkingCountdownAsync();

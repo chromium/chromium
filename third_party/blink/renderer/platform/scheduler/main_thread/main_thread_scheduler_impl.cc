@@ -314,8 +314,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Register a tracing state observer unless we're running in a test without a
   // task runner. Note that it's safe to remove a non-existent observer.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-        weak_factory_.GetWeakPtr());
+    trace_event::AddTraceSessionObserver(this);
   }
 
   internal::ProcessState::Get()->is_process_backgrounded =
@@ -344,8 +343,7 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   CHECK(main_thread_only().detached_task_queues.empty());
   CHECK(!virtual_time_control_task_queue_);
 
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
+  trace_event::RemoveTraceSessionObserver(this);
 }
 
 // static
@@ -2494,15 +2492,14 @@ MainThreadSchedulerImpl::CreateCPUTimeBudgetPoolForTesting(const char* name) {
                                              NowTicks());
 }
 
-void MainThreadSchedulerImpl::OnTraceLogEnabled() {
+void MainThreadSchedulerImpl::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   CreateTraceEventObjectSnapshot();
   tracing_controller_.OnTraceLogEnabled();
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
     page_scheduler->OnTraceLogEnabled();
   }
 }
-
-void MainThreadSchedulerImpl::OnTraceLogDisabled() {}
 
 base::WeakPtr<MainThreadSchedulerImpl> MainThreadSchedulerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

@@ -310,17 +310,16 @@ void TraceNetLogObserver::WatchForTraceStart(NetLog* netlog) {
   net_log_to_watch_ = netlog;
   // Tracing can start before the observer is even created, for instance for
   // startup tracing.
-  if (base::trace_event::TraceLog::GetInstance()->IsEnabled())
-    OnTraceLogEnabled();
-  base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-      weak_factory_.GetWeakPtr());
+  if (TRACE_EVENT_CATEGORY_ENABLED(kNetLogTracingCategory)) {
+    net_log_to_watch_->AddObserver(this, capture_mode_);
+  }
+  base::trace_event::TraceSessionObserverList::AddObserver(this);
 }
 
 void TraceNetLogObserver::StopWatchForTraceStart() {
   // Should only stop if is currently watching.
   DCHECK(net_log_to_watch_);
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
+  base::trace_event::TraceSessionObserverList::RemoveObserver(this);
   // net_log() != nullptr iff NetLog::AddObserver() has been called.
   // This implies that if the netlog category wasn't enabled, then
   // NetLog::RemoveObserver() will not get called, and there won't be
@@ -330,18 +329,27 @@ void TraceNetLogObserver::StopWatchForTraceStart() {
   net_log_to_watch_ = nullptr;
 }
 
-void TraceNetLogObserver::OnTraceLogEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kNetLogTracingCategory, &enabled);
+void TraceNetLogObserver::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  if (net_log()) {
+    return;
+  }
+  bool enabled = TRACE_EVENT_CATEGORY_ENABLED(kNetLogTracingCategory);
   if (!enabled)
     return;
 
   net_log_to_watch_->AddObserver(this, capture_mode_);
 }
 
-void TraceNetLogObserver::OnTraceLogDisabled() {
-  if (net_log())
+void TraceNetLogObserver::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  if (!net_log()) {
+    return;
+  }
+  bool should_stop = !base::trace_event::IsCategoryEnabledOnStop(
+      PERFETTO_GET_CATEGORY_INDEX(kNetLogTracingCategory), args);
+  if (should_stop) {
     net_log()->RemoveObserver(this);
+  }
 }
 
 }  // namespace net

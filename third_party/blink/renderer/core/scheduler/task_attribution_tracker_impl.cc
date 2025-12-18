@@ -115,7 +115,7 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
     // the main thread, since otherwise the `isolate_` might not be the current
     // isolate, so we need to use an async observer.
     if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-      trace_event::AddAsyncEnabledStateObserver(weak_factory_.GetWeakPtr());
+      trace_event::AddTraceSessionObserver(this);
     }
     // If tracing was already enabled, we won't get a callback, so check if we
     // need to register the promise hook.
@@ -129,7 +129,7 @@ TaskAttributionTrackerImpl::~TaskAttributionTrackerImpl() {
   if (base::FeatureList::IsEnabled(
           features::kTaskAttributionTraceMicrotaskTaskState)) {
     // Note that it's safe to remove a non-existent observer.
-    trace_event::RemoveAsyncEnabledStateObserver(this);
+    trace_event::RemoveTraceSessionObserver(this);
   }
 }
 
@@ -230,14 +230,20 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
   return nullptr;
 }
 
-void TaskAttributionTrackerImpl::OnTraceLogEnabled() {
+void TaskAttributionTrackerImpl::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   if (IsTracingCategoryEnabled()) {
     isolate_->SetPromiseHook(TaskAttributionPromiseHook);
   }
 }
 
-void TaskAttributionTrackerImpl::OnTraceLogDisabled() {
-  isolate_->SetPromiseHook(nullptr);
+void TaskAttributionTrackerImpl::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  bool should_stop = !base::trace_event::IsCategoryEnabledOnStop(
+      PERFETTO_GET_CATEGORY_INDEX(kTracingCategory), args);
+  if (should_stop) {
+    isolate_->SetPromiseHook(nullptr);
+  }
 }
 
 void TaskAttributionTrackerImpl::BeginMicrotaskTrace() {

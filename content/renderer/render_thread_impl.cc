@@ -296,36 +296,6 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
   }
 }
 
-perfetto::StaticString ProcessPriorityToString(
-    std::optional<base::Process::Priority> priority) {
-  if (!priority) {
-    return "Unknown";
-  }
-  switch (*priority) {
-    case base::Process::Priority::kBestEffort:
-      return "Best effort";
-    case base::Process::Priority::kUserVisible:
-      return "User visible";
-    case base::Process::Priority::kUserBlocking:
-      return "User blocking";
-  }
-  NOTREACHED();
-}
-
-perfetto::StaticString ProcessVisibilityToString(
-    std::optional<mojom::RenderProcessVisibleState> visible_state) {
-  if (!visible_state) {
-    return "Unknown";
-  }
-  switch (*visible_state) {
-    case mojom::RenderProcessVisibleState::kVisible:
-      return "Visible";
-    case mojom::RenderProcessVisibleState::kHidden:
-      return "Hidden";
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -491,13 +461,6 @@ RenderThreadImpl::RenderThreadImpl(
 }
 
 void RenderThreadImpl::Init() {
-  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(std::nullopt),
-                    process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(std::nullopt),
-                    process_visibility_track_);
-  base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-      weak_factory_.GetWeakPtr());
-
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
   SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
@@ -640,12 +603,6 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
-
-  TRACE_EVENT_END("renderer", process_priority_track_);
-  TRACE_EVENT_END("renderer", process_visibility_track_);
-
   // The destructor should not run in multi-process mode because Shutdown()
   // terminates the process. The destructor only needs to clean up for tests.
   CHECK(IsSingleProcess());
@@ -703,18 +660,6 @@ std::string RenderThreadImpl::GetLocale() {
   DCHECK(!lang.empty());
   return lang;
 }
-
-void RenderThreadImpl::OnTraceLogEnabled() {
-  TRACE_EVENT_END("renderer", process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority_),
-                    process_priority_track_);
-
-  TRACE_EVENT_END("renderer", process_visibility_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state_),
-                    process_visibility_track_);
-}
-
-void RenderThreadImpl::OnTraceLogDisabled() {}
 
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   if (!renderer_host_) {

@@ -335,16 +335,6 @@ class JsonStringOutputWriter
 };
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 
-struct TraceLog::RegisteredAsyncObserver {
-  explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
-      : observer(observer),
-        task_runner(SequencedTaskRunner::GetCurrentDefault()) {}
-  ~RegisteredAsyncObserver() = default;
-
-  WeakPtr<AsyncEnabledStateObserver> observer;
-  scoped_refptr<SequencedTaskRunner> task_runner;
-};
-
 // static
 TraceLog* TraceLog::GetInstance() {
   static base::NoDestructor<TraceLog> instance{};
@@ -354,11 +344,7 @@ TraceLog* TraceLog::GetInstance() {
 // static
 void TraceLog::ResetForTesting() {
   auto* self = GetInstance();
-  AutoLock lock(self->observers_lock_);
   self->tracing_session_.reset();
-  self->enabled_state_observers_.clear();
-  self->owned_enabled_state_observer_copy_.clear();
-  self->async_observers_.clear();
 }
 
 TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
@@ -540,47 +526,6 @@ void TraceLog::SetDisabledWhileLocked() {
   }
 }
 
-void TraceLog::AddEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  enabled_state_observers_.push_back(listener);
-}
-
-void TraceLog::RemoveEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  auto removed = std::ranges::remove(enabled_state_observers_, listener);
-  enabled_state_observers_.erase(removed.begin(), removed.end());
-}
-
-void TraceLog::AddOwnedEnabledStateObserver(
-    std::unique_ptr<EnabledStateObserver> listener) {
-  AutoLock lock(observers_lock_);
-  enabled_state_observers_.push_back(listener.get());
-  owned_enabled_state_observer_copy_.push_back(std::move(listener));
-}
-
-bool TraceLog::HasEnabledStateObserver(EnabledStateObserver* listener) const {
-  AutoLock lock(observers_lock_);
-  return Contains(enabled_state_observers_, listener);
-}
-
-void TraceLog::AddAsyncEnabledStateObserver(
-    WeakPtr<AsyncEnabledStateObserver> listener) {
-  AutoLock lock(observers_lock_);
-  async_observers_.emplace(listener.get(), RegisteredAsyncObserver(listener));
-}
-
-void TraceLog::RemoveAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  async_observers_.erase(listener);
-}
-
-bool TraceLog::HasAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) const {
-  AutoLock lock(observers_lock_);
-  return Contains(async_observers_, listener);
-}
-
 // Flush() works as the following:
 // 1. Flush() is called in thread A whose task runner is saved in
 //    flush_task_runner_;
@@ -693,11 +638,6 @@ void TraceLog::SetProcessID(ProcessId process_id) {
   process_id_ = process_id;
 }
 
-size_t TraceLog::GetObserverCountForTest() const {
-  AutoLock lock(observers_lock_);
-  return enabled_state_observers_.size();
-}
-
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   {
     AutoLock lock(track_event_lock_);
@@ -707,16 +647,6 @@ void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
     if (active_track_event_sessions_ > 1) {
       return;
     }
-  }
-
-  AutoLock lock(observers_lock_);
-  for (EnabledStateObserver* observer : enabled_state_observers_) {
-    observer->OnTraceLogEnabled();
-  }
-  for (const auto& it : async_observers_) {
-    it.second.task_runner->PostTask(
-        FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogEnabled,
-                            it.second.observer));
   }
 }
 
@@ -729,17 +659,6 @@ void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
     if (active_track_event_sessions_ > 0) {
       return;
     }
-  }
-
-  AutoLock lock(observers_lock_);
-  for (base::trace_event::TraceLog::EnabledStateObserver* it :
-       enabled_state_observers_) {
-    it->OnTraceLogDisabled();
-  }
-  for (const auto& it : async_observers_) {
-    it.second.task_runner->PostTask(
-        FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogDisabled,
-                            it.second.observer));
   }
 }
 

@@ -86,7 +86,11 @@ class SystemPowerMonitorHelperTest : public testing::Test {
                                                          std::move(delegate));
   }
 
-  void TearDown() override { helper_.reset(); }
+  void TearDown() override {
+    delegate_ = nullptr;
+    provider_ = nullptr;
+    helper_.reset();
+  }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
   SystemPowerMonitorHelper* helper() { return helper_.get(); }
@@ -98,8 +102,8 @@ class SystemPowerMonitorHelperTest : public testing::Test {
 
  private:
   std::unique_ptr<SystemPowerMonitorHelper> helper_;
-  raw_ptr<FakeDelegate, DanglingUntriaged> delegate_;
-  raw_ptr<FakeProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeDelegate> delegate_;
+  raw_ptr<FakeProvider> provider_;
 };
 
 class SystemPowerMonitorTest : public testing::Test {
@@ -111,13 +115,19 @@ class SystemPowerMonitorTest : public testing::Test {
 
     // Assign a valid metric to provider, so the timer can start successfully.
     provider->set_metrics({1llu});
-    monitor_.reset(new SystemPowerMonitor(std::move(provider),
-                                          std::make_unique<FakeDelegate>()));
+    auto delegate = std::make_unique<FakeDelegate>();
+    delegate_ = delegate.get();
+    monitor_.reset(
+        new SystemPowerMonitor(std::move(provider), std::move(delegate)));
   }
 
-  void TearDown() override { monitor_.reset(); }
+  void TearDown() override {
+    delegate_ = nullptr;
+    monitor_.reset();
+  }
 
   SystemPowerMonitor* monitor() { return monitor_.get(); }
+  FakeDelegate* delegate() { return delegate_.get(); }
   base::SequenceBound<SystemPowerMonitorHelper>* helper() {
     return monitor_->GetHelperForTesting();
   }
@@ -127,6 +137,7 @@ class SystemPowerMonitorTest : public testing::Test {
 
  private:
   std::unique_ptr<SystemPowerMonitor> monitor_;
+  raw_ptr<FakeDelegate> delegate_;
 };
 
 TEST_F(SystemPowerMonitorHelperTest, MonitorHelperStartStop) {
@@ -232,7 +243,9 @@ TEST_F(SystemPowerMonitorTest, TraceLogEnableDisable) {
   ASSERT_NE(helper(), nullptr);
 
   base::test::TestFuture<bool> future_enable;
-  monitor()->OnTraceLogEnabled();
+  helper()
+      ->AsyncCall(&SystemPowerMonitorHelper::OnStart)
+      .WithArgs(perfetto::DataSourceBase::StartArgs{});
   helper()
       ->AsyncCall(&SystemPowerMonitorHelper::IsTimerRunningForTesting)
       .Then(base::BindOnce(
@@ -242,8 +255,10 @@ TEST_F(SystemPowerMonitorTest, TraceLogEnableDisable) {
           future_enable.GetCallback()));
   EXPECT_TRUE(future_enable.Get());
 
+  delegate()->set_trace_category_enabled(false);
+  helper()->AsyncCall(&SystemPowerMonitorHelper::Sample);
+
   base::test::TestFuture<bool> future_disable;
-  monitor()->OnTraceLogDisabled();
   helper()
       ->AsyncCall(&SystemPowerMonitorHelper::IsTimerRunningForTesting)
       .Then(base::BindOnce(

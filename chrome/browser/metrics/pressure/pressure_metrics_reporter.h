@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_METRICS_PRESSURE_PRESSURE_METRICS_REPORTER_H_
 #define CHROME_BROWSER_METRICS_PRESSURE_PRESSURE_METRICS_REPORTER_H_
 
-#include "chrome/browser/metrics/pressure/pressure_metrics.h"
-
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
+#include "chrome/browser/metrics/pressure/pressure_metrics.h"
 
 // Contains the code working on the worker sequence.
 class PressureMetricsWorker;
@@ -23,18 +22,12 @@ class PressureMetricsWorker;
 // (see: System.Pressure.*).
 //
 // Metrics are also reported through tracing as counters.
-class PressureMetricsReporter
-    : public base::trace_event::TraceLog::EnabledStateObserver {
+class PressureMetricsReporter {
  public:
   PressureMetricsReporter();
-  ~PressureMetricsReporter() override;
-
-  // trace_event::TraceLog::EnabledStateObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  ~PressureMetricsReporter();
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<PressureMetricsWorker> worker_;
 };
 

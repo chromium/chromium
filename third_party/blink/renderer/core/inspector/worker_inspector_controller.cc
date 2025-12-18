@@ -104,7 +104,7 @@ WorkerInspectorController::WorkerInspectorController(
         std::move(devtools_params->agent_receiver),
         thread->GetTaskRunner(TaskType::kInternalInspector));
   }
-  trace_event::AddEnabledStateObserver(this);
+  trace_event::AddTraceSessionObserver(this);
   EmitTraceEvent();
 }
 
@@ -174,7 +174,7 @@ void WorkerInspectorController::Dispose() {
   if (agent_)
     agent_->Dispose();
   thread_ = nullptr;
-  trace_event::RemoveEnabledStateObserver(this);
+  trace_event::RemoveTraceSessionObserver(this);
 }
 
 void WorkerInspectorController::FlushProtocolNotifications() {
@@ -204,11 +204,10 @@ void WorkerInspectorController::DidProcessTask(
   FlushProtocolNotifications();
 }
 
-void WorkerInspectorController::OnTraceLogEnabled() {
+void WorkerInspectorController::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   EmitTraceEvent();
 }
-
-void WorkerInspectorController::OnTraceLogDisabled() {}
 
 void WorkerInspectorController::EmitTraceEvent() {
   if (worker_devtools_token_.is_empty())

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "components/power_metrics/energy_metrics_provider.h"
 
 namespace power_metrics {
@@ -42,7 +43,8 @@ class SystemPowerMonitorDelegate {
 
 // Manages a timer to regularly sample and emit trace events, whose start and
 // stop are controlled by System Power Monitor.
-class SystemPowerMonitorHelper {
+class SystemPowerMonitorHelper
+    : public base::trace_event::TraceSessionObserver {
  public:
   // Default sampling interval, which should be set to larger or equal to 50 ms.
   static constexpr base::TimeDelta kDefaultSampleInterval =
@@ -55,11 +57,14 @@ class SystemPowerMonitorHelper {
   SystemPowerMonitorHelper(const SystemPowerMonitorHelper&) = delete;
   SystemPowerMonitorHelper& operator=(const SystemPowerMonitorHelper&) = delete;
 
-  ~SystemPowerMonitorHelper();
+  ~SystemPowerMonitorHelper() override;
 
   void Start();
   void Stop();
   void Sample();
+
+  // base::trace_event::TraceSessionObserver implementation.
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   bool IsTimerRunningForTesting();
 
@@ -75,21 +80,15 @@ class SystemPowerMonitorHelper {
 };
 
 // Monitors system-wide power consumption. Gets data from EnergyMetricsProvider.
-class SystemPowerMonitor
-    : public base::trace_event::TraceLog::EnabledStateObserver {
+class SystemPowerMonitor {
  public:
   SystemPowerMonitor();
+  ~SystemPowerMonitor();
 
   SystemPowerMonitor(const SystemPowerMonitor&) = delete;
   SystemPowerMonitor& operator=(const SystemPowerMonitor&) = delete;
 
-  ~SystemPowerMonitor() override;
-
-  static SystemPowerMonitor* GetInstance();
-
-  // TraceLog::EnabledStateObserver.
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  static void Initialize();
 
  private:
   friend class SystemPowerMonitorTest;

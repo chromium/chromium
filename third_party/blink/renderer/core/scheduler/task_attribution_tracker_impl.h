@@ -38,7 +38,7 @@ class TaskAttributionInfo;
 // current task.
 class CORE_EXPORT TaskAttributionTrackerImpl
     : public TaskAttributionTracker,
-      public blink::trace_event::AsyncEnabledStateObserver {
+      public blink::trace_event::TraceSessionObserver {
  public:
   static std::unique_ptr<TaskAttributionTracker> Create(v8::Isolate*);
 
@@ -59,9 +59,9 @@ class CORE_EXPORT TaskAttributionTrackerImpl
   void BeginMicrotaskTrace() override;
   void EndMicrotaskTrace() override;
 
-  // AsyncEnabledStateObserver overrides:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  // trace_event::TraceSessionObserver implementation.
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);

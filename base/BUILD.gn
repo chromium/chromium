@@ -931,6 +931,8 @@ component("base") {
     "trace_event/named_trigger.h",
     "trace_event/trace_id_helper.cc",
     "trace_event/trace_id_helper.h",
+    "trace_event/trace_session_observer.cc",
+    "trace_event/trace_session_observer.h",
     "traits_bag.h",
     "tuple.h",
     "types/cxx23_from_range.h",

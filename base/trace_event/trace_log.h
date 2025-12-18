@@ -79,59 +79,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
     return active_track_event_sessions_ > 0;
   }
 
-  // Enabled state listeners give a callback when tracing is enabled or
-  // disabled. This can be used to tie into other library's tracing systems
-  // on-demand.
-  class BASE_EXPORT EnabledStateObserver {
-   public:
-    virtual ~EnabledStateObserver() = default;
-
-    // Called just after the tracing system becomes enabled, outside of the
-    // |lock_|. TraceLog::IsEnabled() is true at this point.
-    virtual void OnTraceLogEnabled() = 0;
-
-    // Called just after the tracing system disables, outside of the |lock_|.
-    // TraceLog::IsEnabled() is false at this point.
-    virtual void OnTraceLogDisabled() = 0;
-  };
-  // Adds an observer. Cannot be called from within the observer callback.
-  void AddEnabledStateObserver(EnabledStateObserver* listener);
-  // Removes an observer. Cannot be called from within the observer callback.
-  void RemoveEnabledStateObserver(EnabledStateObserver* listener);
-  // Adds an observer that is owned by TraceLog. This is useful for agents that
-  // implement tracing feature that needs to stay alive as long as TraceLog
-  // does.
-  void AddOwnedEnabledStateObserver(
-      std::unique_ptr<EnabledStateObserver> listener);
-  bool HasEnabledStateObserver(EnabledStateObserver* listener) const;
-
-  // Asynchronous enabled state listeners. When tracing is enabled or disabled,
-  // for each observer, a task for invoking its appropriate callback is posted
-  // to the `SequencedTaskRunner` from which AddAsyncEnabledStateObserver() was
-  // called. This allows the observer to be safely destroyed, provided that it
-  // happens on the same `SequencedTaskRunner` that invoked
-  // AddAsyncEnabledStateObserver().
-  class BASE_EXPORT AsyncEnabledStateObserver {
-   public:
-    virtual ~AsyncEnabledStateObserver() = default;
-
-    // Posted just after the tracing system becomes enabled, outside |lock_|.
-    // TraceLog::IsEnabled() is true at this point.
-    virtual void OnTraceLogEnabled() = 0;
-
-    // Posted just after the tracing system becomes disabled, outside |lock_|.
-    // TraceLog::IsEnabled() is false at this point.
-    virtual void OnTraceLogDisabled() = 0;
-  };
-  // TODO(oysteine): This API originally needed to use WeakPtrs as the observer
-  // list was copied under the global trace lock, but iterated over outside of
-  // that lock so that observers could add tracing. The list is now protected by
-  // its own lock, so this can be changed to a raw ptr.
-  void AddAsyncEnabledStateObserver(
-      WeakPtr<AsyncEnabledStateObserver> listener);
-  void RemoveAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener);
-  bool HasAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener) const;
-
   void SetArgumentFilterPredicate(
       const ArgumentFilterPredicate& argument_filter_predicate);
   ArgumentFilterPredicate GetArgumentFilterPredicate() const;
@@ -166,8 +113,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   void SetProcessID(ProcessId process_id);
 
-  size_t GetObserverCountForTest() const;
-
   void SetEnabledImpl(const TraceConfig& trace_config,
                       const perfetto::TraceConfig& perfetto_config);
 
@@ -177,8 +122,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
  private:
   friend class base::NoDestructor<TraceLog>;
-
-  struct RegisteredAsyncObserver;
 
   TraceLog();
   ~TraceLog() override;
@@ -194,18 +137,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   // This lock protects TraceLog member accesses (except for members protected
   // by thread_info_lock_) from arbitrary threads.
   mutable Lock lock_;
-
-  // The lock protects observers access.
-  mutable Lock observers_lock_;
-  bool dispatching_to_observers_ = false;
-  std::vector<raw_ptr<EnabledStateObserver, VectorExperimental>>
-      enabled_state_observers_ GUARDED_BY(observers_lock_);
-  std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> async_observers_
-      GUARDED_BY(observers_lock_);
-  // Manages ownership of the owned observers. The owned observers will also be
-  // added to |enabled_state_observers_|.
-  std::vector<std::unique_ptr<EnabledStateObserver>>
-      owned_enabled_state_observer_copy_ GUARDED_BY(observers_lock_);
 
   ProcessId process_id_;
 
