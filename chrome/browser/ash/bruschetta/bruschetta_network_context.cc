@@ -234,6 +234,7 @@ void BruschettaNetworkContext::OnAuthRequired(
 
 void BruschettaNetworkContext::OnLocalNetworkAccessPermissionRequired(
     network::mojom::TransportType type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }

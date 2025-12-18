@@ -107,6 +107,7 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // denied).
     url_loader_network_observer->OnLocalNetworkAccessPermissionRequired(
         MapTransportTypeToMojomTransportType(info.type),
+        *checker_.ResponseAddressSpace(),
         base::BindOnce(
             [](base::WeakPtr<PrivateNetworkAccessUrlLoaderInterceptor>
                    weak_self,

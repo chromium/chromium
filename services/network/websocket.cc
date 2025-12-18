@@ -242,6 +242,7 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
       check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
     impl_->url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
         MapTransportTypeToMojomTransportType(info.type),
+        *checker.ResponseAddressSpace(),
         base::BindOnce(
             [](base::WeakPtr<WebSocket> weak_self,
                net::CompletionOnceCallback callback,

@@ -34,6 +34,7 @@ class LocalNetworkAccessBrowserTestBase : public policy::PolicyTest {
   }
 
   net::EmbeddedTestServer& https_server() { return https_server_; }
+  net::EmbeddedTestServer& https_local_server() { return https_local_server_; }
 
   // Fetch the Blink.UseCounter.Features histogram in every renderer process
   // until reaching, but not exceeding, |expected_count|.
@@ -55,6 +56,7 @@ class LocalNetworkAccessBrowserTestBase : public policy::PolicyTest {
  private:
   const bool map_all_hosts_to_localhost_;
   net::EmbeddedTestServer https_server_;
+  net::EmbeddedTestServer https_local_server_;
   base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>

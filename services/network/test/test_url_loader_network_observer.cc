@@ -50,6 +50,7 @@ void TestURLLoaderNetworkObserver::OnAuthRequired(
 
 void TestURLLoaderNetworkObserver::OnLocalNetworkAccessPermissionRequired(
     mojom::TransportType type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(mojom::LocalNetworkAccessResult::kDenied);
 }

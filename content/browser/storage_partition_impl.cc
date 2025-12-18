@@ -2197,6 +2197,7 @@ void StoragePartitionImpl::OnAuthRequired(
 
 void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
     network::mojom::TransportType transport_type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   if (!base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks) &&
@@ -2212,13 +2213,22 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   }
   const URLLoaderNetworkContext& context =
       url_loader_network_observers_.current_context();
+
+  // Compute the permission that we will check, if we end up checking for one.
   blink::PermissionType permission_type;
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecksSplitPermissions)) {
-    // TODO(crbug.com/465491626): ask for right permission, should be either
-    // LOCAL_NETWORK or LOOPBACK_NETWORK depending on resource target.
-    // Current pick is arbitrary.
-    permission_type = blink::PermissionType::LOOPBACK_NETWORK;
+    switch (ip_address_space) {
+      case network::mojom::IPAddressSpace::kLocal:
+        permission_type = blink::PermissionType::LOCAL_NETWORK;
+        break;
+      case network::mojom::IPAddressSpace::kLoopback:
+        permission_type = blink::PermissionType::LOOPBACK_NETWORK;
+        break;
+      case network::mojom::IPAddressSpace::kPublic:
+      case network::mojom::IPAddressSpace::kUnknown:
+        NOTREACHED();
+    }
   } else {
     permission_type = blink::PermissionType::LOCAL_NETWORK_ACCESS;
   }

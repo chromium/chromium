@@ -153,8 +153,8 @@ interface URLLoaderNetworkServiceObserver {
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
 
-  // Asks the URL loader observer if the caller has permission to connect to
-  // devices on the local network.
+  // Asks the URL loader observer if the caller has permission to issue a local
+  // network request to the given ip_address_space.
   //
   // `result` is an enum specifying the result of the permission check.
   //
@@ -164,7 +164,8 @@ interface URLLoaderNetworkServiceObserver {
   // that there aren't any race conditions to worry about with respect to the
   // permission value.
   OnLocalNetworkAccessPermissionRequired(
-      TransportType transport_type) => (LocalNetworkAccessResult result);
+      TransportType transport_type,
+      IPAddressSpace ip_address_space) => (LocalNetworkAccessResult result);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.

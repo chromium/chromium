@@ -502,7 +502,7 @@ URLLoader::URLLoader(
         // "prompt". Later LNA checks will check the permission and use the
         // the result.
         url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
-            mojom::TransportType::kDirect,
+            mojom::TransportType::kDirect, *url_address_space,
             base::BindOnce([](mojom::LocalNetworkAccessResult result) {}));
       }
     }

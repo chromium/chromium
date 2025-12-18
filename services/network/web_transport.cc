@@ -617,7 +617,7 @@ void WebTransport::OnLocalNetworkAccessCheck(
       check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
     url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
         // WebTransport connections are not cached, so just pass kDirect.
-        mojom::TransportType::kDirect,
+        mojom::TransportType::kDirect, *checker.ResponseAddressSpace(),
         base::BindOnce(
             [](base::WeakPtr<WebTransport> weak_self,
                net::CompletionOnceCallback callback,

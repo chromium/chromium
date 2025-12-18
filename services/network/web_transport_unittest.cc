@@ -541,6 +541,7 @@ class LNAPermissionURLLoaderNetworkObserver
  public:
   void OnLocalNetworkAccessPermissionRequired(
       mojom::TransportType type,
+      network::mojom::IPAddressSpace ip_address_space,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override {
     std::move(callback).Run(lna_permission_granted
                                 ? mojom::LocalNetworkAccessResult::kGranted

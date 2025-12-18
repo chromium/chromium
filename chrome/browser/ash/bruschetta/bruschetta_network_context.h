@@ -71,6 +71,7 @@ class BruschettaNetworkContext
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType type,
+      network::mojom::IPAddressSpace ip_address_space,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,

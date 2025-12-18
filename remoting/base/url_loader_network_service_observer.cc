@@ -122,6 +122,7 @@ void UrlLoaderNetworkServiceObserver::OnAuthRequired(
 
 void UrlLoaderNetworkServiceObserver::OnLocalNetworkAccessPermissionRequired(
     network::mojom::TransportType type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {}
 
 void UrlLoaderNetworkServiceObserver::OnClearSiteData(
