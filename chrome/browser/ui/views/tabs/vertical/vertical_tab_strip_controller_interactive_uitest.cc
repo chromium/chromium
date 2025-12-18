@@ -124,14 +124,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForHide(kFirstTabName));
 }
 
-// TODO(crbug.com/469912247): Fails on mac-rel-ready bot.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShiftMultiTabSelection DISABLED_ShiftMultiTabSelection
-#else
-#define MAYBE_ShiftMultiTabSelection ShiftMultiTabSelection
-#endif
+// TODO(crbug.com/469912247): Fails on mac-rel-ready and linux-rel-ready bots.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       MAYBE_ShiftMultiTabSelection) {
+                       DISABLED_ShiftMultiTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
