@@ -25,6 +25,7 @@ import "components/optimization_guide/proto/features/product_specifications.prot
 import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
+import "components/optimization_guide/proto/features/skills.proto";
 import "components/optimization_guide/proto/features/summarize.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/walletable_pass_extraction.proto";
@@ -102,6 +103,8 @@ message LogAiDataRequest {
     ActorLoginLoggingData actor_login = 31;
 
     ContextualTasksContextLoggingData contextual_tasks_context = 32;
+
+    SkillsLoggingData skills = 33;
 
     DefaultLoggingData default = 1000;
   }

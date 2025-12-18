@@ -41,6 +41,7 @@ proto_library("optimization_guide_proto") {
     "features/prompt_api.proto",
     "features/proofreader_api.proto",
     "features/scam_detection.proto",
+    "features/skills.proto",
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
