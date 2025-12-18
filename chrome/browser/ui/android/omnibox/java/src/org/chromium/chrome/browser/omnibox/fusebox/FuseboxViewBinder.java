@@ -210,22 +210,33 @@ class FuseboxViewBinder {
 
     static void updateButtonsA11yAnnouncements(PropertyModel model, FuseboxViewHolder views) {
         @StringRes
-        int navButtonAccessibilityStringRes =
-                switch (model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
-                    case AutocompleteRequestType.AI_MODE -> R.string.acc_send_button_send_to_ai;
-                    case AutocompleteRequestType.IMAGE_GENERATION ->
-                            R.string.acc_send_button_create_image;
-                    case AutocompleteRequestType.SEARCH ->
-                            R.string.acc_send_button_search_or_navigate;
-                    default -> {
-                        assert false
-                                : "Missing A11y announcement for the Send button in this context";
-                        yield R.string.acc_send_button_search_or_navigate;
-                    }
-                };
+        int navButtonAccessibilityStringRes = R.string.acc_send_button_search_or_navigate;
+        @StringRes
+        int aiModeButtonAccessibilityStringRes = R.string.accessibility_omnibox_enable_ai_mode;
+        @StringRes
+        int imageGenButtonAccessibilityStringRes = R.string.accessibility_omnibox_create_image;
+        switch (model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
+            case AutocompleteRequestType.AI_MODE:
+                navButtonAccessibilityStringRes = R.string.acc_send_button_send_to_ai;
+                aiModeButtonAccessibilityStringRes = R.string.acc_ai_mode_selected;
+                break;
+            case AutocompleteRequestType.IMAGE_GENERATION:
+                navButtonAccessibilityStringRes = R.string.acc_send_button_create_image;
+                imageGenButtonAccessibilityStringRes = R.string.acc_create_image_selected;
+                break;
+            case AutocompleteRequestType.SEARCH:
+                break;
+            default:
+                assert false : "Missing A11y announcement for the fusebox button in this context";
+                break;
+        }
 
-        views.navigateButton.setContentDescription(
-                views.parentView.getResources().getText(navButtonAccessibilityStringRes));
+        var res = views.parentView.getResources();
+        views.navigateButton.setContentDescription(res.getText(navButtonAccessibilityStringRes));
+        views.popup.mAiModeButton.setContentDescription(
+                res.getText(aiModeButtonAccessibilityStringRes));
+        views.popup.mCreateImageButton.setContentDescription(
+                res.getText(imageGenButtonAccessibilityStringRes));
     }
 
     static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {
