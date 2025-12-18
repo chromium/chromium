@@ -271,6 +271,10 @@ enum class PermissionPromptDisposition {
   // Only used on Android, a message bubble near top of the screen and below the
   // location bar. This is a flavor of MESSAGE_UI that is used for loud prompts.
   MESSAGE_UI_LOUD = 15,
+
+  // Only used on Android. The prompt is suppressed, and the user is notified
+  // via an icon on the left-hand side of the location bar.
+  LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON = 16,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PromptDisposition)
 

@@ -239,6 +239,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CustomModalDialog"/>
   <variant name="ElementAnchoredBubble"/>
   <variant name="LocationBarLeftChipAutoBubble"/>
+  <variant name="LocationBarLeftClapperQuietIcon"/>
   <variant name="LocationBarLeftQuietAbusiveChip"/>
   <variant name="LocationBarLeftQuietChip"/>
   <variant name="LocationBarRightAnimatedIcon"/>
