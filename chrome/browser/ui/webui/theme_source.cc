@@ -73,6 +73,10 @@ bool IsNewTabCssPath(const std::string& path) {
 ////////////////////////////////////////////////////////////////////////////////
 // ThemeSource, public:
 
+// static
+const char ThemeSource::kThemeColorsCssUrl[] =
+    "chrome://theme/colors.css?sets=ui,chrome";
+
 ThemeSource::ThemeSource(Profile* profile)
     : profile_(profile), serve_untrusted_(false) {}
 
@@ -233,13 +237,12 @@ void ThemeSource::SendThemeImage(
   }
 }
 
-void ThemeSource::SendColorsCss(
+// static
+std::optional<std::string> ThemeSource::GenerateColorsCss(
+    const ui::ColorProvider& color_provider,
     const GURL& url,
-    const content::WebContents::Getter& wc_getter,
-    content::URLDataSource::GotDataCallback callback) {
-  base::ElapsedTimer timer;
-  const ui::ColorProvider& color_provider = wc_getter.Run()->GetColorProvider();
-
+    bool is_grayscale,
+    bool is_baseline) {
   auto get_bool_param = [&](std::string_view key) {
     std::string value;
     return net::GetValueForKeyInQuery(url, key, &value) &&
@@ -254,8 +257,7 @@ void ThemeSource::SendColorsCss(
     LOG(ERROR)
         << "colors.css requires a 'sets' query parameter to specify the color "
            "id sets returned e.g chrome://theme/colors.css?sets=ui,chrome";
-    std::move(callback).Run(nullptr);
-    return;
+    return std::nullopt;
   }
 
   std::vector<std::string_view> color_id_sets = base::SplitStringPiece(
@@ -298,8 +300,7 @@ void ThemeSource::SendColorsCss(
         definitions, [&](const auto& def) { return def.name == set_name; });
     if (!is_valid) {
       LOG(ERROR) << "Unrecognized color set specified: " << set_name;
-      std::move(callback).Run(nullptr);
-      return;
+      return std::nullopt;
     }
   }
 
@@ -311,11 +312,9 @@ void ThemeSource::SendColorsCss(
     css_header = "html:not(#z){";
   }
 
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile());
-  if (theme_service->GetIsGrayscale()) {
+  if (is_grayscale) {
     base::StrAppend(&css_header, {"--user-color-source:baseline-grayscale;"});
-  } else if (theme_service->GetIsBaseline()) {
+  } else if (is_baseline) {
     base::StrAppend(&css_header, {"--user-color-source:baseline-default;"});
   }
 
@@ -347,9 +346,30 @@ void ThemeSource::SendColorsCss(
   }
 
   css_string.push_back('}');
+  return css_string;
+}
+
+void ThemeSource::SendColorsCss(
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
+    content::URLDataSource::GotDataCallback callback) {
+  base::ElapsedTimer timer;
+  const ui::ColorProvider& color_provider = wc_getter.Run()->GetColorProvider();
+
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile());
+
+  std::optional<std::string> css_content =
+      GenerateColorsCss(color_provider, url, theme_service->GetIsGrayscale(),
+                        theme_service->GetIsBaseline());
+
+  if (!css_content) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
   std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(std::move(css_string)));
+      base::MakeRefCounted<base::RefCountedString>(std::move(*css_content)));
 
   // Measures the time it takes to generate the colors.css and queue it for the
   // renderer.

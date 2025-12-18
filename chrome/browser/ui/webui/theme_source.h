@@ -23,6 +23,24 @@ class ThemeSource : public content::URLDataSource {
 
   ~ThemeSource() override;
 
+  // TODO(crbug.com/457618790): Move this into a profile service.
+  static const char kThemeColorsCssUrl[];
+
+  // Generates the CSS content for theme colors.
+  //
+  // This function parses the `sets` query parameter from `url` to determine
+  // which color ID sets to include. It uses `color_provider` to resolve the
+  // actual color values. `is_grayscale` and `is_baseline` are used to inject
+  // metadata variables into the CSS header.
+  //
+  // Returns the generated CSS string on success, or std::nullopt if the URL is
+  // invalid, e.g., missing or invalid `sets` parameter.
+  static std::optional<std::string> GenerateColorsCss(
+      const ui::ColorProvider& color_provider,
+      const GURL& url,
+      bool is_grayscale,
+      bool is_baseline);
+
   // content::URLDataSource implementation.
   std::string GetSource() override;
   void StartDataRequest(

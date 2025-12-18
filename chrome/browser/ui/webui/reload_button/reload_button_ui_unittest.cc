@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
@@ -25,6 +26,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "ui/color/color_provider.h"
 
 namespace {
 
@@ -62,7 +65,7 @@ class MockReloadButtonPageHandlerFactory {
 }  // namespace
 
 // Test fixture for ReloadButtonUI.
-class ReloadButtonUITest : public testing::Test {
+class ReloadButtonUITest : public ChromeViewsTestBase {
  public:
   ReloadButtonUITest() = default;
   ~ReloadButtonUITest() override = default;
@@ -72,17 +75,19 @@ class ReloadButtonUITest : public testing::Test {
   ReloadButtonUITest& operator=(const ReloadButtonUITest&) = delete;
 
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton}, {});
 
     profile_ = std::make_unique<TestingProfile>();
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        profile_.get(), nullptr);
 
-    webui::SetBrowserWindowInterface(web_contents_.get(), &browser_window_);
+    content::WebContents::CreateParams create_params(profile_.get());
+    web_contents_ = content::WebContents::Create(create_params);
 
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
+
     ui_ = std::make_unique<ReloadButtonUI>(web_ui_.get());
 
     mock_command_updater_ =
@@ -93,19 +98,17 @@ class ReloadButtonUITest : public testing::Test {
   void TearDown() override {
     ui_.reset();
     web_ui_.reset();
-    // Clear the interface association before web_contents_ is destroyed.
-    webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
     web_contents_.reset();
     profile_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
   ReloadButtonUI* ui() { return ui_.get(); }
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  testing::NiceMock<MockBrowserWindowInterface> browser_window_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
@@ -142,6 +145,22 @@ TEST_F(ReloadButtonUITest, CreatePageHandler) {
 
   factory.CreatePageHandler();
   EXPECT_THAT(ui()->page_handler_for_testing(), testing::NotNull());
+}
+
+// Tests that PopulateLocalResourceLoaderConfig provides the theme source.
+TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
+  ui::ColorProvider color_provider;
+  ui()->SetColorProviderForTesting(&color_provider);
+
+  auto config = blink::mojom::LocalResourceLoaderConfig::New();
+  ui()->PopulateLocalResourceLoaderConfig(
+      config.get(), url::Origin::Create(GURL("chrome://reload-button/")));
+
+  auto origin = url::Origin::Create(GURL("chrome://theme"));
+
+  ASSERT_TRUE(config->sources.contains(origin));
+  EXPECT_TRUE(
+      config->sources[origin]->path_to_resource_map.contains("colors.css"));
 }
 
 // Test fixture for ReloadButtonUIConfig.

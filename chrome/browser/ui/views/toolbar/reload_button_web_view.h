@@ -44,6 +44,9 @@ class ReloadButtonWebView : public views::View,
   void SetMenuEnabled(bool is_menu_enabled) override;
   views::View* GetAsViewClassForTesting() override;
 
+  // views::View:
+  void AddedToWidget() override;
+
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
@@ -66,6 +69,7 @@ class ReloadButtonWebView : public views::View,
   void UpdateTooltipText();
 
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
