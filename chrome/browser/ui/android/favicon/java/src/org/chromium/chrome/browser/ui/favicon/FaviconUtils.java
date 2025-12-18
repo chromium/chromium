@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
@@ -20,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -27,10 +29,27 @@ import org.chromium.url.GURL;
 @NullMarked
 public class FaviconUtils {
     /**
+     * Returns the default pixel size for a favicon. Used when fetching a favicon from the
+     * LargeIconBridge.
+     *
+     * @param context The context to retrieve display metrics.
+     * @return The desired favicon size in pixels.
+     */
+    @Px
+    public static int getDefaultFaviconSize(Context context) {
+        if (!UiAndroidFeatureList.sAndroidHistoryPaneFavicons.isEnabled()) {
+            // This returns a pixel size. This is legacy behavior.
+            return context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        }
+        return context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+    }
+
+    /**
      * Creates a {@link RoundedIconGenerator} to generate circular {@link Bitmap}s of favicons.
+     *
      * @param context The {@link Context} for accessing color and dimen resources.
-     * @return A {@link RoundedIconGenerator} that uses the default circle icon style. Intended
-     *         for monograms, e.g. a circle with character(s) in the center.
+     * @return A {@link RoundedIconGenerator} that uses the default circle icon style. Intended for
+     *     monograms, e.g. a circle with character(s) in the center.
      */
     public static RoundedIconGenerator createCircularIconGenerator(Context context) {
         Resources resources = context.getResources();
