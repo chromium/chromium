@@ -6,12 +6,12 @@
  * #type=style-lit
  * #scheme=relative
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../updater_shared.css.js
  * #css_wrapper_metadata_end */
 
 :host {
   --event-type-background-color: var(--google-blue-50);
   --omaha-request-background-color: var(--google-green-50);
-  --code-background-color: var(--google-grey-100);
   --event-error-border-color: var(--google-red-700);
   --event-error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
 
@@ -24,7 +24,6 @@
   :host {
     --event-type-background-color: var(--google-blue-900);
     --omaha-request-background-color: var(--google-green-700);
-    --code-background-color: var(--google-grey-800);
     --event-error-border-color: var(--cr-fallback-color-error);
     --event-error-background-color: color-mix(in srgb, var(--google-red-500) 10%, black);
   }

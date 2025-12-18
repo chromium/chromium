@@ -6,6 +6,7 @@
  * #type=style-lit
  * #scheme=relative
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../updater_shared.css.js
  * #css_wrapper_metadata_end */
 
 cr-expand-button {
@@ -18,7 +19,8 @@ cr-expand-button {
   font-family: monospace;
   white-space: pre-wrap;
   overflow-wrap: break-word;
-  background-color: var(--google-grey-100);
+  background-color: var(--code-background-color);
+  color: var(--cr-primary-text-color);
   padding: 4px;
   margin-top: 4px;
   border-radius: 5px;

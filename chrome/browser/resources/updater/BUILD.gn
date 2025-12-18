@@ -56,6 +56,7 @@ build_webui("build") {
     "event_list/filter_dialog/outcome_dialog.css",
     "event_list/filter_dialog/type_dialog.css",
     "event_list/raw_event_details.css",
+    "updater_shared.css",
   ]
 
   webui_context_type = "trusted"
