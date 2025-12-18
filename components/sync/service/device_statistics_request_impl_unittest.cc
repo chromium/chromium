@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/service/device_statistics_request.h"
+#include "components/sync/service/device_statistics_request_impl.h"
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -21,9 +21,9 @@ namespace {
 const char kTestEmail[] = "test@gmail.com";
 const char kTestUrl[] = "https://test.com";
 
-class DeviceStatisticsRequestTest : public testing::Test {
+class DeviceStatisticsRequestImplTest : public testing::Test {
  public:
-  DeviceStatisticsRequestTest()
+  DeviceStatisticsRequestImplTest()
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
@@ -68,7 +68,7 @@ class DeviceStatisticsRequestTest : public testing::Test {
   CoreAccountInfo account_info_;
 };
 
-TEST_F(DeviceStatisticsRequestTest, ShouldSucceed) {
+TEST_F(DeviceStatisticsRequestImplTest, ShouldSucceed) {
   SetOkResponse("test_client");
 
   DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
@@ -88,7 +88,7 @@ TEST_F(DeviceStatisticsRequestTest, ShouldSucceed) {
   EXPECT_EQ("test_client", request.GetResults()[0].client_name());
 }
 
-TEST_F(DeviceStatisticsRequestTest, ShouldHandleAuthError) {
+TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleAuthError) {
   DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
                                       shared_url_loader_factory_, "user_agent",
                                       account_info_, GURL(kTestUrl));
@@ -101,7 +101,7 @@ TEST_F(DeviceStatisticsRequestTest, ShouldHandleAuthError) {
   EXPECT_EQ(DeviceStatisticsRequest::State::kFailed, request.GetState());
 }
 
-TEST_F(DeviceStatisticsRequestTest, ShouldHandleNetworkError) {
+TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleNetworkError) {
   auto head = network::mojom::URLResponseHead::New();
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       "HTTP/1.1 500 Internal Server Error\nContent-Type: "
@@ -124,7 +124,7 @@ TEST_F(DeviceStatisticsRequestTest, ShouldHandleNetworkError) {
   EXPECT_EQ(DeviceStatisticsRequest::State::kFailed, request.GetState());
 }
 
-TEST_F(DeviceStatisticsRequestTest, ShouldRetryOnUnauthorized) {
+TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnUnauthorized) {
   DeviceStatisticsRequestImpl request(identity_test_env_.identity_manager(),
                                       shared_url_loader_factory_, "user_agent",
                                       account_info_, GURL(kTestUrl));
@@ -156,7 +156,7 @@ TEST_F(DeviceStatisticsRequestTest, ShouldRetryOnUnauthorized) {
   EXPECT_EQ("test_client", request.GetResults()[0].client_name());
 }
 
-TEST_F(DeviceStatisticsRequestTest, ShouldRetryOnlyOnceOnUnauthorized) {
+TEST_F(DeviceStatisticsRequestImplTest, ShouldRetryOnlyOnceOnUnauthorized) {
   // The server always responds "unauthorized".
   SetUnauthorizedResponse();
 
