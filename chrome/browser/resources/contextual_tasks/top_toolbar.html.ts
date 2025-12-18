@@ -52,7 +52,7 @@ export function getHtml(this: TopToolbarElement) {
         <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
         $i18n{openInNewTab}
       </button>
-      <hr>
+      <div class="dropdown-divider"></div>
       <button class="dropdown-item" @click="${this.onMyActivityClick_}">
 <if expr="_google_chrome">
         <div class="cr-icon google-g-icon"></div>
