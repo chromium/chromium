@@ -309,9 +309,9 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:conflictResolutionTable];
     /// Tests password reveal.
-    ConflictItemIdentifier* identifier = [[ConflictItemIdentifier alloc]
-        initWithType:CredentialConflictType::kPassword
-               index:1];
+    CredentialItemIdentifier* identifier =
+        [[CredentialItemIdentifier alloc] initWithType:CredentialType::kPassword
+                                                 index:1];
     id<GREYMatcher> row2 = grey_accessibilityID(
         GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
             identifier));

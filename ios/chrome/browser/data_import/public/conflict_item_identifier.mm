@@ -6,10 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 
-@implementation ConflictItemIdentifier
+@implementation CredentialItemIdentifier
 
-- (instancetype)initWithType:(CredentialConflictType)type
-                       index:(NSInteger)index {
+- (instancetype)initWithType:(CredentialType)type index:(NSInteger)index {
   self = [super init];
   if (self) {
     _type = type;
@@ -24,8 +23,8 @@
   if (self == object) {
     return YES;
   }
-  ConflictItemIdentifier* other =
-      base::apple::ObjCCast<ConflictItemIdentifier>(object);
+  CredentialItemIdentifier* other =
+      base::apple::ObjCCast<CredentialItemIdentifier>(object);
   return other && self.type == other.type && self.index == other.index;
 }
 

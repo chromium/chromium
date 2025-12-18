@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
+#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
@@ -208,9 +209,10 @@
 
 - (void)didTapInfoButton {
   CHECK_GT(_mediator.invalidPasswords.count, 0u);
-  DataImportInvalidPasswordsViewController* invalidPasswordsViewController =
-      [[DataImportInvalidPasswordsViewController alloc]
-          initWithInvalidPasswords:_mediator.invalidPasswords];
+  DataImportInvalidCredentialsViewController* invalidPasswordsViewController =
+      [[DataImportInvalidCredentialsViewController alloc]
+          initWithInvalidCredentials:_mediator.invalidPasswords
+                                type:CredentialType::kPassword];
   [self presentViewController:
             [[UINavigationController alloc]
                 initWithRootViewController:invalidPasswordsViewController]];

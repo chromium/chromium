@@ -150,9 +150,9 @@ void ExpectImportTableHasRowCount(int expected_count) {
 }
 
 void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected) {
-  ConflictItemIdentifier* identifier = [[ConflictItemIdentifier alloc]
-      initWithType:CredentialConflictType::kPassword
-             index:idx];
+  CredentialItemIdentifier* identifier =
+      [[CredentialItemIdentifier alloc] initWithType:CredentialType::kPassword
+                                               index:idx];
   id<GREYMatcher> row = grey_accessibilityID(
       GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
           identifier));

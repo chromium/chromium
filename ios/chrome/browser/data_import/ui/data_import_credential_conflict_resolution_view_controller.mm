@@ -46,7 +46,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   /// at the respective index should be unmasked for display.
   NSMutableArray<NSNumber*>* _shouldUnmaskPasswordAtIndex;
   /// The data source painting each cell in the table from `_passwordConflicts`.
-  UITableViewDiffableDataSource<NSString*, ConflictItemIdentifier*>*
+  UITableViewDiffableDataSource<NSString*, CredentialItemIdentifier*>*
       _dataSource;
   /// The "select" and "deselect" buttons.
   UIBarButtonItem* _selectButton;
@@ -141,9 +141,9 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   NSMutableArray<NSNumber*>* passwordIdentifiers = [NSMutableArray array];
   NSMutableArray<NSNumber*>* passkeyIdentifiers = [NSMutableArray array];
   for (NSIndexPath* indexPath in [self.tableView indexPathsForSelectedRows]) {
-    ConflictItemIdentifier* identifier =
+    CredentialItemIdentifier* identifier =
         [_dataSource itemIdentifierForIndexPath:indexPath];
-    if (identifier.type == CredentialConflictType::kPassword) {
+    if (identifier.type == CredentialType::kPassword) {
       [passwordIdentifiers addObject:@(identifier.index)];
     } else {
       [passkeyIdentifiers addObject:@(identifier.index)];
@@ -160,10 +160,10 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 // deselected and "deselect all" otherwise).
 - (void)didTapSelectionButton {
   BOOL deselect = [self allItemsCount] == [self selectedItemsCount];
-  NSArray<ConflictItemIdentifier*>* identifiers = [[_dataSource snapshot]
+  NSArray<CredentialItemIdentifier*>* identifiers = [[_dataSource snapshot]
       itemIdentifiersInSectionWithIdentifier:
           kDataImportCredentialConflictResolutionSection];
-  for (ConflictItemIdentifier* identifier in identifiers) {
+  for (CredentialItemIdentifier* identifier in identifiers) {
     NSIndexPath* indexPath =
         [_dataSource indexPathForItemIdentifier:identifier];
     if (deselect) {
@@ -204,13 +204,13 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 
 /// Returns the cell with the properties of the `item` displayed.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(ConflictItemIdentifier*)identifier {
+                      itemIdentifier:(CredentialItemIdentifier*)identifier {
   UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
   CredentialImportItemCellContentConfiguration* config;
   CredentialImportItem* item;
 
   /// Populate cell with information.
-  if (identifier.type == CredentialConflictType::kPasskey) {
+  if (identifier.type == CredentialType::kPasskey) {
     PasskeyImportItem* passkeyItem = _passkeyConflicts[identifier.index];
     config = [CredentialImportItemCellContentConfiguration
         cellConfigurationForPasskey:passkeyItem];
@@ -247,8 +247,8 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 }
 
 /// Helper method to update the cell with `identifier`.
-- (void)updateItemWithIdentifier:(ConflictItemIdentifier*)identifier {
-  NSDiffableDataSourceSnapshot<NSString*, ConflictItemIdentifier*>* snapshot =
+- (void)updateItemWithIdentifier:(CredentialItemIdentifier*)identifier {
+  NSDiffableDataSourceSnapshot<NSString*, CredentialItemIdentifier*>* snapshot =
       [_dataSource snapshot];
   [snapshot reconfigureItemsWithIdentifiers:@[ identifier ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -301,7 +301,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   __weak __typeof(self) weakSelf = self;
   UITableViewDiffableDataSourceCellProvider cellProvider = ^UITableViewCell*(
       UITableView* tableView, NSIndexPath* indexPath,
-      ConflictItemIdentifier* itemIdentifier) {
+      CredentialItemIdentifier* itemIdentifier) {
     CHECK_EQ(tableView, weakSelf.tableView);
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
@@ -315,17 +315,16 @@ NSString* const kDataImportCredentialConflictResolutionSection =
     kDataImportCredentialConflictResolutionSection
   ]];
 
-  NSMutableArray<ConflictItemIdentifier*>* itemIdentifiers =
+  NSMutableArray<CredentialItemIdentifier*>* itemIdentifiers =
       [NSMutableArray array];
   for (NSUInteger i = 0; i < _passwordConflicts.count; i++) {
-    [itemIdentifiers
-        addObject:[[ConflictItemIdentifier alloc]
-                      initWithType:CredentialConflictType::kPassword
-                             index:i]];
+    [itemIdentifiers addObject:[[CredentialItemIdentifier alloc]
+                                   initWithType:CredentialType::kPassword
+                                          index:i]];
   }
   for (NSUInteger i = 0; i < _passkeyConflicts.count; i++) {
-    [itemIdentifiers addObject:[[ConflictItemIdentifier alloc]
-                                   initWithType:CredentialConflictType::kPasskey
+    [itemIdentifiers addObject:[[CredentialItemIdentifier alloc]
+                                   initWithType:CredentialType::kPasskey
                                           index:i]];
   }
 
@@ -345,8 +344,9 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 }
 
 /// Helper method to set up the accessory view.
-- (UIView*)accessoryViewForItemIdentifier:(ConflictItemIdentifier*)identifier {
-  if (identifier.type == CredentialConflictType::kPasskey ||
+- (UIView*)accessoryViewForItemIdentifier:
+    (CredentialItemIdentifier*)identifier {
+  if (identifier.type == CredentialType::kPasskey ||
       ![self.reauthModule canAttemptReauth]) {
     return nil;
   }
@@ -379,9 +379,9 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 /// Reveal password if `shouldUnmask` is YES and user is authenticated to view
 /// passwords; mask password if otherwise.
 - (void)maybeUpdatePasswordMasking:(BOOL)shouldUnmask
-             forItemWithIdentifier:(ConflictItemIdentifier*)identifier
+             forItemWithIdentifier:(CredentialItemIdentifier*)identifier
                      authenticated:(BOOL)authenticated {
-  if (identifier.type == CredentialConflictType::kPasskey) {
+  if (identifier.type == CredentialType::kPasskey) {
     return;
   }
 

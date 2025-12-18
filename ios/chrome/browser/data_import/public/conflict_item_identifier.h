@@ -7,19 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-enum class CredentialConflictType {
+enum class CredentialType {
   kPassword,
   kPasskey,
 };
 
-// Identifier for a conflicting credential item used in
-// UITableViewDiffableDataSource of a conflict resolution screen.
-@interface ConflictItemIdentifier : NSObject
+// Identifier for a credential item used in UITableViewDiffableDataSource.
+@interface CredentialItemIdentifier : NSObject
 
-@property(nonatomic, readonly) CredentialConflictType type;
+@property(nonatomic, readonly) CredentialType type;
 @property(nonatomic, readonly) NSUInteger index;
 
-- (instancetype)initWithType:(CredentialConflictType)type
+- (instancetype)initWithType:(CredentialType)type
                        index:(NSInteger)index NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

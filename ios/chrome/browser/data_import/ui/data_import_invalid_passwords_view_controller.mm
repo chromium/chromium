@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
@@ -18,28 +21,33 @@
 
 namespace {
 /// The identifier for the only section in the table.
-NSString* const kDataImportInvalidPasswordSection =
-    @"kDataImportInvalidPasswordSection";
+NSString* const kDataImportInvalidCredentialsSection =
+    @"kDataImportInvalidCredentialsSection";
 }  // namespace
 
-@interface DataImportInvalidPasswordsViewController () <UITableViewDelegate>
-
+@interface DataImportInvalidCredentialsViewController () <UITableViewDelegate>
 @end
 
-@implementation DataImportInvalidPasswordsViewController {
-  /// List of invalid passwords.
-  NSArray<PasswordImportItem*>* _invalidPasswords;
-  /// The data source painting each cell in the table from `_invalidPasswords`.
-  UITableViewDiffableDataSource<NSString*, NSNumber*>* _dataSource;
+@implementation DataImportInvalidCredentialsViewController {
+  /// List of invalid credentials.
+  NSArray<CredentialImportItem*>* _invalidCredentials;
+  /// Type of invalid credentials displayed in this view.
+  CredentialType _credentialType;
+  /// The data source painting each cell in the table from
+  /// `_invalidCredentials`.
+  UITableViewDiffableDataSource<NSString*, CredentialItemIdentifier*>*
+      _dataSource;
 }
 
 #pragma mark - ChromeTableViewController
 
-- (instancetype)initWithInvalidPasswords:
-    (NSArray<PasswordImportItem*>*)passwords {
+- (instancetype)initWithInvalidCredentials:
+                    (NSArray<CredentialImportItem*>*)credentials
+                                      type:(CredentialType)type {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _invalidPasswords = passwords;
+    _invalidCredentials = credentials;
+    _credentialType = type;
   }
   return self;
 }
@@ -102,11 +110,18 @@ NSString* const kDataImportInvalidPasswordSection =
 
 /// Returns the cell with the properties of the `item` displayed.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(NSNumber*)identifier {
-  PasswordImportItem* item = _invalidPasswords[identifier.intValue];
-  CredentialImportItemCellContentConfiguration* config =
-      [CredentialImportItemCellContentConfiguration
-          cellConfigurationForErrorMessage:item];
+                      itemIdentifier:(CredentialItemIdentifier*)identifier {
+  CredentialImportItem* item = _invalidCredentials[identifier.index];
+  CredentialImportItemCellContentConfiguration* config;
+  if (_credentialType == CredentialType::kPassword) {
+    config = [CredentialImportItemCellContentConfiguration
+        cellConfigurationForErrorMessage:base::apple::ObjCCastStrict<
+                                             PasswordImportItem>(item)];
+  } else {
+    config = [CredentialImportItemCellContentConfiguration
+        cellConfigurationForPasskey:base::apple::ObjCCastStrict<
+                                        PasskeyImportItem>(item)];
+  }
   if (item.faviconAttributes) {
     config.faviconAttributes = item.faviconAttributes;
   } else {
@@ -123,20 +138,20 @@ NSString* const kDataImportInvalidPasswordSection =
 }
 
 /// Helper method to update the cell with `identifier`.
-- (void)updateItemWithIdentifier:(NSNumber*)identifier {
-  NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
+- (void)updateItemWithIdentifier:(CredentialItemIdentifier*)identifier {
+  NSDiffableDataSourceSnapshot<NSString*, CredentialItemIdentifier*>* snapshot =
       [_dataSource snapshot];
   [snapshot reconfigureItemsWithIdentifiers:@[ identifier ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
-/// Sets `_dataSource` and fills the table with data from `_passwordConflicts`.
+/// Sets `_dataSource` and fills the table with data from `_invalidCredentials`.
 - (void)initializeDataSourceAndTable {
   /// Set up data source.
   __weak __typeof(self) weakSelf = self;
   UITableViewDiffableDataSourceCellProvider cellProvider = ^UITableViewCell*(
       UITableView* tableView, NSIndexPath* indexPath,
-      NSNumber* itemIdentifier) {
+      CredentialItemIdentifier* itemIdentifier) {
     CHECK_EQ(tableView, weakSelf.tableView);
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
@@ -147,13 +162,15 @@ NSString* const kDataImportInvalidPasswordSection =
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
-      appendSectionsWithIdentifiers:@[ kDataImportInvalidPasswordSection ]];
-  NSMutableArray* indicesForPasswordConflicts = [NSMutableArray array];
-  for (NSUInteger i = 0; i < _invalidPasswords.count; i++) {
-    [indicesForPasswordConflicts addObject:@(i)];
+      appendSectionsWithIdentifiers:@[ kDataImportInvalidCredentialsSection ]];
+  NSMutableArray* indicesForInvalidCredentials = [NSMutableArray array];
+  for (NSUInteger i = 0; i < _invalidCredentials.count; i++) {
+    [indicesForInvalidCredentials
+        addObject:[[CredentialItemIdentifier alloc] initWithType:_credentialType
+                                                           index:i]];
   }
-  [snapshot appendItemsWithIdentifiers:indicesForPasswordConflicts
-             intoSectionWithIdentifier:kDataImportInvalidPasswordSection];
+  [snapshot appendItemsWithIdentifiers:indicesForInvalidCredentials
+             intoSectionWithIdentifier:kDataImportInvalidCredentialsSection];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 

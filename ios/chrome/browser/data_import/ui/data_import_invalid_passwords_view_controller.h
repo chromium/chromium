@@ -7,13 +7,17 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
-@class PasswordImportItem;
+@class CredentialImportItem;
+enum class CredentialType;
 
 /// View controller listing password errors encountered during data import.
-@interface DataImportInvalidPasswordsViewController : ChromeTableViewController
+@interface DataImportInvalidCredentialsViewController
+    : ChromeTableViewController
 
-- (instancetype)initWithInvalidPasswords:
-    (NSArray<PasswordImportItem*>*)passwords NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithInvalidCredentials:
+                    (NSArray<CredentialImportItem*>*)credentials
+                                      type:(CredentialType)type
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end

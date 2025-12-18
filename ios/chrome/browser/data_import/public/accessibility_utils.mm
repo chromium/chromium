@@ -43,8 +43,8 @@ NSString* GetCredentialConflictResolutionTableViewAccessibilityIdentifier() {
 /// Returns the accessibility identifier to set on a cell in the table view for
 /// password conflict resolution.
 NSString* GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
-    ConflictItemIdentifier* identifier) {
-  NSString* prefix = identifier.type == CredentialConflictType::kPassword
+    CredentialItemIdentifier* identifier) {
+  NSString* prefix = identifier.type == CredentialType::kPassword
                          ? kDataImportPasswordConflictResolutionAXidPrefix
                          : kDataImportPasskeyConflictResolutionAXidPrefix;
   return [NSString stringWithFormat:@"%@-%ld", prefix, identifier.index];
