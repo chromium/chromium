@@ -4,10 +4,6 @@
 
 import("//build/config/c++/c++.gni")
 
-config("libunwind_public_config") {
-  include_dirs = [ "//third_party/libunwind/src/include" ]
-}
-
 config("libunwind_config") {
   defines = [ "_LIBUNWIND_IS_NATIVE_ONLY" ]
   cflags = [
@@ -32,6 +28,7 @@ source_set("libunwind") {
   if (!is_component_build) {
     defines = [ "_LIBUNWIND_DISABLE_VISIBILITY_ANNOTATIONS" ]
   }
+  include_dirs = [ "//third_party/libunwind/src/include" ]
   sources = [
     # C++ sources
     "//third_party/libunwind/src/src/Unwind-EHABI.cpp",
@@ -46,7 +43,6 @@ source_set("libunwind") {
     "//third_party/libunwind/src/src/UnwindRegistersRestore.S",
     "//third_party/libunwind/src/src/UnwindRegistersSave.S",
   ]
-  public_configs = [ ":libunwind_public_config" ]
   configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:no_exceptions",
