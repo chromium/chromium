@@ -67,10 +67,8 @@ class FakeAudio : public fuchsia::media::testing::Audio_TestBase {
 // expected and if any error has been reported.
 class TestInputCallback : public AudioInputStream::AudioInputCallback {
  public:
-  TestInputCallback(base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)),
-        callback_count_(0),
-        had_error_(0) {}
+  explicit TestInputCallback(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
   void OnData(const AudioBus* source,
               base::TimeTicks capture_time,
               double volume,
@@ -103,8 +101,8 @@ class TestInputCallback : public AudioInputStream::AudioInputCallback {
 
  private:
   base::OnceClosure quit_closure_;
-  int callback_count_;
-  int had_error_;
+  int callback_count_ = 0;
+  int had_error_ = 0;
 };
 
 class AudioInputTest : public testing::TestWithParam<bool> {
@@ -148,9 +146,10 @@ class AudioInputTest : public testing::TestWithParam<bool> {
 #endif
   }
 
-  void MakeAudioInputStreamOnAudioThread() {
+  void MakeAudioInputStreamOnAudioThread(
+      std::optional<bool> echo_cancellation = std::nullopt) {
     RunOnAudioThread(base::BindOnce(&AudioInputTest::MakeAudioInputStream,
-                                    base::Unretained(this)));
+                                    base::Unretained(this), echo_cancellation));
   }
 
   void CloseAudioInputStreamOnAudioThread() {
@@ -181,11 +180,33 @@ class AudioInputTest : public testing::TestWithParam<bool> {
         base::BindOnce(&AudioInputTest::StopAndClose, base::Unretained(this)));
   }
 
-  void MakeAudioInputStream() {
+  AudioParameters MaybeAdjustEchoCancellation(
+      AudioParameters params,
+      std::optional<bool> echo_cancellation) {
+    if (!echo_cancellation.has_value()) {
+      return params;
+    }
+
+    int effects = params.effects();
+
+    if (*echo_cancellation) {
+      effects &= ~AudioParameters::PlatformEffectsMask::ECHO_CANCELLER;
+    } else {
+      effects |= AudioParameters::PlatformEffectsMask::ECHO_CANCELLER;
+    }
+
+    params.set_effects(effects);
+    return params;
+  }
+
+  void MakeAudioInputStream(std::optional<bool> echo_cancellation) {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     AudioParameters params =
         AudioDeviceInfoAccessorForTests(audio_manager_.get())
             .GetInputStreamParameters(AudioDeviceDescription::kDefaultDeviceId);
+
+    params = MaybeAdjustEchoCancellation(params, echo_cancellation);
+
     audio_input_stream_ = audio_manager_->MakeAudioInputStream(
         params, AudioDeviceDescription::kDefaultDeviceId,
         base::BindRepeating(&AudioInputTest::OnLogMessage,
@@ -235,6 +256,20 @@ class AudioInputTest : public testing::TestWithParam<bool> {
   void RunOnAudioThread(base::OnceClosure closure) {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     std::move(closure).Run();
+  }
+
+  void RunRecordingTest(std::optional<bool> echo_cancellation) {
+    MakeAudioInputStreamOnAudioThread(echo_cancellation);
+
+    base::RunLoop run_loop;
+    TestInputCallback test_callback(run_loop.QuitClosure());
+    OpenAndStartAudioInputStreamOnAudioThread(&test_callback);
+
+    run_loop.Run();
+    EXPECT_GE(test_callback.callback_count(), 2);
+    EXPECT_FALSE(test_callback.had_error());
+
+    StopAndCloseAudioInputStreamOnAudioThread();
   }
 
   void OnLogMessage(const std::string& message) {}
@@ -293,17 +328,35 @@ TEST_P(AudioInputTest, MAYBE_OpenStopAndClose) {
 #endif
 TEST_P(AudioInputTest, MAYBE_Record) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
-  MakeAudioInputStreamOnAudioThread();
+  RunRecordingTest(/*echo_cancellation=*/std::nullopt);
+}
 
-  base::RunLoop run_loop;
-  TestInputCallback test_callback(run_loop.QuitClosure());
-  OpenAndStartAudioInputStreamOnAudioThread(&test_callback);
+// Test a normal recording sequence using an AudioInputStream.
+// Very simple test which starts capturing and verifies that recording starts.
+// TODO(crbug.com/40262701): This test is failing on ios-blink-rel-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Record_EchoCancellationDisabled \
+  DISABLED_Record_EchoCancellationDisabled
+#else
+#define MAYBE_Record_EchoCancellationDisabled Record_EchoCancellationDisabled
+#endif
+TEST_P(AudioInputTest, MAYBE_Record_EchoCancellationDisabled) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+  RunRecordingTest(/*echo_cancellation=*/false);
+}
 
-  run_loop.Run();
-  EXPECT_GE(test_callback.callback_count(), 2);
-  EXPECT_FALSE(test_callback.had_error());
-
-  StopAndCloseAudioInputStreamOnAudioThread();
+// Test a normal recording sequence using an AudioInputStream.
+// Very simple test which starts capturing and verifies that recording starts.
+// TODO(crbug.com/40262701): This test is failing on ios-blink-rel-fyi bot.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Record_EchoCancellationEnabled \
+  DISABLED_Record_EchoCancellationEnabled
+#else
+#define MAYBE_Record_EchoCancellationEnabled Record_EchoCancellationEnabled
+#endif
+TEST_P(AudioInputTest, MAYBE_Record_EchoCancellationEnabled) {
+  ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
+  RunRecordingTest(/*echo_cancellation=*/true);
 }
 
 // The test parameter is only relevant on Android. It controls whether or not we
