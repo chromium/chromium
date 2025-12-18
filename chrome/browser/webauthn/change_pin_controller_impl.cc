@@ -53,7 +53,7 @@ void ChangePinControllerImpl::IsChangePinFlowAvailable(
 }
 
 void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
-  if (notify_pin_change_callback_) {
+  if (notify_pin_change_callback_ || !enclave_manager_->is_registered()) {
     std::move(callback).Run(false);
     return;
   }
@@ -69,6 +69,11 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
 }
 
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
+  if (!enclave_manager_->is_registered()) {
+    model_->SetStep(Step::kGPMError);
+    RecordHistogram(ChangePinEvent::kFailed);
+    return;
+  }
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMChangePin);
@@ -82,6 +87,11 @@ void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
+  if (!enclave_manager_->is_registered()) {
+    model_->SetStep(Step::kGPMError);
+    RecordHistogram(ChangePinEvent::kFailed);
+    return;
+  }
   CHECK(rapt_.has_value() && (model_->step() == Step::kGPMChangePin ||
                               model_->step() == Step::kGPMChangeArbitraryPin));
   model_->DisableUiOrShowLoadingDialog();
