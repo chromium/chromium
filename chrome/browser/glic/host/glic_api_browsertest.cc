@@ -167,6 +167,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithWebActuationSettingDisabled",
       "GlicApiTestWithWebActuationSettingEnabled",
       "GlicApiTestWithGeminiActOnWebPolicy",
+      "GlicApiTestHibernateAllOnMemoryPressure",
   };
 }
 
@@ -265,6 +266,20 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
   GURL page_url() {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/browser_tests/test.html");
+  }
+
+  GlicInstanceImpl* OpenGlicInNewTabAndGetInstance(
+      int index,
+      ui::ElementIdentifier tab_id) {
+    EXPECT_TRUE(AddTabAtIndex(index, page_url(), ui::PAGE_TRANSITION_TYPED));
+    browser()->tab_strip_model()->ActivateTabAt(index);
+    TrackGlicInstanceWithTabIndex(index);
+    RunTestSequence(
+        InstrumentTab(tab_id),
+        OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
+        RegisterConversation("instance_" + base::NumberToString(index)));
+    GlicInstanceImpl* instance = GetGlicInstanceImpl();
+    return instance;
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester;
@@ -575,6 +590,16 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
  private:
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicApiTestHibernateAllOnMemoryPressure : public GlicApiTest {
+ public:
+  GlicApiTestHibernateAllOnMemoryPressure() {
+    feature_list_.InitAndEnableFeature(kGlicHibernateAllOnMemoryPressure);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Note: Test names must match test function names in api_test.ts.
@@ -3028,6 +3053,52 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCalledTwice) {
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
+                       testHibernateAllOnMemoryPressure) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+
+  GetInstanceCoordinator().SetWarmingEnabledForTesting(true);
+
+  // Open 3 instances, with instance 2 being the active one.
+  GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
+
+  GlicInstanceImpl* instance2 = OpenGlicInNewTabAndGetInstance(1, kSecondTab);
+  GlicInstanceImpl* instance3 = OpenGlicInNewTabAndGetInstance(2, kThirdTab);
+
+  // Close instance 3 to make it non-showing and non-actuating.
+  RunTestSequence(CloseGlic());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !instance3->IsShowing(); }));
+  ASSERT_FALSE(instance3->IsHibernated());
+
+  // Switch back to tab 1, so instance 1 is now active and instance 2 is not
+  // showing.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  TrackGlicInstanceWithTabIndex(0);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return instance1->IsShowing(); }));
+
+  // There is a warmed instance initially. It should be non-showing and
+  // non-actuating.
+  ASSERT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+
+  // Simulate memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Wait for the non-showing instances to hibernate.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return instance2->IsHibernated() && instance3->IsHibernated();
+  }));
+
+  // Verify the warmed instance is reset.
+  ASSERT_FALSE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+
+  // Active instance should not be hibernated.
+  ASSERT_TRUE(instance1->IsShowing());
+  ASSERT_FALSE(instance1->IsHibernated());
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";
@@ -3389,6 +3460,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestHibernateAllOnMemoryPressure,
+                         DefaultTestParamSet(),
+                         WithTestParams::PrintTestVariant);
 
 }  // namespace
 }  // namespace glic

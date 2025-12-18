@@ -35,6 +35,8 @@ class ApiTests extends ApiTestFixtureBase {
   // WARNING: Remember to update
   // chrome/browser/glic/host/glic_api_browsertest.cc if you add a new test!
 
+  async testHibernateAllOnMemoryPressure() {}
+
   async testDoNothing() {}
 
   // This test should fail even if the ApiTestError is captured in a try-catch

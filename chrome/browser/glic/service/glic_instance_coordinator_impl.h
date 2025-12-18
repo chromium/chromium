@@ -46,6 +46,9 @@ class ContextualCueingService;
 }
 namespace glic {
 
+BASE_FEATURE(kGlicHibernateAllOnMemoryPressure,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
 // access to GlicInstanceCoordinatorImpl to allow for test fakes.
 class GlicInstanceCoordinator : public GlicWindowController {};
