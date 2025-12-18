@@ -50,6 +50,7 @@ source_set("unit_tests") {
 
   deps = [
     ":delegate",
+    "//components/affiliations/core/browser:test_support",
     "//components/device_reauth",
     "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//components/password_manager/core/browser:test_support",

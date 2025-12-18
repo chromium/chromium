@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -151,6 +152,10 @@ class MockPasswordManagerClient
               GetDeviceAuthenticator,
               (),
               (override));
+  MOCK_METHOD(affiliations::AffiliationService*,
+              GetAffiliationService,
+              (),
+              (override));
 };
 
 template <bool success>
@@ -209,6 +214,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
     ON_CALL(mock_client_, IsFillingEnabled).WillByDefault(Return(true));
     ON_CALL(mock_client_, IsReauthBeforeFillingRequired)
         .WillByDefault(Return(false));
+    ON_CALL(mock_client_, GetAffiliationService)
+        .WillByDefault(Return(&mock_affiliation_service_));
   }
 
   base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
@@ -254,6 +261,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
   bool should_store_permission() const { return GetParam(); }
 
  protected:
+  // TODO(crbug.com/469054562): Remove this variable and make the usage
+  // clearer.
   url::Origin main_frame_origin_ =
       url::Origin::Create(GURL("https://example.com"));
 
@@ -269,6 +278,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
   MockStubPasswordManagerDriver mock_driver_;
   FakeFormFetcher form_fetcher_;
   MockActorLoginQualityLogger mock_mqls_logger_;
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service_;
 };
 
 TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
@@ -497,6 +508,9 @@ TEST_P(ActorLoginCredentialFillerTest,
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+  EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          std::vector<affiliations::Facet>{}, true));
 
   filler.AttemptLogin(&mock_password_manager_);
   ASSERT_TRUE(future.Get().has_value());
@@ -2123,6 +2137,227 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
+}
+
+TEST_P(ActorLoginCredentialFillerTest, AffiliatedOrigin_FillSuccess) {
+  url::Origin current_origin =
+      url::Origin::Create(GURL("https://example-login.com"));
+  url::Origin credential_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  main_frame_origin_ = current_origin;
+
+  const Credential credential = CreateTestCredential(
+      kTestUsername, credential_origin.GetURL(), credential_origin);
+  const FormData form_data = CreateSigninFormData(current_origin.GetURL());
+  SetSavedCredential(&form_fetcher_, credential_origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(
+      CreateFormManagerWithParsedForm(current_origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
+      current_origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  std::vector<affiliations::Facet> affiliations;
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      "https://example.com"));
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      "https://example-login.com"));
+
+  EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
+      .WillOnce(base::test::RunOnceCallback<1>(affiliations, true));
+
+  // Filling should succeed because it is an strongly affiliated origin.
+  EXPECT_CALL(mock_driver_, FillField(parsed_form->username_element_renderer_id,
+                                      Eq(kTestUsername), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(mock_driver_, FillField(parsed_form->password_element_renderer_id,
+                                      Eq(kTestPassword), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  filler->AttemptLogin(&mock_password_manager_);
+
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+}
+
+TEST_P(ActorLoginCredentialFillerTest,
+       UsesChosenAffiliatedCredentialOverExactMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kActorLoginPermissionsUseStrongAffiliations);
+
+  // The origin where the credential is being filled.
+  url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));
+  // This is the origin where the credential is saved for, and also the origin
+  // the credential was requested for in GetCredentials.
+  url::Origin credential_request_origin =
+      url::Origin::Create(GURL("https://affiliated.com"));
+  main_frame_origin_ = current_origin;
+
+  const Credential credential =
+      CreateTestCredential(kTestUsername, credential_request_origin.GetURL(),
+                           credential_request_origin);
+  const FormData form_data = CreateSigninFormData(current_origin.GetURL());
+  std::vector<PasswordForm> saved_forms;
+  // There are saved matches for both the `credential_request_origin` and
+  // `current_origin`.
+  saved_forms.push_back(CreateSavedPasswordForm(current_origin.GetURL(),
+                                                kTestUsername, u"exact_pass"));
+  saved_forms.push_back(CreateSavedPasswordForm(
+      credential_request_origin.GetURL(), kTestUsername, u"affiliated_pass"));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(
+      CreateFormManagerWithParsedForm(current_origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
+      current_origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  std::vector<affiliations::Facet> affiliations;
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      current_origin.GetURL().spec()));
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      credential_request_origin.GetURL().spec()));
+
+  EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
+      .WillOnce(base::test::RunOnceCallback<1>(affiliations, true));
+  // Eventhought an exact match exists for the `current_origin`, it should use
+  // the affiliated password because this is the one it was requested for
+  // (`credential_request_origin`).
+  EXPECT_CALL(mock_driver_, FillField(parsed_form->password_element_renderer_id,
+                                      Eq(u"affiliated_pass"), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(mock_driver_, FillField(parsed_form->username_element_renderer_id,
+                                      Eq(kTestUsername), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  filler->AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+}
+
+TEST_P(ActorLoginCredentialFillerTest,
+       UsesChosenAffiliatedCredentialOverExactMatch_InIframe) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kActorLoginSameSiteIframeSupport,
+       password_manager::features::kActorLoginPermissionsUseStrongAffiliations},
+      /*disabled_features=*/{});
+
+  // The origin where the credential is being filled.
+  url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));
+  // The origin where the form is in.
+  url::Origin iframe_origin =
+      url::Origin::Create(GURL("https://login.example.com"));
+  // The origin where the credential was requested for.
+  url::Origin credential_request_origin =
+      url::Origin::Create(GURL("https://affiliated.com"));
+
+  main_frame_origin_ = current_origin;
+  const Credential credential =
+      CreateTestCredential(kTestUsername, credential_request_origin.GetURL(),
+                           credential_request_origin);
+
+  const FormData form_data = CreateSigninFormData(iframe_origin.GetURL());
+  std::vector<PasswordForm> saved_forms;
+  saved_forms.push_back(CreateSavedPasswordForm(iframe_origin.GetURL(),
+                                                kTestUsername, u"exact_pass"));
+  saved_forms.push_back(CreateSavedPasswordForm(
+      credential_request_origin.GetURL(), kTestUsername, u"affiliated_pass"));
+
+  form_fetcher_.SetBestMatches(saved_forms);
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  MockStubPasswordManagerDriver iframe_driver;
+  form_managers.push_back(CreateFormManagerWithParsedForm(
+      iframe_origin, form_data, iframe_driver, form_fetcher_));
+
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+  ON_CALL(iframe_driver, IsInPrimaryMainFrame).WillByDefault(Return(false));
+  ON_CALL(iframe_driver, IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(true));
+  ON_CALL(iframe_driver, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
+      current_origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  std::vector<affiliations::Facet> affiliations;
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      current_origin.GetURL().spec()));
+  EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
+      .WillOnce(base::test::RunOnceCallback<1>(affiliations, true));
+
+  // Eventhought an exact match exists for the `current_origin`, it should use
+  // the affiliated password because this is the one it was requested for
+  // (`credential_request_origin`).
+  EXPECT_CALL(iframe_driver,
+              FillField(parsed_form->password_element_renderer_id,
+                        Eq(u"affiliated_pass"), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(iframe_driver,
+              FillField(parsed_form->username_element_renderer_id,
+                        Eq(kTestUsername), _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  filler->AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+}
+
+TEST_P(ActorLoginCredentialFillerTest, UnrelatedOrigin_FillFails) {
+  url::Origin current_origin =
+      url::Origin::Create(GURL("https://not-affiliated.com"));
+  url::Origin credential_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  main_frame_origin_ = current_origin;
+
+  const Credential credential = CreateTestCredential(
+      kTestUsername, credential_origin.GetURL(), credential_origin);
+  SetSavedCredential(&form_fetcher_, credential_origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
+      current_origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+  std::vector<affiliations::Facet> affiliations;
+  affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      "https://example.com"));
+  EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
+      .WillOnce(base::test::RunOnceCallback<1>(affiliations, true));
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers).Times(0);
+  filler->AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

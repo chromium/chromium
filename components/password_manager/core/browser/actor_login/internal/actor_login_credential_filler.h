@@ -22,6 +22,10 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
+namespace affiliations {
+struct Facet;
+}  // namespace affiliations
+
 namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
@@ -56,6 +60,12 @@ class ActorLoginCredentialFiller {
 
  private:
   enum class FieldType { kUsername, kPassword };
+
+  // Called when the affiliations for `credential_.request_origin` have been
+  // retrieved. `results` contains facets affiliated with the
+  // `credential_.request_origin`.
+  void OnAffiliationsReceived(const std::vector<affiliations::Facet>& results,
+                              bool success);
 
   void FetchEligibleForms(
       base::OnceCallback<
