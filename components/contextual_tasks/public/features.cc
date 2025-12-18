@@ -71,8 +71,7 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
 
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
-    &kContextualTasksContext, "ai-page-url",
-    "https://www.google.com/search?udm=50"};
+    &kContextualTasks, "ai-page-url", "https://www.google.com/search?udm=50"};
 
 // The host that any URL loaded in the embedded WebUi page will be routed to.
 const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{
@@ -80,7 +79,7 @@ const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{
 
 // The base domains for the sign in page.
 const base::FeatureParam<std::string> kContextualTasksSignInDomains{
-    &kContextualTasksContext, "sign-in-domains",
+    &kContextualTasks, "sign-in-domains",
     "accounts.google.com,login.corp.google.com"};
 
 constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
@@ -95,9 +94,9 @@ const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     EntryPointOption::kNoEntryPoint,
     &kEntryPointOptions);
 
-const base::FeatureParam<bool> kTaskScopedSidePanel(&kContextualTasksContext,
-                                                     "TaskScopedSidePanel",
-                                                     true);
+const base::FeatureParam<bool> kTaskScopedSidePanel(&kContextualTasks,
+                                                    "TaskScopedSidePanel",
+                                                    true);
 
 const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked(
     &kContextualTasks,
@@ -105,7 +104,7 @@ const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked(
     true);
 
 const base::FeatureParam<bool> kEnableLensInContextualTasks(
-    &kContextualTasksContext,
+    &kContextualTasks,
     "EnableLensInContextualTasks",
     true);
 
@@ -118,12 +117,12 @@ const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
     &kContextualTasks, "user-agent-suffix", "Cobrowsing/1.0"};
 
 const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
-    &kContextualTasksContext,
+    &kContextualTasks,
     "EnableSteadyComposeboxVoiceSearch",
     true);
 
 const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
-    &kContextualTasksContext,
+    &kContextualTasks,
     "EnableExpandedComposeboxVoiceSearch",
     true);
 
