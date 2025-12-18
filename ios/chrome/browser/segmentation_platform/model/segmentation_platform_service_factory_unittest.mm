@@ -53,6 +53,21 @@ void ConfigureForPriceTrackingModule(scoped_refptr<InputContext> input_context,
       segmentation_platform::kIsSynced,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           enable ? 1.0f : 0.0f));
+
+  // Default value for Send Tab module signal
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSendTabInfobarReceivedInLastSession,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
+}
+
+// Sets signals relevant for the Send Tab ephemeral module
+void ConfigureForSendTabModule(scoped_refptr<InputContext> input_context,
+                               bool enable = true) {
+  // Required signal for Send Tab module
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSendTabInfobarReceivedInLastSession,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          enable ? 1.0f : 0.0f));
 }
 
 // Sets signals relevant for the Lens ephemeral module
@@ -83,6 +98,11 @@ void ConfigureForLensModule(scoped_refptr<InputContext> input_context,
       segmentation_platform::tips_manager::signals::kUsedGoogleTranslation,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           !signal_value));
+
+  // Default value for Send Tab module signal
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSendTabInfobarReceivedInLastSession,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
 }
 
 // Sets signals relevant for the Enhanced Safe Browsing ephemeral module
@@ -100,6 +120,11 @@ void ConfigureForEnhancedSafeBrowsingModule(
       segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           signal_value));
+
+  // Default value for Send Tab module signal
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSendTabInfobarReceivedInLastSession,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
 }
 
 // Observer that waits for service initialization.
@@ -392,7 +417,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -404,6 +429,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   // Disable other cards to ensure price tracking is shown
   ConfigureForLensModule(input_context, false);
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
+  ConfigureForSendTabModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kPriceTrackingNotificationPromo};
@@ -421,7 +447,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -433,6 +459,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   // Disable other cards to ensure Lens is shown
   ConfigureForPriceTrackingModule(input_context, false);
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
+  ConfigureForSendTabModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kLensEphemeralModuleSearchVariation};
@@ -450,7 +477,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -462,6 +489,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   // Disable other cards to ensure Enhanced Safe Browsing is shown
   ConfigureForPriceTrackingModule(input_context, false);
   ConfigureForLensModule(input_context, false);
+  ConfigureForSendTabModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kEnhancedSafeBrowsingEphemeralModule};
@@ -478,7 +506,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -488,6 +516,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForPriceTrackingModule(input_context, true);
   ConfigureForLensModule(input_context, true);
   ConfigureForEnhancedSafeBrowsingModule(input_context, true);
+  ConfigureForSendTabModule(input_context, true);
 
   // The highest priority card should be returned first. In this case, Price
   // Tracking takes precedence over others.

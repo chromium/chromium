@@ -23182,29 +23182,6 @@
             ]
         }
     ],
-    "SendTabToSelfIOSPushNotifications": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "variant_with_magic_stack_card": "true"
-                    },
-                    "enable_features": [
-                        "SendTabToSelfIOSPushNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "SensitiveContent": [
         {
             "platforms": [

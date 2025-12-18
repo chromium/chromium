@@ -25,11 +25,7 @@ BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
 
 const char kSendTabIOSPushNotificationsURLImageParam[] =
     "variant_with_URL_image";
@@ -51,7 +47,7 @@ bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() {
   if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
     return base::GetFieldTrialParamByFeatureAsBool(
         kSendTabToSelfIOSPushNotifications,
-        kSendTabIOSPushNotificationsWithMagicStackCardParam, false);
+        kSendTabIOSPushNotificationsWithMagicStackCardParam, true);
   }
   return false;
 }

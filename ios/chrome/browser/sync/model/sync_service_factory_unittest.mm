@@ -88,6 +88,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
+    datatypes.Put(syncer::SHARING_MESSAGE);
     datatypes.Put(syncer::SAVED_TAB_GROUP);
     if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
       datatypes.Put(syncer::COLLABORATION_GROUP);

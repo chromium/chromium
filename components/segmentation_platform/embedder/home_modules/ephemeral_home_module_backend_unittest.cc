@@ -95,9 +95,10 @@ TEST_F(EphemeralHomeModuleBackendTest, InitAndFetchModel) {
 
 TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
 #if BUILDFLAG(IS_IOS)
-  ExpectExecutionWithInput({0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/
-                           {kNotShownResultValue, kNotShownResultValue});
+  ExpectExecutionWithInput(
+      {0, 0, 0, 0}, /*expected_error=*/false,
+      /*expected_result=*/
+      {kNotShownResultValue, kNotShownResultValue, kNotShownResultValue});
 #elif BUILDFLAG(IS_ANDROID)
   ExpectExecutionWithInput(
       std::vector<float>(22, 0), /*expected_error=*/false,

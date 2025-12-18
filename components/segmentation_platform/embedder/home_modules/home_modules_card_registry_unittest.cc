@@ -58,13 +58,13 @@ TEST_F(HomeModulesCardRegistryTest, TestPriceTrackingNotificationPromoCard) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
-  ASSERT_EQ(2u, registry_->all_output_labels().size());
+  ASSERT_EQ(3u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(1u, registry_->get_label_index(kPriceTrackingNotificationPromo));
-  ASSERT_EQ(3u, registry_->all_cards_input_size());
+  ASSERT_EQ(4u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(1u, all_cards.size());
+  ASSERT_EQ(2u, all_cards.size());
   ASSERT_EQ(std::string(kPriceTrackingNotificationPromo),
             std::string(all_cards.front()->card_name()));
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
@@ -81,14 +81,14 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
-  ASSERT_EQ(6u, registry_->all_output_labels().size());
+  ASSERT_EQ(7u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(2u,
             registry_->get_label_index(kLensEphemeralModuleSearchVariation));
-  ASSERT_EQ(12u, registry_->all_cards_input_size());
+  ASSERT_EQ(13u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(3u, all_cards.size());
+  ASSERT_EQ(4u, all_cards.size());
 
   // Verify that the Lens card is registered.
   ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),
