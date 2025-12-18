@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './composebox.js';
+import './error_page.js';
 import './top_toolbar.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
@@ -48,6 +49,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         reflect: true,
       },
       showComposebox_: {type: Boolean, reflect: true},
+      isErrorPageVisible_: {type: Boolean, reflect: true},
     };
   }
 
@@ -59,6 +61,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
   protected accessor showComposebox_: boolean = true;
+  protected accessor isErrorPageVisible_: boolean = false;
   private listenerIds_: number[] = [];
   // The OAuth token to use for embedded page requests. Null if not yet set.
   // Can be empty if the user is not signed in or the token couldn't be fetched.

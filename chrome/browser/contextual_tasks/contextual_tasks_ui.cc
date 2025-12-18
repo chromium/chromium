@@ -220,6 +220,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_search::ContextualSearchMetricsRecorder::
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kContextualTasks));
+  source->AddLocalizedString(
+      "protectedErrorPageTopLine",
+      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE);
+  source->AddLocalizedString(
+      "protectedErrorPageBottomLine",
+      IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);
 
   source->AddString("userAgentSuffix",
                     contextual_tasks::GetContextualTasksUserAgentSuffix());

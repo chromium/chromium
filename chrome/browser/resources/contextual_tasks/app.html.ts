@@ -17,6 +17,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
   `}
+  <error-page id="errorPage"></error-page>
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>
   <contextual-tasks-composebox id="composebox"
     ?hidden="${!this.showComposebox_}">

@@ -39,7 +39,10 @@
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
   /* Dropdown item color in context menu entrypoint. */
   --cr-primary-text-color: rgba(31, 31, 31, 1);
+  --error-bottom-line-color: #70757A;
+  --error-top-line-color: #202124;
   --gradient-protection-width: 100%;
+  --protected-icon-background-color: #535353;
   --remove-button-border-radius: 10%;
   --remove-button-height: var(--remove-button-width);
   --remove-button-inset-inline-end: calc((var(--thumbnail-chip-width) - var(--thumbnail-chip-icon-size)) / 2);
@@ -79,6 +82,9 @@
   --cr-fallback-color-surface: var(--search-background-color-dark);
   --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
+  --error-bottom-line-color: #9AA0A6;
+  --error-top-line-color: #E8EAED;
+  --protected-icon-background-color: #E8EAED;
   --remove-button-fill-color: rgba(255, 255, 255, 1);
   --search-background-color: rgba(12, 20, 23, 1);
   --search-background-color-rgb: 12, 20, 23;
@@ -93,4 +99,19 @@
   flex-grow: 1;
   height: 100%;
   overflow: hidden;
+}
+
+error-page {
+  display: none;
+}
+
+:host([is-error-page-visible_]) error-page {
+  display: block;
+  position: fixed;
+  top: 76px;
+}
+
+:host([is-error-page-visible_]) #threadFrame,
+:host([is-error-page-visible_]) contextual-tasks-composebox {
+  visibility: hidden;
 }

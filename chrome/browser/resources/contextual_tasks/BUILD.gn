@@ -6,6 +6,16 @@ import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(!is_android)
 
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "lens_untrusted_icons"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [ "encrypted.svg" ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/lens/", "//")
+  }
+}
+
 build_webui("build") {
   grd_prefix = "contextual_tasks"
 
@@ -14,11 +24,18 @@ build_webui("build") {
     "internals/contextual_tasks_internals.html",
   ]
 
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
+
   ts_files = [
     "app.ts",
     "app.html.ts",
     "composebox.ts",
     "composebox.html.ts",
+    "error_page.ts",
+    "error_page.html.ts",
     "contextual_tasks_browser_proxy.ts",
     "favicon_group.ts",
     "favicon_group.html.ts",
@@ -34,6 +51,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "composebox.css",
+    "error_page.css",
     "favicon_group.css",
     "top_toolbar.css",
     "internals/app.css",
