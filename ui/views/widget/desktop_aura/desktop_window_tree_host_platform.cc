@@ -374,6 +374,8 @@ void DesktopWindowTreeHostPlatform::Close() {
   if (close_widget_factory_.HasWeakPtrs() || !platform_window()) {
     return;
   }
+  // Do not generate synthesized events during shutdown.
+  dispatcher()->Shutdown();
 
   platform_window()->PrepareForShutdown();
 

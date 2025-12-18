@@ -267,6 +267,9 @@ DesktopWindowTreeHostWin::CreateDragDropClient() {
 }
 
 void DesktopWindowTreeHostWin::Close() {
+  // Do not generate synthesized events during shutdown.
+  dispatcher()->Shutdown();
+
   // Calling Hide() can detach the content window's layer, so store it
   // beforehand so we can access it below.
   auto* window_layer = content_window()->layer();
