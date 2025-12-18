@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
+import android.content.Context;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -26,6 +29,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @NullMarked
 public class IncognitoUtils {
     private static @Nullable Boolean sIsEnabledForTesting;
+    private static @Nullable Boolean sIsEligibleTablet;
 
     private IncognitoUtils() {}
 
@@ -75,12 +79,28 @@ public class IncognitoUtils {
      * @return Whether incognito tabs should open in a separate window.
      */
     public static boolean shouldOpenIncognitoAsWindow() {
-        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
-        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        ContextUtils.getApplicationContext())
-                                && !DeviceInfo.isAutomotive())
-                        || DeviceInfo.isDesktop());
+        if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            return false;
+        }
+        // TODO(crbug.com/467768341): Clean up the desktop and tablet form factor check once the bug
+        // is fixed.
+        if (DeviceInfo.isDesktop()) {
+            return true;
+        }
+        // Automotive is currently restricted to a single window.
+        if (DeviceInfo.isAutomotive()) {
+            return false;
+        }
+
+        boolean isTablet;
+        if (sIsEligibleTablet != null) {
+            isTablet = sIsEligibleTablet;
+        } else {
+            isTablet =
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                            ContextUtils.getApplicationContext());
+        }
+        return isTablet;
     }
 
     /**
@@ -88,6 +108,27 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoThemeOverlayEnabledForTesting() {
         return ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
+    }
+
+    /**
+     * Initialize {@code sIsEligibleTablet} status if not already.
+     *
+     * @param context {@link Activity} context used to determine if the display is tablet size.
+     * @param isMultiInstanceApi31Enabled Whether the new launch mode 'singleInstancePerTask' is
+     *     configured to allow multiple instantiation of Chrome instance. The device is not eligible
+     *     tablet if multiple instantiation of Chrome instance is not allowed.
+     */
+    public static void initializeEligibleTabletStatus(
+            Context context, boolean isMultiInstanceApi31Enabled) {
+        if (sIsEligibleTablet != null) {
+            return;
+        }
+        if (!isMultiInstanceApi31Enabled
+                || !ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            sIsEligibleTablet = false;
+        } else {
+            sIsEligibleTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        }
     }
 
     @NativeMethods
