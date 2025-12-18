@@ -91,6 +91,10 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
       task_id_, "ClickTool::Execute",
       JournalDetailsBuilder().Add("point", target.widget_point).Build());
 
+  // TODO(b/467336183): For debugging; should be removed once this bug is
+  // resolved.
+  journal_->SendLogBuffer();
+
   CHECK(!click_dispatcher_);
   click_dispatcher_.emplace(button, click_count, target, *this,
                             std::move(callback));

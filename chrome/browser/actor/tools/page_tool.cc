@@ -209,9 +209,10 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  journal().Log(
-      JournalURL(), task_id(), "TimeOfUseValidation",
-      JournalDetailsBuilder().Add("tab_handle", tab->GetHandle()).Build());
+  journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
+                JournalDetailsBuilder()
+                    .Add("tab_handle", tab->GetHandle().raw_value())
+                    .Build());
 
   RenderFrameHost* frame =
       FindTargetLocalRootFrame(request_->GetTabHandle(), request_->GetTarget());

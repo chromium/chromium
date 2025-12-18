@@ -52,6 +52,12 @@ ToolExecutor::~ToolExecutor() {
 
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
                               ToolExecutorCallback callback) {
+  journal_->Log(invocation->task_id, "ToolExecutor::InvokeTool Received", {});
+
+  // Send the buffer now so the journal shows we received the message. This
+  // helps when debugging unresponsive renderers.
+  journal_->SendLogBuffer();
+
   if (tool_) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kExecutorBusy,
@@ -166,6 +172,12 @@ void ToolExecutor::CancelTool(const actor::TaskId& task_id) {
   journal_->Log(
       task_id, "ToolExecutor::CancelTool",
       JournalDetailsBuilder().Add("tool_already_finished", !tool_).Build());
+
+  // Send the buffer now so the journal shows we received the message. This
+  // helps when debugging unresponsive renderers.
+  // TODO(b/467336183): This instance should be removed once this bug is
+  // resolved.
+  journal_->SendLogBuffer();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (!tool_) {
