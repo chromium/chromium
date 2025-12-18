@@ -50,6 +50,8 @@ static std::string WrappedEncodeByte(char value) {
   return buffer;
 }
 
+}  // namespace
+
 TEST(IndexedDBLevelDBCodingTest, EncodeByte) {
   std::string expected;
   expected.push_back(0);
@@ -1178,5 +1180,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeVarIntVSEncodeByteTest) {
   }
 }
 
-}  // namespace
+TEST(IndexedDBLevelDBCodingTest, Empty) {
+  EXPECT_EQ(KeyPrefix::EncodeInternal(0, 0, 0), KeyPrefix::EncodeEmpty());
+}
+
 }  // namespace content::indexed_db

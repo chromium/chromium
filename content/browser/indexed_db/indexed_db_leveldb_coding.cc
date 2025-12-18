@@ -1800,10 +1800,7 @@ bool KeyPrefix::Decode(std::string_view* slice, KeyPrefix* result) {
 }
 
 std::string KeyPrefix::EncodeEmpty() {
-  const std::string result(4, 0);
-  CHECK_EQ(EncodeInternal(0, 0, 0), std::string(4, 0),
-           base::NotFatalUntil::M146);
-  return result;
+  return std::string(4, 0);
 }
 
 std::string KeyPrefix::Encode() const {
