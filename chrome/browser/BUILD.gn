@@ -6592,6 +6592,8 @@ static_library("browser") {
       "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.mm",
       "enterprise/platform_auth/platform_auth_proxying_url_loader_factory.cc",
       "enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h",
+      "enterprise/platform_auth/url_session_helper.h",
+      "enterprise/platform_auth/url_session_helper.mm",
       "enterprise/signals/device_info_fetcher_mac.h",
       "enterprise/signals/device_info_fetcher_mac.mm",
       "file_select_helper_mac.mm",

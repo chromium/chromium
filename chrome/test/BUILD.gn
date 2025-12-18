@@ -7694,6 +7694,7 @@ test("unit_tests") {
       "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/enterprise/platform_auth/extensible_enterprise_sso_entra_unittest.mm",
       "../browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory_unittest.cc",
+      "../browser/enterprise/platform_auth/url_session_helper_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/auth_session_request_unittest.mm",
       "../browser/mac/code_sign_clone_manager_unittest.mm",
