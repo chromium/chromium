@@ -15,7 +15,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,9 +39,9 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/test/simple_url_loader_test_helper.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -145,10 +147,9 @@ bool ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   simple_loader->AttachStringForUpload(request_to_send,
                                        "application/octet-stream");
   simple_loader->SetTimeoutDuration(base::Seconds(10));
-  content::SimpleURLLoaderTestHelper url_loader_helper;
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, url_loader_helper.GetCallback());
-  url_loader_helper.WaitForCallback();
+  base::test::TestFuture<scoped_refptr<net::HttpResponseHeaders>> future;
+  simple_loader->DownloadHeadersOnly(url_loader_factory, future.GetCallback());
+  CHECK(future.Wait());
   if (simple_loader->NetError() != 0) {
     LOG(ERROR) << "Reset account failed with error "
                << net::ErrorToString(simple_loader->NetError())
