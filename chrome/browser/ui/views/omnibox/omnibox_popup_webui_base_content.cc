@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -135,6 +136,15 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
+void OmniboxPopupWebUIBaseContent::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // Note: This is needed for voice search in the AIM popup.
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
+}
+
 void OmniboxPopupWebUIBaseContent::SetContentURL(std::string_view url) {
   content_url_ = GURL(url);
   LoadContent();
@@ -146,6 +156,8 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
       content_url_, location_bar_view_->profile(), IDS_TASK_MANAGER_OMNIBOX);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
+  extensions::SetViewType(contents_wrapper_->web_contents(),
+                          extensions::mojom::ViewType::kComponent);
   webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
                                    location_bar_view_->browser());
   // Make the OmniboxController available to the OmniboxPopupUI.
