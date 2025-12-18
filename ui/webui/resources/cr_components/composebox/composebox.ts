@@ -247,6 +247,10 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxCloseByEscape');
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
+  private clearAllInputsWhenSubmittingQuery_: boolean =
+      loadTimeData.valueExists('clearAllInputsWhenSubmittingQuery') ?
+      loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery') :
+      false;
   protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
   // Whether the composebox is actively waiting for an autocomplete response. If
@@ -1060,8 +1064,11 @@ export class ComposeboxElement extends I18nMixinLit
 
     // If the composebox is expandable, collapse it and clear the input after
     // submitting.
-    if (this.isCollapsible) {
+    if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {
       this.clearAllInputs();
+    }
+
+    if (this.isCollapsible) {
       this.submitEnabled_ = false;
       this.$.input.blur();
     }

@@ -230,6 +230,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "darkMode", ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
                       ->BrowserUsesDarkColors());
+  source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
+
   source->AddString(
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::
