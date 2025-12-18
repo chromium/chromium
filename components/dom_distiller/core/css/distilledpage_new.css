@@ -12,10 +12,11 @@ html {
   width: 100%; /* Use full width by default */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 16px;  /* Add some horizontal space */
-  padding-right: 16px;
-  padding-top: 16px; /* Add vertical spacing for title and bottom sheet peek */
-  padding-bottom: 80px;
+  /*
+    16px for all sides expect the bottom which is enough for the bottom
+    sheet peek not to overlap the content.
+  */
+  padding: 16px 16px 80px;
   box-sizing: border-box; /* Ensures padding is included in the width */
 }
 
