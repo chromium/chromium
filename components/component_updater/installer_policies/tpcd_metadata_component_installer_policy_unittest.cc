@@ -16,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/tpcd/metadata/browser/parser.h"
@@ -31,8 +30,6 @@ using ::testing::_;
 constexpr base::FilePath::CharType kComponentFileName[] =
     FILE_PATH_LITERAL("metadata.pb");
 
-constexpr char kTpcdMetadataInstallationResult[] =
-    "Navigation.TpcdMitigations.MetadataInstallationResult";
 }  // namespace
 
 class TpcdMetadataComponentInstallerPolicyTest
@@ -100,38 +97,22 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        VerifyInstallation_InvalidInstallDir) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_FALSE(policy()->VerifyInstallation(
       base::Value::Dict(), install_dir().Append(FILE_PATH_LITERAL("x"))));
-
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kMissingMetadataFile, 1);
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        VerifyInstallation_RejectsMissingFile) {
-  base::HistogramTester histogram_tester;
-
   EXPECT_FALSE(
       policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kMissingMetadataFile, 1);
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
        VerifyInstallation_RejectsNotProtoFile) {
   ExecFakeComponentInstallation("clearly not a proto");
 
-  base::HistogramTester histogram_tester;
   EXPECT_FALSE(
       policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kParsingToProtoFailed, 1);
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
@@ -152,12 +133,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-  base::HistogramTester histogram_tester;
   ASSERT_FALSE(
       policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kErroneousSpec, 1);
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest,
@@ -178,12 +155,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-  base::HistogramTester histogram_tester;
   ASSERT_FALSE(
       policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kErroneousSpec, 1);
 }
 
 TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
@@ -205,12 +178,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-    base::HistogramTester histogram_tester;
     EXPECT_FALSE(
         policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-    histogram_tester.ExpectBucketCount(
-        kTpcdMetadataInstallationResult,
-        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
   }
 
   // Set an erroneous DTRP.
@@ -219,12 +188,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-    base::HistogramTester histogram_tester;
     EXPECT_FALSE(
         policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-    histogram_tester.ExpectBucketCount(
-        kTpcdMetadataInstallationResult,
-        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
   }
 
   // Set an erroneous DTRP override with a valid DTRP.
@@ -234,12 +199,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_ErroneousDtrp) {
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
 
-    base::HistogramTester histogram_tester;
     EXPECT_FALSE(
         policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
-    histogram_tester.ExpectBucketCount(
-        kTpcdMetadataInstallationResult,
-        tpcd::metadata::InstallationResult::kErroneousDtrp, 1);
   }
 }
 
@@ -268,11 +229,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_FiresCallback) {
             run_loop.Quit();
           }));
 
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectBucketCount(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kSuccessful, 1);
 
   policy->ComponentReady(base::Version(), install_dir(), base::Value::Dict());
 
@@ -303,11 +260,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
           base::BindLambdaForTesting(
               [&](const std::string& raw_metadata) { NOTREACHED(); }));
 
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));
-  histogram_tester.ExpectUniqueSample(
-      kTpcdMetadataInstallationResult,
-      tpcd::metadata::InstallationResult::kSuccessful, 1);
 
   policy->ComponentReady(base::Version(), install_dir(), base::Value::Dict());
 

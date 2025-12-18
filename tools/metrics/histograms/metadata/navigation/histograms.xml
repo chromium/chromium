@@ -2961,19 +2961,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Navigation.TpcdMitigations.MetadataInstallationResult"
-    enum="TpcdMetadataInstallationResult" expires_after="2026-07-13">
-  <owner>njeunje@chromium.org</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    The outcome from Third Party Cookies Deprecation Metadata component
-    installation.
-
-    This metric is recorded at most once for every new metadata version
-    installed.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.Unload" units="ms" expires_after="2026-05-10">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>

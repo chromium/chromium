@@ -106,39 +106,28 @@ void TpcdMetadataComponentInstallerPolicy::ComponentReady(
   }
 }
 
-void WriteMetrics(tpcd::metadata::InstallationResult result) {
-  base::UmaHistogramEnumeration(
-      "Navigation.TpcdMitigations.MetadataInstallationResult", result);
-}
-
 // Called during startup and installation before ComponentReady().
 bool TpcdMetadataComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(GetComponentPath(install_dir))) {
-    WriteMetrics(tpcd::metadata::InstallationResult::kMissingMetadataFile);
     return false;
   }
 
   std::string contents;
   if (!base::ReadFileToString(GetComponentPath(install_dir), &contents)) {
-    WriteMetrics(
-        tpcd::metadata::InstallationResult::kReadingMetadataFileFailed);
     return false;
   }
 
   tpcd::metadata::Metadata metadata;
   if (!metadata.ParseFromString(contents)) {
-    WriteMetrics(tpcd::metadata::InstallationResult::kParsingToProtoFailed);
     return false;
   }
 
-  if (!tpcd::metadata::Parser::IsValidMetadata(metadata,
-                                               base::BindOnce(WriteMetrics))) {
+  if (!tpcd::metadata::Parser::IsValidMetadata(metadata)) {
     return false;
   }
 
-  WriteMetrics(tpcd::metadata::InstallationResult::kSuccessful);
   return true;
 }
 

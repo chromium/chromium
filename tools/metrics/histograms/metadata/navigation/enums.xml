@@ -1970,17 +1970,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Third-party cookie blocking disabled for site"/>
 </enum>
 
-<enum name="TpcdMetadataInstallationResult">
-  <int value="0" label="kSuccessful"/>
-  <int value="1" label="kMissingMetadataFile"/>
-  <int value="2" label="kReadingMetadataFileFailed"/>
-  <int value="3" label="kParsingToProtoFailed"/>
-  <int value="4" label="kErroneousSpec"/>
-  <int value="5" label="kErroneousSource"/>
-  <int value="6" label="kErroneousDtrp"/>
-  <int value="7" label="kIllicitDtrp"/>
-</enum>
-
 <enum name="UserAgentStringType">
   <int value="0" label="Full user agent string"/>
   <int value="1" label="Reduced user agent string"/>

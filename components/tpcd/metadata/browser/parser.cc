@@ -53,46 +53,30 @@ TpcdMetadataRuleSource Parser::ToRuleSource(const std::string& source) {
 }
 
 // static
-bool Parser::IsValidMetadata(const Metadata& metadata,
-                             RecordInstallationResultCallback callback) {
+bool Parser::IsValidMetadata(const Metadata& metadata) {
   for (const tpcd::metadata::MetadataEntry& me : metadata.metadata_entries()) {
     if (!me.has_primary_pattern_spec() ||
         !ContentSettingsPattern::FromString(me.primary_pattern_spec())
              .IsValid()) {
-      if (callback) {
-        std::move(callback).Run(InstallationResult::kErroneousSpec);
-      }
       return false;
     }
 
     if (!me.has_secondary_pattern_spec() ||
         !ContentSettingsPattern::FromString(me.secondary_pattern_spec())
              .IsValid()) {
-      if (callback) {
-        std::move(callback).Run(InstallationResult::kErroneousSpec);
-      }
       return false;
     }
 
     if (!me.has_source()) {
-      if (callback) {
-        std::move(callback).Run(InstallationResult::kErroneousSource);
-      }
       return false;
     }
 
     if (base::FeatureList::IsEnabled(
             net::features::kTpcdMetadataStageControl)) {
       if (me.has_dtrp() && !IsValidDtrp(me.dtrp())) {
-        if (callback) {
-          std::move(callback).Run(InstallationResult::kErroneousDtrp);
-        }
         return false;
       } else if (me.has_dtrp_override() &&
                  (!me.has_dtrp() || !IsValidDtrp(me.dtrp_override()))) {
-        if (callback) {
-          std::move(callback).Run(InstallationResult::kErroneousDtrp);
-        }
         return false;
       }
     }
@@ -139,7 +123,7 @@ MetadataEntries ParseMetadataFromFeatureParam(
 
   CHECK(metadata.ParseFromString(uncompressed));
 
-  CHECK(Parser::IsValidMetadata(metadata, base::NullCallback()));
+  CHECK(Parser::IsValidMetadata(metadata));
 
   return ToMetadataEntries(metadata);
 }
