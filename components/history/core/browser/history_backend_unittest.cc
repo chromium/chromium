@@ -11,6 +11,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -1230,10 +1231,12 @@ TEST_F(HistoryBackendTest, AddPage404) {
       /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
       ui::PAGE_TRANSITION_TYPED, /*hidden=*/true, SOURCE_BROWSED,
       history::VisitResponseCodeCategory::k404, /*did_replace_entry=*/false,
-      /*consider_for_ntp_most_visited=*/false);
+      /*consider_for_ntp_most_visited=*/false,
+      VisitContextEphemerality::kNotEphemeral, /*title=*/std::nullopt,
+      std::optional<GURL>(url), std::optional<GURL>(url));
   backend_->AddPage(request);
 
-  // The visit should have been added to the database...
+  // The visit should have been added to the VisitDatabase...
   URLRow url_row;
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
   VisitVector visits;
@@ -1241,6 +1244,16 @@ TEST_F(HistoryBackendTest, AddPage404) {
       backend_->db()->GetRowForURL(url, nullptr), kMaxVisitsToQuery,
       VisitQuery404sPolicy::kInclude404s, &visits));
   ASSERT_EQ(1u, visits.size());
+
+  // ... and the VisitedLinkDatabase ...
+  VisitRow visit_row = visits.at(0);
+  VisitedLinkRow visit_link_row;
+  EXPECT_EQ(backend_->db()->GetVisitedLinkRow(visit_row.visited_link_id,
+                                              visit_link_row),
+            true);
+  VisitedLinkID visited_link_id_404 = backend_->db()->GetRowForVisitedLink(
+      visit_row.url_id, url, url, visit_link_row);
+  EXPECT_EQ(visited_link_id_404, visit_row.visited_link_id);
 
   // ...but it should not be tracked by `VisitTracker`.
   EXPECT_EQ(
