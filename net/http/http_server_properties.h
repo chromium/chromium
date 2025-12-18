@@ -94,9 +94,9 @@ class NET_EXPORT HttpServerProperties
     : public BrokenAlternativeServices::Delegate {
  public:
   // Store at most 500 MRU ServerInfos in memory and disk.
-  static const int kMaxServerInfoEntries = 500;
+  static constexpr int kMaxServerInfoEntries = 500;
   // Max number of servers that can be recorded as requiring HTTP/1.1.
-  static const int kMaxServersRequiringHttp11Entries = 100;
+  static constexpr int kMaxServersRequiringHttp11Entries = 100;
 
   // Provides an interface to interact with persistent preferences storage
   // implemented by the embedder. The prefs are assumed not to have been loaded
