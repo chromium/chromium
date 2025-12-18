@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -63,6 +64,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -446,7 +448,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     /** Returns the list of supported {@link DialogOption}. */
-    private List<Integer> getDialogOptions(Bundle fragmentArgs) {
+    private static List<Integer> getDialogOptions(Bundle fragmentArgs) {
         String referrer =
                 fragmentArgs.getString(
                         ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
@@ -976,5 +978,26 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     ClearBrowsingDataFragment.class.getName(),
-                    R.xml.clear_browsing_data_preferences);
+                    R.xml.clear_browsing_data_preferences) {
+                @Override
+                public Bundle getExtras(Context context) {
+                    return createFragmentArgs(context.getClass().getName());
+                }
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    Bundle args = createFragmentArgs(context.getClass().getName());
+                    List<Integer> options = getDialogOptions(args);
+                    // Not all checkboxes defined in the layout are necessarily handled by this
+                    // class or a particular subclass. Hide those that are not.
+                    Set<Integer> unboundOptions = getAllOptions();
+                    unboundOptions.removeAll(options);
+                    for (@DialogOption Integer option : unboundOptions) {
+                        indexData.removeEntry(getUniqueId(getPreferenceKey(option)));
+                    }
+
+                    indexData.removeEntry(getUniqueId(PREF_SIGN_OUT_OF_CHROME_TEXT));
+                }
+            };
 }
