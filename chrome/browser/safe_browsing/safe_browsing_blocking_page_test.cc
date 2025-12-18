@@ -2061,19 +2061,6 @@ class TrustSafetySentimentSurveyV2BrowserTest
   }
   ~TrustSafetySentimentSurveyV2BrowserTest() override = default;
 
-  void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    metrics::DesktopSessionDurationTracker::Initialize();
-#endif
-    SafeBrowsingBlockingPageBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    metrics::DesktopSessionDurationTracker::CleanupForTesting();
-#endif
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
