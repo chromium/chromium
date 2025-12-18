@@ -961,7 +961,7 @@ const base::FeatureParam<int> kGlicCompositeViewWidth{
 const base::FeatureParam<int> kGlicCompositeViewHeight{
     &kGlicPrintMenuItem, "glic-composite-view-height", 480};
 
-BASE_FEATURE(kGlicArchiveConversation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicArchiveConversation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
