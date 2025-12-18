@@ -331,13 +331,20 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
   }
 
   CreditCardSuggestionSummary summary;
-  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
-      autofill_manager.client(), *autofill_field_for_labels,
-      /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_filtering=*/{},
-      autofill_field_for_labels->Type().GetCreditCardType(),
-      /*should_show_scan_credit_card=*/false, summary,
-      /*is_card_number_field_empty=*/true);
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
+      suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
+          autofill_manager.client(), *autofill_field_for_labels,
+          autofill_field_for_labels->Type().GetCreditCardType(),
+          /*four_digit_combinations_in_dom=*/{},
+          /*autofilled_last_four_digits_in_form_for_filtering=*/{}, summary);
+  std::vector<Suggestion> suggestions =
+      GenerateCreditCardOrCvcFieldSuggestionsSync(
+          autofill_manager.client(), *autofill_field_for_labels,
+          autofill_field_for_labels->Type().GetCreditCardType(),
+          /*should_show_scan_credit_card=*/false, summary,
+          /*is_card_number_field_empty=*/true, {suggestion_data});
+
   std::erase_if(suggestions, [](const Suggestion& s) {
     return s.type != SuggestionType::kCreditCardEntry;
   });

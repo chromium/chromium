@@ -282,6 +282,43 @@ class PaymentsSuggestionGeneratorTest
         credit_card_upload_enabled);
   }
 
+  std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
+      const AutofillClient& client,
+      const FormFieldData& trigger_field,
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+      base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
+          virtual_card_guid_to_last_four_map) {
+    std::pair<SuggestionGenerator::SuggestionDataSource,
+              std::vector<SuggestionGenerator::SuggestionData>>
+        suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+            client, trigger_field, metadata_logging_context);
+
+    return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+        client, trigger_field, virtual_card_guid_to_last_four_map,
+        {suggestion_data});
+  }
+
+  std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
+      const AutofillClient& client,
+      const FormFieldData& trigger_field,
+      const std::vector<std::string>& four_digit_combinations_in_dom,
+      const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+      FieldType trigger_field_type,
+      bool should_show_scan_credit_card,
+      CreditCardSuggestionSummary& summary,
+      bool is_card_number_field_empty) {
+    std::pair<SuggestionGenerator::SuggestionDataSource,
+              std::vector<SuggestionGenerator::SuggestionData>>
+        suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
+            client, trigger_field, trigger_field_type,
+            four_digit_combinations_in_dom,
+            autofilled_last_four_digits_in_form_for_filtering, summary);
+
+    return GenerateCreditCardOrCvcFieldSuggestionsSync(
+        client, trigger_field, trigger_field_type, should_show_scan_credit_card,
+        summary, is_card_number_field_empty, {suggestion_data});
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
@@ -405,7 +442,6 @@ class AutofillCreditCardBenefitsLabelTest
         metadata_logging_context.instrument_ids_to_available_benefit_sources,
         expected_instrument_ids_to_available_benefit_sources);
   }
-
  private:
   std::u16string expected_benefit_text_;
   CreditCard card_;

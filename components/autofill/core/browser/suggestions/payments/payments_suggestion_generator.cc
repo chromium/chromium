@@ -143,26 +143,6 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   return suggestions;
 }
 
-std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
-    FieldType trigger_field_type,
-    bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary,
-    bool is_card_number_field_empty) {
-  std::pair<SuggestionDataSource, std::vector<SuggestionData>>
-      suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
-          client, trigger_field, trigger_field_type,
-          four_digit_combinations_in_dom,
-          autofilled_last_four_digits_in_form_for_filtering, summary);
-
-  return GenerateCreditCardOrCvcFieldSuggestionsSync(
-      client, trigger_field, trigger_field_type, should_show_scan_credit_card,
-      summary, is_card_number_field_empty, {suggestion_data});
-}
-
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
 FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
     const AutofillClient& client,
@@ -253,23 +233,6 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
   return suggestions;
 }
 
-std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
-    base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
-        virtual_card_guid_to_last_four_map) {
-  // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
-  // duplicate logic to helper functions.
-  std::pair<SuggestionDataSource, std::vector<SuggestionData>>
-      suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
-          client, trigger_field, metadata_logging_context);
-
-  return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
-      client, trigger_field, virtual_card_guid_to_last_four_map,
-      {suggestion_data});
-}
-
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -308,16 +271,27 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   // CVC form AND there is matched VCN (based on the VCN usages and last four
   // from the DOM).
   if (!virtual_card_guid_to_last_four_map.empty()) {
-    suggestions = GetVirtualCardStandaloneCvcFieldSuggestions(
-        client, trigger_field, summary.metadata_logging_context,
-        virtual_card_guid_to_last_four_map);
+    // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
+    // duplicate logic to helper functions.
+    std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+        suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+            client, trigger_field, summary.metadata_logging_context);
+
+    suggestions = GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+        client, trigger_field, virtual_card_guid_to_last_four_map,
+        {suggestion_data});
   } else {
     // If no virtual cards available for standalone CVC field, fall back to
     // regular credit card suggestions.
-    suggestions = GetCreditCardOrCvcFieldSuggestions(
-        client, trigger_field, four_digit_combinations_in_dom,
-        autofilled_last_four_digits_in_form_for_filtering, trigger_field_type,
-        should_show_scan_credit_card, summary, is_card_number_field_empty);
+    std::pair<SuggestionDataSource, std::vector<SuggestionData>>
+        suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
+            client, trigger_field, trigger_field_type,
+            four_digit_combinations_in_dom,
+            autofilled_last_four_digits_in_form_for_filtering, summary);
+
+    return GenerateCreditCardOrCvcFieldSuggestionsSync(
+        client, trigger_field, trigger_field_type, should_show_scan_credit_card,
+        summary, is_card_number_field_empty, {suggestion_data});
   }
 
   return suggestions;
