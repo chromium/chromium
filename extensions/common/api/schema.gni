@@ -46,7 +46,7 @@ extensions_types_only_schema_files_ = [
   "oauth2.webidl",
   "requirements.json",
   "shared_module.webidl",
-  "web_accessible_resources_mv2.idl",
+  "web_accessible_resources_mv2.webidl",
   "web_accessible_resources.webidl",
 ]
 

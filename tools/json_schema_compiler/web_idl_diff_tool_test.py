@@ -48,6 +48,8 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('protocol_handlers.idl', 'protocol_handlers.webidl'),
         ('shared_module.idl', 'shared_module.webidl'),
         ('web_accessible_resources.idl', 'web_accessible_resources.webidl'),
+        ('web_accessible_resources_mv2.idl',
+         'web_accessible_resources_mv2.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
