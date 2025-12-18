@@ -1146,6 +1146,18 @@ void CdmAdapter::ReportMetrics(cdm::MetricName metric_name, uint64_t value) {
           cdm_metrics_data_.decoder_bypass_block_count.value_or(0) + value;
       ReportDecoderBypassBlockCountUMA(value, frames_processed_);
       return;
+    case cdm::kDecoderCheck1SuccessCount:
+      cdm_metrics_data_.decoder_check1_success_count =
+          cdm_metrics_data_.decoder_check1_success_count.value_or(0) + value;
+      return;
+    case cdm::kDecoderCheck1WarningCount:
+      cdm_metrics_data_.decoder_check1_warning_count =
+          cdm_metrics_data_.decoder_check1_warning_count.value_or(0) + value;
+      return;
+    case cdm::kDecoderCheck1ErrorCount:
+      cdm_metrics_data_.decoder_check1_error_count =
+          cdm_metrics_data_.decoder_check1_error_count.value_or(0) + value;
+      return;
   }
 }
 

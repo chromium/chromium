@@ -519,6 +519,9 @@ class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
         {
             Media_EME_CdmMetrics::kCertificateSerialNumberName,
             Media_EME_CdmMetrics::kDecoderBypassBlockCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1WarningCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1ErrorCountName,
             Media_EME_CdmMetrics::kLicenseSdkVersionName,
             Media_EME_CdmMetrics::kNumberOfOnMessageEventsName,
             Media_EME_CdmMetrics::kNumberOfUpdateCallsName,
@@ -540,7 +543,8 @@ class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
           UnorderedElementsAre(
               Pair(Media_EME_CdmMetrics::kLicenseSdkVersionName, 12345),
               Pair(Media_EME_CdmMetrics::kNumberOfOnMessageEventsName, 1),
-              Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1)));
+              Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1),
+              Pair(Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName, 1)));
     } else {
       EXPECT_EQ(report_metric_entries.size(), 0u);
     }
