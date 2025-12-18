@@ -6,8 +6,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -32,13 +34,13 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
       [NSString stringWithFormat:@"omnibox suggestion %d %d", section, row];
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_descendant(
-                                         grey_accessibilityLabel(suggestion)),
-                                     grey_accessibilityID(accessibilityID),
-                                     chrome_test_util::OmniboxPopupRow(),
-                                     grey_sufficientlyVisible(), nil)]
+    id<GREYMatcher> rowMatcher =
+        grey_allOf(grey_accessibilityID(accessibilityID),
+                   chrome_test_util::OmniboxPopupRow(), nil);
+    id<GREYMatcher> suggestionMatcher = grey_allOf(
+        omnibox::PopupRowPrimaryTextMatcher(),
+        grey_accessibilityLabel(suggestion), grey_ancestor(rowMatcher), nil);
+    [[EarlGrey selectElementWithMatcher:suggestionMatcher]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
@@ -85,8 +87,7 @@ void WaitForEmpyOmnibox() {
 - (void)testEnterURL {
   const GURL URL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:URL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(URL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
 }
 
@@ -132,8 +133,7 @@ void WaitForEmpyOmnibox() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"foo")];
 
@@ -142,8 +142,7 @@ void WaitForEmpyOmnibox() {
       grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 }
 
 // Tests whether input mode in an omnibox can be canceled via "hide keyboard"
@@ -165,8 +164,7 @@ void WaitForEmpyOmnibox() {
 
   [ChromeEarlGrey loadURL:URL];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"foo")];
 
@@ -200,8 +198,7 @@ void WaitForEmpyOmnibox() {
   [[EarlGrey selectElementWithMatcher:typingShield]
       performAction:grey_tapAtPoint(CGPointMake(30, 200))];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 }
 
 // Verifies that the keyboard is properly dismissed when a toolbar button
@@ -262,8 +259,7 @@ void WaitForEmpyOmnibox() {
 
   [ChromeEarlGrey loadURL:URL];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 
   // Can't access share menu from xctest on iOS 11+, so use the text field
   // callout bar instead.
@@ -401,11 +397,25 @@ void WaitForEmpyOmnibox() {
                                             grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
-  WaitForEmpyOmnibox();
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"NTP view not visible");
 }
 
 // Tests typing in the omnibox using the keyboard accessory view.
 - (void)testToolbarOmniboxKeyboardAccessoryView {
+  if (IsComposeboxIOSEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test is not relevant when composebox is enabled "
+                           @"as the accessory view is disabled.");
+  }
   // Select the omnibox to get the keyboard up.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
