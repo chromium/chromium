@@ -147,6 +147,10 @@ base::TimeDelta GetSnackbarMessageDuration() {
   return kSnackbarMessageDuration;
 }
 
+std::optional<base::TimeDelta> GetOverrideInfobarDuration() {
+  return std::nullopt;
+}
+
 UIImage* GetPHPickerViewControllerImage() {
   return nil;
 }

@@ -226,6 +226,9 @@ GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
 // Returns the default value for the snackbar message duration.
 base::TimeDelta GetSnackbarMessageDuration();
 
+// Returns override duration for infobar if exists.
+std::optional<base::TimeDelta> GetOverrideInfobarDuration();
+
 // Returns a UIImage for users of PHPickerViewController to use to skip
 // presenting that picker view controller in tests.
 UIImage* GetPHPickerViewControllerImage();

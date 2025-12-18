@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -286,6 +287,11 @@
 // Determines the duration for which to show the infobar based on its priority
 // and its type.
 - (base::TimeDelta)infobarDuration {
+  std::optional<base::TimeDelta> overrideDuration =
+      tests_hook::GetOverrideInfobarDuration();
+  if (overrideDuration.has_value()) {
+    return overrideDuration.value();
+  }
   InfobarOverlayRequestConfig* config =
       self.request->GetConfig<InfobarOverlayRequestConfig>();
 

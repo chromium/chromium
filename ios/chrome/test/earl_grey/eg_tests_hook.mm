@@ -451,6 +451,16 @@ base::TimeDelta GetSnackbarMessageDuration() {
   return base::Seconds(30);
 }
 
+std::optional<base::TimeDelta> GetOverrideInfobarDuration() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(test_switches::kUseDefaultInfobarDuration)) {
+    return std::nullopt;
+  }
+  // Makes the infobar duration longer for EGTests to make sure there is time
+  // detect it, and avoid flakiness.
+  return base::Seconds(30);
+}
+
 UIImage* GetPHPickerViewControllerImage() {
   return ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
       CGSizeMake(1000, 1000), UIColor.greenColor);

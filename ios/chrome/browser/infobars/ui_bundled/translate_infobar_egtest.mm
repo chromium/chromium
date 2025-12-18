@@ -31,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/components/webui/web_ui_url_constants.h"
@@ -315,6 +316,8 @@ void TestResponseProvider::GetLanguageResponse(
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableReaderModeTranslation);
   config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kUseDefaultInfobarDuration);
 
   // TODO(crbug.com/467309708): Refactor to create a test class for Reading Mode
   // once the translation feature is enabled by default.

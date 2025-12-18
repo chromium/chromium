@@ -13,6 +13,7 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
