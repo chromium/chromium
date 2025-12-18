@@ -2,6 +2,7 @@
 # To regenerate, use "update_android_aar_prebuilts = true" and run "gn gen".
 
 aidl = [
+  "aidl/androidx/pdf/annotation/KeyedPdfAnnotation.aidl",
   "aidl/androidx/pdf/annotation/models/AddEditResult.aidl",
   "aidl/androidx/pdf/annotation/models/AnnotationResult.aidl",
   "aidl/androidx/pdf/annotation/models/EditId.aidl",
