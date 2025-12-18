@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeAblationDelay" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-07-25">
   <owner>fergal@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
