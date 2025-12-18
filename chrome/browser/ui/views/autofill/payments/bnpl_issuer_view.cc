@@ -85,7 +85,9 @@ void BnplIssuerView::PopulateIssuers() {
   auto issuer_contexts = controller_->GetIssuerContexts();
   for (const auto& [issuer, eligibility] : issuer_contexts) {
     bool issuer_eligible =
-        eligibility == BnplIssuerEligibilityForPage::kIsEligible;
+        eligibility == BnplIssuerEligibilityForPage::kIsEligible ||
+        eligibility == BnplIssuerEligibilityForPage::
+                           kTemporarilyEligibleCheckoutAmountNotYetKnown;
     const bool issuer_linked = issuer.payment_instrument().has_value();
     const std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
         image_ids =

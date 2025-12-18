@@ -222,6 +222,32 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
           WaitForShow(SelectBnplIssuerDialog::kThrobberId)));
 }
 
+// Ensures that an issuer with `kTemporarilyEligibleCheckoutAmountNotYetKnown`
+// is enabled and can be selected, triggering the throbber.
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       TemporarilyEligibleBnplIssuerSelected) {
+  const std::string temp_eligible_button_name =
+      "Temp Eligible BNPL Issuer button";
+
+  EXPECT_CALL(accept_callback_, Run);
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow({{GetTestBnplIssuerContext(
+          IssuerId::kBnplAffirm,
+          BnplIssuerEligibilityForPage::
+              kTemporarilyEligibleCheckoutAmountNotYetKnown)}}),
+      InAnyContext(
+          NameViewRelative(SelectBnplIssuerDialog::kBnplIssuerView,
+                           temp_eligible_button_name,
+                           [](views::View* container) {
+                             return container->children()[0].get();
+                           }),
+          CheckView(temp_eligible_button_name,
+                    [](views::View* view) { return view->GetEnabled(); }),
+          PressButton(temp_eligible_button_name),
+          WaitForShow(SelectBnplIssuerDialog::kThrobberId)));
+}
+
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
                        IneligibleBnplIssuerSelected) {
   std::string disabled_bnpl_issuer_hover_button_name =
