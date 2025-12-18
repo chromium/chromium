@@ -33,12 +33,10 @@ void CompositorAnimationRunner::Stop() {
 }
 
 void CompositorAnimationRunner::OnAnimationStep(base::TimeTicks timestamp) {
-  if (timestamp - last_tick_ < min_interval_) {
+  if (timestamp < start_tick_) [[unlikely]] {
     return;
   }
-
-  last_tick_ = timestamp;
-  Step(last_tick_);
+  Step(timestamp);
 }
 
 void CompositorAnimationRunner::OnCompositingShuttingDown(
@@ -71,8 +69,7 @@ void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
     compositor_ = current_compositor;
   }
 
-  last_tick_ = base::TimeTicks::Now() - elapsed;
-  min_interval_ = min_interval;
+  start_tick_ = base::TimeTicks::Now() - elapsed;
   DCHECK(!compositor_->HasAnimationObserver(this));
   compositor_->AddAnimationObserver(this);
 }
@@ -82,7 +79,6 @@ void CompositorAnimationRunner::StopInternal() {
     compositor_->RemoveAnimationObserver(this);
   }
 
-  min_interval_ = base::TimeDelta::Max();
   compositor_ = nullptr;
 }
 
