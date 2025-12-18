@@ -14478,6 +14478,30 @@
             ]
         }
     ],
+    "InitFeatureListEarly": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_InitFeatureListEarly",
+                    "params": {
+                        "init_feature_list_early": "true"
+                    },
+                    "enable_features": [
+                        "LoadNativeEarly"
+                    ]
+                },
+                {
+                    "name": "Enabled_InitFeatureListLate",
+                    "enable_features": [
+                        "LoadNativeEarly"
+                    ]
+                }
+            ]
+        }
+    ],
     "InitializePoliciesForSignedInUserInNewEntryPoints": [
         {
             "platforms": [
@@ -15235,30 +15259,6 @@
                     "enable_features": [
                         "LazyBrowserInterfaceBroker",
                         "LoadAllTabsAtStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LoadNativeEarly": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_InitFeatureListEarly",
-                    "params": {
-                        "init_feature_list_early": "true"
-                    },
-                    "enable_features": [
-                        "LoadNativeEarly"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LoadNativeEarly"
                     ]
                 }
             ]
