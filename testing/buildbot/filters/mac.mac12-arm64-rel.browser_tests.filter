@@ -180,7 +180,6 @@
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
 -WebAppBrowserTest.WebAppCreateAndDeleteShortcut
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
--WebAppIntegration.LaunchFromAppShimFallbackSecondaryProfile
 -WebContentsInteractionTestUtilTest.EvaluateString
 -WelcomeAppChooserTest.All
 -WelcomeWelcomeAppTest.All
