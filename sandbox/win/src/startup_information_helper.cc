@@ -205,12 +205,16 @@ bool StartupInformationHelper::BuildStartupInformation() {
   return true;
 }
 
-void StartupInformationHelper::SetFilterEnvironment(bool filter) {
-  filter_environment_ = filter;
+void StartupInformationHelper::SetEnvironment(std::wstring environment) {
+  DCHECK(!environment.empty() && environment.back() == L'\0');
+  environment_ = std::move(environment);
 }
 
-bool StartupInformationHelper::IsEnvironmentFiltered() {
-  return filter_environment_;
+wchar_t* StartupInformationHelper::GetEnvironment() {
+  if (environment_.empty()) {
+    return nullptr;
+  }
+  return const_cast<wchar_t*>(std::data(environment_));
 }
 
 }  // namespace sandbox

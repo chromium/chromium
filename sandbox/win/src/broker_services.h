@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -16,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/alternate_desktop.h"
@@ -27,6 +29,8 @@
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
+
+class StartupInformationHelper;
 
 // BrokerServicesBase ---------------------------------------------------------
 // Broker implementation version 0
@@ -55,8 +59,8 @@ class BrokerServicesBase final : public BrokerServices,
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
   std::unique_ptr<TargetPolicy> CreatePolicy(std::string_view key) override;
 
-  void SpawnTargetAsync(const wchar_t* exe_path,
-                        const wchar_t* command_line,
+  void SpawnTargetAsync(std::wstring_view exe_path,
+                        std::wstring_view command_line,
                         std::unique_ptr<TargetPolicy> policy,
                         SpawnTargetCallback result_callback) override;
   ResultCode GetPolicyDiagnostics(
@@ -83,26 +87,25 @@ class BrokerServicesBase final : public BrokerServices,
   // Ensures the desktop integrity suits any process we are launching.
   ResultCode UpdateDesktopIntegrity(Desktop desktop, IntegrityLevel integrity);
 
+  using CreateTargetInfo =
+      std::pair<std::unique_ptr<StartupInformationHelper>, TargetTokens>;
+
   // Creates the suspended target process and returns the new process handle in
-  // the result. In parallel launch mode, this function runs on the thread pool.
-  CreateTargetResult CreateTarget(
-      TargetProcess* target,
-      const std::wstring& exe_path,
-      const std::wstring& command_line,
-      std::unique_ptr<StartupInformationHelper> startup_info);
+  // the result.
+  CreateTargetResult CreateTarget(std::wstring exe_path,
+                                  std::wstring command_line,
+                                  CreateTargetInfo target_info);
 
-  // Helper for initializing `startup_info` and `target` for CreateTarget.
-  ResultCode PreSpawnTarget(const wchar_t* exe_path,
-                            PolicyBase* policy_base,
-                            StartupInformationHelper* startup_info,
-                            std::unique_ptr<TargetProcess>& target);
+  // Helper for initializing the CreateTargetInfo for CreateTarget.
+  base::expected<CreateTargetInfo, ResultCode> PreSpawnTarget(
+      std::wstring_view exe_path,
+      std::wstring_view command_line,
+      PolicyBase* policy_base);
 
-  // Implementation for SpawnTarget and SpawnTargetAsync.
-  // Parallel launching will be used if
-  // BrokerServicesDelegate::EnableParallelLaunch() returns true. The target
-  // creation result is returned to `result_callback`.
-  void SpawnTargetAsyncImpl(const wchar_t* exe_path,
-                            const wchar_t* command_line,
+  // Implementation for SpawnTarget and SpawnTargetAsync. The target creation
+  // result is returned to `result_callback`.
+  void SpawnTargetAsyncImpl(std::wstring_view exe_path,
+                            std::wstring_view command_line,
                             std::unique_ptr<PolicyBase> policy_base,
                             SpawnTargetCallback result_callback);
 
@@ -110,7 +113,6 @@ class BrokerServicesBase final : public BrokerServices,
   // the target process is created. This function is responsible for running
   // `result_callback` to return the process information.
   void FinishSpawnTarget(std::unique_ptr<PolicyBase> policy_base,
-                         std::unique_ptr<TargetProcess> target,
                          SpawnTargetCallback result_callback,
                          CreateTargetResult target_result);
 
@@ -118,9 +120,8 @@ class BrokerServicesBase final : public BrokerServices,
   ResultCode FinishSpawnTargetImpl(
       ResultCode initial_result,
       std::unique_ptr<PolicyBase> policy_base,
-      std::unique_ptr<TargetProcess> target,
-      base::win::ScopedProcessInformation* process_info,
-      DWORD* last_error);
+      const base::win::ScopedProcessInformation& process_info,
+      DWORD& last_error);
 
   // The completion port used by the job objects to communicate events to
   // the worker thread.

@@ -183,7 +183,7 @@ SBOX_TESTS_COMMAND int PolicyTargetTest_process(int argc, wchar_t** argv) {
 SBOX_TESTS_COMMAND int PolicyTargetTest_filterEnvironment(int argc,
                                                           wchar_t** argv) {
   auto env = base::Environment::Create();
-  // "TMP" should never be filtered. See `TargetProcess::Create`.
+  // "TMP" should never be filtered. See `CreateFilteredEnvironment`.
   if (!env->HasVar("TMP")) {
     return SBOX_TEST_FIRST_ERROR;
   }
@@ -292,7 +292,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
                                                             USER_LOCKDOWN));
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
   EXPECT_EQ(SBOX_ALL_OK, result);
@@ -349,7 +349,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
       broker->GetDesktopName(Desktop::kAlternateDesktop);
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 
@@ -414,7 +414,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
       broker->GetDesktopName(Desktop::kAlternateWinstation);
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 
@@ -524,7 +524,7 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   DWORD last_error = ERROR_SUCCESS;
   base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
       test_future;
-  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+  broker->SpawnTargetAsync(prog_name, arguments, std::move(policy),
                            test_future.GetCallback());
   std::tie(target, last_error, result) = test_future.Take();
 

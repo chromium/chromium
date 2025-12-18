@@ -118,11 +118,9 @@ TEST(InterceptionManagerTest, GetGranularAlignedRandomOffset) {
 TEST(InterceptionManagerTest, BufferLayout1) {
   wchar_t exe_name[MAX_PATH];
   ASSERT_NE(0u, GetModuleFileName(nullptr, exe_name, MAX_PATH - 1));
+  TargetProcess target;
 
-  auto target = TargetProcess::MakeTargetProcessForTesting(
-      ::GetCurrentProcess(), ::GetModuleHandle(exe_name));
-
-  InterceptionManager interceptions(*target);
+  InterceptionManager interceptions(target);
 
   // Any pointer will do for a function pointer.
   void* function = &interceptions;
@@ -188,10 +186,9 @@ TEST(InterceptionManagerTest, BufferLayout2) {
   wchar_t exe_name[MAX_PATH];
   ASSERT_NE(0u, GetModuleFileName(nullptr, exe_name, MAX_PATH - 1));
 
-  auto target = TargetProcess::MakeTargetProcessForTesting(
-      ::GetCurrentProcess(), ::GetModuleHandle(exe_name));
+  TargetProcess target;
 
-  InterceptionManager interceptions(*target);
+  InterceptionManager interceptions(target);
 
   // Any pointer will do for a function pointer.
   void* function = &interceptions;

@@ -72,11 +72,6 @@ bool IsPipe(const std::wstring& path);
 // Converts a NTSTATUS code to a Win32 error code.
 DWORD GetLastErrorFromNtStatus(NTSTATUS status);
 
-// Returns the address of the main exe module in memory taking in account
-// address space layout randomization. This uses the process' PEB to extract
-// the base address. This should only be called on new, suspended processes.
-void* GetProcessBaseAddress(HANDLE process);
-
 // Returns true if the string contains a NUL ('\0') character.
 bool ContainsNulCharacter(std::wstring_view str);
 

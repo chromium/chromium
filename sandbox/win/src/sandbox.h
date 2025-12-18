@@ -108,25 +108,23 @@ class [[clang::lto_visibility_public]] BrokerServices {
   virtual std::unique_ptr<TargetPolicy> CreatePolicy(std::string_view tag) = 0;
 
   // Creates a new target (child process) in a suspended state and takes
-  // ownership of |policy|.
+  // ownership of `policy`.
   // Parameters:
-  // * |exe_path|: This is the full path to the target binary. This parameter
-  //   can be null and in this case the exe path must be the first argument
-  //   of the command_line.
-  // * |command_line|: The arguments to be passed as command line to the new
-  //   process. This can be null if the exe_path parameter is not null.
-  // * |policy|: This is the pointer to the policy object for the sandbox to
+  // * `exe_path`: This is the full path to the target binary.
+  // * `command_line`: The arguments to be passed as command line to the new
+  //   process.
+  // * `policy`: This is the pointer to the policy object for the sandbox to
   //   be created.
-  // * |result_callback|: Accepts these output parameters:
-  //   * |last_error|: If an error or warning is returned from this method this
+  // * `result_callback`: Accepts these output parameters:
+  //   * `last_error`: If an error or warning is returned from this method this
   //     parameter will hold the last Win32 error value.
-  //   * |target|: returns the resulting target process information such as
+  //   * `target`: returns the resulting target process information such as
   //     process handle and PID just as if CreateProcess() had been called. The
   //     caller is responsible for closing the handles returned in this
   //     structure.
   // Target creation happens on the thread pool.
-  virtual void SpawnTargetAsync(const wchar_t* exe_path,
-                                const wchar_t* command_line,
+  virtual void SpawnTargetAsync(std::wstring_view exe_path,
+                                std::wstring_view command_line,
                                 std::unique_ptr<TargetPolicy> policy,
                                 SpawnTargetCallback result_callback) = 0;
 

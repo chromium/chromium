@@ -472,6 +472,11 @@ void ConfigBase::SetZeroAppShim() {
   zero_appshim_ = true;
 }
 
+TargetTokens::TargetTokens(base::win::AccessToken initial,
+                           base::win::AccessToken lockdown)
+    : initial_(std::move(initial)), lockdown_(std::move(lockdown)) {}
+TargetTokens::~TargetTokens() = default;
+
 PolicyBase::PolicyBase(std::string_view tag)
     : tag_(tag),
       config_(),
@@ -570,22 +575,7 @@ bool PolicyBase::HasJob() {
   return job_.IsValid();
 }
 
-ResultCode PolicyBase::DropActiveProcessLimit() {
-  if (!job_.IsValid())
-    return SBOX_ERROR_BAD_PARAMS;
-
-  if (config()->GetJobLevel() >= JobLevel::kInteractive)
-    return SBOX_ALL_OK;
-
-  if (ERROR_SUCCESS != job_.SetActiveProcessLimit(0))
-    return SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT;
-
-  return SBOX_ALL_OK;
-}
-
-ResultCode PolicyBase::MakeTokens(
-    std::optional<base::win::AccessToken>& initial,
-    std::optional<base::win::AccessToken>& lockdown) {
+base::expected<TargetTokens, ResultCode> PolicyBase::MakeTokens() {
   std::optional<base::win::Sid> random_sid;
   if (config()->add_restricting_random_sid()) {
     random_sid = base::win::Sid::GenerateRandomSid();
@@ -599,7 +589,7 @@ ResultCode PolicyBase::MakeTokens(
       config()->GetLockdownTokenLevel(), integrity_level, TokenType::kPrimary,
       lockdown_default_dacl, random_sid);
   if (!primary) {
-    return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
+    return base::unexpected(SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN);
   }
 
   AppContainerBase* app_container = config()->app_container();
@@ -608,16 +598,14 @@ ResultCode PolicyBase::MakeTokens(
     // Build the lowbox lockdown (primary) token.
     primary = app_container->BuildPrimaryToken(*primary);
     if (!primary) {
-      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
+      return base::unexpected(SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN);
     }
 
     if (!ReplacePackageSidInDacl(primary->get(), app_container->GetPackageSid(),
                                  TOKEN_ALL_ACCESS)) {
-      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
+      return base::unexpected(SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL);
     }
   }
-
-  lockdown = std::move(*primary);
 
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
@@ -626,26 +614,44 @@ ResultCode PolicyBase::MakeTokens(
       config()->GetInitialTokenLevel(), integrity_level,
       TokenType::kImpersonation, lockdown_default_dacl, random_sid);
   if (!impersonation) {
-    return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
+    return base::unexpected(SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN);
   }
 
   if (app_container) {
     impersonation = app_container->BuildImpersonationToken(*impersonation);
     if (!impersonation) {
-      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN;
+      return base::unexpected(
+          SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN);
     }
   }
 
-  initial = std::move(*impersonation);
-
-  return SBOX_ALL_OK;
+  return TargetTokens{std::move(*impersonation), std::move(*primary)};
 }
 
-ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
-  if (target_)
+ResultCode PolicyBase::InitProcess(HANDLE process_handle,
+                                   ThreadPool* thread_pool,
+                                   DWORD& last_error) {
+  if (target_) {
     return SBOX_ERROR_UNEXPECTED_CALL;
+  }
+
   // Policy rules are compiled when the underlying ConfigBase is frozen.
   DCHECK(config()->IsConfigured());
+
+  auto target = std::make_unique<TargetProcess>(process_handle);
+
+  if (config()->GetJobLevel() <= JobLevel::kLimitedUser) {
+    if (!job_.IsValid()) {
+      return SBOX_ERROR_BAD_PARAMS;
+    }
+    // Restrict the job from containing any processes. Job restrictions
+    // are only applied at process creation, so the target process is
+    // unaffected.
+    last_error = job_.SetActiveProcessLimit(0);
+    if (ERROR_SUCCESS != last_error) {
+      return SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT;
+    }
+  }
 
   if (config()->zero_appshim()) {
     if (!ApplyZeroAppShimToSuspendedProcess(target->Process())) {
@@ -667,11 +673,10 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   if (!SetupHandleCloser(*target))
     return SBOX_ERROR_SETUP_HANDLE_CLOSER;
 
-  DWORD win_error = ERROR_SUCCESS;
   // Initialize the sandbox infrastructure for the target.
-  // TODO(wfh) do something with win_error code here.
-  ret = target->Init(dispatcher_.get(), config()->policy_span(),
-                     delegate_data_span(), kIPCMemSize, &win_error);
+  ret =
+      target->Init(dispatcher_.get(), config()->policy_span(),
+                   delegate_data_span(), kIPCMemSize, thread_pool, &last_error);
 
   if (ret != SBOX_ALL_OK)
     return ret;
@@ -679,8 +684,7 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   IntegrityLevel delayed_integrity_level = config()->delayed_integrity_level();
   static_assert(sizeof(g_shared_delayed_integrity_level) ==
                 sizeof(delayed_integrity_level));
-  ret = target->TransferVariable("g_shared_delayed_integrity_level",
-                                 &delayed_integrity_level,
+  ret = target->TransferVariable(&delayed_integrity_level,
                                  &g_shared_delayed_integrity_level,
                                  sizeof(g_shared_delayed_integrity_level));
   if (SBOX_ALL_OK != ret)
@@ -696,18 +700,18 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
 
   static_assert(sizeof(g_shared_delayed_mitigations) ==
                 sizeof(delayed_mitigations));
-  ret = target->TransferVariable(
-      "g_shared_delayed_mitigations", &delayed_mitigations,
-      &g_shared_delayed_mitigations, sizeof(g_shared_delayed_mitigations));
+  ret = target->TransferVariable(&delayed_mitigations,
+                                 &g_shared_delayed_mitigations,
+                                 sizeof(g_shared_delayed_mitigations));
   if (SBOX_ALL_OK != ret)
     return ret;
 
   MitigationFlags startup_mitigations = config()->GetProcessMitigations();
   static_assert(sizeof(g_shared_startup_mitigations) ==
                 sizeof(startup_mitigations));
-  ret = target->TransferVariable(
-      "g_shared_startup_mitigations", &startup_mitigations,
-      &g_shared_startup_mitigations, sizeof(g_shared_startup_mitigations));
+  ret = target->TransferVariable(&startup_mitigations,
+                                 &g_shared_startup_mitigations,
+                                 sizeof(g_shared_startup_mitigations));
   if (SBOX_ALL_OK != ret)
     return ret;
 
@@ -785,8 +789,7 @@ bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
   }
 
   static_assert(sizeof(g_handle_closer_info) == sizeof(handle_closer));
-  ResultCode rc = target.TransferVariable("g_handle_closer_info",
-                                          &handle_closer, &g_handle_closer_info,
+  ResultCode rc = target.TransferVariable(&handle_closer, &g_handle_closer_info,
                                           sizeof(g_handle_closer_info));
 
   return (SBOX_ALL_OK == rc);

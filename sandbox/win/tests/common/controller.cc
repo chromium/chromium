@@ -331,7 +331,7 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
                            ResultCode>
         test_future;
-    broker_->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy_),
+    broker_->SpawnTargetAsync(prog_name, arguments, std::move(policy_),
                               test_future.GetCallback());
     base::win::ScopedProcessInformation proc_info;
     std::tie(proc_info, last_error, result) = test_future.Take();

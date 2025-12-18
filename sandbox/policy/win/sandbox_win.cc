@@ -973,8 +973,8 @@ ResultCode SandboxWin::StartSandboxedProcess(
       "startup", "StartProcessWithAccess::LAUNCHPROCESS", trace_event_id);
 
   g_broker_services->SpawnTargetAsync(
-      cmd_line.GetProgram().value().c_str(),
-      cmd_line.GetCommandLineString().c_str(), std::move(policy),
+      cmd_line.GetProgram().value(), cmd_line.GetCommandLineString(),
+      std::move(policy),
       base::BindOnce(&SandboxWin::FinishStartSandboxedProcess, delegate,
                      std::move(timer), std::move(result_callback)));
   return SBOX_ALL_OK;

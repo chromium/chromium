@@ -134,8 +134,8 @@ ResultCode InterceptionManager::InitializeInterceptions() {
   if (rc != SBOX_ALL_OK)
     return rc;
 
-  rc = child_->TransferVariable("g_interceptions", &remote_buffer,
-                                &g_interceptions, sizeof(g_interceptions));
+  rc = child_->TransferVariable(&remote_buffer, &g_interceptions,
+                                sizeof(g_interceptions));
   return rc;
 }
 
@@ -375,9 +375,8 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
   ::VirtualProtectEx(child, thunks, thunk_bytes, PAGE_EXECUTE_READ,
                      &old_protection);
 
-  ResultCode ret =
-      child_->TransferVariable("g_originals", &patch.value().originals,
-                               &g_originals, sizeof(g_originals));
+  ResultCode ret = child_->TransferVariable(&patch.value().originals,
+                                            &g_originals, sizeof(g_originals));
   return ret;
 }
 

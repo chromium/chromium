@@ -61,7 +61,7 @@ enum ResultCode : int {
   SBOX_ERROR_DELEGATE_PRE_SPAWN = 19,
   // Could not assign process to job object.
   SBOX_ERROR_ASSIGN_PROCESS_TO_JOB_OBJECT = 20,
-  // Could not assign process to job object.
+  // Could not assign initial thread token.
   SBOX_ERROR_SET_THREAD_TOKEN = 21,
   // Could not get thread context of new process.
   SBOX_ERROR_GET_THREAD_CONTEXT = 22,
