@@ -22,6 +22,24 @@ namespace mojo {
 
 template <>
 struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::SharedImageExportResultDataView,
+    gpu::SharedImageExportResult> {
+  static const gpu::SyncToken& sync_token(
+      const gpu::SharedImageExportResult& shared_image_exported_result) {
+    return shared_image_exported_result.sync_token_;
+  }
+
+  static bool Read(gpu::mojom::SharedImageExportResultDataView data,
+                   gpu::SharedImageExportResult* out) {
+    if (!data.ReadSyncToken(&out->sync_token_)) {
+      return false;
+    }
+    return true;
+  }
+};
+
+template <>
+struct GPU_IPC_COMMON_EXPORT StructTraits<
     gpu::mojom::ExportedSharedImageDataView,
     gpu::ExportedSharedImage> {
   static const gpu::Mailbox& mailbox(const gpu::ExportedSharedImage& holder) {

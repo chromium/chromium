@@ -51,6 +51,16 @@ struct CanvasResourceDispatcher::ExportedResource {
     CHECK(resource_);
   }
 
+  void ReleaseResource(gpu::SharedImageExportResult shared_image_export_result,
+                       bool is_lost) {
+    auto sync_token = resource_->GetClientSharedImage()->EndExport(
+        std::move(shared_image_export_result));
+    ReleaseResource(sync_token, is_lost);
+  }
+
+  ~ExportedResource() { ReleaseResource(gpu::SyncToken(), /*is_lost=*/false); }
+
+ private:
   void ReleaseResource(const gpu::SyncToken& sync_token, bool is_lost) {
     auto resource = std::move(resource_);
     if (release_callback_) {
@@ -59,9 +69,6 @@ struct CanvasResourceDispatcher::ExportedResource {
     }
   }
 
-  ~ExportedResource() { ReleaseResource(gpu::SyncToken(), /*is_lost=*/false); }
-
- private:
   scoped_refptr<CanvasResource> resource_;
   CanvasResource::ReleaseCallback release_callback_;
 };
@@ -431,7 +438,7 @@ void CanvasResourceDispatcher::OnFakeFrameTimer(TimerBase* timer) {
 
 void CanvasResourceDispatcher::ReclaimResources(
     Vector<viz::ReturnedResource> resources) {
-  for (const auto& resource : resources) {
+  for (auto& resource : resources) {
     auto it = exported_resources_.find(resource.id);
 
     CHECK(it != exported_resources_.end());
@@ -439,7 +446,8 @@ void CanvasResourceDispatcher::ReclaimResources(
       continue;
     }
 
-    it->value->ReleaseResource(resource.sync_token, resource.lost);
+    it->value->ReleaseResource(resource.shared_image_export_result,
+                               resource.lost);
     exported_resources_.erase(it);
   }
 }

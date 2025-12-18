@@ -36,12 +36,13 @@ struct VIZ_COMMON_EXPORT ReturnedResource {
   // identifies a resource. This is the same ID space as TransferableResource.
   ResourceId id = kInvalidResourceId;
 
-  // A |sync_token| is an identifier for a point in the parent compositor's
-  // command buffer. The child compositor then issues a WaitSyncPointCHROMIUM
-  // command with this |sync_token| as a parameter into its own command buffer.
-  // This ensures that uses of the resource submitted by the parent compositor
-  // are executed before commands submitted by the child.
-  gpu::SyncToken sync_token;
+  // |shared_image_export_result| is a struct wrapping a SyncToken
+  // that identifies a point in the parent compositor's command buffer. The
+  // child compositor then issues a WaitSyncPointCHROMIUM command with the
+  // wrapped SyncToken as a parameter into its own command buffer. This ensures
+  // that uses of the resource submitted by the parent compositor are executed
+  // before commands submitted by the child.
+  gpu::SharedImageExportResult shared_image_export_result;
 
   // Release fence for this resource. If this is a valid fence then the client
   // may use it to wait if they need to perform external operations

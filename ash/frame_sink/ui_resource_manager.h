@@ -40,7 +40,7 @@ class ASH_EXPORT UiResourceManager {
 
   const UiResource* PeekExportedResource(viz::ResourceId resource_id) const;
 
-  void ReclaimResources(const std::vector<viz::ReturnedResource>& resources);
+  void ReclaimResources(std::vector<viz::ReturnedResource>& resources);
 
   // Give the `resource` to be managed by the manager and exports it.
   viz::TransferableResource OfferAndPrepareResourceForExport(

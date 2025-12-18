@@ -44,7 +44,7 @@ TransferableResource& TransferableResource::operator=(
 ReturnedResource TransferableResource::ToReturnedResource() const {
   ReturnedResource returned;
   returned.id = id;
-  returned.sync_token = sync_token_;
+  returned.shared_image_export_result = shared_image()->EndImport(sync_token_);
   returned.count = 1;
   return returned;
 }

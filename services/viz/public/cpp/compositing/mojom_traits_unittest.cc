@@ -692,17 +692,16 @@ TEST_F(StructTraitsTest, ReturnedResource) {
   const int count = 1234;
   const bool lost = true;
 
-  ReturnedResource input;
-  input.id = id;
-  input.sync_token = sync_token;
-  input.count = count;
-  input.lost = lost;
+  ReturnedResource input{
+      id, gpu::SharedImageExportResult::CreateForTesting(sync_token),
+      gfx::GpuFenceHandle(), count, lost};
 
   ReturnedResource output;
   mojo::test::SerializeAndDeserialize<mojom::ReturnedResource>(input, output);
 
   EXPECT_EQ(id, output.id);
-  EXPECT_EQ(sync_token, output.sync_token);
+  EXPECT_TRUE(input.shared_image_export_result.IsEqualForTesting(
+      output.shared_image_export_result));
   EXPECT_EQ(count, output.count);
   EXPECT_EQ(lost, output.lost);
 }

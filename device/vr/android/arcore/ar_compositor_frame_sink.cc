@@ -269,7 +269,7 @@ void ArCompositorFrameSink::DidReceiveCompositorFrameAck(
 void ArCompositorFrameSink::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
   DVLOG(3) << __func__ << " resources.size()=" << resources.size();
-  for (const auto& resource : resources) {
+  for (auto& resource : resources) {
     DVLOG(3) << __func__ << " Reclaimed: " << resource.id;
     if (resource.id == viz::kInvalidResourceId)
       continue;
@@ -299,7 +299,9 @@ void ArCompositorFrameSink::ReclaimResources(
     // token to determine when the frame is *actually* done. Given that each
     // frame can have multiple buffers associated with it, we'll store the token
     // until we get all of the buffers associated with the frame returned.
-    rendering_frame->reclaimed_sync_tokens.push_back(resource.sync_token);
+    rendering_frame->reclaimed_sync_tokens.push_back(
+        rendering_frame->shared_buffer->shared_image->EndExport(
+            std::move(resource.shared_image_export_result)));
 
     // Once we've cleared all of the buffers on the frame that were passed to
     // viz, we can tell our parent that the frame is ready to be reclaimed

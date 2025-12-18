@@ -10,8 +10,6 @@
 
 namespace viz {
 
-// TODO(crbug.com/40286368): Store the SharedImageExportResult directly in
-// ReturnedResource.
 ReturnedResource::ReturnedResource(
     ResourceId id,
     gpu::SharedImageExportResult shared_image_export_result,
@@ -19,7 +17,7 @@ ReturnedResource::ReturnedResource(
     int count,
     bool lost)
     : id(id),
-      sync_token(shared_image_export_result.sync_token_),
+      shared_image_export_result(shared_image_export_result),
       release_fence(std::move(release_fence)),
       count(count),
       lost(lost) {}

@@ -9,6 +9,11 @@ import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 
+// gpu::SharedImageExportResult
+struct SharedImageExportResult {
+  gpu.mojom.SyncToken sync_token;
+};
+
 // gpu::ExportedSharedImage
 struct ExportedSharedImage {
   gpu.mojom.Mailbox mailbox;

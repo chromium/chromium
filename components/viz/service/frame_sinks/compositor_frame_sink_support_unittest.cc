@@ -234,7 +234,8 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
     ASSERT_EQ(expected_returned_ids.size(), actual_resources.size());
     for (size_t i = 0; i < expected_returned_ids.size(); ++i) {
       const auto& resource = actual_resources[i];
-      EXPECT_EQ(expected_sync_token, resource.sync_token);
+      EXPECT_TRUE(resource.shared_image_export_result.IsEqualForTesting(
+          expected_sync_token));
       EXPECT_EQ(expected_returned_ids[i], resource.id);
       EXPECT_EQ(expected_returned_counts[i], resource.count);
     }

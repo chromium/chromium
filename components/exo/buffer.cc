@@ -292,9 +292,11 @@ bool Buffer::Texture::IsLost() {
 void Buffer::Texture::Release(base::OnceClosure callback,
                               viz::ReturnedResource resource) {
   if (context_provider_) {
+    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
+        std::move(resource.shared_image_export_result));
     // Only need to wait on the sync token if we don't have a release fence.
-    if (resource.sync_token.HasData()) {
-      sync_token_ = resource.sync_token;
+    if (resource_sync_token.HasData()) {
+      sync_token_ = resource_sync_token;
     }
   }
 
@@ -323,9 +325,11 @@ void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
                                          viz::ReturnedResource resource) {
   if (context_provider_ && query_type_ != 0) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    if (resource.sync_token.HasData()) {
-      ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
-      sync_token_ = resource.sync_token;
+    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
+        std::move(resource.shared_image_export_result));
+    if (resource_sync_token.HasData()) {
+      ri->WaitSyncTokenCHROMIUM(resource_sync_token.GetConstData());
+      sync_token_ = resource_sync_token;
     }
     ri->BeginQueryEXT(query_type_, query_id_);
     ri->EndQueryEXT(query_type_);
@@ -333,7 +337,7 @@ void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
     // on the shared image have completed and it's ready to be reused) if sync
     // token has data and buffer has been used. If buffer was never used then
     // run the callback immediately.
-    if (resource.sync_token.HasData()) {
+    if (resource_sync_token.HasData()) {
       ReleaseWhenQueryResultIsAvailable(std::move(callback));
       return;
     }

@@ -105,19 +105,28 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
     return SharedImageExportResult(sync_token);
   }
 
+  // The two IsEqualForTesting methods allow easy SyncToken comparison without
+  // unpacking SharedImageExportResult.
+  bool IsEqualForTesting(const SyncToken& sync_token) const {
+    return sync_token_ == sync_token;
+  }
+
+  bool IsEqualForTesting(const SharedImageExportResult& other_result) const {
+    return IsEqualForTesting(other_result.sync_token_);
+  }
+
  private:
   friend class ClientSharedImage;
-  // Allows ReturnedResource to access the sync_token_ member.
-  // TODO(crbug.com/40286368): After ReturnedResource is fully migrated to use
-  // SharedImageExportResult, this friend declaration may still be needed, but
-  // for a different purpose - to allow ReturnedResource to be default
-  // constructed. At that point, the comment above should be updated
-  // accordingly.
+
+  // Allows ReturnedResource to be default constructed.
   friend struct viz::ReturnedResource;
 
   // Allows ReturnedResourceViz to convert SyncToken to SharedImageExportResult.
   friend struct viz::ReturnedResourceViz;
+  friend struct mojo::StructTraits<gpu::mojom::SharedImageExportResultDataView,
+                                   SharedImageExportResult>;
 
+  SharedImageExportResult() = default;
   explicit SharedImageExportResult(const SyncToken& sync_token);
 
   SyncToken sync_token_;
