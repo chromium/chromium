@@ -39,7 +39,7 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
       RemoveChildViewT(immersive_web_view_);
   immersive_web_view_ = nullptr;
-  return web_view->TakeContentsWrapper();
+  return web_view->CloseAndTakeContentsWrapper();
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveOverlayView)
