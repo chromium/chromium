@@ -1,0 +1,18 @@
+{
+  "name": "Web app install element test app with id",
+  "id": "my_id",
+  "icons": [
+    {
+      "src": "launcher-icon-1x.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "launcher-icon-3x.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone"
+}

@@ -1133,6 +1133,7 @@ source_set("web_applications_browser_tests") {
     "commands/navigate_and_trigger_install_dialog_command_browsertest.cc",
     "commands/update_protocol_handler_approval_command_browsertest.cc",
     "commands/web_install_from_url_command_browsertest.cc",
+    "install_element_browsertest.cc",
     "isolated_web_apps/borderless_browsertest.cc",
     "isolated_web_apps/commands/garbage_collect_storage_partitions_command_browsertest.cc",
     "isolated_web_apps/commands/get_isolated_web_app_browsing_data_command_browsertest.cc",

@@ -29,8 +29,12 @@ HTMLInstallElement::HTMLInstallElement(Document& document)
   setType(AtomicString("install"));
 }
 
-const String& HTMLInstallElement::Manifest() const {
-  return FastGetAttribute(html_names::kManifestAttr).GetString();
+const String& HTMLInstallElement::InstallUrl() const {
+  return FastGetAttribute(html_names::kInstallurlAttr).GetString();
+}
+
+const String& HTMLInstallElement::ManifestId() const {
+  return FastGetAttribute(html_names::kManifestidAttr).GetString();
 }
 
 void HTMLInstallElement::Trace(Visitor* visitor) const {
@@ -50,21 +54,10 @@ void HTMLInstallElement::UpdateAppearance() {
 }
 
 void HTMLInstallElement::UpdateAppearanceTask() {
-  KURL url(Manifest());
-  uint16_t message_id = 0;
-  String inner_text;
-  if (!url.IsValid()) {
-    message_id =
-        GetTranslatedMessageID(IDS_PERMISSION_REQUEST_INSTALL,
-                               ComputeInheritedLanguage().LowerASCII());
-    inner_text = GetLocale().QueryString(message_id);
-  } else {
-    message_id =
-        GetTranslatedMessageID(IDS_PERMISSION_REQUEST_INSTALL_WITH_HOST,
-                               ComputeInheritedLanguage().LowerASCII());
-    inner_text =
-        GetLocale().QueryString(message_id, String(url.Host().ToString()));
-  }
+  // TODO(crbug.com/467103133): Render site-specific information.
+  uint16_t message_id = GetTranslatedMessageID(
+      IDS_PERMISSION_REQUEST_INSTALL, ComputeInheritedLanguage().LowerASCII());
+  String inner_text = GetLocale().QueryString(message_id);
   CHECK(message_id);
   permission_text_span()->setInnerText(inner_text);
 
@@ -72,7 +65,8 @@ void HTMLInstallElement::UpdateAppearanceTask() {
 }
 
 bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
-  return attr.GetName() == html_names::kManifestAttr ||
+  return attr.GetName() == html_names::kManifestidAttr ||
+         attr.GetName() == html_names::kInstallurlAttr ||
          HTMLElement::IsURLAttribute(attr);
 }
 
@@ -110,12 +104,19 @@ void HTMLInstallElement::OnActivated() {
   // Do some installation.
   CHECK(WebInstallService());
 
-  // If there's no manifest, attempt to install the current page:
+  // Create the empty install data. If it remains empty, we attempt to install
+  // the current page.
   mojom::blink::InstallOptionsPtr options;
-  KURL manifest_url = KURL(Manifest());
-  if (manifest_url.IsValid()) {
+  KURL install_url = KURL(InstallUrl());
+  if (install_url.IsValid()) {
     options = mojom::blink::InstallOptions::New();
-    options->install_url = manifest_url;
+    options->install_url = install_url;
+    // manifestid is only valid if installurl was also provided, as it's used
+    // for data validation on the installurl.
+    KURL manifest_id_url = KURL(ManifestId());
+    if (manifest_id_url.IsValid()) {
+      options->manifest_id = manifest_id_url;
+    }
   }
   WebInstallService()->Install(
       std::move(options),

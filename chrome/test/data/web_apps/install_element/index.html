@@ -1,0 +1,18 @@
+<html>
+<head>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div id="parent">
+    <install id="install-app" installurl="" manifestid=""></install>
+  </div>
+  <script>
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      console.log(event.target.id + '-promptaction');
+    });
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      console.log(event.target.id + '-promptdismiss');
+    });
+  </script>
+</body>
+</html>

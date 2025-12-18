@@ -4604,9 +4604,11 @@ interface HTMLInputElement : HTMLElement
     setter width
 interface HTMLInstallElement : HTMLPermissionElement
     attribute @@toStringTag
-    getter manifest
+    getter installURL
+    getter manifestId
     method constructor
-    setter manifest
+    setter installURL
+    setter manifestId
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag
     getter type

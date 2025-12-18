@@ -23,7 +23,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
  public:
   explicit HTMLInstallElement(Document&);
 
-  const String& Manifest() const;
+  const String& InstallUrl() const;
+  const String& ManifestId() const;
   void Trace(Visitor*) const override;
 
  private:
