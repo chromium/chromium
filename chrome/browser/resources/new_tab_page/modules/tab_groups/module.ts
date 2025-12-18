@@ -181,6 +181,7 @@ export class ModuleElement extends ModuleElementBase {
   }
 
   protected onCreateNewTabGroupClick_(fromZeroStateCard: boolean) {
+    this.fire('usage');
     const histogram = 'NewTabPage.TabGroups.CreateNewTabGroup';
     recordOccurrence(histogram);
     recordOccurrence(
@@ -190,6 +191,7 @@ export class ModuleElement extends ModuleElementBase {
   }
 
   protected onTabGroupClick_(id: string, index: number) {
+    this.fire('usage');
     recordSmallCount('NewTabPage.TabGroups.ClickTabGroupIndex', index);
     this.handler_.openTabGroup(id);
   }
