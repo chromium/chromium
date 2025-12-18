@@ -4185,7 +4185,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3824757763656550700">Diğer cihazlardaki sekmeleri görmek için oturum açın</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Bu dosya türü için seçimimi hatırla: <ph name="FILE_TYPES" />}other{Bu dosya türleri için seçimimi hatırla: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3825235932371054736">{NUM_TABS,plural, =1{Bu Sekmeyle İlgili Sorunu Düzelt}other{Bu Sekmelerle İlgili Sorunu Düzelt}}</translation>
-<translation id="3825512074963838982">Görüntü</translation>
+<translation id="3825512074963838982">Görünüm</translation>
 <translation id="3825635794653163640">Uygulama simgesinde, uygulama uyarıları için nokta göster</translation>
 <translation id="3826071569074535339">Hareket sensörlerini kullanmasına izin verilenler</translation>
 <translation id="3826086052025847742">ChromeOS Flex Günlükleri</translation>

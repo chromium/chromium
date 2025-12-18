@@ -636,7 +636,7 @@
 <translation id="3469117812148449995">මුරපදය සුරැකීමට විකල්ප</translation>
 <translation id="3472469028191701821">නව පටිත්තක විවෘත වේ</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} අඩවියක් හෝ යෙදුමක් සඳහා}one{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}other{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}}</translation>
-<translation id="3474624961160222204"><ph name="NAME" /> ලෙස කරගෙන යන්න</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="3476450923187944815">වෙනත් යෙදුම් හරහා ඔබේ මුරපද වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="3485558910355485767">නව අප්‍රසිද්ධ කවුළුව</translation>
 <translation id="3488501490964659223">පටිති වසා ඇති අතර බ්‍රවුස් කිරීමේ දත්ත මකා දමන ලදි. ඔබ වරනු ලැබ ඇත</translation>
@@ -936,7 +936,7 @@
 <translation id="4642472735733036929">මිල හඹා යෑම නතර විය</translation>
 <translation id="4645575059429386691">ඔබේ දෙමව්පියන් පාලනය කරයි</translation>
 <translation id="4647758699119474035"><ph name="USER_NAME" /> ලෙස පුරනය වී ඇත. <ph name="USER_EMAIL" />. Google ගිණුමේ දෝෂයකි. ගිණුම් මෙනුව විවෘත කරන්න.</translation>
-<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ලෙස කරගෙන යන්න</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ලෙස ඉදිරියට යන්න</translation>
 <translation id="4651927776207937667">{count,plural, =1{මිනිත්තු 1කට පසු සඟවන්න}one{මිනිත්තු {count}කට පසු සඟවන්න}other{මිනිත්තු {count}කට පසු සඟවන්න}}</translation>
 <translation id="4652817563047461855">ඔබේ මුරපද සුරක්ෂිත බවට වග බලා ගන්න, ඒවා අවදානමට ලක් වී තිබේ දැයි සොයා බලන්න, සහ සබැඳිව ඔබව ආරක්ෂා කර ගැනීමට උපදෙස් ලබා ගන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">සුරකින්න</translation>

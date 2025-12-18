@@ -12014,6 +12014,34 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="9088191250434406767">การไม่ตั้งค่านโยบายหรือตั้งค่าเป็น "เปิดใช้" จะอนุญาตให้ผู้ใช้ค้นหาด้วยกล้องของตนโดยใช้ <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ได้ การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้ผู้ใช้จะไม่เห็นปุ่ม <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ในช่องค้นหาเมื่อระบบรองรับการค้นหาที่ได้รับความช่วยเหลือจากกล้อง <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="9088433379343318874">เปิดใช้ผู้ให้บริการเนื้อหาสำหรับผู้ใช้ภายใต้การควบคุมดูแล</translation>
 <translation id="9088444059179765143">กำหนดค่าวิธีการตรวจหาเขตเวลาอัตโนมัติ</translation>
+<translation id="9089059535778570773">การตั้งค่านโยบายนี้จะกำหนดค่ากฎที่เลือกพร็อกซีที่เบราว์เซอร์จะใช้โดยขึ้นอยู่กับ URL ของปลายทางและเงื่อนไขอื่นๆ นโยบายนี้จะมีความสำคัญเหนือกว่าการตั้งค่าพร็อกซีที่ตั้งจากนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ส่วนขยายของ <ph name="PROXY_SETTINGS_EXTENSION_API" /> หรือการตั้งค่าของผู้ใช้ด้วยตนเอง หากมีการตั้งค่าไว้
+
+การไม่ตั้งค่านโยบายนี้จะไม่มีผลต่อนโยบายพร็อกซีหรือการตั้งค่าของผู้ใช้อื่นๆ
+
+เมื่อเบราว์เซอร์ต้องตัดสินใจว่าจะใช้พร็อกซีใด รายการของนโยบาย <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> จะได้รับการประเมินตามลำดับจนกว่ารายการจะเป็นไปตามหัวข้อต่อไปนี้ทั้งหมด
+  * ตรงกับรูปแบบ URL อย่างน้อย 1 รายการใน <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />
+  * ไม่มีรูปแบบ URL ใน <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> ที่ตรงกัน
+  * หากมีการระบุ <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> และเป็นรายการที่ไม่ว่างเปล่า ระบบจะถือว่าตรงตามเงื่อนไขทั้งหมดที่แสดงโดยรายการนั้น
+ระบบจะใช้ค่าใน <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> เป็นพร็อกซีสำหรับการจับคู่ดังกล่าว หากไม่พบรายการที่ตรงกัน การตั้งค่าพร็อกซีจะกลับไปใช้การตั้งค่าที่กำหนดไว้ในนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" />
+
+รูปแบบ URL ที่ <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> และ <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> รองรับมีการบันทึกไว้ใน https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns
+
+รายการในช่อง <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> จะสอดคล้องกับค่าสตริงของไฟล์ PAC เช่น
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+หรือคุณจะใช้ตัวระบุพร็อกซีที่คล้าย URL เพื่อระบุพร็อกซีโดยตรงก็ได้ เช่น
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+ระบบจะใช้รายการแรกที่เข้าถึงได้ในลิสต์เป็นพร็อกซี ระบบจะไม่สนใจรายการที่ไม่ถูกต้องในลิสต์
+
+ช่อง <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> มีรายการเงื่อนไขทั้งหมดที่ต้องเป็นไปตามกฎการลบล้างเพื่อตัดสินใจเลือกพร็อกซีที่จะใช้ หากไม่ได้ตั้งค่า ระบบจะใช้รายการนี้ตราบใดที่ตรงกับโฮสต์อย่างน้อย 1 รายการใน <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />
+
+เงื่อนไข <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> จะตรวจสอบว่า DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> ที่ระบุสามารถแก้ปัญหาที่อยู่ IP ได้หรือไม่ ต้องมีโฮสต์ (เช่น example.com) และอาจมีรูปแบบหรือพอร์ต (เช่น https://example.com, example.com:123, https://example.com:123) หากค่าของ <ph name="PROXY_OVERRIDE_RULES_RESULT" /> เป็น "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" ระบบจะถือว่าตรงตามเงื่อนไข หากตั้งค่าเป็น <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> แทน ระบบจะถือว่าตรงตามเงื่อนไขในกรณีที่การแก้ปัญหาล้มเหลว</translation>
 <translation id="9095599826504830315">ไม่อนุญาตให้ใช้การเปรียบเทียบแท็บ</translation>
 <translation id="9096772739225230999">ไม่รายงานการกำหนดค่าเครือข่าย</translation>
 <translation id="9098409326885953506">ตรวจหาหน้าต่างที่ถูกบังและระงับการระบายสี</translation>

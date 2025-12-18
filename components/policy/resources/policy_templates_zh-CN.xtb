@@ -11961,6 +11961,34 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9088191250434406767">如果此政策未设置或已启用，用户便可借助 <ph name="GOOGLE_LENS_PRODUCT_NAME" />使用摄像头进行搜索。如果此政策已停用，那么即使可以使用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能，用户也不会在搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>
+<translation id="9089059535778570773">设置此政策时，系统会按照您的设置来配置规则，从而根据目标网址和其他条件来选择浏览器使用的代理。如果您通过 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 扩展程序 API 或自己手动设置了代理，则此政策将优先于这些代理设置。
+
+如果您未设置此政策，则其他代理政策或用户设置不会受到影响。
+
+当浏览器需要决定使用哪个代理时，系统会按顺序评估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的条目，直到有条目满足以下所有条件为止：
+  * 与 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中的至少 1 个网址格式匹配。
+  * 与 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 中的所有网址格式都不匹配。
+  * 符合由 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />（如果已指定为一个非空列表）的条目表示的所有条件。
+如果找到匹配项，<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 中的值将用作代理。如果未找到匹配项，则代理设置将回退到 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策中的设置。
+
+<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 和 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> 支持的网址格式都记录在这里：https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns。
+
+<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 字段条目对应于 PAC 文件的字符串值，例如：
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+或者，您也可以直接使用与网址类似的代理说明符来指定代理，例如：
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+列表中第一个可连接的条目将用作代理。系统会忽略列表中的无效条目。
+
+<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 字段包含一系列条件，只有满足所有这些条件，系统才会使用其替换规则来决定要使用的代理。如果未设置该字段，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中至少有 1 个匹配的主机，系统就会使用相应条目。
+
+<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 条件会检查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> 是否能够解析为 IP 地址。该 DNS Host 必须包含主机（例如 example.com），并且可以选择性地包含 scheme 或端口（例如 https://example.com、example.com:123、https://example.com:123）。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值为“<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />”，则视为满足条件。如果该值设为 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，则当解析失败时，系统会认为已满足条件。</translation>
 <translation id="9095599826504830315">不允许使用“标签页比较”工具。</translation>
 <translation id="9096772739225230999">不报告网络配置</translation>
 <translation id="9098409326885953506">检测被遮挡的窗口并暂停其渲染进程</translation>

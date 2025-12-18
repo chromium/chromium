@@ -4336,7 +4336,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">顯示和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">可將網址傳送至安全瀏覽功能進行檢查。同時也會傳送少量網頁、下載內容、擴充功能活動及系統資訊，以協助找出新的威脅。當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各項 Google 應用程式時提供保護。</translation>
-<translation id="3924788966103416622">為了進行偵錯，外部應用程式想要完全掌控這個 Chrome 工作階段，包括存取你儲存的資料、Cookie 和網站資料，以及前往任何網址。</translation>
+<translation id="3924788966103416622">為進行偵錯，外部應用程式要求取得這個 Chrome 工作階段的完整權限，包括存取你儲存的資料、Cookie 和網站資料，以及前往任何網址。</translation>
 <translation id="3925573269917483990">相機：</translation>
 <translation id="3925926055063465902">這部裝置的其他使用者也可以使用這個網路</translation>
 <translation id="3926002189479431949">Smart Lock 手機已變更</translation>
@@ -4474,7 +4474,7 @@
 <translation id="4015250302257349679">按下 <ph name="ACCELERATOR" /> 鍵可聚焦這個泡泡，再次按下即可聚焦泡泡指向的元素。</translation>
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為這個連結建立 QR 圖碼</translation>
-<translation id="4018953474106733212">這項功能只有網頁程式開發人員可以開啟，而且只能搭配可信任的應用程式使用。</translation>
+<translation id="4018953474106733212">只建議由網頁程式開發人員開啟這項功能，請先確認應用程式的可信度再授權。</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
 <translation id="4020701737692625681">管理員可以錄製你的螢幕內容</translation>
 <translation id="4021279097213088397">–</translation>

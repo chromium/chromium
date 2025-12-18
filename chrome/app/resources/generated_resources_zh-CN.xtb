@@ -1421,7 +1421,7 @@
 <translation id="1949980990364952348">应用名称</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1951823516285577843">查找替代扩展程序</translation>
-<translation id="1953626242273481999">允许远程调试？</translation>
+<translation id="1953626242273481999">要允许远程调试吗？</translation>
 <translation id="1953796913175502363">设置您的工作资料</translation>
 <translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
 <translation id="1954813140452229842">装载共享资源时出错。请检查您的凭据，然后重试。</translation>
@@ -4329,7 +4329,7 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">显示大小和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">系统会将网址发送给“安全浏览”功能进行检查，还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。当您登录后，会暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
-<translation id="3924788966103416622">一款外部应用请求完全控制此 Chrome 会话以进行调试。这包括访问您保存的数据、Cookie 和网站数据，以及前往任意网址。</translation>
+<translation id="3924788966103416622">为进行调试，一款外部应用请求完全控制此 Chrome 会话，包括访问您保存的数据、Cookie 和网站数据，以及前往任意网址。</translation>
 <translation id="3925573269917483990">摄像头：</translation>
 <translation id="3925926055063465902">此设备上的其他用户也可以使用此网络</translation>
 <translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>

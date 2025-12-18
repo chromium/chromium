@@ -12119,6 +12119,34 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9088191250434406767">Si a esta política se le asigna el valor Enabled o no se le asigna ninguno, los usuarios podrán hacer búsquedas con sus cámaras utilizando <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si se le asigna el valor Disabled, los usuarios no podrán ver el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda cuando se admita el uso de la búsqueda asistida mediante cámara de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="9088433379343318874">Habilitar el proveedor de contenido de usuarios supervisados</translation>
 <translation id="9088444059179765143">Configura el método de detección automática de la zona horaria</translation>
+<translation id="9089059535778570773">Si se define esta política, se configuran reglas que seleccionan el proxy que usa el navegador en función de la URL de destino y otras condiciones. Esta política tendrá prioridad sobre la configuración de proxy definida en la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, la API de extensión <ph name="PROXY_SETTINGS_EXTENSION_API" /> o la configuración manual del usuario (si se ha definido alguna).
+
+Si no se define esta política, no se verán afectadas otras políticas de proxy ni la configuración del usuario.
+
+Cuando el navegador debe decidir qué proxy usar, las entradas de la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se evalúan en secuencia hasta que una de ellas cumple todos los puntos siguientes:
+  * Coincide con al menos uno de los patrones de URL de <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+  * No coincide con ninguno de los patrones de URL de <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
+  * Si se especifica <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> y es una lista no vacía, se cumplen todas las condiciones representadas por sus entradas.
+El valor de <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> se usará como proxy para esa coincidencia. Si no se encuentra ninguna coincidencia, la configuración de proxy se revertirá a la que se haya definido en la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Los patrones de URL que <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> y <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> admite se indican en https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Las entradas del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corresponden a valores de cadena de archivos PAC como los siguientes:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+También se pueden usar directamente especificadores de proxy similares a URLs para especificar el proxy, por ejemplo:
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+La primera entrada accesible de la lista se usará como proxy. Las entradas no válidas de la lista se ignoran.
+
+El campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene una lista de condiciones que se deben cumplir para que se use su regla de anulación y se decida qué proxy se debe usar. Si no se define, se usará la entrada siempre que coincida al menos un host de <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+
+La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> comprueba si el <ph name="PROXY_OVERRIDE_RULES_HOST" /> de DNS proporcionado se puede resolver en una dirección IP. Debe contener un host (por ejemplo, example.com) y, opcionalmente, un esquema o un puerto (por ejemplo, https://example.com, example.com:123 o https://example.com:123). Si el valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> es <ph name="PROXY_OVERRIDE_RULES_RESOLVED" />, se considera que se cumple la condición. Si, en cambio, se le asigna el valor <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, se considera que se cumple la condición si no se ha podido resolver el problema.</translation>
 <translation id="9095599826504830315">No permitir la función Comparación de pestañas.</translation>
 <translation id="9096772739225230999">No enviar información sobre la configuración de red</translation>
 <translation id="9098409326885953506">Detectar ventanas tapadas y dejar de generar sus píxeles</translation>

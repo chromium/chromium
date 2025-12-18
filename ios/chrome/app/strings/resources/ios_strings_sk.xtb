@@ -758,7 +758,7 @@
 <translation id="3941941395924123592">{COUNT,plural, =1{Zavrieť {COUNT} kartu}few{Zavrieť {COUNT} karty}many{Close {COUNT} tabs}other{Zavrieť {COUNT} kariet}}</translation>
 <translation id="3948600256434252210">Ak chcete prehliadať v režime inkognito, potiahnite doprava.</translation>
 <translation id="3949712484278252781">Vaše konverzácie s Gemini a vaše <ph name="GOOGLE_WORKSPACE_DATA" /> nebudú preverovať kontrolóri ani sa pomocou nich nebudú zlepšovať modely generatívnej umelej inteligencie.</translation>
-<translation id="3950479158728806902">Automaticky vytvorte prístupový kľúč a prihláste sa rýchlejšie</translation>
+<translation id="3950479158728806902">Automaticky vytvoriť prístupový kľúč na zrýchlenie prihlásenia</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3955740319737378355">Hotovo</translation>
 <translation id="3955822496205734389">Máte slabé heslá.</translation>
@@ -1339,7 +1339,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6078236141387574983">Znova upraviť výšku hárka</translation>
 <translation id="6084848228346514841">Výber kariet</translation>
 <translation id="6089212833343035912">PIN Správcu hesiel Google</translation>
-<translation id="6090760257419195752">Zavreté upozornenia</translation>
+<translation id="6090760257419195752">Zavreté varovania</translation>
 <translation id="6094325891006032858">Zapnite Zlepšené bezpečné prehliadanie</translation>
 <translation id="6096965253650248286">Nájdený počet: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Prihlásili ste sa ako <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>

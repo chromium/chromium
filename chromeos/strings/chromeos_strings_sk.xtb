@@ -24,7 +24,7 @@
 <translation id="1069150558259542054">Kláves Rýchlo vložiť nie je možné používať v prípade vlastných skratiek.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
-<translation id="1075811647922107217">Veľkosť stránky</translation>
+<translation id="1075811647922107217">Veľkosť strany</translation>
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
 <translation id="1100902271996134409">Vytvárajú sa obrázky…</translation>
@@ -792,7 +792,7 @@
 <translation id="4448096106102522892">ostrov</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsiete</translation>
-<translation id="4454245904991689773">Adresár na skenovanie</translation>
+<translation id="4454245904991689773">Uložiť do</translation>
 <translation id="4456812688969919973">Tlačidlo Uložiť názov prístupového bodu (APN) je teraz zakázané</translation>
 <translation id="4469288414739283461">Šetrič obrazovky s otáčaním Zeme</translation>
 <translation id="4474142134969976028">Žiadne zodpovedajúce výsledky</translation>
@@ -1352,7 +1352,7 @@
 <translation id="6957231940976260713">Názov služby</translation>
 <translation id="695776212669661671">šípka doprava</translation>
 <translation id="6957792699151067488">kvetom</translation>
-<translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
+<translation id="6961170852793647506">Najprv položte dokument na skener</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Zariadenie</translation>
 <translation id="6972754398087986839">Začať</translation>
@@ -1809,7 +1809,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES} stránku}few{Skenovať {NUMBER_OF_PAGES} stránky}many{Skenovať {NUMBER_OF_PAGES} stránky}other{Skenovať {NUMBER_OF_PAGES} stránok}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES}. stranu}few{Skenovať {NUMBER_OF_PAGES}. stranu}many{Skenovať {NUMBER_OF_PAGES}. stranu}other{Skenovať {NUMBER_OF_PAGES}. stranu}}</translation>
 <translation id="89945434909472341">dediny</translation>
 <translation id="8997710128084572139">Úroveň batérie zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998002498898621320">realistická fotka</translation>
@@ -1849,7 +1849,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9122492456897874028">Zhrňte obsah, získajte definície a vykonávajte viac</translation>
 <translation id="9122602430962285795">Ak sa chcete znova pripojiť, prejdite do Nastavení</translation>
 <translation id="9122865513525855321">Zenová</translation>
-<translation id="9126720536733509015">Ukladať viacero strán do jedného súboru PDF</translation>
+<translation id="9126720536733509015">Skenovať viacero strán do jedného PDF</translation>
 <translation id="9133772297793293778">Stlačte prvý až štyrtý modifikátor a jeden ďalší kláves na klávesnici. Režim úprav ukončíte stlačením klávesov alt + esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Ľavý kláves Shift</translation>

@@ -12273,6 +12273,34 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9088191250434406767">정책을 설정하지 않거나 사용 설정하면 사용자가 <ph name="GOOGLE_LENS_PRODUCT_NAME" />를 통해 카메라를 사용하여 검색할 수 있습니다. 정책을 사용 중지하면 <ph name="GOOGLE_LENS_PRODUCT_NAME" /> 카메라 지원 검색 기능이 제공될 때도 검색창에 <ph name="GOOGLE_LENS_PRODUCT_NAME" /> 버튼이 표시되지 않습니다.</translation>
 <translation id="9088433379343318874">관리 대상 사용자 콘텐츠 제공업체 사용</translation>
 <translation id="9088444059179765143">자동 시간대 감지 방법 설정</translation>
+<translation id="9089059535778570773">이 정책을 설정하면 대상 URL 및 기타 조건에 따라 브라우저에서 사용할 프록시를 선택하는 규칙이 구성됩니다. 이 정책은 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책, <ph name="PROXY_SETTINGS_EXTENSION_API" /> 확장 프로그램 API 또는 수동 사용자 설정에서 설정된 프록시 설정보다 우선 적용됩니다.
+
+정책을 설정하지 않아도 다른 프록시 정책 또는 사용자 설정에 영향을 미치지 않습니다.
+
+브라우저에서 사용할 프록시를 결정해야 하는 경우 항목이 다음 사항을 모두 충족할 때까지 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책의 항목이 순서대로 평가됩니다.
+  * <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 URL 패턴 중 하나 이상이 일치합니다.
+  * <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />의 URL 패턴 중 일치하는 패턴이 없습니다.
+  * <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 조건이 지정되고 목록이 비어 있지 않은 경우 해당 항목으로 표현된 모든 조건이 충족됩니다.
+<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />의 값이 이러한 일치의 프록시로 사용됩니다. 일치하는 항목이 없으면 프록시 설정이 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책에 설정된 항목으로 되돌아갑니다.
+
+<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 및 <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />에서 지원되는 URL 패턴은 https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns에 설명되어 있습니다.
+
+<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> 필드 항목은 다음과 같은 PAC 파일의 문자열 값에 해당합니다.
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+  * SOCKS4 host:port
+  * SOCKS5 host:port
+또는 URL과 유사한 프록시 지정자를 직접 사용하여 다음과 같이 프록시를 지정할 수 있습니다.
+  * http://host:port
+  * https://host:port
+  * socks4://host:port
+  * socks5://host:port
+목록에서 연결 가능한 첫 번째 항목이 프록시로 사용됩니다. 목록의 잘못된 항목은 무시됩니다.
+
+<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 필드에는 사용할 프록시를 결정하기 위해 재정의 규칙을 사용하려면 모두 충족해야 하는 조건 목록이 포함됩니다. 설정하지 않으면 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 호스트 중 하나 이상이 일치하는 한 항목이 사용됩니다.
+
+<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 조건은 제공된 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" />가 IP 주소로 확인할 수 있는지 확인합니다. 호스트(예: example.com)가 포함되어야 하며 선택적으로 스키마 또는 포트(예: https://example.com, example.com:123, https://example.com:123)가 포함될 수 있습니다. <ph name="PROXY_OVERRIDE_RULES_RESULT" />의 값이 "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />"인 경우 조건이 충족된 것으로 간주됩니다. 대신 값이 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />로 설정되면 해결이 실패한 경우 조건이 충족된 것으로 간주됩니다.</translation>
 <translation id="9095599826504830315">탭 비교를 허용하지 않습니다.</translation>
 <translation id="9096772739225230999">네트워크 구성 보고 안함</translation>
 <translation id="9098409326885953506">가려진 창을 감지하여 색상 설정 정지</translation>
