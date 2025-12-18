@@ -26,6 +26,8 @@ ReaderModeFontFamily ConvertMojomFontFamily(
       return ReaderModeFontFamily::kSerif;
     case dom_distiller::mojom::FontFamily::kMonospace:
       return ReaderModeFontFamily::kMonospace;
+    case dom_distiller::mojom::FontFamily::kLexend:
+      return ReaderModeFontFamily::kLexend;
   }
 }
 

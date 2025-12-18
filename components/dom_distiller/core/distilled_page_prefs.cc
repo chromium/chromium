@@ -61,16 +61,41 @@ void DistilledPagePrefs::SetFontFamily(mojom::FontFamily new_font_family) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+bool DistilledPagePrefs::IsUserPrefFontAvailable(
+    mojom::FontFamily font_family) {
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+  return true;
+#else
+  bool new_fonts_enabled = false;
+#if BUILDFLAG(IS_ANDROID)
+  new_fonts_enabled =
+      base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp) &&
+      base::FeatureList::IsEnabled(dom_distiller::kReaderModeSupportNewFonts);
+#else  // IS_IOS
+  new_fonts_enabled =
+      base::FeatureList::IsEnabled(dom_distiller::kReaderModeSupportNewFonts);
+#endif
+  return new_fonts_enabled || font_family == mojom::FontFamily::kSansSerif ||
+         font_family == mojom::FontFamily::kSerif ||
+         font_family == mojom::FontFamily::kMonospace;
+#endif
+}
+
 mojom::FontFamily DistilledPagePrefs::GetFontFamily() {
   auto font_family =
       static_cast<mojom::FontFamily>(pref_service_->GetInteger(prefs::kFont));
-  if (mojom::IsKnownEnumValue(font_family))
-    return font_family;
+  auto default_font_family = mojom::FontFamily::kSansSerif;
+  if (!mojom::IsKnownEnumValue(font_family)) {
+    // Persisted data was incorrect, clean it up by storing the default.
+    SetFontFamily(default_font_family);
+    return default_font_family;
+  }
 
-  // Persisted data was incorrect, trying to clean it up by storing the
-  // default.
-  SetFontFamily(mojom::FontFamily::kSansSerif);
-  return mojom::FontFamily::kSansSerif;
+  if (IsUserPrefFontAvailable(font_family)) {
+    // The user's preference font is admissible.
+    return font_family;
+  }
+  return default_font_family;
 }
 
 void DistilledPagePrefs::SetUserPrefTheme(mojom::Theme new_theme) {

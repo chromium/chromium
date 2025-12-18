@@ -429,6 +429,7 @@ chrome_java_resources = [
   "java/res/drawable/volume_up_24dp.xml",
   "java/res/drawable/window_controls_overlay_toggle.xml",
   "java/res/drawable/xr_toolbar_rounded_rect.xml",
+  "java/res/font/reader_mode_lexend.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
   "java/res/layout/account_chooser_dialog_item.xml",
   "java/res/layout/account_chooser_dialog_title.xml",

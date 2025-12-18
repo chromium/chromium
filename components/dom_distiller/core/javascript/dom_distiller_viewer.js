@@ -4,9 +4,9 @@
 
 // LINT.IfChange(JSThemesAndFonts)
 
-// These classes must agree with the font classes in distilledpage.css.
+// These classes must agree with the font classes in distilledpage_common.css.
 const themeClasses = ['light', 'dark', 'sepia'];
-const fontFamilyClasses = ['sans-serif', 'serif', 'monospace'];
+const fontFamilyClasses = ['sans-serif', 'serif', 'monospace', 'Lexend'];
 
 // LINT.ThenChange(//components/dom_distiller/core/viewer.cc:JSThemesAndFonts)
 
@@ -636,22 +636,6 @@ function updateToolbarColor(theme) {
   $('theme-color').content = toolbarColor;
 }
 
-function maybeSetWebFont() {
-  // On iOS, the web fonts block the rendering until the resources are
-  // fetched, which can take a long time on slow networks.
-  // In Blink, it times out after 3 seconds and uses fallback fonts.
-  // See crbug.com/711650
-  if (distillerOnIos) {
-    return;
-  }
-
-  const e = document.createElement('link');
-  e.href = 'https://fonts.googleapis.com/css?family=Roboto';
-  e.rel = 'stylesheet';
-  e.type = 'text/css';
-  document.head.appendChild(e);
-}
-
 // TODO(crbug.com/40108835): Consider making this a custom HTML element.
 class FontSizeSlider {
   constructor() {
@@ -705,8 +689,6 @@ class FontSizeSlider {
     this.update(this.element.value);
   }
 }
-
-maybeSetWebFont();
 
 // The zooming speed relative to pinching speed.
 const FONT_SCALE_MULTIPLIER = 0.5;

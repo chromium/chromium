@@ -5494,6 +5494,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_LABEL" desc="Label of a Reading mode options button which changes the Reading mode color scheme." meaning="Label of a Reading mode options button which changes the Reading mode color scheme. This should be one, at most two characters to preview the color scheme e.g. Aa in English.">
         Aa
       </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_LEXEND_LABEL" desc="The label for the Lexend font option in the Reader Mode options menu.">
+        Lexend
+      </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE" desc="Title of the Reading mode font family drop-down menu which contains font families to choose from.">
         Font
       </message>

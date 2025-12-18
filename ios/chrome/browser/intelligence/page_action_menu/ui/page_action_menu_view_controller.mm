@@ -173,6 +173,10 @@ const CGFloat kDividerWidth = 1.0;
       fontFamilyString = l10n_util::GetStringUTF16(
           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL);
       break;
+    case dom_distiller::mojom::FontFamily::kLexend:
+      fontFamilyString = l10n_util::GetStringUTF16(
+          IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_LEXEND_LABEL);
+      break;
   }
   self.readerModeOptionsButtonSubtitleLabel.text = l10n_util::GetNSStringF(
       IDS_IOS_AI_HUB_READER_MODE_OPTIONS_FONT_LABEL, fontFamilyString);

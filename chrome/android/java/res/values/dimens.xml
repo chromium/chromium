@@ -446,7 +446,7 @@ found in the LICENSE file.
     <dimen name="link_hover_status_bar_mouse_padding">20dp</dimen>
 
     <!--  Reader mode prefs dimensions. -->
-    <dimen name="reader_mode_prefs_font_style_container_width">280dp</dimen>
+    <dimen name="reader_mode_prefs_font_style_button_separator_padding">16dp</dimen>
     <dimen name="reader_mode_prefs_font_style_button_size">72dp</dimen>
     <dimen name="reader_mode_prefs_font_style_signifier_text_size">24dp</dimen>
     <dimen name="reader_mode_prefs_font_style_name_text_size">10dp</dimen>

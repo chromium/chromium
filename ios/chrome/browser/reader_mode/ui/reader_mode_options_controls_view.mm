@@ -260,6 +260,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
   UIAction* sansSerifAction = [self createSansSerifAction];
   UIAction* serifAction = [self createSerifAction];
   UIAction* monospaceAction = [self createMonospaceAction];
+  UIAction* lexendAction = [self createLexendAction];
 
   switch (selectedFontFamily) {
     case dom_distiller::mojom::FontFamily::kSansSerif:
@@ -271,12 +272,18 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
     case dom_distiller::mojom::FontFamily::kMonospace:
       monospaceAction.state = UIMenuElementStateOn;
       break;
+    case dom_distiller::mojom::FontFamily::kLexend:
+      lexendAction.state = UIMenuElementStateOn;
+      break;
   }
 
+  // TODO(crbug.com/441657426): Add lexendAction to supported list
   return [UIMenu
       menuWithTitle:l10n_util::GetNSString(
                         IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE)
-           children:@[ monospaceAction, sansSerifAction, serifAction ]];
+           children:@[
+             monospaceAction, sansSerifAction, serifAction
+           ]];
 }
 
 // Returns the action to select the Sans-serif font family.
@@ -320,6 +327,19 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
                     setFontFamily:dom_distiller::mojom::FontFamily::kMonospace];
               }];
   return monospaceAction;
+}
+
+// Returns the action to select the Lexend font family.
+- (UIAction*)createLexendAction {
+  return [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_LEXEND_LABEL)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                [self.mutator
+                    setFontFamily:dom_distiller::mojom::FontFamily::kLexend];
+              }];
 }
 
 #pragma mark - Font size buttons creation helpers

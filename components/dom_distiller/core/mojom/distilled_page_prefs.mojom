@@ -14,5 +14,5 @@ enum FontFamily {
   kSansSerif = 0,
   kSerif = 1,
   kMonospace = 2,
+  kLexend = 3,
 };
-

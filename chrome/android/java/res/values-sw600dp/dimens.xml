@@ -24,7 +24,6 @@ found in the LICENSE file.
     <dimen name="recent_tabs_visible_separator_padding">28dp</dimen>
 
     <!--  Reader mode prefs dimensions. -->
-    <dimen name="reader_mode_prefs_font_style_container_width">352dp</dimen>
     <dimen name="reader_mode_prefs_font_style_button_size">96dp</dimen>
     <dimen name="reader_mode_prefs_font_style_signifier_text_size">32dp</dimen>
 </resources>

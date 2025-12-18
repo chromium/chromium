@@ -19,6 +19,14 @@ found in the LICENSE file.
   <title>$i18n{title}</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
+  <if expr="not(is_ios)">
+    <!-- Import web fonts. -->
+    <!-- On iOS, the web fonts block the rendering until the resources are fetched,
+     which can take a long time on slow networks. In Blink, it times out after 3
+     seconds and uses fallback fonts. See crbug.com/711650 -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&family=Roboto&display=block"
+      rel="stylesheet" type="text/css">
+  </if>
   <!-- Placeholder for CSS. -->
   $2
 </head>

@@ -36,10 +36,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -161,6 +164,7 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSerif.assertExpected();
+        mReaderModePrefsView.onChangeFontFamily(FontFamily.SERIF);
 
         HistogramWatcher histogramMonospace =
                 HistogramWatcher.newBuilder()
@@ -172,6 +176,7 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 2, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramMonospace.assertExpected();
+        mReaderModePrefsView.onChangeFontFamily(FontFamily.MONOSPACE);
 
         // Test clicking the first option again.
         HistogramWatcher histogramSansSerif2 =
@@ -184,6 +189,25 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 3, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSansSerif2.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
+        DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS
+    })
+    public void testAdditionalFontFamilyButtonsVisibility_NewFontsEnabled() {
+        assertEquals(
+                View.VISIBLE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
+    public void testAdditionalFontFamilyButtonsVisibility_NewFontsDisabled() {
+        assertEquals(
+                View.GONE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
     }
 
     @Test

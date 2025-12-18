@@ -51,6 +51,7 @@ const char kSepiaJsTheme[] = "sepia";
 const char kSerifJsFontFamily[] = "serif";
 const char kSansSerifJsFontFamily[] = "sans-serif";
 const char kMonospaceJsFontFamily[] = "monospace";
+const char kLexendJsFontFamily[] = "Lexend";
 
 // LINT.ThenChange(//components/dom_distiller/core/javascript/dom_distiller_viewer.js:JSThemesAndFonts)
 
@@ -65,6 +66,7 @@ const char kSepiaCssClass[] = "sepia";
 const char kSerifCssClass[] = "serif";
 const char kSansSerifCssClass[] = "sans-serif";
 const char kMonospaceCssClass[] = "monospace";
+const char kLexendCssClass[] = "Lexend";
 
 // LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
@@ -114,20 +116,32 @@ const std::string GetThemeCssClass(mojom::Theme theme) {
 
 // Maps font families to JS font families.
 const std::string GetJsFontFamily(mojom::FontFamily font_family) {
-  if (font_family == mojom::FontFamily::kSerif)
-    return kSerifJsFontFamily;
-  if (font_family == mojom::FontFamily::kMonospace)
-    return kMonospaceJsFontFamily;
-  return kSansSerifJsFontFamily;
+  switch (font_family) {
+    case mojom::FontFamily::kSerif:
+      return kSerifJsFontFamily;
+    case mojom::FontFamily::kSansSerif:
+      return kSansSerifJsFontFamily;
+    case mojom::FontFamily::kMonospace:
+      return kMonospaceJsFontFamily;
+    case mojom::FontFamily::kLexend:
+      return kLexendJsFontFamily;
+  }
+  NOTREACHED();
 }
 
 // Maps fontFamilies to CSS fontFamily classes.
 const std::string GetFontCssClass(mojom::FontFamily font_family) {
-  if (font_family == mojom::FontFamily::kSerif)
-    return kSerifCssClass;
-  if (font_family == mojom::FontFamily::kMonospace)
-    return kMonospaceCssClass;
-  return kSansSerifCssClass;
+  switch (font_family) {
+    case mojom::FontFamily::kSansSerif:
+      return kSansSerifCssClass;
+    case mojom::FontFamily::kSerif:
+      return kSerifCssClass;
+    case mojom::FontFamily::kMonospace:
+      return kMonospaceCssClass;
+    case mojom::FontFamily::kLexend:
+      return kLexendCssClass;
+  }
+  NOTREACHED();
 }
 
 const std::string EnsureNonEmptyContent(const std::string& content) {

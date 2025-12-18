@@ -1963,6 +1963,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Sans Serif"/>
   <int value="1" label="Serif"/>
   <int value="2" label="Monospace"/>
+  <int value="3" label="Lexend"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeFontFamily) -->

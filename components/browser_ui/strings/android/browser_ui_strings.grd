@@ -1020,6 +1020,9 @@
       <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
         Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
       </message>
+      <message name="IDS_FONT_FAMILY_LEXEND_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to Lexend.">
+        Font Lexend
+      </message>
       <message name="IDS_FONT_FAMILY_SANS_SERIF_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to sans serif.">
         Font Sans Serif
       </message>

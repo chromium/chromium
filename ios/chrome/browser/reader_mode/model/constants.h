@@ -92,7 +92,8 @@ enum class ReaderModeFontFamily {
   kSansSerif = 0,
   kSerif = 1,
   kMonospace = 2,
-  kMaxValue = kMonospace,
+  kLexend = 3,
+  kMaxValue = kLexend,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeFontFamily)
 

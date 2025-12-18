@@ -65,8 +65,8 @@ public class ReaderModeBottomSheetRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_READER_MODE)
-                    .setRevision(6)
-                    .setDescription("Updated capitalization of bottomsheet title")
+                    .setRevision(7)
+                    .setDescription("Update font style button container to be scrollable")
                     .build();
 
     private @Captor ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverCaptor;

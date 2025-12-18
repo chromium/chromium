@@ -83,6 +83,10 @@ class DistilledPagePrefs {
   void RemoveObserver(Observer* obs);
 
  private:
+  // Checks whether the user preference font set (used in GetFontFamily) is
+  // admissible based on feature flags enabled.
+  bool IsUserPrefFontAvailable(mojom::FontFamily font);
+
 #if BUILDFLAG(IS_ANDROID)
   // Clamps the default font scaling to properly follow min and max font scaling
   // for whether the distillation is in-app or CCT.

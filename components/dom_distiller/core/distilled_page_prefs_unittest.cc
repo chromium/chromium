@@ -381,12 +381,15 @@ class DistilledPagePrefsFeatureTest
     : public DistilledPagePrefsTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  DistilledPagePrefsFeatureTest() {
+  void SetUp() override {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(kReaderModeDistillInApp);
+      std::vector<base::test::FeatureRef> enabled_features = {
+          kReaderModeDistillInApp, kReaderModeSupportNewFonts};
+      scoped_feature_list_.InitWithFeatures(enabled_features, {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(kReaderModeDistillInApp);
     }
+    DistilledPagePrefsTest::SetUp();
   }
 
  private:
@@ -487,6 +490,32 @@ TEST_P(DistilledPagePrefsFeatureTest, TestClampDefaultFontScaling) {
   run_loop2.Run();
   ASSERT_FLOAT_EQ(max_font_scale, obs.GetFontScaling());
   ASSERT_FLOAT_EQ(max_font_scale, distilled_page_prefs_->GetFontScaling());
+
+  distilled_page_prefs_->RemoveObserver(&obs);
+}
+
+TEST_P(DistilledPagePrefsFeatureTest, TestIsUserPrefFontAvailable) {
+  TestingObserver obs;
+  distilled_page_prefs_->AddObserver(&obs);
+
+  // Test availability of Lexend font based on feature flag.
+  distilled_page_prefs_->SetFontFamily(mojom::FontFamily::kLexend);
+  base::RunLoop run_loop1;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop1.QuitClosure());
+  run_loop1.Run();
+
+  if (GetParam()) {
+    // Feature enabled: Lexend should be available.
+    EXPECT_EQ(mojom::FontFamily::kLexend, obs.GetFontFamily());
+    EXPECT_EQ(mojom::FontFamily::kLexend,
+              distilled_page_prefs_->GetFontFamily());
+  } else {
+    // Feature disabled: Poppins should fallback to Sans Serif.
+    EXPECT_EQ(mojom::FontFamily::kSansSerif, obs.GetFontFamily());
+    EXPECT_EQ(mojom::FontFamily::kSansSerif,
+              distilled_page_prefs_->GetFontFamily());
+  }
 
   distilled_page_prefs_->RemoveObserver(&obs);
 }

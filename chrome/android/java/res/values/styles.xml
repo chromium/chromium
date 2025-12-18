@@ -307,6 +307,14 @@ found in the LICENSE file.
 
     <style name="ReaderModeFontStyleButton"
         parent="Widget.Material3Expressive.Button.IconButton.Tonal">
+        <item name="android:layout_width">@dimen/reader_mode_prefs_font_style_button_size</item>
+        <item name="android:layout_height">@dimen/reader_mode_prefs_font_style_button_size</item>
+        <item name="android:layout_marginEnd">
+            @dimen/reader_mode_prefs_font_style_button_separator_padding
+        </item>
+        <item name="backgroundTint">@color/reader_mode_prefs_font_style_button_background_color</item>
+        <item name="android:checkable">true</item>
+        <item name="android:foreground">@drawable/focusable_item_foreground</item>
         <item name="android:textAppearance">
             @style/TextAppearance.ReaderModeFontStyleButton
         </item>
@@ -601,4 +609,8 @@ found in the LICENSE file.
     </style>
 
     <style name="Theme.Chromium.Widget" parent="Theme.BrowserUI.DayNight" />
+
+    <style name="TextAppearance.ReaderMode.Lexend" parent="">
+        <item name="android:fontFamily">@font/reader_mode_lexend</item>
+    </style>
 </resources>
