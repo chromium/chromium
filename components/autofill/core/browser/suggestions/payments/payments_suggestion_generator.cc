@@ -73,7 +73,7 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
           features::kAutofillEnableCvcStorageAndFillingEnhancement)) {
     FilterCardsToSuggestForCvcFields(
         trigger_field_type,
-        base::flat_set<std::string>(std::move(four_digit_combinations_in_dom)),
+        base::flat_set<std::string>(four_digit_combinations_in_dom),
         autofilled_last_four_digits_in_form_for_filtering, cards_to_suggest);
   }
 
