@@ -207,11 +207,7 @@ if (is_linux || is_chromeos) {
       # The thumbv7 vs. armv7 distinction is for legacy reasons and both
       # targets in fact target Thumb, see:
       # https://github.com/rust-lang/rust/issues/44722
-      if (arm_use_neon) {
-        rust_abi_target = "thumbv7neon-unknown-linux-gnueabi" + float_suffix
-      } else {
-        rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
-      }
+      rust_abi_target = "thumbv7neon-unknown-linux-gnueabi" + float_suffix
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
     }
@@ -235,12 +231,7 @@ if (is_linux || is_chromeos) {
     # Android clang target specifications mostly match Rust, but this
     # is an exception.
     # See section above for Linux for thumbv7neon vs. armv7.
-    # Note that on Android, NEON is enabled for all builds except Cronet.
-    if (arm_use_neon) {
-      rust_abi_target = "thumbv7neon-linux-androideabi"
-    } else {
-      rust_abi_target = "armv7-linux-androideabi"
-    }
+    rust_abi_target = "thumbv7neon-linux-androideabi"
   } else if (android_abi_target == "mipsel-linux-android") {
     # There is no MIPS android target.
     rust_abi_target = ""

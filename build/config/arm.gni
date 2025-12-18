@@ -8,6 +8,7 @@ import("//build/config/v8_target_cpu.gni")
 # TODO(thakis): Remove all uses of these, then remove the variables.
 arm_fpu = "neon"
 arm_use_neon = true
+arm_optionally_use_neon = false
 
 # These are primarily relevant in current_cpu == "arm" contexts, where
 # ARM code is being compiled.  But they can also be relevant in the
@@ -22,9 +23,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # The ARM architecture. This will be a string like "armv6" or "armv7-a".
     # An empty string means to use the default for the arm_version.
     arm_arch = ""
-
-    # Whether to enable optional NEON code paths.
-    arm_optionally_use_neon = false
 
     # Thumb is a reduced instruction set available on some ARM processors that
     # has increased code density.

@@ -322,11 +322,9 @@ if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "arm64e") {
       sources = libvpx_srcs_arm_neon_neon
       deps = [ ":libvpx_arm_neon_headers" ]
     } else if (cpu_arch_full == "arm-neon-highbd") {
+      # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
       sources = libvpx_srcs_arm_neon_highbd_neon
       deps = [ ":libvpx_arm_neon_highbd_headers" ]
-    } else if (cpu_arch_full == "arm-neon-cpu-detect") {
-      sources = libvpx_srcs_arm_neon_cpu_detect_neon
-      deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
     } else if (cpu_arch_full == "arm64") {
       sources = libvpx_srcs_arm64_neon
       deps = [ ":libvpx_arm64_headers" ]
@@ -409,14 +407,11 @@ if (current_cpu == "arm64" || current_cpu == "arm64e") {
 }
 
 if (current_cpu == "arm") {
-  if (cpu_arch_full == "arm-neon") {
-    arm_assembly_sources = libvpx_srcs_arm_neon_assembly
-  } else if (cpu_arch_full == "arm-neon-highbd") {
+  if (cpu_arch_full == "arm-neon-highbd") {
+    # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
     arm_assembly_sources = libvpx_srcs_arm_neon_highbd_assembly
-  } else if (cpu_arch_full == "arm-neon-cpu-detect") {
-    arm_assembly_sources = libvpx_srcs_arm_neon_cpu_detect_assembly
   } else {
-    arm_assembly_sources = libvpx_srcs_arm_assembly
+    arm_assembly_sources = libvpx_srcs_arm_neon_assembly
   }
 }
 
@@ -450,8 +445,7 @@ if (current_cpu == "arm" && arm_assembly_sources != []) {
     sources = get_target_outputs(":convert_arm_assembly")
     configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
     configs += [ ":libvpx_config" ]
-    if (cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-cpu-detect" ||
-        cpu_arch_full == "arm-neon-highbd") {
+    if (cpu_arch_full == "arm-neon" || cpu_arch_full == "arm-neon-highbd") {
       asmflags = [ "-mfpu=neon" ]
 
       # allow asm files to include generated sources which match the source
@@ -471,16 +465,8 @@ source_set("libvpx_x86_64_headers") {
   sources = libvpx_srcs_x86_64_headers
 }
 
-source_set("libvpx_arm_headers") {
-  sources = libvpx_srcs_arm_headers
-}
-
 source_set("libvpx_arm_neon_headers") {
   sources = libvpx_srcs_arm_neon_headers
-}
-
-source_set("libvpx_arm_neon_cpu_detect_headers") {
-  sources = libvpx_srcs_arm_neon_cpu_detect_headers
 }
 
 source_set("libvpx_arm64_headers") {
@@ -533,17 +519,12 @@ static_library("libvpx") {
     public_deps = [ ":libvpx_mips_headers" ]
   } else if (current_cpu == "arm") {
     if (is_chromeos) {
+      # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
       sources = libvpx_srcs_arm_neon_highbd
       public_deps = [ ":libvpx_arm_neon_highbd_headers" ]
-    } else if (arm_use_neon) {
+    } else {
       sources = libvpx_srcs_arm_neon
       public_deps = [ ":libvpx_arm_neon_headers" ]
-    } else if (is_android) {
-      sources = libvpx_srcs_arm_neon_cpu_detect
-      public_deps = [ ":libvpx_arm_neon_cpu_detect_headers" ]
-    } else {
-      sources = libvpx_srcs_arm
-      public_deps = [ ":libvpx_arm_headers" ]
     }
   } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
     if (is_chromeos || is_win || is_mac || is_ios) {
@@ -581,8 +562,7 @@ static_library("libvpx") {
     ]
   }
   if (cpu_arch_full == "arm-neon-highbd" || cpu_arch_full == "arm-neon" ||
-      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64" ||
-      current_cpu == "arm64e") {
+      current_cpu == "arm64" || current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon" ]
   }
   if (current_cpu == "arm64" || current_cpu == "arm64e") {
