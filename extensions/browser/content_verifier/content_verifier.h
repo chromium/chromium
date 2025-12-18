@@ -124,6 +124,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   scoped_refptr<const ContentHash> GetCachedContentHash(
       const ExtensionId& extension_id,
       const base::Version& extension_version,
+      const base::FilePath& extension_root,
       bool force_missing_computed_hashes_creation);
 
   // Returns whether or not we should compute hashes during installation.
@@ -222,7 +223,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
       std::unique_ptr<ContentVerifierIOData::ExtensionData> data);
   // Performs IO thread operations after extension unload.
   void OnExtensionUnloadedOnIO(const ExtensionId& extension_id,
-                               const base::Version& extension_version);
+                               const base::Version& extension_version,
+                               const base::FilePath& extension_root);
 
   // Called to indicate that all the relevant data is ready for the extension,
   // and we can start verifying files.

@@ -190,9 +190,12 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
   manifest_version_ = manifest_version;
   failure_callback_ = std::move(failure_callback);
 
-  // The content verification hashes are most likely already cached.
+  // We search for the cached ContentHash also using the extension root to avoid
+  // mismatching with a different directory for the same extension version (e.g.
+  // .../1.0_0 vs .../1.0_1). This mismatch can occur during corruption repair
+  // that happens when the extension is not idle.
   auto content_hash = verifier->GetCachedContentHash(
-      extension_id_, extension_version_,
+      extension_id_, extension_version_, extension_root_,
       /*force_missing_computed_hashes_creation=*/true);
   if (content_hash) {
     StartWithContentHash(std::move(content_hash));
@@ -239,8 +242,17 @@ void ContentVerifyJob::StartWithContentHash(
                     "if the job continued.";
   }
 
-  // If the hash and the verify jobs' roots don't match then the hash comparison
-  // done later will match against the wrong files.
+  // The below detects if the hash and the verify jobs' extension roots don't
+  // match. If they don't then the hash comparison done later could match
+  // against a different extension root folder that could have different hashes.
+  // This could happen if this verify job was created before a corruption
+  // repair, but started after a corruption repair which was waiting until the
+  // extension went idle. This job would then have an extension root of
+  // .../<extension_version>_N and the `ContentHash` would have an extension
+  // root of .../<extension_version>_(N+1). The corrupted
+  // .../<extension_version>_N folder could still exist, and still have the same
+  // files (until it's garbage collected at some point) so the file's hash in
+  // the corrupted folder wouldn't match `content_hash`.
   if ((GetCurrentChannel() == version_info::Channel::CANARY ||
        GetCurrentChannel() == version_info::Channel::DEV) &&
       content_hash->extension_root() != extension_root_) {

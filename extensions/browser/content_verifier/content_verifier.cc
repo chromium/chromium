@@ -158,21 +158,24 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
 struct ContentVerifier::CacheKey {
   CacheKey(const ExtensionId& extension_id,
            const base::Version& version,
+           const base::FilePath& extension_root,
            bool needs_force_missing_computed_hashes_creation)
       : extension_id(extension_id),
         version(version),
+        extension_root(extension_root),
         needs_force_missing_computed_hashes_creation(
             needs_force_missing_computed_hashes_creation) {}
 
   bool operator<(const CacheKey& other) const {
-    return std::tie(extension_id, version,
+    return std::tie(extension_id, version, extension_root,
                     needs_force_missing_computed_hashes_creation) <
-           std::tie(other.extension_id, other.version,
+           std::tie(other.extension_id, other.version, other.extension_root,
                     other.needs_force_missing_computed_hashes_creation);
   }
 
   ExtensionId extension_id;
   base::Version version;
+  base::FilePath extension_root;
   // TODO(lazyboy): This shouldn't be necessary as key. For the common
   // case, we'd only want to cache successful ContentHash instances regardless
   // of whether force creation was requested.
@@ -204,9 +207,11 @@ class ContentVerifier::HashHelper {
 
   // Cancels any ongoing computed_hashes.json disk write for an extension.
   void Cancel(const ExtensionId& extension_id,
-              const base::Version& extension_version) {
+              const base::Version& extension_version,
+              const base::FilePath& extension_root) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    auto callback_key = std::make_pair(extension_id, extension_version);
+    auto callback_key =
+        std::make_tuple(extension_id, extension_version, extension_root);
     auto iter = callback_infos_.find(callback_key);
     if (iter == callback_infos_.end())
       return;
@@ -224,7 +229,8 @@ class ContentVerifier::HashHelper {
                       ContentHashCallback callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     auto callback_key =
-        std::make_pair(fetch_key.extension_id, fetch_key.extension_version);
+        std::make_tuple(fetch_key.extension_id, fetch_key.extension_version,
+                        fetch_key.extension_root);
     auto iter = callback_infos_.find(callback_key);
     if (iter != callback_infos_.end()) {
       iter->second.callbacks.push_back(std::move(callback));
@@ -251,7 +257,7 @@ class ContentVerifier::HashHelper {
   }
 
  private:
-  using CallbackKey = std::pair<ExtensionId, base::Version>;
+  using CallbackKey = std::tuple<ExtensionId, base::Version, base::FilePath>;
 
   class IsCancelledChecker
       : public base::RefCountedThreadSafe<IsCancelledChecker> {
@@ -642,7 +648,7 @@ void ContentVerifier::CreateContentHash(
   DCHECK(data);
   ContentHash::FetchKey fetch_key =
       GetFetchKey(extension_id, extension_root, extension_version);
-  CacheKey cache_key(extension_id, extension_version,
+  CacheKey cache_key(extension_id, extension_version, extension_root,
                      force_missing_computed_hashes_creation);
   // Since |shutdown_on_io_| = false, GetOrCreateHashHelper() must return
   // non-nullptr instance of HashHelper.
@@ -656,6 +662,7 @@ void ContentVerifier::CreateContentHash(
 scoped_refptr<const ContentHash> ContentVerifier::GetCachedContentHash(
     const ExtensionId& extension_id,
     const base::Version& extension_version,
+    const base::FilePath& extension_root,
     bool force_missing_computed_hashes_creation) {
   TRACE_EVENT("extensions.content_verifier.debug",
               "ContentVerifier::GetCachedContentHash", "extension_id",
@@ -667,7 +674,7 @@ scoped_refptr<const ContentHash> ContentVerifier::GetCachedContentHash(
     return nullptr;
   }
 
-  CacheKey cache_key(extension_id, extension_version,
+  CacheKey cache_key(extension_id, extension_version, extension_root,
                      force_missing_computed_hashes_creation);
   auto cache_iter = cache_.find(cache_key);
   return cache_iter != cache_.end() ? cache_iter->second : nullptr;
@@ -807,8 +814,9 @@ void ContentVerifier::OnExtensionUnloaded(
   if (shutdown_on_ui_)
     return;
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ContentVerifier::OnExtensionUnloadedOnIO, this,
-                                extension->id(), extension->version()));
+      FROM_HERE,
+      base::BindOnce(&ContentVerifier::OnExtensionUnloadedOnIO, this,
+                     extension->id(), extension->version(), extension->path()));
 }
 
 ContentVerifierKey ContentVerifier::GetContentVerifierKey() {
@@ -835,7 +843,8 @@ void ContentVerifier::ClearCacheForTesting() {
 
 void ContentVerifier::OnExtensionUnloadedOnIO(
     const ExtensionId& extension_id,
-    const base::Version& extension_version) {
+    const base::Version& extension_version,
+    const base::FilePath& extension_root) {
   TRACE_EVENT("extensions.content_verifier.debug",
               "ContentVerifier::OnExtensionUnloadedOnIO", "extension_id",
               extension_id, "extension_version", extension_version.GetString());
@@ -844,12 +853,15 @@ void ContentVerifier::OnExtensionUnloadedOnIO(
   io_data_.RemoveData(extension_id);
 
   // Remove all possible cache entries for this extension version.
-  cache_.erase(CacheKey(extension_id, extension_version, true));
-  cache_.erase(CacheKey(extension_id, extension_version, false));
+  cache_.erase(CacheKey(extension_id, extension_version, extension_root,
+                        /*needs_force_missing_computed_hashes_creation=*/true));
+  cache_.erase(
+      CacheKey(extension_id, extension_version, extension_root,
+               /*needs_force_missing_computed_hashes_creation=*/false));
 
   HashHelper* hash_helper = GetOrCreateHashHelper();
   if (hash_helper)
-    hash_helper->Cancel(extension_id, extension_version);
+    hash_helper->Cancel(extension_id, extension_version, extension_root);
 
   ready_extensions_.erase(extension_id);
   pending_jobs_.erase(extension_id);

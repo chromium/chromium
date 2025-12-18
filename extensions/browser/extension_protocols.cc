@@ -660,6 +660,12 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     AddCacheHeaders(*headers, last_modified_time);
     AddMimeTypeHeaders(*headers, read_file_path);
 
+    // TODO(crbug.com/416484593): If the file is missing, we might want to check
+    // if the extension has moved to a new directory (e.g. _N suffix) with the
+    // same version, and reroute the request there to avoid FILE_NOT_FOUND. For
+    // example, in the case of request for an extension resource coming in
+    // while a corruption repair that starts when an extension goes idle.
+
     // TODO(crbug.com/405286894, crbug.com/410916670): Properly implement
     // content verification for range headers which return a subset of the
     // extension's file. Currently end headers may trigger unintentional
