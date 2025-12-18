@@ -39,6 +39,7 @@ source_set("read_anything") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
+    "//chrome/browser/dom_distiller",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui_browser:headers",
@@ -51,7 +52,6 @@ source_set("read_anything") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser/dom_distiller",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/ui:ui_features",

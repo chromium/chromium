@@ -252,6 +252,17 @@ class ReadAnythingUntrustedPageHandlerTest
     // disables using ReadAnythingWithScreen2x and PdfOcr.
   }
 
+  explicit ReadAnythingUntrustedPageHandlerTest(
+      std::vector<base::test::FeatureRef> enabled_features) {
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsImmersiveEnabled()) {
+      enabled_features.push_back(features::kImmersiveReadAnything);
+    } else {
+      disabled_features.push_back(features::kImmersiveReadAnything);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   bool IsImmersiveEnabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
@@ -1752,8 +1763,38 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   }
 }
 
+class ReadAnythingUntrustedPageHandlerDistillerTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerDistillerTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingWithReadability}) {}
+};
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
+                       DistillationPopulatesContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  OnActiveAXTreeIDChanged();
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->distilled_title_for_testing().has_value(); }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->distilled_content_for_testing().has_value(); }));
+}
+
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ReadAnythingUntrustedPageHandlerTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReadAnythingUntrustedPageHandlerDistillerTest,
                          testing::Bool());

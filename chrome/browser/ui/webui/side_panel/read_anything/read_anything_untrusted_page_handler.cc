@@ -19,6 +19,7 @@
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -30,10 +31,16 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/dom_distiller/core/distiller_page.h"
+#include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/dom_distiller/core/task_tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -86,6 +93,44 @@ using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
 
+class ReadAnythingUntrustedPageHandler::DistillerDelegate
+    : public dom_distiller::ViewRequestDelegate {
+ public:
+  explicit DistillerDelegate(ReadAnythingUntrustedPageHandler* handler)
+      : handler_(handler) {}
+  ~DistillerDelegate() override = default;
+
+  void StartDistillation(dom_distiller::DomDistillerService* service,
+                         content::WebContents* contents) {
+    // If existing distillation request, cancel it. This removes delegate as
+    // observer of previous request and allow it to observe new request.
+    viewer_handle_.reset();
+    const GURL& url = contents->GetLastCommittedURL();
+    viewer_handle_ = service->ViewUrl(
+        this,
+        service->CreateDefaultDistillerPageWithHandle(
+            std::make_unique<dom_distiller::SourcePageHandleWebContents>(
+                contents, /*owned=*/false)),
+        url);
+  }
+
+  // dom_distiller::ViewRequestDelegate:
+  void OnArticleReady(
+      const dom_distiller::DistilledArticleProto* article_proto) override {
+    handler_->ProcessDistilledArticle(article_proto);
+    viewer_handle_.reset();
+  }
+
+  void OnArticleUpdated(
+      dom_distiller::ArticleDistillationUpdate article_update) override {
+    // Unused.
+  }
+
+ private:
+  raw_ptr<ReadAnythingUntrustedPageHandler> handler_;
+  std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
+};
+
 namespace {
 
 // All AXMode flags of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
@@ -104,6 +149,9 @@ constexpr ui::AXMode kReadAnythingAXMode =
 // receive the callback for the page before the pdf has finished loading, which
 // results in the last committed origin being invalid.
 constexpr int PDF_LOAD_DELAY_MS = 1000;
+
+// Prefix definition for logging.
+constexpr char kReadAnythingPrefix[] = "Read Anything";
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -340,6 +388,16 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             base::BindOnce(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
+  }
+
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    // Set the JavaScript world ID.
+    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
+      dom_distiller::SetDistillerJavaScriptWorldId(
+          ISOLATED_WORLD_ID_CHROME_INTERNAL);
+    }
+
+    distiller_delegate_ = std::make_unique<DistillerDelegate>(this);
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -1066,10 +1124,50 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
+  // for text selection.
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   VLOG(1) << "Sending non-pdf tree with id " << rfh->GetAXTreeID();
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
+
+  RequestDomDistillerDistillation(contents);
+}
+
+void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
+    content::WebContents* content) {
+  // TODO(crbug.com/459156156): Work on PDF distillation in a future CL.
+  if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_) {
+    return;
+  }
+  const GURL& url = content->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    VLOG(1) << kReadAnythingPrefix << ": URL is not HTTP/HTTPS, skipping for "
+            << url.spec();
+    // TODO(crbug.com/467084642): Create UMA / UKM metric to track non
+    // HTTP/HTTPS readability distillation attempt.
+    return;
+  }
+
+  dom_distiller::DomDistillerService* dom_distiller_service =
+      dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
+          content->GetBrowserContext());
+  DCHECK(dom_distiller_service);
+  distiller_delegate_->StartDistillation(dom_distiller_service, content);
+}
+
+void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
+    const dom_distiller::DistilledArticleProto* article_proto) {
+  CHECK(features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_);
+  if (article_proto && article_proto->pages_size() > 0) {
+    distilled_title_for_testing_ = article_proto->title();
+
+    std::string full_html;
+    for (const auto& page : article_proto->pages()) {
+      full_html.append(page.html());
+    }
+    distilled_content_for_testing_ = full_html;
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
