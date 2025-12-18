@@ -241,7 +241,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void ShowCreditCardUploadSaveAndFillDialog(
       const LegalMessageLines& legal_message_lines,
       CardSaveAndFillDialogCallback callback) override;
-  void ShowCreditCardSaveAndFillPendingDialog() override;
+  void ShowCreditCardSaveAndFillPendingDialog(
+      CardSaveAndFillDialogCallback callback) override;
   void HideCreditCardSaveAndFillDialog() override;
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;

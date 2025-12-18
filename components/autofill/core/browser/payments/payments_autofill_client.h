@@ -740,8 +740,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // response is being fetched. This pending state is a precursor to either the
   // local or upload Save and Fill dialog. If the preflight call fails, the
   // dialog transitions to the local version. If it succeeds, the dialog
-  // transitions to the server version.
-  virtual void ShowCreditCardSaveAndFillPendingDialog() = 0;
+  // transitions to the server version. The `callback` is executed when the user
+  // closes the pending dialog. This allows the caller to be notified of the
+  // cancellation and abort any pending operations.
+  virtual void ShowCreditCardSaveAndFillPendingDialog(
+      CardSaveAndFillDialogCallback callback) = 0;
 
   // Hides the Save and Fill dialog upon receivng response from the CreateCard
   // server call.

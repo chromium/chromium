@@ -11,6 +11,12 @@ namespace autofill {
 class SaveAndFillDialogView {
  public:
   virtual ~SaveAndFillDialogView() = default;
+
+  // A pending throbber is shown while the preflight call is executed. This
+  // function is called once a response is received, signaling the view to
+  // transition to the appropriate version of the dialog (local or upload)
+  // based on the controller's updated state.
+  virtual void DismissThrobberAndUpdateMainView() = 0;
 };
 
 }  // namespace autofill

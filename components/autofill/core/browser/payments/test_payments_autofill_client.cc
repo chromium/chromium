@@ -454,7 +454,8 @@ void TestPaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
     CardSaveAndFillDialogCallback callback) {}
 
-void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {}
+void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
+    CardSaveAndFillDialogCallback callback) {}
 
 void TestPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 

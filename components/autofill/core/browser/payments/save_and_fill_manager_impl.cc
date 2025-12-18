@@ -48,7 +48,9 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
       .card_submitted_through_save_and_fill = true;
 
   if (IsCreditCardUploadEnabled()) {
-    payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog();
+    payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog(
+        base::BindOnce(&SaveAndFillManagerImpl::OnPendingDialogCanceled,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     PopulateInitialUploadDetails();
 
@@ -428,6 +430,14 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   payments_autofill_client()->CreditCardUploadCompleted(
       result, /*on_confirmation_closed_callback=*/std::nullopt);
 
+  Reset();
+}
+
+void SaveAndFillManagerImpl::OnPendingDialogCanceled(
+    CardSaveAndFillDialogUserDecision user_decision,
+    const UserProvidedCardSaveAndFillDetails&
+        user_provided_card_save_and_fill_details) {
+  CHECK(user_decision == CardSaveAndFillDialogUserDecision::kDeclined);
   Reset();
 }
 

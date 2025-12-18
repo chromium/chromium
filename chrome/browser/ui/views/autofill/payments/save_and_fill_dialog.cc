@@ -64,17 +64,11 @@ void SaveAndFillDialog::AddedToWidget() {
     focus_manager_->AddFocusChangeListener(this);
   }
 
-  if (controller_->GetDialogState() == SaveAndFillDialogState::kUploadDialog) {
-    GetBubbleFrameView()->SetTitleView(
-        std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
-  } else {
-    auto title_view = std::make_unique<views::Label>(
-        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
-    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    title_view->SetMultiLine(true);
-    GetBubbleFrameView()->SetTitleView(std::move(title_view));
-  }
+  auto title_view = std::make_unique<views::Label>(
+      GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+  title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  title_view->SetMultiLine(true);
+  GetBubbleFrameView()->SetTitleView(std::move(title_view));
   SetAccessibleTitle(GetWindowTitle());
 }
 
@@ -164,8 +158,7 @@ void SaveAndFillDialog::InitViews() {
 
   if (controller_->GetDialogState() == SaveAndFillDialogState::kPendingDialog) {
     ToggleThrobberVisibility(/*visible=*/true);
-  } else if (controller_->GetDialogState() ==
-             SaveAndFillDialogState::kUploadDialog) {
+  } else {
     ToggleThrobberVisibility(/*visible=*/false);
   }
 }
@@ -181,6 +174,7 @@ void SaveAndFillDialog::CreateMainContentView() {
           .Build());
   main_view_->AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&explanatory_message_label_)
           .SetText(controller_->GetExplanatoryMessage())
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -248,10 +242,6 @@ void SaveAndFillDialog::CreateMainContentView() {
       /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
   name_on_card_data_.GetInputTextField().SetController(this);
   main_view_->AddChildView(std::move(name_on_card_data_.container));
-
-  if (controller_->GetDialogState() == SaveAndFillDialogState::kUploadDialog) {
-    main_view_->AddChildView(CreateLegalMessageView());
-  }
 }
 
 void SaveAndFillDialog::CreatePendingView() {
@@ -280,6 +270,39 @@ void SaveAndFillDialog::ToggleThrobberVisibility(bool visible) {
   }
   main_view_->SetVisible(!visible);
   pending_view_->SetVisible(visible);
+}
+
+void SaveAndFillDialog::DismissThrobberAndUpdateMainView() {
+  if (!controller_) {
+    GetWidget()->Close();
+    return;
+  }
+  if (controller_->GetDialogState() == SaveAndFillDialogState::kUploadDialog) {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  } else {
+    auto title_view = std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title_view->SetMultiLine(true);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
+  }
+  SetAccessibleTitle(GetWindowTitle());
+
+  if (explanatory_message_label_) {
+    explanatory_message_label_->SetText(controller_->GetExplanatoryMessage());
+  }
+  if (controller_->GetDialogState() == SaveAndFillDialogState::kUploadDialog &&
+      !legal_message_view_) {
+    legal_message_view_ = main_view_->AddChildView(CreateLegalMessageView());
+  }
+
+  ToggleThrobberVisibility(false);
+  GetWidget()->GetRootView()->GetLayoutManager()->Layout(
+      GetWidget()->GetRootView());
+  GetWidget()->SetSize(GetWidget()->GetRootView()->GetPreferredSize());
+  card_number_data_.GetInputTextField().RequestFocus();
 }
 
 payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
@@ -337,6 +360,10 @@ std::unique_ptr<views::View> SaveAndFillDialog::CreateLegalMessageView() {
   return autofill::CreateLegalMessageView(
       message_lines, std::u16string(), ui::ImageModel(),
       base::BindRepeating(on_legal_message_link_clicked_));
+}
+
+base::WeakPtr<SaveAndFillDialog> SaveAndFillDialog::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill

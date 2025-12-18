@@ -126,6 +126,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
                        PaymentsAutofillClient::PaymentsRpcResult result,
                        const std::string& instrument_id);
 
+  void OnPendingDialogCanceled(CardSaveAndFillDialogUserDecision user_decision,
+                               const UserProvidedCardSaveAndFillDetails&
+                                   user_provided_card_save_and_fill_details);
+
   // Function invoked when the flow ends. This resets the state variables in
   // this class.
   void Reset();

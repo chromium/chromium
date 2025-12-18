@@ -31,33 +31,46 @@ void SaveAndFillDialogControllerImpl::ShowLocalDialog(
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kLocalDialog;
-  dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
+  if (dialog_view_) {
+    // If this function is called while a view is already pending, it means the
+    // pre-flight server call for an upload save has failed. In this case,
+    // transition the throbber view to the local save dialog instead of creating
+    // a new dialog.
+    dialog_view_->DismissThrobberAndUpdateMainView();
+  } else {
+    // The user was only eligible for local save and the server pre-flight call
+    // was not attempted. Therefore, no throbber view is pending and a new
+    // dialog view is created since this is a direct local save flow.
+    dialog_view_ = std::move(create_and_show_view_callback).Run();
+  }
   CHECK(dialog_view_);
   autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/false);
 }
 
 void SaveAndFillDialogControllerImpl::ShowUploadDialog(
     const LegalMessageLines& legal_message_lines,
-    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-        create_and_show_view_callback,
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kUploadDialog;
   legal_message_lines_ = legal_message_lines;
-  dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
   autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/true);
+  dialog_view_->DismissThrobberAndUpdateMainView();
 }
 
 void SaveAndFillDialogControllerImpl::ShowPendingDialog(
     base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-        create_and_show_view_callback) {
+        create_and_show_view_callback,
+    payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+        card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kPendingDialog;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
+  card_save_and_fill_dialog_callback_ =
+      std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
 }
 

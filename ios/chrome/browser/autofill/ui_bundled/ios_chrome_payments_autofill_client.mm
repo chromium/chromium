@@ -605,8 +605,8 @@ void IOSChromePaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
     CardSaveAndFillDialogCallback callback) {}
 
-void IOSChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {
-}
+void IOSChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
+    CardSaveAndFillDialogCallback callback) {}
 
 void IOSChromePaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 

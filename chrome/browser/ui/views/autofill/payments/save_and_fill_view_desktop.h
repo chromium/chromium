@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_AND_FILL_VIEW_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/autofill/payments/save_and_fill_dialog.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -28,12 +29,16 @@ class SaveAndFillViewDesktop : public SaveAndFillDialogView {
   SaveAndFillViewDesktop& operator=(const SaveAndFillViewDesktop&) = delete;
   ~SaveAndFillViewDesktop() override;
 
+  // SaveAndFillDialogView:
+  void DismissThrobberAndUpdateMainView() override;
+
  private:
   void OnLegalMessageLinkClicked(const GURL& url);
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> dialog_widget_;
 
+  base::WeakPtr<SaveAndFillDialog> save_and_fill_dialog_;
   base::WeakPtrFactory<SaveAndFillViewDesktop> weak_ptr_factory_{this};
 };
 

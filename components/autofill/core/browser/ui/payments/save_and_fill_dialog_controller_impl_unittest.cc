@@ -17,6 +17,14 @@
 
 namespace autofill {
 
+class TestSaveAndFillDialogView : public SaveAndFillDialogView {
+ public:
+  TestSaveAndFillDialogView() = default;
+  ~TestSaveAndFillDialogView() override = default;
+
+  MOCK_METHOD(void, DismissThrobberAndUpdateMainView, (), (override));
+};
+
 class SaveAndFillDialogControllerImplTest : public testing::Test {
  protected:
   SaveAndFillDialogControllerImplTest() = default;
@@ -29,10 +37,11 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   void SetUp() override {
     controller_ = std::make_unique<SaveAndFillDialogControllerImpl>();
 
-    EXPECT_CALL(create_and_show_view_callback, Run())
-        .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+    EXPECT_CALL(create_and_show_view_callback_, Run())
+        .WillOnce(
+            testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-    controller_->ShowLocalDialog(create_and_show_view_callback.Get(),
+    controller_->ShowLocalDialog(create_and_show_view_callback_.Get(),
                                  card_save_and_fill_dialog_callback_.Get());
   }
 
@@ -44,7 +53,7 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   std::unique_ptr<SaveAndFillDialogControllerImpl> controller_;
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
+      create_and_show_view_callback_;
   base::MockCallback<
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
       card_save_and_fill_dialog_callback_;
@@ -331,18 +340,12 @@ TEST_F(SaveAndFillDialogControllerImplTest,
 TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
   base::HistogramTester histogram_tester;
   auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
-  base::MockCallback<
-      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
-  base::MockCallback<
-      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
-      card_save_and_fill_dialog_callback;
 
-  EXPECT_CALL(create_and_show_view_callback, Run())
-      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+  EXPECT_CALL(create_and_show_view_callback_, Run())
+      .WillOnce(testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-  controller->ShowLocalDialog(create_and_show_view_callback.Get(),
-                              card_save_and_fill_dialog_callback.Get());
+  controller->ShowLocalDialog(create_and_show_view_callback_.Get(),
+                              card_save_and_fill_dialog_callback_.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.DialogShown2",
@@ -353,18 +356,12 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
 TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
   base::HistogramTester histogram_tester;
   auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
-  base::MockCallback<
-      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
-  base::MockCallback<
-      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
-      card_save_and_fill_dialog_callback;
 
-  EXPECT_CALL(create_and_show_view_callback, Run())
-      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+  EXPECT_CALL(create_and_show_view_callback_, Run())
+      .WillOnce(testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-  controller->ShowUploadDialog({}, create_and_show_view_callback.Get(),
-                               card_save_and_fill_dialog_callback.Get());
+  controller->ShowPendingDialog(create_and_show_view_callback_.Get(), {});
+  controller->ShowUploadDialog({}, card_save_and_fill_dialog_callback_.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.DialogShown2",
