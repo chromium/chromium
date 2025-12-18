@@ -246,13 +246,16 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
     // anonymous LayoutViewTransitionRoot between the ::view-transition and
     // LayoutView.
     CHECK(!before_child);
-    CHECK(!GetViewTransitionRoot());
 
-    LayoutViewTransitionRoot* snapshot_containing_block =
-        MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
-    LayoutBlockFlow::AddChild(snapshot_containing_block,
-                              /*before_child=*/nullptr);
-    snapshot_containing_block->AddChild(new_child);
+    // The view-transition root may already exist if the pseudo is being
+    // reinserted due to a positioned state change.
+    if (!GetViewTransitionRoot()) {
+      LayoutViewTransitionRoot* snapshot_containing_block =
+          MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
+      LayoutBlockFlow::AddChild(snapshot_containing_block,
+                                /*before_child=*/nullptr);
+    }
+    GetViewTransitionRoot()->AddChild(new_child);
 
     ViewTransition* transition =
         ViewTransitionUtils::GetTransition(GetDocument());
