@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -39,9 +40,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tear down called once per test.
 - (void)tearDownHelper {
+  [ChromeCoordinatorAppInterface reset];
   [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
+}
+
++ (BOOL)loadMinimalAppUI {
+  return YES;
 }
 
 #pragma mark - BookmarksAccessibilityTestCase Tests
@@ -50,7 +56,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksLandingPage {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
@@ -59,7 +65,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnMobileBookmarks {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
@@ -69,7 +75,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksFolderEditPage {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Invoke Edit through long press.
@@ -94,7 +100,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksEditPage {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Invoke Edit through long press.
@@ -127,7 +133,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksMovePage {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Invoke Move through long press.
@@ -159,7 +165,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksMoveToNewFolderPage {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Invoke Move through long press.
@@ -182,7 +188,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksDeleteUndo {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Change to edit mode
@@ -212,7 +218,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testAccessibilityOnBookmarksSelect {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Change to edit mode

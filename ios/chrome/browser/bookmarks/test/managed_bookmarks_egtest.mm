@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
@@ -99,6 +100,10 @@ void SearchBookmarksForText(NSString* search_text) {
 
 @implementation ManagedBookmarksTestCase
 
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   const std::string managedBookmarksData = [self managedBookmarksPolicyData];
   std::string policyData = "<dict>"
@@ -143,7 +148,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that the managed bookmarks folder does not exist when the policy data
 // is empty.
 - (void)testEmptyManagedBookmarks {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   [BookmarkEarlGreyUI verifyEmptyState];
 
@@ -175,7 +180,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that the managed bookmarks folder exists with default name.
 - (void)testDefaultFolderName {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
                                           @"Managed bookmarks")]
@@ -243,7 +248,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that the managed bookmarks folder exists with custom name and
 // contents.
 - (void)testManagedBookmarksFolderStructure {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [self openCustomManagedBookmarksFolder];
   VerifyBookmarkNodeWithLabelNotNil(@"First_Managed_URL");
 
@@ -254,7 +259,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that 'New Folder' and 'Edit' buttons are disabled inside top-level
 // managed bookmarks folder and sub-folder.
 - (void)testContextBarButtonsDisabled {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [self openCustomManagedBookmarksFolder];
 
   VerifyBookmarkContextBarNewFolderButtonDisabled();
@@ -268,7 +273,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that long press is disabled for the top-level managed bookmarks folder.
 - (void)testLongPressDisabledForManagedFolders {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   // Top-level managed folder cannot be long-pressed.
   LongPressBookmarkNodeWithLabel(@"Custom_Folder_Name");
@@ -281,7 +286,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // TODO(crbug.com/40684788): Long press unexpectedly triggers a tap (only in
 // earl grey tests).
 - (void)DISABLED_testContextMenuWithDisabledEditOption {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [self openCustomManagedBookmarksFolder];
 
   LongPressBookmarkNodeWithLabel(@"First_Managed_URL");
@@ -304,7 +309,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that swipe is disabled in managed bookmarks top-level folder and
 // sub-folder.
 - (void)testSwipeDisabled {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [self openCustomManagedBookmarksFolder];
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
@@ -327,7 +332,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests that swiping is disabled on managed bookmark items on search results.
 - (void)testSwipeDisabledOnSearchResults {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   SearchBookmarksForText(@"URL\n");
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
@@ -338,7 +343,7 @@ void SearchBookmarksForText(NSString* search_text) {
 
 // Tests long presses on managed bookmark items in search results.
 - (void)testLongPressOnSearchResults {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   SearchBookmarksForText(@"URL\n");
 
   LongPressBookmarkNodeWithLabel(@"First_Managed_URL");
@@ -349,7 +354,7 @@ void SearchBookmarksForText(NSString* search_text) {
 // Tests that edit is enabled on search results, but managed bookmarks cannot be
 // selected for action.
 - (void)testEditOnSearchResults {
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   SearchBookmarksForText(@"URL\n");
 
   // Change to edit mode, using context menu.
