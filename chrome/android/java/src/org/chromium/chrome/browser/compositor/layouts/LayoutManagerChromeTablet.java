@@ -240,8 +240,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
-    public boolean applyOffsetTagToStaticLayout() {
-        return !mTabStripLayoutHelperManager.hasOffsetTags();
+    public boolean hasTabletUi() {
+        return true;
     }
 
     @Override

@@ -661,7 +661,7 @@ public class LayoutManagerImpl
                         mTabContentManagerSupplier.get(),
                         mBrowserControlsStateProvider,
                         mTopUiThemeColorProvider,
-                        this::applyOffsetTagToStaticLayout);
+                        !hasTabletUi());
 
         setNextLayout(null, true);
 
@@ -1445,7 +1445,7 @@ public class LayoutManagerImpl
         mLayoutObservers.removeObserver(listener);
     }
 
-    public boolean applyOffsetTagToStaticLayout() {
-        return true;
+    public boolean hasTabletUi() {
+        return false;
     }
 }
