@@ -28,8 +28,9 @@ namespace autofill {
 namespace {
 
 std::u16string GetMessageDescription() {
+  // TODO: crbug.com/460410690 - Confirm save/update subtitle strings.
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE);
+      IDS_AUTOFILL_AI_SAVE_ENTITY_MESSAGE_SUBTITLE);
 }
 
 std::u16string GetMessagePrimaryButtonText() {
