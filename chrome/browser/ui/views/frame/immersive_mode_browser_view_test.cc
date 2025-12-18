@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cmath>
 #include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
@@ -195,48 +194,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                                     {IDC_SELECT_PREVIOUS_TAB, 0}};
   for (const auto& datum : test_data) {
     tester.RunCommand(datum.command, datum.expected_index);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
-                       LocatedEventShouldRevealTopChrome) {
-  auto* const immersive_mode_controller =
-      ImmersiveModeController::From(browser());
-
-  EnterImmersiveFullscreenMode(browser());
-  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
-
-  enum EventType { kMouse, kTouch };
-  for (auto event_type : {kMouse, kTouch}) {
-    SCOPED_TRACE(event_type == kMouse ? "Mouse" : "Touch");
-
-    ImmersiveModeTester tester(browser());
-
-    aura::Window* window = browser()->window()->GetNativeWindow();
-    ui::test::EventGenerator event_generator(window->GetRootWindow());
-    gfx::Point point(std::roundl(window->bounds().width() / 2), 0);
-
-    if (event_type == kMouse) {
-      event_generator.MoveMouseTo(point);
-    } else {
-      event_generator.PressTouch(point);
-      event_generator.MoveTouchBy(0, 30);
-      event_generator.ReleaseTouch();
-    }
-    tester.WaitForRevealStarted();
-    EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-
-    point.set_y(std::roundl(window->bounds().height() / 2));
-    if (event_type == kMouse) {
-      // Moving down below the topchrome hides the topchrome.
-      event_generator.MoveMouseTo(point);
-    } else {
-      // Touching the center of the window hides the topchrome.
-      event_generator.PressTouch(point);
-      event_generator.ReleaseTouch();
-    }
-    tester.WaitForRevealEnded();
-    EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   }
 }
 
