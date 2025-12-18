@@ -255,6 +255,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                         updateTranslateAdvancedSectionIndex(enabled, /* refreshResult= */ true);
                         contentLanguagesPreference.notifyPrefChanged();
                         translationAdvancedSection.setVisible(enabled);
+                        notifyPreferencesUpdated();
                         LanguagesManager.recordAction(
                                 enabled
                                         ? LanguagesManager.LanguageSettingsActionType
