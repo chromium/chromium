@@ -1482,6 +1482,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Voice Over Swipe"/>
 </enum>
 
+<!-- LINT.IfChange(IOSTipsNotificationType) -->
+
 <enum name="IOSTipsNotificationType">
   <int value="0" label="Default Browser"/>
   <int value="1" label="What's New"/>
@@ -1498,11 +1500,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Trusted Vault Key Retrieval"/>
 </enum>
 
+<!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TipsNotificationType) -->
+
+<!-- LINT.IfChange(IOSTipsNotificationUserType) -->
+
 <enum name="IOSTipsNotificationUserType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Less Engaged"/>
   <int value="2" label="Active Seeker"/>
 </enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TipsNotificationUserType) -->
 
 <!-- LINT.IfChange(TrustedVaultNotificationEvents) -->
 
