@@ -151,10 +151,13 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       // Snap visibility to target.
       interpolated_child.visible = target_child.visible;
     } else {
-      // For new children snap to target bounds.
-      // TODO(crbug.com/459824840): Explore animating new children in from
-      // an empty size.
-      interpolated_child.bounds = target_child.bounds;
+      // Animate-in new Views from empty bounds.
+      // TODO(crbug.com/459824840): We may want to snap new children to target
+      // bounds in the case of a tab drag-and-drop.
+      gfx::Rect initial_bounds = target_child.bounds;
+      initial_bounds.set_height(0);
+      interpolated_child.bounds = gfx::Tween::RectValueBetween(
+          value, initial_bounds, target_child.bounds);
     }
     result.child_layouts.push_back(interpolated_child);
   }
