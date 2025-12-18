@@ -204,11 +204,12 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
   // Log the connection timing information.
   auto timing = latest_navigation_handle_timing();
   builder
-      .SetFirstRequestConnectDelay(
+      .SetFirstRequestConnectDelayMs(
           timing.first_request_connect_delay.InMilliseconds())
-      .SetFirstRequestDomainLookupDelay(
+      .SetFirstRequestDomainLookupDelayMs(
           timing.first_request_domain_lookup_delay.InMilliseconds())
-      .SetFirstRequestSslDelay(timing.first_request_ssl_delay.InMilliseconds());
+      .SetFirstRequestSslDelayMs(
+          timing.first_request_ssl_delay.InMilliseconds());
 
   builder.Record(ukm::UkmRecorder::Get());
   last_logged_ukm_milestones_ = logged_milestones;

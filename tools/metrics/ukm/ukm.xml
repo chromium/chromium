@@ -16169,22 +16169,22 @@ be describing additional metrics about the same event.
       Whether the first redirect response is received yet.
     </summary>
   </metric>
-  <metric name="FirstRequestConnectDelay">
+  <metric name="FirstRequestConnectDelayMs">
     <summary>
-      The delay caused by connection setup for the first HTTP request which is
-      sent for the main resource of a main frame navigation.
+      The delay in milliseconds caused by connection setup for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
     </summary>
   </metric>
-  <metric name="FirstRequestDomainLookupDelay">
+  <metric name="FirstRequestDomainLookupDelayMs">
     <summary>
-      The delay caused by domain lookup for the first HTTP request which is sent
-      for the main resource of a main frame navigation.
+      The delay in milliseconds caused by domain lookup for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
     </summary>
   </metric>
-  <metric name="FirstRequestSslDelay">
+  <metric name="FirstRequestSslDelayMs">
     <summary>
-      The delay caused by SSL handshake for the first HTTP request which is sent
-      for the main resource of a main frame navigation.
+      The delay in milliseconds caused by SSL handshake for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
     </summary>
   </metric>
   <metric name="HasImpression" enum="Boolean">
