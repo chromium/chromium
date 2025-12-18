@@ -8,9 +8,19 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
 
 namespace enterprise_auth {
+
+namespace {
+
+constexpr std::string_view kPrefix =
+    "/idp/idx/authenticators/sso_extension/transactions/";
+constexpr std::string_view kSuffix = "/verify";
+constexpr size_t kMinPathLength = kPrefix.length() + kSuffix.length() + 1;
+
+}  // namespace
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -71,6 +81,46 @@ ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {
   if (destruction_callback_) {
     std::move(destruction_callback_).Run();
   }
+}
+
+// static
+bool ProxyingURLLoaderFactory::IsOktaSSORequest(
+    const network::ResourceRequest& request) {
+  if (request.method != "POST") {
+    return false;
+  }
+
+  const GURL& gurl = request.url;
+  if (!gurl.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+
+  std::string_view path = gurl.path();
+  // Normalise to not end with '/'.
+  if (path.ends_with("/")) {
+    path = path.substr(0, path.size() - 1);
+  }
+
+  if (path.length() < kMinPathLength) {
+    return false;
+  }
+
+  if (!base::EndsWith(path, kSuffix) || !base::StartsWith(path, kPrefix)) {
+    return false;
+  }
+
+  size_t id_len = path.length() - kPrefix.length() - kSuffix.length();
+  const std::string_view id_part = path.substr(kPrefix.length(), id_len);
+  if (id_part.find('/') != std::string_view::npos) {
+    return false;
+  }
+
+  if (gurl.has_query() || gurl.has_ref() || gurl.has_username() ||
+      gurl.has_password()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace enterprise_auth

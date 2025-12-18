@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -47,7 +48,7 @@ constexpr char kInvalidHeaderName[] = "Invalid@Name";
 constexpr char kInitiator[] = "https://initiator.com";
 constexpr char kContent[] = "payload";
 constexpr char kOrigin[] = "Origin";
-constexpr int kTimeout = 10;
+constexpr base::TimeDelta kTimeout = base::Seconds(2);
 constexpr char kInvalidString[] = "\x80";
 constexpr char kContentLength[] = "Content-Length";
 constexpr char kContentType[] = "Content-Type";
@@ -154,15 +155,14 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_BasicFields) {
   network::ResourceRequest request;
   request.url = GURL(kUrl);
   request.method = kMethod;
-  int timeout = kTimeout;
   request.headers.SetHeader(kHeaderKey, kHeaderVal);
 
-  NSURLRequest* result = ConvertResourceRequest(request, timeout);
+  NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   ASSERT_NE(nil, result);
 
   EXPECT_NSEQ([NSURL URLWithString:@(kUrl)], result.URL);
   EXPECT_NSEQ(@(kMethod), result.HTTPMethod);
-  EXPECT_EQ(timeout, result.timeoutInterval);
+  EXPECT_EQ(kTimeout.InSeconds(), result.timeoutInterval);
 
   NSDictionary* headers = result.allHTTPHeaderFields;
   EXPECT_NSEQ(@(kHeaderVal), headers[@(kHeaderKey)]);
@@ -176,7 +176,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithOriginInitiator) {
   url::Origin origin = url::Origin::Create(GURL(kInitiator));
   request.request_initiator = origin;
 
-  NSURLRequest* result = ConvertResourceRequest(request, 10);
+  NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   NSDictionary* headers = result.allHTTPHeaderFields;
 
   EXPECT_NSEQ(@(kInitiator), headers[@(kOrigin)]);
@@ -190,7 +190,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_DoesNotOverwriteOrigin) {
   url::Origin origin = url::Origin::Create(GURL("otherorigin.com"));
   request.request_initiator = origin;
 
-  NSURLRequest* result = ConvertResourceRequest(request, 10);
+  NSURLRequest* result = ConvertResourceRequest(request, kTimeout);
   NSDictionary* headers = result.allHTTPHeaderFields;
   EXPECT_NSEQ(@(kInitiator), headers[@(kOrigin)]);
 }
@@ -207,7 +207,7 @@ TEST(UrlSessionHelperTest, ConvertResourceRequest_WithFieldsHeadersAndBody) {
 
   EXPECT_NSEQ([NSURL URLWithString:@(kUrl)], result.URL);
   EXPECT_NSEQ(@(kMethod), result.HTTPMethod);
-  EXPECT_EQ(kTimeout, result.timeoutInterval);
+  EXPECT_EQ(kTimeout.InSeconds(), result.timeoutInterval);
 
   NSDictionary* headers = result.allHTTPHeaderFields;
   EXPECT_NSEQ(@(kHeaderVal), headers[@(kHeaderKey)]);

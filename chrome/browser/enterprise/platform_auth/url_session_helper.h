@@ -13,6 +13,10 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 // URLSession is Apple's API for performing URL requests. This namespace
 // provides a few helper functions to convert between Chrome's network objects
 // and Apple's native objects to ease the use of the aforementioned API.
@@ -26,7 +30,7 @@ namespace url_session_helper {
 // Only supports request body of type network::DataElementBytes, for other types
 // body will be set to nil.
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
-                                     int timeout_in_seconds);
+                                     base::TimeDelta timeout);
 
 // Only converts: mime_type, content_length, network_accessed
 // and http headers.

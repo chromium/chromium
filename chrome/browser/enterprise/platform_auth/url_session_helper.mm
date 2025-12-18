@@ -9,6 +9,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/time/time.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -121,7 +122,7 @@ scoped_refptr<net::HttpResponseHeaders> ConvertNSHTTPURLResponseToHeaders(
 }  // namespace
 
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
-                                     int timeout_in_seconds) {
+                                     base::TimeDelta timeout) {
   NSURL* native_url = net::NSURLWithGURL(request.url);
   if (!native_url) {
     return nil;
@@ -150,7 +151,7 @@ NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
   ns_request.HTTPMethod = method;
   ns_request.allHTTPHeaderFields = headers;
   ns_request.cachePolicy = NSURLRequestUseProtocolCachePolicy;
-  ns_request.timeoutInterval = timeout_in_seconds;
+  ns_request.timeoutInterval = timeout.InSeconds();
   ns_request.HTTPBody = body;
   return ns_request;
 }

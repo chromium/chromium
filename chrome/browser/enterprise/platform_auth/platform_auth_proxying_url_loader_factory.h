@@ -33,6 +33,11 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       const url::Origin& request_initiator,
       network::URLLoaderFactoryBuilder& factory_builder);
 
+  // Checks if request matches pattern of Okta's SSO URL request, which is:
+  // POST
+  // https://<DOMAIN>/idp/idx/authenticators/sso_extension/transactions/<ID>/verify
+  static bool IsOktaSSORequest(const network::ResourceRequest& request);
+
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
