@@ -31,11 +31,12 @@
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

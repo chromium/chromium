@@ -13,7 +13,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {

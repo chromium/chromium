@@ -11,7 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 
 namespace optimization_guide {
 

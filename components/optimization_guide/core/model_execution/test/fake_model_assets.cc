@@ -18,7 +18,6 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
 namespace optimization_guide {

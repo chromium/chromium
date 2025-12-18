@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 namespace optimization_guide {
 

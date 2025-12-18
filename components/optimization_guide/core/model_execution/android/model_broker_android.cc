@@ -17,7 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/android/backend_model_impl_android.h"
 #include "services/on_device_model/android/downloader_params.mojom.h"
 #include "services/on_device_model/android/model_downloader_android.h"
