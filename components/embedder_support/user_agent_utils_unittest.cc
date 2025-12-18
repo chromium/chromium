@@ -502,23 +502,6 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
       {blink::features::kReduceUserAgentMinorVersion}, {});
   { VerifyGetUserAgentFunctions(); }
 
-  // Verify that three user agent functions return the correct user agent string
-  // when both kReduceUserAgentMinorVersion and kReduceUserAgentPlatformOsCpu
-  // turn on.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion,
-       blink::features::kReduceUserAgentPlatformOsCpu},
-      {});
-  { VerifyGetUserAgentFunctions(); }
-
-  // Verify that three user agent functions return the correct user agent string
-  // when kReduceUserAgentPlatformOsCpu turns on.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentPlatformOsCpu}, {});
-  { VerifyGetUserAgentFunctions(); }
-
   // Verify that three user agent functions return the correct user agent
   // when kReduceUserAgentMinorVersion turns off.
   scoped_feature_list.Reset();
@@ -527,7 +510,7 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
   { VerifyGetUserAgentFunctions(); }
 
   // Verify that three user agent functions return the correct user agent
-  // without explicit features turn on.
+  // without explicit features turned on.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures({}, {});
   { VerifyGetUserAgentFunctions(); }
@@ -542,8 +525,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
 #if BUILDFLAG(IS_ANDROID)
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion,
-       blink::features::kReduceUserAgentPlatformOsCpu},
+      {blink::features::kReduceUserAgentMinorVersion},
       {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
   // Verify the mobile platform and oscpu user agent string is not reduced when
   // not using a mobile user agent.
@@ -565,9 +547,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
 #else
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion,
-       blink::features::kReduceUserAgentPlatformOsCpu},
-      {});
+      {blink::features::kReduceUserAgentMinorVersion}, {});
   ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     // Verify unified platform user agent is returned.
@@ -591,17 +571,14 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
 #if BUILDFLAG(IS_ANDROID)
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion,
-       blink::features::kReduceUserAgentPlatformOsCpu},
+      {blink::features::kReduceUserAgentMinorVersion},
       {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
   EXPECT_NE(GetUnifiedPlatformForTesting().c_str(),
             GetUserAgentPlatformOsCpu(GetUserAgent()));
 #else
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion,
-       blink::features::kReduceUserAgentPlatformOsCpu},
-      {});
+      {blink::features::kReduceUserAgentMinorVersion}, {});
   EXPECT_EQ(GetUnifiedPlatformForTesting().c_str(),
             GetUserAgentPlatformOsCpu(GetUserAgent()));
 #endif

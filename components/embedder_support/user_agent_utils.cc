@@ -155,9 +155,7 @@ const std::string& GetWindowsPlatformVersion() {
 #endif  // BUILDFLAG(IS_WIN)
 
 // For desktop:
-// Returns true if both kReduceUserAgentMinorVersionName and
-// kReduceUserAgentPlatformOsCpu are enabled. It makes
-// kReduceUserAgentPlatformOsCpu depend on kReduceUserAgentMinorVersionName.
+// Returns true if kReduceUserAgentMinorVersionName is enabled.
 //
 // For android:
 // Returns true if both kReduceUserAgentMinorVersionName and
@@ -175,9 +173,7 @@ bool ShouldSendUserAgentUnifiedPlatform() {
          base::FeatureList::IsEnabled(
              blink::features::kReduceUserAgentAndroidVersionDeviceModel);
 #else
-  return reduce_minor_version &&
-         base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentPlatformOsCpu);
+  return reduce_minor_version;
 #endif
 }
 

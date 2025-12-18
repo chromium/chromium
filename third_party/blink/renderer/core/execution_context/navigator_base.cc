@@ -51,25 +51,19 @@ String NavigatorBase::userAgent() const {
 }
 
 String NavigatorBase::platform() const {
+#if BUILDFLAG(IS_ANDROID)
   ExecutionContext* execution_context = GetExecutionContext();
 
-#if BUILDFLAG(IS_ANDROID)
   // For user-agent reduction phase 6, Android platform should be frozen
   // string, see https://www.chromium.org/updates/ua-reduction/.
-  if (RuntimeEnabledFeatures::ReduceUserAgentAndroidVersionDeviceModelEnabled(
+  if (!RuntimeEnabledFeatures::ReduceUserAgentAndroidVersionDeviceModelEnabled(
           execution_context)) {
-    return GetReducedNavigatorPlatform();
-  }
-#else
-  // For user-agent reduction phase 5, all desktop platform should be frozen
-  // string, see https://www.chromium.org/updates/ua-reduction/.
-  if (RuntimeEnabledFeatures::ReduceUserAgentPlatformOsCpuEnabled(
-          execution_context)) {
-    return GetReducedNavigatorPlatform();
+    return NavigatorID::platform();
   }
 #endif
-
-  return NavigatorID::platform();
+  // TODO(crbug.com/469458271): When we remove phase 6 feature flags, we can
+  // move GetReducedNavigatorPlatform logic directly to NavigatorID::platform().
+  return GetReducedNavigatorPlatform();
 }
 
 void NavigatorBase::Trace(Visitor* visitor) const {

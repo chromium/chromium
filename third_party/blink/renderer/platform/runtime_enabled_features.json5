@@ -4225,13 +4225,6 @@
       status: "stable",
     },
     {
-      // If enabled, the platform and oscpu of the User-Agent string will be
-      // reduced.
-      name: "ReduceUserAgentPlatformOsCpu",
-      depends_on: ["ReduceUserAgentMinorVersion"],
-      status: {"Android": "", "default": "stable"},
-    },
-    {
       public: true,
       name: "RegionCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},

@@ -599,11 +599,6 @@ const char kReduceAcceptLanguageHTTP[] = "reduce-accept-language-http";
 // https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.
 const char kReduceUserAgentMinorVersion[] = "reduce-user-agent-minor-version";
 
-// Reduce the platform and oscpu in the desktop User-Agent string. This flag
-// implements phase 5 of User-Agent reduction:
-// https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.
-const char kReduceUserAgentPlatformOsCpu[] = "reduce-user-agent-platform-oscpu";
-
 // Enables remote debug over stdio pipes [in=3, out=4] or over the remote pipes
 // specified in the 'remote-debugging-io-pipes' switch.
 // Optionally, specifies the format for the protocol messages, can be either
