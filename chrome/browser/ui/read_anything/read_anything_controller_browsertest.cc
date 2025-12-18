@@ -37,6 +37,7 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
+  MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
 };
 
 class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
@@ -197,6 +198,24 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   });
 
   tab->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       SetPresentationState_NotifiesObservers) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  MockReadAnythingLifecycleObserver observer;
+  controller->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnReadingModePresenterChanged()).Times(1);
+
+  controller->SetPresentationState(
+      ReadAnythingController::PresentationState::kInSidePanel);
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

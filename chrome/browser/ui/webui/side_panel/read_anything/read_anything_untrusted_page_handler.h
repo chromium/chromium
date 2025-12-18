@@ -202,6 +202,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnTabWillDetach() override;
   void Activate(bool active,
                 std::optional<ReadAnythingOpenTrigger> open_trigger) override;
+  void OnReadingModePresenterChanged() override;
 
   // Logs the extension installation state. Intended to get more information
   // on system voice usage.

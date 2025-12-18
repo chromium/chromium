@@ -43,6 +43,7 @@ class MockReadAnythingLifecycleObserver
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
+  MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
 };
 
 class ReadAnythingSidePanelControllerTest

@@ -1005,6 +1005,10 @@ void ReadAnythingUntrustedPageHandler::Activate(
   }
 }
 
+void ReadAnythingUntrustedPageHandler::OnReadingModePresenterChanged() {
+  OnGetPresentationState();
+}
+
 void ReadAnythingUntrustedPageHandler::OnDestroyed() {
   side_panel_controller_ = nullptr;
   read_anything_controller_ = nullptr;

@@ -131,6 +131,8 @@ class ReadAnythingController {
   // feature is necessarily showing by the host.
   PresentationState GetPresentationState() const;
 
+  void SetPresentationState(PresentationState new_state);
+
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
   // caller, and the caller passes in the presentation that the webui will be

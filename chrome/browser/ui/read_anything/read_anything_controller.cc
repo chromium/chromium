@@ -179,7 +179,7 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingController::GetOrCreateWebUIWrapper(
     PresentationState web_ui_new_presentation_state) {
-  presentation_state_ = web_ui_new_presentation_state;
+  SetPresentationState(web_ui_new_presentation_state);
   if (!web_ui_wrapper_) {
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
     web_ui_wrapper_ =
@@ -213,7 +213,7 @@ void ReadAnythingController::TransferWebUiOwnership(
   CHECK(web_ui_wrapper);
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);
-  presentation_state_ = PresentationState::kInactive;
+  SetPresentationState(PresentationState::kInactive);
 }
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
@@ -313,6 +313,14 @@ void ReadAnythingController::ToggleReadAnythingSidePanel(
 ReadAnythingController::PresentationState
 ReadAnythingController::GetPresentationState() const {
   return presentation_state_;
+}
+
+void ReadAnythingController::SetPresentationState(PresentationState new_state) {
+  if (presentation_state_ == new_state) {
+    return;
+  }
+  presentation_state_ = new_state;
+  observers_.Notify(&Observer::OnReadingModePresenterChanged);
 }
 
 void ReadAnythingController::OnMainPagePrimaryPageChanged() {
