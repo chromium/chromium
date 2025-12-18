@@ -333,7 +333,7 @@
         Microphone
       </message>
       <message name="IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL" translateable="false" desc="The accessibility label for the button to open price tracking in the AI hub.">
-        Show price history for this product
+        Currently tracking this product. Open to see price history
       </message>
       <message name="IDS_IOS_AI_HUB_OPEN_TRANSLATE_SETTINGS_ACCESSIBILITY_LABEL" translateable="false" desc="The accessibility label for the button to open translate settings in the AI hub.">
         Open Translate settings
