@@ -659,6 +659,7 @@ third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16/src
 third_party/rust/chromium_crates_io/vendor/hex-v0_4
 third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback
 third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/benches/data
+third_party/rust/chromium_crates_io/vendor/image-v0_25
 third_party/rust/chromium_crates_io/vendor/indexmap-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itertools-v0_11/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1
@@ -687,6 +688,7 @@ third_party/rust/chromium_crates_io/vendor/llguidance-v1
 third_party/rust/chromium_crates_io/vendor/log-v0_4
 third_party/rust/chromium_crates_io/vendor/log-v0_4/.github/workflows
 third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8
+third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/.github/workflows
 third_party/rust/chromium_crates_io/vendor/num-bigint-v0_4
 third_party/rust/chromium_crates_io/vendor/num-derive-v0_4
 third_party/rust/chromium_crates_io/vendor/num-integer-v0_1

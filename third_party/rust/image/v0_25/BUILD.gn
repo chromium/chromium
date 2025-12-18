@@ -1,0 +1,141 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "image"
+  epoch = "0.25"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/animation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/avif/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/avif/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/avif/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/avif/ycgco.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/avif/yuv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/dds.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/dxt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/farbfeld.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/gif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/hdr/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/hdr/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/hdr/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/ico/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/ico/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/ico/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/jpeg/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/jpeg/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/jpeg/entropy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/jpeg/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/jpeg/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/openexr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/png.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/pnm/autobreak.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/pnm/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/pnm/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/pnm/header.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/pnm/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/qoi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/tga/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/tga/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/tga/header.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/tga/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/tiff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/webp/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/webp/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/webp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/hooks.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/affine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/colorops.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/fast_blur.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/filter_1d.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/imageops/sample.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/buffer_par.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/dynimage.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/flat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/generic_image.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/images/sub_image.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/free_functions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/image_reader_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/io/limits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/math/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/math/rect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/math/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/metadata/cicp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/utils/mod.rs",
+  ]
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/image-v0_25/src/../README.md",
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "The image-rs Developers"
+  cargo_pkg_name = "image"
+  cargo_pkg_description = "Imaging library. Provides basic image processing and encoders/decoders for common image formats."
+  cargo_pkg_repository = "https://github.com/image-rs/image"
+  cargo_pkg_version = "0.25.9"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/byteorder_lite/v0_1:lib",
+    "//third_party/rust/moxcms/v0_7:lib",
+    "//third_party/rust/num_traits/v0_2:lib",
+  ]
+  features = [ "bmp" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

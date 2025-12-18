@@ -147,6 +147,9 @@ allow_unsafe = false
 [crate.byteorder]
 extra_kv = { allow_unsafe = true }
 
+[crate.byteorder-lite]
+extra_kv = { allow_unsafe = false }
+
 [crate.bytes.extra_kv]
 allow_unsafe = true
 
@@ -372,6 +375,10 @@ extra_kv = { allow_unsafe = false }
 [crate.icu_provider.extra_kv]
 allow_unsafe = true
 
+[crate.image]
+extra_input_roots = ['../README.md']
+extra_kv = { allow_unsafe = true }
+
 [crate.indexmap.extra_kv]
 allow_unsafe = true
 
@@ -436,6 +443,9 @@ allow_unsafe = false
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
 
+[crate.moxcms]
+extra_kv = { allow_unsafe = true }
+
 [crate.murmur3]
 extra_kv = { allow_unsafe = false }
 
@@ -493,6 +503,9 @@ group = 'test'
 [crate.prost-derive]
 extra_kv = { allow_unsafe = false }
 group = 'test'
+
+[crate.pxfm]
+extra_kv = { allow_unsafe = true }
 
 [crate.qr_code.extra_kv]
 allow_unsafe = false

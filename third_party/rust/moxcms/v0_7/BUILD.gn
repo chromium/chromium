@@ -1,0 +1,190 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "moxcms"
+  epoch = "0.7"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/chad.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/chromaticity.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/cicp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/interpolator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/interpolator_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/lut4_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/lut4_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/rgb_xyz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/rgb_xyz_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/rgb_xyz_q2_13.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/rgb_xyz_q2_13_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/t_lut3_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx/t_lut3_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx512/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx512/rgb_xyz_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/avx512/rgb_xyz_q2_13_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/bpc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/gray2rgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/gray2rgb_extended.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/interpolator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/finalizers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/md3x3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/md4x3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/md_3xn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/md_nx3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/md_pipeline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/pcs_stages.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/rgb_xyz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/stages.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/xyz_lab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/katana/xyz_rgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/lut3x3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/lut3x4.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/lut4.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/lut_transforms.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/mab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/mab4x3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/mba3x4.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/md_lut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/md_luts_factory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/interpolator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/interpolator_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/lut4_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/lut4_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/rgb_xyz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/rgb_xyz_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/rgb_xyz_q1_30_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/rgb_xyz_q2_13.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/rgb_xyz_q2_13_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/t_lut3_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/neon/t_lut3_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/prelude_lut_xyz_rgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgb2gray.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgb2gray_extended.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgb_xyz_factory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgbxyz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgbxyz_fixed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/rgbxyz_float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/interpolator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/interpolator_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/lut4_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/lut4_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/rgb_xyz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/rgb_xyz_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/rgb_xyz_q2_13.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/rgb_xyz_q2_13_opt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/t_lut3_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/sse/t_lut3_to_3_q0_15.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/transform_lut3_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/transform_lut3_to_4.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/transform_lut4_to_3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/conversions/xyz_lab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/dat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/defaults.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/dt_ucs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/err.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/gamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/gamut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/helpers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/ictcp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/jzazbz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/jzczhz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/lab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/lut_hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/luv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/curve_shape.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/degeneration.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/discontinuity.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/monotonic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matan/slope_limit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/math/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/matrix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/mlaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/nd_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/oklab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/oklch.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/profile.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/rgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/safe_math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/srlab2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/tag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/trc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/xyy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/src/yrg.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Radzivon Bartoshyk"
+  cargo_pkg_name = "moxcms"
+  cargo_pkg_description = "Simple Color Management in Rust"
+  cargo_pkg_repository = "https://github.com/awxkee/moxcms.git"
+  cargo_pkg_version = "0.7.10"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/num_traits/v0_2:lib",
+    "//third_party/rust/pxfm/v0_1:lib",
+  ]
+  features = [
+    "avx",
+    "default",
+    "neon",
+    "sse",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

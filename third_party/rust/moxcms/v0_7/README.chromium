@@ -1,0 +1,11 @@
+Name: moxcms
+URL: https://crates.io/crates/moxcms
+Version: 0.7.10
+Revision: d1868a757e89c7aaca94dc94d3d86f6c7815d473
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/moxcms-v0_7/LICENSE-APACHE.md
+Shipped: yes
+Security Critical: yes
+
+Description: Simple Color Management in Rust

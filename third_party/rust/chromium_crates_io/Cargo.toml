@@ -86,6 +86,11 @@ features = ["compiled_data"]
 version = "2.1.1"
 default-features = false
 
+[dependencies.image]
+version = "0.25.9"
+default-features = false
+features = ["bmp"]
+
 [dependencies.llguidance]
 version = "1.0.0"
 default-features = false

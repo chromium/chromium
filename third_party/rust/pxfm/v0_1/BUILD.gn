@@ -1,0 +1,326 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "pxfm"
+  epoch = "0.1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/acos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/acosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/acospi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/acospif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/asin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/asin_eval_dyadic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/asinf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/asinpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/asinpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/alpha0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/alpha1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/bessel_exp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/beta0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/beta1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i0e.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i0ef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i0f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i1e.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i1ef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/i2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j0_coeffs_remez.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j0_coeffs_taylor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j0f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j0f_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j1_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j1_coeffs_taylor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/j1f_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/jincpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/jincpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k0e.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k0ef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k0f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k1e.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k1ef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/k2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/trigo_bessel.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y0_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y0_coeffs_taylor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y0f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y0f_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y1_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y1_coeffs_taylor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bessel/y1f_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/bits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/compound_d.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/compound_m1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/compound_m1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/compoundf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/powm1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/compound/powm1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cosm1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/csc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cube_roots/cbrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cube_roots/cbrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cube_roots/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cube_roots/rcbrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/cube_roots/rcbrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/double_double.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/dyadic_float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erf_poly.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erfc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erfcx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erfcxf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/erffc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/inverf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/inverfc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/inverfcf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/inverff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/rerf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/rerf_poly.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/err/rerff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/auxiliary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp10.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp10f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp10m1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp10m1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp2m1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp2m1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/exp_f128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/expf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/expm1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/expm1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/logistic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/logisticf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/exponents/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/beta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/betaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/betainc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/betaincf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/digamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/digamma_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/digammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/gamma_p.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/gamma_pf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/gamma_q.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/gamma_qf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lgamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lgamma_r.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lgamma_rf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lgammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lnbeta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/lnbetaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/tgamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/tgammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/trigamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/gamma/trigammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/acosh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/acoshf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/asinh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/asinhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/atanh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/atanhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/cosh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/coshf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/sinh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/sinhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/tanh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/hyperbolic/tanhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/fast_log.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/fast_log_dd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10dd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10dd_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10p1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10p1_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10p1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10td.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log10td_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1p.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1p_dd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1p_dyadic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1p_dyadic_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1pf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1pmx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log1pmxf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2dd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2dd_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2p1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2p1_dyadic_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2p1_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2p1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2td.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log2td_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_dd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_dd_coeffs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_dyadic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_range_reduction.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_td.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/log_td_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/logf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/logit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/logitf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/logs/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/polyeval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/pow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/pow_exec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/pow_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/powf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/powf_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/ceil.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/floor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/rint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/rintf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/round.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/round_ties_even.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/trunc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/rounding/truncf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/shared_eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/argument_reduction.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/argument_reduction_pi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/cosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/cosm1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/cospif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/cscf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/secf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sincf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sincosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sincosf_eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sincospif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sincpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sinf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sinmxf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_cosf/sinpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_helper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sin_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sinc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincos_dyadic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincos_reduce.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincos_reduce_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincospi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincospi_tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sincpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/sinmx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/rsqrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/rsqrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/sqrt1pm1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/sqrt1pm1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/square_root/sqrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atan2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atan2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atan2pi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atan2pif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atanf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atanpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/atanpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/cot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/cotf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/cotpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/cotpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/evalf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/tan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/tanf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/tanpi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/tanpi_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/tangent/tanpif.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/cathetus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/cathetusf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/hypot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/hypot3f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/hypotf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triangle/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/src/triple_double.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Radzivon Bartoshyk"
+  cargo_pkg_name = "pxfm"
+  cargo_pkg_description = "Fast and accurate math"
+  cargo_pkg_repository = "https://github.com/awxkee/pxfm"
+  cargo_pkg_version = "0.1.26"
+
+  allow_unsafe = true
+
+  deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

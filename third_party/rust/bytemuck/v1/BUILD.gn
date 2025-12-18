@@ -47,6 +47,7 @@ cargo_crate("lib") {
   features = [
     "bytemuck_derive",
     "derive",
+    "extern_crate_alloc",
     "min_const_generics",
     "nightly_portable_simd",
   ]
