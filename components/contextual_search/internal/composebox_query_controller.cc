@@ -290,7 +290,8 @@ ComposeboxQueryController::ComposeboxQueryController(
   // tasks feature is enabled. This allows the query controller to behave
   // consistently for co-browsing enabled users, even if the NTP or
   // Omnibox entrypoints have different configurations.
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      contextual_tasks::ShouldForceContextIdMigration()) {
     enable_multi_context_input_flow_ = true;
     use_separate_request_ids_for_multi_context_viewport_images_ = true;
     enable_context_id_migration_ = true;

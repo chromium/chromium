@@ -45,6 +45,10 @@ BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
 BASE_FEATURE(kContextualTasksForceCountryCodeUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Forces the context id migration to be enabled.
+const base::FeatureParam<bool> kForceContextIdMigration{
+    &kContextualTasks, "ForceContextIdMigration", false};
+
 const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
     0.8};
@@ -137,6 +141,10 @@ bool ShouldForceGscInTabMode() {
 
 bool ShouldForceCountryCodeUS() {
   return base::FeatureList::IsEnabled(kContextualTasksForceCountryCodeUS);
+}
+
+bool ShouldForceContextIdMigration() {
+  return kForceContextIdMigration.Get();
 }
 
 std::string GetContextualTasksAiPageUrl() {
