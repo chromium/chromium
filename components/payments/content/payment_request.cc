@@ -679,16 +679,23 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
   }
 
+  // In most cases, we show the 'No Matching Payment Credential' dialog in
+  // order to preserve user privacy. An exception is failure to download the
+  // card art icon - because we download it in all cases, revealing a
+  // failure doesn't leak any information about the user to the site.
+  // The no matching credentials dialog is only shown if the SPC UX Refresh
+  // feature is not enabled.
+  // TODO: crbug.com/469745132 - Note that once the SPC UX Refresh feature is
+  // launched, the no matching credentials dialog will no longer be needed.
   if (render_frame_host().IsActive() &&
       spec_->IsSecurePaymentConfirmationRequested() &&
       state()->available_apps().empty() &&
       base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
-      // In most cases, we show the 'No Matching Payment Credential' dialog in
-      // order to preserve user privacy. An exception is failure to download the
-      // card art icon - because we download it in all cases, revealing a
-      // failure doesn't leak any information about the user to the site.
-      error_reason != AppCreationFailureReason::ICON_DOWNLOAD_FAILED) {
+      error_reason != AppCreationFailureReason::ICON_DOWNLOAD_FAILED &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh)) {
     journey_logger_.SetNoMatchingCredentialsShown();
+
     auto opt_out_callback =
         spec_->method_data().front()->secure_payment_confirmation->show_opt_out
             ? base::BindOnce(&PaymentRequest::OnUserOptedOut,
@@ -702,8 +709,11 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
         base::BindOnce(&PaymentRequest::OnUserCancelled,
                        weak_ptr_factory_.GetWeakPtr()),
         std::move(opt_out_callback));
-    if (observer_for_testing_)
+
+    if (observer_for_testing_) {
       observer_for_testing_->OnErrorDisplayed();
+    }
+
     return;
   }
 

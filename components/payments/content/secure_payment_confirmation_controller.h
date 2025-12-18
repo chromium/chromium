@@ -14,6 +14,7 @@
 namespace payments {
 
 class PaymentRequest;
+class SecurePaymentConfirmationApp;
 
 // LINT.IfChange(SecurePaymentRequestOutcome)
 enum class SecurePaymentRequestOutcome {
@@ -65,12 +66,16 @@ class SecurePaymentConfirmationController
   void SetIsDialogShowingForTesting(bool is_dialog_showing) {
     is_dialog_showing_ = is_dialog_showing;
   }
+  void SetIsErrorDialogForTesting(bool is_error_dialog) {
+    is_error_dialog_ = is_error_dialog;
+  }
 
   base::WeakPtr<SecurePaymentConfirmationController> GetWeakPtr();
 
  private:
   void SetupModelAndShowDialogIfApplicable();
-  void CreateTransactionView();
+  void CreateTransactionView(SecurePaymentConfirmationApp* app);
+  void CreateErrorView(SecurePaymentConfirmationApp* app);
 
   // Can be null when the webpage closes or the iframe refreshes or navigates.
   base::WeakPtr<PaymentRequest> request_;
@@ -85,6 +90,7 @@ class SecurePaymentConfirmationController
 
   int number_of_initialization_tasks_ = 0;
   bool is_dialog_showing_ = false;
+  bool is_error_dialog_ = false;
 
   base::WeakPtrFactory<SecurePaymentConfirmationController> weak_ptr_factory_{
       this};

@@ -95,6 +95,50 @@ class SecurePaymentConfirmationControllerTest
       weak_ptr_factory_{this};
 };
 
+TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnConfirm) {
+  base::HistogramTester histogram_tester;
+  controller()->SetIsDialogShowingForTesting(true);
+
+  CreateEventWaiter({Event::CONNECTION_TERMINATED});
+  controller()->OnConfirm();
+  WaitForEvents();
+
+  histogram_tester.ExpectUniqueSample(
+      "SecurePaymentRequest.Transaction.Outcome",
+      SecurePaymentRequestOutcome::kAccept,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SecurePaymentConfirmationControllerTest,
+       Metrics_OnConfirmWithErrorDialog) {
+  base::HistogramTester histogram_tester;
+  controller()->SetIsDialogShowingForTesting(true);
+
+  controller()->SetIsErrorDialogForTesting(true);
+
+  CreateEventWaiter({Event::CONNECTION_TERMINATED});
+  controller()->OnConfirm();
+  WaitForEvents();
+
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kAccept,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnAnotherWay) {
+  base::HistogramTester histogram_tester;
+  controller()->SetIsDialogShowingForTesting(true);
+
+  CreateEventWaiter({Event::CONNECTION_TERMINATED});
+  controller()->OnAnotherWay();
+  WaitForEvents();
+
+  histogram_tester.ExpectUniqueSample(
+      "SecurePaymentRequest.Transaction.Outcome",
+      SecurePaymentRequestOutcome::kAnotherWay,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnCancel) {
   base::HistogramTester histogram_tester;
   controller()->SetIsDialogShowingForTesting(true);
@@ -107,6 +151,22 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnCancel) {
       "SecurePaymentRequest.Transaction.Outcome",
       SecurePaymentRequestOutcome::kAnotherWay,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SecurePaymentConfirmationControllerTest,
+       Metrics_OnCancelWithErrorDialog) {
+  base::HistogramTester histogram_tester;
+  controller()->SetIsDialogShowingForTesting(true);
+
+  controller()->SetIsErrorDialogForTesting(true);
+
+  CreateEventWaiter({Event::CONNECTION_TERMINATED});
+  controller()->OnCancel();
+  WaitForEvents();
+
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kCancel,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnOptOut) {
@@ -123,18 +183,20 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnOptOut) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnConfirm) {
+TEST_F(SecurePaymentConfirmationControllerTest,
+       Metrics_OnOptOutWithErrorDialog) {
   base::HistogramTester histogram_tester;
   controller()->SetIsDialogShowingForTesting(true);
 
+  controller()->SetIsErrorDialogForTesting(true);
+
   CreateEventWaiter({Event::CONNECTION_TERMINATED});
-  controller()->OnConfirm();
+  controller()->OnOptOut();
   WaitForEvents();
 
-  histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
-      SecurePaymentRequestOutcome::kAccept,
-      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
+                                      SecurePaymentRequestOutcome::kOptOut,
+                                      /*expected_bucket_count=*/1);
 }
 
 class SecurePaymentConfirmationControllerUxRefreshFeatureTest
@@ -143,21 +205,6 @@ class SecurePaymentConfirmationControllerUxRefreshFeatureTest
   base::test::ScopedFeatureList feature_list_{
       blink::features::kSecurePaymentConfirmationUxRefresh};
 };
-
-TEST_F(SecurePaymentConfirmationControllerUxRefreshFeatureTest,
-       Metrics_OnAnotherWay) {
-  base::HistogramTester histogram_tester;
-  controller()->SetIsDialogShowingForTesting(true);
-
-  CreateEventWaiter({Event::CONNECTION_TERMINATED});
-  controller()->OnAnotherWay();
-  WaitForEvents();
-
-  histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
-      SecurePaymentRequestOutcome::kAnotherWay,
-      /*expected_bucket_count=*/1);
-}
 
 TEST_F(SecurePaymentConfirmationControllerUxRefreshFeatureTest,
        Metrics_OnCancel) {

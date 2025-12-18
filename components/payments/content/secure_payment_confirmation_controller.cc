@@ -26,6 +26,16 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
+namespace {
+
+constexpr char kTransactionOutcomeHistogramName[] =
+    "SecurePaymentRequest.Transaction.Outcome";
+
+constexpr char kFallbackOutcomeHistogramName[] =
+    "SecurePaymentRequest.Fallback.Outcome";
+
+}  // namespace
+
 namespace payments {
 
 SecurePaymentConfirmationController::SecurePaymentConfirmationController(
@@ -115,25 +125,41 @@ void SecurePaymentConfirmationController::OnInitialized(
 }
 
 void SecurePaymentConfirmationController::OnConfirm() {
-  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
-                                SecurePaymentRequestOutcome::kAccept);
+  if (is_error_dialog_) {
+    base::UmaHistogramEnumeration(kFallbackOutcomeHistogramName,
+                                  SecurePaymentRequestOutcome::kAccept);
 
-  if (!request_) {
-    return;
+    is_dialog_showing_ = false;
+    CloseDialog();
+
+    if (!request_) {
+      return;
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PaymentRequest::OnUserAuthAnotherWay, request_));
+  } else {
+    base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
+                                  SecurePaymentRequestOutcome::kAccept);
+
+    if (!request_) {
+      return;
+    }
+
+    ShowProcessingSpinner();
+
+    // This will trigger WebAuthn with OS-level UI (if any) on top of the
+    // |view_| with its animated processing spinner. For example, on Linux,
+    // there's no OS-level UI, while on MacOS, there's an OS-level prompt for
+    // the Touch ID that shows on top of Chrome.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PaymentRequest::Pay, request_));
   }
-
-  ShowProcessingSpinner();
-
-  // This will trigger WebAuthn with OS-level UI (if any) on top of the |view_|
-  // with its animated processing spinner. For example, on Linux, there's no
-  // OS-level UI, while on MacOS, there's an OS-level prompt for the Touch ID
-  // that shows on top of Chrome.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PaymentRequest::Pay, request_));
 }
 
 void SecurePaymentConfirmationController::OnAnotherWay() {
-  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
+  base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
                                 SecurePaymentRequestOutcome::kAnotherWay);
 
   is_dialog_showing_ = false;
@@ -154,13 +180,18 @@ void SecurePaymentConfirmationController::OnCancel() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
+  if (is_error_dialog_) {
+    base::UmaHistogramEnumeration(kFallbackOutcomeHistogramName,
                                   SecurePaymentRequestOutcome::kCancel);
   } else {
-    base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
-                                  SecurePaymentRequestOutcome::kAnotherWay);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSecurePaymentConfirmationUxRefresh)) {
+      base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
+                                    SecurePaymentRequestOutcome::kCancel);
+    } else {
+      base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
+                                    SecurePaymentRequestOutcome::kAnotherWay);
+    }
   }
 
   is_dialog_showing_ = false;
@@ -175,8 +206,13 @@ void SecurePaymentConfirmationController::OnCancel() {
 }
 
 void SecurePaymentConfirmationController::OnOptOut() {
-  base::UmaHistogramEnumeration("SecurePaymentRequest.Transaction.Outcome",
-                                SecurePaymentRequestOutcome::kOptOut);
+  if (is_error_dialog_) {
+    base::UmaHistogramEnumeration(kFallbackOutcomeHistogramName,
+                                  SecurePaymentRequestOutcome::kOptOut);
+  } else {
+    base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
+                                  SecurePaymentRequestOutcome::kOptOut);
+  }
 
   is_dialog_showing_ = false;
   CloseDialog();
@@ -197,6 +233,7 @@ SecurePaymentConfirmationController::GetWeakPtr() {
 void SecurePaymentConfirmationController::
     SetupModelAndShowDialogIfApplicable() {
   DCHECK(!view_);
+
   // If no apps are available then don't show any UI. The payment_request.cc
   // code will reject the PaymentRequest.show() call with appropriate error
   // message on its own.
@@ -204,6 +241,8 @@ void SecurePaymentConfirmationController::
       request_->state()->available_apps().empty()) {
     return;
   }
+
+  is_dialog_showing_ = true;
 
   if (!request_->web_contents() || !request_->state()->selected_app() ||
       request_->state()->selected_app()->type() != PaymentApp::Type::INTERNAL ||
@@ -234,9 +273,17 @@ void SecurePaymentConfirmationController::
     return;
   }
 
+  SecurePaymentConfirmationApp* app =
+      static_cast<SecurePaymentConfirmationApp*>(
+          request_->state()->selected_app());
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    CreateTransactionView();
+    is_error_dialog_ = app->IsErrorDialog();
+    if (is_error_dialog_) {
+      CreateErrorView(app);
+    } else {
+      CreateTransactionView(app);
+    }
   } else {
     model_.set_verify_button_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
@@ -268,10 +315,6 @@ void SecurePaymentConfirmationController::
               origin.value().GetURL(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
     }
-
-    SecurePaymentConfirmationApp* app =
-        static_cast<SecurePaymentConfirmationApp*>(
-            request_->state()->selected_app());
 
     model_.set_instrument_label(l10n_util::GetStringUTF16(
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
@@ -317,7 +360,6 @@ void SecurePaymentConfirmationController::
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SecurePaymentConfirmationController::OnOptOut,
                      weak_ptr_factory_.GetWeakPtr()));
-  is_dialog_showing_ = true;
 
   // For automated testing, SPC can be placed in an 'autoaccept' or
   // 'autoreject' mode, where the dialog should immediately be
@@ -347,11 +389,79 @@ void SecurePaymentConfirmationController::
   }
 }
 
-void SecurePaymentConfirmationController::CreateTransactionView() {
-  SecurePaymentConfirmationApp* app =
-      static_cast<SecurePaymentConfirmationApp*>(
-          request_->state()->selected_app());
+void SecurePaymentConfirmationController::CreateTransactionView(
+    SecurePaymentConfirmationApp* app) {
+  model_.set_header_logos(app->GetPaymentEntitiesLogos());
 
+  model_.set_title(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
+
+  model_.set_merchant_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
+  std::optional<std::string>& payee_name =
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_name;
+  if (payee_name.has_value()) {
+    model_.set_merchant_name(
+        std::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
+  }
+  std::optional<url::Origin>& origin =
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_origin;
+  if (origin.has_value()) {
+    model_.set_merchant_origin(std::optional<std::u16string>(
+        url_formatter::FormatUrlForSecurityDisplay(
+            origin.value().GetURL(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
+  }
+
+  model_.set_instrument_label(l10n_util::GetStringUTF16(
+      IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
+  model_.set_instrument_value(app->GetLabel());
+  model_.set_instrument_details_value(app->GetSublabel());
+  model_.set_instrument_icon(app->icon_bitmap());
+
+  model_.set_total_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));
+  const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
+  std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
+  model_.set_total_value(
+      base::StrCat({base::UTF8ToUTF16(total->amount->currency), u" ",
+                    CurrencyFormatter(total->amount->currency,
+                                      request_->state()->GetApplicationLocale())
+                        .Format(total->amount->value)}));
+
+  model_.set_verify_button_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
+  model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
+
+  model_.set_progress_bar_visible(false);
+
+  model_.set_opt_out_visible(request_->spec()
+                                 ->method_data()
+                                 .front()
+                                 ->secure_payment_confirmation->show_opt_out);
+  model_.set_opt_out_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL));
+  model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
+  model_.set_relying_party_id(
+      base::UTF8ToUTF16(request_->spec()
+                            ->method_data()
+                            .front()
+                            ->secure_payment_confirmation->rp_id));
+
+  view_ = SecurePaymentConfirmationView::Create(
+      request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
+}
+
+// TODO: crbug.com/441559720 - Implement the fallback UI specific changes.
+void SecurePaymentConfirmationController::CreateErrorView(
+    SecurePaymentConfirmationApp* app) {
   model_.set_header_logos(app->GetPaymentEntitiesLogos());
 
   model_.set_title(l10n_util::GetStringUTF16(

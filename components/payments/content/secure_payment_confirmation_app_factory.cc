@@ -253,7 +253,6 @@ void SecurePaymentConfirmationAppFactory::
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             ::features::kSecurePaymentConfirmationDebug))) {
-#if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             blink::features::kSecurePaymentConfirmationUxRefresh)) {
       // Skip getting matching credential IDs since the authenticator is not
@@ -263,7 +262,6 @@ void SecurePaymentConfirmationAppFactory::
           std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>());
       return;
     }
-#endif  // BUILDFLAG(IS_ANDROID)
 
     request->delegate->OnDoneCreatingPaymentApps();
     return;
@@ -474,7 +472,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   bool skip_spc_app_creation = !request->delegate->GetSpec();
   bool has_authenticator_and_credential =
       request->authenticator && request->credential;
-#if BUILDFLAG(IS_ANDROID)
   skip_spc_app_creation =
       skip_spc_app_creation ||
       (!has_authenticator_and_credential &&
@@ -482,10 +479,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
            features::kSecurePaymentConfirmationFallback) &&
        !base::FeatureList::IsEnabled(
            blink::features::kSecurePaymentConfirmationUxRefresh));
-#else
-  skip_spc_app_creation =
-      skip_spc_app_creation || !has_authenticator_and_credential;
-#endif  // BUILDFLAG(IS_ANDROID)
   if (skip_spc_app_creation) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
@@ -529,7 +522,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
             url::Origin::Create(request->delegate->GetTopOrigin()),
             request->delegate->GetSpec()->AsWeakPtr(),
             std::move(request->mojo_request), /*authenticator=*/nullptr,
-            std::move(payment_entities_logos)));
+            std::move(payment_entities_logos),
+            /*is_error_dialog=*/true));
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -567,7 +561,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),
-          std::move(payment_entities_logos)));
+          std::move(payment_entities_logos),
+          /*is_error_dialog=*/false));
 
   request->delegate->OnDoneCreatingPaymentApps();
 }
