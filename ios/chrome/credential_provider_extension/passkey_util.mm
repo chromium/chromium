@@ -36,12 +36,13 @@ void Append(std::vector<uint8_t>& container, NSData* data) {
 // passkey request.
 webauthn::passkey_model_utils::ExtensionInputData
 ExtensionInputDataFromPRFInputs(NSArray<NSData*>* prf_inputs) {
-  if (prf_inputs) {
+  if ([prf_inputs count] > 0) {
     return webauthn::passkey_model_utils::ExtensionInputData(
-        {([prf_inputs count] > 0) ? base::apple::NSDataToSpan(prf_inputs[0])
-                                  : std::vector<uint8_t>(),
-         ([prf_inputs count] > 1) ? base::apple::NSDataToSpan(prf_inputs[1])
-                                  : std::vector<uint8_t>()});
+        {base::apple::NSDataToSpan(prf_inputs[0]),
+         ([prf_inputs count] > 1)
+             ? std::optional<base::span<const uint8_t>>(
+                   base::apple::NSDataToSpan(prf_inputs[1]))
+             : std::nullopt});
   }
   return webauthn::passkey_model_utils::ExtensionInputData();
 }

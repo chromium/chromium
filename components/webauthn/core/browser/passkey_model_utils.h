@@ -40,7 +40,7 @@ struct ExtensionOutputData {
 // PRF extension input data for passkey creation and assertion.
 struct PRFInputData {
   PRFInputData(base::span<const uint8_t> prf_input1,
-               base::span<const uint8_t> prf_input2);
+               std::optional<base::span<const uint8_t>> prf_input2);
 
   PRFInputData(const PRFInputData&);
   PRFInputData(PRFInputData&&);

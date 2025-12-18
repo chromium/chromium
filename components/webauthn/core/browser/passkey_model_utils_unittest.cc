@@ -180,9 +180,9 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
 }
 
 TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
-  std::vector<uint8_t> prf_input1, prf_input2;
+  std::vector<uint8_t> prf_input1;
   prf_input1.emplace_back('a');
-  ExtensionInputData extension_input_data({prf_input1, prf_input2});
+  ExtensionInputData extension_input_data({prf_input1, std::nullopt});
   ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
       kRpId, kTestUser, kTestKey, kTestKeyVersion, extension_input_data,
@@ -221,6 +221,71 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
   EXPECT_EQ(encrypted_data.large_blob_uncompressed_size(), 0u);
 
   EXPECT_EQ(extension_output_data.prf_result.size(), 32u);
+}
+
+TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
+  std::vector<uint8_t> prf_empty_input, prf_non_empty_input;
+  prf_non_empty_input.emplace_back('a');
+
+  ExtensionOutputData extension_output_data;
+
+  // First input empty, 2nd input missing, 1 PRF output.
+  PRFInputData input_data_0X({prf_empty_input, std::nullopt});
+  EXPECT_TRUE(input_data_0X.prf_input().input1.empty());
+  EXPECT_FALSE(input_data_0X.prf_input().input2.has_value());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_0X),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 32u);
+
+  // First input non empty, 2nd input missing, 1 PRF output.
+  PRFInputData input_data_1X({prf_non_empty_input, std::nullopt});
+  EXPECT_FALSE(input_data_1X.prf_input().input1.empty());
+  EXPECT_FALSE(input_data_1X.prf_input().input2.has_value());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_1X),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 32u);
+
+  // First input empty, 2nd input empty, 2 PRF outputs.
+  PRFInputData input_data_00({prf_empty_input, prf_empty_input});
+  EXPECT_TRUE(input_data_00.prf_input().input1.empty());
+  EXPECT_TRUE(input_data_00.prf_input().input2.has_value());
+  EXPECT_TRUE(input_data_00.prf_input().input2->empty());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_00),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
+
+  // First input empty, 2nd input non empty, 2 PRF output2.
+  PRFInputData input_data_01({prf_empty_input, prf_non_empty_input});
+  EXPECT_TRUE(input_data_01.prf_input().input1.empty());
+  EXPECT_TRUE(input_data_01.prf_input().input2.has_value());
+  EXPECT_FALSE(input_data_01.prf_input().input2->empty());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_01),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
+
+  // First input non empty, 2nd input empty, 2 PRF outputs.
+  PRFInputData input_data_10({prf_non_empty_input, prf_empty_input});
+  EXPECT_FALSE(input_data_10.prf_input().input1.empty());
+  EXPECT_TRUE(input_data_10.prf_input().input2.has_value());
+  EXPECT_TRUE(input_data_10.prf_input().input2->empty());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_10),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
+
+  // First input non empty, 2nd input non empty, 2 PRF outputs.
+  PRFInputData input_data_11({prf_non_empty_input, prf_non_empty_input});
+  EXPECT_FALSE(input_data_11.prf_input().input1.empty());
+  EXPECT_TRUE(input_data_11.prf_input().input2.has_value());
+  EXPECT_FALSE(input_data_11.prf_input().input2->empty());
+  GeneratePasskeyAndEncryptSecrets(kRpId, kTestUser, kTestKey, kTestKeyVersion,
+                                   ExtensionInputData(input_data_11),
+                                   &extension_output_data);
+  EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
 }
 
 }  // namespace

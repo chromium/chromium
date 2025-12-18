@@ -116,13 +116,12 @@ ExtensionOutputData::ExtensionOutputData() = default;
 ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
 ExtensionOutputData::~ExtensionOutputData() = default;
 
-PRFInputData::PRFInputData(base::span<const uint8_t> prf_input1,
-                           base::span<const uint8_t> prf_input2) {
-  if (!prf_input1.empty()) {
-    input.input1.assign(prf_input1.begin(), prf_input1.end());
-    if (!prf_input2.empty()) {
-      input.input2.emplace(prf_input2.begin(), prf_input2.end());
-    }
+PRFInputData::PRFInputData(
+    base::span<const uint8_t> prf_input1,
+    std::optional<base::span<const uint8_t>> prf_input2) {
+  input.input1.assign(prf_input1.begin(), prf_input1.end());
+  if (prf_input2.has_value()) {
+    input.input2.emplace(prf_input2->begin(), prf_input2->end());
   }
   input.HashInputsIntoSalts();
 }
@@ -146,7 +145,7 @@ bool ExtensionInputData::hasPRF() const {
 
 ExtensionOutputData ExtensionInputData::ToOutputData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
-  if (!hasPRF() || prf_input_data->prf_input().input1.empty()) {
+  if (!hasPRF()) {
     return {};
   }
 
