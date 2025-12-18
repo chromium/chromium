@@ -273,9 +273,8 @@ TEST_F(WhatsNewRegistryTest, ClearUnregisteredModules) {
   stored_enabled_modules_.Append("TestModuleDoesNotExist");
   EXPECT_CALL(*mock_storage_service, ReadModuleData())
       .WillOnce(testing::ReturnRef(stored_enabled_modules_));
-  EXPECT_CALL(
-      *mock_storage_service,
-      ClearModules(std::set<std::string_view>({"TestModuleDoesNotExist"})));
+  EXPECT_CALL(*mock_storage_service,
+              ClearModules(std::set<std::string>({"TestModuleDoesNotExist"})));
   RegisterModules(std::move(mock_storage_service));
 
   whats_new_registry_->ClearUnregisteredModules();
@@ -285,8 +284,9 @@ TEST_F(WhatsNewRegistryTest, ClearUnregisteredEditions) {
   auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
   EXPECT_CALL(*mock_storage_service, ReadEditionData())
       .WillOnce(testing::ReturnRef(stored_used_editions_));
-  EXPECT_CALL(*mock_storage_service, ClearEditions(std::set<std::string_view>(
-                                         {"TestOldUnregisteredEdition"})));
+  EXPECT_CALL(
+      *mock_storage_service,
+      ClearEditions(std::set<std::string>({"TestOldUnregisteredEdition"})));
   RegisterModules(std::move(mock_storage_service));
 
   whats_new_registry_->ClearUnregisteredEditions();

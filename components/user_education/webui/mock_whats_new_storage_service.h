@@ -36,8 +36,8 @@ class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
   MOCK_METHOD(void, SetModuleEnabled, (std::string_view), (override));
   MOCK_METHOD(void, SetEditionUsed, (std::string_view), (override));
   MOCK_METHOD(void, SetVersionUsed, (), (override));
-  MOCK_METHOD(void, ClearModules, (std::set<std::string_view>), (override));
-  MOCK_METHOD(void, ClearEditions, (std::set<std::string_view>), (override));
+  MOCK_METHOD(void, ClearModules, (std::set<std::string>), (override));
+  MOCK_METHOD(void, ClearEditions, (std::set<std::string>), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
 

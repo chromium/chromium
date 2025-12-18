@@ -98,20 +98,20 @@ void WhatsNewStorageServiceImpl::SetVersionUsed() {
 }
 
 void WhatsNewStorageServiceImpl::ClearModules(
-    std::set<std::string_view> modules_to_clear) {
+    std::set<std::string> modules_to_clear) {
   // Remove rolled feature from prefs. Order no longer matters for
   // rolled modules.
   auto enabled_modules = GetEnabledOrder();
-  for (const auto module : modules_to_clear) {
+  for (const std::string& module : modules_to_clear) {
     enabled_modules->EraseValue(base::Value(module));
   }
 }
 
 void WhatsNewStorageServiceImpl::ClearEditions(
-    std::set<std::string_view> editions_to_clear) {
+    std::set<std::string> editions_to_clear) {
   // Remove edition from prefs.
   auto used_editions = GetUsedEditions();
-  for (const auto edition : editions_to_clear) {
+  for (const std::string& edition : editions_to_clear) {
     used_editions->Remove(edition);
   }
 }

@@ -38,8 +38,8 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   void SetEditionUsed(std::string_view edition_name) override;
   void SetVersionUsed() override;
 
-  void ClearModules(std::set<std::string_view> modules_to_clear) override;
-  void ClearEditions(std::set<std::string_view> editions_to_clear) override;
+  void ClearModules(std::set<std::string> modules_to_clear) override;
+  void ClearEditions(std::set<std::string> editions_to_clear) override;
 
   void Reset() override;
 

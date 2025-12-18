@@ -259,7 +259,7 @@ void WhatsNewRegistry::SetVersionUsed() const {
 }
 
 void WhatsNewRegistry::ClearUnregisteredModules() const {
-  std::set<std::string_view> modules_to_clear;
+  std::set<std::string> modules_to_clear;
   for (auto& module_value : storage_service_->ReadModuleData()) {
     auto found_module = modules_.find(module_value.GetString());
     // If the stored module cannot be found in the current registered
@@ -272,7 +272,7 @@ void WhatsNewRegistry::ClearUnregisteredModules() const {
 }
 
 void WhatsNewRegistry::ClearUnregisteredEditions() const {
-  std::set<std::string_view> editions_to_clear;
+  std::set<std::string> editions_to_clear;
   for (auto edition_value : storage_service_->ReadEditionData()) {
     auto found_edition = editions_.find(edition_value.first);
     // If the stored edition cannot be found in the current registered
