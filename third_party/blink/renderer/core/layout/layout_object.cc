@@ -3205,16 +3205,10 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
   }
 }
 
-static bool AreNonIdenticalCursorListsEqual(const ComputedStyle* a,
-                                            const ComputedStyle* b) {
-  DCHECK_NE(a->Cursors(), b->Cursors());
-  return a->Cursors() && b->Cursors() && *a->Cursors() == *b->Cursors();
-}
-
 static inline bool AreCursorsEqual(const ComputedStyle* a,
                                    const ComputedStyle* b) {
-  return a->Cursor() == b->Cursor() && (a->Cursors() == b->Cursors() ||
-                                        AreNonIdenticalCursorListsEqual(a, b));
+  return a->Cursor() == b->Cursor() &&
+         base::ValuesEquivalent(a->Cursors(), b->Cursors());
 }
 
 void LayoutObject::SetScrollAnchorDisablingStyleChangedOnAncestor() {
