@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -441,4 +443,28 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
 
   // Verify the focused group is reset.
   EXPECT_EQ(controller()->GetFocusedGroup(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
+                       FocusedGroupUpdatesThemeMultipleTimes) {
+  BrowserWidget* widget =
+      static_cast<BrowserView*>(browser()->window())->browser_widget();
+  EXPECT_EQ(widget->user_color_override(), std::nullopt);
+
+  // Create a tab and a group.
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Focus on the group.
+  controller()->SetFocusedGroup(group);
+  EXPECT_NE(widget->user_color_override(), std::nullopt);
+
+  // Unset focused group.
+  controller()->SetFocusedGroup(std::nullopt);
+  EXPECT_EQ(widget->user_color_override(), std::nullopt);
+
+  // Focus on the group again.
+  controller()->SetFocusedGroup(group);
+  EXPECT_NE(widget->user_color_override(), std::nullopt);
 }

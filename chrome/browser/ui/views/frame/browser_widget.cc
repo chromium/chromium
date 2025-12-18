@@ -494,9 +494,15 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
     }
   }
 
+  if (user_color_override().has_value()) {
+    key.user_color = user_color_override().value();
+  }
+
   // user_color_source.
   if (IsIncognitoBrowser()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kGrayscale;
+  } else if (user_color_override().has_value()) {
+    key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
   } else if (theme_service->UsingDeviceTheme()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
   } else if (theme_service->GetIsGrayscale()) {
