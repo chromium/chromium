@@ -34,6 +34,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/to_address.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
@@ -186,21 +187,22 @@ bool TextCodecUtf8::IsSupported(StringView canonical_name) {
 }
 
 void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
-  registrar("UTF-8", "UTF-8");
+  AtomicString canonical_name("UTF-8");
+  registrar("UTF-8", canonical_name);
 
   // Additional aliases that originally were present in the encoding
   // table in WebKit on Macintosh, and subsequently added by
   // TextCodecICU. Perhaps we can prove some are not used on the web
   // and remove them.
-  registrar("unicode11utf8", "UTF-8");
-  registrar("unicode20utf8", "UTF-8");
-  registrar("utf8", "UTF-8");
-  registrar("x-unicode20utf8", "UTF-8");
+  registrar("unicode11utf8", canonical_name);
+  registrar("unicode20utf8", canonical_name);
+  registrar("utf8", canonical_name);
+  registrar("x-unicode20utf8", canonical_name);
 
   // Additional aliases present in the WHATWG Encoding Standard
   // (http://encoding.spec.whatwg.org/)
   // and Firefox (24), but not in ICU 4.6.
-  registrar("unicode-1-1-utf-8", "UTF-8");
+  registrar("unicode-1-1-utf-8", canonical_name);
 }
 
 void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {

@@ -1014,8 +1014,9 @@ TextCodecCjk::TextCodecCjk(Encoding encoding) : encoding_(encoding) {}
 void TextCodecCjk::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // https://encoding.spec.whatwg.org/#names-and-labels
   auto registerAliases = [&](std::initializer_list<const char*> list) {
+    AtomicString canonical_name(*list.begin());
     for (auto* alias : list)
-      registrar(alias, *list.begin());
+      registrar(alias, canonical_name);
   };
 
   registerAliases({kCanonicalNameEucJp, "cseucpkdfmtjapanese", "x-euc-jp"});

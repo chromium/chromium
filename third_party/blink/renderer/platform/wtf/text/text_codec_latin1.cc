@@ -31,6 +31,7 @@
 
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -73,24 +74,26 @@ static constexpr std::array<UChar, 256> kTable = {
 };
 
 void TextCodecLatin1::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+  AtomicString canonical_name("windows-1252");
+
   // Taken from the alias table at https://encoding.spec.whatwg.org/
-  registrar("windows-1252", "windows-1252");
-  registrar("ANSI_X3.4-1968", "windows-1252");
-  registrar("ASCII", "windows-1252");
-  registrar("cp1252", "windows-1252");
-  registrar("cp819", "windows-1252");
-  registrar("csISOLatin1", "windows-1252");
-  registrar("IBM819", "windows-1252");
-  registrar("ISO-8859-1", "windows-1252");
-  registrar("iso-ir-100", "windows-1252");
-  registrar("iso8859-1", "windows-1252");
-  registrar("iso88591", "windows-1252");
-  registrar("iso_8859-1", "windows-1252");
-  registrar("iso_8859-1:1987", "windows-1252");
-  registrar("l1", "windows-1252");
-  registrar("latin1", "windows-1252");
-  registrar("US-ASCII", "windows-1252");
-  registrar("x-cp1252", "windows-1252");
+  registrar("windows-1252", canonical_name);
+  registrar("ANSI_X3.4-1968", canonical_name);
+  registrar("ASCII", canonical_name);
+  registrar("cp1252", canonical_name);
+  registrar("cp819", canonical_name);
+  registrar("csISOLatin1", canonical_name);
+  registrar("IBM819", canonical_name);
+  registrar("ISO-8859-1", canonical_name);
+  registrar("iso-ir-100", canonical_name);
+  registrar("iso8859-1", canonical_name);
+  registrar("iso88591", canonical_name);
+  registrar("iso_8859-1", canonical_name);
+  registrar("iso_8859-1:1987", canonical_name);
+  registrar("l1", canonical_name);
+  registrar("latin1", canonical_name);
+  registrar("US-ASCII", canonical_name);
+  registrar("x-cp1252", canonical_name);
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderWindowsLatin1(

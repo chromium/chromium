@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/numerics/byte_conversions.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -43,17 +44,20 @@ bool TextCodecUtf16::IsSupported(StringView canonical_name) {
 }
 
 void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
-  registrar("UTF-16LE", "UTF-16LE");
-  registrar("UTF-16BE", "UTF-16BE");
+  AtomicString utf_16le("UTF-16LE");
+  AtomicString utf_16be("UTF-16BE");
 
-  registrar("ISO-10646-UCS-2", "UTF-16LE");
-  registrar("UCS-2", "UTF-16LE");
-  registrar("UTF-16", "UTF-16LE");
-  registrar("Unicode", "UTF-16LE");
-  registrar("csUnicode", "UTF-16LE");
-  registrar("unicodeFEFF", "UTF-16LE");
+  registrar("UTF-16LE", utf_16le);
+  registrar("UTF-16BE", utf_16be);
 
-  registrar("unicodeFFFE", "UTF-16BE");
+  registrar("ISO-10646-UCS-2", utf_16le);
+  registrar("UCS-2", utf_16le);
+  registrar("UTF-16", utf_16le);
+  registrar("Unicode", utf_16le);
+  registrar("csUnicode", utf_16le);
+  registrar("unicodeFEFF", utf_16le);
+
+  registrar("unicodeFFFE", utf_16be);
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16le(

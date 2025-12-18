@@ -34,7 +34,7 @@ namespace blink {
 
 void TextCodecUserDefined::RegisterEncodingNames(
     EncodingNameRegistrar registrar) {
-  registrar("x-user-defined", "x-user-defined");
+  registrar("x-user-defined", AtomicString("x-user-defined"));
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUserDefined(

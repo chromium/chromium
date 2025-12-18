@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_replacement.h"
 
 #include <memory>
+
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -15,13 +17,14 @@ TextCodecReplacement::TextCodecReplacement()
 
 void TextCodecReplacement::RegisterEncodingNames(
     EncodingNameRegistrar registrar) {
+  AtomicString canonical_name("replacement");
   // Taken from the alias table at·https://encoding.spec.whatwg.org/
-  registrar("replacement", "replacement");
-  registrar("csiso2022kr", "replacement");
-  registrar("hz-gb-2312", "replacement");
-  registrar("iso-2022-cn", "replacement");
-  registrar("iso-2022-cn-ext", "replacement");
-  registrar("iso-2022-kr", "replacement");
+  registrar("replacement", canonical_name);
+  registrar("csiso2022kr", canonical_name);
+  registrar("hz-gb-2312", canonical_name);
+  registrar("iso-2022-cn", canonical_name);
+  registrar("iso-2022-cn-ext", canonical_name);
+  registrar("iso-2022-kr", canonical_name);
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderReplacement(

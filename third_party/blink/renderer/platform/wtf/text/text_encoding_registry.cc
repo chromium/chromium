@@ -132,16 +132,14 @@ static bool IsUndesiredAlias(StringView alias) {
   return false;
 }
 
-static void AddToTextEncodingNameMap(const char* alias, const char* name) {
+static void AddToTextEncodingNameMap(const char* alias,
+                                     const AtomicString& canonical_name) {
   StringView alias_view(alias);
   DCHECK_LE(alias_view.length(), kMaxEncodingNameLength);
   EncodingRegistryLock().AssertAcquired();
   if (IsUndesiredAlias(alias_view)) {
     return;
   }
-  // TODO(tkent): This function creates AtomicStrings for an identical string
-  // repeatedly. We should make the `name` argument AtomicString.
-  AtomicString canonical_name(name);
   CheckExistingName(alias_view, canonical_name);
   g_text_encoding_name_map->insert(alias_view.ToString(), canonical_name);
 }
