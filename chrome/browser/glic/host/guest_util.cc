@@ -13,11 +13,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/common/language_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -27,6 +25,11 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 namespace glic {
 
@@ -68,6 +71,8 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+
 // Forwards the draggable regions from the webview webcontent to main
 // webcontents.
 class WebviewWebContentsDelegate : public content::WebContentsDelegate,
@@ -97,6 +102,8 @@ class WebviewWebContentsDelegate : public content::WebContentsDelegate,
     }
   }
 };
+
+#endif
 
 }  // namespace
 
@@ -162,12 +169,15 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (!service) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
     guest_contents->SetUserData(
         "glic::WebviewWebContentsDelegate",
         std::make_unique<WebviewWebContentsDelegate>(guest_contents));
     guest_contents->SetSupportsDraggableRegions(true);
   }
+#endif
 
   service->GuestAdded(guest_contents);
 

@@ -99,7 +99,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -112,6 +111,10 @@
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 namespace mojo {
 
@@ -2093,6 +2096,7 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
 }
 
 content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
+#if !BUILDFLAG(IS_ANDROID)
   extensions::WebViewGuest* web_view_guest = nullptr;
   content::RenderFrameHost* webui_frame =
       webui_contents_->GetPrimaryMainFrame();
@@ -2109,6 +2113,10 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
         return content::RenderFrameHost::FrameIterationAction::kContinue;
       });
   return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
+#else
+  // TODO(b/470059315): Important to implement in Android.
+  return nullptr;
+#endif
 }
 
 void GlicPageHandler::SetProfileReadyState(

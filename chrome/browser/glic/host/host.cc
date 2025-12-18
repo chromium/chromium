@@ -27,12 +27,15 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 namespace glic {
 
@@ -648,8 +651,10 @@ void HostManager::Shutdown() {
 }
 
 void HostManager::GuestAdded(content::WebContents* guest_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
+#endif
 
   for (Host* host : GetPrimaryHosts()) {
     if (!host->webui_contents()) {
@@ -658,11 +663,15 @@ void HostManager::GuestAdded(content::WebContents* guest_contents) {
 
     host->GuestAdded(guest_contents);
 
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(harringtond): This looks wrong, either fix or document this.
     blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
     prefs.default_font_size =
         host->webui_contents()->GetOrCreateWebPreferences().default_font_size;
     top->SetWebPreferences(prefs);
+#else
+    // TODO(b/470059315): What do we do for Android?
+#endif
     return;
   }
 }
