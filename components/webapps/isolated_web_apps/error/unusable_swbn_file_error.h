@@ -61,7 +61,8 @@ class UnusableSwbnFileError {
 
   Error value() const { return error_; }
   const std::string& message() const { return message_; }
-  static void UmaLogStatus(UnusableSwbnFileError);
+
+  std::string ToString() const;
 
  private:
   Error error_;

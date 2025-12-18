@@ -495,8 +495,7 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
     const UnusableSwbnFileError& error) {
-  return ForOtherError(
-      IsolatedWebAppResponseReaderFactory::ErrorToString(error));
+  return ForOtherError(error.ToString());
 }
 
 // static

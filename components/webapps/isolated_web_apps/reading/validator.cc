@@ -130,4 +130,20 @@ IsolatedWebAppValidator::ValidateMetadata(
       });
 }
 
+// static
+base::expected<void, UnusableSwbnFileError>
+IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
+    content::BrowserContext* browser_context,
+    const web_package::SignedWebBundleId& expected_web_bundle_id,
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    const std::optional<GURL>& primary_url,
+    const std::vector<GURL>& entries,
+    bool dev_mode) {
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateIntegrityBlock(
+      browser_context, expected_web_bundle_id, integrity_block, dev_mode));
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateMetadata(
+      expected_web_bundle_id, primary_url, entries));
+  return base::ok();
+}
+
 }  // namespace web_app

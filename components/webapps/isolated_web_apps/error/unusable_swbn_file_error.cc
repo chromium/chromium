@@ -4,6 +4,7 @@
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 
 namespace web_app {
@@ -63,6 +64,27 @@ UnusableSwbnFileError::UnusableSwbnFileError(
 bool operator==(const UnusableSwbnFileError& lhs,
                 const UnusableSwbnFileError& rhs) {
   return (lhs.value() == rhs.value()) && (lhs.message() == rhs.message());
+}
+
+std::string UnusableSwbnFileError::ToString() const {
+  switch (value()) {
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError:
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError:
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserVersionError:
+      return base::StringPrintf("Failed to parse integrity block: %s",
+                                message());
+    case UnusableSwbnFileError::Error::kIntegrityBlockValidationError:
+      return base::StringPrintf("Failed to validate integrity block: %s",
+                                message());
+    case UnusableSwbnFileError::Error::kSignatureVerificationError:
+      return base::StringPrintf("Failed to verify signatures: %s", message());
+    case UnusableSwbnFileError::Error::kMetadataParserInternalError:
+    case UnusableSwbnFileError::Error::kMetadataParserFormatError:
+    case UnusableSwbnFileError::Error::kMetadataParserVersionError:
+      return base::StringPrintf("Failed to parse metadata: %s", message());
+    case UnusableSwbnFileError::Error::kMetadataValidationError:
+      return base::StringPrintf("Failed to validate metadata: %s", message());
+  }
 }
 
 // static
