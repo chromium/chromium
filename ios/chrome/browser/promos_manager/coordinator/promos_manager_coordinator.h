@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_H_
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol ApplicationCommands;
@@ -38,4 +38,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_H_

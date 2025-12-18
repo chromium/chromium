@@ -1,0 +1,22 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/app_store_rating/coordinator",
+  "+ios/chrome/browser/app_store_rating/model",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/features.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/promo",
+  "+ios/chrome/browser/credential_provider_promo/ui_bundled",
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/default_promo/ui_bundled",
+  "+ios/chrome/browser/docking_promo/coordinator/docking_promo_display_handler.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/first_run/public/features.h",
+  "+ios/chrome/browser/post_restore_signin/ui_bundled",
+  "+ios/chrome/browser/safari_data_import/coordinator/safari_data_import_reminder_promo_display_handler.h",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/welcome_back/coordinator/welcome_back_display_handler.h",
+  "+ios/chrome/browser/welcome_back/model/features.h",
+  "+ios/chrome/browser/whats_new/coordinator",
+  # keep-sorted end
+]

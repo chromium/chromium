@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/welcome_back/ui/welcome_back_display_handler.h"
+#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_display_handler.h"
 
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"

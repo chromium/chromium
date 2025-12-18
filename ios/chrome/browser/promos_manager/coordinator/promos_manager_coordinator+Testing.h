@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_TESTING_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_TESTING_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_TESTING_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_TESTING_H_
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/bannered_promo_view_provider.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_mediator.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_mediator.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_view_provider.h"
 
 // Testing category to provide access for unit tests to easily inject state.
 @interface PromosManagerCoordinator (Testing)
@@ -32,4 +32,4 @@
 - (void)displayPromo:(PromoDisplayData)promoData;
 @end
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_PROMOS_MANAGER_COORDINATOR_TESTING_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_PROMOS_MANAGER_COORDINATOR_TESTING_H_

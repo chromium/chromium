@@ -7,8 +7,8 @@
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_view_provider.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_view_provider.h"
 
 // Base provider for displaying the Default Browser Promo. Should not be
 // instantiated.

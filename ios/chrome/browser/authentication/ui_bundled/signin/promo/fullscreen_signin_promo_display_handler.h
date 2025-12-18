@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_FULLSCREEN_SIGNIN_PROMO_DISPLAY_HANDLER_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_FULLSCREEN_SIGNIN_PROMO_DISPLAY_HANDLER_H_
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 
 @interface FullscreenSigninPromoDisplayHandler
     : NSObject <StandardPromoDisplayHandler>

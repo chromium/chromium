@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator+Testing.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_action_handler.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/bannered_promo_view_provider.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator+Testing.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_action_handler.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"

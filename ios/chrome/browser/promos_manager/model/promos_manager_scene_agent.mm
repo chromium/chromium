@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_scene_agent.h"
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
+#import "ios/chrome/browser/promos_manager/public/utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"

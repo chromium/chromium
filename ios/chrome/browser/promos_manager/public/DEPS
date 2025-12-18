@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/policy/ui_bundled",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
+]

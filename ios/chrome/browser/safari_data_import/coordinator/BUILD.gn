@@ -107,7 +107,7 @@ source_set("promo") {
     "safari_data_import_reminder_promo_display_handler.h",
     "safari_data_import_reminder_promo_display_handler.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/promos_manager/ui_bundled:promos" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager/coordinator:promos" ]
   deps = [
     "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager/model:types",

@@ -88,6 +88,20 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("scene_agent") {
+  sources = [
+    "promos_manager_scene_agent.h",
+    "promos_manager_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/promos_manager/public:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

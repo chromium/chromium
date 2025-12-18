@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
+#import "ios/chrome/browser/docking_promo/coordinator/docking_promo_display_handler.h"
 
 #import "base/check.h"
 #import "components/feature_engagement/public/feature_constants.h"

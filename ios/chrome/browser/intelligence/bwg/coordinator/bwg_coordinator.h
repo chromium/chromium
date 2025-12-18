@@ -7,7 +7,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator that manages the first run and any BWG triggers.

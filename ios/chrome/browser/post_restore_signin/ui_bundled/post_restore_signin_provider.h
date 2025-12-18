@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_POST_RESTORE_SIGNIN_UI_BUNDLED_POST_RESTORE_SIGNIN_PROVIDER_H_
 #define IOS_CHROME_BROWSER_POST_RESTORE_SIGNIN_UI_BUNDLED_POST_RESTORE_SIGNIN_PROVIDER_H_
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/bannered_promo_view_provider.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_alert_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 class Browser;

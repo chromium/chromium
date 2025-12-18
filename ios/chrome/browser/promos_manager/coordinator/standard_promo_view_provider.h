@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_VIEW_PROVIDER_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_VIEW_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_VIEW_PROVIDER_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_VIEW_PROVIDER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/promo_protocol.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_action_handler.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promo_protocol.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 // StandardPromoViewProvider enables feature teams to simply and easily
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_VIEW_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_VIEW_PROVIDER_H_

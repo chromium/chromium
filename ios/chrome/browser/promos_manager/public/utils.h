@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_UTILS_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_PUBLIC_UTILS_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_PUBLIC_UTILS_H_
 
 @class SceneState;
 
@@ -14,4 +14,4 @@ bool ShouldPromoManagerDisplayPromos();
 // Returns YES if a promo can be displayed for the given scene state.
 bool IsUIAvailableForPromo(SceneState* scene_state);
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PUBLIC_UTILS_H_

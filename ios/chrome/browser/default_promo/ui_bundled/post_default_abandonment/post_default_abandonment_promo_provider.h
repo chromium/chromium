@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_POST_DEFAULT_ABANDONMENT_POST_DEFAULT_ABANDONMENT_PROMO_PROVIDER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_POST_DEFAULT_ABANDONMENT_POST_DEFAULT_ABANDONMENT_PROMO_PROVIDER_H_
 
-#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_alert_provider.h"
+#import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 // Provider for displaying the post-default browser abandonment alert.

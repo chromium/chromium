@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_DISPLAY_HANDLER_H_
-#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_DISPLAY_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_DISPLAY_HANDLER_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_DISPLAY_HANDLER_H_
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/promos_manager/coordinator/promo_protocol.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/ui_bundled/promo_protocol.h"
 
 // StandardPromoDisplayHandler enables feature teams to completely handle
 // what happens after their promo, `identifier`, is triggered for display.
@@ -33,4 +33,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_STANDARD_PROMO_DISPLAY_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_COORDINATOR_STANDARD_PROMO_DISPLAY_HANDLER_H_

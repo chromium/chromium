@@ -21,7 +21,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
-    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/utils",
     "//ios/chrome/browser/shared/model/browser",

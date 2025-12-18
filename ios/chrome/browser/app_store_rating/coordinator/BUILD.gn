@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "app_store_rating_display_handler.h",
+    "app_store_rating_display_handler.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}

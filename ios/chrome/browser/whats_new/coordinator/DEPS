@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/promos_manager/ui_bundled",
+  "+ios/chrome/browser/promos_manager/coordinator",
   "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/url_loading/model",
