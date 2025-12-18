@@ -58,6 +58,8 @@ component("network_service") {
     "disk_cache/mojo_backend_file_operations_factory.h",
     "dns_config_change_manager.cc",
     "dns_config_change_manager.h",
+    "enterprise/encryption/chunked_encryptor.cc",
+    "enterprise/encryption/chunked_encryptor.h",
     "enterprise/encryption/encrypted_backend_file_operations.cc",
     "enterprise/encryption/encrypted_backend_file_operations.h",
     "enterprise/encryption/encrypted_backend_file_operations_factory.cc",
@@ -360,6 +362,7 @@ component("network_service") {
     "//components/url_pattern",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
+    "//crypto",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/base:protobuf_support",
     "//mojo/public/cpp/bindings",
@@ -413,10 +416,7 @@ component("network_service") {
   }
 
   if (is_android) {
-    deps += [
-      "//crypto",
-      "//third_party/boringssl",
-    ]
+    deps += [ "//third_party/boringssl" ]
   }
 
   if (is_win) {
@@ -466,6 +466,7 @@ source_set("tests") {
     "devtools_durable_msg_collector_manager_unittest.cc",
     "devtools_durable_msg_collector_unittest.cc",
     "dns_config_change_manager_unittest.cc",
+    "enterprise/encryption/chunked_encryptor_unittest.cc",
     "enterprise/encryption/os_crypt_cache_encryption_delegate_unittest.cc",
     "host_resolver_unittest.cc",
     "http_cache_data_counter_unittest.cc",

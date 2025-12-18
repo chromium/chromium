@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 EncryptedCacheFile::EncryptedCacheFile(
     std::unique_ptr<disk_cache::CacheFile> file)
@@ -55,4 +55,4 @@ bool EncryptedCacheFile::WriteAndCheck(int64_t offset,
   return file_->WriteAndCheck(offset, data);
 }
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption

@@ -2804,7 +2804,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
               base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>();
         }
         cache_params.file_operations_factory = base::MakeRefCounted<
-            enterprise::EncryptedBackendFileOperationsFactory>(
+            enterprise_encryption::EncryptedBackendFileOperationsFactory>(
             std::move(cache_params.file_operations_factory));
       }
     }

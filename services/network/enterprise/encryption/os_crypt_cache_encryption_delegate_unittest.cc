@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace enterprise_encryption {
+namespace network::enterprise_encryption {
 
 namespace {
 
@@ -244,4 +244,4 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitEncryptorNotAvailable) {
   }
 }
 
-}  // namespace enterprise_encryption
+}  // namespace network::enterprise_encryption

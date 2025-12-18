@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "net/disk_cache/disk_cache.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 // Factory to create `BackendFileOperations` instances with encryption support.
 class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedBackendFileOperationsFactory
@@ -36,6 +36,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedBackendFileOperationsFactory
   scoped_refptr<disk_cache::BackendFileOperationsFactory> decorated_factory_;
 };
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption
 
 #endif  // SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_ENCRYPTED_BACKEND_FILE_OPERATIONS_FACTORY_H_

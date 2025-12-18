@@ -12,7 +12,7 @@
 #include "net/disk_cache/cache_file.h"
 #include "net/disk_cache/disk_cache.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 class UnboundEncryptedBackendFileOperations final
     : public disk_cache::UnboundBackendFileOperations {
@@ -61,6 +61,6 @@ class EncryptedBackendFileOperations final
   std::unique_ptr<disk_cache::BackendFileOperations> decorated_backend_;
 };
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption
 
 #endif  // SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_ENCRYPTED_BACKEND_FILE_OPERATIONS_H_

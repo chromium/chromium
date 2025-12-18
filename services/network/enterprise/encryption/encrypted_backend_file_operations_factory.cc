@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/enterprise/encryption/encrypted_backend_file_operations.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 EncryptedBackendFileOperationsFactory::EncryptedBackendFileOperationsFactory(
     scoped_refptr<BackendFileOperationsFactory> decorated_factory)
@@ -32,4 +32,4 @@ EncryptedBackendFileOperationsFactory::CreateUnbound() {
       decorated_factory_->CreateUnbound());
 }
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption

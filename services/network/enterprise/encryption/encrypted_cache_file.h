@@ -9,7 +9,7 @@
 
 #include "net/disk_cache/cache_file.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 // A decorator implementation of `CacheFile` that adds an encryption layer on
 // top of another `CacheFile` instance.
@@ -38,6 +38,6 @@ class EncryptedCacheFile : public disk_cache::CacheFile {
   std::unique_ptr<disk_cache::CacheFile> file_;
 };
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption
 
 #endif  // SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_ENCRYPTED_CACHE_FILE_H_

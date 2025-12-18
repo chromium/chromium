@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 
-namespace enterprise_encryption {
+namespace network::enterprise_encryption {
 
 OSCryptCacheEncryptionDelegate::OSCryptCacheEncryptionDelegate(
     mojo::PendingRemote<network::mojom::CacheEncryptionProvider> provider)
@@ -107,4 +107,4 @@ void OSCryptCacheEncryptionDelegate::InitCallback(
   callbacks_.Notify(net::OK);
 }
 
-}  // namespace enterprise_encryption
+}  // namespace network::enterprise_encryption
