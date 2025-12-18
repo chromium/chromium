@@ -49,7 +49,10 @@ expected<Process, DWORD> RunDeElevated(
     const CommandLine& command_line,
     std::optional<ProcessId> medium_process_id) {
   if (!::IsUserAnAdmin()) {
-    if (auto process = LaunchProcess(command_line, {}); process.IsValid()) {
+    LaunchOptions options;
+    options.grant_foreground_privilege = true;
+    if (auto process = LaunchProcess(command_line, options);
+        process.IsValid()) {
       return ok(std::move(process));
     }
     return unexpected(::GetLastError());
@@ -180,9 +183,9 @@ HRESULT RunDeElevatedNoWait(const std::wstring& path,
     return hr;
   }
 
-  std::optional<base::FilePath> current_dir;
+  std::optional<FilePath> current_dir;
   if (!current_directory) {
-    current_dir = base::PathService::CheckedGet(base::DIR_CURRENT);
+    current_dir = PathService::CheckedGet(DIR_CURRENT);
     current_directory = current_dir->value();
   }
 

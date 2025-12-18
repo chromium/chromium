@@ -262,27 +262,6 @@ bool VerifyHKLMAccess() {
   return result;
 }
 
-bool IsRunningElevated() {
-  // This method should be called only for Vista or later.
-  if (!IsWindowsVersionSupported() || !VerifyAdminGroup())
-    return false;
-
-  HANDLE process_token;
-  if (!::OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &process_token))
-    return false;
-
-  TOKEN_ELEVATION_TYPE elevation_type = TokenElevationTypeDefault;
-  DWORD size_returned = 0;
-  if (!::GetTokenInformation(process_token, TokenElevationType, &elevation_type,
-                             sizeof(elevation_type), &size_returned)) {
-    ::CloseHandle(process_token);
-    return false;
-  }
-
-  ::CloseHandle(process_token);
-  return (elevation_type == TokenElevationTypeFull);
-}
-
 struct SetWindowPosParams {
   int x;
   int y;
@@ -377,18 +356,9 @@ BOOL __stdcall GoogleChromeCompatibilityCheck(BOOL set_flag,
 
 BOOL __stdcall LaunchGoogleChrome() {
   base::FilePath chrome_exe_path;
-  if (!GetGoogleChromePath(&chrome_exe_path))
-    return false;
-
-  base::CommandLine chrome_command(chrome_exe_path);
-  if (IsRunningElevated()) {
-    return base::win::RunDeElevated(chrome_command).has_value();
-  }
-
-  base::LaunchOptions options;
-  options.grant_foreground_privilege = true;
-  return base::LaunchProcess(chrome_command.GetCommandLineString(), options)
-      .IsValid();
+  return GetGoogleChromePath(&chrome_exe_path) &&
+         base::win::RunDeElevated(base::CommandLine(chrome_exe_path))
+             .has_value();
 }
 
 BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,
