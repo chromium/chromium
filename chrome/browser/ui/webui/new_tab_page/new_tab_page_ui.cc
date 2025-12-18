@@ -879,6 +879,9 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   registry->RegisterBooleanPref(ntp_prefs::kNtpShowAllMostVisitedTiles, false);
   registry->RegisterBooleanPref(prefs::kNtpPromoVisible, true);
+  registry->RegisterTimePref(ntp_prefs::kNtpLastModuleStalenessUpdate,
+                             base::Time());
+  registry->RegisterDictionaryPref(ntp_prefs::kNtpModuleStalenessCountDict);
   registry->RegisterDictionaryPref(
       ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
 }
@@ -892,6 +895,8 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled, false);
   prefs->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   prefs->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles, false);
+  prefs->SetTime(ntp_prefs::kNtpLastModuleStalenessUpdate, base::Time());
+  prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::Value::Dict());
   prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
                  base::Value::Dict());
 }

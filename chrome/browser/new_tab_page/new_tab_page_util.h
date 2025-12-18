@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_
 
 #include <set>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "components/ntp_tiles/tile_type.h"
@@ -47,6 +48,14 @@ bool IsEnterpriseShortcutsEnabled(Profile* profile);
 bool IsPersonalShortcutsVisible(Profile* profile);
 // Returns the set of enabled NTP tile types.
 std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile);
+
+// Updates the staleness counters for modules iff:
+// (1) It's not the first staleness update.
+// (2) Time since last update is above the staleness update threshold.
+// (3) Auto-removal feature is not disabled for all modules.
+// (4) Auto-removal feature is not disabled for the module.
+void UpdateModulesStaleness(Profile* profile,
+                            const std::vector<std::string>& module_ids);
 
 // Sets the kNtpShortcutsAutoRemovalDisabled pref to true for the module.
 void DisableShortcutsAutoRemoval(Profile* profile);
