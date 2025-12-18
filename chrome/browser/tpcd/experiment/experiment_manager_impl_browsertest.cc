@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/to_string.h"
@@ -52,7 +53,9 @@ struct SyntheticTrialTestCase {
 };
 
 constexpr char kEligibleGroupName[] = "eligible";
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kOverrideGroupName[] = "override";
+#endif
 
 class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
@@ -99,6 +102,7 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
 
 // Android does not support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 class ExperimentManagerImplSyntheticTrialTest
     : public ExperimentManagerImplBrowserTest,
       public testing::WithParamInterface<SyntheticTrialTestCase> {
@@ -132,6 +136,15 @@ IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
 
 IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
                        RegistersSyntheticTrial) {
+  // TODO(crbug.com/469047728): Explore deletion of this test.
+  // Client eligibility is forced for this test because the EligibilityService
+  // was removed.
+  if (auto* manager =
+          ExperimentManagerImpl::GetForProfile(browser()->profile())) {
+    manager->SetClientEligibility(GetParam().new_state_eligible,
+                                  base::DoNothing());
+  }
+
   // Delay to make sure `CaptureEligibilityInLocalStatePref` has run.
   Wait();
 
@@ -290,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentManagerImplDisable3PCsSyntheticTrialTest,
   ASSERT_NE(group_name_hash, 0u);
   EXPECT_EQ(group_name_hash, HashName(kEligibleGroupName));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class ExperimentManagerImplSilentOnboardingSyntheticTrialTest
     : public ExperimentManagerImplBrowserTest {
@@ -301,7 +315,6 @@ class ExperimentManagerImplSilentOnboardingSyntheticTrialTest
             /*need_onboarding=*/true,
             /*enable_silent_onboarding=*/true) {}
 };
-
 IN_PROC_BROWSER_TEST_F(ExperimentManagerImplSilentOnboardingSyntheticTrialTest,
                        PRE_ExistingProfilesRegistersSyntheticTrial) {
   Wait();
