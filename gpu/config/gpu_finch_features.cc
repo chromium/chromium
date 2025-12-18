@@ -198,6 +198,10 @@ BASE_FEATURE(kWebGPUService, WEBGPU_ENABLED);
 BASE_FEATURE(kWebGPUBlobCache, WEBGPU_ENABLED);
 #undef WEBGPU_ENABLED
 
+// Feature enforces WebGPU security in Android Advanced Protection Mode.
+// Disable feature by default for Finch testing.
+BASE_FEATURE(kAAPMBlocksWebGPU, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // List of Dawn toggles for WebGPU, delimited by ,
 // The FeatureParam may be overridden via Finch config, or via the command line
 // For example:

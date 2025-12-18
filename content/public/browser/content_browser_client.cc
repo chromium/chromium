@@ -1624,6 +1624,10 @@ bool ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
   return false;
 }
 
+bool ContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {
+  return false;
+}
+
 ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }

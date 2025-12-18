@@ -2452,6 +2452,15 @@ void ChromeContentBrowserClient::WillComputeSiteForNavigation(
   }
 }
 
+bool ChromeContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return safe_browsing::AdvancedProtectionStatusManagerAndroid::
+      QueryIsUnderAdvancedProtection();
+#else
+  return false;
+#endif
+}
+
 bool ChromeContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   if (base::FeatureList::IsEnabled(features::kSitePerProcess)) {
     return true;

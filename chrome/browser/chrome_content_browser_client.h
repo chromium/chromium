@@ -281,6 +281,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   void WillComputeSiteForNavigation(content::BrowserContext* browser_context,
                                     const GURL& url) override;
+  bool IsAndroidAdvancedProtectionEnabled() override;
   bool ShouldEnableStrictSiteIsolation() override;
   std::optional<bool> GetOverrideValueForOriginKeyedProcesses() override;
   bool ShouldDisableSiteIsolation(

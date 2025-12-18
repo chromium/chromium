@@ -2874,6 +2874,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Whether v8 feature flag overrides are disallowed for the given `site_url`.
   virtual bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url);
 
+  // Whether Advanced Protection is enabled for Android.
+  // Returns false if build is not Android.
+  virtual bool IsAndroidAdvancedProtectionEnabled();
+
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
 
