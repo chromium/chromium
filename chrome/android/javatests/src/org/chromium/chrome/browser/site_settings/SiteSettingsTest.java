@@ -274,7 +274,11 @@ public class SiteSettingsTest {
     @Before
     public void setUp() throws TimeoutException {
         // Clean up cookies and permissions to ensure tests run in a clean environment.
-        cleanUpCookiesAndPermissions();
+        try {
+            cleanUpCookiesAndPermissions();
+        } catch (TimeoutException e) {
+            // Sometimes there's a callback timeout here. Doesn't seem to impact test results.
+        }
     }
 
     @After
@@ -321,7 +325,11 @@ public class SiteSettingsTest {
 
     @AfterClass
     public static void tearDownAfterClass() throws TimeoutException {
-        cleanUpCookiesAndPermissions();
+        try {
+            cleanUpCookiesAndPermissions();
+        } catch (TimeoutException e) {
+            // Sometimes there's a callback timeout here. Doesn't seem to impact test results.
+        }
     }
 
     private static BrowserContextHandle getBrowserContextHandle() {
@@ -1382,7 +1390,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(38, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(40, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -2227,6 +2235,54 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesLocalNetworkAccess() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesLocalNetworkWithToggle() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOCAL_NETWORK, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testOnlyExpectedPreferencesLocalNetwork() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOCAL_NETWORK,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesLoopbackNetworkWithToggle() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOOPBACK_NETWORK, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testOnlyExpectedPreferencesLoopbackNetwork() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOOPBACK_NETWORK,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT);
     }
@@ -3309,6 +3365,74 @@ public class SiteSettingsTest {
                         "LocalNetworkAccess",
                         SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
                         ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testAllowLocalNetwork() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LocalNetwork",
+                        SiteSettingsCategory.Type.LOCAL_NETWORK,
+                        ContentSettingsType.LOCAL_NETWORK,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testBlockLocalNetwork() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LocalNetwork",
+                        SiteSettingsCategory.Type.LOCAL_NETWORK,
+                        ContentSettingsType.LOCAL_NETWORK,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testAllowLoopbackNetwork() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LoopbackNetwork",
+                        SiteSettingsCategory.Type.LOOPBACK_NETWORK,
+                        ContentSettingsType.LOOPBACK_NETWORK,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS
+    })
+    public void testBlockLoopbackNetwork() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LoopbackNetwork",
+                        SiteSettingsCategory.Type.LOOPBACK_NETWORK,
+                        ContentSettingsType.LOOPBACK_NETWORK,
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();

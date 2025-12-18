@@ -1074,9 +1074,6 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
           ContentSettingsType::POINTER_LOCK,
-          // TODO(crbug.com/465491626): remove once settings UI is added.
-          ContentSettingsType::LOCAL_NETWORK,
-          ContentSettingsType::LOOPBACK_NETWORK,
           // clang-format on
       });
 

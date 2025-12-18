@@ -144,8 +144,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:touchpad-mouse',
       enabledLabel: 'siteSettingsCapturedSurfaceControlAllowed',
       disabledLabel: 'siteSettingsCapturedSurfaceControlBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableCapturedSurfaceControl'),
+      shouldShow: () => loadTimeData.getBoolean('enableCapturedSurfaceControl'),
     },
     {
       route: routes.SITE_SETTINGS_CLIPBOARD,
@@ -248,6 +247,11 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       enabledLabel: 'siteSettingsFontsAllowed',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
+    // If LNA is enabled, we show either the LOCAL_NETWORK_ACCESS setting, or
+    // the combo of LOCAL_NETWORK and LOOPBACK_NETWORK settings.
+    // enableLocalNetworkAccessSetting and
+    // enableLocalNetworkAccessSplitPermissions are never both true; though if
+    // LNA is off they can both be false.
     {
       route: routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
       id: Id.LOCAL_NETWORK_ACCESS,
@@ -257,6 +261,29 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsLocalNetworkAccessBlock',
       shouldShow: () =>
           loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+    },
+    {
+      route: routes.SITE_SETTINGS_LOCAL_NETWORK,
+      id: Id.LOCAL_NETWORK,
+      label: 'siteSettingsLocalNetwork',
+      icon: 'settings20:router',
+      enabledLabel: 'siteSettingsLocalNetworkAsk',
+      disabledLabel: 'siteSettingsLocalNetworkBlock',
+      // This is shown when we've got LNA enabled with split permissions.
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
+    },
+    {
+      route: routes.SITE_SETTINGS_LOOPBACK_NETWORK,
+      id: Id.LOOPBACK_NETWORK,
+      label: 'siteSettingsLoopbackNetwork',
+      // TODO(crbug.com/465491626): use finalized desktop icon.
+      icon: 'settings20:router',
+      enabledLabel: 'siteSettingsLoopbackNetworkAsk',
+      disabledLabel: 'siteSettingsLoopbackNetworkBlock',
+      // This is shown when we've got LNA enabled with split permissions.
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
@@ -538,6 +565,8 @@ export class SettingsSiteSettingsPageElement extends
               // </if>
               Id.WEB_APP_INSTALLATION,
               Id.LOCAL_NETWORK_ACCESS,
+              Id.LOCAL_NETWORK,
+              Id.LOOPBACK_NETWORK,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

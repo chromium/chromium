@@ -144,6 +144,11 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::LOCAL_NETWORK_ACCESS,
        IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS,
        IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS_MID_SENTENCE},
+      {ContentSettingsType::LOCAL_NETWORK, IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK,
+       IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_MID_SENTENCE},
+      {ContentSettingsType::LOOPBACK_NETWORK,
+       IDS_SITE_SETTINGS_TYPE_LOOPBACK_NETWORK,
+       IDS_SITE_SETTINGS_TYPE_LOOPBACK_NETWORK_MID_SENTENCE},
       {ContentSettingsType::WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
@@ -299,6 +304,12 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK;
+      break;
+    case ContentSettingsType::LOCAL_NETWORK:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ASK;
+      break;
+    case ContentSettingsType::LOOPBACK_NETWORK:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_LOOPBACK_NETWORK_ASK;
       break;
     // Guard content settings:
     case ContentSettingsType::USB_GUARD:

@@ -3153,6 +3153,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCK" desc="The block label for the hand tracking feature in site settings.">
     Don't allow sites to track your hands
   </message>
+
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_DESCRIPTION" desc="Description of the local network access content setting.">
     Sites can use this feature to look for and connect to any device on your local network
   </message>
@@ -3168,6 +3169,39 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the local network access content setting.">
     Not allowed to connect to any device on your local network
   </message>
+
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_DESCRIPTION" desc="Description of the local network content setting.">
+    Sites can use this feature to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ASK" desc="Label for the enabled option of the local network content setting.">
+    Sites can ask to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_BLOCK" desc="Label for the disabled option of the local network content setting.">
+    Don't allow sites to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the local network content setting.">
+    Allowed to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the local network content setting.">
+    Not allowed to access other devices on your local network
+  </message>
+
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_DESCRIPTION" desc="Description of the loopback network content setting.">
+    Sites can use this feature to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_ASK" desc="Label for the enabled option of the loopback network content setting.">
+    Sites can ask to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_BLOCK" desc="Label for the disabled option of the loopback network content setting.">
+    Don't allow sites to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the loopback network content setting.">
+    Allowed to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the loopback network content setting.">
+    Not allowed to access other apps and services on this device
+  </message>
+
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
   </message>

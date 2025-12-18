@@ -332,5 +332,18 @@
             label="$i18n{siteSettingsLocalNetworkAccess}">
         </site-details-permission>
       </template>
+      <template is="dom-if" if="[[enableLocalNetworkAccessSplitPermissions_]]">
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.LOCAL_NETWORK]]"
+            icon="settings20:router"
+            label="$i18n{siteSettingsLocalNetwork}">
+        </site-details-permission>
+        <!-- TODO(crbug.com/465491626): use finalized desktop icon -->
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.LOOPBACK_NETWORK]]"
+            icon="settings20:router"
+            label="$i18n{siteSettingsLoopbackNetwork}">
+        </site-details-permission>
+      </template>
     </div>
   </settings-subpage>

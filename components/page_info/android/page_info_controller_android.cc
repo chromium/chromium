@@ -203,7 +203,14 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
-    permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    if (base::FeatureList::IsEnabled(
+            network::features::kLocalNetworkAccessChecksSplitPermissions)) {
+      permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK);
+      permissions_to_display.push_back(ContentSettingsType::LOOPBACK_NETWORK);
+    } else {
+      permissions_to_display.push_back(
+          ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    }
   }
 
   std::map<ContentSettingsType, /*allowed*/ bool>

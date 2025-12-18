@@ -449,7 +449,15 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                 : &vector_icons::kInstallDesktopIcon;
       break;
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
-      // TODO(crbug.com/400455013): Replace with final icons.
+      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
+                                : &vector_icons::kRouterIcon;
+      break;
+    case ContentSettingsType::LOCAL_NETWORK:
+      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
+                                : &vector_icons::kRouterIcon;
+      break;
+    // TODO(crbug.com/465491626): use finalized desktop icon
+    case ContentSettingsType::LOOPBACK_NETWORK:
       icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
                                 : &vector_icons::kRouterIcon;
       break;

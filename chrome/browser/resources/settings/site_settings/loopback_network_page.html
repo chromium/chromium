@@ -1,0 +1,25 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsLoopbackNetwork}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsLoopbackNetworkDescription}
+  </div>
+  <!-- TODO(crbug.com/465491626): use finalized desktop icon -->
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.LOOPBACK_NETWORK]]"
+      allow-option-label="$i18n{siteSettingsLoopbackNetworkAsk}"
+      allow-option-icon="settings20:router"
+      block-option-label="$i18n{siteSettingsLoopbackNetworkBlock}"
+      block-option-icon="settings20:router-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.LOOPBACK_NETWORK]]"
+      block-header=
+          "$i18n{siteSettingsLoopbackNetworkBlockedExceptions}"
+      allow-header=
+          "$i18n{siteSettingsLoopbackNetworkAllowedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

@@ -82,6 +82,8 @@ public class SiteSettingsCategory {
         Type.LOCAL_NETWORK_ACCESS,
         Type.WINDOW_MANAGEMENT,
         Type.AUTO_PICTURE_IN_PICTURE,
+        Type.LOCAL_NETWORK,
+        Type.LOOPBACK_NETWORK,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -126,9 +128,11 @@ public class SiteSettingsCategory {
         int LOCAL_NETWORK_ACCESS = 35;
         int WINDOW_MANAGEMENT = 36;
         int AUTO_PICTURE_IN_PICTURE = 37;
+        int LOCAL_NETWORK = 38;
+        int LOOPBACK_NETWORK = 39;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 38;
+        int NUM_ENTRIES = 40;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -261,6 +265,10 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.JAVASCRIPT_OPTIMIZER;
             case Type.LOCAL_NETWORK_ACCESS:
                 return ContentSettingsType.LOCAL_NETWORK_ACCESS;
+            case Type.LOCAL_NETWORK:
+                return ContentSettingsType.LOCAL_NETWORK;
+            case Type.LOOPBACK_NETWORK:
+                return ContentSettingsType.LOOPBACK_NETWORK;
             case Type.MICROPHONE:
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.NFC:
@@ -358,6 +366,10 @@ public class SiteSettingsCategory {
                 return "javascript_optimizer";
             case Type.LOCAL_NETWORK_ACCESS:
                 return "local_network_access";
+            case Type.LOCAL_NETWORK:
+                return "local_network";
+            case Type.LOOPBACK_NETWORK:
+                return "loopback_network";
             case Type.MICROPHONE:
                 return "microphone";
             case Type.NFC:

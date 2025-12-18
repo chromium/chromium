@@ -536,7 +536,17 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableLocalNetworkAccessSetting",
       base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks) &&
-          !network::features::kLocalNetworkAccessChecksWarn.Get());
+          !network::features::kLocalNetworkAccessChecksWarn.Get() &&
+          !base::FeatureList::IsEnabled(
+              network::features::kLocalNetworkAccessChecksSplitPermissions));
+
+  html_source->AddBoolean(
+      "enableLocalNetworkAccessSplitPermissions",
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+          !network::features::kLocalNetworkAccessChecksWarn.Get() &&
+          base::FeatureList::IsEnabled(
+              network::features::kLocalNetworkAccessChecksSplitPermissions));
 
   // AI
   bool show_glic_section = false;

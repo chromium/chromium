@@ -203,6 +203,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "file_system_write_guard_permission_list";
             case ContentSettingsType.LOCAL_NETWORK_ACCESS:
                 return "local_network_access";
+            case ContentSettingsType.LOCAL_NETWORK:
+                return "local_network";
+            case ContentSettingsType.LOOPBACK_NETWORK:
+                return "loopback_network";
             case ContentSettingsType.WINDOW_MANAGEMENT:
                 return "window_management_permission_list";
             default:

@@ -1258,6 +1258,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return R.string.website_settings_serial_port_page_description;
             } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS) {
                 return R.string.website_settings_local_network_access_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.LOCAL_NETWORK) {
+                return R.string.website_settings_local_network_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.LOOPBACK_NETWORK) {
+                return R.string.website_settings_loopback_network_page_description;
             } else if (mCategory.getType() == SiteSettingsCategory.Type.WINDOW_MANAGEMENT) {
                 return R.string.website_settings_window_management_page_description;
             } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE) {

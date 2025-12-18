@@ -130,6 +130,12 @@
   <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_TITLE" desc="Title of the permission for Local Network Access [CHAR_LIMIT=32]">
     Local network access
   </message>
+  <message name="IDS_LOCAL_NETWORK_PERMISSION_TITLE" desc="Title of the permission for Local Network [CHAR_LIMIT=32]">
+    Local network
+  </message>
+  <message name="IDS_LOOPBACK_NETWORK_PERMISSION_TITLE" desc="Title of the permission for Loopback Network [CHAR_LIMIT=32]">
+    Loopback network
+  </message>
   <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_TITLE" desc="Title of the permission for Window Management [CHAR_LIMIT=32]">
     Window management
   </message>
@@ -1236,7 +1242,6 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_ACCESS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to connect to devices on the user's local network. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to connect to any device on your local network. When off, sites can’t connect to devices on your local network.
   </message>
-
   <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_ACCESS_ASK" desc="Primary text corresponding to the ask button in the Local Network Access permission radio button group.">
     Sites can ask to connect to any device on your local network
   </message>
@@ -1244,6 +1249,43 @@
     Don’t allow sites to connect to any device on your local network
   </message>
 
+  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_PAGE_DESCRIPTION" desc="Description of the local network content setting.">
+    Sites can use this feature to access other devices on your local network
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_ASK" desc="Summary text explaining that sites need to ask for permission before they can connect to other devices on the user's local network.">
+    Sites can ask to access other devices on your local network
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_BLOCKED" desc="Summary text explaining that sites are blocked from making local network requests to other devices on your local network.">
+    Don't allow sites to access other devices on your local network
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to connect to other devices on the user's local network. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to access other devices on your local network. When off, sites can’t access other devices on your local network.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_ASK" desc="Primary text corresponding to the ask button in the Local Network permission radio button group.">
+    Sites can ask to access other devices on your local network
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_BLOCK" desc="Primary text corresponding to the block button in the Local Network permission radio button group.">
+    Don’t allow sites to access other devices on your local network
+  </message>
+
+  <message name="IDS_WEBSITE_SETTINGS_LOOPBACK_NETWORK_PAGE_DESCRIPTION" desc="Description of the loopback network content setting.">
+    Sites can use this feature to access other apps and services on this device
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOOPBACK_NETWORK_ASK" desc="Summary text explaining that sites need to ask for permission before they can connect to this device.">
+    Sites can ask to access other apps and services on this device
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOOPBACK_NETWORK_BLOCKED" desc="Summary text explaining that sites are blocked from making local network requests to this device.">
+    Don't allow sites to access other apps and services on this device
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOOPBACK_NETWORK_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to connect to this device. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to access other apps and services on this device. When off, sites can’t access other apps and services on this device.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_LOOPBACK_NETWORK_ASK" desc="Primary text corresponding to the ask button in the Loopback Network permission radio button group.">
+    Sites can ask to access other apps and services on this device
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_LOOPBACK_NETWORK_BLOCK" desc="Primary text corresponding to the block button in the Loopback Network permission radio button group.">
+    Don't allow sites to access other apps and services on this device
+  </message>
   <!-- Window Management -->
   <message name="IDS_WEBSITE_SETTINGS_WINDOW_MANAGEMENT_PAGE_DESCRIPTION" desc="Description of the window management content setting.">
     Sites can use this feature to manage windows on all your displays

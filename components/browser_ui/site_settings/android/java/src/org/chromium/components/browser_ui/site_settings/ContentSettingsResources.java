@@ -407,6 +407,34 @@ public class ContentSettingsResources {
                         R.drawable.router_off_24,
                         R.string.website_settings_local_network_access_ask,
                         R.string.website_settings_local_network_access_block);
+
+            case ContentSettingsType.LOCAL_NETWORK:
+                return new ResourceItem(
+                        R.drawable.router_24,
+                        R.string.local_network_permission_title,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        R.string.website_settings_category_local_network_ask,
+                        R.string.website_settings_category_local_network_blocked,
+                        R.string.website_settings_category_local_network_a11y,
+                        R.drawable.router_off_24,
+                        R.string.website_settings_local_network_ask,
+                        R.string.website_settings_local_network_block);
+
+            // TODO(crbug.com/465491626): use finalized android icon
+            case ContentSettingsType.LOOPBACK_NETWORK:
+                return new ResourceItem(
+                        R.drawable.router_24,
+                        R.string.loopback_network_permission_title,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        R.string.website_settings_category_loopback_network_ask,
+                        R.string.website_settings_category_loopback_network_blocked,
+                        R.string.website_settings_category_loopback_network_a11y,
+                        R.drawable.router_off_24,
+                        R.string.website_settings_loopback_network_ask,
+                        R.string.website_settings_loopback_network_block);
+
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
                                 R.drawable.ic_videocam_fill_24dp,

@@ -410,6 +410,25 @@
     </template>
   </template>
 
+  <template is="dom-if" if="[[enableLocalNetworkAccessSplitPermissions_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_LOCAL_NETWORK, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-local-network-page slot="view"
+          id="siteSettingsLocalNetwork" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_LOCAL_NETWORK.path]]">
+      </settings-local-network-page>
+    </template>
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_LOOPBACK_NETWORK, currentRoute,
+        inSearchMode)]]" update-when-false>
+      <settings-loopback-network-page slot="view"
+          id="siteSettingsLoopbackNetwork" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_LOOPBACK_NETWORK.path]]">
+      </settings-loopback-network-page>
+    </template>
+  </template>
+
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_LOCAL_FONTS, currentRoute, inSearchMode)]]"
       update-when-false>

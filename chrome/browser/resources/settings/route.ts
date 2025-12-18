@@ -150,6 +150,11 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_LOCAL_NETWORK_ACCESS =
         r.SITE_SETTINGS.createChild('localNetworkAccess');
   }
+  if (loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions')) {
+    r.SITE_SETTINGS_LOCAL_NETWORK = r.SITE_SETTINGS.createChild('localNetwork');
+    r.SITE_SETTINGS_LOOPBACK_NETWORK =
+        r.SITE_SETTINGS.createChild('loopbackNetwork');
+  }
 }
 
 /**

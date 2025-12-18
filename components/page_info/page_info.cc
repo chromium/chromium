@@ -166,6 +166,8 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::WEB_PRINTING,
 #endif  // BUILDFLAG(IS_CHROMEOS)
     ContentSettingsType::LOCAL_NETWORK_ACCESS,
+    ContentSettingsType::LOCAL_NETWORK,
+    ContentSettingsType::LOOPBACK_NETWORK,
 };
 
 // The list of setting types which request permission for a pair of requesting

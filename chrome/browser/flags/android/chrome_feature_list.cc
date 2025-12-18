@@ -460,6 +460,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &media::kContextMenuPictureInPictureAndroid,
     &net::features::kVerifyQWACs,
     &network::features::kLocalNetworkAccessChecks,
+    &network::features::kLocalNetworkAccessChecksSplitPermissions,
     &notifications::features::kUseChimeAndroidSdk,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &paint_preview::kPaintPreviewDemo,

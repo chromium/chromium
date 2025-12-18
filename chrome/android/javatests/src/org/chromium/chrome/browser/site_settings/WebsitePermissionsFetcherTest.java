@@ -836,6 +836,20 @@ public class WebsitePermissionsFetcherTest {
                         ContentSetting.DEFAULT,
                         ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.LOCAL_NETWORK,
+                        ORIGIN,
+                        ContentSetting.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.LOOPBACK_NETWORK,
+                        ORIGIN,
+                        ContentSetting.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
 
         int storageSize = 256;
         int sharedDictionarySize = 12345;
