@@ -665,10 +665,7 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
   }
 
   if (contextual_tasks_ui) {
-    // TODO(http://crbug.com/451688545): Get the TabContextStatus from
-    // `context_controller_`.
-    contextual_tasks_ui->OnActiveTabContextStatusChanged(
-        ContextualTasksUI::TabContextStatus::kNotUploaded);
+    contextual_tasks_ui->OnActiveTabContextStatusChanged();
   }
 }
 

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -50,6 +51,10 @@ namespace contextual_tasks {
 class ContextualTasksContextController;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 class ContextualTasksComposeboxHandler;
 class ContextualTasksInternalsPageHandler;
@@ -83,14 +88,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
     raw_ptr<contextual_tasks::ContextualTasksContextController>
         context_controller_;
     raw_ref<TaskInfoDelegate> task_info_delegate_;
-  };
-
-  // Enum representing the upload status of tab context.
-  enum class TabContextStatus {
-    kNotUploaded,
-    kPendingUpload,
-    kUploaded,
-    kIgnored,
   };
 
   explicit ContextualTasksUI(content::WebUI* web_ui);
@@ -175,7 +172,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // Called when the active tab has been changed, either a new page is loaded or
   // a title change. This is only called when the of this class is rendered in
   // the side panel.
-  void OnActiveTabContextStatusChanged(TabContextStatus status);
+  void OnActiveTabContextStatusChanged();
 
   void SetComposeboxHandlerForTesting(
       std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
@@ -220,6 +217,15 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // WebContents. In practice, this is the creation of the WebContents hosting
   // the embedded remote page.
   void OnInnerWebContentsCreated(content::WebContents* inner_contents);
+
+  // Called when the contextual task context is returned by the service.
+  void OnContextRetrievedForActiveTab(
+      int32_t tab_id,
+      const GURL& last_committed_url,
+      std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
+
+  // Called to update the suggested tab chip on composebox.
+  void UpdateSuggestedTabContext(tabs::TabInterface* tab);
 
   // The OAuth token fetcher is used to fetch the OAuth token for the signed in
   // user. This is used to authenticate the user when making requests in the
