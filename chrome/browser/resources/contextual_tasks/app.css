@@ -13,10 +13,9 @@
   flex-direction: column;
   height: 100%;
   background-color: var(--search-background-color);
-  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
   --color-composebox-cancel-button: rgba(10,10,10, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
-  --color-composebox-file-carousel-divider: rgba(255, 255, 255, 1);
+  --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
   --color-composebox-file-carousel-remove-button: rgba(0, 0, 0, 0.6);
   --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.2);
@@ -34,6 +33,7 @@
   --color-composebox-hover: rgba(233, 235, 240, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
+  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
@@ -52,22 +52,36 @@
   --thumbnail-chip-width: 154px;
 }
 
-/* Dark mode */
-/* TODO(dianaou): Add styling for dark mode. */
 :host([dark-mode_]) {
-  --color-composebox-cancel-button: #bfbfbf;
-  --color-composebox-font: #e6e8f0;
-  --color-composebox-font-dark: #e6e8f0;
-  --color-composebox-font-light: #e6e8f0;
-  --color-composebox-hover: #3e3f43;
+  --color-composebox-background: rgba(31, 31, 31, 1);
+  --color-composebox-cancel-button: rgba(191, 191, 191, 1);
+  --color-composebox-context-entrypoint-hover-background: rgba(63, 64, 74, 1);
+  --color-composebox-file-carousel-divider: rgba(94, 94, 94, 1);
+  --color-composebox-file-carousel-remove-gradient-end: rgba(100, 100, 100, 0.2);
+  --color-composebox-file-carousel-remove-gradient-start: rgba(100, 100, 100, 0.2);
+  --color-composebox-file-carousel-url: rgba(230, 232, 240, 1);
+  --color-composebox-file-chip-background: rgba(42, 43, 54, 1);
+  --color-composebox-file-chip-background-hovered: rgba(63, 64, 74, 1);
+  --color-composebox-file-chip-favicon-background: rgba(31, 31, 31, 1);
+  --color-composebox-file-chip-text: rgba(227, 227, 227, 1);
+  --color-composebox-font: rgba(230, 232, 240, 1);
+  --color-composebox-font-dark: rgba(230, 232, 240, 1);
+  --color-composebox-font-light: rgba(230, 232, 240, 1);
+  --color-composebox-hover: rgba(62, 63, 67, 1);
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
-  --color-composebox-voice-lens-button: #bfbfbf;
-  --color-searchbox-results-background-hovered: #3c4043;
-  --cr-composebox-background-color: #1d1e26;
+  --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
+  --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
+  --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
+  --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
+  --cr-composebox-background-color: rgba(29, 30, 38, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
-  --cr-composebox-submit-button-hover-color: #3e3f431a;
-  --search-background-color: #101218;
-  --search-background-color-rgb: 36, 36, 36;
+  --cr-composebox-submit-button-hover-color: rgba(54, 54, 54, 1);
+  --cr-fallback-color-surface: var(--search-background-color-dark);
+  --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
+  --cr-primary-text-color: var(--color-composebox-file-chip-text);
+  --remove-button-fill-color: rgba(255, 255, 255, 1);
+  --search-background-color: rgba(12, 20, 23, 1);
+  --search-background-color-rgb: 12, 20, 23;
 }
 
 [hidden] {
