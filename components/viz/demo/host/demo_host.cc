@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/viz/demo/client/demo_client.h"
 #include "components/viz/demo/common/switches.h"
+#include "components/viz/demo/host/demo_host_display_client.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
@@ -122,7 +123,7 @@ void DemoHost::Initialize(
   host_frame_sink_manager_.BindAndSetManager(std::move(receiver), nullptr,
                                              std::move(remote));
 
-  display_client_ = std::make_unique<viz::HostDisplayClient>(widget_);
+  display_client_ = std::make_unique<demo::DemoHostDisplayClient>(widget_);
 
   auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
 

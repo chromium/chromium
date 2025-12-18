@@ -43,32 +43,34 @@ DemoService::DemoService(
   params->frame_sink_manager_client = std::move(client);
   runner_ = std::make_unique<viz::VizCompositorThreadRunnerImpl>();
 
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kVizDemoUseGPU)) {
-    gpu_init_ = std::make_unique<gpu::GpuInit>();
+  gpu_init_ = std::make_unique<gpu::GpuInit>();
 
-    io_thread_ = CreateAndStartIOThread();
+  io_thread_ = CreateAndStartIOThread();
 
-    viz::GpuServiceImpl::InitParams init_params;
-    init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
-    init_params.io_runner = io_thread_->task_runner();
-    init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
+  viz::GpuServiceImpl::InitParams init_params;
+  init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
+  init_params.io_runner = io_thread_->task_runner();
+  init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
 
-    gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
-        gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
-        gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
-        gpu_init_->gpu_feature_info_for_hardware_gpu(),
-        gpu_init_->gpu_extra_info(), std::move(init_params));
+  gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
+      gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
+      gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
+      gpu_init_->gpu_feature_info_for_hardware_gpu(),
+      gpu_init_->gpu_extra_info(), std::move(init_params));
 
-    mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
-    std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
+  std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
 
-    gpu_service_->InitializeWithHost(
-        std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
-        gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
-                                           gfx::Size()),
-        viz::mojom::GpuServiceCreationParams::New());
+  scoped_refptr<gl::GLSurface> default_offscreen_surface;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kVizDemoUseGPU)) {
+    default_offscreen_surface = gl::init::CreateOffscreenGLSurface(
+        gl::GetDefaultDisplay(), gfx::Size());
   }
+
+  gpu_service_->InitializeWithHost(
+      std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
+      default_offscreen_surface, viz::mojom::GpuServiceCreationParams::New());
 
   runner_->CreateFrameSinkManager(std::move(params), gpu_service_.get());
 }

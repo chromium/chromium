@@ -260,6 +260,13 @@ int main(int argc, char** argv) {
   if (use_gpu) {
     gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
   }
+#elif BUILDFLAG(IS_WIN)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
+  command_line->AppendSwitchASCII(switches::kUseGL,
+                                  use_gpu ? gl::kGLImplementationANGLEName
+                                          : gl::kGLImplementationDisabledName);
+  gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
 #endif
   return DemoMain();
 }
