@@ -150,8 +150,7 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
   }
 
-  WebStateDelegateBrowserAgent::CreateForBrowser(
-      browser, TabInsertionBrowserAgent::FromBrowser(browser));
+  WebStateDelegateBrowserAgent::CreateForBrowser(browser);
 
   // ViewSourceBrowserAgent requires TabInsertionBrowserAgent, and is only used
   // in debug builds.

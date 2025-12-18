@@ -137,8 +137,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(
-        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
+    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
     SyncErrorBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
