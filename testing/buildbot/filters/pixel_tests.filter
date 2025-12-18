@@ -134,6 +134,7 @@ PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
 PrivacySandboxSettingsTopicsInteractiveTest.*
 ProfileMenuViewPixelTest.*
+ProfilePickerSigninToolbarUIPixelTest.*
 ProfilePickerUIPixelTest.*
 ProfileTypeChoiceUIPixelTest.*
 PromptForScanningModalDialogTest.*

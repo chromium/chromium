@@ -15,14 +15,16 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
-// Padding of elements in the simple toolbar.
-constexpr gfx::Insets kToolbarPadding = gfx::Insets(8);
+// Padding of elements in the simple toolbar, matching the padding in profile
+// picker type choice screen.
+constexpr gfx::Insets kToolbarPadding = gfx::Insets(8).set_left(16);
 
 class SimpleBackButton : public ToolbarButton {
   METADATA_HEADER(SimpleBackButton, ToolbarButton)
@@ -72,25 +74,13 @@ void ProfilePickerSignInToolbar::BuildToolbar(
   auto back_button =
       std::make_unique<SimpleBackButton>(std::move(on_back_callback));
   AddChildView(std::move(back_button));
-  UpdateToolbarColor();
-}
 
-void ProfilePickerSignInToolbar::OnThemeChanged() {
-  UpdateToolbarColor();
-  View::OnThemeChanged();
-}
-
-void ProfilePickerSignInToolbar::UpdateToolbarColor() {
-  if (!GetColorProvider()) {
-    return;
-  }
-
-  SkColor background_color = GetColorProvider()->GetColor(kColorToolbar);
-  SetBackground(views::CreateSolidBackground(background_color));
-
-  // On Mac, the WebContents is initially transparent. Set the color for the
-  // main view as well.
-  parent()->SetBackground(views::CreateSolidBackground(background_color));
+  // Set the background to transparent to inherit the color from sign-in page.
+  SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  // Ensure toolbar is drawn on top of the WebView. Mark it as non-opaque to let
+  // the web content show through the transparent background.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 BEGIN_METADATA(ProfilePickerSignInToolbar)

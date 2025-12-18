@@ -65,7 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -826,24 +826,22 @@ bool ProfilePickerView::GetAcceleratorForCommandId(
   return false;
 }
 
-void ProfilePickerView::BuildLayout() {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                                   views::MaximumFlexSizeRule::kUnbounded));
+void ProfilePickerView::Layout(PassKey) {
+  LayoutSuperclass<views::WidgetDelegateView>(this);
+  CHECK(toolbar_);
+  toolbar_->SetBoundsRect(gfx::Rect(toolbar_->GetPreferredSize()));
+}
 
-  auto toolbar = std::make_unique<ProfilePickerSignInToolbar>();
-  toolbar_ = AddChildView(std::move(toolbar));
-  // Toolbar gets built and set visible once we it's needed for the signin.
-  SetNativeToolbarVisible(false);
+void ProfilePickerView::BuildLayout() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);
   web_view_ = AddChildView(std::move(web_view));
+
+  // Toolbar gets built and set visible once it's needed for the signin.
+  toolbar_ = AddChildView(std::make_unique<ProfilePickerSignInToolbar>());
+  SetNativeToolbarVisible(false);
 
   web_contents_attached_subscription_ =
       web_view_->AddWebContentsAttachedCallback(base::BindRepeating(

@@ -23,13 +23,6 @@ class ProfilePickerSignInToolbar : public views::View {
 
   // Builds the actual toolbar, before calling this function, it remains empty.
   void BuildToolbar(base::RepeatingClosure on_back_callback);
-
-  // views::View:
-  void OnThemeChanged() override;
-
- private:
-  // Updates the colors for the toolbar.
-  void UpdateToolbarColor();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_TOOLBAR_H_
