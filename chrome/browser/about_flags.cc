@@ -2194,7 +2194,7 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"MC (Multi context)", kOmniboxAimMultiContext,
      std::size(kOmniboxAimMultiContext), nullptr},
     {"MC Dedicated Button", kOmniboxAimMultiContextDedicatedModeButton,
-     std::size(kOmniboxAimDedicatedModeButton), nullptr},
+     std::size(kOmniboxAimMultiContextDedicatedModeButton), nullptr},
     {"MC Button with Hint", kOmniboxAimMultiContextDedicatedModeButtonWithHint,
      std::size(kOmniboxAimMultiContextDedicatedModeButtonWithHint), nullptr},
     {"MC Compact", kOmniboxAimMultiContextCompactFusebox,
