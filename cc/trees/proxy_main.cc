@@ -15,6 +15,8 @@
 #include "base/notimplemented.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/traced_value.h"
@@ -149,10 +151,23 @@ void ProxyMain::BeginMainFrame(
   // Record the final status, subsampled. Use an RAII object as this function
   // has many early returns.
   CommitEarlyOutReason reason = CommitEarlyOutReason::kNoEarlyOut;
+  bool record_metrics = base::ShouldRecordSubsampledMetric(.01);
+  std::optional<base::ElapsedTimer> timer;
+  if (record_metrics) {
+    timer.emplace();
+  }
   absl::Cleanup maybe_record_metric = [&] {
-    if (base::ShouldRecordSubsampledMetric(.01)) {
+    if (record_metrics) {
       UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.MainResult",
                                 reason);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.BeginMainFrame.TimeUs", timer->Elapsed(),
+          base::Microseconds(1), base::Seconds(10), 50);
+      if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "Compositing.BeginMainFrame.TimeUs.NoUpdate", timer->Elapsed(),
+            base::Microseconds(1), base::Seconds(10), 50);
+      }
     }
   };
 
