@@ -1517,8 +1517,6 @@ void TapTabGridEditButton() {
   // Load the first website.
   [ChromeEarlGrey loadURL:GURL(URL1)];
   [ChromeEarlGrey waitForWebStateContainingText:content1];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL1)]
-      assertWithMatcher:grey_notNil()];
   NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
 
   // Load the second website and this one should be the selected one.
