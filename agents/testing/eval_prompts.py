@@ -69,7 +69,9 @@ def _build_chromium(cwd: pathlib.Path, configs: list[eval_config.TestConfig]):
         logging.debug('No targets to precompile')
 
 
-def _discover_testcase_files() -> list[eval_config.TestConfig]:
+def _discover_testcase_files(
+    extra_tests_paths: list[str] | None = None,
+) -> list[eval_config.TestConfig]:
     """Discovers all testcase files that can be run by this test runner.
 
     Returns:
@@ -80,6 +82,10 @@ def _discover_testcase_files() -> list[eval_config.TestConfig]:
     all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
     prompts_path = constants.CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
     all_tests.extend(list(prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
+    if extra_tests_paths:
+        for extra_tests_path in extra_tests_paths:
+            fullPath = constants.CHROMIUM_SRC / extra_tests_path
+            all_tests.extend(list(fullPath.glob(f'**/*{TESTCASE_EXTENSION}')))
     return [eval_config.TestConfig.from_file(t) for t in all_tests]
 
 
@@ -152,6 +158,7 @@ def _get_tests_to_run(
     total_shards: int | None,
     test_filter: str | None,
     tag_filter: str | None = None,
+    extra_tests_paths: list[str] | None = None,
 ) -> list[eval_config.TestConfig]:
     """Retrieves which tests should be run for this invocation.
 
@@ -171,7 +178,7 @@ def _get_tests_to_run(
     """
     shard_index, total_shards = _determine_shard_values(
         shard_index, total_shards)
-    configs_to_run = _discover_testcase_files()
+    configs_to_run = _discover_testcase_files(extra_tests_paths)
     if test_filter:
         filters = test_filter.split('::')
         configs_to_run = [
@@ -300,7 +307,8 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         0 on success, a non-zero value on failure.
     """
     configs_to_run = _get_tests_to_run(args.shard_index, args.total_shards,
-                                       args.filter, args.tag_filter)
+                                       args.filter, args.tag_filter,
+                                       args.extra_tests_paths)
     configs_to_run = configs_to_run * (args.isolated_script_test_repeat + 1)
     if len(configs_to_run) == 0:
         logging.info('No tests to run after filtering and sharding')
@@ -514,6 +522,10 @@ def _parse_args() -> argparse.Namespace:
         '--isolated-script-test-filter',
         dest='filter',
         help='Alias for --filter to conform to the isolated script standard.')
+    group.add_argument('--extra-tests-paths',
+                       action='append',
+                       dest='extra_tests_paths',
+                       help='Additional path to detect tests in.')
     group.add_argument(
         '--shard-index',
         type=int,
