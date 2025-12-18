@@ -185,6 +185,7 @@
   border-radius: 100px;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 500ms ease-out;
 }
 
 .play .gradient-and-mask-wrapper {
@@ -192,7 +193,7 @@
   pointer-events: auto;
 }
 
-#glowAnimationWrapper:hover .gradient-and-mask-wrapper{
+#glowAnimationWrapper:hover .gradient-and-mask-wrapper {
   opacity: 1;
   pointer-events: auto;
 }
@@ -202,13 +203,21 @@
   filter: blur(40px);
 }
 
-#glowAnimationWrapper:hover .outer-glow{
+:host([ntp-realbox-next-enabled_]) .outer-glow {
+  filter: blur(2px);
+}
+
+#glowAnimationWrapper:hover .outer-glow {
   filter: none;
+}
+
+:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .outer-glow {
+  filter: blur(2px);
 }
 
 /* Containers used to position the gradient and masks correctly. The gradient
  * and masks themselves are created using pseudo-elements. */
- .gradient,
+.gradient,
 .mask {
   position: absolute;
   inset: 0;
@@ -220,7 +229,7 @@
   aspect-ratio: 1/1;
 }
 
- .gradient:before,
+.gradient:before,
 .mask:before {
   content: '';
   position: absolute;
@@ -243,10 +252,23 @@
   rotate: var(--mask-angle-start);
 }
 
+:host([ntp-realbox-next-enabled_]) .gradient:before {
+  background: var(--glif-gradient);
+  rotate: calc(var(--glif-angle-start) + var(--mouse-angle, 0deg));
+}
+
+:host([ntp-realbox-next-enabled_]) .play .gradient:before {
+  animation: fade-in-out var(--anim-duration) linear forwards;
+}
+
+:host([ntp-realbox-next-enabled_]) .mask:before {
+  background: var(--mask-gradient);
+  rotate: calc(var(--mask-angle-start) + var(--mouse-angle, 0deg));
+}
+
 .play .mask:before {
   animation: rotate-mask-anim var(--anim-duration) var(--acceleration) forwards;
 }
-
 
 #glowAnimationWrapper:hover .mask:before {
   --anim-duration: 8s;
@@ -258,4 +280,16 @@
   --anim-duration: 8s;
   animation: rotate-glif-anim-infinite var(--anim-duration) linear infinite,
              fade-in-out-infinite var(--anim-duration) linear forwards;
+}
+
+:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .mask:before {
+  --anim-duration: 8s;
+  animation: fade-in-out-infinite var(--anim-duration) linear forwards;
+}
+
+:host([ntp-realbox-next-enabled_])
+#glowAnimationWrapper:hover
+.gradient:before {
+  --anim-duration: 8s;
+  animation: fade-in-out-infinite var(--anim-duration) linear forwards;
 }
