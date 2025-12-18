@@ -448,6 +448,8 @@ void AutofillControllerTest::TearDown() {
   [accessory_mediator_ disconnect];
   [suggestion_controller_ detachFromWebState];
 
+  autofill_manager_injector_.reset();
+
   web::test::WaitForBackgroundTasks();
   web_state_.reset();
 }

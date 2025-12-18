@@ -443,6 +443,11 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
             web_state());
   }
 
+  void TearDown() override {
+    autofill_manager_injector_.reset();
+    AutofillTestWithWebState::TearDown();
+  }
+
   web::WebFrame* WaitForMainFrame() {
     __block web::WebFrame* main_frame = nullptr;
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
