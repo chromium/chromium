@@ -571,7 +571,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   // stroke width.
 
   if (path_type == TabStyle::PathType::kBorder && tab()->split() &&
-      !IsLeftSplitTab(tab())) {
+      !IsLeftSplitTab(tab()) && base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "v60") {
     // Start with the top left side of the shape.
     path.moveTo(left, tab_top);
   } else {
@@ -604,20 +604,44 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") == "v60") {
       path.moveTo(left, extended_bottom);
+      if (IsRightSplitTab(tab()))
+        path.moveTo(tab_left, extended_bottom);
       if (extend_to_top) {
         // Create the vertical extension by extending the side diagonals until
         // they reach the top of the bounds.
-         path.cubicTo(left, extended_bottom, (((tab_left + 5) + left) / 2), ((tab_top + extended_bottom) / 2), tab_left + 5,
-                    tab_top);
-         path.lineTo(tab_right - 5, tab_top);
-         path.cubicTo(tab_right - 5, tab_top, (((tab_right - 5) + right) / 2), ((tab_top + extended_bottom) / 2), right,
-                 extended_bottom);
+         if (!IsRightSplitTab(tab())) {
+            path.cubicTo(left, extended_bottom, (((tab_left + 5) + left) / 2), ((tab_top + extended_bottom) / 2), tab_left + 5,
+                       tab_top);
+         } else {
+            path.cubicTo(left, extended_bottom, left, ((tab_top + extended_bottom) / 2), left,
+                       tab_top);
+         }
+         if (!IsLeftSplitTab(tab())) {
+            path.lineTo(tab_right - 5, tab_top);
+            path.cubicTo(tab_right - 5, tab_top, (((tab_right - 5) + right) / 2), ((tab_top + extended_bottom) / 2), right,
+                    extended_bottom);
+         } else {
+            path.lineTo(tab_right, tab_top);
+            path.cubicTo(tab_right, tab_top, tab_right, ((tab_top + extended_bottom) / 2), tab_right,
+                    extended_bottom);
+         }
       } else {
-         path.cubicTo(left, extended_bottom, ((tab_left + left) / 2), (((tab_top * 0.5) + extended_bottom) / 2), tab_left,
-                  (tab_top * 0.5));
-         path.cubicTo(tab_left, (tab_top * 0.5), tab_left, tab_top * 0.5, tab_right, tab_top * 0.5);
-         path.cubicTo(tab_right, (tab_top * 0.5), (((tab_right - 2) + right) / 2), (((tab_top * 0.5) + extended_bottom) / 2), right,
-                 extended_bottom);
+         if (!IsRightSplitTab(tab())) {
+            path.cubicTo(left, extended_bottom, ((tab_left + left) / 2), (((tab_top * 0.5) + extended_bottom) / 2), tab_left,
+                     (tab_top * 0.5));
+         } else {
+            path.cubicTo(tab_left, extended_bottom, tab_left, (((tab_top * 0.5) + extended_bottom) / 2), tab_left,
+                     (tab_top * 0.5));
+         }
+         if (!IsLeftSplitTab(tab())) {
+            path.cubicTo(tab_left, (tab_top * 0.5), tab_left, tab_top * 0.5, tab_right, tab_top * 0.5);
+            path.cubicTo(tab_right, (tab_top * 0.5), (((tab_right - 2) + right) / 2), (((tab_top * 0.5) + extended_bottom) / 2), right,
+                    extended_bottom);
+         } else {
+            path.cubicTo(tab_left, (tab_top * 0.5), tab_left, tab_top * 0.5, tab_right, tab_top * 0.5);
+            path.cubicTo(tab_right, (tab_top * 0.5), tab_right, (((tab_top * 0.5) + extended_bottom) / 2), tab_right,
+                    extended_bottom);
+         }
       }
 
       path.close();
