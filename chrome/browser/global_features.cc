@@ -22,6 +22,7 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "media/base/media_switches.h"
+#include "net/net_buildflags.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 // This causes a gn error on Android builds, because gn does not understand
@@ -51,6 +52,13 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_obsolete_profile_garbage_collector.h"  // nogncheck
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"  // nogncheck
+#include "components/unexportable_keys/features.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace {
 
@@ -105,6 +113,18 @@ void GlobalFeatures::PostBrowserProcessInit() {
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
 #endif
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (unexportable_keys::UnexportableKeyServiceImpl::
+          IsStatefulUnexportableKeyProviderSupported(
+              unexportable_keys::GetDefaultConfig()) &&
+      base::FeatureList::IsEnabled(
+          unexportable_keys::kUnexportableKeyDeletion)) {
+    unexportable_key_obsolete_profile_garbage_collector_ = std::make_unique<
+        unexportable_keys::UnexportableKeyObsoleteProfileGarbageCollector>(
+        g_browser_process->profile_manager());
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 }
 
 void GlobalFeatures::PreBrowserProcessInitCore() {

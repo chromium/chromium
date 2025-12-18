@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "net/net_buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace system_permission_settings {
@@ -55,6 +56,12 @@ class ApplicationAdvancedProtectionStatusDetector;
 class GlobalBrowserCollection;
 class StartupLaunchManager;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+namespace unexportable_keys {
+class UnexportableKeyObsoleteProfileGarbageCollector;
+}  // namespace unexportable_keys
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
@@ -230,6 +237,12 @@ class GlobalFeatures {
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
   std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<
+      unexportable_keys::UnexportableKeyObsoleteProfileGarbageCollector>
+      unexportable_key_obsolete_profile_garbage_collector_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_
