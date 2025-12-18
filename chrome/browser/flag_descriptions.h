@@ -229,7 +229,6 @@ inline constexpr char kAndroidBcivBottomControlsDescription[] =
     "Let viz move bottom browser controls when scrolling. If this flag is "
     "enabled, AndroidBrowserControlsInViz must also be enabled.";
 
-
 inline constexpr char kAndroidBottomToolbarV2Name[] = "Bottom Toolbar V2";
 inline constexpr char kAndroidBottomToolbarV2Description[] =
     "If enabled, allows the Omnibox to be persistently anchored to the bottom "
@@ -244,7 +243,6 @@ inline constexpr char kAndroidBrowserControlsInVizDescription[] =
 inline constexpr char kAnnotatorModeName[] = "Enable annotator tool";
 inline constexpr char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
-
 
 inline constexpr char kAutoRevokeSuspiciousNotificationName[] =
     "Auto-revoke suspicious notification";
@@ -2489,6 +2487,11 @@ inline constexpr char kIgnoreGpuBlocklistName[] =
 inline constexpr char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
+
+inline constexpr char kInfobarPrioritizationName[] = "Infobar Prioritization";
+inline constexpr char kInfobarPrioritizationDescription[] =
+    "Shows the infobars by priority starting by critical ones by respecting a "
+    "given caps.";
 
 inline constexpr char kInfobarRefreshName[] = "Infobar Refresh";
 inline constexpr char kInfobarRefreshDescription[] =
@@ -7616,7 +7619,6 @@ inline constexpr char kRenderArcNotificationsByChromeDescription[] =
 inline constexpr char kArcWindowPredictorName[] = "Enable ARC window predictor";
 inline constexpr char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
-
 
 inline constexpr char kShimlessRMAOsUpdateName[] =
     "Enable OS updates in shimless RMA";

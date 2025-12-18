@@ -6138,6 +6138,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "infobar-prioritization",
+    "owners": [ "top-chrome-desktop-ui@google.com","koretadaniel@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "infobar-refresh",
     "owners": [ "top-chrome-desktop-ui@google.com","musalmaan@chromium.org","koretadaniel@chromium.org" ],
     "expiry_milestone": 150

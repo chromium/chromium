@@ -4,7 +4,7 @@
 
 #include "components/infobars/core/features.h"
 
-namespace infobars {
+namespace infobars::features {
 
 BASE_FEATURE(kInfobarPrioritization, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -46,4 +46,4 @@ std::optional<InfobarPriorityCaps> GetInfobarPriorityCaps() {
            .max_low_queued = kMaxLowQueued.Get()}};
 }
 
-}  // namespace infobars
+}  // namespace infobars::features

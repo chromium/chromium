@@ -117,11 +117,11 @@ static void EnableWithCaps(base::test::ScopedFeatureList& feature_list,
                            int default_cap,
                            int low_cap) {
   feature_list.InitAndEnableFeatureWithParameters(
-      kInfobarPrioritization,
-      {{kMaxVisibleCritical.name, base::NumberToString(critical_cap)},
-       {kMaxVisibleDefault.name, base::NumberToString(default_cap)},
-       {kMaxVisibleLow.name, base::NumberToString(low_cap)},
-       {kMaxLowQueued.name, "3"}});
+      features::kInfobarPrioritization,
+      {{features::kMaxVisibleCritical.name, base::NumberToString(critical_cap)},
+       {features::kMaxVisibleDefault.name, base::NumberToString(default_cap)},
+       {features::kMaxVisibleLow.name, base::NumberToString(low_cap)},
+       {features::kMaxLowQueued.name, "3"}});
 }
 
 class InfoBarContainerWithPriorityTest : public testing::Test {

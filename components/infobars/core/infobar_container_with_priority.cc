@@ -15,7 +15,8 @@ namespace infobars {
 namespace {
 // Returns the visible cap for a given priority.
 size_t GetInfoBarPriorityCapFor(InfoBarDelegate::InfobarPriority priority) {
-  std::optional<InfobarPriorityCaps> caps = GetInfobarPriorityCaps();
+  std::optional<features::InfobarPriorityCaps> caps =
+      features::GetInfobarPriorityCaps();
   CHECK(caps.has_value());
   switch (priority) {
     case InfoBarDelegate::InfobarPriority::kCriticalSecurity:
@@ -52,7 +53,7 @@ InfoBarContainerWithPriority::~InfoBarContainerWithPriority() = default;
 
 void InfoBarContainerWithPriority::ChangeInfoBarManager(
     InfoBarManager* infobar_manager) {
-  if (!IsInfobarPrioritizationEnabled()) {
+  if (!features::IsInfobarPrioritizationEnabled()) {
     InfoBarContainer::ChangeInfoBarManager(infobar_manager);
     return;
   }
@@ -101,7 +102,7 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
 }
 
 void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
-  if (!IsInfobarPrioritizationEnabled()) {
+  if (!features::IsInfobarPrioritizationEnabled()) {
     InfoBarContainer::OnInfoBarAdded(infobar);
     return;
   }
@@ -114,7 +115,7 @@ void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
 
 void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
                                                     bool animate) {
-  if (!IsInfobarPrioritizationEnabled()) {
+  if (!features::IsInfobarPrioritizationEnabled()) {
     InfoBarContainer::OnInfoBarRemoved(infobar, animate);
     return;
   }
@@ -148,7 +149,7 @@ void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
 
 void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
                                                      InfoBar* new_infobar) {
-  if (!IsInfobarPrioritizationEnabled()) {
+  if (!features::IsInfobarPrioritizationEnabled()) {
     InfoBarContainer::OnInfoBarReplaced(old_infobar, new_infobar);
     return;
   }

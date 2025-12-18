@@ -110,7 +110,8 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 class InfoBarContainerStandardTest : public InfoBarContainerViewBrowserTest {
  public:
   InfoBarContainerStandardTest() {
-    feature_list_.InitAndDisableFeature(infobars::kInfobarPrioritization);
+    feature_list_.InitAndDisableFeature(
+        infobars::features::kInfobarPrioritization);
   }
 };
 
@@ -182,9 +183,10 @@ class InfoBarContainerPriorityTest : public InfoBarContainerViewBrowserTest {
   InfoBarContainerPriorityTest() {
     // These caps match the design doc's defaults.
     feature_list_.InitAndEnableFeatureWithParameters(
-        infobars::kInfobarPrioritization, {{"max_visible_critical", "2"},
-                                           {"max_visible_default", "1"},
-                                           {"max_visible_low", "1"}});
+        infobars::features::kInfobarPrioritization,
+        {{"max_visible_critical", "2"},
+         {"max_visible_default", "1"},
+         {"max_visible_low", "1"}});
   }
 };
 
@@ -319,9 +321,9 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest,
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsPrioritizationEnabled()) {
-      enabled_features.push_back(infobars::kInfobarPrioritization);
+      enabled_features.push_back(infobars::features::kInfobarPrioritization);
     } else {
-      disabled_features.push_back(infobars::kInfobarPrioritization);
+      disabled_features.push_back(infobars::features::kInfobarPrioritization);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

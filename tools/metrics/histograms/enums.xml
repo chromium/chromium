@@ -9602,6 +9602,7 @@ from previous Chrome versions.
   <int value="-1654902085" label="PwaNavigationCapturing:enabled"/>
   <int value="-1654476091" label="cast-streaming-force-enable-hardware-vp8"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
+  <int value="-1654293330" label="InfobarPrioritization:enabled"/>
   <int value="-1653991213" label="CrossOriginIsolated:disabled"/>
   <int value="-1653838003" label="PauseBackgroundTabs:enabled"/>
   <int value="-1652906854" label="DsePreload2OnPress:disabled"/>
@@ -18966,6 +18967,7 @@ from previous Chrome versions.
   <int value="1596717222" label="SyncPollImmediatelyOnEveryStartup:enabled"/>
   <int value="1596843821" label="NtpRealboxCr23Theming:disabled"/>
   <int value="1597516564" label="kDiagnosticsAppJelly:enabled"/>
+  <int value="1597610694" label="InfobarPrioritization:disabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
   <int value="1599757259" label="DrawWebEdgeToEdge:enabled"/>

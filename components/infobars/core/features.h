@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace infobars {
+namespace infobars::features {
 
 // When enabled, infobar display is prioritized per WebContents by tier:
 // 1) CRITICAL_SECURITY may stack concurrently up to a fixed cap.
@@ -43,6 +43,6 @@ bool IsInfobarPrioritizationEnabled();
 
 std::optional<InfobarPriorityCaps> GetInfobarPriorityCaps();
 
-}  // namespace infobars
+}  // namespace infobars::features
 
 #endif  // COMPONENTS_INFOBARS_CORE_FEATURES_H_
