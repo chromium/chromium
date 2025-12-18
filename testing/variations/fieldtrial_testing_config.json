@@ -25387,11 +25387,9 @@
                 {
                     "name": "ThreeButtonPasswordSaveDialog",
                     "enable_features": [
-                        "ThreeButtonPasswordSaveDialog"
-                    ],
-                    "disable_features": [
                         "IPH_PasswordsSavePrimingPromo",
-                        "IPH_PasswordsSaveRecoveryPromo"
+                        "IPH_PasswordsSaveRecoveryPromo",
+                        "ThreeButtonPasswordSaveDialog"
                     ]
                 }
             ]

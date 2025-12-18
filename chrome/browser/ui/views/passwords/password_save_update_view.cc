@@ -180,9 +180,10 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       extra_view_->SetStyle(
           GetDialogButtonStyle(ui::mojom::DialogButton::kCancel));
 
-      // The third button will usually stretch the bubble beyond its intended
-      // width. Permit the bubble to use vertical buttons if this happens.
-      set_allow_vertical_buttons(true);
+      // Use "Medium" dialog width, per UX preference for 3-button dialogs.
+      set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
     } else {
       // 2-button save dialog variant.
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
@@ -232,7 +233,8 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   SetShowIcon(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // SetExtraView is not designed to be called multiple times, so hide the
-  // extra button if it exists.
+  // extra button if it exists. Note that we're intentionally keeping the width
+  // of the previous dialog, even if it's the wider 3-button width.
   if (extra_view_) {
     extra_view_->SetVisible(false);
   }
