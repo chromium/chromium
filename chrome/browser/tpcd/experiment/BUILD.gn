@@ -4,7 +4,10 @@
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "experiment_manager_impl_unittest.cc" ]
+  sources = [
+    "eligibility_service_unittest.cc",
+    "experiment_manager_impl_unittest.cc",
+  ]
 
   deps = [
     "//base",

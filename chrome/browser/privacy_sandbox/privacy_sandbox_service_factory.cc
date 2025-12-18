@@ -15,6 +15,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -76,6 +77,11 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
+
+  // The Eligibility service should be created before the Privacy Sandbox
+  // service is created to determine the cookie deprecation experiment
+  // eligibility.
+  DependsOn(tpcd::experiment::EligibilityServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
