@@ -6,15 +6,19 @@
 #define COMPONENTS_SPEECH_UPSTREAM_LOADER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace speech {
 
@@ -41,7 +45,7 @@ class UpstreamLoader : public network::mojom::ChunkedDataPipeGetter {
 
  private:
   void OnUploadPipeWriteable(MojoResult unused);
-  void OnComplete(std::optional<std::string> response_body);
+  void OnComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
   // mojom::ChunkedDataPipeGetter implementation:
   void GetSize(GetSizeCallback get_size_callback) override;

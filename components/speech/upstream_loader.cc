@@ -4,10 +4,10 @@
 
 #include "components/speech/upstream_loader.h"
 
-#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/speech/upstream_loader_client.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -32,7 +32,7 @@ UpstreamLoader::UpstreamLoader(
       network::ResourceRequestBody::ReadOnlyOnce(false));
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), upstream_traffic_annotation);
-  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_url_loader_->DownloadHeadersOnly(
       url_loader_factory,
       base::BindOnce(&UpstreamLoader::OnComplete, base::Unretained(this)));
 }
@@ -102,15 +102,14 @@ void UpstreamLoader::OnUploadPipeWriteable(MojoResult unused) {
   SendData();
 }
 
-void UpstreamLoader::OnComplete(std::optional<std::string> response_body) {
+void UpstreamLoader::OnComplete(
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   int response_code = -1;
-  if (simple_url_loader_->ResponseInfo() &&
-      simple_url_loader_->ResponseInfo()->headers) {
-    response_code =
-        simple_url_loader_->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
   }
-  upstream_loader_client_->OnUpstreamDataComplete(response_body.has_value(),
-                                                  response_code);
+  bool success = simple_url_loader_->NetError() == net::OK;
+  upstream_loader_client_->OnUpstreamDataComplete(success, response_code);
 }
 
 void UpstreamLoader::GetSize(GetSizeCallback get_size_callback) {
