@@ -504,7 +504,6 @@ class WebAppIntegrationTestDriver {
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   IconLabelBubbleView* pwa_install_view();
-  views::Button* intent_chip_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
 

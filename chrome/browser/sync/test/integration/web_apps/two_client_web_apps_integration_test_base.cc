@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -187,6 +188,16 @@ bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
     base::RunLoop loop;
     web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
     loop.Run();
+
+    // The base SyncTest class creates a Browser window for each profile, but
+    // does not create any tabs in that window. Our tests require all Browser
+    // windows to always have at least one tab, so create these tabs as needed.
+    Browser* browser =
+        chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
+    CHECK(browser);
+    if (!browser->tab_strip_model()->count()) {
+      AddBlankTabAndShow(browser);
+    }
   }
   return true;
 }

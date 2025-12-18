@@ -4215,7 +4215,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   for (Profile* profile : GetAllProfiles()) {
     base::flat_map<Browser*, BrowserState> browser_state;
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [this, profile, &browser_state](BrowserWindowInterface* browser) {
+        [profile, &browser_state](BrowserWindowInterface* browser) {
           Profile* browser_profile = browser->GetProfile();
           if (browser_profile != profile) {
             return true;
@@ -4236,7 +4236,9 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
           if (!is_app_browser && active_tab_contents != nullptr) {
             EXPECT_TRUE(AwaitIntentPickerTabHelperIconUpdateComplete(
                 active_tab_contents));
-            launch_icon_shown = intent_chip_view()->GetVisible();
+            launch_icon_shown =
+                GetIntentPickerButton(browser->GetBrowserForMigrationOnly())
+                    ->GetVisible();
           }
 
           webapps::AppId app_id;
@@ -4761,9 +4763,7 @@ Browser* WebAppIntegrationTestDriver::browser() {
   Browser* browser =
       chrome::FindTabbedBrowser(profile(), /*match_original_profiles=*/false);
   CHECK(browser);
-  if (!browser->tab_strip_model()->count()) {
-    delegate_->AddBlankTabAndShow(browser);
-  }
+  CHECK(browser->tab_strip_model()->count());
   return browser;
 }
 
@@ -4793,19 +4793,6 @@ IconLabelBubbleView* WebAppIntegrationTestDriver::pwa_install_view() {
           ->GetPageActionView(kActionInstallPwa);
   CHECK(pwa_install_view);
   return pwa_install_view;
-}
-
-views::Button* WebAppIntegrationTestDriver::intent_chip_view() {
-  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-    auto* intent_chip_button = BrowserView::GetBrowserViewForBrowser(browser())
-                                   ->toolbar_button_provider()
-                                   ->GetPageActionView(kActionShowIntentPicker);
-    CHECK(intent_chip_button);
-    return intent_chip_button;
-  }
-  IntentChipButton* intent_chip_button = GetIntentPickerIcon(browser());
-  CHECK(intent_chip_button);
-  return intent_chip_button;
 }
 
 const net::EmbeddedTestServer&
