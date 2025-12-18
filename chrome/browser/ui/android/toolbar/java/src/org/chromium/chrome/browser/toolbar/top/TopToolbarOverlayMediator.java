@@ -265,9 +265,11 @@ public class TopToolbarOverlayMediator {
                             @BrowserControlsState int constraints,
                             boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            // Offset tag application is handled by external when
-                            // #isTopControlsRefactorOffsetEnabled is enabled.
-                            if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
+                            // Offset tag application is handled by TopControlsStacker when
+                            // #isTopControlsRefactorOffsetEnabled is enabled and browser controls
+                            // is at the top.
+                            if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                                    || getControlsPosition() == ControlsPosition.BOTTOM) {
                                 updateOffsetTag(offsetTagsInfo);
                             }
                             if (shouldUpdateOffsets) {
