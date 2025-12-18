@@ -24,9 +24,6 @@ class PrefRegistrySyncable;
 // This is a static class with only static utility functions. But it's also a
 // friend class of push_messaging::AppIdentifier to allow using private
 // functions.
-// TODO(crbug.com/444713031): Use of the private functions of
-// push_messaging::AppIdentifier is less ideal and should be addressed sooner or
-// later.
 class PushMessagingAppIdentifier final {
  public:
   PushMessagingAppIdentifier() = delete;
