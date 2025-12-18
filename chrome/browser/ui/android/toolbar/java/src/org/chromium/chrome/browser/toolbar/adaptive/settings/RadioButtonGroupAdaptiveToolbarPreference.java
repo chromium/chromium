@@ -49,7 +49,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseReadAloud;
     private boolean mCanUsePageSummary;
-    private boolean mButtonsInitialized;
     private Runnable mInitRadioButtonRunnable = this::initializeRadioButtonSelection;
     private boolean mIsBound;
 
@@ -117,7 +116,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     }
 
     private void initializeRadioButtonSelection() {
-        if (mStatePredictor == null || !isBound() || mButtonsInitialized) return;
+        if (mStatePredictor == null || !isBound()) return;
 
         mStatePredictor.recomputeUiState(
                 uiState -> {
@@ -169,7 +168,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
         updatePageSummaryButtonVisibility();
-        mButtonsInitialized = true;
     }
 
     @Override
