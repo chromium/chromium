@@ -81,7 +81,7 @@ include_rules = [
   "+ios/chrome/browser/phone_number/ui_bundled",
   "+ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
-  "+ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h",
+  "+ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h",
   "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h",

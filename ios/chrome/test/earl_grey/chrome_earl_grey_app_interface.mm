@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"

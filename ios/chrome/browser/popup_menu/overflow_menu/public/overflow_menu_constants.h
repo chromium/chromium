@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_CONSTANTS_H_
 
 #import <optional>
 #import <string>
@@ -76,9 +76,13 @@ std::string StringNameForActionType(ActionType action);
 // Ingests overflow_menu::Destination `destination` and records the
 // corresponding UMA action.
 void RecordUmaActionForDestination(Destination destination);
+
+// `kNewDestinationsInsertionIndex` represents the index new destinations are
+// inserted into the current ranking.
+constexpr int kNewDestinationsInsertionIndex = 3;
 }  // namespace overflow_menu
 
 using DestinationRanking = std::vector<overflow_menu::Destination>;
 using ActionRanking = std::vector<overflow_menu::ActionType>;
 
-#endif  // IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_CONSTANTS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
@@ -55,10 +55,10 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled//overflow_menu/overflow_menu_orderer.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_orderer.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -843,8 +843,9 @@ TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
 }
 
 // Tests that the Settings destination is badged with an error dot and
-// positioned at at most kNewDestinationsInsertionIndex when there is an
-// eligible identity error that can be resolved from the Settings menu.
+// positioned at at most overflow_menu::kNewDestinationsInsertionIndex when
+// there is an eligible identity error that can be resolved from the Settings
+// menu.
 TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
   CreateMediator(/*incognito=*/NO);
 
@@ -856,10 +857,11 @@ TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
   mediator_.model = model_;
 
   // Verify that the Settings destination is put at
-  // the kNewDestinationsInsertionIndex position and that it has the error
-  // badge to indicate the error.
+  // the overflow_menu::kNewDestinationsInsertionIndex position and that it has
+  // the error badge to indicate the error.
   OverflowMenuDestination* promotedDestination =
-      mediator_.model.destinations[kNewDestinationsInsertionIndex];
+      mediator_.model
+          .destinations[overflow_menu::kNewDestinationsInsertionIndex];
   EXPECT_NSEQ(kToolsMenuSettingsId,
               promotedDestination.accessibilityIdentifier);
   EXPECT_EQ(BadgeTypeError, promotedDestination.badge);
@@ -901,7 +903,8 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
   // Verify that the Settings destination is put at the front of the
   // destinations and that it has the red dot badge to indicate the error.
   OverflowMenuDestination* promotedDestination =
-      mediator_.model.destinations[kNewDestinationsInsertionIndex];
+      mediator_.model
+          .destinations[overflow_menu::kNewDestinationsInsertionIndex];
   EXPECT_NSEQ(kToolsMenuSettingsId,
               promotedDestination.accessibilityIdentifier);
   EXPECT_EQ(BadgeTypeError, promotedDestination.badge);
@@ -997,11 +1000,14 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   // Verify that the Settings destination is put at the front of the
   // destinations and that What's New is put at the second place.
   EXPECT_NSEQ(kToolsMenuSettingsId,
-              mediator_.model.destinations[kNewDestinationsInsertionIndex]
+              mediator_.model
+                  .destinations[overflow_menu::kNewDestinationsInsertionIndex]
                   .accessibilityIdentifier);
-  EXPECT_NSEQ(kToolsMenuWhatsNewId,
-              mediator_.model.destinations[kNewDestinationsInsertionIndex + 1]
-                  .accessibilityIdentifier);
+  EXPECT_NSEQ(
+      kToolsMenuWhatsNewId,
+      mediator_.model
+          .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
+          .accessibilityIdentifier);
 }
 
 // Tests that there is blue dot displayed on the Settings destination when there
@@ -1018,7 +1024,8 @@ TEST_F(OverflowMenuMediatorTest, TestSettingsBlueDotBadge) {
 
   // Verify that the Settings destination is there and has the promo badge.
   OverflowMenuDestination* promotedDestination =
-      mediator_.model.destinations[kNewDestinationsInsertionIndex];
+      mediator_.model
+          .destinations[overflow_menu::kNewDestinationsInsertionIndex];
   EXPECT_NSEQ(kToolsMenuSettingsId,
               promotedDestination.accessibilityIdentifier);
   EXPECT_EQ(BadgeTypePromo, promotedDestination.badge);
@@ -1044,16 +1051,22 @@ TEST_F(OverflowMenuMediatorTest,
   // Verify the destinations to be promoted are put in the right rank and have
   // the right badge.
   EXPECT_NSEQ(kToolsMenuSettingsId,
-              mediator_.model.destinations[kNewDestinationsInsertionIndex]
+              mediator_.model
+                  .destinations[overflow_menu::kNewDestinationsInsertionIndex]
                   .accessibilityIdentifier);
   EXPECT_EQ(BadgeTypeError,
-            mediator_.model.destinations[kNewDestinationsInsertionIndex].badge);
-  EXPECT_NSEQ(kToolsMenuWhatsNewId,
-              mediator_.model.destinations[kNewDestinationsInsertionIndex + 1]
-                  .accessibilityIdentifier);
-  EXPECT_EQ(
-      BadgeTypeNew,
-      mediator_.model.destinations[kNewDestinationsInsertionIndex + 1].badge);
+            mediator_.model
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                .badge);
+  EXPECT_NSEQ(
+      kToolsMenuWhatsNewId,
+      mediator_.model
+          .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
+          .accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypeNew,
+            mediator_.model
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
+                .badge);
   EXPECT_EQ(8U, [mediator_.model.destinations count]);
 }
 

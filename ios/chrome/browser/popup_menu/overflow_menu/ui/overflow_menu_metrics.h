@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
-#define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_UI_OVERFLOW_MENU_METRICS_H_
+#define IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_UI_OVERFLOW_MENU_METRICS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -196,4 +196,4 @@ bool ItemWasInitiallyVisible(int item,
                              NSArray<NSNumber*>* items,
                              int visibleItemCount);
 
-#endif  // IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_UI_OVERFLOW_MENU_METRICS_H_

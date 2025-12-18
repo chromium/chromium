@@ -49,7 +49,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

@@ -111,7 +111,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"

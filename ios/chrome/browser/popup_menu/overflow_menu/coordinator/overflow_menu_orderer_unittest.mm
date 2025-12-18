@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_orderer.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_orderer.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -10,11 +10,10 @@
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_action_provider.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -382,15 +381,16 @@ TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationsInMiddleOfRanking) {
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[7]);
 
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -426,15 +426,16 @@ TEST_F(OverflowMenuOrdererTest, InsertsAndRemovesNewDestinationsInRanking) {
                 overflow_menu_model_.destinations[0].destination),
             all_destinations[2]);
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[7]);
 
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -473,14 +474,15 @@ TEST_F(OverflowMenuOrdererTest, MoveBadgedDestinationsInRanking) {
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[4]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[4]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -514,20 +516,22 @@ TEST_F(OverflowMenuOrdererTest, PriorityToErrorBadgeOverOtherBadges) {
   // Set the initial ranking to `current_destinations`.
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[5]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[5]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[3]);
 }
 
 // Tests that the destinations that have a badge but are in a better position
-// than kNewDestinationsInsertionIndex won't be moved hence not demoted.
+// than overflow_menu::kNewDestinationsInsertionIndex won't be moved hence not
+// demoted.
 TEST_F(OverflowMenuOrdererTest, DontMoveBadgedDestinationWithGoodRanking) {
   DestinationRanking all_destinations = SampleDestinations();
   DestinationRanking current_destinations = {
@@ -550,7 +554,7 @@ TEST_F(OverflowMenuOrdererTest, DontMoveBadgedDestinationWithGoodRanking) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
   // Verify that the destination with a badge and with a better ranking than
-  // kNewDestinationsInsertionIndex wasn't moved.
+  // overflow_menu::kNewDestinationsInsertionIndex wasn't moved.
   ASSERT_EQ(static_cast<overflow_menu::Destination>(
                 overflow_menu_model_.destinations[0].destination),
             all_destinations[0]);
@@ -591,19 +595,21 @@ TEST_F(OverflowMenuOrdererTest, PriorityToBadgeOverNewDestinationStatus) {
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[6]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[6]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[7]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 2]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 2]
               .destination),
       all_destinations[5]);
 }
@@ -656,29 +662,33 @@ TEST_F(OverflowMenuOrdererTest, PriorityToNewDestinationWithBadge) {
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[7]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[7]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[4]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 2]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 2]
               .destination),
       all_destinations[5]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 3]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 3]
               .destination),
       all_destinations[6]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 4]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 4]
               .destination),
       all_destinations[3]);
 }
@@ -757,9 +767,9 @@ TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
   DestinationRanking updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
 
-  ASSERT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  ASSERT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             all_destinations[4]);
-  ASSERT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  ASSERT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             all_destinations[6]);
 }
 
@@ -953,7 +963,7 @@ TEST_F(OverflowMenuOrdererTest, NoDestinationUsageHistoryWithBadge) {
       RankingFromDestinationArray(overflow_menu_model_.destinations);
   // The expected result is that the badged destination is moved, but the tapped
   // destination is not because there is an active badge.
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -962,7 +972,7 @@ TEST_F(OverflowMenuOrdererTest, NoDestinationUsageHistoryWithBadge) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -970,7 +980,7 @@ TEST_F(OverflowMenuOrdererTest, NoDestinationUsageHistoryWithBadge) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1006,30 +1016,35 @@ TEST_F(OverflowMenuOrdererTest, NewItemOnlyHasBadgeForShortTime) {
   // The new item should be moved up.
   EXPECT_EQ(
       RankingFromDestinationArray(
-          overflow_menu_model_.destinations)[kNewDestinationsInsertionIndex],
+          overflow_menu_model_
+              .destinations)[overflow_menu::kNewDestinationsInsertionIndex],
       new_destination);
-  EXPECT_EQ(
-      overflow_menu_model_.destinations[kNewDestinationsInsertionIndex].badge,
-      BadgeTypeNew);
+  EXPECT_EQ(overflow_menu_model_
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                .badge,
+            BadgeTypeNew);
   [overflow_menu_orderer_ updateForMenuDisappearance];
 
   // For the next 2 impressions, the destination should still have a badge
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
-  EXPECT_EQ(
-      overflow_menu_model_.destinations[kNewDestinationsInsertionIndex].badge,
-      BadgeTypeNew);
+  EXPECT_EQ(overflow_menu_model_
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                .badge,
+            BadgeTypeNew);
   [overflow_menu_orderer_ updateForMenuDisappearance];
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
-  EXPECT_EQ(
-      overflow_menu_model_.destinations[kNewDestinationsInsertionIndex].badge,
-      BadgeTypeNew);
+  EXPECT_EQ(overflow_menu_model_
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                .badge,
+            BadgeTypeNew);
   [overflow_menu_orderer_ updateForMenuDisappearance];
 
   // Now, on the next reordering, destination should no longer have a badge.
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
-  EXPECT_EQ(
-      overflow_menu_model_.destinations[kNewDestinationsInsertionIndex].badge,
-      BadgeTypeNone);
+  EXPECT_EQ(overflow_menu_model_
+                .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                .badge,
+            BadgeTypeNone);
   [overflow_menu_orderer_ updateForMenuDisappearance];
 }
 
@@ -1072,9 +1087,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
       RankingFromDestinationArray(overflow_menu_model_.destinations);
   // The expected result is that the badged destinations are moved, but the
   // tapped destination is not because there is an active badge.
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination2);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination1);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1083,9 +1098,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination2);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination1);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1093,9 +1108,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination2);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination1);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1106,9 +1121,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
 
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination1);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination2);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1116,9 +1131,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination1);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination2);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1126,9 +1141,9 @@ TEST_F(OverflowMenuOrdererTest, TwoBadgesOnlyOneCountsImpressions) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             badged_destination1);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             badged_destination2);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   [overflow_menu_orderer_ updateForMenuDisappearance];
@@ -1254,7 +1269,8 @@ TEST_F(OverflowMenuOrdererTest, CustomizingDestinationsClearsBadgeImpressions) {
   // because it is already visible, the new destination has moved and has a
   // badge, and the tapped destination is not because there is an active badge.
   EXPECT_EQ(updated_ranking[0], badged_destination);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex], new_destination);
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
+            new_destination);
   EXPECT_EQ(updated_ranking[updated_ranking.size() - 1], tapped_destination);
   EXPECT_FALSE(destination_provider_.badgesCleared);
 
@@ -1350,15 +1366,16 @@ TEST_F(OverflowMenuOrdererTest,
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[7]);
 
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -1397,15 +1414,16 @@ TEST_F(OverflowMenuOrdererTest,
                 overflow_menu_model_.destinations[0].destination),
             all_destinations[2]);
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[7]);
 
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -1445,14 +1463,15 @@ TEST_F(OverflowMenuOrdererTest, Customization_MoveBadgedDestinationsInRanking) {
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[4]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[4]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[6]);
 }
@@ -1488,22 +1507,23 @@ TEST_F(OverflowMenuOrdererTest,
   // Set the initial ranking to `current_destinations`.
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_
+                    .destinations[overflow_menu::kNewDestinationsInsertionIndex]
+                    .destination),
+            all_destinations[5]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
-              .destination),
-      all_destinations[5]);
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(
-          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+          overflow_menu_model_
+              .destinations[overflow_menu::kNewDestinationsInsertionIndex + 1]
               .destination),
       all_destinations[3]);
 }
 
 // Variant of `DontMoveBadgedDestinationWithGoodRanking` with customization flag
 // enabled. Tests that the destinations that have a badge but are in a better
-// position than kNewDestinationsInsertionIndex won't be moved hence not
-// demoted.
+// position than overflow_menu::kNewDestinationsInsertionIndex won't be moved
+// hence not demoted.
 TEST_F(OverflowMenuOrdererTest,
        Customization_DontMoveBadgedDestinationWithGoodRanking) {
   DestinationRanking all_destinations = SampleDestinations();
@@ -1527,7 +1547,7 @@ TEST_F(OverflowMenuOrdererTest,
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
 
   // Verify that the destination with a badge and with a better ranking than
-  // kNewDestinationsInsertionIndex wasn't moved.
+  // overflow_menu::kNewDestinationsInsertionIndex wasn't moved.
   ASSERT_EQ(static_cast<overflow_menu::Destination>(
                 overflow_menu_model_.destinations[0].destination),
             all_destinations[0]);
@@ -1612,9 +1632,9 @@ TEST_F(OverflowMenuOrdererTest,
   DestinationRanking updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
 
-  ASSERT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  ASSERT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             all_destinations[4]);
-  ASSERT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  ASSERT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             all_destinations[6]);
 }
 
@@ -1712,7 +1732,7 @@ TEST_F(OverflowMenuOrdererTest, LoadBadgeDataFromPrefs) {
 
   DestinationRanking updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             overflow_menu::Destination::Bookmarks);
 
   // Adding another new destination should cause Bookmarks to hold the 4th slot
@@ -1728,18 +1748,18 @@ TEST_F(OverflowMenuOrdererTest, LoadBadgeDataFromPrefs) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             overflow_menu::Destination::Bookmarks);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             all_destinations[6]);
   [overflow_menu_orderer_ updateForMenuDisappearance];
 
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             overflow_menu::Destination::Bookmarks);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             all_destinations[6]);
   [overflow_menu_orderer_ updateForMenuDisappearance];
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
@@ -1749,9 +1769,9 @@ TEST_F(OverflowMenuOrdererTest, LoadBadgeDataFromPrefs) {
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex],
             all_destinations[6]);
-  EXPECT_EQ(updated_ranking[kNewDestinationsInsertionIndex + 1],
+  EXPECT_EQ(updated_ranking[overflow_menu::kNewDestinationsInsertionIndex + 1],
             overflow_menu::Destination::Bookmarks);
   [overflow_menu_orderer_ updateForMenuDisappearance];
 }

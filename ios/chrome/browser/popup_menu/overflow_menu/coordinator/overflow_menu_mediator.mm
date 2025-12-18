@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
@@ -54,13 +54,12 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/destination_usage_history.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_metrics.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_orderer.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_orderer.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/model/destination_usage_history.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"

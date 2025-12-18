@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_metrics.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 
 IOSOverflowMenuDestination HistogramDestinationFromDestination(
     overflow_menu::Destination destination) {

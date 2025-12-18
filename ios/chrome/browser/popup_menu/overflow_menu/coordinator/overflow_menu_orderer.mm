@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_orderer.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_orderer.h"
 
 #import <unordered_set>
 
@@ -12,12 +12,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history/destination_usage_history.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_metrics.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/model/destination_usage_history.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_action_provider.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -93,7 +93,8 @@ void InsertDestination(overflow_menu::Destination destination,
     output.push_back(destination);
   } else {
     const int insertionIndex = std::min(
-        output.size() - 1, static_cast<size_t>(kNewDestinationsInsertionIndex));
+        output.size() - 1,
+        static_cast<size_t>(overflow_menu::kNewDestinationsInsertionIndex));
 
     output.insert(output.begin() + insertionIndex, destination);
   }
@@ -369,8 +370,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   // at the beginning.
   NSUInteger badgeImpressionLastIndex =
       (experimental_flags::IsSpotlightDebuggingEnabled())
-          ? kNewDestinationsInsertionIndex + 1
-          : kNewDestinationsInsertionIndex;
+          ? overflow_menu::kNewDestinationsInsertionIndex + 1
+          : overflow_menu::kNewDestinationsInsertionIndex;
 
   NSRange impressedRange = NSMakeRange(
       0, MIN(badgeImpressionLastIndex + 1, self.model.destinations.count));
@@ -847,7 +848,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
     }
 
     // Initial items are always added to the ranking, regardless of badge state.
-    if (newDestinationRanking.size() < kNewDestinationsInsertionIndex) {
+    if (newDestinationRanking.size() <
+        overflow_menu::kNewDestinationsInsertionIndex) {
       InsertDestination(destination, remainingDestinations,
                         newDestinationRanking, true);
       continue;
@@ -946,9 +948,9 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       OverflowMenuDestination* overflowMenuDestination =
           [self.destinationProvider
               destinationForDestinationType:rankedDestination];
-      const bool dontSort =
-          overflowMenuDestination.badge == BadgeTypeNone ||
-          sortedDestinations.size() < kNewDestinationsInsertionIndex;
+      const bool dontSort = overflowMenuDestination.badge == BadgeTypeNone ||
+                            sortedDestinations.size() <
+                                overflow_menu::kNewDestinationsInsertionIndex;
 
       if (dontSort) {
         InsertDestination(rankedDestination, remainingDestinations,

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_DESTINATION_USAGE_HISTORY_DESTINATION_USAGE_HISTORY_H_
-#define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_DESTINATION_USAGE_HISTORY_DESTINATION_USAGE_HISTORY_H_
+#ifndef IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_MODEL_DESTINATION_USAGE_HISTORY_H_
+#define IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_MODEL_DESTINATION_USAGE_HISTORY_H_
 
 #import <UIKit/UIKit.h>
 
 #include "base/values.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 
 class PrefService;
 
@@ -85,4 +84,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_DESTINATION_USAGE_HISTORY_DESTINATION_USAGE_HISTORY_H_
+#endif  // IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_MODEL_DESTINATION_USAGE_HISTORY_H_

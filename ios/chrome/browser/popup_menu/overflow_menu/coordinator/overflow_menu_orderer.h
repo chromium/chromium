@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ORDERER_H_
-#define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ORDERER_H_
+#ifndef IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_COORDINATOR_OVERFLOW_MENU_ORDERER_H_
+#define IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_COORDINATOR_OVERFLOW_MENU_ORDERER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 
 namespace overflow_menu {
 enum class Destination;
@@ -131,4 +131,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ORDERER_H_
+#endif  // IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_COORDINATOR_OVERFLOW_MENU_ORDERER_H_

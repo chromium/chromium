@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -124,7 +124,7 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     return std::nullopt;
   }
 }
-// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:actionTypeToString)
+// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.cc:actionTypeToString)
 
 // LINT.IfChange(actionTypeToString)
 std::string StringNameForActionType(ActionType action) {
@@ -175,7 +175,7 @@ std::string StringNameForActionType(ActionType action) {
       return "TabGroup";
   }
 }
-// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:stringToActionType)
+// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.cc:stringToActionType)
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.

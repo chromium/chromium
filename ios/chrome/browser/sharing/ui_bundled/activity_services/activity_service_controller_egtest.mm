@@ -9,7 +9,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

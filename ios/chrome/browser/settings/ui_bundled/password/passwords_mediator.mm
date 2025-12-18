@@ -417,7 +417,7 @@ struct PasswordManagerActiveWidgetPromoData
   return _syncService->GetUserSettings()
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
-// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
+// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
 
 // Decides whether the Trusted Vault widget promo should be displayed and asks
 // consumer to do so. This code should be in sync with the code that decides

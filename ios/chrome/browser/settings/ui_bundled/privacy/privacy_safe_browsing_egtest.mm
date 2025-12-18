@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ACTION_PROVIDER_H_
-#define IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ACTION_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_ACTION_PROVIDER_H_
+#define IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_ACTION_PROVIDER_H_
 
-#import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 
 @class OverflowMenuAction;
 
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_POPUP_MENU_UI_BUNDLED_OVERFLOW_MENU_OVERFLOW_MENU_ACTION_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_POPUP_MENU_OVERFLOW_MENU_PUBLIC_OVERFLOW_MENU_ACTION_PROVIDER_H_

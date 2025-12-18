@@ -97,7 +97,7 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/popup_menu/ui_bundled/overflow_menu:feature_flags",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:feature_flags",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/screen_time/model:buildflags",
