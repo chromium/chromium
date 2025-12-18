@@ -427,54 +427,73 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
   EXPECT_EQ(0u, cache.size());
 }
 
-// Test that SSL cache is flushed on low memory notifications
-TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
-  base::test::TaskEnvironment task_environment;
-
-  // kExpirationCheckCount is set to a suitably large number so the automated
-  // pruning never triggers.
-  const size_t kExpirationCheckCount = 1000;
-  const base::TimeDelta kTimeout = base::Seconds(1000);
+// Tests that the session cache responds correctly to memory pressure events.
+TEST_F(SSLClientSessionCacheTest, MemoryPressure) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   SSLClientSessionCache::Config config;
-  config.expiration_check_count = kExpirationCheckCount;
-  std::unique_ptr<base::SimpleTestClock> clock = MakeTestClock();
+  config.max_entries = 10;
+  // Use a large expiration check count so it doesn't interfere.
+  config.expiration_check_count = 1000;
   SSLClientSessionCache cache(config);
-  cache.SetClockForTesting(clock.get());
 
-  // Insert an entry into the session cache.
-  bssl::UniquePtr<SSL_SESSION> session1 =
-      MakeTestSession(clock->Now(), kTimeout);
-  cache.Insert(cache.generation_number(), MakeTestKey("key1"),
-               bssl::UpRef(session1));
-  EXPECT_EQ(session1.get(), cache.Lookup(MakeTestKey("key1")).get());
-  EXPECT_EQ(1u, cache.size());
+  EXPECT_EQ(10u, cache.max_size());
 
-  // Expire the session.
-  clock->Advance(kTimeout * 2);
-  // Add one more session.
-  bssl::UniquePtr<SSL_SESSION> session2 =
-      MakeTestSession(clock->Now(), kTimeout);
-  cache.Insert(cache.generation_number(), MakeTestKey("key2"),
-               bssl::UpRef(session2));
-  EXPECT_EQ(2u, cache.size());
+  // Insert 10 entries.
+  for (size_t i = 0; i < 10; i++) {
+    bssl::UniquePtr<SSL_SESSION> session = NewSSLSession();
+    cache.Insert(cache.generation_number(),
+                 MakeTestKey(base::NumberToString(i)), bssl::UpRef(session));
+  }
+  EXPECT_EQ(10u, cache.size());
 
-  // Fire a notification that will flush expired sessions.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::RunLoop().RunUntilIdle();
+  // Memory pressure moderate should halve the cache size.
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment.QuitClosure());
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(5u, cache.max_size());
+  EXPECT_EQ(5u, cache.size());
 
-  // Expired session's cache should be flushed.
-  // Lookup returns nullptr, when cache entry not found.
-  EXPECT_FALSE(cache.Lookup(MakeTestKey("key1")));
-  EXPECT_TRUE(cache.Lookup(MakeTestKey("key2")));
-  EXPECT_EQ(1u, cache.size());
+  // Verify that the oldest entries (0-4) were removed and newer (5-9) remain.
+  for (size_t i = 0; i < 5; i++) {
+    EXPECT_EQ(nullptr,
+              cache.Lookup(MakeTestKey(base::NumberToString(i))).get());
+  }
+  for (size_t i = 5; i < 10; i++) {
+    EXPECT_NE(nullptr,
+              cache.Lookup(MakeTestKey(base::NumberToString(i))).get());
+  }
 
-  // Fire notification that will flush everything.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
+  // Memory pressure critical should clear the cache.
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment.QuitClosure());
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(0u, cache.max_size());
   EXPECT_EQ(0u, cache.size());
+
+  // Can't add an element under critical memory pressure.
+  {
+    bssl::UniquePtr<SSL_SESSION> session = NewSSLSession();
+    cache.Insert(cache.generation_number(),
+                 MakeTestKey(base::NumberToString(67)), bssl::UpRef(session));
+    EXPECT_EQ(0u, cache.size());
+  }
+
+  // Memory pressure none should restore the original size limit.
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_NONE, task_environment.QuitClosure());
+  task_environment.RunUntilQuit();
+  EXPECT_EQ(10u, cache.max_size());
+  EXPECT_EQ(0u, cache.size());
+
+  // We should be able to insert 10 entries again.
+  for (size_t i = 0; i < 10; i++) {
+    bssl::UniquePtr<SSL_SESSION> session = NewSSLSession();
+    cache.Insert(cache.generation_number(),
+                 MakeTestKey(base::NumberToString(i)), bssl::UpRef(session));
+  }
+  EXPECT_EQ(10u, cache.size());
 }
 
 TEST_F(SSLClientSessionCacheTest, FlushForServer) {
