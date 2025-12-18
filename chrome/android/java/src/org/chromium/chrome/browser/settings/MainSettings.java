@@ -695,6 +695,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         } else if (key.equals(PREF_MANAGE_SYNC)) {
             openManageSyncPref(context, profile, true, FRAGMENT_TAG_RESULT);
             return true;
+        } else if (key.equals(PREF_NOTIFICATIONS)) {
+            Intent intent = new Intent();
+            if (shouldShowNotificationPref(context, intent)) context.startActivity(intent);
+            return false;
         }
         // TODO(crbug.com/469676538): Handle the rest of preferences.
         return false;

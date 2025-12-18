@@ -750,29 +750,31 @@ public class SettingsSearchCoordinator {
         try {
             Class fragment = Class.forName(preferenceFragment);
             Constructor constructor = fragment.getConstructor();
-            var pf = (PreferenceFragmentCompat) constructor.newInstance();
-            pf.setArguments(extras);
+            var f = (Fragment) constructor.newInstance();
+            f.setArguments(extras);
             FragmentManager fragmentManager = getSettingsFragmentManager();
             fragmentManager
                     .beginTransaction()
-                    .replace(getViewIdForSearchDisplay(), pf)
+                    .replace(getViewIdForSearchDisplay(), f)
                     .addToBackStack(FRAGMENT_TAG_RESULT)
                     .setReorderingAllowed(true)
                     .commit();
 
             // Scroll to the chosen preference after the new fragment is ready.
-            fragmentManager.registerFragmentLifecycleCallbacks(
-                    new FragmentManager.FragmentLifecycleCallbacks() {
-                        @Override
-                        public void onFragmentAttached(
-                                @NonNull FragmentManager fm,
-                                @NonNull Fragment f,
-                                @NonNull Context context) {
-                            mHandler.post(() -> scrollAndHighlightItem(pf, key));
-                            fm.unregisterFragmentLifecycleCallbacks(this);
-                        }
-                    },
-                    false);
+            if (f instanceof PreferenceFragmentCompat pf) {
+                fragmentManager.registerFragmentLifecycleCallbacks(
+                        new FragmentManager.FragmentLifecycleCallbacks() {
+                            @Override
+                            public void onFragmentAttached(
+                                    @NonNull FragmentManager fm,
+                                    @NonNull Fragment f,
+                                    @NonNull Context context) {
+                                mHandler.post(() -> scrollAndHighlightItem(pf, key));
+                                fm.unregisterFragmentLifecycleCallbacks(this);
+                            }
+                        },
+                        false);
+            }
         } catch (ClassNotFoundException
                 | InstantiationException
                 | NoSuchMethodException
