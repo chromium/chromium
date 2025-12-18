@@ -170,7 +170,23 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
 
   content::WebContents* contextual_task_web_contents = nullptr;
-  if (!is_to_new_tab) {
+  // If the current tab is included in the context list, this navigation should
+  // open in the side panel.
+  // TODO(crbug.com/462773224): Add test that navigation with current tab in
+  // context leads to side panel.
+  if (session_handle && source_tab &&
+      session_handle->IsTabInContext(
+          SessionTabHelper::IdForTab(source_tab->GetContents()))) {
+    AssociateWebContentsToTask(source_tab->GetContents(), task.GetTaskId());
+    BrowserWindow* window = BrowserWindow::FindBrowserWindowWithWebContents(
+        source_tab->GetContents());
+    if (window) {
+      auto* coordinator = ContextualTasksSidePanelCoordinator::From(
+          window->AsBrowserView()->browser());
+      coordinator->Show();
+      contextual_task_web_contents = coordinator->GetActiveWebContents();
+    }
+  } else if (!is_to_new_tab) {
     source_tab->GetContents()->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(ui_url));
     contextual_task_web_contents = source_tab->GetContents();
