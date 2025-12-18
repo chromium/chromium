@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -44,8 +43,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
-
-constexpr base::TimeDelta kMemoryPressureCaptureDelay = base::Milliseconds(500);
 
 base::TimeDelta GetPreviewImageCaptureDelay(
     ThumbnailImage::CaptureReadiness readiness) {
@@ -613,23 +610,6 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
           ? base::TimeDelta()
           : GetPreviewImageCaptureDelay(thumbnail->GetCaptureReadiness());
 
-  // Under memory pressure, we will additionally delay the initial capture, so
-  // that generating the image is a more deliberate choice from the user. The
-  // memory pressure monitor is disabled in tests.
-  if (const auto* const monitor = base::MemoryPressureMonitor::Get()) {
-    switch (monitor->GetCurrentPressureLevel(
-        base::MemoryPressureMonitorTag::kTabHoverCardController)) {
-      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        capture_delay = base::TimeDelta::Max();
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-        capture_delay += kMemoryPressureCaptureDelay;
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_NONE:
-        break;
-    }
-  }
-
   if (capture_delay.is_zero()) {
     thumbnail_observer_->Observe(thumbnail);
     return;
@@ -647,11 +627,7 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
   }
 
-  // If we've elected to put off capture indefinitely (likely due to memory
-  // pressure), there's no additional work to do.
-  if (capture_delay.is_inf()) {
-    return;
-  }
+  CHECK(!capture_delay.is_inf());
 
   // Start a delayed capture.
   delayed_show_timer_.Start(
@@ -674,21 +650,6 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   DCHECK(tab);
   DCHECK(hover_card_);
   DCHECK(waiting_for_preview());
-
-  // Do not capture thumbnails during critical memory pressure.
-  const auto* const monitor = base::MemoryPressureMonitor::Get();
-  if (monitor && monitor->GetCurrentPressureLevel(
-                     base::MemoryPressureMonitorTag::kTabHoverCardController) ==
-                     base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    // Because we're blocked, we'll show a placeholder instead of nothing or
-    // the wrong image.
-    if (thumbnail_wait_state_ ==
-        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
-      hover_card_->SetPlaceholderImage();
-      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
-    }
-    return;
-  }
 
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail || thumbnail == thumbnail_observer_->current_image()) {

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 
 // These are regression tests for possible crashes.
 
@@ -26,13 +25,8 @@ class TabHoverCardControllerTest : public TestWithBrowserView {
     feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
   }
 
-  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
-    fake_memory_monitor_.SetAndNotifyMemoryPressure(level);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_monitor_;
 };
 
 TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
@@ -181,34 +175,6 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
   EXPECT_NE(controller->thumbnail_observer_.get()->current_image(), nullptr);
   EXPECT_EQ(controller->thumbnail_wait_state_,
             TabHoverCardController::kNotWaiting);
-}
-
-TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
-
-  g_browser_process->local_state()->SetBoolean(prefs::kHoverCardImagesEnabled,
-                                               true);
-
-  AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-  AddTab(browser_view()->browser(), GURL("http://foo2.com"));
-  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
-
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
-  TabRendererData data;
-  TestThumbnailImageDelegate delegate;
-  data.thumbnail = base::MakeRefCounted<ThumbnailImage>(&delegate);
-  target_tab->SetData(std::move(data));
-  controller->target_tab_ = target_tab;
-
-  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  controller->ShowHoverCard(true, target_tab);
-
-  EXPECT_EQ(controller->thumbnail_observer_.get()->current_image(), nullptr);
-  EXPECT_EQ(controller->thumbnail_wait_state_,
-            TabHoverCardController::kWaitingWithPlaceholder);
 }
 
 class TabHoverCardPreviewsEnabledPrefTest : public TestWithBrowserView {

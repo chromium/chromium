@@ -72,8 +72,6 @@ class TabHoverCardController : public views::ViewObserver,
                            DisableMemoryUsageForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
                            ShowPreviewsForDiscardedTabWithThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
-                           DontCaptureUnderCriticalMemoryPressure);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardPreviewsEnabledPrefTest, DefaultState);
   class EventSniffer;
 
