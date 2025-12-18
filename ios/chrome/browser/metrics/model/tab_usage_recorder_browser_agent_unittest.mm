@@ -11,6 +11,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_samples.h"
+#import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -56,7 +57,10 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
 
-  ~TabUsageRecorderBrowserAgentTest() override { [application_ stopMocking]; }
+  ~TabUsageRecorderBrowserAgentTest() override {
+    base::RunLoop().RunUntilIdle(); // Pending tasks may access `application_`.
+    [application_ stopMocking];
+  }
 
   web::FakeWebState* InsertFakeWebState(const char* url,
                                         WebStateInMemoryOption in_memory) {
