@@ -51,6 +51,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 #endif
 
 using base::UserMetricsAction;
@@ -307,7 +308,15 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (display_share_with_glic) {
+  if (glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
+      glic::GlicEnabling::IsMultiInstanceEnabled()) {
+    glic_tab_sub_menu_model_ =
+        std::make_unique<glic::GlicTabSubMenuModel>(tab_strip, index);
+    AddSubMenu(TabStripModel::CommandGlicShare,
+               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_START_SHARE,
+                                                num_tabs),
+               glic_tab_sub_menu_model_.get());
+  } else if (display_share_with_glic) {
     auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         tab_strip->profile());
     bool start_sharing = false;

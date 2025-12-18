@@ -314,6 +314,9 @@
       =1 {Sharing selected tab would exceed the sharing limit}
     other {Sharing # tabs would exceed the sharing limit}}
   </message>
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+    Start new chat with Gemini
+  </message>
   </if>
   <if expr="use_titlecase">
   <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
@@ -330,6 +333,9 @@
     {NUM_TABS, plural,
       =1 {Sharing Selected Tab Would Exceed the Sharing Limit}
     other {Sharing # Tabs Would Exceed the Sharing Limit}}
+  </message>
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+    Start New Chat with Gemini
   </message>
   </if>
 

@@ -779,6 +779,8 @@ class TabStripModel {
     CommandGlicShareLimit,
     CommandGlicStartShare,
     CommandGlicStopShare,
+    CommandGlicShare,
+    CommandGlicCreateNewChat,
 #endif
     CommandLast
   };
