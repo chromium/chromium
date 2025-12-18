@@ -47,7 +47,7 @@ extensions_types_only_schema_files_ = [
   "requirements.json",
   "shared_module.webidl",
   "web_accessible_resources_mv2.idl",
-  "web_accessible_resources.idl",
+  "web_accessible_resources.webidl",
 ]
 
 # APIs that are not currently supported on the experimental desktop-android.
