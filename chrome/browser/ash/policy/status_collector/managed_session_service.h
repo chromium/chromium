@@ -58,7 +58,6 @@ class ManagedSessionService : public ash::AuthStatusConsumer,
     // Occurs when the active user has locked the user session.
     virtual void OnLocked() {}
 
-    // TODO(b/247595531): Merge both Unlock functions into one.
     // Occurs when the active user has unlocked the user session.
     virtual void OnUnlocked() {}
 
