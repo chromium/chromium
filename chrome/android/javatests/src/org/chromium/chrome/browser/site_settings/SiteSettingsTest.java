@@ -4339,7 +4339,10 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "true")})
+    @Policies.Add({
+        @Policies.Item(key = "BlockThirdPartyCookies", string = "true"),
+        @Policies.Item(key = "RelatedWebsiteSetsEnabled", string = "true")
+    })
     public void renderThirdPartyCookiesPageManagedBlocked() throws Exception {
         renderCategoryPage(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,

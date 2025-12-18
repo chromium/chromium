@@ -1237,7 +1237,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
     "src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegateTest.java",
     "src/org/chromium/chrome/browser/site_settings/CookieControlsBridgeTest.java",
     "src/org/chromium/chrome/browser/site_settings/CookieSettingsTest.java",
-    "src/org/chromium/chrome/browser/site_settings/FakeRwsPrivacySandboxBridge.java",
     "src/org/chromium/chrome/browser/site_settings/FamilyLinkControlsTest.java",
     "src/org/chromium/chrome/browser/site_settings/LocationPermissionSubpageSettingsTest.java",
     "src/org/chromium/chrome/browser/site_settings/ManageSpaceActivityTest.java",
