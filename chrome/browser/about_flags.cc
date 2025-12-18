@@ -877,6 +877,7 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowLensSearchChip", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
@@ -884,6 +885,7 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
         {"ShowLensSearchChip", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
@@ -891,6 +893,7 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
         {"ShowLensSearchChip", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
@@ -898,23 +901,17 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowLensSearchChip", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
         {"MaxNumFiles", "5"},
 };
 const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip[] = {
-        {"AddContextButtonVariant", "below_results"},
-        {"ShowVoiceSearchInSteadyComposebox", "true"},
-        {"ShowVoiceSearchInExpandedComposebox", "true"},
-        {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonDragAndDrop[] = {
         {"AddContextButtonVariant", "below_results"},
-        {"ShowCreateImageTool", "true"},
-        {"ShowToolsAndModels", "true"},
         {"EnableContextDragAndDrop", "true"},
+        {"ShowLensSearchChip", "true"},
+        {"ShowRecentTabChip", "true"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
 };
@@ -934,10 +931,6 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button below results, 5 File Limit",
      kWebUIOmniboxAimPopupAddContextButtonMultiFile,
      std::size(kWebUIOmniboxAimPopupAddContextButtonMultiFile), nullptr},
-    {"- \"Add Context\" Button below results, Recent Tab Chip",
-     kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip),
-     nullptr},
     {"- \"Add Context\" Button enable drag and drop",
      kWebUIOmniboxAimPopupAddContextButtonDragAndDrop,
      std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr}};
