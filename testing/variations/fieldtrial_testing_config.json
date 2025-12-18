@@ -23868,6 +23868,25 @@
             ]
         }
     ],
+    "SimdutfBase64Encode": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SimdutfBase64Encode"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimpleCachePrioritizedCaching": [
         {
             "platforms": [

@@ -524,7 +524,7 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
 
   std::string serialized;
   proto.SerializeToString(&serialized);
-  return base::Base64Encode(serialized);
+  return base::Base64EncodeEarlyStartup(base::as_byte_span(serialized));
 }
 
 bool VariationsIdsProvider::AddVariationIdsToSet(
