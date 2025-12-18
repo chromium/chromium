@@ -1899,6 +1899,36 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void isMaximized_whenSetBoundsPending_returnsBasedOnFutureBounds() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowManager =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var promise = new Promise<Pair<Integer, Rect>>();
+        when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
+
+        // Act.
+        chromeAndroidTask.maximize();
+        assertTrue("isMaximized is true while pending", chromeAndroidTask.isMaximized());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), any());
+        promise.fulfill(Pair.create(0, DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX));
+        shadowOf(getMainLooper()).idle();
+
+        chromeAndroidTask.setBoundsInDp(new Rect(100, 100, 600, 800));
+        var mockMaximiumMetrics = mock(WindowMetrics.class);
+        when(mockMaximiumMetrics.getBounds()).thenReturn(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockMaximiumMetrics);
+
+        // Assert
+        Assert.assertFalse(
+                "isMaximized should return false if future bounds don't equal to maximum bound",
+                chromeAndroidTask.isMaximized());
+    }
+
+    @Test
     public void isMinimized_whenPendingCreate_withPendingMinimize_returnsTrue() {
         // Arrange.
         var task =

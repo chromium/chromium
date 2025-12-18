@@ -119,6 +119,19 @@ final class PendingActionManager {
     private @Nullable Rect mFutureBoundsInDp;
 
     /**
+     * Store the maximized bounds for a pending Task.
+     *
+     * <p>A pending Task doesn't have a live Activity and is unable to get maximized bounds. We
+     * cache the maximized bounds of a live Activity for pending Tasks as the maximized bounds don't
+     * change.
+     */
+    @Nullable private static Rect sMaximumBoundsInDp;
+
+    static void setMaximumBounds(Rect maximumBoundsInDp) {
+        sMaximumBoundsInDp = maximumBoundsInDp;
+    }
+
+    /**
      * Requests an action to be performed on the pending task. Use this for actions that do not
      * require an input.
      *
@@ -152,12 +165,12 @@ final class PendingActionManager {
         }
     }
 
-    void requestMaximize(Rect futureBoundsInDp) {
+    void requestMaximize() {
         ThreadUtils.assertOnUiThread();
         mPendingActions[0] = PendingAction.MAXIMIZE;
         mPendingActions[1] = PendingAction.NONE;
 
-        mPendingBoundsInDp = futureBoundsInDp;
+        mPendingBoundsInDp = sMaximumBoundsInDp == null ? new Rect() : sMaximumBoundsInDp;
         updateFutureStatesInternal();
     }
 
@@ -179,12 +192,14 @@ final class PendingActionManager {
         ThreadUtils.assertOnUiThread();
         if (boundsInDp.isEmpty()) return;
 
-        requestGlobalOverrideAction(PendingAction.SET_BOUNDS);
+        mPendingActions[0] = PendingAction.SET_BOUNDS;
+        mPendingActions[1] = PendingAction.NONE;
         mPendingBoundsInDp = boundsInDp;
         // Cache last requested bounds for potential subsequent restoration. Pending restored
         // bounds will be cleared after all pending actions are dispatched.
         mFutureRestoredBoundsInDp = mPendingBoundsInDp;
         mFutureBoundsInDp = boundsInDp;
+        updateFutureStatesInternal();
     }
 
     /**
@@ -471,6 +486,10 @@ final class PendingActionManager {
                     || action == PendingAction.MAXIMIZE
                     || action == PendingAction.RESTORE) {
                 mFutureBoundsInDp = mPendingBoundsInDp;
+            }
+
+            if (action == PendingAction.SET_BOUNDS && sMaximumBoundsInDp != null) {
+                mIsMaximizedFuture = sMaximumBoundsInDp.equals(mFutureBoundsInDp);
             }
         }
     }

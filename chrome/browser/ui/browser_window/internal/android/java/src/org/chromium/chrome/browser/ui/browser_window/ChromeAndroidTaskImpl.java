@@ -116,15 +116,6 @@ final class ChromeAndroidTaskImpl
         void update(Activity activity, ActivityWindowAndroid activityWindowAndroid);
     }
 
-    /**
-     * Store the maximized bounds for a pending Task.
-     *
-     * <p>A pending Task doesn't have a live Activity and is unable to get maximized bounds. We
-     * cache the maximized bounds of a live Activity for pending Tasks as the maximized bounds don't
-     * change.
-     */
-    @Nullable public static Rect sCachedMaximizeRectInDp;
-
     private final PendingActionManager mPendingActionManager = new PendingActionManager();
 
     private final @BrowserWindowType int mBrowserWindowType;
@@ -657,8 +648,7 @@ final class ChromeAndroidTaskImpl
         if (Boolean.TRUE.equals(mPendingActionManager.isMaximizedFuture(mState))) return;
 
         if (mState == State.PENDING_CREATE) {
-            assertNonNull(sCachedMaximizeRectInDp);
-            mPendingActionManager.requestMaximize(sCachedMaximizeRectInDp);
+            mPendingActionManager.requestMaximize();
             return;
         }
 
@@ -854,11 +844,12 @@ final class ChromeAndroidTaskImpl
         // Cache the maximize bound.
         if (VERSION.SDK_INT >= VERSION_CODES.R) {
             var activity = getActivity(activityWindowAndroid);
-            sCachedMaximizeRectInDp =
+            var maximumBoundsInDp =
                     convertBoundsInPxToDp(
                             ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(
                                     activity.getWindowManager()),
                             activityWindowAndroid.getDisplay());
+            PendingActionManager.setMaximumBounds(maximumBoundsInDp);
         }
     }
 
@@ -1135,8 +1126,7 @@ final class ChromeAndroidTaskImpl
 
         Rect maxBoundsInPx =
                 ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(activity.getWindowManager());
-        mPendingActionManager.requestMaximize(
-                convertBoundsInPxToDp(maxBoundsInPx, activityWindowAndroid.getDisplay()));
+        mPendingActionManager.requestMaximize();
         mState = State.PENDING_UPDATE;
         setBoundsInPx(activity, activityWindowAndroid.getDisplay(), maxBoundsInPx);
     }
