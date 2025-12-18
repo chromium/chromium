@@ -4926,11 +4926,8 @@ void StyleEngine::RevisitStyleSheetForInspector(
 }
 
 double StyleEngine::GetCachedRandomBaseValue(
-    RandomValueSharing random_value_sharing,
+    const RandomValueSharing& random_value_sharing,
     const Element* element) {
-  if (random_value_sharing.IsFixed()) {
-    return random_value_sharing.GetFixed();
-  }
   RandomCachingKey* random_caching_key =
       RandomCachingKey::Create(random_value_sharing, element);
   auto it = random_base_value_cache_.find(random_caching_key);

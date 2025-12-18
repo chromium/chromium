@@ -850,7 +850,6 @@ TEST(CSSMathExpressionNode, InvalidRandomFunction) {
       "random(fixed 3px, 1, 2)",
       "random(fixed 0.1 element-shared, 1, 2)",
       "random(calc(1 + 1), calc(3px + 3px))",
-      "random(fixed calc(2 / 4), 0px, 100px)",
 
       // Not random(), but tests that other functions doesn't accept random()'s
       // arguments.
@@ -890,7 +889,9 @@ TEST(CSSMathExpressionNode, ValidRandomFunction) {
       {"random(auto, 1px, 2%)", "random(1px, 2%)"},
       {"random(auto, 1, 2, 3)", "random(1, 2, 3)"},
       {"random(fixed 0.1, 1px, 3px)", "random(fixed 0.1, 1px, 3px)"},
-      {"random(fixed .3, 0deg, 90deg)", "random(fixed 0.3, 0deg, 90deg)"}};
+      {"random(fixed .3, 0deg, 90deg)", "random(fixed 0.3, 0deg, 90deg)"},
+      {"random(fixed calc(2 / 4), 0px, 100px)",
+       "random(fixed calc(0.5), 0px, 100px)"}};
 
   for (const auto& test_case : test_cases) {
     CSSParserTokenStream stream(test_case.input);

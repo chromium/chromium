@@ -16,28 +16,29 @@
 namespace blink {
 
 RandomCachingKey* RandomCachingKey::Create(
-    RandomValueSharing random_value_sharing,
+    const RandomValueSharing& random_value_sharing,
     const Element* element) {
   DCHECK(!random_value_sharing.IsFixed());
   const Element* element_for_caching =
       random_value_sharing.IsElementShared() ? nullptr : element;
-  AtomicString ident = random_value_sharing.GetIdent();
-  DCHECK(!ident.IsNull());
-  return MakeGarbageCollected<RandomCachingKey>(ident, element_for_caching);
+  AtomicString name = random_value_sharing.Name();
+  DCHECK(!name.IsNull());
+  return MakeGarbageCollected<RandomCachingKey>(
+      base::PassKey<RandomCachingKey>(), name, element_for_caching);
 }
 
 bool RandomCachingKey::operator==(const RandomCachingKey& other) const {
   if (!element_ && !other.element_) {
-    return ident_ == other.ident_;
+    return name_ == other.name_;
   }
   if (!element_ || !other.element_) {
     return false;
   }
-  return ident_ == other.ident_ && element_ == other.element_;
+  return name_ == other.name_ && element_ == other.element_;
 }
 
 unsigned RandomCachingKey::GetHash() const {
-  unsigned hash = blink::GetHash(ident_);
+  unsigned hash = blink::GetHash(name_);
   if (element_) {
     AddIntToHash(hash, blink::GetHash(element_.Get()));
   }

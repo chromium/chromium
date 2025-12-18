@@ -19,17 +19,20 @@ class RandomValueSharing;
 // https://drafts.csswg.org/css-values-5/#random-caching-key
 class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
  public:
-  RandomCachingKey(AtomicString ident, const Element* element)
-      : ident_(ident), element_(element) {}
-  static RandomCachingKey* Create(RandomValueSharing random_value_sharing,
-                                  const Element* element);
+  RandomCachingKey(base::PassKey<RandomCachingKey>,
+                   AtomicString name,
+                   const Element* element)
+      : name_(name), element_(element) {}
+  static RandomCachingKey* Create(
+      const RandomValueSharing& random_value_sharing,
+      const Element* element);
   bool operator==(const RandomCachingKey& other) const;
   unsigned GetHash() const;
   void Trace(Visitor* visitor) const;
-  AtomicString Ident() const { return ident_; }
+  AtomicString Name() const { return name_; }
 
  private:
-  AtomicString ident_;
+  AtomicString name_;
   Member<const Element> element_;
 };
 

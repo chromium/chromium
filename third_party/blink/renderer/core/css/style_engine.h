@@ -797,8 +797,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // functions in the same property value. Only used if
   // RandomValueSharing::isAuto() returns true.
   // https://drafts.csswg.org/css-values-5/#random-caching
-  double GetCachedRandomBaseValue(RandomValueSharing random_value_sharing,
-                                  const Element* element);
+  double GetCachedRandomBaseValue(
+      const RandomValueSharing& random_value_sharing,
+      const Element* element);
 
  private:
   void UpdateCounters(const Element& element,

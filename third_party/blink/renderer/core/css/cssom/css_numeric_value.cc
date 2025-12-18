@@ -157,17 +157,20 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
 
   if (root.IsRandomFunction()) {
     const auto& node = To<CSSMathExpressionRandomFunction>(root);
-    DCHECK(node.GetRandomValueSharing().IsFixed());
+    DCHECK(node.GetRandomValueSharing()->IsFixed());
     CSSNumericValue* min = CalcToNumericValue(*node.Min());
     CSSNumericValue* max = CalcToNumericValue(*node.Max());
+    // TODO(crbug.com/413385732): Use correct random_base_value instead of 0 if
+    // it's not calculated.
+    double random_base_value =
+        node.GetRandomValueSharing()->GetFixed()->GetValueIfKnown().value_or(0);
     if (!node.Step()) {
-      return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
-                                   std::move(min), std::move(max));
+      return CSSMathRandom::Create(random_base_value, std::move(min),
+                                   std::move(max));
     }
     CSSNumericValue* step = CalcToNumericValue(*node.Step());
-    return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
-                                 std::move(min), std::move(max),
-                                 std::move(step));
+    return CSSMathRandom::Create(random_base_value, std::move(min),
+                                 std::move(max), std::move(step));
   }
 
   // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()` and

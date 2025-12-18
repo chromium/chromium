@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
 
@@ -1167,52 +1168,72 @@ struct DowncastTraits<CSSMathExpressionSiblingFunction> {
 // <random-value-sharing> = [ [ auto | <dashed-ident> ] || element-shared ]
 //                          | fixed <number [0,1]>
 // https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
-class RandomValueSharing {
+class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
  public:
-  static std::optional<RandomValueSharing> Parse(CSSParserTokenStream& stream);
-  static RandomValueSharing Auto() { return RandomValueSharing(); }
-  static RandomValueSharing Fixed(double fixed_value) {
-    return RandomValueSharing(fixed_value);
+  static const RandomValueSharing* Parse(CSSParserTokenStream& stream,
+                                         const CSSParserContext&);
+  static const RandomValueSharing* Auto() {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        ThreadSpecific<Persistent<RandomValueSharing>>, thread_specific_random,
+        ());
+
+    Persistent<RandomValueSharing>& random_value_sharing =
+        *thread_specific_random;
+    if (!random_value_sharing) {
+      random_value_sharing = MakeGarbageCollected<RandomValueSharing>();
+      LEAK_SANITIZER_IGNORE_OBJECT(&random_value_sharing);
+    }
+    return random_value_sharing;
   }
-  // Returns the current object if an identifier is already set or if it's fixed
-  // value. Otherwise, returns a copy with the identifier bound to the specified
+  static const RandomValueSharing* Fixed(double fixed_value);
+  // Returns the current object if a name is already set or if it's fixed
+  // value. Otherwise, returns a copy with the name bound to the specified
   // property name and index.
-  static RandomValueSharing WithPropertyIdent(
-      RandomValueSharing other,
+  const RandomValueSharing* CopyWithPropertyValueIndexNameIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index);
+      wtf_size_t property_value_index) const;
+
+  RandomValueSharing() = default;
+
+  using ElementShared = base::StrongAlias<class ElementSharedTag, bool>;
+  explicit RandomValueSharing(ElementShared element_shared)
+      : value_(NameAndElementShared(element_shared)) {}
+  RandomValueSharing(AtomicString name, ElementShared element_shared)
+      : value_(NameAndElementShared(name, element_shared)) {}
+  explicit RandomValueSharing(const CSSPrimitiveValue* fixed_value)
+      : value_(fixed_value) {}
 
   bool IsFixed() const;
-  double GetFixed() const;
+  const CSSPrimitiveValue* GetFixed() const;
   bool IsAuto() const;
-  AtomicString GetIdent() const;
+  AtomicString Name() const;
   bool IsElementShared() const;
 
   bool operator==(const RandomValueSharing& other) const;
   String CssText() const;
+  void Trace(Visitor* visitor) const;
 
  private:
-  struct IdentElementShared {
-    IdentElementShared() = default;
-    explicit IdentElementShared(bool element_shared)
-        : is_element_shared(element_shared) {}
-    IdentElementShared(AtomicString identifier, bool element_shared)
-        : ident(identifier), is_element_shared(element_shared) {}
-    bool operator==(const IdentElementShared& other) const {
-      return ident == other.ident &&
-             is_element_shared == other.is_element_shared;
+  // Used for non fixed <random-value-sharing> values, i.e.:
+  // [ [ auto | <dashed-ident> ] || element-shared ]
+  // "name" can refer to either the property name and property value index, or
+  // the random identifier. NameAndElementShared are created without a "name"
+  // when random identifier is not provided. But they will be replaced later
+  // populated with the property name and property value index "name".
+  struct NameAndElementShared {
+    NameAndElementShared() = default;
+    explicit NameAndElementShared(ElementShared element_shared)
+        : element_shared(element_shared) {}
+    NameAndElementShared(AtomicString random_name, ElementShared element_shared)
+        : name(random_name), element_shared(element_shared) {}
+    bool operator==(const NameAndElementShared& other) const {
+      return name == other.name && element_shared == other.element_shared;
     }
-    AtomicString ident;
-    bool is_element_shared = false;
+    AtomicString name;
+    ElementShared element_shared = ElementShared(false);
   };
-  RandomValueSharing() = default;
-  explicit RandomValueSharing(bool is_element_shared)
-      : value_(IdentElementShared(is_element_shared)) {}
-  RandomValueSharing(AtomicString ident, bool is_element_shared)
-      : value_(IdentElementShared(ident, is_element_shared)) {}
-  explicit RandomValueSharing(double fixed_value) : value_(fixed_value) {}
-
-  std::variant<IdentElementShared, double> value_ = IdentElementShared();
+  std::variant<NameAndElementShared, Member<const CSSPrimitiveValue>> value_ =
+      NameAndElementShared();
 };
 
 // <random()> = random( <random-value-sharing>? , <calc-sum>, <calc-sum>,
@@ -1221,14 +1242,15 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
     : public CSSMathExpressionNode {
  public:
   explicit CSSMathExpressionRandomFunction(
+      base::PassKey<CSSMathExpressionRandomFunction>,
       CalculationResultCategory category,
-      RandomValueSharing random_value_sharing,
+      const RandomValueSharing* random_value_sharing,
       const CSSMathExpressionNode* min,
       const CSSMathExpressionNode* max,
       const CSSMathExpressionNode* step);
 
   static CSSMathExpressionRandomFunction* Create(
-      RandomValueSharing random_value_sharing,
+      const RandomValueSharing* random_value_sharing,
       HeapVector<Member<const CSSMathExpressionNode>>&& nodes);
 
   CSSMathExpressionNode* Copy() const override;
@@ -1285,7 +1307,7 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
     NOTREACHED();
   }
   bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
-  RandomValueSharing GetRandomValueSharing() const {
+  const RandomValueSharing* GetRandomValueSharing() const {
     return random_value_sharing_;
   }
   const CSSMathExpressionNode* Min() const { return min_; }
@@ -1298,7 +1320,7 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
   std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
-  RandomValueSharing random_value_sharing_;
+  Member<const RandomValueSharing> random_value_sharing_;
   Member<const CSSMathExpressionNode> min_;
   Member<const CSSMathExpressionNode> max_;
   Member<const CSSMathExpressionNode> step_;
