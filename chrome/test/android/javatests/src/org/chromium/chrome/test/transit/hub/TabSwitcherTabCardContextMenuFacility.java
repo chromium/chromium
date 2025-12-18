@@ -10,6 +10,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
+
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -127,6 +130,26 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     public void unpinTab() {
         checkItemsAbsent(pinTab);
         changePinnedState(/* newPinnedState= */ false, unpinTab);
+    }
+
+    /** Click Select tab and open List Editor. */
+    public TabSwitcherListEditorFacility<HostStationT> selectTab() {
+        return selectTab
+                .scrollToAndSelectTo()
+                .enterFacility(new TabSwitcherListEditorFacility<>(List.of(mTabId), List.of()));
+    }
+
+    /** Click Close tab. */
+    public void closeTab() {
+        // TODO(crbug.com/470054396): Check that the tab card was removed from the tab switcher.
+        closeTab.scrollToAndSelectTo()
+                .waitFor(
+                        uiThreadCondition(
+                                "Tab was closed",
+                                () ->
+                                        whether(
+                                                mHostStation.getTabModel().getTabById(mTabId)
+                                                        == null)));
     }
 
     private void changePinnedState(boolean newPinnedState, Item pinListItem) {

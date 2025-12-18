@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -31,11 +32,13 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardContextMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for Tab Switcher Card context menus. */
@@ -182,6 +185,45 @@ public class TabSwitcherCardContextMenuTest {
         // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
         // the Tab Switcher.
         ntp = tabSwitcher.openNewTab();
+        assertFinalDestination(ntp);
+    }
+
+    @Test
+    @MediumTest
+    public void testTabCardMenuInTabSwitcher_selectTabs() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.value();
+        @TabId int firstTabId = firstTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher = firstPage.openNewTabFast().openRegularTabSwitcher();
+
+        TabSwitcherListEditorFacility<TabSwitcherStation> editor =
+                tabSwitcher
+                        .expectTabCard(firstTabId, firstTab.getTitle())
+                        .showContextMenu()
+                        .selectTab();
+
+        List<@TabId Integer> selectedTabIds = editor.getAllTabIdsSelected();
+        assertEquals(1, selectedTabIds.size());
+        assertEquals(firstTabId, selectedTabIds.get(0).intValue());
+
+        editor.openAppMenuWithEditor().groupTabs().pressDone();
+
+        assertFinalDestination(tabSwitcher.openNewTab());
+    }
+
+    @Test
+    @MediumTest
+    public void testTabCardMenuInTabSwitcher_closeTab() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.value();
+        @TabId int firstTabId = firstTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher = firstPage.openNewTabFast().openRegularTabSwitcher();
+
+        tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().closeTab();
+
+        RegularNewTabPageStation ntp = tabSwitcher.openAppMenu().openNewTab();
         assertFinalDestination(ntp);
     }
 }
