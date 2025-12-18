@@ -428,52 +428,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
   EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
 }
 
-class VirtualCardMultipleRequestPrivateApiTest
-    : public AutofillPrivateApiTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  VirtualCardMultipleRequestPrivateApiTest() {
-    feature_list_.InitWithFeatureState(
-        autofill::features::
-            kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
-        MultipleRequestInVcnDownstreamEnrollmentEnabled());
-  }
-
-  ~VirtualCardMultipleRequestPrivateApiTest() override = default;
-
-  bool MultipleRequestInVcnDownstreamEnrollmentEnabled() const {
-    return GetParam();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AutofillPrivateApiTest,
-                         VirtualCardMultipleRequestPrivateApiTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VirtualCardMultipleRequestPrivateApiTest,
-                       AddVirtualCard) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
-  if (MultipleRequestInVcnDownstreamEnrollmentEnabled()) {
-    autofill_client()
-        ->GetPaymentsAutofillClient()
-        ->set_multiple_request_payments_network_interface(
-            std::make_unique<autofill::payments::
-                                 MockMultipleRequestPaymentsNetworkInterface>(
-                autofill_client()->GetURLLoaderFactory(),
-                *autofill_client()->GetIdentityManager()));
-  } else {
-    autofill_client()
-        ->GetPaymentsAutofillClient()
-        ->set_payments_network_interface(
-            std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
-                autofill_client()->GetURLLoaderFactory(),
-                autofill_client()->GetIdentityManager(),
-                &personal_data_manager));
-  }
+  autofill_client()
+      ->GetPaymentsAutofillClient()
+      ->set_multiple_request_payments_network_interface(
+          std::make_unique<
+              autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
+              autofill_client()->GetURLLoaderFactory(),
+              *autofill_client()->GetIdentityManager()));
   // Required for adding the server card.
   personal_data_manager.payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);

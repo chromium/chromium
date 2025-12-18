@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
@@ -61,12 +60,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     autofill_client_ = std::make_unique<TestAutofillClient>();
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
     autofill_client_->GetPaymentsAutofillClient()
-        ->set_payments_network_interface(
-            std::make_unique<payments::TestPaymentsNetworkInterface>(
-                autofill_client_->GetURLLoaderFactory(),
-                autofill_client_->GetIdentityManager(),
-                &personal_data_manager()));
-    autofill_client_->GetPaymentsAutofillClient()
         ->set_multiple_request_payments_network_interface(
             std::make_unique<
                 payments::MockMultipleRequestPaymentsNetworkInterface>(
@@ -75,20 +68,11 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     autofill_client_->set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
 
-    if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-      virtual_card_enrollment_manager_ =
-          std::make_unique<TestVirtualCardEnrollmentManager>(
-              &payments_data_manager(),
-              &multiple_request_payments_network_interface(),
-              autofill_client_.get());
-    } else {
-      virtual_card_enrollment_manager_ =
-          std::make_unique<TestVirtualCardEnrollmentManager>(
-              &payments_data_manager(), &payments_network_interface(),
-              autofill_client_.get());
-    }
+    virtual_card_enrollment_manager_ =
+        std::make_unique<TestVirtualCardEnrollmentManager>(
+            &payments_data_manager(),
+            &multiple_request_payments_network_interface(),
+            autofill_client_.get());
 
     SetUpCard();
   }
@@ -156,11 +140,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
  protected:
   TestPaymentsDataManager& payments_data_manager() {
     return personal_data_manager().test_payments_data_manager();
-  }
-  payments::TestPaymentsNetworkInterface& payments_network_interface() {
-    return static_cast<payments::TestPaymentsNetworkInterface&>(
-        *autofill_client_->GetPaymentsAutofillClient()
-             ->GetPaymentsNetworkInterface());
   }
   payments::MockMultipleRequestPaymentsNetworkInterface&
   multiple_request_payments_network_interface() {
@@ -235,24 +214,14 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
   state->risk_data.reset();
   payments::GetDetailsForEnrollmentRequestDetails request_details;
-  if (base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    EXPECT_CALL(multiple_request_payments_network_interface(),
-                GetVirtualCardEnrollmentDetails)
-        .WillOnce(
-            testing::DoAll(testing::SaveArg<0>(&request_details),
-                           testing::Return(payments::RequestId("11223344"))));
-  }
+  EXPECT_CALL(multiple_request_payments_network_interface(),
+              GetVirtualCardEnrollmentDetails)
+      .WillOnce(
+          testing::DoAll(testing::SaveArg<0>(&request_details),
+                         testing::Return(payments::RequestId("11223344"))));
 
   virtual_card_enrollment_manager_->OnRiskDataLoadedForVirtualCard(
       kTestRiskData);
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    request_details = payments_network_interface()
-                          .get_details_for_enrollment_request_details();
-  }
 
   EXPECT_EQ(request_details.risk_data, state->risk_data.value_or(""));
   EXPECT_EQ(request_details.app_locale, payments_data_manager().app_locale());
@@ -360,37 +329,27 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
   virtual_card_enrollment_manager_->SetPaymentsRpcResult(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kNone);
   payments::UpdateVirtualCardEnrollmentRequestDetails request_details;
-  if (base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    EXPECT_CALL(multiple_request_payments_network_interface(),
-                UpdateVirtualCardEnrollment)
-        .WillOnce([&](const payments::UpdateVirtualCardEnrollmentRequestDetails&
-                          req,
-                      base::OnceCallback<void(
-                          payments::PaymentsAutofillClient::PaymentsRpcResult)>
-                          callback) {
-          // Action 1: Save the argument
-          request_details = req;
+  EXPECT_CALL(multiple_request_payments_network_interface(),
+              UpdateVirtualCardEnrollment)
+      .WillOnce(
+          [&](const payments::UpdateVirtualCardEnrollmentRequestDetails& req,
+              base::OnceCallback<void(
+                  payments::PaymentsAutofillClient::PaymentsRpcResult)>
+                  callback) {
+            // Action 1: Save the argument
+            request_details = req;
 
-          // Action 2: Run the callback
-          std::move(callback).Run(
-              payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+            // Action 2: Run the callback
+            std::move(callback).Run(
+                payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 
-          // Action 3: Return the required RequestId
-          return payments::RequestId("11223344");
-        });
-  }
+            // Action 3: Return the required RequestId
+            return payments::RequestId("11223344");
+          });
 
   virtual_card_enrollment_manager_->Unenroll(
       /*instrument_id=*/9223372036854775807,
       /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    request_details = payments_network_interface()
-                          .update_virtual_card_enrollment_request_details();
-  }
 
   EXPECT_EQ(request_details.virtual_card_enrollment_source,
             VirtualCardEnrollmentSource::kSettingsPage);
@@ -413,28 +372,20 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
       /*sample=*/true, 1);
 
   // Starts another request and make sure it fails.
-  if (base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    EXPECT_CALL(multiple_request_payments_network_interface(),
-                UpdateVirtualCardEnrollment)
-        .WillOnce(
-            [&](const payments::UpdateVirtualCardEnrollmentRequestDetails& req,
-                base::OnceCallback<void(
-                    payments::PaymentsAutofillClient::PaymentsRpcResult)>
-                    callback) {
-              // Action 1: Run the callback
-              std::move(callback).Run(payments::PaymentsAutofillClient::
-                                          PaymentsRpcResult::kPermanentFailure);
+  EXPECT_CALL(multiple_request_payments_network_interface(),
+              UpdateVirtualCardEnrollment)
+      .WillOnce(
+          [&](const payments::UpdateVirtualCardEnrollmentRequestDetails& req,
+              base::OnceCallback<void(
+                  payments::PaymentsAutofillClient::PaymentsRpcResult)>
+                  callback) {
+            // Action 1: Run the callback
+            std::move(callback).Run(payments::PaymentsAutofillClient::
+                                        PaymentsRpcResult::kPermanentFailure);
 
-              // Action 2: Return the required RequestId
-              return payments::RequestId("11223344");
-            });
-  } else {
-    payments_network_interface().set_update_virtual_card_enrollment_result(
-        payments::PaymentsAutofillClient::PaymentsRpcResult::
-            kVcnRetrievalPermanentFailure);
-  }
+            // Action 2: Return the required RequestId
+            return payments::RequestId("11223344");
+          });
   virtual_card_enrollment_manager_->Unenroll(
       /*instrument_id=*/9223372036854775807,
       /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
@@ -828,39 +779,25 @@ TEST_P(VirtualCardEnrollmentManagerParamTest, Enroll) {
     virtual_card_enrollment_manager_->SetPaymentsRpcResult(
         payments::PaymentsAutofillClient::PaymentsRpcResult::kNone);
     payments::UpdateVirtualCardEnrollmentRequestDetails request_details;
-    if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-      EXPECT_CALL(multiple_request_payments_network_interface(),
-                  UpdateVirtualCardEnrollment)
-          .WillOnce(
-              [&](const payments::UpdateVirtualCardEnrollmentRequestDetails&
-                      req,
-                  base::OnceCallback<void(
-                      payments::PaymentsAutofillClient::PaymentsRpcResult)>
-                      callback) {
-                // Action 1: Save the argument
-                request_details = req;
+    EXPECT_CALL(multiple_request_payments_network_interface(),
+                UpdateVirtualCardEnrollment)
+        .WillOnce(
+            [&](const payments::UpdateVirtualCardEnrollmentRequestDetails& req,
+                base::OnceCallback<void(
+                    payments::PaymentsAutofillClient::PaymentsRpcResult)>
+                    callback) {
+              // Action 1: Save the argument
+              request_details = req;
 
-                // Action 2: Run the callback
-                std::move(callback).Run(result);
+              // Action 2: Run the callback
+              std::move(callback).Run(result);
 
-                // Action 3: Return the required RequestId
-                return payments::RequestId("11223344");
-              });
-    } else {
-      payments_network_interface().set_update_virtual_card_enrollment_result(
-          result);
-    }
+              // Action 3: Return the required RequestId
+              return payments::RequestId("11223344");
+            });
 
     virtual_card_enrollment_manager_->Enroll(
         /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
-    if (!base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-      request_details = payments_network_interface()
-                            .update_virtual_card_enrollment_request_details();
-    }
 
     EXPECT_TRUE(request_details.vcn_context_token.has_value());
     EXPECT_EQ(request_details.vcn_context_token, kTestVcnContextToken);
@@ -1014,37 +951,24 @@ TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
 class DownstreamEnrollmentEarlyPreflightCallParamTest
     : public VirtualCardEnrollmentManagerTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, VirtualCardEnrollmentSource, bool>> {
+          std::tuple<VirtualCardEnrollmentSource, bool>> {
  public:
-  DownstreamEnrollmentEarlyPreflightCallParamTest() {
-    feature_list_.InitWithFeatureState(
-        features::
-            kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
-        experiment_enabled());
-  }
-
-  // Whether the experiment to support multiple requests in downstream
-  // enrollment is enabled.
-  bool experiment_enabled() const { return std::get<0>(GetParam()); }
+  DownstreamEnrollmentEarlyPreflightCallParamTest() = default;
 
   // The source of the enrollment.
-  VirtualCardEnrollmentSource source() const { return std::get<1>(GetParam()); }
+  VirtualCardEnrollmentSource source() const { return std::get<0>(GetParam()); }
 
   // Whether downstream enrollment for this VirtualCardEnrollmentManager
   // instance has started or not.
   bool downstream_enrollment_has_started() const {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     VirtualCardEnrollmentManagerTest,
     DownstreamEnrollmentEarlyPreflightCallParamTest,
     ::testing::Combine(
-        ::testing::Bool(),
         ::testing::Values(VirtualCardEnrollmentSource::kUpstream,
                           VirtualCardEnrollmentSource::kDownstream,
                           VirtualCardEnrollmentSource::kSettingsPage),
@@ -1067,8 +991,7 @@ TEST_P(DownstreamEnrollmentEarlyPreflightCallParamTest,
         VirtualCardEnrollmentSource::kDownstream;
   }
 
-  bool expected = experiment_enabled() &&
-                  source() == VirtualCardEnrollmentSource::kDownstream &&
+  bool expected = source() == VirtualCardEnrollmentSource::kDownstream &&
                   downstream_enrollment_has_started();
   EXPECT_EQ(expected,
             virtual_card_enrollment_manager_

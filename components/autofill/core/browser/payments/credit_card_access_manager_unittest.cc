@@ -2663,16 +2663,12 @@ TEST_F(CreditCardAccessManagerTest, DestructorResetsCardIdentifier) {
 }
 
 TEST_F(CreditCardAccessManagerTest, InvokeVirtualCardEnrollmentPreflightCall) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::
-          kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment);
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/
-          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-              nullptr),
+          autofill_client()
+              .GetPaymentsAutofillClient()
+              ->GetMultipleRequestPaymentsNetworkInterface(),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
@@ -2693,49 +2689,13 @@ TEST_F(CreditCardAccessManagerTest, InvokeVirtualCardEnrollmentPreflightCall) {
 }
 
 TEST_F(CreditCardAccessManagerTest,
-       DoNotInvokeVirtualCardEnrollmentPreflightCall_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::
-          kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment);
-  auto virtual_card_enrollment_manager =
-      std::make_unique<MockVirtualCardEnrollmentManager>(
-          &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/
-          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-              nullptr),
-          &autofill_client());
-  autofill_client()
-      .GetPaymentsAutofillClient()
-      ->set_virtual_card_enrollment_manager(
-          std::move(virtual_card_enrollment_manager));
-  CreditCard card = test::GetMaskedServerCard();
-  card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
-  personal_data().test_payments_data_manager().AddServerCreditCard(card);
-  EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
-                  autofill_client()
-                      .GetPaymentsAutofillClient()
-                      ->GetVirtualCardEnrollmentManager()),
-              InitVirtualCardEnroll)
-      .Times(0);
-
-  PrepareToFetchCreditCardAndWaitForCallbacks();
-  CreditCardAccessManagerTestBase::FetchCreditCard(&card);
-}
-
-TEST_F(CreditCardAccessManagerTest,
        DoNotInvokeVirtualCardEnrollmentPreflightCall_CardNotEligible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::
-          kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment);
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/
-          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-              nullptr),
+          autofill_client()
+              .GetPaymentsAutofillClient()
+              ->GetMultipleRequestPaymentsNetworkInterface(),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()

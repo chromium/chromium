@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -95,6 +96,11 @@ void CreditCardAccessManagerTestBase::SetUp() {
       std::make_unique<payments::TestPaymentsNetworkInterface>(
           autofill_client().GetURLLoaderFactory(),
           autofill_client().GetIdentityManager(), &personal_data()));
+  payments_autofill_client().set_multiple_request_payments_network_interface(
+      std::make_unique<
+          autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
+          autofill_client().GetURLLoaderFactory(),
+          *autofill_client().GetIdentityManager()));
   autofill_client().set_test_strike_database(
       std::make_unique<TestStrikeDatabase>());
 

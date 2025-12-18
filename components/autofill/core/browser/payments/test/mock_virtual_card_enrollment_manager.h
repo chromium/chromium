@@ -16,7 +16,8 @@ class MockVirtualCardEnrollmentManager
  public:
   MockVirtualCardEnrollmentManager(
       PaymentsDataManager* payments_data_manager,
-      PaymentsNetworkInterfaceVariation payments_network_interface,
+      payments::MultipleRequestPaymentsNetworkInterface*
+          payments_network_interface,
       TestAutofillClient* autofill_client);
   ~MockVirtualCardEnrollmentManager() override;
 

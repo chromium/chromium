@@ -10,7 +10,8 @@ namespace autofill {
 
 MockVirtualCardEnrollmentManager::MockVirtualCardEnrollmentManager(
     PaymentsDataManager* payments_data_manager,
-    PaymentsNetworkInterfaceVariation payments_network_interface,
+    payments::MultipleRequestPaymentsNetworkInterface*
+        payments_network_interface,
     TestAutofillClient* autofill_client)
     : TestVirtualCardEnrollmentManager(payments_data_manager,
                                        payments_network_interface,
