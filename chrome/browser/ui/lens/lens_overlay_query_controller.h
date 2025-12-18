@@ -234,6 +234,15 @@ class LensOverlayQueryController {
     return visual_search_interaction_data_;
   }
 
+  // After this is called, for the remainder of the current session, requests do
+  // not need to check prefs for whether the user has granted permissions
+  // permanently.
+  void GrantPermissionForSession();
+
+  // Returns true if either GrantPermissionForSession() has been called or the
+  // user has granted permissions permanently.
+  bool HasPermissionForSession();
+
   base::TimeTicks partial_page_contents_request_start_time_for_testing() const {
     return partial_page_contents_request_start_time_;
   }
@@ -996,6 +1005,11 @@ class LensOverlayQueryController {
   // latency events that should only be logged once per query flow.
   base::flat_set<lens::LensOverlayGen204Controller::LatencyType>
       sent_initial_latency_request_events_;
+
+  // True if permission has been granted for the current session, so requests do
+  // not need to check prefs for whether the user has granted permissions
+  // permanently.
+  bool has_permission_for_session_ = false;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

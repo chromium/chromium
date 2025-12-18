@@ -153,6 +153,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Lens interaction"/>
   <int value="1" label="Composebox focus"/>
   <int value="2" label="Closed without accepting"/>
+  <int value="3" label="Accepted"/>
+  <int value="4" label="Dismissed"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h:LensOverlayNonBlockingPrivacyNoticeUserAction) -->

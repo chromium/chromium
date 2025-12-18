@@ -48,6 +48,8 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'maybeCloseTranslateFeaturePromo',
       'fetchSupportedLanguages',
       'finishReshowOverlay',
+      'acceptPrivacyNotice',
+      'dismissPrivacyNotice',
     ]);
   }
 
@@ -174,6 +176,14 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.browserLocale = locale;
     this.sourceLanguagesToFetch = sourceLanguages;
     this.targetLanguagesToFetch = targetLanguages;
+  }
+
+  acceptPrivacyNotice() {
+    this.methodCalled('acceptPrivacyNotice');
+  }
+
+  dismissPrivacyNotice() {
+    this.methodCalled('dismissPrivacyNotice');
   }
 }
 

@@ -16,11 +16,16 @@ namespace lens {
 enum class LensOverlayNonBlockingPrivacyNoticeUserAction {
   // User performed a Lens interaction.
   kLensInteraction = 0,
-  // User focused the composebox.
+  // User focused the composebox. Currently not used as composebox interactions
+  // will be recorded as Lens interactions.
   kComposeboxFocused = 1,
   // User closed the overlay without accepting the privacy notice.
   kClosedWithoutAccepting = 2,
-  kMaxValue = kClosedWithoutAccepting
+  // User accepted the privacy notice.
+  kAccepted = 3,
+  // User dismissed the privacy notice.
+  kDismissed = 4,
+  kMaxValue = kDismissed
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayNonBlockingPrivacyNoticeUserAction)
 

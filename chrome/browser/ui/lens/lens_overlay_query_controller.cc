@@ -911,7 +911,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // If permissions have not yet been granted, exit early. Once permissions are
   // granted and the cluster info response is received,
   // PrepareAndFetchFullImageRequest will be called again.
-  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+  if (!HasPermissionForSession()) {
     query_controller_state_ = QueryControllerState::kWaitingForPermissions;
     return;
   }
@@ -1221,7 +1221,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   // If permissions have not yet been granted, exit early. The full image
   // request will recall this method once permissions are granted and the
   // cluster info is fetched.
-  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+  if (!HasPermissionForSession()) {
     return;
   }
 
@@ -1581,7 +1581,7 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
   // If permissions have not yet been granted, exit early. The full image
   // request will recall this method once permissions are granted and the
   // cluster info is fetched.
-  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+  if (!HasPermissionForSession()) {
     return;
   }
 
@@ -2414,5 +2414,14 @@ bool LensOverlayQueryController::IsPartialPageContentSubstantial() {
   // query is considered substantial.
   return characters_per_page >
          lens::features::GetScannedPdfCharacterPerPageHeuristic();
+}
+
+void LensOverlayQueryController::GrantPermissionForSession() {
+  has_permission_for_session_ = true;
+}
+
+bool LensOverlayQueryController::HasPermissionForSession() {
+  return has_permission_for_session_ ||
+         DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs());
 }
 }  // namespace lens

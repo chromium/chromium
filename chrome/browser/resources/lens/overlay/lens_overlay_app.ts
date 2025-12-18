@@ -240,6 +240,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         reflectToAttribute: true,
         value: () => loadTimeData.getBoolean('enablePrivacyNotice'),
       },
+      hasPermissionsForSession: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => !loadTimeData.getBoolean('enablePrivacyNotice'),
+      },
     };
   }
 
@@ -318,6 +323,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   declare private overlayReshowInProgress: boolean;
   // Whether to show the privacy notice.
   declare private isPrivacyNoticeVisible: boolean;
+  // Whether permissions have been granted for this session, either temporarily
+  // following a user interaction, or permanently following the user accepting
+  // the privacy notice.
+  declare private hasPermissionsForSession: boolean;
 
   // The performance tracker used to log performance metrics for the overlay.
   private performanceTracker: PerformanceTracker = new PerformanceTracker();
@@ -371,6 +380,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = false;
         this.sidePanelOpened = true;
         this.overlayReshowInProgress = true;
+        this.hasPermissionsForSession = true;
         this.performanceTracker.reset();
         this.performanceTracker.startSession();
       }),
@@ -609,8 +619,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private computeShowGhostLoader(): boolean {
     // Ghost loader is disabled by the feature flag or suppressed by the
-    // LensOverlayController.
-    if (!this.enableGhostLoader || this.suppressGhostLoader) {
+    // LensOverlayController. It is also disabled if permissions have not yet
+    // been granted.
+    if (!this.enableGhostLoader || this.suppressGhostLoader ||
+        !this.hasPermissionsForSession) {
       return false;
     }
     // Show the ghost loader if there is focus on the searchbox, and there is
@@ -830,6 +842,18 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     // Get the the text from the ghost loader to add to the searchbox aria
     // description.
     return this.showGhostLoader ? this.$.searchboxGhostLoader.getText() : '';
+  }
+
+  private onPrivacyNoticeCancel() {
+    this.browserProxy.handler.dismissPrivacyNotice();
+    this.isPrivacyNoticeVisible = false;
+  }
+
+  private onPrivacyNoticeContinue() {
+    this.browserProxy.handler.acceptPrivacyNotice();
+    this.isPrivacyNoticeVisible = false;
+    this.hasPermissionsForSession = true;
+    this.focusSearchbox();
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {
