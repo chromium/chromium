@@ -76,12 +76,16 @@ class TabUnderlineView : public AnimatedEffectView {
   // `AnimatedEffectView`:
   bool IsCycleDone(base::TimeTicks timestamp) override;
   base::TimeDelta GetTotalDuration() const override;
+  std::vector<SkColor> GetEffectColors() override;
   void PopulateShaderUniforms(
       std::vector<cc::PaintShader::FloatUniform>& float_uniforms,
       std::vector<cc::PaintShader::Float2Uniform>& float2_uniforms,
       std::vector<cc::PaintShader::Float4Uniform>& float4_uniforms,
       std::vector<cc::PaintShader::IntUniform>& int_uniforms) const override;
   void DrawEffect(gfx::Canvas* canvas, const cc::PaintFlags& flags) override;
+
+  // `views::View`:
+  void OnThemeChanged() override;
 
   int ComputeWidth();
 

@@ -47,23 +47,6 @@ int64_t TimeTicksToMicroseconds(base::TimeTicks tick) {
   return (tick - base::TimeTicks()).InMicroseconds();
 }
 
-std::vector<SkColor> GetParameterizedColors() {
-  std::vector<SkColor> colors;
-  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
-    std::vector<std::string> unparsed_colors =
-        base::SplitString(::features::kGlicParameterizedShaderColors.Get(), "#",
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& unparsed : unparsed_colors) {
-      SkColor result;
-      if (!content::ParseHexColorString("#" + unparsed, &result)) {
-        return std::vector<SkColor>();
-      }
-      colors.push_back(result);
-    }
-  }
-  return colors;
-}
-
 std::vector<float> GetParameterizedFloats() {
   std::vector<float> floats;
   if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
@@ -88,7 +71,7 @@ AnimatedEffectView::AnimatedEffectView(Browser* browser,
     : browser_(browser),
       creation_time_(base::TimeTicks::Now()),
       tester_(std::move(tester)),
-      colors_(GetParameterizedColors()),
+      colors_(GetEffectColors()),
       floats_(GetParameterizedFloats()),
       theme_service_(
           ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
@@ -340,6 +323,23 @@ void AnimatedEffectView::ResetAnimationCycle() {
   if (tester_) [[unlikely]] {
     tester_->AnimationReset();
   }
+}
+
+std::vector<SkColor> AnimatedEffectView::GetEffectColors() {
+  std::vector<SkColor> colors;
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+    std::vector<std::string> unparsed_colors =
+        base::SplitString(::features::kGlicParameterizedShaderColors.Get(), "#",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& unparsed : unparsed_colors) {
+      SkColor result;
+      if (!content::ParseHexColorString("#" + unparsed, &result)) {
+        return std::vector<SkColor>();
+      }
+      colors.push_back(result);
+    }
+  }
+  return colors;
 }
 
 float AnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
