@@ -322,6 +322,11 @@ void FtlSignalStrategy::Core::OnReceiveMessagesStreamClosed(
 void FtlSignalStrategy::Core::OnMessageReceived(
     const SignalingAddress& sender_address,
     const SignalingMessage& message) {
+  if (sender_address.channel() != SignalingAddress::Channel::FTL) {
+    LOG(WARNING) << "Ignoring message sent from non-FTL JID.";
+    return;
+  }
+
   for (auto& listener : listeners_) {
     if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
       return;

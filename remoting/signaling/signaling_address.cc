@@ -89,10 +89,12 @@ SignalingAddress::SignalingAddress(const std::string& address) {
 }
 
 // static
-SignalingAddress SignalingAddress::CreateSystemAddress(const std::string& id) {
+SignalingAddress SignalingAddress::CreateFtlSystemAddress(
+    const std::string& id) {
   SignalingAddress address;
   address.is_system_ = true;
   address.id_ = id;
+  address.channel_ = Channel::FTL;
   return address;
 }
 

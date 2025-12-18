@@ -182,4 +182,13 @@ TEST(SignalingAddressTest, JidWithoutResourceIsXmpp) {
   EXPECT_EQ(kJid, addr.id());
 }
 
+TEST(SignalingAddressTest, CreateFtlSystemAddress) {
+  const char kSystemSenderId[] = "chromoting-backend-service";
+  SignalingAddress addr =
+      SignalingAddress::CreateFtlSystemAddress(kSystemSenderId);
+  EXPECT_EQ(SignalingAddress::Channel::FTL, addr.channel());
+  EXPECT_TRUE(addr.is_system());
+  EXPECT_EQ(kSystemSenderId, addr.id());
+}
+
 }  // namespace remoting

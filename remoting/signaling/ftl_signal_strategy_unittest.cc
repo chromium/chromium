@@ -37,6 +37,8 @@ using testing::Return;
 
 constexpr char kFakeLocalUsername[] = "fake_local_user@domain.com";
 constexpr char kFakeRemoteUsername[] = "fake_remote_user@domain.com";
+constexpr char kFakeCorpUsername[] = "user@corp.google.com";
+
 MATCHER_P(SignalingMessageMatches, expected_stanza_text, "") {
   const ftl::ChromotingMessage* ftl_message =
       std::get_if<ftl::ChromotingMessage>(&arg);
@@ -113,9 +115,14 @@ class FakeMessagingClient : public MessagingClient {
   void OnMessage(const ftl::Id& sender_id,
                  const std::string& sender_registration_id,
                  const ftl::ChromotingMessage& message) {
-    callback_list_.Notify(SignalingAddress::CreateFtlSignalingAddress(
-                              sender_id.id(), sender_registration_id),
-                          message);
+    OnMessage(SignalingAddress::CreateFtlSignalingAddress(
+                  sender_id.id(), sender_registration_id),
+              message);
+  }
+
+  void OnMessage(const SignalingAddress& sender_address,
+                 const ftl::ChromotingMessage& message) {
+    callback_list_.Notify(sender_address, message);
   }
 
   void AcceptReceivingMessages() {
@@ -622,6 +629,31 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
   ASSERT_EQ(0u, received_messages_.size());
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
+}
+
+TEST_F(FtlSignalStrategyTest, ReceiveMessageFromNonFtlSender_IsIgnored) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  auto stanza =
+      CreateXmlStanza(Direction::INCOMING, signal_strategy_->GetNextId());
+  std::string stanza_string = stanza->Str();
+  ftl::ChromotingMessage message;
+  message.mutable_xmpp()->set_stanza(stanza_string);
+
+  // This represents an XMPP address.
+  messaging_client_->OnMessage(SignalingAddress(kFakeRemoteUsername), message);
+  ASSERT_EQ(received_messages_.size(), 0u);
+
+  // This represents a 'Corp' signaling user with an FTL-like resource. The
+  // SignalingAddress class should detect this and mark it as a Corp address.
+  messaging_client_->OnMessage(
+      SignalingAddress::CreateFtlSignalingAddress(kFakeCorpUsername,
+                                                  kFakeRemoteRegistrationId),
+      message);
+  ASSERT_EQ(received_messages_.size(), 0u);
 }
 
 }  // namespace remoting

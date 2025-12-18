@@ -36,7 +36,7 @@ class SignalingAddress {
       const std::string& username,
       const std::string& registration_id);
 
-  static SignalingAddress CreateSystemAddress(const std::string& id);
+  static SignalingAddress CreateFtlSystemAddress(const std::string& id);
 
   static SignalingAddress Parse(const jingle_xmpp::XmlElement* iq,
                                 Direction direction);

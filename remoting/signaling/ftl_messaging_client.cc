@@ -348,26 +348,27 @@ void FtlMessagingClient::RunMessageCallbacks(const ftl::InboxMessage& message) {
   }
   message_tracker_.TrackId(message.message_id());
 
-  if (message.sender_id().type() != ftl::IdType_Type_SYSTEM &&
-      message.sender_registration_id().empty()) {
+  bool is_system = message.sender_id().type() == ftl::IdType_Type_SYSTEM;
+  if (message.sender_registration_id().empty() && !is_system) {
     LOG(WARNING) << "Ignored peer message with no sender registration ID.";
     return;
   }
 
-  if (message.message_type() !=
-      ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE) {
-    LOG(WARNING) << "Received message with unknown type: "
-                 << message.message_type()
-                 << ", sender: " << message.sender_id().id();
+  auto message_type = message.message_type();
+  auto sender_id = message.sender_id().id();
+  if (message_type != ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE) {
+    LOG(WARNING) << "Received message with unknown type: " << message_type
+                 << ", sender: " << sender_id;
     return;
   }
 
   ftl::ChromotingMessage chromoting_message;
   chromoting_message.ParseFromString(message.message());
-  callback_list_.Notify(
-      SignalingAddress::CreateFtlSignalingAddress(
-          message.sender_id().id(), message.sender_registration_id()),
-      chromoting_message);
+  auto sender_address =
+      is_system ? SignalingAddress::CreateFtlSystemAddress(sender_id)
+                : SignalingAddress::CreateFtlSignalingAddress(
+                      sender_id, message.sender_registration_id());
+  callback_list_.Notify(sender_address, chromoting_message);
 }
 
 void FtlMessagingClient::OnMessageReceived(const ftl::InboxMessage& message) {
