@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/begin_frame_source_ios.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 
 namespace content {
 
@@ -55,6 +56,11 @@ void BeginFrameSourceIOS::SetNeedsBeginFrame(bool needs_begin_frames) {
   } else {
     begin_frame_source_.RemoveObserver(this);
   }
+}
+
+void BeginFrameSourceIOS::NeedsBeginFrameWithId(int64_t display_id,
+                                                bool needs_begin_frames) {
+  NOTIMPLEMENTED();
 }
 
 void BeginFrameSourceIOS::SetPreferredInterval(base::TimeDelta interval) {
