@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   // Set an allowlist that allows an URL.
   base::Value::List allowlist;
   allowlist.Append("aaa.com");
-  policies.Set(key::kIncognitoModeAllowlist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allowlist)), nullptr);
 
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   // Set an allowlist that allows `allowed_url`.
   base::Value::List allowlist;
   allowlist.Append("allowed.com");
-  policies.Set(key::kIncognitoModeAllowlist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allowlist)), nullptr);
 
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   // Set an Incognito allowlist that allows `url`.
   base::Value::List incognito_allowlist;
   incognito_allowlist.Append("blocked.com");
-  policies.Set(key::kIncognitoModeAllowlist, POLICY_LEVEL_MANDATORY,
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(incognito_allowlist)), nullptr);
 

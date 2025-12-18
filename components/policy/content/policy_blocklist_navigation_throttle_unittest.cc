@@ -169,7 +169,7 @@ class PolicyBlocklistNavigationThrottleTest
     pref_service_.registry()->RegisterListPref(
         policy::policy_prefs::kIncognitoModeUrlBlocklist);
     pref_service_.registry()->RegisterListPref(
-        policy::policy_prefs::kIncognitoModeAllowlist);
+        policy::policy_prefs::kIncognitoModeUrlAllowlist);
 
     auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
         &pref_service_, policy::policy_prefs::kUrlBlocklist,
@@ -180,7 +180,7 @@ class PolicyBlocklistNavigationThrottleTest
       incognito_url_blocklist_manager =
           std::make_unique<policy::URLBlocklistManager>(
               &pref_service_, policy::policy_prefs::kIncognitoModeUrlBlocklist,
-              policy::policy_prefs::kIncognitoModeAllowlist);
+              policy::policy_prefs::kIncognitoModeUrlAllowlist);
     }
 
     policy_blocklist_service_ = std::make_unique<PolicyBlocklistService>(
@@ -229,8 +229,8 @@ class PolicyBlocklistNavigationThrottleTest
   void SetIncognitoAllowlistUrlPattern(const std::string& pattern) {
     base::Value::List value;
     value.Append(pattern);
-    pref_service_.SetManagedPref(policy::policy_prefs::kIncognitoModeAllowlist,
-                                 std::move(value));
+    pref_service_.SetManagedPref(
+        policy::policy_prefs::kIncognitoModeUrlAllowlist, std::move(value));
     task_environment()->RunUntilIdle();
   }
 

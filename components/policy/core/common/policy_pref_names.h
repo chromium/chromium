@@ -246,8 +246,8 @@ inline constexpr char kIncognitoModeUrlBlocklist[] =
     "policy.incognito_mode_url_blocklist";
 
 // Allows access to the listed host patterns for incognito mode.
-inline constexpr char kIncognitoModeAllowlist[] =
-    "policy.incognito_mode_allowlist";
+inline constexpr char kIncognitoModeUrlAllowlist[] =
+    "policy.incognito_mode_url_allowlist";
 
 }  // namespace policy_prefs
 }  // namespace policy

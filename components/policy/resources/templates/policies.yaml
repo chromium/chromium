@@ -1391,7 +1391,7 @@ policies:
   1390: ExtensionInstallCloudPolicyChecksEnabled
   1391: DevToolsGoogleDeveloperProgramProfileAvailability
   1392: IncognitoModeUrlBlocklist
-  1393: IncognitoModeAllowlist
+  1393: IncognitoModeUrlAllowlist
   1394: PreferSlowKexAlgorithms
   1395: ExtensionForceInstallWithNonMalwareViolationsEnabled
   1396: CacheEncryptionEnabled
