@@ -22,6 +22,10 @@ import {PostMessageHandler} from './post_message_handler.js';
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
 
+// The url query parameter keys for the viewport size.
+const VIEWPORT_HEIGHT_KEY = 'bih';
+const VIEWPORT_WIDTH_KEY = 'biw';
+
 export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
@@ -244,6 +248,20 @@ export class ContextualTasksAppElement extends CrLitElement {
         url.searchParams.set(key, value);
       }
     }
+
+    // The viewport width and height are also common search params but they
+    // are not retrieved from the browser as the viewport is determined by the
+    // contextual tasks webview.
+    const resultsBoundingRect = this.$.threadFrame.getBoundingClientRect();
+    if (resultsBoundingRect.width > 0) {
+      url.searchParams.set(
+          VIEWPORT_WIDTH_KEY, resultsBoundingRect.width.toString());
+    }
+    if (resultsBoundingRect.height > 0) {
+      url.searchParams.set(
+          VIEWPORT_HEIGHT_KEY, resultsBoundingRect.height.toString());
+    }
+
     return url;
   }
 
