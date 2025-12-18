@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -293,6 +294,26 @@ MigrationBehaviorFromString(const std::string& behavior) {
   return std::nullopt;
 }
 
+template <typename T>
+std::vector<T> ToStdVector(const Vector<T>& blink_vector) {
+  std::vector<T> std_vector;
+  std_vector.reserve(blink_vector.size());
+  for (const auto& p : blink_vector) {
+    std_vector.push_back(p);
+  }
+  return std_vector;
+}
+
+template <typename T>
+Vector<T> ToBlinkVector(const std::vector<T>& std_vector) {
+  Vector<T> blink_vector;
+  blink_vector.reserve(std_vector.size());
+  for (const auto& p : std_vector) {
+    blink_vector.push_back(p);
+  }
+  return blink_vector;
+}
+
 }  // anonymous namespace
 
 ManifestParser::ManifestParser(const String& data,
@@ -376,20 +397,30 @@ bool ManifestParser::Parse() {
     }
   }
 
-  manifest_->display_override = ParseDisplayOverride(root_object.get());
-  for (const mojom::blink::DisplayMode& display_override :
-       manifest_->display_override) {
-    if (display_override == mojom::blink::DisplayMode::kWindowControlsOverlay) {
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppWindowControlsOverlay);
-    } else if (display_override == mojom::blink::DisplayMode::kBorderless &&
-               base::FeatureList::IsEnabled(
-                   blink::features::kWebAppBorderless)) {
-      UseCounter::Count(execution_context_, WebFeature::kWebAppBorderless);
-    } else if (display_override == mojom::blink::DisplayMode::kBorderless) {
-      UseCounter::Count(execution_context_, WebFeature::kUnframedIwa);
-    } else if (display_override == mojom::blink::DisplayMode::kTabbed) {
-      UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
+  Vector<blink::Manifest::DisplayOverride> display_override =
+      ParseDisplayOverride(root_object.get());
+  for (const auto& item : display_override) {
+    manifest_->display_override.push_back(
+        mojom::blink::DisplayOverrideItem::New(
+            item.display(), ToBlinkVector(item.url_patterns())));
+
+    switch (item.display()) {
+      case mojom::blink::DisplayMode::kWindowControlsOverlay:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppWindowControlsOverlay);
+        break;
+      case mojom::blink::DisplayMode::kBorderless:
+        UseCounter::Count(
+            execution_context_,
+            base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)
+                ? WebFeature::kWebAppBorderless
+                : WebFeature::kUnframedIwa);
+        break;
+      case mojom::blink::DisplayMode::kTabbed:
+        UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
+        break;
+      default:
+        break;
     }
   }
 
@@ -930,9 +961,9 @@ blink::mojom::DisplayMode ManifestParser::ParseDisplay(
   return display_enum;
 }
 
-Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
+Vector<blink::Manifest::DisplayOverride> ManifestParser::ParseDisplayOverride(
     const JSONObject* object) {
-  Vector<mojom::blink::DisplayMode> display_override;
+  Vector<blink::Manifest::DisplayOverride> display_override;
 
   JSONValue* json_value = object->Get("display_override");
   if (!json_value) {
@@ -947,10 +978,17 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
 
   for (const JSONValue& value : *display_override_list) {
     String display_enum_string;
-    // AsString will return an empty string if a type error occurs,
-    // which will cause DisplayModeFromString to return kUndefined,
-    // resulting in this entry being ignored.
-    value.AsString(&display_enum_string);
+
+    // If a type error occurs, `GetString` and `AsString` do not modify
+    // `display_enum_string`, so `DisplayModeFromString` returns `kUndefined`
+    // and this entry is ignored.
+    const auto* display_override_object = JSONObject::Cast(&value);
+    if (display_override_object) {
+      display_override_object->GetString("display", &display_enum_string);
+    } else {
+      value.AsString(&display_enum_string);
+    }
+
     display_enum_string = display_enum_string.StripWhiteSpace();
     mojom::blink::DisplayMode display_enum =
         DisplayModeFromString(display_enum_string.Utf8());
@@ -967,7 +1005,22 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     }
 
     if (display_enum != mojom::blink::DisplayMode::kUndefined) {
-      display_override.push_back(display_enum);
+      std::vector<SafeUrlPattern> url_patterns;
+      if (display_override_object) {
+        url_patterns = ToStdVector(
+            ParseUrlPatterns(display_override_object, "url_patterns"));
+      }
+      if (display_enum == mojom::blink::DisplayMode::kBorderless) {
+        display_override.push_back(
+            blink::Manifest::DisplayOverride::CreateUnframed(
+                std::move(url_patterns)));
+      } else if (url_patterns.empty()) {
+        display_override.push_back(
+            blink::Manifest::DisplayOverride::Create(display_enum));
+      } else {
+        AddErrorInfo(StrCat({"display override '", display_enum_string,
+                             "' ignored, url_patterns are not allowed."}));
+      }
     }
   }
 

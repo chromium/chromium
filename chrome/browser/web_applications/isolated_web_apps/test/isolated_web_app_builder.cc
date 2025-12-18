@@ -488,7 +488,10 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->update_manifest_url = update_manifest_url_;
   }
   manifest->display = display_mode_;
-  manifest->display_override = display_mode_override_;
+  for (const auto& display_mode : display_mode_override_) {
+    manifest->display_override.push_back(
+        blink::Manifest::DisplayOverride::Create(display_mode));
+  }
   if (launch_handler_client_mode_) {
     manifest->launch_handler =
         blink::Manifest::LaunchHandler(*launch_handler_client_mode_);

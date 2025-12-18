@@ -20,6 +20,7 @@
 namespace webapps {
 
 using blink::mojom::DisplayMode;
+using DisplayOverride = blink::Manifest::DisplayOverride;
 using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 blink::Manifest::ImageResource CreateImage(const std::string& url,
@@ -359,25 +360,28 @@ TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
 }
 
 TEST_F(ShortcutInfoTest, DisplayOverride) {
-  manifest_.display = blink::mojom::DisplayMode::kBrowser;
-  manifest_.display_override = {blink::mojom::DisplayMode::kMinimalUi};
+  manifest_.display = DisplayMode::kBrowser;
+  manifest_.display_override = {
+      DisplayOverride::Create(DisplayMode::kMinimalUi)};
   info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kMinimalUi);
+  EXPECT_EQ(info_.display, DisplayMode::kMinimalUi);
 
-  manifest_.display = blink::mojom::DisplayMode::kFullscreen;
-  manifest_.display_override = {blink::mojom::DisplayMode::kBrowser};
+  manifest_.display = DisplayMode::kFullscreen;
+  manifest_.display_override = {DisplayOverride::Create(DisplayMode::kBrowser)};
   info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kBrowser);
+  EXPECT_EQ(info_.display, DisplayMode::kBrowser);
 
-  manifest_.display = blink::mojom::DisplayMode::kStandalone;
-  manifest_.display_override = {blink::mojom::DisplayMode::kFullscreen};
+  manifest_.display = DisplayMode::kStandalone;
+  manifest_.display_override = {
+      DisplayOverride::Create(DisplayMode::kFullscreen)};
   info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kFullscreen);
+  EXPECT_EQ(info_.display, DisplayMode::kFullscreen);
 
-  manifest_.display = blink::mojom::DisplayMode::kMinimalUi;
-  manifest_.display_override = {blink::mojom::DisplayMode::kStandalone};
+  manifest_.display = DisplayMode::kMinimalUi;
+  manifest_.display_override = {
+      DisplayOverride::Create(DisplayMode::kStandalone)};
   info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kStandalone);
+  EXPECT_EQ(info_.display, DisplayMode::kStandalone);
 }
 
 TEST_F(ShortcutInfoTest, ManifestIdGenerated) {

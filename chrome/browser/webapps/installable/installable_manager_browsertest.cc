@@ -85,6 +85,12 @@ InstallableParams GetPrimaryIconPreferMaskableParams() {
   return params;
 }
 
+// Matches a `DisplayOverride` by `display` mode.
+testing::Matcher<const blink::Manifest::DisplayOverride&> DisplayOverrideIs(
+    blink::mojom::DisplayMode display) {
+  return testing::Property(&blink::Manifest::DisplayOverride::display, display);
+}
+
 }  // anonymous namespace
 
 // Used only for testing pages where the manifest URL is changed. This class
@@ -1620,11 +1626,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
-  ASSERT_EQ(2u, tester->manifest().display_override.size());
-  EXPECT_EQ(blink::mojom::DisplayMode::kMinimalUi,
-            tester->manifest().display_override[0]);
-  EXPECT_EQ(blink::mojom::DisplayMode::kStandalone,
-            tester->manifest().display_override[1]);
+  EXPECT_THAT(tester->manifest().display_override,
+              testing::ElementsAre(
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kMinimalUi),
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kStandalone)));
 
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
@@ -1647,13 +1652,11 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
-  ASSERT_EQ(3u, tester->manifest().display_override.size());
-  EXPECT_EQ(blink::mojom::DisplayMode::kBrowser,
-            tester->manifest().display_override[0]);
-  EXPECT_EQ(blink::mojom::DisplayMode::kMinimalUi,
-            tester->manifest().display_override[1]);
-  EXPECT_EQ(blink::mojom::DisplayMode::kStandalone,
-            tester->manifest().display_override[2]);
+  EXPECT_THAT(tester->manifest().display_override,
+              testing::ElementsAre(
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kBrowser),
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kMinimalUi),
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kStandalone)));
   EXPECT_EQ(
       std::vector<InstallableStatusCode>{
           InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED},
@@ -1674,9 +1677,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
-  ASSERT_EQ(1u, tester->manifest().display_override.size());
-  EXPECT_EQ(blink::mojom::DisplayMode::kStandalone,
-            tester->manifest().display_override[0]);
+  EXPECT_THAT(tester->manifest().display_override,
+              testing::ElementsAre(
+                  DisplayOverrideIs(blink::mojom::DisplayMode::kStandalone)));
 
   EXPECT_FALSE(tester->primary_icon_url().is_empty());
   EXPECT_NE(nullptr, tester->primary_icon());

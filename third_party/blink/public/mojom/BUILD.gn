@@ -921,6 +921,11 @@ mojom("mojom_platform") {
       # to enable using icu::Locale as a WTF::HashMap key.
       types = [
         {
+          mojom = "blink.mojom.DisplayOverrideItem"
+          cpp = "::blink::Manifest::DisplayOverride"
+        },
+
+        {
           mojom = "blink.mojom.Locale"
           cpp = "::icu::Locale"
         },

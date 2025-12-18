@@ -23,7 +23,7 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -42,6 +42,7 @@ namespace blink {
 
 using liburlpattern::PartType;
 using testing::AllOf;
+using testing::ElementsAreArray;
 using testing::Field;
 
 namespace {
@@ -102,7 +103,6 @@ std::vector<testing::Matcher<const liburlpattern::Part&>> PatternDataMatchers(
 // given `expected` data.
 testing::Matcher<const SafeUrlPattern&> PatternDataEq(
     const UrlPatternData& expected) {
-  using testing::ElementsAreArray;
   return AllOf(Field("protocol", &SafeUrlPattern::protocol,
                      ElementsAreArray(PatternDataMatchers(expected.protocol))),
                Field("username", &SafeUrlPattern::username,
@@ -119,6 +119,17 @@ testing::Matcher<const SafeUrlPattern&> PatternDataEq(
                      ElementsAreArray(PatternDataMatchers(expected.search))),
                Field("hash", &SafeUrlPattern::hash,
                      ElementsAreArray(PatternDataMatchers(expected.hash))));
+}
+
+// Matches a mojo `DisplayOverrideItem` by `display` mode and `url_patterns`.
+testing::Matcher<const mojom::blink::DisplayOverrideItemPtr&>
+DisplayOverrideItemIs(
+    blink::mojom::DisplayMode display,
+    std::vector<testing::Matcher<const SafeUrlPattern&>> url_patterns = {}) {
+  return testing::Pointee(
+      AllOf(Field(&mojom::blink::DisplayOverrideItem::display, display),
+            Field(&mojom::blink::DisplayOverrideItem::url_patterns,
+                  ElementsAreArray(url_patterns))));
 }
 
 }  // namespace
@@ -1139,10 +1150,9 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   // Case insensitive
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ "BROWSER" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBrowser)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1150,20 +1160,18 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ " browser " ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBrowser)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Accept 'browser'
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ "browser" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBrowser)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1171,12 +1179,11 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "browser", "minimal-ui" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_EQ(manifest->display_override[1],
-              blink::mojom::DisplayMode::kMinimalUi);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1186,12 +1193,11 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     auto& manifest = ParseManifest(
         R"({ "display_override": [ 3, "browser", "invalid-display",
         "minimal-ui" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_EQ(manifest->display_override[1],
-              blink::mojom::DisplayMode::kMinimalUi);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1204,13 +1210,12 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
         "minimal-ui", "standalone" ] })");
     EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kStandalone);
     EXPECT_EQ(0u, GetErrorCount());
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_EQ(manifest->display_override[1],
-              blink::mojom::DisplayMode::kMinimalUi);
-    EXPECT_EQ(manifest->display_override[2],
-              blink::mojom::DisplayMode::kStandalone);
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kStandalone)));
     EXPECT_FALSE(IsManifestEmpty(manifest));
   }
 
@@ -1220,14 +1225,12 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "browser", "minimal-ui",
         "browser" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_EQ(manifest->display_override[1],
-              blink::mojom::DisplayMode::kMinimalUi);
-    EXPECT_EQ(manifest->display_override[2],
-              blink::mojom::DisplayMode::kBrowser);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1235,10 +1238,9 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "display_override": [ "window-controls-overlay" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kWindowControlsOverlay);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kWindowControlsOverlay)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1259,10 +1261,9 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "borderless" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBorderless);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBorderless)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1280,10 +1281,9 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(blink::features::kUnframedIwa);
     auto& manifest = ParseManifest(R"({ "display_override": [ "unframed" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kBorderless);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBorderless)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1299,12 +1299,139 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     ScopedWebAppTabStripForTest tabbed(true);
     auto& manifest = ParseManifest(R"({ "display_override": [ "tabbed" ] })");
-    EXPECT_FALSE(manifest->display_override.empty());
-    EXPECT_EQ(manifest->display_override[0],
-              blink::mojom::DisplayMode::kTabbed);
-    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(DisplayOverrideItemIs(blink::mojom::DisplayMode::kTabbed)));
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Accept 'unframed' with url_patterns when flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        {
+          "display": "unframed",
+          "url_patterns": [
+            {"protocol": "https", "hostname": "foo.com"},
+            {"pathname": "/bar"}
+          ]
+        }
+      ]
+    })");
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(DisplayOverrideItemIs(
+            blink::mojom::DisplayMode::kBorderless,
+            {PatternDataEq({.protocol = {"https"}, .hostname = {"foo.com"}}),
+             PatternDataEq({.protocol = {"http"},
+                            .hostname = {"foo.com"},
+                            .pathname = {"/bar"}})})));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'borderless' with url_patterns when flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list(
+        blink::features::kWebAppBorderless);
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        {
+          "display": "borderless",
+          "url_patterns": [ {"pathname": "/bar"} ]
+        }
+      ]
+    })");
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kBorderless,
+                    {PatternDataEq({.protocol = {"http"},
+                                    .hostname = {"foo.com"},
+                                    .pathname = {"/bar"}})})));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Ignore object without 'display' field.
+  {
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        { "url_patterns": [] }
+      ]
+    })");
+    EXPECT_TRUE(manifest->display_override.empty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Ignore displays with url_patterns other than 'unframed'.
+  {
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        {
+          "display": "standalone",
+          "url_patterns": [ {"pathname": "/foo"} ]
+        }
+      ]
+    })");
+    EXPECT_THAT(manifest->display_override, testing::IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "display override 'standalone' ignored, url_patterns are not allowed.",
+        errors()[0]);
+  }
+
+  // Accept mixed strings and objects.
+  {
+    base::test::ScopedFeatureList feature_list(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        "minimal-ui",
+        {
+          "display": "unframed",
+          "url_patterns": [ {"pathname": "/bar"} ]
+        },
+        "browser"
+      ]
+    })");
+    EXPECT_THAT(
+        manifest->display_override,
+        ElementsAre(
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBorderless,
+                                  {PatternDataEq({.protocol = {"http"},
+                                                  .hostname = {"foo.com"},
+                                                  .pathname = {"/bar"}})}),
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser)));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+TEST_F(ManifestParserTest, DisplayOverrideAcceptsOutOfScopeUrlPatterns) {
+  base::test::ScopedFeatureList feature_list(blink::features::kUnframedIwa);
+  // The manifest parser does not validate that URL patterns are same-origin or
+  // in-scope. Consumers should verify the pattern is within the app scope
+  // before applying the display mode.
+  auto& manifest = ParseManifest(R"({
+      "start_url": "/app/index.html",
+      "scope": "/app/",
+      "display_override": [
+        {
+          "display": "unframed",
+          "url_patterns": [
+            { "pathname": "/bar" },
+            { "hostname": "bar.com" }
+          ]
+        }
+      ]
+    })");
+  EXPECT_THAT(
+      manifest->display_override,
+      ElementsAre(DisplayOverrideItemIs(
+          blink::mojom::DisplayMode::kBorderless,
+          {PatternDataEq({.protocol = {"http"},
+                          .hostname = {"foo.com"},
+                          .pathname = {"/bar"}}),
+           PatternDataEq({.protocol = {"http"}, .hostname = {"bar.com"}})})));
+  EXPECT_EQ(0u, GetErrorCount());
 }
 
 TEST_F(ManifestParserTest, BorderlessUrlPatternsParseRules) {

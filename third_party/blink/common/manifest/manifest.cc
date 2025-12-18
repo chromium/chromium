@@ -4,6 +4,12 @@
 
 #include "third_party/blink/public/common/manifest/manifest.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 
@@ -161,5 +167,40 @@ bool Manifest::TabStrip::operator==(const TabStrip& other) const {
   };
   return AsTuple(*this) == AsTuple(other);
 }
+
+// static
+Manifest::DisplayOverride Manifest::DisplayOverride::Create(
+    blink::mojom::DisplayMode display_mode) {
+  return DisplayOverride(display_mode, {});
+}
+
+// static
+Manifest::DisplayOverride Manifest::DisplayOverride::CreateUnframed(
+    std::vector<SafeUrlPattern> url_patterns) {
+  return DisplayOverride(blink::mojom::DisplayMode::kBorderless,
+                         std::move(url_patterns));
+}
+
+Manifest::DisplayOverride::DisplayOverride(
+    blink::mojom::DisplayMode display_mode,
+    std::vector<SafeUrlPattern> patterns)
+    : display_(display_mode), url_patterns_(std::move(patterns)) {
+  CHECK(url_patterns_.empty() ||
+        display_ == blink::mojom::DisplayMode::kBorderless)
+      << "url_patterns is not allowed in display modes other than 'unframed'";
+}
+
+Manifest::DisplayOverride::DisplayOverride() = default;
+Manifest::DisplayOverride::DisplayOverride(const DisplayOverride& other) =
+    default;
+Manifest::DisplayOverride::DisplayOverride(DisplayOverride&& other) = default;
+Manifest::DisplayOverride& Manifest::DisplayOverride::operator=(
+    const DisplayOverride& other) = default;
+Manifest::DisplayOverride& Manifest::DisplayOverride::operator=(
+    DisplayOverride&& other) = default;
+Manifest::DisplayOverride::~DisplayOverride() = default;
+
+bool Manifest::DisplayOverride::operator==(const DisplayOverride& other) const =
+    default;
 
 }  // namespace blink

@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-forward.h"
@@ -254,6 +255,44 @@ class BLINK_COMMON_EXPORT Manifest {
 
     HomeTab home_tab;
     NewTabButton new_tab_button;
+  };
+
+  // Class representing an item in the 'display_override' list.
+  class BLINK_COMMON_EXPORT DisplayOverride {
+   public:
+    static DisplayOverride Create(mojom::DisplayMode display_mode);
+
+    // `url_patterns` are only allowed in the "unframed" display mode.
+    static DisplayOverride CreateUnframed(
+        std::vector<SafeUrlPattern> url_patterns = {});
+
+    // This constructor is public so this class can be used in STL containers.
+    // Prefer using the factory methods above to create instances.
+    DisplayOverride();
+    DisplayOverride(const DisplayOverride& other);
+    DisplayOverride(DisplayOverride&& other);
+    DisplayOverride& operator=(const DisplayOverride& other);
+    DisplayOverride& operator=(DisplayOverride&& other);
+    ~DisplayOverride();
+
+    bool operator==(const DisplayOverride& other) const;
+
+    // The display mode of this override.
+    mojom::DisplayMode display() const { return display_; }
+
+    // Note this may include patterns that match out-of-scope or even
+    // out-of-origin URLs. Callers should verify URLs are in-scope before
+    // accepting this override.
+    const std::vector<SafeUrlPattern>& url_patterns() const {
+      return url_patterns_;
+    }
+
+   private:
+    explicit DisplayOverride(mojom::DisplayMode display_mode,
+                             std::vector<SafeUrlPattern> url_patterns = {});
+
+    mojom::DisplayMode display_ = mojom::DisplayMode::kUndefined;
+    std::vector<SafeUrlPattern> url_patterns_;
   };
 };
 

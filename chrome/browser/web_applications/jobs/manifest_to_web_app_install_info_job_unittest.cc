@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-data-view.h"
 #include "third_party/liburlpattern/part.h"
@@ -74,14 +76,23 @@ IconPurpose IconInfoPurposeToManifestPurpose(
   }
 }
 
-// Returns a simple `SafeUrlPattern` for the "foo.com" hostname.
-blink::SafeUrlPattern FooUrlPattern() {
+// Returns a simple `SafeUrlPattern` to match the given hostname.
+blink::SafeUrlPattern UrlPatternForHostname(std::string_view hostname) {
   blink::SafeUrlPattern pattern;
   pattern.hostname = {
       liburlpattern::Part(liburlpattern::PartType::kFixed,
-                          /*value=*/"foo.com", liburlpattern::Modifier::kNone),
+                          /*value=*/std::string(hostname),
+                          liburlpattern::Modifier::kNone),
   };
   return pattern;
+}
+
+blink::SafeUrlPattern FooUrlPattern() {
+  return UrlPatternForHostname("foo.com");
+}
+
+blink::SafeUrlPattern BarUrlPattern() {
+  return UrlPatternForHostname("bar.com");
 }
 
 class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
@@ -173,10 +184,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
 
-  manifest->display_override.push_back(DisplayMode::kMinimalUi);
-  manifest->display_override.push_back(DisplayMode::kStandalone);
-
-  manifest->borderless_url_patterns = {FooUrlPattern()};
+  manifest->display_override = {
+      blink::Manifest::DisplayOverride::Create(DisplayMode::kMinimalUi),
+      blink::Manifest::DisplayOverride::Create(DisplayMode::kStandalone),
+      blink::Manifest::DisplayOverride::CreateUnframed({FooUrlPattern()})};
 
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
@@ -246,9 +257,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   // Verify basic web app fields populated.
   EXPECT_EQ(u"Foo App", web_app_info->title);
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info->display_mode);
-  ASSERT_EQ(2u, web_app_info->display_override.size());
+  ASSERT_EQ(3u, web_app_info->display_override.size());
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info->display_override[0]);
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info->display_override[1]);
+  EXPECT_EQ(DisplayMode::kBorderless, web_app_info->display_override[2]);
   EXPECT_EQ(start_url_, web_app_info->start_url());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(start_url_),
             web_app_info->manifest_id());
@@ -1372,6 +1384,26 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
               gfx::test::EqualsBitmap(larger_icon));
   EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[largest_icon_size],
               gfx::test::EqualsBitmap(largest_icon));
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest, BorderlessUrlPatternsOverwrite) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  manifest->display_override = {
+      blink::Manifest::DisplayOverride::CreateUnframed({FooUrlPattern()}),
+      blink::Manifest::DisplayOverride::CreateUnframed({BarUrlPattern()})};
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+
+  // Expect only the patterns from the last "borderless" entry to be present
+  // because the current implementation overwrites `borderless_url_patterns`
+  // with every `url_patterns` entry in `display_override`. This is a temporary
+  // solution until `borderless_url_patterns` is replaced by `display_override`
+  // and `url_patterns`.
+  // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
+  EXPECT_THAT(web_app_info->borderless_url_patterns,
+              testing::ElementsAre(BarUrlPattern()));
 }
 
 }  // namespace

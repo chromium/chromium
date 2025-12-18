@@ -7,12 +7,17 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -345,6 +350,36 @@ bool StructTraits<blink::mojom::ManifestTabStripDataView,
 
   if (!data.ReadNewTabButton(&out->new_tab_button))
     return false;
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::DisplayOverrideItemDataView,
+                  ::blink::Manifest::DisplayOverride>::
+    Read(blink::mojom::DisplayOverrideItemDataView data,
+         ::blink::Manifest::DisplayOverride* out) {
+  blink::mojom::DisplayMode display_mode;
+  if (!data.ReadDisplay(&display_mode)) {
+    return false;
+  }
+
+  std::vector<::blink::SafeUrlPattern> url_patterns;
+  if (!data.ReadUrlPatterns(&url_patterns)) {
+    return false;
+  }
+
+  // `url_patterns` are only allowed in `kBorderless` display mode.
+  if (display_mode != blink::mojom::DisplayMode::kBorderless &&
+      !url_patterns.empty()) {
+    return false;
+  }
+
+  if (display_mode == blink::mojom::DisplayMode::kBorderless) {
+    *out = ::blink::Manifest::DisplayOverride::CreateUnframed(
+        std::move(url_patterns));
+  } else {
+    *out = ::blink::Manifest::DisplayOverride::Create(display_mode);
+  }
 
   return true;
 }

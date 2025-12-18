@@ -153,7 +153,7 @@ void MaybeEmitUkmMetricsForPromotable(
   interaction.installed = false;
   if (!banner_data.manifest().display_override.empty()) {
     interaction.effective_display_mode =
-        static_cast<int>(banner_data.manifest().display_override[0]);
+        static_cast<int>(banner_data.manifest().display_override[0].display());
   } else {
     interaction.effective_display_mode =
         static_cast<int>(banner_data.manifest().display);

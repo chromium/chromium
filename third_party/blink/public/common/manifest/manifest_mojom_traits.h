@@ -15,8 +15,9 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
 
 namespace mojo {
 namespace internal {
@@ -358,6 +359,24 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::ManifestTabStripDataView,
 
   static bool Read(blink::mojom::ManifestTabStripDataView data,
                    ::blink::Manifest::TabStrip* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::DisplayOverrideItemDataView,
+    ::blink::Manifest::DisplayOverride> {
+  static ::blink::mojom::DisplayMode display(
+      const ::blink::Manifest::DisplayOverride& item) {
+    return item.display();
+  }
+
+  static const std::vector<::blink::SafeUrlPattern>& url_patterns(
+      const ::blink::Manifest::DisplayOverride& item) {
+    return item.url_patterns();
+  }
+
+  static bool Read(blink::mojom::DisplayOverrideItemDataView data,
+                   ::blink::Manifest::DisplayOverride* out);
 };
 
 }  // namespace mojo

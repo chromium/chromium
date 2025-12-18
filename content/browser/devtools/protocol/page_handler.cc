@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -293,8 +294,9 @@ void GotManifest(std::optional<std::string> manifest_id,
   if (!input_manifest->display_override.empty()) {
     auto display_overrides = std::make_unique<protocol::Array<std::string>>();
     for (const auto& display_override : input_manifest->display_override) {
-      display_overrides->push_back(base::ToString(display_override));
+      display_overrides->push_back(base::ToString(display_override.display()));
     }
+    // TODO(crbug.com/469012990): Extend CDP for display override URL patterns.
     manifest.SetDisplayOverrides(std::move(display_overrides));
   }
   if (!input_manifest->file_handlers.empty()) {
@@ -2127,8 +2129,8 @@ std::unique_ptr<Page::BackForwardCacheBlockingDetails> SourceLocationToProtocol(
   if (!source->function_name.empty()) {
     blocking_details.SetFunction(source->function_name);
   }
-  CHECK(source->line_number > 0);
-  CHECK(source->column_number > 0);
+  CHECK_GT(source->line_number, 0ul);
+  CHECK_GT(source->column_number, 0ul);
   return blocking_details.SetLineNumber(source->line_number - 1)
       .SetColumnNumber(source->column_number - 1)
       .Build();

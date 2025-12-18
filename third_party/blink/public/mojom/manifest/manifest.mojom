@@ -58,7 +58,7 @@ struct Manifest {
 
   DisplayMode display;
 
-  array<DisplayMode> display_override;
+  array<DisplayOverrideItem> display_override;
 
   array<SafeUrlPattern> borderless_url_patterns;
 
@@ -479,4 +479,18 @@ enum ManifestRequestResult {
   kManifestFailedToParse,
   // Success, the manifest was loaded from the URL specified by the page.
   kSuccess
+};
+
+// Represents an item in the `display_override` list.
+struct DisplayOverrideItem {
+  // The display mode of this item.
+  DisplayMode display;
+
+  // The URL patterns where this display mode applies. An empty list means the
+  // display mode applies to all URLs.
+  //
+  // Note the parser does not validate that URL patterns are same-origin or in
+  // scope. Consumers should verify the pattern is within the app scope before
+  // applying the display mode.
+  array<SafeUrlPattern> url_patterns;
 };

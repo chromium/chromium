@@ -226,7 +226,7 @@ InstallableStatusCode InstallableEvaluator::GetDisplayError(
   // If this array is not empty, the first value will "win", so validate
   // this value is installable.
   if (!manifest.display_override.empty()) {
-    display_mode_to_evaluate = manifest.display_override[0];
+    display_mode_to_evaluate = manifest.display_override[0].display();
     error_type_if_invalid =
         InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
   }

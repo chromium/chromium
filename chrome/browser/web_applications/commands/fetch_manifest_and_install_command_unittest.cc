@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -59,6 +60,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -1067,7 +1069,8 @@ class UniversalInstallComboTest
 
     if (GetDisplayMode()) {
       manifest->display = blink::mojom::DisplayMode::kBrowser;
-      manifest->display_override = {GetDisplayMode().value()};
+      manifest->display_override = {
+          blink::Manifest::DisplayOverride::Create(GetDisplayMode().value())};
     } else {
       page_state.error_code =
           webapps::InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;

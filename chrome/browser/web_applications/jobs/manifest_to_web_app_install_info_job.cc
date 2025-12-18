@@ -625,9 +625,13 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   if (manifest_->display != DisplayMode::kUndefined) {
     install_info().display_mode = manifest_->display;
   }
-
-  if (!manifest_->display_override.empty()) {
-    install_info().display_override = manifest_->display_override;
+  for (const auto& override_item : manifest_->display_override) {
+    install_info().display_override.push_back(override_item.display());
+    if (override_item.display() == DisplayMode::kBorderless &&
+        !override_item.url_patterns().empty()) {
+      // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
+      install_info().borderless_url_patterns = override_item.url_patterns();
+    }
   }
 
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
@@ -648,7 +652,10 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   PopulateFileHandlerInfoFromManifest(manifest_->file_handlers,
                                       install_info().scope, &install_info());
 
-  install_info().borderless_url_patterns = manifest_->borderless_url_patterns;
+  if (!manifest_->borderless_url_patterns.empty()) {
+    // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
+    install_info().borderless_url_patterns = manifest_->borderless_url_patterns;
+  }
 
   install_info().share_target = ToWebAppShareTarget(manifest_->share_target);
 

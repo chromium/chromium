@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,13 +27,16 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -369,7 +375,10 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayOverrideUpdatedSilently) {
   auto& new_manifest = GetPageManifest();
   std::vector<DisplayMode> new_display_override = {DisplayMode::kMinimalUi,
                                                    DisplayMode::kBrowser};
-  new_manifest->display_override = new_display_override;
+  for (const auto& display_mode : new_display_override) {
+    new_manifest->display_override.push_back(
+        blink::Manifest::DisplayOverride::Create(display_mode));
+  }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
