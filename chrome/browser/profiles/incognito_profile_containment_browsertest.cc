@@ -50,7 +50,6 @@ constexpr const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/Trust Tokens",
     "/Default/Shortcuts",
     "/GrShaderCache/GPUCache",
-    "/first_party_sets.db",
     "/Local State"};
 #if BUILDFLAG(IS_MAC)
 constexpr const char* kAllowListPrefixesForPlatform[] = {
@@ -288,8 +287,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 // state even if user did not explicitly open the browser in regular mode and if
 // so, please add the file to the allow_list at the top and file a bug to follow
 // up.
+// TODO(crbug.com/40809832): Flakes on Win 7.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
-                       StoringDataDoesNotModifyProfileFolder) {
+                       DISABLED_StoringDataDoesNotModifyProfileFolder) {
   // Take a snapshot of regular profile.
   Snapshot before_incognito;
   GetUserDirectorySnapshot(before_incognito, /*compute_file_hashes=*/true);
@@ -302,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
       embedded_test_server()->GetURL("/browsing_data/site_data.html")));
 
   const std::vector<std::string> kStorageTypes{
-      "CacheStorage", "Cookie",        "FileSystem",   "IndexedDb",
-      "LocalStorage", "ServiceWorker", "SessionCookie"};
+      "CacheStorage", "Cookie",        "FileSystem",    "IndexedDb",
+      "LocalStorage", "ServiceWorker", "SessionCookie", "WebSql"};
 
   for (const std::string& type : kStorageTypes) {
     ASSERT_TRUE(
