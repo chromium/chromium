@@ -10,12 +10,6 @@ use_opus_arm_optimization = current_cpu == "arm" || current_cpu == "arm64"
 
 use_opus_x86_optimization = current_cpu == "x86" || current_cpu == "x64"
 
-# If OPUS Run Time CPU Detections (RTCD) shall be used.
-# Based on the conditions in celt/arm/armcpu.c:
-# defined(_MSC_VER) || defined(__linux__).
-use_opus_arm_rtcd =
-    current_cpu == "arm" && (is_win || is_android || is_linux || is_chromeos)
-
 config("opus_config") {
   include_dirs = [ "src/include" ]
 }
@@ -93,27 +87,22 @@ config("opus_private_config") {
         "OPUS_ARM_ASM",
         "OPUS_ARM_INLINE_ASM",
         "OPUS_ARM_INLINE_EDSP",
-      ]
-    }
-
-    if (use_opus_arm_rtcd) {
-      defines += [
         "OPUS_ARM_MAY_HAVE_EDSP",
         "OPUS_ARM_MAY_HAVE_MEDIA",
-        "OPUS_HAVE_RTCD",
+        "OPUS_ARM_PRESUME_EDSP",
+        "OPUS_ARM_PRESUME_MEDIA",
       ]
     }
 
     defines += [
       "OPUS_ARM_MAY_HAVE_NEON",
       "OPUS_ARM_MAY_HAVE_NEON_INTR",
+      "OPUS_ARM_PRESUME_NEON",
+      "OPUS_ARM_PRESUME_NEON_INTR",
     ]
 
     if (current_cpu == "arm64") {
-      defines += [
-        "OPUS_ARM_PRESUME_NEON_INTR",
-        "OPUS_ARM_PRESUME_AARCH64_NEON_INTR",
-      ]
+      defines += [ "OPUS_ARM_PRESUME_AARCH64_NEON_INTR" ]
     }
   }
 }
@@ -145,19 +134,6 @@ config("opus_test_no_nonnull_config") {
   # compilation error if -Werror is specified.
   if (is_clang) {
     cflags = [ "-Wno-nonnull" ]
-  }
-}
-
-if (use_opus_arm_rtcd) {
-  action("convert_rtcd_assembler") {
-    script = "convert_rtcd_assembler.py"
-    outputs = [ "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S" ]
-    args = [
-      rebase_path("//third_party/opus/src/celt/arm/arm2gnu.pl", root_build_dir),
-      rebase_path("//third_party/opus/src/celt/arm/celt_pitch_xcorr_arm.s",
-                  root_build_dir),
-      rebase_path("$target_gen_dir/celt_pitch_xcorr_arm_gnu.S", root_build_dir),
-    ]
   }
 }
 
@@ -455,21 +431,6 @@ static_library("opus") {
       "src/silk/arm/macros_armv4.h",
       "src/silk/arm/macros_armv5e.h",
     ]
-
-    if (use_opus_arm_rtcd) {
-      sources += [
-        "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S",
-        "src/celt/arm/arm_celt_map.c",
-        "src/celt/arm/armcpu.c",
-        "src/celt/arm/armcpu.h",
-        "src/celt/arm/fft_arm.h",
-        "src/celt/arm/mdct_arm.h",
-        "src/celt/arm/pitch_arm.h",
-        "src/silk/arm/arm_silk_map.c",
-        "src/silk/fixed/main_FIX.h",
-      ]
-      deps += [ ":convert_rtcd_assembler" ]
-    }
   }
 }
 
