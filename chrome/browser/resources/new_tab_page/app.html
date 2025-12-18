@@ -63,6 +63,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         <dialog id="composeboxDialog">
           <cr-composebox id="composebox"
               ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+              ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
               @composebox-initialized="${this.onComposeboxInitialized_}"
               @close-composebox="${this.closeComposebox_}"
               @composebox-input-focus-changed="${this.onInputFocusChanged_}"
@@ -73,6 +74,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       ` : html`
         <cr-composebox id="composebox"
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             @composebox-initialized="${this.onComposeboxInitialized_}"
             @close-composebox="${this.closeComposebox_}"
             @composebox-input-focus-changed="${this.onInputFocusChanged_}"

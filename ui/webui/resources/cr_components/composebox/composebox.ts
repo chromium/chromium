@@ -153,7 +153,21 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      /**
+       * Feature flag for New Tab Page Realbox Next.
+       */
       ntpRealboxNextEnabled: {
+        type: Boolean,
+        // NOTE: Do not reflect this property. For shared UI, use
+        // `searchboxNextEnabled`. For NTP-specific styling, use CSS from the
+        // embedding component (e.g., `new_tab_page/app.css`).
+      },
+      /**
+       * Generic flag indicating a "Next" searchbox (Realbox Next, Omnibox Next,
+       * etc.). Used for all styling and behavior shared across 'Next' searchbox
+       * implementations.
+       */
+      searchboxNextEnabled: {
         type: Boolean,
         reflect: true,
       },
@@ -184,6 +198,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   accessor maxSuggestions: number|null = null;
   accessor ntpRealboxNextEnabled: boolean = false;
+  accessor searchboxNextEnabled: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor carouselOnTop_: boolean = false;
   accessor isDraggingFile: boolean = false;
@@ -310,9 +325,9 @@ export class ComposeboxElement extends I18nMixinLit
           this.$.context.onFileContextAdded(e.detail.file);
         });
     this.focusInput();
-    // For realbox next, the zps autocomplete query is triggered after
-    // the state has been initialized.
-    if (this.showZps && !this.ntpRealboxNextEnabled) {
+    // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
+    // autocomplete query is triggered after the state has been initialized.
+    if (this.showZps && !this.searchboxNextEnabled) {
       this.queryAutocomplete(/* clearMatches= */ false);
     }
 
