@@ -1190,8 +1190,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
           << property.GetCSSPropertyName().ToAtomicString().Ascii();
 
     // Webkit prefixed properties which don't have non-aliased counterparts.
-    // TODO ensure that each of these are reachable since they supposedly aren't
-    // just aliases.
+    // TODO(crbug.com/40919412): Implement comparison for these properties. They
+    // are reachable via transitions now.
     case CSSPropertyID::kWebkitBorderImage:
     case CSSPropertyID::kWebkitBoxAlign:
     case CSSPropertyID::kWebkitBoxDecorationBreak:
