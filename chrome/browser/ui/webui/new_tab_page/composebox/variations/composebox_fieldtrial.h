@@ -62,8 +62,6 @@ extern const base::FeatureParam<bool> kEnableViewportImages;
 extern const base::FeatureParam<bool> kShowToolsAndModels;
 // Whether to show the create image button in the composebox context menu.
 extern const base::FeatureParam<bool> kShowCreateImageTool;
-// Whether to force tools and models to show in the composebox context menu.
-extern const base::FeatureParam<bool> kForceToolsAndModels;
 // Whether to allow drag and drop files on composebox
 extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
 

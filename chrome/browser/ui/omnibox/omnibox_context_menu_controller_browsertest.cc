@@ -74,7 +74,6 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
         {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"},
-           {omnibox::kForceToolsAndModels.name, "true"},
            {omnibox::kShowCreateImageTool.name, "true"},
            {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},
