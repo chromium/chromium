@@ -28313,99 +28313,100 @@ should be able to be added at any place in this file.
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateCanceled"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the canceled state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateIdle"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the idle state of the password check upon opening Password
-    Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Issues from the Password Checkup homepage. iOS only. This user action was
+    added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateNoPasswords"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the no passwords state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateOffline"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the offline state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateOther"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the other state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the quota limit state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateRunning"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the running state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateSignedOut"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the signed out state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorShowReauth"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when reauth is requested as a result of entering the Password
-    Checkup homepage. iOS only. TODO(crbug.com/409680593): This user action was
-    added to investigate a crash. Remove when done with the investigation.
+    Checkup homepage. iOS only. This user action was added to investigate a
+    crash, see crbug.com/409680593.
   </description>
 </action>
 
@@ -28471,11 +28472,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordIssuesCoordinatorStart" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
-    Reported when the PasswordIssuesCoordinator is started. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Reported when the PasswordIssuesCoordinator is started. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
@@ -28510,20 +28511,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordIssuesViewDidAppear" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when the PasswordIssuesTableViewController view has appeared. iOS
-    only. TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    only. This user action was added to investigate a crash, see
+    crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordIssuesViewDidLoad" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when the PasswordIssuesTableViewController view has loaded. iOS
-    only. TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    only. This user action was added to investigate a crash, see
+    crbug.com/409680593.
   </description>
 </action>
 

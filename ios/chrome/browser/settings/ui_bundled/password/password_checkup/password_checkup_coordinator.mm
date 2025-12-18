@@ -195,7 +195,6 @@ using password_manager::PasswordCheckReferrer;
 // credentials for `warningType`.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
-  [self logPasswordCheckState];
   DUMP_WILL_BE_CHECK(!_passwordIssuesCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
@@ -476,44 +475,6 @@ using password_manager::PasswordCheckReferrer;
       return YES;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;
-  }
-}
-
-// TODO(crbug.com/409680593): Remove when done with the investigation.
-- (void)logPasswordCheckState {
-  switch (_passwordCheckManager->GetPasswordCheckState()) {
-    case PasswordCheckState::kCanceled:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateCanceled"));
-      return;
-    case PasswordCheckState::kIdle:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateIdle"));
-      return;
-    case PasswordCheckState::kNoPasswords:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateNoPasswords"));
-      return;
-    case PasswordCheckState::kOffline:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateOffline"));
-      return;
-    case PasswordCheckState::kOther:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateOther"));
-      return;
-    case PasswordCheckState::kQuotaLimit:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"));
-      return;
-    case PasswordCheckState::kRunning:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateRunning"));
-      return;
-    case PasswordCheckState::kSignedOut:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateSignedOut"));
-      return;
   }
 }
 
