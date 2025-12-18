@@ -215,6 +215,25 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   }
 }
 
+bool ContextualTasksUiService::MaybeFocusExistingOpenTab(
+    const GURL& url,
+    TabStripModel* tab_strip_model,
+    const base::Uuid& task_id) {
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    content::WebContents* web_contents =
+        tab_strip_model->GetTabAtIndex(i)->GetContents();
+    std::optional<ContextualTask> task =
+        context_controller_->GetContextualTaskForTab(
+            SessionTabHelper::IdForTab(web_contents));
+    if (web_contents->GetLastCommittedURL() == url && task &&
+        task->GetTaskId() == task_id) {
+      tab_strip_model->ActivateTabAt(i);
+      return true;
+    }
+  }
+  return false;
+}
+
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
     base::Uuid task_id,
@@ -251,17 +270,21 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // tab.
   // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
   if (!tab) {
-    // Creates the Tab so session ID is created for the WebContents.
-    auto tab_to_insert = std::make_unique<tabs::TabModel>(
-        std::move(new_contents), tab_strip_model);
-    if (task_id.is_valid()) {
-      AssociateWebContentsToTask(new_contents_ptr, task_id);
+    // Attempt to focus an existing tab prior to creating a new one.
+    if (!MaybeFocusExistingOpenTab(url, tab_strip_model, task_id)) {
+      // Creates the Tab so session ID is created for the WebContents.
+      auto tab_to_insert = std::make_unique<tabs::TabModel>(
+          std::move(new_contents), tab_strip_model);
+      if (task_id.is_valid()) {
+        AssociateWebContentsToTask(new_contents_ptr, task_id);
+      }
+      // Insert the WebContents after the current active.
+      int active_tab_index = tab_strip_model->active_index();
+      tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
+                              ui::PAGE_TRANSITION_LINK,
+                              AddTabTypes::ADD_ACTIVE);
     }
 
-    // Insert the WebContents after the current active tab.
-    int active_tab_index = tab_strip_model->active_index();
-    tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
-                            ui::PAGE_TRANSITION_LINK, AddTabTypes::ADD_ACTIVE);
     return;
   }
 
