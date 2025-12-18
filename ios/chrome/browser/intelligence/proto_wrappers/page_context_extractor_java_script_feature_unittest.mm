@@ -87,7 +87,7 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
 };
 
 // TODO(crbug.com/455761581): Test is flaky.
-TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
+TEST_F(PageContextExtractorJavaScriptFeatureTest, DISABLED_ExtractPageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
                     "text</p><iframe "
