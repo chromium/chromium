@@ -30,16 +30,10 @@ namespace privacy_sandbox {
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
     bool is_incognito)
-    : pref_service_(pref_service),
-      is_incognito_(is_incognito) {
+    : pref_service_(pref_service) {
   CHECK(pref_service_);
 
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kBlockAll3pcToggleEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
-          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kTrackingProtection3pcdEnabled,
       base::BindRepeating(
@@ -60,23 +54,9 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
       content_settings::features::kTrackingProtection3pcd);
 }
 
-bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
-  return IsTrackingProtection3pcdEnabled() &&
-         (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
-          is_incognito_);
-}
-
-void TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnBlockAllThirdPartyCookiesChanged();
-  }
-}
-
 void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnTrackingProtection3pcdChanged();
-    // 3PC blocking may change as a result of entering/leaving the experiment.
-    observer.OnBlockAllThirdPartyCookiesChanged();
   }
 }
 

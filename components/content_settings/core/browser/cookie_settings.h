@@ -253,7 +253,6 @@ class CookieSettings
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;
-  void OnBlockAllThirdPartyCookiesChanged() override;
 
   // Updates the FEDERATED_IDENTITY_SHARING settings.
   void UpdateFedCmSharingPermissions();

@@ -544,16 +544,6 @@ IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DoesNotEmitDevtoolsIssueWithBlockedCookiesSetting) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               true);
-
-  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-
-  CheckNoAddedIssue();
-}
-
-IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
                        DoesNotEmitDevtoolsIssueForAdTaggedCookie) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/true);
 

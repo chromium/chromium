@@ -21,12 +21,6 @@ class TrackingProtectionSettingsObserver {
 
   virtual ~TrackingProtectionSettingsObserver() = default;
 
-  // For observation of IP protection.
-  virtual void OnIpProtectionEnabledChanged() {}
-
-  // For observation of block all 3PC.
-  virtual void OnBlockAllThirdPartyCookiesChanged() {}
-
   // For observation of tracking protection experiment status.
   virtual void OnTrackingProtection3pcdChanged() {}
 

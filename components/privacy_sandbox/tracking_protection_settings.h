@@ -45,20 +45,13 @@ class TrackingProtectionSettings : public KeyedService {
   // Returns whether tracking protection for 3PCD (prefs + UX) is enabled.
   bool IsTrackingProtection3pcdEnabled() const;
 
-  // Returns whether tracking protection 3PCD is enabled and all 3PC are blocked
-  // (i.e. without mitigations).
-  bool AreAllThirdPartyCookiesBlocked() const;
-
  private:
   // Callbacks for pref observation.
-  void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
-
-  bool is_incognito_;
 };
 
 }  // namespace privacy_sandbox

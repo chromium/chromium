@@ -74,7 +74,6 @@ CookieSettings::CookieSettings(
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
   OnCookiePreferencesChanged();
-  OnBlockAllThirdPartyCookiesChanged();
   UpdateFedCmSharingPermissions();
 }
 
@@ -369,9 +368,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
-  return (tracking_protection_settings_ &&
-          tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
-          !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) ||
+  return (base::FeatureList::IsEnabled(
+              content_settings::features::kTrackingProtection3pcd) &&
+          !is_incognito_) ||
          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
 }
 
@@ -389,10 +388,6 @@ void CookieSettings::OnContentSettingChanged(
           ContentSettingsType::FEDERATED_IDENTITY_SHARING)) {
     UpdateFedCmSharingPermissions();
   }
-}
-
-void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
-  OnCookiePreferencesChanged();
 }
 
 void CookieSettings::OnMitigationsEnabledChanged() {
