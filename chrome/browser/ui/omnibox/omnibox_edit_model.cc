@@ -1790,22 +1790,29 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
 std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     const std::optional<omnibox::GroupId>& suggestion_group_id) const {
   if (suggestion_group_id.has_value()) {
+    const auto& input = autocomplete_controller()->input();
     bool force_hide_row_header =
         OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
-            autocomplete_controller()->input().current_page_classification());
+            input.current_page_classification());
     auto header_text =
         autocomplete_controller()->result().GetHeaderForSuggestionGroup(
             suggestion_group_id.value());
 
-    // Show contextual search suggestion group header if the Lens action has
-    // been moved to the Omnibox toolbelt.
     bool has_toolbelt_lens_action =
         autocomplete_controller()->contextual_search_provider() &&
         autocomplete_controller()
             ->contextual_search_provider()
             ->HasToolbeltLensAction();
+    bool has_lens_search_chip =
+        controller_->client()->IsAimPopupEnabled() &&
+        omnibox::kShowLensSearchChip.Get() &&
+        ContextualSearchProvider::LensEntrypointEligible(
+            input, autocomplete_controller()->autocomplete_provider_client());
+    // Show contextual search suggestion group header if the Lens action has
+    // been moved to the Omnibox toolbelt OR the "Omnibox Next" Lens search chip
+    // is currently active.
     if (suggestion_group_id.value() == omnibox::GROUP_CONTEXTUAL_SEARCH &&
-        has_toolbelt_lens_action) {
+        (has_toolbelt_lens_action || has_lens_search_chip)) {
       // TODO(khalidpeer): Make direct use of `header_text` once we start
       //     receiving a non-empty contextual search header from the server.
       return header_text.empty()
