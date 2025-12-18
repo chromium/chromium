@@ -114,10 +114,13 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 // when opening the SRP in a new tab.
 GURL RemoveSidePanelURLParameters(const GURL& url);
 
-// Appends the invocation source parameter to the URL.
+// Appends the invocation source parameter to the URL. If `is_contextual_tasks`
+// is true, the source URL param will be prefixed with `chrome.crn`. If false,
+// the param will be prefixed with `chrome.cr`.
 GURL AppendInvocationSourceParamToURL(
     const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source);
+    lens::LensOverlayInvocationSource invocation_source,
+    bool is_contextual_tasks);
 
 }  // namespace lens
 

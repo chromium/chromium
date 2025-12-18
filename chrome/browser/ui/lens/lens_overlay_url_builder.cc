@@ -231,7 +231,7 @@ GURL BuildTextOnlySearchURL(
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
   url_with_query_params = AppendInvocationSourceParamToURL(
-      url_with_query_params, invocation_source);
+      url_with_query_params, invocation_source, /*is_contextual_tasks=*/false);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -268,7 +268,7 @@ GURL BuildLensSearchURL(
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
   url_with_query_params = AppendInvocationSourceParamToURL(
-      url_with_query_params, invocation_source);
+      url_with_query_params, invocation_source, /*is_contextual_tasks=*/false);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
