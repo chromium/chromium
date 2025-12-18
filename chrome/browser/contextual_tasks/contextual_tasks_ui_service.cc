@@ -209,6 +209,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // Open the linked page in a tab directly after this one.
   tab_strip_model->InsertWebContentsAt(
       current_index + 1, std::move(new_contents), AddTabTypes::ADD_ACTIVE);
+  if (tab->GetGroup()) {
+    tab_strip_model->AddToExistingGroup({current_index + 1},
+                                        tab->GetGroup().value());
+  }
 
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =
