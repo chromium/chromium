@@ -501,18 +501,17 @@ class DiceBrowserTest : public InProcessBrowserTest,
   }
 
   // Signin with a main account and add token for a secondary account.
-  void SetupSignedInAccounts(
-      signin::ConsentLevel primary_account_consent_level) {
+  void SetupSignedInAccounts() {
     // Signin main account.
     AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
-        GetIdentityManager(), main_email_, primary_account_consent_level);
+        GetIdentityManager(), main_email_, signin::ConsentLevel::kSignin);
     ASSERT_TRUE(
         GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
     ASSERT_FALSE(
         GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
             GetMainAccountID()));
     ASSERT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                      primary_account_consent_level));
+                                      signin::ConsentLevel::kSignin));
 
     // Add a token for a secondary account.
     AccountInfo secondary_account_info =
@@ -813,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   // Sync should not be enabled.
   EXPECT_TRUE(GetIdentityManager()
-                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSignin)
                   .empty());
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -877,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
   EXPECT_EQ(0, reconcilor_started_count_);
 
   // Start from a signed-in state.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
   EXPECT_EQ(1, reconcilor_started_count_);
 
   // Navigate to Gaia and sign in again with the main account.
@@ -895,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
   // Check that the token was requested and added to the token service.
   SendRefreshTokenResponse();
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
 
   // Old token must not be revoked (see http://crbug.com/865189).
   EXPECT_EQ(0, token_revoked_notification_count_);
@@ -908,14 +907,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
 // Checks that the Dice signout flow works and deletes all tokens.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutMainAccount) {
   // Start from a signed-in state.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
   // Signout from main account.
   SignOutWithDice(kMainAccount);
 
   // Check that the user is in error state.
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(
@@ -936,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutMainAccount) {
 // token.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
   // Start from a signed-in state.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
   // Signout from secondary account.
   SignOutWithDice(kSecondaryAccount);
@@ -944,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
   // Check that the user is still signed in from main account, but secondary
   // token is deleted.
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
@@ -958,14 +957,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
 // Checks that the Dice signout flow works and deletes all tokens.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
   // Start from a signed-in state.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
   // Signout from all accounts.
   SignOutWithDice(kAllAccounts);
 
   // Check that the user is in error state.
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSync));
+                                    signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(
@@ -983,16 +982,16 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
 }
 
 // Checks that the Dice signout flow works and deletes all tokens.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokeSyncAccountInAuthErrorState) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokePrimaryAccountInAuthErrorState) {
   // Start from a signed-in state.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
   // Signout from main account.
   SignOutWithDice(kMainAccount);
 
   // Check that the user is in error state.
   ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   ASSERT_TRUE(
@@ -1050,17 +1049,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_SignedOut) {
   WaitForReconcilorUnblockedCount(0);
 }
 
-// Tests that turning off Dice via preferences works when signed in without sync
-// consent.
+// Tests that turning off Dice via preferences works when signed in.
 //
 // Regression test for crbug/1254325
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_NotOptedIntoSync) {
-  SetupSignedInAccounts(signin::ConsentLevel::kSignin);
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_SignedIn) {
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
 
@@ -1069,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_NotOptedIntoSync) {
       prefs::kSigninAllowedOnNextStartup, false);
 }
 
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_NotOptedIntoSync) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_SignedIn) {
   // Check that Dice is disabled.
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
@@ -1078,48 +1074,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_NotOptedIntoSync) {
   EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
 
-  EXPECT_FALSE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(
-      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
-  EXPECT_TRUE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
-
-  // Navigate to Gaia and sign in.
-  NavigateToURL(kSigninURL);
-  // Check that the Dice request header was not sent.
-  EXPECT_EQ(kNoDiceRequestHeader, dice_request_header_);
-  EXPECT_EQ(0, reconcilor_blocked_count_);
-  WaitForReconcilorUnblockedCount(0);
-}
-
-// Tests that turning off Dice via preferences works when signed in with sync
-// consent
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_OptedIntoSync) {
-  // Sign the profile in and turn sync on.
-  SetupSignedInAccounts(signin::ConsentLevel::kSync);
-  syncer::SyncPrefs(browser()->profile()->GetPrefs())
-      .SetInitialSyncFeatureSetupComplete();
-
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
-      browser()->profile()));
-
-  // Turn off Dice for this profile.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kSigninAllowedOnNextStartup, false);
-}
-
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_OptedIntoSync) {
-  EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kSigninAllowedOnNextStartup));
-  EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
-      browser()->profile()));
-
-  EXPECT_FALSE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
@@ -1145,9 +1099,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
       incognito_browser->profile()));
 }
 
-// Tests that Sync is enabled if the ENABLE_SYNC response is received after the
-// refresh token.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
+// Tests that the profile is signed in if the ENABLE_SYNC response is received
+// after the refresh token.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -1241,9 +1195,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
 }
 
 // Tests that the account is signed in if the ENABLE_SYNC response is received
-// before the refresh token, and the Sync opt-in is offered.
+// before the refresh token, and the Sync/history sync opt-in is offered.
 // https://crbug.com/1082858
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncBeforeToken) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -1633,6 +1587,8 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
 };
 
 // Checks that migration handles Cookie clear on exit and sync toggles.
+// TODO(crbug.com/40066949): This test can be removed after UNO phase 3 launch.
+// This test is valid as long as there are sync users with clear cookie on exit.
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
                        PRE_MigrationWithSettings) {
   Profile* profile = browser()->profile();
@@ -2205,7 +2161,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   ASSERT_TRUE(deleted_profiles.empty());
 
   // Sign the profile in.
-  SetupSignedInAccounts(signin::ConsentLevel::kSignin);
+  ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
 
   // Prohibit sign-in on next start-up.
